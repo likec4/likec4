@@ -1,7 +1,8 @@
 import { PlaygroundActorSafeContext } from '$/hooks/safeContext'
-import { useUpdateEffect } from '@likec4/diagram'
+import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef } from '@xstate/react'
 import type { PropsWithChildren } from 'react'
+// import { inspector } from './inspector'
 import { type PlaygroundInput, playgroundMachine } from './playground-machine'
 
 export function PlaygroundActorContextProvider(
@@ -18,7 +19,7 @@ export function PlaygroundActorContextProvider(
       type: 'workspace.switch',
       workspace,
     })
-  }, [workspace])
+  }, [workspace.workspaceId])
 
   return (
     <PlaygroundActorSafeContext value={playgroundActor}>

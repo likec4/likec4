@@ -21,9 +21,9 @@ export function CompoundActionButton({
 }: CompoundActionButtonProps) {
   return (
     <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'compound-action')}>
-      <Box
-        className={clsx('nodrag nopan', css.actionButton)}
-        component={m.div}
+      <ActionIcon
+        className={clsx('nodrag nopan', css.actionIcon)}
+        component={m.button}
         initial={false}
         animate={{
           scale: isHovered ? 1.2 : 1,
@@ -36,18 +36,14 @@ export function CompoundActionButton({
           // y: 1,
         }}
         whileTap={{ scale: 1 }}
+        size={'md'}
+        radius="md"
+        // Otherwise node receives click event and is selected
+        onClick={onClick}
+        onDoubleClick={stopPropagation}
       >
-        <ActionIcon
-          className={css.actionIcon}
-          size={'md'}
-          radius="md"
-          // Otherwise node receives click event and is selected
-          onClick={onClick}
-          onDoubleClick={stopPropagation}
-        >
-          {icon ?? <IconZoomScan stroke={2} />}
-        </ActionIcon>
-      </Box>
+        {icon ?? <IconZoomScan stroke={2} />}
+      </ActionIcon>
     </Box>
   )
 }

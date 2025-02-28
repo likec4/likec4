@@ -60,8 +60,8 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
 
     const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
 
-    const MAX_TRANSPARENCY = 40
-    const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
+    const MAX_TRANSPARENCY = 65
+    const borderTransparency = clamp(MAX_TRANSPARENCY - 0.8 * opacity * MAX_TRANSPARENCY, {
       min: 0,
       max: MAX_TRANSPARENCY,
     })

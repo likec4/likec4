@@ -1,4 +1,3 @@
-import type { PlaygroundActorRef } from '$state/types'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import getEditorServiceOverride, { type OpenEditor } from '@codingame/monaco-vscode-editor-service-override'
 import {
@@ -18,7 +17,6 @@ export type CustomWrapperConfig = WrapperConfig & {
 }
 
 export const createWrapperConfig = (params: {
-  playgroundActor: PlaygroundActorRef
   onActiveEditorChanged?: (filename: string) => void
   getActiveEditor: () => monaco.editor.ICodeEditor | null
 }): CustomWrapperConfig => {
@@ -39,13 +37,6 @@ export const createWrapperConfig = (params: {
         },
       },
     },
-  }
-
-  const ctx = params.playgroundActor.getSnapshot().context
-  const modified = {
-    text: ctx.files[ctx.activeFilename] ?? '',
-    uri: '/' + ctx.activeFilename,
-    fileExt: 'c4',
   }
 
   const fsProvider = new RegisteredFileSystemProvider(false)
@@ -89,9 +80,6 @@ export const createWrapperConfig = (params: {
     editorAppConfig: {
       useDiffEditor: false,
       monacoWorkerFactory: configureMonacoWorkers,
-      codeResources: {
-        modified,
-      },
       editorOptions: {
         codeLens: true,
         'semanticHighlighting.enabled': true,

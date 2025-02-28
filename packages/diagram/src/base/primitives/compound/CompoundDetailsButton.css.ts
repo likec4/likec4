@@ -26,7 +26,6 @@ export const actionIcon = style({
   pointerEvents: 'all',
   cursor: 'pointer',
   color: `var(--_compound-title-color,${btnColor})`,
-  backgroundColor: 'var(--ai-bg)',
   'vars': {
     '--ai-color-hover': vars.element.hiContrast,
     '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,

@@ -11,7 +11,7 @@ import { Header } from '$components/appshell/Header'
 // import { PlaygroundActorProvider } from '$state/context'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
 import { PlaygroundActorContextProvider } from '$state/context'
-import { WorkspacePersistence } from '$state/persistence'
+import { WorkspacePersistence, WorkspaceSessionPersistence } from '$state/persistence'
 import * as css from './styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/w/$workspaceId')({
   } => {
     const id = params.workspaceId as keyof typeof Examples
     if (Examples[id]) {
-      return {
+      return WorkspaceSessionPersistence.read(id) ?? {
         workspaceId: id,
         activeFilename: Examples[id].currentFilename,
         title: Examples[id].title,

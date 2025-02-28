@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css'
 import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
-import { transitions, vars } from '../../../theme-vars'
+import { vars } from '../../../theme-vars'
 
 export const container = style({
   position: 'absolute',
@@ -14,18 +14,10 @@ export const container = style({
   zIndex: 10,
 })
 
-export const actionButton = style({
-  width: 'min-content',
-  height: 'min-content',
-  // display: 'flex',
-  // justifyContent: 'center',
-  // alignItems: 'center',
-})
-
 export const actionIcon = style({
   opacity: 0.45,
   color: `var(--_compound-title-color,${vars.element.loContrast})`,
-  transition: transitions.fast,
+  // transition: transitions.fast,
   'vars': {
     '--ai-color-hover': vars.element.hiContrast,
     '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
@@ -33,7 +25,7 @@ export const actionIcon = style({
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`,
   },
-  background: `var(--ai-bg)`,
+  // background: `var(--ai-bg)`,
   boxShadow: '1px 1px 3px 0px transparent',
   selectors: {
     [`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"]) &`]: {
@@ -46,8 +38,8 @@ export const actionIcon = style({
     },
     [`:where([data-hovered='true']) &`]: {
       opacity: 1,
-      transitionDelay: '100ms',
-      transitionDuration: '300ms',
+      // transitionDelay: '100ms',
+      // transitionDuration: '300ms',
       // boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.15)',
       // color: `var(--ai-color-hover)`,
       // vars: {

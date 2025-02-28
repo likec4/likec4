@@ -1,4 +1,3 @@
-import { Examples } from '$/examples'
 import {
   type ComputedView,
   type DiagramView,
@@ -20,7 +19,7 @@ import {
   raise,
   setup,
 } from 'xstate'
-import { WorkspacePersistence } from './persistence'
+import { selectWorkspacePersistence } from './persistence'
 
 export type DiagramState = {
   // Never loaded
@@ -268,9 +267,7 @@ export const playgroundMachine = setup({
     }),
 
     'persist to storage': (({ context }) => {
-      if (Examples[context.workspaceId as keyof typeof Examples]) return
-
-      WorkspacePersistence.write({
+      selectWorkspacePersistence(context.workspaceId).write({
         workspaceId: context.workspaceId,
         activeFilename: context.activeFilename,
         title: context.workspaceTitle,

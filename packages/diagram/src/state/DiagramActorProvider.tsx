@@ -15,7 +15,6 @@ import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorRef } from './types'
 
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
-
 export function DiagramActorProvider({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
   const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()

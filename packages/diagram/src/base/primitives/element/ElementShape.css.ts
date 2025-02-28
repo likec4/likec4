@@ -128,6 +128,16 @@ export const shapeSvg = style([shapeBase, {
         `,
       },
     },
+    [`:where([data-likec4-level='true']) &`]: {
+      vars: {
+        [filterShadow]: `
+        drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
+        drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
+
+        `,
+      },
+    },
     [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
       vars: {
         [filterShadow]: `none`,
