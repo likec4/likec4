@@ -23,7 +23,7 @@ export const { activate, deactivate } = defineExtension(async () => {
   logger.debug('node extension')
   activateLanguageClient(
     // Create a language client
-    (id, name, props) => {
+    (id, name, { documentSelector, ...opts }) => {
       const serverModule = extensionContext.value!.asAbsolutePath(
         path.join(
           'dist',
@@ -64,7 +64,9 @@ export const { activate, deactivate } = defineExtension(async () => {
       }
 
       const clientOptions: LanguageClientOptions = {
-        ...props,
+        ...opts,
+        // @ts-expect-error
+        documentSelector,
         synchronize: fileSystemWatcher
           ? {
             fileEvents: fileSystemWatcher,

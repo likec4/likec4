@@ -15,6 +15,7 @@ import {
   DocumentState,
   WorkspaceCache,
 } from 'langium'
+import prettyMs from 'pretty-ms'
 import {
   filter,
   groupBy,
@@ -82,7 +83,6 @@ export class LikeC4ModelBuilder extends ADisposable {
 
     const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4Model>
     return cache.get(CACHE_KEY_PARSED_MODEL, () => {
-      logger.debug('unsafeSyncParseModel ({docslength} docs)', { docslength: docs.length })
       return buildModel(docs)
     })
   }
@@ -91,14 +91,19 @@ export class LikeC4ModelBuilder extends ADisposable {
     const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4Model>
     const cached = cache.get(CACHE_KEY_PARSED_MODEL)
     if (cached) {
+      logger.debug('parseModel from cache')
       return cached
     }
-    logger.debug('parseModel')
+
     if (this.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       logger.debug('parseModel: waiting for documents to be validated')
       await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
+      logger.debug('parseModel: documents are validated')
     }
-    return this.unsafeSyncParseModel()
+    const t0 = performance.now()
+    const result = this.unsafeSyncParseModel()
+    logger.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
+    return result
   }
 
   private previousViews: Record<ViewId, c4.ComputedView> = {}
@@ -116,7 +121,6 @@ export class LikeC4ModelBuilder extends ADisposable {
       if (!parsed) {
         return LikeC4Model.EMPTY
       }
-      logger.debug('unsafeSyncBuildModel')
 
       const {
         views: parsedViews,
@@ -158,12 +162,15 @@ export class LikeC4ModelBuilder extends ADisposable {
       logger.debug('buildLikeC4Model from cache')
       return cached
     }
+    const t0 = performance.now()
     const model = await this.parseModel(cancelToken)
     if (!model) {
+      logger.debug('buildLikeC4Model: no model')
       return LikeC4Model.EMPTY
     }
-    logger.debug('buildLikeC4Model')
-    return this.unsafeSyncBuildModel()
+    const result = this.unsafeSyncBuildModel()
+    logger.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
+    return result
   }
 
   public async computeView(

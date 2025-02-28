@@ -19,7 +19,6 @@ import {
   type BaseLanguageClient,
   type DiagnosticSeverity as lcDiagnosticSeverity,
   type LanguageClientOptions,
-  type TextDocumentFilter,
 } from 'vscode-languageclient'
 import { isLikeC4Source } from './common/initWorkspace'
 import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
@@ -38,7 +37,7 @@ type CreateLanguageClient = (
   id: string,
   name: string,
   props: Omit<LanguageClientOptions, 'documentSelector' | 'outputChannel'> & {
-    documentSelector: TextDocumentFilter[]
+    documentSelector: vscode.DocumentFilter[]
     outputChannel: vscode.OutputChannel
   },
 ) => BaseLanguageClient
@@ -128,6 +127,7 @@ function activateLc(
   }
 
   watch(documentSelector, async () => {
+    // @ts-expect-error
     client.clientOptions.documentSelector = toValue(documentSelector)
     await restartServer()
   })

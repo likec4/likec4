@@ -20,7 +20,7 @@ export const { activate, deactivate } = defineExtension(async () => {
   logger.debug('browser extension')
   activateLanguageClient(
     // Create a language client
-    (id, name, props) => {
+    (id, name, opts) => {
       // Create a worker. The worker main file implements the language server.
       const serverMain = vscode.Uri.joinPath(
         extensionContext.value!.extensionUri,
@@ -37,7 +37,7 @@ export const { activate, deactivate } = defineExtension(async () => {
 
       // Options to control the language client
       const clientOptions: LanguageClientOptions = {
-        ...props,
+        ...opts,
         documentSelector: [
           { language: languageId, scheme: 'file' },
           { language: languageId, scheme: 'vscode-vfs' },

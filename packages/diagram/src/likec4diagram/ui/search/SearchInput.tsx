@@ -39,7 +39,7 @@ export function LikeC4SearchInput() {
   const previous = usePreviousDistinct(search)
   const isFirstRender = useIsFirstRender()
 
-  const [isEmptyForSomeTime] = useDebouncedValue(search === '' && !isFirstRender, isString(previous) ? 400 : 1000)
+  const [isEmptyForSomeTime] = useDebouncedValue(search === '' && !isFirstRender, isString(previous) ? 500 : 2000)
 
   useWindowEvent(
     'keydown',
