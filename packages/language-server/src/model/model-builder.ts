@@ -91,7 +91,7 @@ export class LikeC4ModelBuilder extends ADisposable {
     const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4Model>
     const cached = cache.get(CACHE_KEY_PARSED_MODEL)
     if (cached) {
-      return await Promise.resolve(cached)
+      return cached
     }
     logger.debug('parseModel')
     if (this.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
@@ -156,7 +156,7 @@ export class LikeC4ModelBuilder extends ADisposable {
     const cached = cache.get(CACHE_KEY_COMPUTED_MODEL)
     if (cached) {
       logger.debug('buildLikeC4Model from cache')
-      return await Promise.resolve(cached)
+      return cached
     }
     const model = await this.parseModel(cancelToken)
     if (!model) {

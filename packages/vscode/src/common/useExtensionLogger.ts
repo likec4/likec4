@@ -22,9 +22,10 @@ export const useExtensionLogger = createSingletonComposable(() => {
         sinks: ['console', 'vscode', 'telemetry'],
       },
     ],
-  }).then(() => {
-    outputChannel.debug('configured logger')
-  })
+  }).then(
+    () => outputChannel.debug('configured logger'),
+    (err) => outputChannel.error(err),
+  )
 
   return {
     ...useLogger('LikeC4 Extension', {

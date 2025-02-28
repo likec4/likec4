@@ -5,6 +5,7 @@ import {
   FetchDiagramView,
   WebviewMsgs,
 } from '@likec4/vscode-preview/protocol'
+import prettyMs from 'pretty-ms'
 import { executeCommand, useActiveTextEditor, useDisposable } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { Messenger } from 'vscode-messenger'
@@ -33,14 +34,25 @@ export function activateMessenger(rpc: Rpc) {
   })
 
   useDisposable(messenger.onRequest(FetchComputedModel, async () => {
-    logger.debug`onRequest ${'FetchComputedModel'}`
-    return await rpc.fetchComputedModel()
+    const t0 = performance.now()
+    try {
+      const result = await rpc.fetchComputedModel()
+      const t1 = performance.now()
+      logger.debug(`request {req} in ${prettyMs(t1 - t0)}`, { req: 'fetchComputedModel' })
+      return result
+    } catch (err) {
+      const t1 = performance.now()
+      logger.warn(`request {req} failed after ${prettyMs(t1 - t0)}`, { req: 'fetchComputedModel', err })
+      return { model: null }
+    }
   }))
 
   useDisposable(messenger.onRequest(FetchDiagramView, async (viewId) => {
-    logger.debug`onRequest ${'FetchDiagramView'} of ${viewId}`
+    const t0 = performance.now()
     try {
       const result = await rpc.layoutView(viewId)
+      const t1 = performance.now()
+      logger.debug(`request {req} of {viewId} in ${prettyMs(t1 - t0)}`, { req: 'layoutView', viewId })
       return result
         ? {
           view: result.diagram,
@@ -50,9 +62,10 @@ export function activateMessenger(rpc: Rpc) {
           view: null,
           error: `View "${viewId}" not found`,
         }
-    } catch (e) {
-      const error = loggable(e)
-      logger.error(error)
+    } catch (err) {
+      const t1 = performance.now()
+      logger.warn(`request {req} of {viewId} failed after ${prettyMs(t1 - t0)}`, { req: 'layoutView', err, viewId })
+      const error = loggable(err)
       return {
         view: null,
         error,

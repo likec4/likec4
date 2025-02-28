@@ -11,7 +11,6 @@ import {
   useDisposable,
   useIsDarkTheme,
   useViewTitle,
-  useVscodeContext,
   watch,
 } from 'reactive-vscode'
 import { type Webview, type WebviewPanel, Uri, ViewColumn, window } from 'vscode'
@@ -27,8 +26,6 @@ const logger = rootLogger.getChild('DiagramPreview')
 export const useDiagramPreview = createSingletonComposable(() => {
   let current: ReturnType<typeof createDiagramPreview> | null
   let currentScope: EffectScope | null = null
-
-  useVscodeContext('likec4.preview.active', () => !!current)
 
   function close() {
     if (current) {
@@ -73,7 +70,7 @@ export const useDiagramPreview = createSingletonComposable(() => {
   return {
     open,
     close,
-    viewId: () => current?.viewId.value as ViewId ?? null,
+    viewId: () => current?.viewId.value as ViewId | null ?? null,
     getLastClickedElement: async () => {
       if (!current) {
         return {

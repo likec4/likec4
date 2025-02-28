@@ -1,4 +1,5 @@
 import useDocumentSelector from '#useDocumentSelector'
+import type { ViewId } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import {
   executeCommand,
@@ -12,7 +13,7 @@ import {
   useVscodeContext,
   watch,
 } from 'reactive-vscode'
-import { entries, groupBy, map, pipe, prop } from 'remeda'
+import { entries, groupBy, map, pipe, prop, values } from 'remeda'
 import * as vscode from 'vscode'
 import {
   type BaseLanguageClient,
@@ -25,8 +26,9 @@ import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
 import { useDiagramPreview, ViewType } from './common/useDiagramPreview'
 import { useExtensionLogger } from './common/useExtensionLogger'
 import { activateMessenger } from './common/useMessenger'
+import { activateTelemetry } from './common/useTelemetry'
 import { languageId } from './const'
-import { logger } from './logger'
+import { logger, logWarn } from './logger'
 import { commands } from './meta'
 import { useRpc } from './Rpc'
 
@@ -132,8 +134,43 @@ function activateLc(
 
   const preview = useDiagramPreview()
   useCommand(commands.restart, restartServer)
-  useCommand(commands.openPreview, (viewId = 'index') => {
+  useCommand(commands.openPreview, async (viewId?: ViewId) => {
+    if (!viewId) {
+      try {
+        const { model } = await rpc.fetchComputedModel()
+        const views = values(model?.views ?? {}).map(v => ({
+          label: v.id,
+          description: v.title ?? '',
+          viewId: v.id,
+        })).sort((a, b) => {
+          if (a.label === 'index') {
+            return -1
+          }
+          if (b.label === 'index') {
+            return 1
+          }
+          return a.label.localeCompare(b.label)
+        })
+        if (views.length === 0) {
+          await vscode.window.showWarningMessage('No views found', { modal: true })
+          return
+        }
+        const selected = await vscode.window.showQuickPick(views, {
+          canPickMany: false,
+          title: 'Select a view',
+        })
+        if (!selected) {
+          return
+        }
+
+        viewId = selected.viewId
+      } catch (e) {
+        logWarn(e)
+        return
+      }
+    }
     preview.open(viewId)
+    telemetry.sendTelemetryErrorEvent('open-preview')
   })
   useCommand(commands.locate, async (params: LocateParams) => {
     const loc = await rpc.locate(params)
@@ -209,7 +246,10 @@ function activateLc(
     layoutDiagnosticsCollection.set(diagnostic)
   })
 
+  const telemetry = activateTelemetry(rpc)
+
   logger.info('LikeC4 activated')
+  telemetry.sendTelemetryEvent('activation')
 
   return {
     rpc,

@@ -14,7 +14,6 @@ import { nextTick, triggerRef, useDisposable } from 'reactive-vscode'
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
 import type { BaseLanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { logger } from './logger'
 import { computedModel } from './state'
 
 // #region From server
@@ -54,10 +53,7 @@ export function useRpc(client: BaseLanguageClient) {
   }
 
   function onDidChangeModel(cb: () => void) {
-    useDisposable(client.onNotification(lsp.onDidChangeModel, () => {
-      logger.debug`broadcast ${'onDidChangeModel'}`
-      cb()
-    }))
+    useDisposable(client.onNotification(lsp.onDidChangeModel, cb))
   }
 
   let previousOperation = Promise.resolve({} as any)
