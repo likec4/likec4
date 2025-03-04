@@ -1,0 +1,25 @@
+name = "playground"
+main = "./worker/index.ts"
+compatibility_date = "2025-03-01"
+compatibility_flags = [ "nodejs_compat_v2" ]
+workers_dev = true
+
+assets = { not_found_handling = "single-page-application", binding = "ASSETS" }
+
+[vars]
+GITHUB_ID=""
+GITHUB_SECRET=""
+SESSION_ENCRYPTION_KEY="VFRAdSem81cuALVeOMC4PJyLXf30tckV"
+
+
+[placement]
+mode = "smart"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "ebf54cfa797b4d76bd08e83bb7214898"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+logs = { enabled = true }

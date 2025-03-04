@@ -1,5 +1,5 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../mantine.css'
+import { mantine } from '../mantine'
 
 const bg = createVar()
 

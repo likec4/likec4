@@ -1,5 +1,6 @@
 import '@xyflow/react/dist/style.css'
 
+export type { ControlsCustomLayout, ControlsCustomLayoutProps } from './context/ControlsCustomLayout'
 export { FramerMotionConfig } from './context/FramerMotionConfig'
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'

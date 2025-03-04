@@ -1,19 +1,19 @@
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { whereNotReducedGraphics } from '../LikeC4Diagram.css'
-import { mantine, transitions, vars, whereDark, whereLight } from '../theme-vars'
+import { mantine, transitions, vars, whereDark, whereLight, whereNotReducedGraphics } from '../theme-vars'
 
 const transparent = createVar('transparent')
 const bgColor = createVar('bgcolor')
 export const root = style({
-  height: '32px',
+  height: '30px',
   paddingLeft: mantine.spacing.sm,
   paddingRight: '4px',
-  borderRadius: mantine.radius.sm,
-  color: mantine.colors.placeholder,
+  borderRadius: fallbackVar('var(--search-border-radius)', mantine.radius.sm),
+  color: fallbackVar('var(--search-color)', mantine.colors.placeholder),
   border: '1px solid',
   cursor: 'pointer',
   transition: transitions.fast,
   backgroundColor: bgColor,
+  width: '100%',
   vars: {
     [transparent]: '20%',
     [bgColor]: mantine.colors.default,
@@ -51,13 +51,20 @@ globalStyle(`${root} .tabler-icon`, {
   color: mantine.colors.text,
 })
 
+export const placeholder = style({
+  fontSize: mantine.fontSizes.sm,
+  fontWeight: 500,
+  paddingRight: 50,
+  flex: 1,
+})
+
 export const shortcut = style({
   fontSize: '11px',
+  fontWeight: 600,
   lineHeight: 1,
   padding: '4px 7px',
   borderRadius: mantine.radius.sm,
   border: '1px solid',
-  fontWeight: 'bold',
   selectors: {
     [`${whereLight} &`]: {
       color: mantine.colors.gray[7],

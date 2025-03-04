@@ -8,7 +8,6 @@ import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import type { NodeProps } from '../../types'
 import { nodeSizes } from './ElementNodeContainer'
 import * as css from './ElementTitle.css'
-import { iconSize as varIconSize } from './styles.css'
 
 type Data =
   & Pick<
@@ -48,7 +47,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
       )}
       style={{
         ...isNumber(iconSize) && assignInlineVars({
-          [varIconSize]: `${iconSize}px`,
+          [css.iconSize]: `${iconSize}px`,
         }),
       }}
     >

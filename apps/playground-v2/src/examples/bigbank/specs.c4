@@ -1,0 +1,67 @@
+specification {
+
+  element enterprise {
+    style {
+      opacity 15%
+    }
+  }
+  element softwaresystem {
+    notation "Software System"
+    style {
+      color primary
+      opacity 25%
+    }
+  }
+  element existingsystem {
+    notation "Existing System"
+    style {
+      color muted
+      opacity 15%
+    }
+  }
+  element container {
+    style {
+      opacity 20%
+    }
+  }
+  element component
+
+  element mobileApp {
+    notation 'Mobile App'
+    style {
+      shape mobile
+    }
+  }
+
+  element spa {
+    notation 'Single-Page Application'
+    style {
+      shape browser
+    }
+  }
+
+  element person {
+    notation 'Person, Customer'
+    style {
+      color green
+      shape person
+    }
+  }
+
+  element staff {
+    notation 'Person, Bank Staff'
+    style {
+      color secondary
+      shape person
+    }
+  }
+
+  // Structurizr does not have a database element
+  // Just for the sake of the example
+  element database {
+    style {
+      shape storage
+    }
+  }
+
+}

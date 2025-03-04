@@ -5,6 +5,9 @@ import { easings, mantine, transitions, vars, whereDark, whereLight } from '../.
 export const cardBg = createVar('card-bg')
 const cardBgImage = createVar('card-bg-top')
 
+export const backdropBlur = createVar('backdrop-blur')
+export const backdropOpacity = createVar('backdrop-opacity')
+
 export const dialog = style({
   boxSizing: 'border-box',
   margin: 0,
@@ -18,14 +21,14 @@ export const dialog = style({
   background: 'transparent',
   border: '0 solid transparent',
   vars: {
-    '--backdrop-opacity': '0%',
-    '--backdrop-blur': '0px',
+    [backdropOpacity]: '0%',
+    [backdropBlur]: '0px',
   },
   selectors: {
     [`&::backdrop`]: {
-      WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
-      backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(36 36 36 / var(--backdrop-opacity))`,
+      WebkitBackdropFilter: `blur(${backdropBlur})`,
+      backdropFilter: `blur(${backdropBlur})`,
+      backgroundColor: `rgb(36 36 36 / ${backdropOpacity})`,
     },
   },
 })

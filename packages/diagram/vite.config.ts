@@ -5,26 +5,27 @@ import dts from 'vite-plugin-dts'
 import packageJson from './package.json' with { type: 'json' }
 
 export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production'
+  console.log('isProduction', isProduction)
   return {
-    define: {
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    },
+    // define: {
+    //   'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+    // },
     resolve: {
       conditions: ['production', 'sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },
     },
-    mode: 'production',
     build: {
-      emptyOutDir: true,
+      emptyOutDir: isProduction,
       cssCodeSplit: false,
       cssMinify: true,
       minify: false,
       lib: {
         entry: 'src/index.ts',
         formats: ['es'],
-        fileName(format, entryName) {
+        fileName(_format, entryName) {
           return `${entryName}.js`
         },
       },
@@ -54,12 +55,16 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       vanillaExtractPlugin({}),
-      dts({
-        staticImport: true,
-        compilerOptions: {
-          declarationMap: false,
-        },
-      }),
+      ...(isProduction
+        ? [
+          dts({
+            staticImport: true,
+            compilerOptions: {
+              declarationMap: false,
+            },
+          }),
+        ]
+        : []),
     ],
   }
 })

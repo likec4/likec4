@@ -4,3 +4,5 @@ packages:
 
 catalog:
   typescript: 5.7.3
+  wireit: "^0.14.11"
+  wrangler: "^3.111.0"

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "composite": true,
+    "tsBuildInfoFile": ".tsbuildinfo/worker.tsbuildinfo",
+    "noEmit": false,
+  },
+  "include": [
+    "./worker-configuration.d.ts",
+    "./.wrangler/types/runtime.d.ts",
+    "./worker"
+  ]
+}

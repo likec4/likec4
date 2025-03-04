@@ -7,7 +7,7 @@ import {
   LikeC4Model,
   nonNullable,
 } from '@likec4/core'
-import type { LocateParams } from '@likec4/language-server/protocol'
+import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
 import { rootLogger } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import { keys, prop } from 'remeda'
@@ -99,7 +99,7 @@ export type PlaygroundEvents =
   | { type: 'likec4.lsp.onLayoutError'; viewId: ViewId; error: string }
   // Workspace events
   | { type: 'workspace.applyViewChanges'; change: ViewChange }
-  | { type: 'workspace.openSources'; target: LocateParams }
+  | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.changeActiveView'; viewId: ViewId }
   | { type: 'workspace.changeActiveFile'; filename: string }
   | { type: 'workspace.switch'; workspace: PlaygroundInput }
@@ -107,7 +107,7 @@ export type PlaygroundEvents =
   | { type: 'workspace.ready' }
 
 export type PlaygroundEmitted =
-  | { type: 'workspace.openSources'; target: LocateParams }
+  | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.applyViewChanges'; viewId: ViewId; change: ViewChange }
 
 const logger = rootLogger.getChild('playground-actor')

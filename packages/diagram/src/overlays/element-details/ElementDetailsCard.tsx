@@ -48,10 +48,14 @@ import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import { stopPropagation } from '../../utils'
+import { getVarName } from '../../utils/css'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
+
+const backdropBlur = getVarName(css.backdropBlur) as '--backdrop-blur'
+const backdropOpacity = getVarName(css.backdropOpacity) as '--backdrop-opacity'
 
 const Divider = MantineDivider.withProps({
   mb: 8,
@@ -226,16 +230,16 @@ export function ElementDetailsCard({
       layout
       layoutRoot
       initial={{
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '10%',
+        [backdropBlur]: '0px',
+        [backdropOpacity]: '10%',
       }}
       animate={{
-        '--backdrop-blur': '3px',
-        '--backdrop-opacity': '60%',
+        [backdropBlur]: '3px',
+        [backdropOpacity]: '60%',
       }}
       exit={{
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '0%',
+        [backdropBlur]: '0px',
+        [backdropOpacity]: '0%',
         transition: {
           duration: 0.1,
         },

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "outputs": [
+        "src/routeTree.gen.ts",
+        ".wrangler/types",
+        "styled-system",
+        "worker-configuration.d.ts"
+      ],
+      "inputs": [
+        "*.config.ts",
+        "src/routes/*.tsx",
+        "tsr.config.json",
+        "package.json"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/routeTree.gen.ts",
+        "!tsr.config.json"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    }
+  }
+}

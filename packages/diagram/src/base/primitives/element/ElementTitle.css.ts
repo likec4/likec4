@@ -2,11 +2,13 @@ import { rem } from '@mantine/core'
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
 import { vars } from '../../../theme-vars'
-import { iconSize, paddingSize, textSize } from './styles.css'
+import { iconSize, paddingSize, textSize } from './vars.css'
 
 export const hasIcon = style({})
 
 const textAlign = createVar('text-align')
+
+export { iconSize, paddingSize, textSize }
 
 export const title = style({
   flex: '0 0 auto',

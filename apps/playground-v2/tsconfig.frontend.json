@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/frontend.tsbuildinfo",
+    "composite": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "allowArbitraryExtensions": true,
+    "customConditions": [
+      "sources"
+    ],
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "$components/*": [
+        "./src/components/*"
+      ],
+      "$state/*": [
+        "./src/state/*"
+      ],
+      "$hooks/*": [
+        "./src/hooks/*"
+      ],
+      "$styled-system/*": [
+        "./styled-system/*"
+      ],
+      "$/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "./src",
+    "./styled-system"
+  ],
+  "exclude": [
+    "./worker/**/*"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.worker.json"
+    }
+  ]
+}

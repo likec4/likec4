@@ -10,7 +10,7 @@ import type { LanguageClientConfig, WrapperConfig } from 'monaco-editor-wrapper'
 import { first } from 'remeda'
 import languageConfig from '../../language-configuration.json?raw'
 import textmateGrammar from '../../likec4.tmLanguage.json?raw'
-import { configureMonacoWorkers, loadLikeC4Worker } from './utils'
+import { configureMonacoWorkers, loadLikeC4Worker } from './workers'
 
 export type CustomWrapperConfig = WrapperConfig & {
   fsProvider: RegisteredFileSystemProvider
@@ -59,23 +59,19 @@ export const createWrapperConfig = (params: {
     fsProvider,
     vscodeApiConfig: {
       enableExtHostWorker: false,
-      viewsConfig: {
-        viewServiceType: 'EditorService',
-        openEditorFunc,
-      },
       serviceOverrides: {
         ...getEditorServiceOverride(openEditorFunc),
         ...getThemeServiceOverride(),
         ...getTextmateServiceOverride(),
       },
-      userConfiguration: {
-        json: JSON.stringify({
-          'workbench.colorTheme': 'Default Dark+',
-          'editor.guides.bracketPairsHorizontal': 'active',
-          'editor.wordBasedSuggestions': 'off',
-          'editor.experimental.asyncTokenization': true,
-        }),
-      },
+      // userConfiguration: {
+      //   json: JSON.stringify({
+      //     'workbench.colorTheme': 'Default Dark+',
+      //     'editor.guides.bracketPairsHorizontal': 'active',
+      //     'editor.wordBasedSuggestions': 'off',
+      //     'editor.experimental.asyncTokenization': true,
+      //   }),
+      // },
     },
     editorAppConfig: {
       useDiffEditor: false,

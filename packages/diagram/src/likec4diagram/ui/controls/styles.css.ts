@@ -1,8 +1,7 @@
 import { rem } from '@mantine/core'
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { mantine, vars } from '../../../theme-vars'
+import { mantine, vars, whereNotReducedGraphics } from '../../../theme-vars'
 
 export const navigationButtons = style({
   gap: calc(mantine.spacing.xs).divide(1.5).toString(),

@@ -1,6 +1,5 @@
 import { fallbackVar, style } from '@vanilla-extract/css'
-import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { mantine, vars, whereDark } from '../../../theme-vars'
+import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
 
 export const container = style({
   bottom: 0,

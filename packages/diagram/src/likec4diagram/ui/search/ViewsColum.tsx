@@ -22,13 +22,12 @@ import { m } from 'framer-motion'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
-import { emptyBoX } from './_shared.css'
 import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput } from './utils'
 import * as css from './ViewsColumn.css'
 
 export const NothingFound = () => (
-  <Box className={emptyBoX}>
+  <Box className={css.emptyBoX}>
     Nothing found
   </Box>
 )

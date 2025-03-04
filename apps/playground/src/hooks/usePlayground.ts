@@ -4,7 +4,7 @@ import {
   type PlaygroundContext,
 } from '$state/types'
 import { type ViewChange, type ViewId, nonNullable } from '@likec4/core'
-import type { LocateParams } from '@likec4/language-server/protocol'
+import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
@@ -56,7 +56,7 @@ export function usePlayground() {
       })
     },
 
-    openSources: (target: LocateParams) => {
+    openSources: (target: LocateRequest.Params) => {
       playgroundActor.send({
         type: 'workspace.openSources',
         target,

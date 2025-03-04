@@ -27,15 +27,23 @@
         "default": "./dist/index.js"
       }
     },
-    "./style.css": "./dist/style.css"
+    "./package.json": "./package.json",
+    "./diagram.css": "./dist/diagram.css"
   },
   "packageManager": "pnpm@10.4.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "vite build",
+    "build:watch": "wireit",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g \"dist/*\" .tsbuildinfo",
     "test": "vitest run --no-isolate"
+  },
+  "wireit": {
+    "build:watch": {
+      "command": "vite build --watch --mode development --clearScreen=false -l warn",
+      "service": true
+    }
   },
   "dependencies": {
     "@dagrejs/dagre": "1.1.4",
@@ -44,7 +52,6 @@
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.29.0",
-    "@vanilla-extract/dynamic": "^2.1.2",
     "@xstate/react": "^5.0.2",
     "@xyflow/react": "12.4.4",
     "@xyflow/system": "0.0.52",
@@ -81,6 +88,7 @@
     "typescript": "catalog:",
     "vite": "6.1.0",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.6",
+    "wireit": "catalog:"
   }
 }

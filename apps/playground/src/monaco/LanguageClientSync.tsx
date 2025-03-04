@@ -3,12 +3,11 @@ import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
 import { type ViewChange, type ViewId, invariant, LikeC4Model, nonNullable } from '@likec4/core'
 import {
-  type LocateParams,
-  buildDocuments,
-  changeView,
-  fetchComputedModel,
-  layoutView,
-  locate,
+  BuildDocuments,
+  ChangeView,
+  FetchComputedModel,
+  LayoutView,
+  Locate,
   onDidChangeModel,
 } from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
@@ -17,7 +16,8 @@ import { useRouter } from '@tanstack/react-router'
 import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { createMemoryFileSystem, loadLikeC4Worker, setActiveEditor } from './utils'
+import { createMemoryFileSystem, setActiveEditor } from './utils'
+import { loadLikeC4Worker } from './workers'
 
 import type { Location } from 'vscode-languageserver-types'
 import type { CustomWrapperConfig } from './config'
@@ -53,7 +53,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestComputedModel = useCallbackRef(async () => {
     try {
-      const { model } = await languageClient().sendRequest(fetchComputedModel, {})
+      const { model } = await languageClient().sendRequest(FetchComputedModel.Req, { cleanCaches: false })
       if (model) {
         playground.send({
           type: 'likec4.lsp.onDidChangeModel',
@@ -67,7 +67,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const { result } = await languageClient().sendRequest(layoutView, { viewId })
+      const { result } = await languageClient().sendRequest(LayoutView.Req, { viewId })
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
       } else {
@@ -97,9 +97,9 @@ export function LanguageClientSync({ config, wrapper }: {
     }
   }
 
-  const showLocation = useCallbackRef(async (target: LocateParams) => {
+  const showLocation = useCallbackRef(async (target: Locate.Params) => {
     try {
-      const location = await languageClient().sendRequest(locate, target)
+      const location = await languageClient().sendRequest(Locate.Req, target)
       if (location) {
         revealLocation(location)
       }
@@ -110,7 +110,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const applyViewChanges = useCallbackRef(async (viewId: ViewId, change: ViewChange) => {
     try {
-      const location = await languageClient().sendRequest(changeView, { viewId, change })
+      const location = await languageClient().sendRequest(ChangeView.Req, { viewId, change })
       if (location) {
         revealLocation(location)
       }
@@ -160,7 +160,7 @@ export function LanguageClientSync({ config, wrapper }: {
         )
 
         // Initial request for model
-        await languageClient().sendRequest(buildDocuments, { docs })
+        await languageClient().sendRequest(BuildDocuments.Req, { docs })
         await requestComputedModel()
 
         playground.send({

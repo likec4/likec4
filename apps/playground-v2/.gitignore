@@ -1,0 +1,14 @@
+src/routeTree.gen.ts
+.wrangler/
+dist/
+prebuild/
+
+## Panda
+styled-system
+styled-system-studio
+
+worker-configuration.d.ts
+
+.dev.vars
+.env.*
+.wireit
