@@ -1,3 +1,4 @@
+import { Examples } from '$/examples'
 import {
   type PlaygroundActorRef,
   type PlaygroundActorSnapshot,
@@ -10,9 +11,12 @@ import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useMemo } from 'react'
 import { keys } from 'remeda'
-import { usePlaygroundActorRef } from './safeContext'
+import {
+  _useOptionalPlaygroundActorRef as useOptionalPlaygroundActorRef,
+  _usePlaygroundActorRef as usePlaygroundActorRef,
+} from './safeContext'
 
-export { usePlaygroundActorRef }
+export { useOptionalPlaygroundActorRef, usePlaygroundActorRef }
 
 export function usePlayground() {
   const playgroundActor = usePlaygroundActorRef()
@@ -93,6 +97,7 @@ const selectWorkspace = (snapshot: PlaygroundActorSnapshot) => ({
   workspaceTitle: snapshot.context.workspaceTitle,
   filenames: keys(snapshot.context.files),
   activeFilename: snapshot.context.activeFilename,
+  isExample: !!Examples[snapshot.context.workspaceId as keyof typeof Examples],
   hasChanges: !shallowEqual(snapshot.context.files, snapshot.context.originalFiles),
 })
 export function usePlaygroundWorkspace() {

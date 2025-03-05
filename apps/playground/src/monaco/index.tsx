@@ -1,9 +1,7 @@
-/**
- * Temporary disabled lazy loading for better DX
- */
-export { default as MonacoEditor } from './MonacoEditor'
+// import { Loader } from '@mantine/core'
+// import { lazy, Suspense } from 'react'
+
 // const LazyMonacoEditor = lazy(async () => {
-//   // await initLocaleLoader()
 //   return await import('./MonacoEditor')
 // })
 
@@ -14,3 +12,5 @@ export { default as MonacoEditor } from './MonacoEditor'
 //     </Suspense>
 //   )
 // }
+
+export { default as default } from './MonacoEditor'

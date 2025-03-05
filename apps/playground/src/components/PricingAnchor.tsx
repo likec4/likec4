@@ -7,7 +7,7 @@ export const PricingAnchor = ({
   text = 'Help us to keep service running',
 }: { text?: string }) => (
   <Anchor
-    href={'https://likec4.dev/pricing'}
+    href={'https://github.com/sponsors/likec4'}
     target="_blank"
     underline="hover"
     className={hstack({

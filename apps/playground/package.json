@@ -1,32 +1,69 @@
 {
-  "name": "@likec4/playground",
+  "name": "@likec4/playground-v2",
   "version": "1.24.1",
   "private": true,
   "scripts": {
-    "generate": "tsr generate",
-    "dev": "vite dev --clearScreen false",
+    "prepare": "wireit",
+    "generate": "pnpm run prepare",
+    "dev": "wireit",
     "typecheck": "tsc --noEmit",
-    "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
-    "prebuild": "vite build --mode prebuild",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npx wrangler pages deploy dist --project-name likec4-playground",
-    "deploy:prod": "run deploy --branch main",
+    "wrangler:deploy": "wireit",
+    "build-and-deploy": "wireit",
     "clean": "rm -r -f dist"
+  },
+  "wireit": {
+    "dev": {
+      "command": "vite dev",
+      "dependencies": [
+        "../../packages/diagram:build:watch"
+      ]
+    },
+    "generate-panda": {
+      "command": "panda codegen"
+    },
+    "generate-tsr": {
+      "command": "tsr generate"
+    },
+    "generate-wrangler": {
+      "command": "wrangler types --experimental-include-runtime"
+    },
+    "prepare": {
+      "dependencies": [
+        "generate-panda",
+        "generate-tsr",
+        "generate-wrangler"
+      ]
+    },
+    "build-with-turbo": {
+      "command": "turbo run build"
+    },
+    "build-and-deploy": {
+      "dependencies": [
+        "build-with-turbo"
+      ],
+      "command": "wrangler deploy -c dist/playground/wrangler.json"
+    },
+    "wrangler:deploy": {
+      "command": "wrangler deploy -c dist/playground/wrangler.json"
+    }
+  },
+  "imports": {
+    "#worker": "./worker/index.ts",
+    "#worker/types": "./worker/types.ts"
   },
   "sideEffects": false,
   "type": "module",
   "packageManager": "pnpm@10.4.1",
   "dependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/diagram": "workspace:*",
-    "@likec4/language-server": "workspace:*",
-    "@likec4/layouts": "workspace:*"
+    "type-fest": "4.34.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^0.1.7",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
-    "@codingame/monaco-vscode-editor-service-override": "14.0.5",
     "@codingame/monaco-vscode-editor-api": "14.0.5",
+    "@codingame/monaco-vscode-editor-service-override": "14.0.5",
     "@codingame/monaco-vscode-files-service-override": "14.0.5",
     "@codingame/monaco-vscode-keybindings-service-override": "14.0.5",
     "@codingame/monaco-vscode-lifecycle-service-override": "14.0.5",
@@ -34,13 +71,23 @@
     "@codingame/monaco-vscode-theme-defaults-default-extension": "14.0.5",
     "@codingame/monaco-vscode-theme-service-override": "14.0.5",
     "@codingame/monaco-vscode-views-service-override": "14.0.5",
+    "@hono/oauth-providers": "^0.6.2",
+    "@hono/valibot-validator": "^0.5.2",
     "@hpcc-js/wasm-graphviz": "1.7.0",
+    "@likec4/core": "workspace:*",
+    "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "7.17.0",
     "@mantine/hooks": "7.17.0",
+    "@mantine/modals": "7.17.0",
+    "@mantine/notifications": "^7.17.1",
     "@mantine/vanilla-extract": "7.17.0",
+    "@nanostores/react": "0.8.4",
+    "@pandacss/dev": "^0.53.0",
     "@react-hookz/web": "^25.0.1",
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "3.29.0",
@@ -60,15 +107,16 @@
     "@xyflow/react": "12.4.4",
     "@xyflow/system": "0.0.52",
     "clsx": "^2.1.1",
-    "elkjs": "^0.9.3",
-    "esm-env": "^1.2.2",
+    "date-fns": "^4.1.0",
     "fast-equals": "^5.2.2",
     "framer-motion": "^12.4.7",
+    "hono": "^4.7.2",
+    "hono-sessions": "^0.7.1",
     "langium": "3.3.1",
     "monaco-editor-wrapper": "6.4.0",
     "monaco-languageclient": "9.4.0",
     "nanoid": "^5.0.9",
-    "p-limit": "^6.2.0",
+    "nanostores": "0.11.3",
     "postcss": "^8.5.3",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
@@ -76,13 +124,12 @@
     "react-resizable-panels": "^2.1.7",
     "remeda": "^2.20.2",
     "strip-indent": "^4.0.0",
-    "terser": "^5.39.0",
     "tsx": "~4.19.3",
     "turbo": "^2.4.2",
-    "type-fest": "4.34.1",
     "typescript": "catalog:",
     "ufo": "^1.5.4",
-    "vite": "6.1.0",
+    "valibot": "1.0.0-rc.3",
+    "vite": "6.2.0",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vscode": "npm:@codingame/monaco-vscode-extension-api@14.0.5",
@@ -94,6 +141,8 @@
     "vscode-oniguruma": "2.0.1",
     "vscode-textmate": "9.2.0",
     "vscode-uri": "3.1.0",
+    "wireit": "catalog:",
+    "wrangler": "catalog:",
     "xstate": "^5.19.2"
   }
 }

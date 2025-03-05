@@ -64,14 +64,14 @@ export const createWrapperConfig = (params: {
         ...getThemeServiceOverride(),
         ...getTextmateServiceOverride(),
       },
-      // userConfiguration: {
-      //   json: JSON.stringify({
-      //     'workbench.colorTheme': 'Default Dark+',
-      //     'editor.guides.bracketPairsHorizontal': 'active',
-      //     'editor.wordBasedSuggestions': 'off',
-      //     'editor.experimental.asyncTokenization': true,
-      //   }),
-      // },
+      userConfiguration: {
+        json: JSON.stringify({
+          'workbench.colorTheme': 'Default Dark+',
+          'editor.guides.bracketPairsHorizontal': 'active',
+          'editor.wordBasedSuggestions': 'off',
+          'editor.experimental.asyncTokenization': true,
+        }),
+      },
     },
     editorAppConfig: {
       useDiffEditor: false,

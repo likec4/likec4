@@ -6,6 +6,7 @@ import {
   BuildDocuments,
   ChangeView,
   FetchComputedModel,
+  FetchLayoutedModel,
   LayoutView,
   Locate,
   onDidChangeModel,
@@ -60,8 +61,35 @@ export function LanguageClientSync({ config, wrapper }: {
           model: LikeC4Model.create(model),
         })
       }
+      const errors: string[] = []
+      languageClient().diagnostics?.forEach((uri, diagnostics) => {
+        for (const diagnostic of diagnostics) {
+          if (diagnostic.severity === 0) {
+            errors.push(diagnostic.message)
+          }
+        }
+      })
+      playground.send({
+        type: 'likec4.lsp.onDiagnostic',
+        errors,
+      })
     } catch (error) {
       logger.error(loggable(error))
+    }
+  })
+
+  const requestLayoutedData = useCallbackRef(async () => {
+    try {
+      const { model } = await languageClient().sendRequest(FetchLayoutedModel.Req)
+      if (model) {
+        playground.send({ type: 'likec4.lsp.onLayoutedModel', model })
+      } else {
+        playground.send({ type: 'likec4.lsp.onLayoutedModelError', error: 'Failed to layout' })
+      }
+    } catch (err) {
+      const error = loggable(err)
+      playground.send({ type: 'likec4.lsp.onLayoutedModelError', error })
+      logger.error(error)
     }
   })
 
@@ -110,6 +138,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const applyViewChanges = useCallbackRef(async (viewId: ViewId, change: ViewChange) => {
     try {
+      languageClient().diagnostics
       const location = await languageClient().sendRequest(ChangeView.Req, { viewId, change })
       if (location) {
         revealLocation(location)
@@ -215,6 +244,9 @@ export function LanguageClientSync({ config, wrapper }: {
       }),
       playground.actor.on('workspace.applyViewChanges', ({ viewId, change }) => {
         applyViewChanges(viewId, change)
+      }),
+      playground.actor.on('workspace.request-layouted-data', () => {
+        requestLayoutedData()
       }),
     ]
     return () => listeners.forEach(l => l.unsubscribe())

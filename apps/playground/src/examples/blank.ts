@@ -28,6 +28,6 @@ views {
     title 'Landscape'
     include *
   }
-}`.trimStart()
-  }
+}`.trimStart(),
+  },
 }

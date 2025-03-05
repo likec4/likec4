@@ -1,9 +1,10 @@
-import { style } from '@vanilla-extract/css'
+import { css as style } from '$styled-system/css'
 
 export const content = style({
   paddingTop: 120,
   position: 'relative',
   zIndex: '1',
+  border: '1px solid token(colors.dimmed)',
 })
 
 export const image = style({

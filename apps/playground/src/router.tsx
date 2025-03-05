@@ -4,7 +4,6 @@ import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/
 import { useMemo } from 'react'
 import type { FallbackProps } from 'react-error-boundary'
 import { NotFound } from './components/NotFound'
-import { basepath } from './const'
 import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
@@ -39,7 +38,7 @@ function createRouter() {
   return createTanstackRouter<RouteTree, 'always', true>({
     routeTree,
     context: {},
-    basepath,
+    basepath: import.meta.env.BASE_URL,
     trailingSlash: 'always',
     // history: useHasHistory ? createHashHistory() : createBrowserHistory(),
     defaultErrorComponent: ({ error, reset }) => {

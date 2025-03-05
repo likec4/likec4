@@ -1,4 +1,4 @@
-import { PlaygroundActorSafeContext } from '$/hooks/safeContext'
+import { PlaygroundActorSafeContext } from '$hooks/safeContext'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef } from '@xstate/react'
 import type { PropsWithChildren } from 'react'

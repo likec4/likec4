@@ -187,7 +187,7 @@ export function SharePlaygroundForm() {
                   color: 'text',
                 })}
               >
-                Contact us
+                Contact
               </Anchor>{' '}
               to enable this feature.
             </Text>

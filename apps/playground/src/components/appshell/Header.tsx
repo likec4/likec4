@@ -1,16 +1,19 @@
-import { usePlaygroundWorkspace } from '$/hooks/usePlayground'
+import { useWorkspaceIdFromRoute } from '$hooks/useWorkspaceIdFromRoute'
 import {
   Anchor,
-  Box,
   Button,
   Group,
 } from '@mantine/core'
+import { MatchRoute } from '@tanstack/react-router'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { Logo } from '../Logo'
 import { PlaygroundsMenu } from './PlaygroundsMenu'
+import { PlaygroundTitle } from './PlaygroundTitle'
+import { ShareButton } from './ShareButton'
+import { UserButton } from './UserButton'
 
 export function Header() {
-  const { workspaceTitle } = usePlaygroundWorkspace()
+  const workspaceId = useWorkspaceIdFromRoute()
   return (
     <Group h="100%" px="md" justify="space-between" align="stretch">
       <Group gap={'lg'} align="center" visibleFrom="sm">
@@ -20,10 +23,10 @@ export function Header() {
               height: 22,
             }} />
         </Anchor>
-        <Box fz={'sm'} fw={500} visibleFrom="md">{workspaceTitle}</Box>
+        {workspaceId && <PlaygroundTitle />}
       </Group>
-
-      <Group h="100%" gap={4}>
+      <Group h="100%" gap={'xs'}>
+        {workspaceId && <ShareButton />}
         <PlaygroundsMenu />
         <Button
           component="a"
@@ -47,6 +50,7 @@ export function Header() {
           GitHub
         </Button>
         <ColorSchemeToggle />
+        <UserButton />
       </Group>
     </Group>
   )

@@ -1,4 +1,4 @@
-import { usePlayground, usePlaygroundWorkspace } from '$/hooks/usePlayground'
+import { usePlayground, usePlaygroundWorkspace } from '$hooks/usePlayground'
 import { Box, Tabs, TabsList } from '@mantine/core'
 
 export function WorkspaceFileTabs() {

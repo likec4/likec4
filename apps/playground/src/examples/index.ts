@@ -11,26 +11,26 @@ export const Examples = {
   'bigbank': {
     isCustom: false,
     title: 'Big Bank',
-    ...BigBankExample
+    ...BigBankExample,
   },
   'tutorial': {
     isCustom: false,
     title: 'Getting Started tutorial',
-    ...TutorialExample
+    ...TutorialExample,
   },
   'blank': {
     isCustom: false,
     title: 'Blank playground',
-    ...BlankExample
+    ...BlankExample,
   },
   'dynamic': {
     isCustom: false,
     title: 'Dynamic View playground',
-    ...DynamicViewExample
+    ...DynamicViewExample,
   },
   'deployment': {
     isCustom: false,
     title: 'Deployment playground',
-    ...DeploymentExample
-  }
+    ...DeploymentExample,
+  },
 } satisfies Record<string, { isCustom: boolean; title: string; currentFilename: string; files: Record<string, string> }>

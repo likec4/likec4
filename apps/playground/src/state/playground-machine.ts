@@ -1,25 +1,31 @@
+import { ISODatetime } from '#worker/types'
+import { type Api, api } from '$/api'
 import {
   type ComputedView,
   type DiagramView,
   type ExclusiveUnion,
+  type LayoutedLikeC4Model,
   type ViewChange,
   type ViewId,
   LikeC4Model,
   nonNullable,
 } from '@likec4/core'
 import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
-import { rootLogger } from '@likec4/log'
-import { deepEqual } from 'fast-equals'
+import { loggable, rootLogger } from '@likec4/log'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { keys, prop } from 'remeda'
 import {
   assign,
   cancel,
   emit,
   enqueueActions,
+  fromPromise,
   raise,
   setup,
 } from 'xstate'
 import { selectWorkspacePersistence } from './persistence'
+import type { ShareOptions } from './shareOptions'
+import type { LocalWorkspace, ShareHistoryItem, WithInput } from './types'
 
 export type DiagramState = {
   // Never loaded
@@ -48,16 +54,12 @@ export type DiagramState = {
   error: string | null
 }
 
-export type PlaygroundInput = {
-  workspaceId: string
-  title: string
-  activeFilename: string
-  files: Record<string, string>
-}
+export type PlaygroundInput = LocalWorkspace
 
 export interface PlaygroundContext {
   workspaceId: string
   workspaceTitle: string
+  shareHistory: Array<ShareHistoryItem>
 
   /**
    * Current LikeC4 model.
@@ -88,25 +90,39 @@ export interface PlaygroundContext {
    * If `null`, no view is active and panel is hidden.
    */
   activeViewId: ViewId | null
+
+  diagnosticErrors: string[]
+
+  shareRequest: null | {
+    layoutedLikeC4Data: LayoutedLikeC4Model | null
+    options: ShareOptions
+    success?: Api.Share.Response
+    error?: string | null
+  }
 }
 
 export type PlaygroundEvents =
   // Monaco events
   | { type: 'monaco.onTextChanged'; filename: string; modified: string }
   // LikeC4 Language Server events
+  | { type: 'likec4.lsp.onLayoutedModel'; model: LayoutedLikeC4Model }
+  | { type: 'likec4.lsp.onLayoutedModelError'; error: string }
   | { type: 'likec4.lsp.onDidChangeModel'; model: LikeC4Model.Computed }
   | { type: 'likec4.lsp.onLayoutDone'; dot: string; diagram: DiagramView }
   | { type: 'likec4.lsp.onLayoutError'; viewId: ViewId; error: string }
+  | { type: 'likec4.lsp.onDiagnostic'; errors: string[] }
   // Workspace events
   | { type: 'workspace.applyViewChanges'; change: ViewChange }
   | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.changeActiveView'; viewId: ViewId }
   | { type: 'workspace.changeActiveFile'; filename: string }
   | { type: 'workspace.switch'; workspace: PlaygroundInput }
+  | { type: 'workspace.share'; options: ShareOptions }
   | { type: 'workspace.persist' }
   | { type: 'workspace.ready' }
 
 export type PlaygroundEmitted =
+  | { type: 'workspace.request-layouted-data' }
   | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.applyViewChanges'; viewId: ViewId; change: ViewChange }
 
@@ -119,7 +135,13 @@ export const playgroundMachine = setup({
     input: {} as PlaygroundInput,
     emitted: {} as PlaygroundEmitted,
   },
-  actors: {},
+  actors: {
+    'call-share-api': fromPromise(async ({ input }: WithInput<Api.Share.Payload>) => {
+      return await api.share.create({
+        json: input,
+      })
+    }),
+  },
   actions: {
     'reset workspace': assign(({ context }, params: { workspace: PlaygroundInput }): Partial<PlaygroundContext> => {
       return {
@@ -131,6 +153,8 @@ export const playgroundMachine = setup({
         },
         originalFiles: { ...params.workspace.files },
         likec4model: null,
+        shareRequest: null,
+        diagnosticErrors: [],
         viewStates: {},
       }
     }),
@@ -266,12 +290,32 @@ export const playgroundMachine = setup({
       })
     }),
 
+    'update share request on success': assign(({ context }, params: { response: Api.Share.Response }) => {
+      return {
+        shareRequest: {
+          ...context.shareRequest!,
+          success: params.response,
+        },
+        shareHistory: [
+          ...context.shareHistory,
+          {
+            shareId: params.response.shareId,
+            createdAt: params.response.createdAt,
+            expiresAt: params.response.expiresAt,
+            userId: params.response.userId,
+            options: params.response.shareOptions,
+          },
+        ],
+      }
+    }),
+
     'persist to storage': (({ context }) => {
       selectWorkspacePersistence(context.workspaceId).write({
         workspaceId: context.workspaceId,
         activeFilename: context.activeFilename,
         title: context.workspaceTitle,
         files: context.files,
+        shareHistory: context.shareHistory,
       })
     }),
   },
@@ -284,9 +328,12 @@ export const playgroundMachine = setup({
     activeFilename: input.activeFilename,
     files: { ...input.files },
     originalFiles: { ...input.files },
+    shareHistory: [...input.shareHistory ?? []],
     likec4model: null,
+    shareRequest: null,
     viewStates: {},
     activeViewId: null,
+    diagnosticErrors: [],
   }),
   states: {
     'initializing': {
@@ -310,6 +357,7 @@ export const playgroundMachine = setup({
       },
     },
     'ready': {
+      id: 'ready',
       on: {
         'workspace.switch': {
           actions: [
@@ -382,8 +430,102 @@ export const playgroundMachine = setup({
             }),
           },
         },
+        'likec4.lsp.onDiagnostic': {
+          actions: assign({
+            diagnosticErrors: ({ context, event }) =>
+              shallowEqual(context.diagnosticErrors, event.errors) ? context.diagnosticErrors : event.errors,
+          }),
+        },
         'workspace.persist': {
           actions: 'persist to storage',
+        },
+        'workspace.share': {
+          actions: assign({
+            shareRequest: ({ event }) => ({
+              layoutedLikeC4Data: null,
+              options: event.options,
+            }),
+          }),
+          target: 'sharing',
+        },
+      },
+    },
+    'sharing': {
+      initial: 'wait-layouted-data',
+      states: {
+        'wait-layouted-data': {
+          entry: emit({ type: 'workspace.request-layouted-data' }),
+          on: {
+            'likec4.lsp.onLayoutedModel': {
+              guard: ({ context }) => !!context.shareRequest,
+              actions: assign({
+                shareRequest: ({ context, event }) => ({
+                  layoutedLikeC4Data: event.model,
+                  options: context.shareRequest!.options,
+                }),
+              }),
+              target: 'call-api',
+            },
+            'likec4.lsp.onLayoutedModelError': {
+              actions: assign({
+                shareRequest: ({ context, event }) => ({
+                  ...context.shareRequest!,
+                  error: event.error,
+                }),
+              }),
+              target: '#ready',
+            },
+          },
+        },
+        'call-api': {
+          entry: assign({
+            shareRequest: ({ context }) => ({
+              ...context.shareRequest!,
+              error: null,
+            }),
+          }),
+          invoke: {
+            src: 'call-share-api',
+            input: ({ context }) => ({
+              localWorkspace: {
+                workspaceId: context.workspaceId,
+                title: context.workspaceTitle,
+                activeFilename: context.activeFilename,
+                files: context.files,
+              },
+              model: context.shareRequest!.layoutedLikeC4Data!,
+              shareOptions: context.shareRequest!.options,
+            }),
+            onDone: {
+              target: '#ready',
+              actions: [
+                assign({
+                  shareRequest: ({ context, event }) => ({
+                    ...context.shareRequest!,
+                    success: event.output,
+                  }),
+                  shareHistory: ({ context, event }) => [
+                    ...context.shareHistory,
+                    {
+                      ...event.output,
+                      createdAt: ISODatetime(new Date()),
+                      options: context.shareRequest!.options,
+                    },
+                  ],
+                }),
+                'persist to storage',
+              ],
+            },
+            onError: {
+              target: '#ready',
+              actions: assign({
+                shareRequest: ({ context, event }) => ({
+                  ...context.shareRequest!,
+                  error: loggable(event.error),
+                }),
+              }),
+            },
+          },
         },
       },
     },
