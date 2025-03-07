@@ -5,6 +5,7 @@ import {
 } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
+import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
@@ -318,24 +319,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   return (
     <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
       <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
-      {enableEdgeEditing && (
-        <g
-          onContextMenu={e => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}>
-          {controlPoints.map((p, i) => (
-            <circle
-              onPointerDown={e => onControlPointerDown(i, e)}
-              className={edgesCss.controlPoint}
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={3}
-            />
-          ))}
-        </g>
-      )}
       <EdgeLabel
         edgeProps={props}
         labelPosition={{
@@ -354,6 +337,29 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
             }} />
         )}
       </EdgeLabel>
+      {/* Render control points above edge label  */}
+      {enableEdgeEditing && controlPoints.length > 0 && (
+        <EdgeLabelRenderer>
+          <EdgeContainer component="svg" className={edgesCss.controlPointsContainer} {...props}>
+            <g
+              onContextMenu={e => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}>
+              {controlPoints.map((p, i) => (
+                <circle
+                  onPointerDown={e => onControlPointerDown(i, e)}
+                  className={clsx('nodrag nopan', edgesCss.controlPoint)}
+                  key={i}
+                  cx={Math.round(p.x)}
+                  cy={Math.round(p.y)}
+                  r={3}
+                />
+              ))}
+            </g>
+          </EdgeContainer>
+        </EdgeLabelRenderer>
+      )}
     </EdgeContainer>
   )
 })

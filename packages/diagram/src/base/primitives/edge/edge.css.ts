@@ -73,10 +73,10 @@ globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
   },
 })
 
-globalStyle(`${reactFlow} .react-flow__edges > svg`, {
+globalStyle(`${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
   mixBlendMode: 'plus-lighter',
 })
-globalStyle(`${whereLight} ${reactFlow} .react-flow__edges > svg`, {
+globalStyle(`${whereLight} ${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
   mixBlendMode: 'screen',
 })
 

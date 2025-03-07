@@ -1,7 +1,22 @@
 import { globalStyle, style } from '@vanilla-extract/css'
+import { ZIndexes } from '../../../base/const'
 import { mantine, xyvars } from '../../../theme-vars'
 
 const isSelected = '.react-flow__edge.selected'
+
+export const controlPointsContainer = style({
+  overflow: 'visible',
+  position: 'absolute',
+  pointerEvents: 'none',
+  top: 0,
+  left: 0,
+  zIndex: ZIndexes.Edge,
+  selectors: {
+    [`&:is([data-edge-hovered='true'])`]: {
+      zIndex: ZIndexes.Edge + 1,
+    },
+  },
+})
 
 export const controlPoint = style({
   fill: xyvars.edge.stroke,
