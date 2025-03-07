@@ -158,6 +158,15 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "title": "system",
         },
       ],
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
       "tags": null,
       "title": "Landscape view",
     },
@@ -355,6 +364,15 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "2.c4",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
       "tags": null,
       "title": "frontend",
       "viewOf": "system.frontend",
@@ -424,6 +442,15 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "2.c4",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
       "tags": null,
       "title": "Index",
     },
@@ -516,6 +543,18 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "2.c4",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+        {
+          "direction": "LR",
+        },
+      ],
       "tags": null,
       "title": "api",
       "viewOf": "system.backend.api",
@@ -652,6 +691,15 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "title": "user2",
         },
       ],
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
       "tags": null,
       "title": "Landscape view",
     },
@@ -783,6 +831,15 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "title": "user2",
         },
       ],
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
       "tags": null,
       "title": "Landscape view",
     },
@@ -912,6 +969,15 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "tags": null,
           "technology": null,
           "title": "user2",
+        },
+      ],
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
         },
       ],
       "tags": null,

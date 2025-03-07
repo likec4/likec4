@@ -241,6 +241,15 @@ exports[`compute-element-view > view of cloud 1`] = `
       "title": "amazon",
     },
   ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+      ],
+    },
+  ],
   "tags": null,
   "title": null,
   "viewOf": "cloud",
@@ -449,6 +458,15 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "tags": null,
       "technology": null,
       "title": "backend",
+    },
+  ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+      ],
     },
   ],
   "tags": null,

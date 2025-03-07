@@ -428,6 +428,15 @@ export const likeC4Model = LikeC4Model.fromDump({
       links: null,
       customColorDefinitions: {},
       __: 'element',
+      rules: [
+        {
+          include: [
+            {
+              wildcard: true,
+            },
+          ],
+        },
+      ],
       autoLayout: {
         direction: 'TB',
       },
@@ -576,6 +585,22 @@ export const likeC4Model = LikeC4Model.fromDump({
       customColorDefinitions: {},
       viewOf: 'cloud',
       __: 'element',
+      rules: [
+        {
+          include: [
+            {
+              wildcard: true,
+            },
+          ],
+        },
+        {
+          include: [
+            {
+              element: 'cloud.frontend.dashboard',
+            },
+          ],
+        },
+      ],
       autoLayout: {
         direction: 'TB',
       },
@@ -894,6 +919,26 @@ export const likeC4Model = LikeC4Model.fromDump({
       links: null,
       customColorDefinitions: {},
       __: 'deployment',
+      rules: [
+        {
+          include: [
+            {
+              ref: {
+                deployment: 'customer.instance',
+              },
+            },
+          ],
+        },
+        {
+          include: [
+            {
+              ref: {
+                deployment: 'prod.eu.zone1.ui',
+              },
+            },
+          ],
+        },
+      ],
       autoLayout: {
         direction: 'TB',
       },

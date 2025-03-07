@@ -8,22 +8,22 @@ import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
-  DefaultArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
   type DynamicView,
   type DynamicViewStep,
-  isDynamicViewParallelSteps,
-  isViewRuleAutoLayout,
-  isViewRulePredicate,
   type NonEmptyArray,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
   type StepEdgeId,
-  stepEdgeId,
   type Tag,
-  type ViewId
+  type ViewId,
+  DefaultArrowType,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
+  isDynamicViewParallelSteps,
+  isViewRuleAutoLayout,
+  isViewRulePredicate,
+  stepEdgeId,
 } from '../../types'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -62,7 +62,7 @@ class DynamicViewCompute {
 
   constructor(
     protected model: LikeC4Model,
-    protected view: DynamicView
+    protected view: DynamicView,
   ) {}
 
   private addStep(
@@ -75,7 +75,7 @@ class DynamicViewCompute {
       ...step
     }: DynamicViewStep,
     index: number,
-    parent?: number
+    parent?: number,
   ) {
     const id = parent ? stepEdgeId(parent, index) : stepEdgeId(index)
     const source = this.model.element(stepSource)
@@ -93,7 +93,7 @@ class DynamicViewCompute {
       tail,
       color,
       line,
-      notation
+      notation,
     } = this.findRelations(source, target)
 
     const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
@@ -112,7 +112,7 @@ class DynamicViewCompute {
       ...(tail ? { tail } : {}),
       ...(color ? { color } : {}),
       ...(line ? { line } : {}),
-      ...(notation ? { notation } : {})
+      ...(notation ? { notation } : {}),
     })
   }
 
@@ -171,7 +171,7 @@ class DynamicViewCompute {
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
         head: DefaultArrowType,
-        ...step
+        ...step,
       }
       if (isBackward) {
         edge.dir = 'back'
@@ -204,8 +204,8 @@ class DynamicViewCompute {
       applyViewRuleStyles(
         rules,
         // Keep order of elements
-        elements.map(e => nonNullable(nodesMap.get(e.id)))
-      )
+        elements.map(e => nonNullable(nodesMap.get(e.id))),
+      ),
     )
 
     const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
@@ -214,10 +214,11 @@ class DynamicViewCompute {
 
     return calcViewLayoutHash({
       ...view,
+      rules,
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
       },
       nodes: map(nodes, n => {
         // omit notation
@@ -230,9 +231,9 @@ class DynamicViewCompute {
       edges,
       ...(elementNotations.length > 0 && {
         notation: {
-          elements: elementNotations
-        }
-      })
+          elements: elementNotations,
+        },
+      }),
     })
   }
 
@@ -258,14 +259,14 @@ class DynamicViewCompute {
         head: null,
         color: null,
         line: null,
-        notation: null
+        notation: null,
       }
     }
     const alltags = pipe(
       relationships,
       flatMap(r => r.tags),
       filter(isTruthy),
-      unique()
+      unique(),
     )
     const tags = hasAtLeast(alltags, 1) ? alltags : null
     const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
@@ -280,7 +281,7 @@ class DynamicViewCompute {
       filter(isTruthy),
       filter(v => v !== this.view.id),
       unique(),
-      only()
+      only(),
     )
 
     const commonProperties = pipe(
@@ -299,8 +300,8 @@ class DynamicViewCompute {
         color: new Set<Color>(),
         line: new Set<RelationshipLineType>(),
         notation: new Set<string>(),
-        title: new Set<string>()
-      })
+        title: new Set<string>(),
+      }),
     )
 
     return {
@@ -312,13 +313,13 @@ class DynamicViewCompute {
       head: only([...commonProperties.head]) ?? null,
       color: only([...commonProperties.color]) ?? null,
       line: only([...commonProperties.line]) ?? null,
-      notation: only([...commonProperties.notation]) ?? null
+      notation: only([...commonProperties.notation]) ?? null,
     }
   }
 }
 export function computeDynamicView<M extends AnyAux>(
   model: LikeC4Model<M>,
-  view: DynamicView
+  view: DynamicView,
 ): ComputedDynamicView {
   return new DynamicViewCompute(model, view).compute()
 }
