@@ -104,6 +104,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy -c dist/playground/wrangler.json
-          environment: production
           workingDirectory: apps/playground
           packageManager: pnpm
