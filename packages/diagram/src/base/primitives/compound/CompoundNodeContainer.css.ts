@@ -19,7 +19,6 @@ export const container = style({
   padding: 0,
   margin: 0,
   border: '0px solid transparent',
-  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   ':before': {
     borderRadius: varBorderRadius,
     content: ' ',
@@ -39,6 +38,9 @@ export const container = style({
     [`&:is([data-compound-transparent="true"]):before`]: {
       opacity: varCompoundOpacity,
       borderWidth: calc(varBorderWidth).subtract('1px').toString(),
+    },
+    [`${whereNotReducedGraphics} &`]: {
+      boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     },
     [`${whereNotReducedGraphics} &:is([data-compound-transparent="true"]):before`]: {
       transition: `all 200ms ${easings.inOut}`,

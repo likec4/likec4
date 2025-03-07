@@ -7,11 +7,10 @@ export const root = style({
   height: '30px',
   paddingLeft: mantine.spacing.sm,
   paddingRight: '4px',
-  borderRadius: fallbackVar('var(--search-border-radius)', mantine.radius.sm),
+  borderRadius: '0px',
   color: fallbackVar('var(--search-color)', mantine.colors.placeholder),
   border: '1px solid',
   cursor: 'pointer',
-  transition: transitions.fast,
   backgroundColor: bgColor,
   width: '100%',
   vars: {
@@ -32,6 +31,8 @@ export const root = style({
       },
     },
     [`${whereNotReducedGraphics} &`]: {
+      transition: transitions.fast,
+      borderRadius: fallbackVar('var(--search-border-radius)', mantine.radius.sm),
       backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
       boxShadow: mantine.shadows.xs,
       WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),

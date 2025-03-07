@@ -44,10 +44,10 @@ const Sizes = {
 }
 
 export const ZIndexes = {
-  compound: 2,
-  edge: 3,
-  element: 4,
-
+  compound: 0,
+  // keep edges and elements in the same layer
+  edge: 2,
+  element: 2,
   max: 5,
 }
 

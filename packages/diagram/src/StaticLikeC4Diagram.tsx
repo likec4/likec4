@@ -11,6 +11,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'enableElementDetails'
   | 'enableRelationshipDetails'
   | 'enableRelationshipBrowser'
+  | 'reduceGraphics'
   | 'initialWidth'
   | 'initialHeight'
   | 'renderIcon'

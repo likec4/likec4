@@ -22,9 +22,10 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
+import { useStore } from '@nanostores/react'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
-import { $access, $expires, $forkable, $pincode, generateRandomPincode } from './shareFormState'
+import { $access, $expires, $forkable, $generateBtnDisabled, $pincode, generateRandomPincode } from './shareFormState'
 
 const Button = MantineButton.withProps({
   size: 'xs',
@@ -73,6 +74,7 @@ export function SharePlaygroundForm() {
   const [access, setAccess] = useAtom($access)
   const [pincode, setPincode] = useAtom($pincode)
   const [forkable, setForkable] = useAtom($forkable)
+  const btnDisabled = useStore($generateBtnDisabled)
 
   const playground = usePlayground()
 
@@ -169,30 +171,6 @@ export function SharePlaygroundForm() {
           )}
         </Stack>
       </div>
-
-      {access.startsWith('github:') && (
-        <HStack w={'100%'}>
-          <Alert color="main" w={'100%'}>
-            <Text
-              className={css({
-                fontSize: 'xs',
-                // color: 'main.8',
-              })}>
-              <Anchor
-                underline="not-hover"
-                href="mailto:denis@davydkov.com?subject=Feature%3A%20allow%20access%20via%20GitHub"
-                className={css({
-                  fontSize: 'xs',
-                  color: 'text',
-                })}
-              >
-                Contact
-              </Anchor>{' '}
-              to enable this feature.
-            </Text>
-          </Alert>
-        </HStack>
-      )}
       <div>
         <Checkbox
           size="xs"
@@ -203,30 +181,57 @@ export function SharePlaygroundForm() {
         />
       </div>
       {shareRequest?.error && <Alert title={shareRequest.error} />}
-      {!shareLink && (
-        <Group justify="space-between" align="baseline" w={'100%'} mt={'md'}>
-          <Box>
-            <PricingAnchor />
-          </Box>
-          <Button
-            loading={isShareInProgress}
-            size="xs"
-            onClick={(e) => {
-              e.stopPropagation()
-              playground.send({
-                type: 'workspace.share',
-                options: {
-                  expires,
-                  pincode,
-                  forkable,
-                  access,
-                },
-              })
-            }}>
-            Generate link
-          </Button>
-        </Group>
-      )}
+      {!shareLink &&
+        (
+          <>
+            {access.startsWith('github:') && (
+              <HStack w={'100%'}>
+                <Alert color="main" w={'100%'}>
+                  <Text
+                    className={css({
+                      fontSize: 'xs',
+                      // color: 'main.8',
+                    })}>
+                    <Anchor
+                      underline="not-hover"
+                      href="mailto:denis@davydkov.com?subject=Feature%3A%20allow%20access%20via%20GitHub"
+                      className={css({
+                        fontSize: 'xs',
+                        color: 'text',
+                      })}
+                    >
+                      Contact
+                    </Anchor>{' '}
+                    to enable this feature.
+                  </Text>
+                </Alert>
+              </HStack>
+            )}
+            <Group justify="space-between" align="baseline" w={'100%'}>
+              <Box>
+                <PricingAnchor />
+              </Box>
+              <Button
+                disabled={btnDisabled}
+                loading={isShareInProgress}
+                size="xs"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  playground.send({
+                    type: 'workspace.share',
+                    options: {
+                      expires,
+                      pincode,
+                      forkable,
+                      access,
+                    },
+                  })
+                }}>
+                Generate link
+              </Button>
+            </Group>
+          </>
+        )}
       {shareRequest?.success && shareLink && (
         <CopyButton value={shareLink} timeout={2000}>
           {({ copied, copy }) => (

@@ -144,6 +144,9 @@ export const playgroundMachine = setup({
   },
   actions: {
     'reset workspace': assign(({ context }, params: { workspace: PlaygroundInput }): Partial<PlaygroundContext> => {
+      if (context.workspaceId === params.workspace.workspaceId) {
+        return {}
+      }
       return {
         workspaceId: params.workspace.workspaceId,
         workspaceTitle: params.workspace.title,
@@ -155,6 +158,9 @@ export const playgroundMachine = setup({
         likec4model: null,
         shareRequest: null,
         diagnosticErrors: [],
+        shareHistory: [
+          ...params.workspace.shareHistory ?? [],
+        ],
         viewStates: {},
       }
     }),
@@ -298,13 +304,7 @@ export const playgroundMachine = setup({
         },
         shareHistory: [
           ...context.shareHistory,
-          {
-            shareId: params.response.shareId,
-            createdAt: params.response.createdAt,
-            expiresAt: params.response.expiresAt,
-            userId: params.response.userId,
-            options: params.response.shareOptions,
-          },
+          params.response,
         ],
       }
     }),
@@ -499,20 +499,12 @@ export const playgroundMachine = setup({
             onDone: {
               target: '#ready',
               actions: [
-                assign({
-                  shareRequest: ({ context, event }) => ({
-                    ...context.shareRequest!,
-                    success: event.output,
+                {
+                  type: 'update share request on success',
+                  params: ({ event }) => ({
+                    response: event.output,
                   }),
-                  shareHistory: ({ context, event }) => [
-                    ...context.shareHistory,
-                    {
-                      ...event.output,
-                      createdAt: ISODatetime(new Date()),
-                      options: context.shareRequest!.options,
-                    },
-                  ],
-                }),
+                },
                 'persist to storage',
               ],
             },

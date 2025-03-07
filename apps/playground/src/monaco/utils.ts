@@ -4,26 +4,25 @@ import {
   type RegisteredFileSystemProvider,
   RegisteredMemoryFile,
 } from '@codingame/monaco-vscode-files-service-override'
-import { nonNullable } from '@likec4/core'
 import { loggable, logger } from '@likec4/log'
 import { first } from 'remeda'
 
 export const setActiveEditor = (filename: monaco.Uri) => {
   const activeTextEditor = first(monaco.editor.getEditors())
   if (!activeTextEditor) {
-    throw new Error('MonacoEditor: editor is not ready')
+    console.error('MonacoEditor: no active editor')
+    return
   }
   if (activeTextEditor.getModel()?.uri.toString() === filename.toString()) {
     // already opened
     return
   }
-  // vscode.window.showTextDocument(filename)
-  activeTextEditor.setModel(
-    nonNullable(
-      monaco.editor.getModel(filename),
-      `MonacoEditor: model ${filename} not found`,
-    ),
-  )
+  const model = monaco.editor.getModel(filename)
+  if (!model) {
+    console.error(`MonacoEditor: model ${filename} not found`)
+    return
+  }
+  activeTextEditor.setModel(model)
 }
 
 export function cleanDisposables(disposables: IDisposable[]) {
@@ -78,9 +77,9 @@ export function createMemoryFileSystem(
 
   // Clean up models that are not in the files
   if (currentModels.size > 0) {
-    log.debug(`dispose monaco models: ${[...currentModels.keys()]}`)
     currentModels.values().forEach((model) => {
       try {
+        log.debug(`dispose monaco model: ${model.uri.toString()}`)
         model.dispose()
       }
       catch (e) {

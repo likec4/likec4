@@ -60,18 +60,6 @@ export function LanguageClientSync({ config, wrapper }: {
           model: LikeC4Model.create(model),
         })
       }
-      const errors: string[] = []
-      languageClient().diagnostics?.forEach((uri, diagnostics) => {
-        for (const diagnostic of diagnostics) {
-          if (diagnostic.severity === 0) {
-            errors.push(diagnostic.message)
-          }
-        }
-      })
-      playground.send({
-        type: 'likec4.lsp.onDiagnostic',
-        errors,
-      })
     } catch (error) {
       logger.error(loggable(error))
     }
@@ -121,7 +109,9 @@ export function LanguageClientSync({ config, wrapper }: {
       editor.revealRangeInCenterIfOutsideViewport(range, monaco.editor.ScrollType.Smooth)
       const nextFilename = model.uri.path.slice(1)
       playground.changeActiveFile(nextFilename)
+      return
     }
+    console.error(`Editor or model not found for location: ${location}`, { editor, model })
   }
 
   const showLocation = useCallbackRef(async (target: Locate.Params) => {
@@ -131,7 +121,7 @@ export function LanguageClientSync({ config, wrapper }: {
         revealLocation(location)
       }
     } catch (error) {
-      logger.error(loggable(error))
+      console.error(error)
     }
   })
 
@@ -143,8 +133,8 @@ export function LanguageClientSync({ config, wrapper }: {
         revealLocation(location)
       }
     } catch (error) {
-      playground.send({ type: 'likec4.lsp.onLayoutError', viewId, error: `${error}` })
-      logger.error(loggable(error))
+      playground.send({ type: 'likec4.lsp.onLayoutError', viewId, error: `${loggable(error)}` })
+      console.error(error)
     }
   })
 
@@ -180,22 +170,47 @@ export function LanguageClientSync({ config, wrapper }: {
 
         const throttled = funnel(requestComputedModel, {
           triggerAt: 'both',
-          minGapMs: 1000,
+          minGapMs: 500,
         })
 
         disposables.push(
           languageClient().onNotification(onDidChangeModel, () => {
+            try {
+              const errors: string[] = []
+              languageClient().diagnostics?.forEach((uri, diagnostics) => {
+                for (const diagnostic of diagnostics) {
+                  if (diagnostic.severity === 0) {
+                    errors.push(
+                      `L${diagnostic.range.start.line + 1}:${
+                        diagnostic.range.start.character + 1
+                      } ${diagnostic.message}`,
+                    )
+                  }
+                }
+              })
+              playground.send({
+                type: 'likec4.lsp.onDiagnostic',
+                errors,
+              })
+            } catch (e) {
+              logger.error(loggable(e))
+            }
             throttled.call()
           }),
         )
 
-        // Initial request for model
-        await languageClient().sendRequest(BuildDocuments.Req, { docs })
-        await requestComputedModel()
+        try {
+          // Initial request for model
+          await languageClient().sendRequest(BuildDocuments.Req, { docs })
+          await requestComputedModel()
 
-        playground.send({
-          type: 'workspace.ready',
-        })
+          playground.send({
+            type: 'workspace.ready',
+          })
+        }
+        catch (err) {
+          console.error(err)
+        }
       })
       .catch(err => {
         logger.error(loggable(err))
@@ -222,7 +237,7 @@ export function LanguageClientSync({ config, wrapper }: {
     return () => {
       subscribe.dispose()
     }
-  }, [playground.actor])
+  }, [playground])
 
   useEffect(
     () => {
@@ -255,7 +270,7 @@ export function LanguageClientSync({ config, wrapper }: {
       }),
     ]
     return () => listeners.forEach(l => l.unsubscribe())
-  }, [playground.actor])
+  }, [playground])
 
   useEffect(() => {
     if (playgroundState !== 'ready') return
@@ -272,7 +287,7 @@ export function LanguageClientSync({ config, wrapper }: {
     return () => {
       listener.dispose()
     }
-  }, [wrapper, workspaceId, playgroundState, playground.actor])
+  }, [wrapper, workspaceId, playgroundState, playground])
 
   return null
 }

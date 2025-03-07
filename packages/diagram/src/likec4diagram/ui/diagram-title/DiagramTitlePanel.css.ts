@@ -1,18 +1,13 @@
 import { fallbackVar, style } from '@vanilla-extract/css'
 import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
 
-export const container = style({
-  bottom: 0,
-  left: 0,
-  padding: 8,
-  margin: 0,
-})
-
 export const card = style({
   cursor: 'default',
   minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
+  width: 'auto',
   backgroundColor: mantine.colors.body,
+  borderRadius: '0px',
   '@media': {
     [mantine.largerThan('sm')]: {
       minWidth: 250,
@@ -28,6 +23,7 @@ export const card = style({
       backgroundColor: mantine.colors.dark[6],
     },
     [`${whereNotReducedGraphics} &`]: {
+      borderRadius: mantine.radius.sm,
       backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
       WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
       backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),

@@ -10,7 +10,7 @@ import './main.css'
 import { createRoot } from 'react-dom/client'
 import { Routes } from './router'
 
-createRoot(document.getElementById('like4-root')!).render(
+createRoot(document.getElementById('likec4-root')!).render(
   // <StrictMode>
   <Routes />,
   // </StrictMode>

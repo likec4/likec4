@@ -9,7 +9,7 @@ import type { ViewId } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useTransition } from 'react'
 import { only } from 'remeda'
 import * as css from '../styles.css'
 
@@ -110,15 +110,15 @@ function WorkspaceDiagramPage() {
             renderIcon={IconRenderer}
             onNavigateTo={(nextView, event) => {
               event?.stopPropagation()
+              playground.openSources({
+                view: nextView,
+              })
               router.navigate({
                 from: '/w/$workspaceId/$viewId',
                 to: './',
                 params: {
                   viewId: nextView,
                 },
-              })
-              playground.openSources({
-                view: nextView,
               })
             }}
             onEdgeClick={(edge, event) => {

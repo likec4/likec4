@@ -51,12 +51,7 @@ export const edgeLabelContainer = style([edgeVars, {
   width: 'auto',
   height: 'auto',
   backgroundColor: xyvars.edge.labelBgColor,
-  borderRadius: labelBorderRadius,
   border: '0px solid transparent',
-
-  vars: {
-    [varTranslate]: `translate(0,0)`,
-  },
   selectors: {
     [`&:is([data-edge-dimmed="true"])`]: {
       opacity: 0.2,
@@ -70,12 +65,12 @@ export const edgeLabelContainer = style([edgeVars, {
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
     },
     [`${whereNotReducedGraphics} &`]: {
+      borderRadius: labelBorderRadius,
       mixBlendMode: 'plus-lighter',
       transform: varTranslate,
       transition: transitions.fast,
     },
     [`${whereNotReducedGraphics} &[data-edge-hovered="true"]`]: {
-      mixBlendMode: 'normal',
       transition: `all 190ms ${easings.inOut}`,
       transform: `${varTranslate} scale(1.12)`,
     },
@@ -159,7 +154,7 @@ export const edgeNoteCloseButton = style({
   position: 'absolute',
   top: 4,
   right: 4,
-  zIndex: 9,
+  // zIndex: 9,
 })
 
 export const edgeNoteText = style({
@@ -181,7 +176,7 @@ export const edgeNoteText = style({
 })
 
 export const actionBtn = style({
-  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  // zIndex: 'calc(var(--layer-overlays, 1) + 1)',
   pointerEvents: 'all',
   color: xyvars.edge.labelColor,
   cursor: 'pointer',

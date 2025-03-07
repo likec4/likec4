@@ -266,6 +266,24 @@ export const diagramMachine = setup({
       panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
     },
 
+    'xyflow:fitFocusedBounds': ({ context }) => {
+      const { bounds, duration = 450 } = focusedBounds({ context })
+      const { width, height, panZoom, transform } = context.xystore.getState()
+
+      const maxZoom = Math.max(1, transform[2])
+      const viewport = getViewportForBounds(
+        bounds,
+        width,
+        height,
+        MinZoom,
+        maxZoom,
+        context.fitViewPadding,
+      )
+      viewport.x = Math.round(viewport.x)
+      viewport.y = Math.round(viewport.y)
+      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
+    },
+
     'xyflow:setViewportCenter': ({ context }, params: { x: number; y: number }) => {
       const { x, y } = params
       invariant(context.xyflow, 'xyflow is not initialized')
@@ -487,10 +505,7 @@ export const diagramMachine = setup({
         })),
         'open source of focused or last clicked node',
         spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
-        {
-          type: 'xyflow:fitDiagram',
-          params: focusedBounds,
-        },
+        'xyflow:fitFocusedBounds',
       ],
       exit: enqueueActions(({ enqueue, context }) => {
         enqueue.stopChild('hotkey')
@@ -515,14 +530,11 @@ export const diagramMachine = setup({
             actions: [
               assign({
                 lastClickedNode,
-                focusedNode: ({ event }) => event.node.id as NodeId,
               }),
-              assign(focusNodesEdges),
-              'open source of focused or last clicked node',
-              {
-                type: 'xyflow:fitDiagram',
-                params: focusedBounds,
-              },
+              raise(({ event }) => ({
+                type: 'focus.node',
+                nodeId: event.node.id as NodeId,
+              })),
             ],
           },
         ],
@@ -533,10 +545,7 @@ export const diagramMachine = setup({
             }),
             assign(focusNodesEdges),
             'open source of focused or last clicked node',
-            {
-              type: 'xyflow:fitDiagram',
-              params: focusedBounds,
-            },
+            'xyflow:fitFocusedBounds',
           ],
         },
         'key.esc': {
@@ -631,10 +640,7 @@ export const diagramMachine = setup({
           },
         }),
         assign(updateActiveWalkthrough),
-        {
-          type: 'xyflow:fitDiagram',
-          params: focusedBounds,
-        },
+        'xyflow:fitFocusedBounds',
       ],
       on: {
         'key.esc': {
@@ -665,13 +671,13 @@ export const diagramMachine = setup({
               },
             })
             enqueue.assign(updateActiveWalkthrough)
-            enqueue({
-              type: 'xyflow:fitDiagram',
-              params: focusedBounds,
-            })
+            enqueue('xyflow:fitFocusedBounds')
           }),
         },
         'walkthrough.end': {
+          target: 'idle',
+        },
+        'xyflow.paneDblClick': {
           target: 'idle',
         },
         // We received another view, close overlay and process event again
@@ -681,18 +687,18 @@ export const diagramMachine = setup({
           target: 'idle',
         },
       },
-      exit: enqueueActions(({ enqueue, context }) => {
+      exit: enqueueActions(({ enqueue, context, event }) => {
         enqueue.stopChild('hotkey')
         if (context.viewportBeforeFocus) {
           enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
         } else {
           enqueue({ type: 'xyflow:fitDiagram' })
         }
-        enqueue.assign((s) => ({
+        enqueue.assign({
           activeWalkthrough: null,
-          ...unfocusNodesEdges(s),
+          ...unfocusNodesEdges({ context, event }),
           viewportBeforeFocus: null,
-        }))
+        })
       }),
     },
   },
@@ -722,15 +728,13 @@ export const diagramMachine = setup({
     },
     'navigate.to': {
       guard: 'is another view',
-      actions: [
-        assign({
-          lastOnNavigate: ({ context, event }) => ({
-            fromView: context.view.id,
-            toView: event.viewId,
-            fromNode: event.fromNode ?? null,
-          }),
+      actions: assign({
+        lastOnNavigate: ({ context, event }) => ({
+          fromView: context.view.id,
+          toView: event.viewId,
+          fromNode: event.fromNode ?? null,
         }),
-      ],
+      }),
       target: '.navigating',
     },
     'navigate.back': {
@@ -810,7 +814,10 @@ export const diagramMachine = setup({
     'layout.align': {
       guard: 'not readonly',
       actions: [
-        { type: 'layout.align', params: ({ event }) => ({ mode: event.mode }) },
+        {
+          type: 'layout.align',
+          params: ({ event }) => ({ mode: event.mode }),
+        },
         raise({ type: 'saveManualLayout.schedule' }),
       ],
     },
@@ -829,7 +836,7 @@ export const diagramMachine = setup({
       ],
     },
     'open.elementDetails': {
-      actions: enqueueActions(({ context, enqueue, system, event }) => {
+      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => {
         let initiatedFrom = null as null | {
           node: NodeId
           clientRect: Rect
@@ -850,7 +857,7 @@ export const diagramMachine = setup({
             clientRect,
           }
         }
-        enqueue.sendTo(typedSystem(system).overlaysActorRef!, {
+        return ({
           type: 'open.elementDetails' as const,
           subject: event.fqn,
           currentView: context.view,

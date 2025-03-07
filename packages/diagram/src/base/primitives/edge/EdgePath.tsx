@@ -2,6 +2,7 @@ import type { DiagramEdge } from '@likec4/core'
 import clsx from 'clsx'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import type { EdgeProps } from '../../types'
 import * as css from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
@@ -36,6 +37,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   interactionWidth,
   onEdgePointerDown,
 }, svgPathRef) => {
+  const isReducedGraphicsMode = useIsReducedGraphics()
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
   if (dir === 'back') {
@@ -57,32 +59,42 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
 
   return (
     <>
-      <path
-        className={clsx('react-flow__edge-interaction')}
-        d={svgPath}
-        fill="none"
-        stroke={'transparent'}
-        strokeWidth={interactionWidth ?? 10}
-      />
+      {!isReducedGraphicsMode && (
+        <path
+          className={clsx('react-flow__edge-interaction')}
+          d={svgPath}
+          fill="none"
+          stroke={'transparent'}
+          strokeWidth={interactionWidth ?? 10}
+        />
+      )}
       <g className={css.markerContext} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
-        <path
-          className={clsx('react-flow__edge-path', css.edgePathBg)}
-          d={svgPath}
-          style={style}
-          strokeLinecap={'round'}
-        />
+        {!isReducedGraphicsMode && (
+          <path
+            className={clsx('react-flow__edge-path', css.edgePathBg)}
+            d={svgPath}
+            style={style}
+            strokeLinecap={'round'}
+          />
+        )}
         <path
           ref={svgPathRef}
-          className={clsx('react-flow__edge-path', css.cssEdgePath)}
+          className={clsx(
+            'react-flow__edge-path',
+            isReducedGraphicsMode && 'react-flow__edge-interaction',
+            css.cssEdgePath,
+          )}
           d={svgPath}
           style={style}
           strokeWidth={strokeWidth}
-          strokeLinecap={'round'}
-          strokeDasharray={strokeDasharray}
+          {...!isReducedGraphicsMode && {
+            strokeLinecap: 'round',
+            strokeDasharray: strokeDasharray,
+          }}
           markerStart={MarkerStart ? `url(#start${id})` : undefined}
           markerEnd={MarkerEnd ? `url(#end${id})` : undefined}
         />

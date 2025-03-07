@@ -68,6 +68,7 @@ export const technology = style({
 })
 
 export const elementDataContainer = style({
+  position: 'relative',
   flex: '1',
   height: 'fit-content',
   width: 'fit-content',

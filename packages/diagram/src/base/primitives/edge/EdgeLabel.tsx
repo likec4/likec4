@@ -77,7 +77,6 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     if (labelX === undefined || labelY === undefined || isZoomTooSmall) {
       return null
     }
-
     const translate = labelXY?.translate
 
     return (

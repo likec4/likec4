@@ -1,7 +1,7 @@
 import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core'
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { clsx } from 'clsx'
-import { LayoutGroup } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../context/ControlsCustomLayout'
@@ -24,6 +24,23 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
   actionsGroup,
 }) => (
   <Group
+    component={m.div}
+    // @ts-expect-error group component not fully polymorphic
+    initial={{
+      opacity: 0.05,
+      translateX: -30,
+      translateY: -16,
+    }}
+    animate={{
+      opacity: 1,
+      translateX: 0,
+      translateY: 0,
+    }}
+    exit={{
+      opacity: 0.05,
+      translateX: -30,
+      translateY: -10,
+    }}
     align="flex-start"
     className={clsx(
       'react-flow__panel',
@@ -51,10 +68,11 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
 )
 
 export const Controls = memo(() => {
-  const { viewId, hasLayoutDrift, viewportChanged } = useDiagramContext(c => ({
+  const { viewId, hasLayoutDrift, viewportChanged, isNotActiveWalkthrough } = useDiagramContext(c => ({
     viewId: c.view.id,
     hasLayoutDrift: c.view.hasLayoutDrift ?? false,
     viewportChanged: c.viewportChangedManually,
+    isNotActiveWalkthrough: c.activeWalkthrough === null,
   }))
   const diagram = useDiagram()
   const {
@@ -73,54 +91,58 @@ export const Controls = memo(() => {
   const ControlsLayout = useControlsCustomLayout() ?? ControlsDefaultLayout
   return (
     <LayoutGroup inherit={false}>
-      <ControlsLayout
-        burgerMenu={onBurgerMenuClick && (
-          <ActionIcon
-            onClick={e => {
-              e.stopPropagation()
-              onBurgerMenuClick()
-            }}>
-            <IconMenu2 />
-          </ActionIcon>
+      <AnimatePresence initial={false} mode="wait">
+        {isNotActiveWalkthrough && (
+          <ControlsLayout
+            burgerMenu={onBurgerMenuClick && (
+              <ActionIcon
+                onClick={e => {
+                  e.stopPropagation()
+                  onBurgerMenuClick()
+                }}>
+                <IconMenu2 />
+              </ActionIcon>
+            )}
+            navigationButtons={enableNavigationButtons && <NavigationButtons />}
+            search={enableSearch && <LikeC4Search />}
+            syncInProgressBadge={<SyncLayoutBadge />}
+            actionsGroup={
+              <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
+                {enableVscode && (
+                  <Tooltip label="Open source" {...portalProps}>
+                    <ActionIcon
+                      onClick={e => {
+                        e.stopPropagation()
+                        onOpenSource?.({ view: viewId })
+                      }}>
+                      <IconFileSymlink stroke={1.5} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+                {enableControls && <ToggleReadonly />}
+                {enableControls && hasLayoutDrift && <LayoutDriftNotification {...portalProps} />}
+                {enableControls && notReadOnly && (
+                  <>
+                    <ChangeAutoLayoutButton {...portalProps} />
+                    <ManualLayoutToolsButton {...portalProps} />
+                  </>
+                )}
+                {enableControls && (
+                  <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
+                    <ActionIcon
+                      onClick={e => {
+                        e.stopPropagation()
+                        diagram.fitDiagram()
+                      }}>
+                      <IconFocusCentered />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </ActionIconGroup>
+            }
+          />
         )}
-        navigationButtons={enableNavigationButtons && <NavigationButtons />}
-        search={enableSearch && <LikeC4Search />}
-        syncInProgressBadge={<SyncLayoutBadge />}
-        actionsGroup={
-          <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
-            {enableVscode && (
-              <Tooltip label="Open source" {...portalProps}>
-                <ActionIcon
-                  onClick={e => {
-                    e.stopPropagation()
-                    onOpenSource?.({ view: viewId })
-                  }}>
-                  <IconFileSymlink stroke={1.5} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-            {enableControls && <ToggleReadonly />}
-            {enableControls && hasLayoutDrift && <LayoutDriftNotification {...portalProps} />}
-            {enableControls && notReadOnly && (
-              <>
-                <ChangeAutoLayoutButton {...portalProps} />
-                <ManualLayoutToolsButton {...portalProps} />
-              </>
-            )}
-            {enableControls && (
-              <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
-                <ActionIcon
-                  onClick={e => {
-                    e.stopPropagation()
-                    diagram.fitDiagram()
-                  }}>
-                  <IconFocusCentered />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </ActionIconGroup>
-        }
-      />
+      </AnimatePresence>
     </LayoutGroup>
   )
 })

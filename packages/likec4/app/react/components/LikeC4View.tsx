@@ -71,6 +71,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   enableElementDetails = false,
   enableRelationshipBrowser = enableElementDetails,
   enableRelationshipDetails = enableRelationshipBrowser,
+  reduceGraphics = 'auto',
   mantineTheme,
   styleNonce,
   style,
@@ -139,6 +140,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
               controls={controls}
               nodesSelectable
               nodesDraggable={false}
+              reduceGraphics={reduceGraphics}
               // We may have multiple embedded views on the same page
               // so we don't want enable search and hotkeys
               enableSearch={false}

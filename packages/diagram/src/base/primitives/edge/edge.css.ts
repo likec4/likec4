@@ -1,7 +1,5 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import {
-  hiddenIfReducedGraphics,
-  hiddenIfZoomTooSmall,
   reactFlow,
 } from '../../../LikeC4Diagram.css'
 import { vars, whereDark, whereLight, whereNotReducedGraphics, xyvars } from '../../../theme-vars'
@@ -75,14 +73,14 @@ globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
   },
 })
 
-globalStyle(`${reactFlow} .react-flow__edges > svg`, {
+globalStyle(`${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
   mixBlendMode: 'plus-lighter',
 })
-globalStyle(`${whereLight} ${reactFlow} .react-flow__edges > svg`, {
+globalStyle(`${whereLight} ${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
   mixBlendMode: 'screen',
 })
 
-export const edgePathBg = style([hiddenIfZoomTooSmall, hiddenIfReducedGraphics, {
+export const edgePathBg = style({
   // strokeWidth: xyvars.edge.strokeWidth,
   strokeOpacity: 0.08,
   // transition: 'stroke-width 175ms ease-in-out',
@@ -91,12 +89,15 @@ export const edgePathBg = style([hiddenIfZoomTooSmall, hiddenIfReducedGraphics, 
   transitionDuration: '155ms',
   transitionTimingFunction: 'ease-out',
   selectors: {
+    [`:where([data-likec4-zoom-small="true"]) &`]: {
+      display: 'none',
+    },
     [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
       strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
       strokeOpacity: 0.15,
     },
   },
-}])
+})
 
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = style({
@@ -114,12 +115,14 @@ const strokeKeyframes = keyframes({
 })
 
 export const cssEdgePath = style({
-  animationDuration: '800ms',
-  animationIterationCount: 'infinite',
-  animationTimingFunction: 'linear',
-  animationFillMode: 'both',
-  strokeDashoffset: 10,
   selectors: {
+    [`${whereNotReducedGraphics} &`]: {
+      animationDuration: '800ms',
+      animationIterationCount: 'infinite',
+      animationTimingFunction: 'linear',
+      animationFillMode: 'both',
+      strokeDashoffset: 10,
+    },
     [`${reactFlow} :where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '450ms',

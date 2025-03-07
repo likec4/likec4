@@ -64,7 +64,6 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
     children,
     ...rest
   }, ref) => {
-    const nonReducedGraphics = !useIsReducedGraphics()
     let scale = 1
     switch (true) {
       case isHovered:
@@ -90,7 +89,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
           'likec4-element-node',
         ])}
         initial={false}
-        {...selectable && nonReducedGraphics && {
+        {...selectable && {
           animate: {
             scale,
           },

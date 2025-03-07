@@ -5,6 +5,7 @@ import {
 } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
+import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
@@ -13,6 +14,7 @@ import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from
 import { useEnabledFeature } from '../../../context'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
@@ -27,6 +29,7 @@ const curve = d3line<XYPosition>()
   .y(d => d.y)
 
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+  const isReducedGraphicsMode = useIsReducedGraphics()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
@@ -44,10 +47,11 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     target,
     targetX,
     targetY,
+    selected = false,
     data: {
       id: edgeId,
-      navigateTo,
       points,
+      hovered = false,
       active = false,
       dimmed = false,
       labelBBox,
@@ -55,6 +59,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       ...data
     },
   } = props
+
+  const navigateTo = enableNavigateTo ? data.navigateTo : undefined
 
   const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
@@ -297,7 +303,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           <div {...props} />
         </NotePopover>
       )
-    } else if (enableRelationshipDetails) {
+    } else if (enableRelationshipDetails && (!isReducedGraphicsMode || hovered || selected || active)) {
       renderLabel = (props: any) => (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}
@@ -313,24 +319,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   return (
     <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
       <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
-      {enableEdgeEditing && (
-        <g
-          onContextMenu={e => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}>
-          {controlPoints.map((p, i) => (
-            <circle
-              onPointerDown={e => onControlPointerDown(i, e)}
-              className={edgesCss.controlPoint}
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={3}
-            />
-          ))}
-        </g>
-      )}
       <EdgeLabel
         edgeProps={props}
         labelPosition={{
@@ -340,7 +328,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         }}
         {...renderLabel && { renderRoot: renderLabel }}
       >
-        {!isControlPointDragging && enableNavigateTo && navigateTo && (
+        {!isControlPointDragging && navigateTo && (
           <EdgeActionButton
             {...props}
             onClick={e => {
@@ -349,6 +337,29 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
             }} />
         )}
       </EdgeLabel>
+      {/* Render control points above edge label  */}
+      {enableEdgeEditing && controlPoints.length > 0 && (
+        <EdgeLabelRenderer>
+          <EdgeContainer component="svg" className={edgesCss.controlPointsContainer} {...props}>
+            <g
+              onContextMenu={e => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}>
+              {controlPoints.map((p, i) => (
+                <circle
+                  onPointerDown={e => onControlPointerDown(i, e)}
+                  className={clsx('nodrag nopan', edgesCss.controlPoint)}
+                  key={i}
+                  cx={Math.round(p.x)}
+                  cy={Math.round(p.y)}
+                  r={3}
+                />
+              ))}
+            </g>
+          </EdgeContainer>
+        </EdgeLabelRenderer>
+      )}
     </EdgeContainer>
   )
 })

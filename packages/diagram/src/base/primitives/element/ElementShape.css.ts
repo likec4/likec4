@@ -81,7 +81,9 @@ const shapeBase = style({
   fill: vars.element.fill,
   stroke: vars.element.stroke,
   overflow: 'visible',
-  zIndex: -1,
+  // zIndex is removed to improve rendering performance
+  // this forces to keep shape in the same layer as the node
+  // zIndex: -1,
 })
 
 export const shapeSvgMultiple = style([shapeBase, hiddenIfZoomTooSmall, {

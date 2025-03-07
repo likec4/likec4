@@ -123,6 +123,13 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
    */
   enableRelationshipDetails?: boolean | undefined
 
+  /**
+   * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
+   *
+   * @default 'auto' - will be set to true if view is pannable and has more than 3000 * 2000 pixels
+   */
+  reduceGraphics?: 'auto' | boolean | undefined
+
   where?: WhereOperator<Tag, Kind> | undefined
 
   className?: string | undefined
@@ -218,6 +225,13 @@ export interface LikeC4BrowserProps {
    * @default true
    */
   showNotations?: boolean | undefined
+
+  /**
+   * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
+   *
+   * @default 'auto' - will be set to true if view is pannable and has more than 3000 * 2000 pixels
+   */
+  reduceGraphics?: 'auto' | boolean | undefined
 
   className?: string | undefined
   style?: CSSProperties | undefined
