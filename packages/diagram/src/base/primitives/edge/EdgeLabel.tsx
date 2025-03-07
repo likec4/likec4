@@ -41,6 +41,8 @@ const toCssVarValue = (value: number | string | undefined) => {
   return isNumber(value) ? `${value}px` : value
 }
 
+const varTranslate = getVarName(css.varTranslate)
+
 export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
   forwardRef<HTMLDivElement, EdgeLabelProps>(({
     edgeProps: {
@@ -75,6 +77,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     if (labelX === undefined || labelY === undefined || isZoomTooSmall) {
       return null
     }
+    const translate = labelXY?.translate
 
     return (
       <EdgeLabelRenderer>
@@ -94,6 +97,9 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
           style={{
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),
+            ...(translate && {
+              [varTranslate]: translate,
+            }),
             ...(labelBBox && {
               maxWidth: labelBBox.width + 18,
             }),

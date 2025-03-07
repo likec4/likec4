@@ -40,6 +40,8 @@ export const stepEdgeNumber = style({
 export const varLabelX = createVar('label-x')
 export const varLabelY = createVar('label-y')
 
+export const varTranslate = createVar('translate')
+
 export const edgeLabelContainer = style([edgeVars, {
   top: 0,
   left: 0,
@@ -65,11 +67,12 @@ export const edgeLabelContainer = style([edgeVars, {
     [`${whereNotReducedGraphics} &`]: {
       borderRadius: labelBorderRadius,
       mixBlendMode: 'plus-lighter',
+      transform: varTranslate,
       transition: transitions.fast,
     },
     [`${whereNotReducedGraphics} &[data-edge-hovered="true"]`]: {
       transition: `all 190ms ${easings.inOut}`,
-      transform: `scale(1.12)`,
+      transform: `${varTranslate} scale(1.12)`,
     },
     [`${whereLight} ${whereNotReducedGraphics} &`]: {
       mixBlendMode: 'screen',
