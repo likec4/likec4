@@ -1,6 +1,7 @@
 import { Examples } from '$/examples'
 import { invariant } from '@tanstack/react-router'
 import { first, keys } from 'remeda'
+import type { LocalWorkspace } from './types'
 
 export function readWorkspace(key: string): any {
   const value = localStorage.getItem(key)
@@ -14,11 +15,8 @@ function workspacePersistence(storage: Storage) {
       try {
         let fromStorage = storage.getItem(key)
         if (fromStorage) {
-          const parsed = JSON.parse(fromStorage) as {
-            activeFilename?: string
+          const parsed = JSON.parse(fromStorage) as LocalWorkspace & {
             currentFilename?: string
-            title: string
-            files: Record<string, string>
           }
           let activeFilename = parsed.activeFilename || parsed.currentFilename
           if (!activeFilename) {
@@ -26,6 +24,7 @@ function workspacePersistence(storage: Storage) {
           }
           invariant(activeFilename, 'activeFilename is required')
           return {
+            ...parsed,
             workspaceId,
             activeFilename,
             files: {
@@ -33,9 +32,9 @@ function workspacePersistence(storage: Storage) {
               ...parsed.files,
             },
             title: parsed.title ?? workspaceId,
-          }
+          } satisfies LocalWorkspace
         }
-        throw new Error(`Workspace ${key} not found`)
+        return null
       } catch (e) {
         console.error(`Error reading fromStorage ${key}:`, e)
         return null
@@ -44,19 +43,12 @@ function workspacePersistence(storage: Storage) {
     /**
      * @returns key to read the workspace back
      */
-    write(workspace: {
-      workspaceId: string
-      activeFilename: string
-      title: string
-      files: Record<string, string>
-    }) {
+    write({ shareHistory, ...workspace }: LocalWorkspace) {
       storage.setItem(
         `likec4:workspace:${workspace.workspaceId}`,
         JSON.stringify({
-          activeFilename: workspace.activeFilename,
-          currentFilename: workspace.activeFilename,
-          title: workspace.title,
-          files: workspace.files,
+          ...workspace,
+          ...shareHistory && shareHistory.length > 0 && { shareHistory },
         }),
       )
       return `likec4:workspace:${workspace.workspaceId}`

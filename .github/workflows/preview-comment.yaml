@@ -65,7 +65,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch preview
+          command: versions upload -c dist/playground/wrangler.json
           workingDirectory: apps/playground
           packageManager: pnpm
 

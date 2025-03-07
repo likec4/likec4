@@ -11,7 +11,7 @@ import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { useEffect, useRef } from 'react'
 import { only } from 'remeda'
-import * as css from './styles.css'
+import * as css from '../styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId/$viewId')({
   component: WorkspaceDiagramPage,

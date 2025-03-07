@@ -1,35 +1,14 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@likec4/tsconfig/react-lib.json",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "allowArbitraryExtensions": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "customConditions": [
-      "sources"
-    ],
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "$components/*": [
-        "./src/components/*"
-      ],
-      "$state/*": [
-        "./src/state/*"
-      ],
-      "$/*": [
-        "./src/*"
-      ]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.vite.json"
+    },
+        {
+      "path": "./tsconfig.frontend.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
     }
-  },
-  "include": [
-    "./src",
-  ],
-  "exclude": [
-    "./src/ex/**"
   ]
 }

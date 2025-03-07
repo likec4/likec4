@@ -1,7 +1,15 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { easings, mantine, transitions, vars, whereDark, whereLight, xyvars } from '../../../theme-vars'
+import {
+  easings,
+  mantine,
+  transitions,
+  vars,
+  whereDark,
+  whereLight,
+  whereNotReducedGraphics,
+  xyvars,
+} from '../../../theme-vars'
 import { edgeVars, mixColor } from './edge.css'
 
 const labelBorderRadius = 4
@@ -45,17 +53,11 @@ export const edgeLabelContainer = style([edgeVars, {
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: labelBorderRadius,
   border: '0px solid transparent',
-  transform: varTranslate,
-  transition: transitions.fast,
+
   vars: {
     [varTranslate]: `translate(0,0)`,
   },
   selectors: {
-    '&[data-edge-hovered="true"]': {
-      mixBlendMode: 'normal',
-      transition: `all 190ms ${easings.inOut}`,
-      transform: `${varTranslate} scale(1.12)`,
-    },
     [`&:is([data-edge-dimmed="true"])`]: {
       opacity: 0.2,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
@@ -69,6 +71,13 @@ export const edgeLabelContainer = style([edgeVars, {
     },
     [`${whereNotReducedGraphics} &`]: {
       mixBlendMode: 'plus-lighter',
+      transform: varTranslate,
+      transition: transitions.fast,
+    },
+    [`${whereNotReducedGraphics} &[data-edge-hovered="true"]`]: {
+      mixBlendMode: 'normal',
+      transition: `all 190ms ${easings.inOut}`,
+      transform: `${varTranslate} scale(1.12)`,
     },
     [`${whereLight} ${whereNotReducedGraphics} &`]: {
       mixBlendMode: 'screen',

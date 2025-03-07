@@ -1,14 +1,13 @@
 import { type DiagramNode } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
-import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
 import { isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { getVarName } from '../../../utils/css'
 import type { NodeProps } from '../../types'
 import { nodeSizes } from './ElementNodeContainer'
 import * as css from './ElementTitle.css'
-import { iconSize as varIconSize } from './styles.css'
 
 type Data =
   & Pick<
@@ -26,6 +25,8 @@ type Data =
 type ElementTitleProps = NodeProps<Data> & {
   iconSize?: number
 }
+
+const varIconSize = getVarName(css.iconSize)
 
 export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
   const elementIcon = IconRenderer({
@@ -47,9 +48,9 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         'likec4-element',
       )}
       style={{
-        ...isNumber(iconSize) && assignInlineVars({
+        ...isNumber(iconSize) && {
           [varIconSize]: `${iconSize}px`,
-        }),
+        },
       }}
     >
       {elementIcon}

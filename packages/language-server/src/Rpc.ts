@@ -1,22 +1,22 @@
-import { filter, funnel, map, pipe } from 'remeda'
+import { filter, funnel, indexBy, map, pipe } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
-import { type DiagramView, LikeC4Model, nonexhaustive } from '@likec4/core'
+import { type DiagramView, type LayoutedLikeC4Model, LikeC4Model, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
 import { isLikeC4Builtin } from './likec4lib'
 import {
-  buildDocuments,
-  changeView,
-  computeView,
-  fetchComputedModel,
-  fetchModel,
-  layoutView,
-  locate,
+  BuildDocuments,
+  ChangeView,
+  ComputeView,
+  FetchComputedModel,
+  FetchLayoutedModel,
+  LayoutView,
+  Locate,
   onDidChangeModel,
-  validateLayout,
+  ValidateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
 
@@ -61,7 +61,7 @@ export class Rpc extends ADisposable {
 
     this.onDispose(
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
-      connection.onRequest(fetchComputedModel, async ({ cleanCaches }, cancelToken) => {
+      connection.onRequest(FetchComputedModel.Req, async ({ cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'}`
         if (cleanCaches) {
           const all = LangiumDocuments.all.map(d => d.uri).toArray()
@@ -73,27 +73,37 @@ export class Rpc extends ADisposable {
         }
         return { model: null }
       }),
-      connection.onRequest(fetchModel, async cancelToken => {
-        const model = await modelBuilder.parseModel(cancelToken)
-        return { model }
-      }),
-      connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
+      connection.onRequest(ComputeView.Req, async ({ viewId }, cancelToken) => {
         const view = await modelBuilder.computeView(viewId, cancelToken)
         return { view }
       }),
-      connection.onRequest(layoutView, async ({ viewId }, cancelToken) => {
+      connection.onRequest(FetchLayoutedModel.Req, async (cancelToken) => {
+        const model = await modelBuilder.parseModel(cancelToken)
+        if (model === null) {
+          return { model: null }
+        }
+        const diagrams = await views.diagrams()
+        return {
+          model: {
+            ...model,
+            __: 'layouted' as const,
+            views: indexBy(diagrams, d => d.id),
+          } satisfies LayoutedLikeC4Model,
+        }
+      }),
+      connection.onRequest(LayoutView.Req, async ({ viewId }, cancelToken) => {
         logger.debug`received request ${'layoutView'} of ${viewId}`
         const result = await views.layoutView(viewId, cancelToken)
         return { result }
       }),
-      connection.onRequest(validateLayout, async (_, cancelToken) => {
+      connection.onRequest(ValidateLayout.Req, async (cancelToken) => {
         const layouts = await views.layoutAllViews(cancelToken)
 
         const result = reportLayoutDrift(layouts.map(l => l.diagram))
 
         return { result }
       }),
-      connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
+      connection.onRequest(BuildDocuments.Req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
         const deleted = LangiumDocuments.all
@@ -128,7 +138,7 @@ export class Rpc extends ADisposable {
         await interruptAndCheck(cancelToken)
         await DocumentBuilder.update(changed, deleted, cancelToken)
       }),
-      connection.onRequest(locate, params => {
+      connection.onRequest(Locate.Req, params => {
         switch (true) {
           case 'element' in params:
             return modelLocator.locateElement(params.element, params.property ?? 'name')
@@ -142,7 +152,7 @@ export class Rpc extends ADisposable {
             nonexhaustive(params)
         }
       }),
-      connection.onRequest(changeView, async (request, _cancelToken) => {
+      connection.onRequest(ChangeView.Req, async (request, _cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId}`
         return await modelEditor.applyChange(request)
       }),

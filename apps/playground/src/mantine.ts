@@ -19,11 +19,11 @@ export const theme = createTheme({
   },
   fontSizes: {
     ...DEFAULT_THEME.fontSizes,
-    xxs: rem(10),
+    '2xs': rem(10),
   },
   spacing: {
     ...DEFAULT_THEME.spacing,
-    xxs: rem(8),
+    '2xs': rem(8),
   },
   headings: {
     fontWeight: '500',

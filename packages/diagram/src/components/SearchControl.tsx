@@ -21,10 +21,10 @@ export function SearchControl({ className, ...others }: SearchControlProps) {
     <UnstyledButton {...others} className={cx(classes.root, className)}>
       <Group gap="xs">
         <IconSearch style={{ width: rem(15), height: rem(15) }} stroke={2} />
-        <Text fz="sm" fw="500" pr={50}>
+        <Text component="div" className={classes.placeholder}>
           Search
         </Text>
-        <Text fw={700} className={classes.shortcut}>
+        <Text component="div" className={classes.shortcut}>
           {isMac ? '⌘ + K' : 'Ctrl + K'}
         </Text>
       </Group>

@@ -115,10 +115,12 @@ export {
   isKindEqual,
   isNotOperator,
   isOrOperator,
+  isParticipantOperator,
   isTagEqual,
   whereOperatorAsPredicate,
 } from './operators'
 export type {
+  AllNever,
   AndOperator,
   EqualOperator,
   Filterable,
@@ -126,6 +128,8 @@ export type {
   NotOperator,
   OperatorPredicate,
   OrOperator,
+  Participant,
+  ParticipantOperator,
   TagEqual,
   WhereOperator,
 } from './operators'

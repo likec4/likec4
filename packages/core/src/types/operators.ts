@@ -10,7 +10,7 @@ export type EqualOperator<V> = {
   neq: V
 }
 
-type AllNever = {
+export type AllNever = {
   not?: never
   and?: never
   or?: never

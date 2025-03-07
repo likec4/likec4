@@ -120,9 +120,9 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/core": "7.17.0",
-    "@mantine/hooks": "7.17.0",
-    "@mantine/vanilla-extract": "7.17.0",
+    "@mantine/core": "catalog:",
+    "@mantine/hooks": "catalog:",
+    "@mantine/vanilla-extract": "catalog:",
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.29.0",
@@ -196,5 +196,5 @@
     "which": "^5.0.0",
     "yargs": "17.7.2"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.5.2"
 }

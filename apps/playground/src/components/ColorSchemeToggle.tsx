@@ -1,6 +1,6 @@
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
-import { icon } from './ColorSchemeToggle.css'
+import * as css from './ColorSchemeToggle.css'
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme()
@@ -8,6 +8,7 @@ export function ColorSchemeToggle() {
 
   return (
     <ActionIcon
+      className={css.icon}
       visibleFrom="lg"
       size={'md'}
       variant="subtle"
@@ -16,8 +17,8 @@ export function ColorSchemeToggle() {
       aria-label="Toggle color scheme"
     >
       {computedColorScheme === 'light'
-        ? <IconMoonStars stroke={1.5} className={icon} />
-        : <IconSun stroke={1.5} className={icon} />}
+        ? <IconMoonStars stroke={1.5} />
+        : <IconSun stroke={1.5} />}
     </ActionIcon>
   )
 }

@@ -1,7 +1,6 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { easings, vars, whereLight } from '../../../theme-vars'
+import { easings, vars, whereLight, whereNotReducedGraphics } from '../../../theme-vars'
 
 export const varCompoundOpacity = createVar('opacity')
 export const varBorderRadius = createVar('borderRadius')

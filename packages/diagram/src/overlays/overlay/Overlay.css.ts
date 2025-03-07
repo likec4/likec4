@@ -2,6 +2,10 @@ import { createVar, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
 import { mantine, whereLight } from '../../theme-vars'
 
+export const backdropBlur = createVar('backdrop-blur')
+export const backdropOpacity = createVar('backdrop-opacity')
+const backdropColor = createVar('backdrop-color')
+
 const borderRadius = createVar('border-radius')
 export const dialog = style({
   boxSizing: 'border-box',
@@ -20,20 +24,20 @@ export const dialog = style({
   padding: 6,
   vars: {
     [borderRadius]: '8px',
-    '--backdrop-color': '34 34 34',
-    '--backdrop-opacity': '0%',
-    '--backdrop-blur': '0px',
+    [backdropColor]: '34 34 34',
+    [backdropOpacity]: '0%',
+    [backdropBlur]: '0px',
   },
   selectors: {
     [`&::backdrop`]: {
       cursor: 'zoom-out',
-      WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
-      backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(var(--backdrop-color) / var(--backdrop-opacity))`,
+      WebkitBackdropFilter: `blur(${backdropBlur})`,
+      backdropFilter: `blur(${backdropBlur})`,
+      backgroundColor: `rgb(${backdropColor} / ${backdropOpacity})`,
     },
     [`${whereLight} &`]: {
       vars: {
-        '--backdrop-color': '15 15 15',
+        [backdropBlur]: '15 15 15',
       },
     },
   },

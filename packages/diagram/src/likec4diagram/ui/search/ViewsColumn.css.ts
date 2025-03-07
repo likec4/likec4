@@ -2,7 +2,7 @@ import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../theme-vars'
 import { button, description, descriptionColor, iconColor, title } from './_shared.css'
 
-export { focusable } from './_shared.css'
+export { emptyBoX, focusable } from './_shared.css'
 
 export const viewButton = style([button, {
   flexWrap: 'nowrap',

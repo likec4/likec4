@@ -1,7 +1,7 @@
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../mantine.css'
+// import { createVar, globalStyle } from '@vanilla-extract/css'
+import { css as style } from '$styled-system/css'
 
-const bg = createVar()
+// const bg = createVar()
 
 export const panel = style({})
 
@@ -11,7 +11,7 @@ export const resize = style({
   boxSizing: 'border-box',
   borderLeft: '0px solid transparent',
   transition: 'all 175ms ease-in-out',
-  backgroundColor: mantine.colors.defaultBorder,
+  backgroundColor: 'defaultBorder',
   backgroundClip: 'content-box',
   flex: '0 0 6px',
   // position: 'relative',
@@ -34,9 +34,9 @@ export const resize = style({
   //   transition: 'background-color 150ms ease-in-out',
   // },
 
-  ':hover': {
-    transform: 'scaleX(2)',
-    backgroundColor: mantine.colors.primaryColors.filledHover,
+  _hover: {
+    scaleX: 2,
+    backgroundColor: 'primary.filledHover',
     // vars: {
     //   [bg]: mantine.colors.primaryColors.filledHover
     // },
@@ -48,8 +48,11 @@ export const stateAlert = style({
   top: '0.75rem',
   left: '0.5rem',
   userSelect: 'none',
+  '& .mantine-Notification-description': {
+    whiteSpace: 'pre-line',
+  },
 })
 
-globalStyle(`${stateAlert} .mantine-Notification-description`, {
-  whiteSpace: 'pre-line',
-})
+// globalStyle(`${stateAlert} .mantine-Notification-description`, {
+//   whiteSpace: 'pre-line',
+// })

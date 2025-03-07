@@ -29,16 +29,24 @@
   "[css]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
   "search.exclude": {
     ".yarn/**": true,
     "yarn.lock": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
+    "**/routeTree.gen.ts": true
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
+    "**/.wireit": true,
     ".pnpm-store/**": true,
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,

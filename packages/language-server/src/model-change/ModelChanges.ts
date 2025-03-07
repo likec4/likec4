@@ -4,7 +4,7 @@ import { Location, Range, TextEdit } from 'vscode-languageserver-types'
 import { type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
-import type { ChangeViewRequestParams } from '../protocol'
+import type { ChangeView } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
 import { saveManualLayout } from './saveManualLayout'
@@ -16,7 +16,7 @@ export class LikeC4ModelChanges {
     this.locator = services.likec4.ModelLocator
   }
 
-  public async applyChange(changeView: ChangeViewRequestParams): Promise<Location | null> {
+  public async applyChange(changeView: ChangeView.Params): Promise<Location | null> {
     const lspConnection = this.services.shared.lsp.Connection
     invariant(lspConnection, 'LSP Connection not available')
     let result: Location | null = null
@@ -53,7 +53,7 @@ export class LikeC4ModelChanges {
     return result
   }
 
-  protected convertToTextEdit({ viewId, change }: ChangeViewRequestParams): {
+  protected convertToTextEdit({ viewId, change }: ChangeView.Params): {
     doc: ParsedLikeC4LangiumDocument
     modifiedRange: Range
     edits: TextEdit[]

@@ -3,7 +3,7 @@ import type {
   ComputedView,
   DiagramView,
   Fqn,
-  ParsedLikeC4Model,
+  LayoutedLikeC4Model,
   RelationId,
   ViewChange,
   ViewId,
@@ -18,48 +18,65 @@ export type OnDidChangeModelNotification = typeof onDidChangeModel
 
 // #region To server
 
-export const fetchModel = new RequestType0<{ model: ParsedLikeC4Model | null }, void>(
-  'likec4/fetchModel',
-)
-export type FetchModelRequest = typeof fetchModel
+export namespace FetchComputedModel {
+  export type Params = {
+    cleanCaches?: boolean | undefined
+  }
+  export type Res = {
+    model: ComputedLikeC4Model | null
+  }
+  export const Req = new RequestType<Params, Res, void>('likec4/fetchComputedModel')
+  export type Req = typeof Req
+}
 
-export const fetchComputedModel = new RequestType<
-  { cleanCaches?: boolean | undefined },
-  { model: ComputedLikeC4Model | null },
-  void
->(
-  'likec4/fetchComputedModel',
-)
-export type FetchComputedModelRequest = typeof fetchComputedModel
+export namespace ComputeView {
+  export type Params = {
+    viewId: ViewId
+  }
+  export type Result = {
+    view: ComputedView | null
+  }
 
-export const computeView = new RequestType<{ viewId: ViewId }, { view: ComputedView | null }, void>(
-  'likec4/computeView',
-)
-export type ComputeViewRequest = typeof computeView
+  export const Req = new RequestType<Params, Result, void>('likec4/computeView')
+  export type Req = typeof Req
+}
+
+export namespace FetchLayoutedModel {
+  export type Res = {
+    model: LayoutedLikeC4Model | null
+  }
+
+  export const Req = new RequestType0<Res, void>('likec4/fetchLayoutedModel')
+  export type Req = typeof Req
+}
 
 /**
  * Request to layout a view.
  */
-export const layoutView = new RequestType<
-  { viewId: ViewId },
-  {
+export namespace LayoutView {
+  export type Params = {
+    viewId: ViewId
+  }
+  export type Res = {
     result:
       | {
         dot: string
         diagram: DiagramView
       }
       | null
-  },
-  void
->('likec4/layout-view')
-export type LayoutViewRequest = typeof layoutView
+  }
+
+  export const Req = new RequestType<Params, Res, void>('likec4/layout-view')
+  export type Req = typeof Req
+}
 
 /**
  * Request to layout all existing views.
  */
-export const validateLayout = new RequestType<
-  {},
-  {
+
+export namespace ValidateLayout {
+  export type Params = never
+  export type Res = {
     result:
       | {
         uri: string
@@ -69,45 +86,55 @@ export const validateLayout = new RequestType<
         range: { start: Position; end: Position }
       }[]
       | null
-  },
-  void
->('likec4/validate-layout')
-export type ValidateLayoutRequest = typeof validateLayout
+  }
+  export const Req = new RequestType0<Res, void>('likec4/validate-layout')
+  export type Req = typeof Req
+}
 
 /**
  * Request to build documents.
  */
-export interface BuildDocumentsParams {
-  docs: DocumentUri[]
+export namespace BuildDocuments {
+  export type Params = {
+    docs: DocumentUri[]
+  }
+
+  export const Req = new RequestType<Params, void, void>('likec4/build')
+  export type Req = typeof Req
 }
-export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
-export type BuildDocumentsRequest = typeof buildDocuments
 
 /**
  * Request to locate an element, relation, deployment or view.
  */
-export type LocateParams =
-  | {
-    element: Fqn
-    property?: string
-  }
-  | {
-    relation: RelationId
-  }
-  | {
-    deployment: Fqn
-    property?: string
-  }
-  | {
-    view: ViewId
-  }
-export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-export type LocateRequest = typeof locate
+export namespace Locate {
+  export type Params =
+    | {
+      element: Fqn
+      property?: string
+    }
+    | {
+      relation: RelationId
+    }
+    | {
+      deployment: Fqn
+      property?: string
+    }
+    | {
+      view: ViewId
+    }
+  export type Res = Location | null
+  export const Req = new RequestType<Params, Res, void>('likec4/locate')
+  export type Req = typeof Req
+}
 // #endregion
 
-export interface ChangeViewRequestParams {
-  viewId: ViewId
-  change: ViewChange
+export namespace ChangeView {
+  export type Params = {
+    viewId: ViewId
+    change: ViewChange
+  }
+  export type Res = Location | null
+
+  export const Req = new RequestType<Params, Res, void>('likec4/change-view')
+  export type Req = typeof Req
 }
-export const changeView = new RequestType<ChangeViewRequestParams, Location | null, void>('likec4/change-view')
-export type ChangeViewRequest = typeof changeView

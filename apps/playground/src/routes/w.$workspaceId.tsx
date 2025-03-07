@@ -1,17 +1,13 @@
-import { AppShell, AppShellHeader, AppShellMain, Stack } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { Examples } from '../examples'
-// import { useWorkspaceState, WorkspaceContextProvider } from '../state'
-// import { EditorPanel } from './-workspace/EditorPanel'
-// import { Header } from './-workspace/Header'
+import { Examples } from '$/examples'
 import { MonacoEditor } from '$/monaco'
 import { Header } from '$components/appshell/Header'
-// import { PlaygroundActorProvider } from '$state/context'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
 import { PlaygroundActorContextProvider } from '$state/context'
 import { WorkspacePersistence, WorkspaceSessionPersistence } from '$state/persistence'
+import { AppShell, AppShellHeader, AppShellMain, Box, Stack } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import * as css from './styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
@@ -42,7 +38,6 @@ export const Route = createFileRoute('/w/$workspaceId')({
 function WorkspaceContextPage() {
   // const { workspaceId } = Route.useParams()
   const workspace = Route.useLoaderData()
-
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   return (
@@ -62,7 +57,9 @@ function WorkspaceContextPage() {
               defaultSize={40}>
               <Stack h="100%" gap={0}>
                 <WorkspaceFileTabs />
-                <MonacoEditor />
+                <Box flex={1}>
+                  <MonacoEditor />
+                </Box>
               </Stack>
             </Panel>
             <PanelResizeHandle
