@@ -1,3 +1,19 @@
+# [1.25.0](https://github.com/likec4/likec4/compare/v1.24.1...v1.25.0) (2025-03-07)
+
+
+### Bug Fixes
+
+* **diagram:** improve rendering performance ([#1680](https://github.com/likec4/likec4/issues/1680)) ([910a319](https://github.com/likec4/likec4/commit/910a3195d4115d4fbfdb960be35e24788f942143))
+* **playground:** xyflow catches and prevents keypress`Space`, that breaks monaco ([26223c3](https://github.com/likec4/likec4/commit/26223c37f8dd318130efe39f50ca736d695e0a0b))
+* **vscode:** refactor mess with `reactive-vscode` ([#1668](https://github.com/likec4/likec4/issues/1668)) ([0bb02e7](https://github.com/likec4/likec4/commit/0bb02e769c322f34d5460a94ac4880a662001dbf))
+
+
+### Features
+
+* Share from playground ([#1677](https://github.com/likec4/likec4/issues/1677)) ([5c7fbea](https://github.com/likec4/likec4/commit/5c7fbea97d7bba0de33082cc88412de9586b1a90))
+
+
+
 ## [1.24.1](https://github.com/likec4/likec4/compare/v1.24.0...v1.24.1) (2025-02-27)
 
 
