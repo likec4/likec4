@@ -3,8 +3,7 @@
   "version": "1.24.1",
   "private": true,
   "scripts": {
-    "prepare": "wireit",
-    "generate": "pnpm run prepare",
+    "generate": "wireit",
     "dev": "wireit",
     "typecheck": "tsc --noEmit",
     "build": "vite build",
@@ -15,26 +14,53 @@
     "clean": "rm -r -f dist"
   },
   "wireit": {
-    "dev": {
-      "command": "vite dev",
-      "dependencies": [
-        "../../packages/diagram:build:watch"
+    "generate-panda": {
+      "command": "panda codegen",
+      "files": [
+        "package.json",
+        "src/index.css",
+        "panda.config.ts"
+      ],
+      "output": [
+        "styled-system/*"
       ]
     },
-    "generate-panda": {
-      "command": "panda codegen"
-    },
     "generate-tsr": {
-      "command": "tsr generate"
+      "command": "tsr generate",
+      "files": [
+        "package.json",
+        "tsr.config.json",
+        "vite.config.ts",
+        "src/routes/*.tsx"
+      ],
+      "output": [
+        "src/routeTree.gen.ts"
+      ]
     },
     "generate-wrangler": {
-      "command": "wrangler types --experimental-include-runtime"
+      "command": "wrangler types --experimental-include-runtime",
+      "files": [
+        "package.json",
+        "tsconfig.worker.json",
+        "wrangler.toml"
+      ],
+      "output": [
+        ".wrangler/types",
+        "worker-configuration.d.ts"
+      ]
     },
-    "prepare": {
+    "generate": {
       "dependencies": [
         "generate-panda",
         "generate-tsr",
         "generate-wrangler"
+      ]
+    },
+    "dev": {
+      "command": "vite dev",
+      "dependencies": [
+        "generate",
+        "../../packages/diagram:build:watch"
       ]
     },
     "build-with-turbo": {
