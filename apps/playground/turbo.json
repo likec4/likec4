@@ -3,10 +3,6 @@
   "extends": [
     "//"
   ],
-  "globalEnv": [
-    "NODE_ENV",
-    "CLOUDFLARE_ENV"
-  ],
   "tasks": {
     "generate": {
       "outputs": [
@@ -24,6 +20,10 @@
       ]
     },
     "build": {
+      "env": [
+        "NODE_ENV",
+        "CLOUDFLARE_ENV"
+      ],
       "dependsOn": [
         "generate",
         "^build"
