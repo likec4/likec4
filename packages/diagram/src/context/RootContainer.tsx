@@ -1,17 +1,19 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
 import { type PropsWithChildren, createContext, createRef, useContext, useRef } from 'react'
-import { useIsReducedGraphics } from '../hooks/useIsReducedGraphics'
 import { rootClassName } from '../theme-vars'
 
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
 export function RootContainer({
   className,
+  reduceGraphics = false,
   children,
-}: PropsWithChildren<{ className?: string | undefined }>) {
+}: PropsWithChildren<{
+  className?: string | undefined
+  reduceGraphics?: boolean
+}>) {
   const ref = useRef<HTMLDivElement>(null)
-  const reduceGraphics = useIsReducedGraphics()
   return (
     <Box
       className={clsx(rootClassName, className)}

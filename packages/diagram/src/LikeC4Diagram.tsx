@@ -86,9 +86,10 @@ export function LikeC4Diagram({
     }
   }
 
-  // If view has more then 3000 * 2000 pixels - assume it is a big diagram
   const isReducedGraphicsMode = reduceGraphics === 'auto'
-    ? (view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000
+    // If view has more then 3000 * 2000 pixels - assume it is a big diagram
+    // Enable reduced graphics mode if diagram is "big" and pannable
+    ? pannable && ((view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000)
     : reduceGraphics
 
   return (
@@ -132,7 +133,7 @@ export function LikeC4Diagram({
                 onBurgerMenuClick,
               }}>
               <ReducedGraphicsContext value={isReducedGraphicsMode}>
-                <RootContainer className={className}>
+                <RootContainer className={className} reduceGraphics={isReducedGraphicsMode}>
                   {!isEmpty(view.customColorDefinitions) && (
                     <LikeC4CustomColors customColors={view.customColorDefinitions} />
                   )}
