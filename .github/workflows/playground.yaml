@@ -36,34 +36,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-playground:
-    name: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ʦ typecheck
-        run: |
-          pnpm turbo run typecheck --filter='@likec4/playground'
-
-      - name: ⚙️ build
-        run: |
-          pnpm turbo run build --filter='@likec4/playground'
-
-      - name: upload a build artifact
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
-        with:
-          name: playground-website
-          if-no-files-found: error
-          retention-days: 5
-          path: apps/playground/dist/
-
   deploy-playground-preview:
     # Deploy to Preview
     # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
@@ -71,7 +43,6 @@ jobs:
     if: "inputs.environment == 'preview' || github.event_name != 'workflow_dispatch'"
     name: deploy preview
     runs-on: ubuntu-latest
-    needs: build-playground
     timeout-minutes: 10
     environment:
       name: "playground-preview"
@@ -83,20 +54,12 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
 
-      - name: 🛠️ Setup node
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-
-      - name: download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
-        with:
-          name: playground-website
-          path: apps/playground/dist/
+      - name: ⚙️ build
+        run: |
+          pnpm turbo run build --filter='@likec4/playground'
 
       - id: cloudflare
         name: publish to cloudflare
@@ -104,7 +67,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch preview
+          command: versions upload -c dist/playground/wrangler.json
           workingDirectory: apps/playground
           packageManager: pnpm
 
@@ -114,6 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-playground
     timeout-minutes: 10
+    env:
+      CLOUDFLARE_ENV: "production"
     environment:
       name: "playground-prod"
       url: ${{ steps.cloudflare.outputs.deployment-url }}
@@ -124,20 +89,12 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
 
-      - name: 🛠️ Setup node
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: "pnpm"
-
-      - name: download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
-        with:
-          name: playground-website
-          path: apps/playground/dist/
+      - name: ⚙️ build
+        run: |
+          pnpm turbo run build --filter='@likec4/playground'
 
       - id: cloudflare
         name: publish to cloudflare
@@ -145,6 +102,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch main
+          command: deploy -c dist/playground/wrangler.json
           workingDirectory: apps/playground
           packageManager: pnpm
