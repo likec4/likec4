@@ -98,6 +98,7 @@ export function PlaygroundsMenu() {
                   variant="subtle"
                   color="red"
                   onClick={e => {
+                    e.preventDefault()
                     e.stopPropagation()
                     removeWorkspace(name)
                     if (workspaceId === name) {

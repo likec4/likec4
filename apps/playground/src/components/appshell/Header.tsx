@@ -35,6 +35,7 @@ export function Header() {
           variant="subtle"
           px={'xs'}
           size="xs"
+          visibleFrom="sm"
           color="gray">
           Docs
         </Button>
