@@ -6,7 +6,6 @@ export const container = style({
   position: 'absolute',
   top: 2,
   right: 2,
-  zIndex: 10,
 })
 
 const btnColor = createVar('navigateBtnColor')

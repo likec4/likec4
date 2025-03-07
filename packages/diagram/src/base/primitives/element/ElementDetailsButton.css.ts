@@ -6,7 +6,6 @@ export const container = style({
   position: 'absolute',
   top: 2,
   right: 2,
-  zIndex: 10,
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
       right: 5,

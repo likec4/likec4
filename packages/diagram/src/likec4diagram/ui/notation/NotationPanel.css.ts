@@ -1,6 +1,6 @@
 import { fallbackVar, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine, vars, whereDark } from '../../../theme-vars'
+import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
 // import { stokeFillMix } from '../../xyflow/nodes/element/element.css'
 
 export const container = style({
@@ -8,6 +8,19 @@ export const container = style({
   right: 0,
   padding: 8,
   margin: 0,
+})
+
+export const icon = style({
+  vars: {
+    ['--ai-radius']: '0px',
+  },
+  selectors: {
+    [`${whereNotReducedGraphics} &`]: {
+      vars: {
+        ['--ai-radius']: mantine.radius.md,
+      },
+    },
+  },
 })
 
 export const card = style({

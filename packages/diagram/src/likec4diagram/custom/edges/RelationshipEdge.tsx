@@ -44,10 +44,12 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     target,
     targetX,
     targetY,
+    selected = false,
     data: {
       id: edgeId,
       navigateTo,
       points,
+      hovered = false,
       active = false,
       dimmed = false,
       labelBBox,
@@ -297,7 +299,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           <div {...props} />
         </NotePopover>
       )
-    } else if (enableRelationshipDetails) {
+    } else if (enableRelationshipDetails && (hovered || selected || active)) {
       renderLabel = (props: any) => (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}

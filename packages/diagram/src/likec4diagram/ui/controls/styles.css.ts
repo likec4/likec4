@@ -1,7 +1,7 @@
 import { rem } from '@mantine/core'
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine, vars, whereNotReducedGraphics } from '../../../theme-vars'
+import { mantine, vars, whereNotReducedGraphics, whereReducedGraphics } from '../../../theme-vars'
 
 export const navigationButtons = style({
   gap: calc(mantine.spacing.xs).divide(1.5).toString(),
@@ -19,6 +19,12 @@ export const panel = style({
 
 globalStyle(`${panel} :where(button, .action-icon)`, {
   pointerEvents: 'all',
+})
+
+globalStyle(`${whereReducedGraphics} ${panel} .action-icon`, {
+  vars: {
+    '--ai-radius': '0px',
+  },
 })
 
 globalStyle(`.likec4-top-left-panel .action-icon`, {

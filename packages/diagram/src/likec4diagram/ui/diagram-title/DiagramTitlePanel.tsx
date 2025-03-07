@@ -47,13 +47,12 @@ export function DiagramTitlePanel() {
             opacity: 0.05,
             scale: 0.6,
           }}
-          className={clsx('react-flow__panel', css.container)}
+          className={clsx('react-flow__panel', 'left', 'bottom')}
           style={{
             transformOrigin: 'left center',
           }}
         >
           <Card
-            radius="sm"
             className={css.card}
             withBorder={!isCollapsed}
             p={isCollapsed ? 'sm' : 'md'}

@@ -147,6 +147,7 @@ function ExportPage() {
         fitViewPadding={0}
         background={'transparent'}
         renderIcon={RenderIcon}
+        reduceGraphics={false}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />
     </Box>

@@ -12,7 +12,7 @@ export const container = style({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  zIndex: 10,
+  // zIndex: 10,
 })
 
 export const actionButtons = style({

@@ -1,7 +1,7 @@
 export const ZIndexes = {
-  Compound: 2,
-  Edge: 4,
-  Element: 6,
+  Compound: 0,
+  Edge: 2,
+  Element: 2,
   Max: 8,
 } as const
 

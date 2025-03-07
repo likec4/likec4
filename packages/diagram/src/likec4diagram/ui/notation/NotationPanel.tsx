@@ -178,7 +178,7 @@ export const NotationPanel = memo(() => {
               size={'lg'}
               variant="default"
               color="gray"
-              radius={'md'}
+              className={css.icon}
               onClick={() => setCollapsed(false)}
             >
               <IconHelpCircle stroke={1.5} />
