@@ -3,15 +3,12 @@ import {
   type ReactFlowProps,
   type ReactFlowState,
   ReactFlow,
-  useOnViewportChange,
   useStore,
-  useStoreApi,
 } from '@xyflow/react'
 import clsx from 'clsx'
-import { shallowEqual } from 'fast-equals'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import { useIsReducedGraphics } from '../hooks/useIsReducedGraphics'
+import { useIsReducedGraphics } from '../hooks/useReducedGraphics'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
 import * as css from '../LikeC4Diagram.css'
@@ -75,21 +72,14 @@ export const BaseXYFlow = <
   fitView = true,
   zoomOnDoubleClick = false,
   onViewportResize,
+  onMoveEnd,
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
   const reduceGraphics = useIsReducedGraphics()
 
-  const isPanningRef = useRef(false)
-
   const xystore = useXYStoreApi()
-
-  useEffect(() => {
-    return xystore.subscribe((state) => {
-      isPanningRef.current = state.paneDragging
-    })
-  }, [xystore])
 
   return (
     <ReactFlow<NodeType, EdgeType>
@@ -144,8 +134,21 @@ export const BaseXYFlow = <
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
+      onMoveEnd={useCallbackRef((event, { x, y, zoom }) => {
+        /**
+         * WORKAROUND
+         * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+         * https://github.com/xyflow/xyflow/issues/3282
+         * https://github.com/likec4/likec4/issues/734
+         */
+        const roundedX = Math.round(x),
+          roundedY = Math.round(y)
+        if (x !== roundedX || y !== roundedY) {
+          xystore.setState({ transform: [roundedX, roundedY, zoom] })
+        }
+        onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
+      })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
-        if (isPanningRef.current) return
         onNodesChange([{
           id: node.id,
           type: 'replace',
@@ -153,7 +156,6 @@ export const BaseXYFlow = <
         }])
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
-        if (node.data.hovered !== true) return
         onNodesChange([{
           id: node.id,
           type: 'replace',
@@ -161,7 +163,6 @@ export const BaseXYFlow = <
         }])
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        if (isPanningRef.current) return
         onEdgesChange([{
           id: edge.id,
           type: 'replace',
@@ -169,7 +170,6 @@ export const BaseXYFlow = <
         }])
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        if (edge.data.hovered !== true) return
         onEdgesChange([{
           id: edge.id,
           type: 'replace',
@@ -181,49 +181,21 @@ export const BaseXYFlow = <
       {...props}
     >
       {isBgWithPattern && <Background background={background} />}
-      <BaseXYFlowInner onViewportResize={onViewportResize} />
+      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
       {children}
     </ReactFlow>
   )
 }
 
-const BaseXYFlowInner = ({
-  onViewportResize,
-}: Pick<BaseXYFlowProps<any, any>, 'onViewportResize'>) => {
-  const xyflowApi = useStoreApi()
-
-  /**
-   * WORKAROUND - Called on viewport change
-   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
-   * https://github.com/xyflow/xyflow/issues/3282
-   * https://github.com/likec4/likec4/issues/734
-   */
-  useOnViewportChange({
-    onEnd: ({ x, y, zoom }) => {
-      const roundedX = Math.round(x),
-        roundedY = Math.round(y)
-      if (x !== roundedX || y !== roundedY) {
-        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
-      }
-    },
-  })
-
-  return (
-    <>
-      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
-    </>
-  )
-}
-
-const selectDimensions = ({ width, height }: ReactFlowState) => ({ width, height })
+const selectDimensions = ({ width, height }: ReactFlowState) => (width || 1) * (height || 1)
 
 const ViewportResizeHanlder = ({
   onViewportResize,
 }: {
   onViewportResize: () => void
 }) => {
-  const { width, height } = useStore(selectDimensions, shallowEqual)
-  useUpdateEffect(onViewportResize, [width, height])
+  const square = useStore(selectDimensions)
+  useUpdateEffect(onViewportResize, [square])
 
-  return <></>
+  return null
 }

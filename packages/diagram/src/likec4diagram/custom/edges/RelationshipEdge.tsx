@@ -14,7 +14,7 @@ import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from
 import { useEnabledFeature } from '../../../context'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
-import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
+import { useLooseReducedGraphics } from '../../../hooks/useReducedGraphics'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
@@ -29,7 +29,7 @@ const curve = d3line<XYPosition>()
   .y(d => d.y)
 
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
-  const isReducedGraphicsMode = useIsReducedGraphics()
+  const isReducedGraphicsMode = useLooseReducedGraphics()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()

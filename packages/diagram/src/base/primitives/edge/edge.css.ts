@@ -2,7 +2,15 @@ import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-
 import {
   reactFlow,
 } from '../../../LikeC4Diagram.css'
-import { vars, whereDark, whereLight, whereNotReducedGraphics, xyvars } from '../../../theme-vars'
+import {
+  vars,
+  whereDark,
+  whereLight,
+  whereNotReducedGraphics,
+  whereReducedGraphics,
+  whereSmallZoom,
+  xyvars,
+} from '../../../theme-vars'
 
 export const mixColor = createVar('mix-color')
 
@@ -47,6 +55,9 @@ export const edgeContainer = style([edgeVars, {
       opacity: 0.25,
       transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+    },
+    [`${whereReducedGraphics} &`]: {
+      transition: 'none',
     },
   },
 }])
@@ -115,29 +126,35 @@ const strokeKeyframes = keyframes({
 })
 
 export const cssEdgePath = style({
+  animationDuration: '800ms',
+  animationIterationCount: 'infinite',
+  animationTimingFunction: 'linear',
+  animationFillMode: 'both',
+  strokeDashoffset: 10,
   selectors: {
     [`${whereNotReducedGraphics} &`]: {
-      animationDuration: '800ms',
-      animationIterationCount: 'infinite',
-      animationTimingFunction: 'linear',
-      animationFillMode: 'both',
-      strokeDashoffset: 10,
+      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
-    [`${reactFlow} :where([data-edge-hovered='true']) &`]: {
+    [`:where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '450ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
-    [`${reactFlow} :where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
+    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
-    [`${reactFlow} :where([data-edge-dir='back']) &`]: {
+    [`:where([data-edge-dir='back']) &`]: {
       animationDirection: 'reverse',
     },
     [`:where([data-edge-dimmed]) &`]: {
       animationPlayState: 'paused',
     },
+    [`${whereSmallZoom} &`]: {
+      animationName: 'none',
+    },
   },
+})
+
+export const looseReduce = style({
+  animationName: 'none',
 })

@@ -8,6 +8,7 @@ export {
 export const rootClassName = 'likec4-diagram-root'
 export const whereNotReducedGraphics = `:where(.${rootClassName}:not([data-likec4-reduced-graphics]))`
 export const whereReducedGraphics = `:where(.${rootClassName}:is([data-likec4-reduced-graphics="true"]))`
+export const whereSmallZoom = `:where([data-likec4-zoom-small="true"])`
 
 export const whereLight = ':where([data-mantine-color-scheme="light"])'
 export const whereDark = ':where([data-mantine-color-scheme="dark"])'

@@ -10,12 +10,12 @@ import {
   RootContainer,
 } from './context'
 import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
-import { ReducedGraphicsContext } from './hooks/useIsReducedGraphics'
+import { ReduceGraphicsContext } from './context/ReduceGraphics'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
 import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
-import { LikeC4DiagramXYFlow } from './likec4diagram/XYFlow'
 import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
@@ -132,7 +132,7 @@ export function LikeC4Diagram({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <ReducedGraphicsContext value={isReducedGraphicsMode}>
+              <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
                 <RootContainer className={className} reduceGraphics={isReducedGraphicsMode}>
                   {!isEmpty(view.customColorDefinitions) && (
                     <LikeC4CustomColors customColors={view.customColorDefinitions} />
@@ -161,7 +161,7 @@ export function LikeC4Diagram({
                     </DiagramActorProvider>
                   </XYFlowProvider>
                 </RootContainer>
-              </ReducedGraphicsContext>
+              </ReduceGraphicsContext>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>

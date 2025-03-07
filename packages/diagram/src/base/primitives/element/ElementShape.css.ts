@@ -149,6 +149,7 @@ export const shapeSvg = style([shapeBase, {
       filter: 'none',
     },
     [`${reactFlowReducedGraphics} &`]: {
+      transition: 'none',
       filter: 'none',
     },
   },

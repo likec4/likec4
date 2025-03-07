@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
-import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
+import { useIsReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as css from './CompoundNodeContainer.css'
 

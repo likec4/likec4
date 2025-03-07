@@ -9,7 +9,6 @@ import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
-import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as css from './ElementNodeContainer.css'
 

@@ -2,7 +2,7 @@ import type { DiagramEdge } from '@likec4/core'
 import clsx from 'clsx'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
+import { useIsReducedGraphics, useLooseReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { EdgeProps } from '../../types'
 import * as css from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
@@ -30,14 +30,17 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
     dir,
     tail,
     head,
+    ...data
   },
   strokeWidth,
   svgPath,
   style,
+  animated = false,
   interactionWidth,
   onEdgePointerDown,
 }, svgPathRef) => {
-  const isReducedGraphicsMode = useIsReducedGraphics()
+  const isReducedGraphics = useIsReducedGraphics()
+  const isLooseReduce = useLooseReducedGraphics()
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
   if (dir === 'back') {
@@ -56,10 +59,21 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   } else if (isDashed) {
     strokeDasharray = '8,10'
   }
+  if (isLooseReduce) {
+    strokeDasharray = undefined
+  }
+
+  const isAnimated = (animated || data.hovered || data.active) && !data.dimmed
+  if (isLooseReduce && isAnimated) {
+    style = {
+      ...style,
+      animationName: 'none',
+    }
+  }
 
   return (
     <>
-      {!isReducedGraphicsMode && (
+      {!isLooseReduce && (
         <path
           className={clsx('react-flow__edge-interaction')}
           d={svgPath}
@@ -73,7 +87,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
-        {!isReducedGraphicsMode && (
+        {!isReducedGraphics && (
           <path
             className={clsx('react-flow__edge-path', css.edgePathBg)}
             d={svgPath}
@@ -85,16 +99,14 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           ref={svgPathRef}
           className={clsx(
             'react-flow__edge-path',
-            isReducedGraphicsMode && 'react-flow__edge-interaction',
+            'react-flow__edge-interaction',
             css.cssEdgePath,
           )}
           d={svgPath}
           style={style}
           strokeWidth={strokeWidth}
-          {...!isReducedGraphicsMode && {
-            strokeLinecap: 'round',
-            strokeDasharray: strokeDasharray,
-          }}
+          strokeLinecap={'round'}
+          strokeDasharray={strokeDasharray}
           markerStart={MarkerStart ? `url(#start${id})` : undefined}
           markerEnd={MarkerEnd ? `url(#end${id})` : undefined}
         />

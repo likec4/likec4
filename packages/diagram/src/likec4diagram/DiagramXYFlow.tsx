@@ -6,6 +6,7 @@ import { type PropsWithChildren, memo } from 'react'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
+import { ReduceGraphicsViewportListener } from '../context/ReduceGraphics'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
@@ -154,6 +155,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       nodesSelectable={nodesSelectable}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>
+      <ReduceGraphicsViewportListener />
       <DiagramUI />
       {children}
     </BaseXYFlow>
