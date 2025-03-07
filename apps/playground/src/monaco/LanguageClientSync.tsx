@@ -3,12 +3,12 @@ import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
 import { type ViewChange, type ViewId, invariant, LikeC4Model, nonNullable } from '@likec4/core'
 import {
-  type LocateParams,
-  buildDocuments,
-  changeView,
-  fetchComputedModel,
-  layoutView,
-  locate,
+  BuildDocuments,
+  ChangeView,
+  FetchComputedModel,
+  FetchLayoutedModel,
+  LayoutView,
+  Locate,
   onDidChangeModel,
 } from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
@@ -17,10 +17,10 @@ import { useRouter } from '@tanstack/react-router'
 import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { createMemoryFileSystem, loadLikeC4Worker, setActiveEditor } from './utils'
+import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
+import { cleanDisposables, createMemoryFileSystem, setActiveEditor } from './utils'
 
 import type { Location } from 'vscode-languageserver-types'
-import type { CustomWrapperConfig } from './config'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
@@ -53,21 +53,48 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestComputedModel = useCallbackRef(async () => {
     try {
-      const { model } = await languageClient().sendRequest(fetchComputedModel, {})
+      const { model } = await languageClient().sendRequest(FetchComputedModel.Req, { cleanCaches: false })
       if (model) {
         playground.send({
           type: 'likec4.lsp.onDidChangeModel',
           model: LikeC4Model.create(model),
         })
       }
+      const errors: string[] = []
+      languageClient().diagnostics?.forEach((uri, diagnostics) => {
+        for (const diagnostic of diagnostics) {
+          if (diagnostic.severity === 0) {
+            errors.push(diagnostic.message)
+          }
+        }
+      })
+      playground.send({
+        type: 'likec4.lsp.onDiagnostic',
+        errors,
+      })
     } catch (error) {
       logger.error(loggable(error))
     }
   })
 
+  const requestLayoutedData = useCallbackRef(async () => {
+    try {
+      const { model } = await languageClient().sendRequest(FetchLayoutedModel.Req)
+      if (model) {
+        playground.send({ type: 'likec4.lsp.onLayoutedModel', model })
+      } else {
+        playground.send({ type: 'likec4.lsp.onLayoutedModelError', error: 'Failed to layout' })
+      }
+    } catch (err) {
+      const error = loggable(err)
+      playground.send({ type: 'likec4.lsp.onLayoutedModelError', error })
+      logger.error(error)
+    }
+  })
+
   const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const { result } = await languageClient().sendRequest(layoutView, { viewId })
+      const { result } = await languageClient().sendRequest(LayoutView.Req, { viewId })
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
       } else {
@@ -97,9 +124,9 @@ export function LanguageClientSync({ config, wrapper }: {
     }
   }
 
-  const showLocation = useCallbackRef(async (target: LocateParams) => {
+  const showLocation = useCallbackRef(async (target: Locate.Params) => {
     try {
-      const location = await languageClient().sendRequest(locate, target)
+      const location = await languageClient().sendRequest(Locate.Req, target)
       if (location) {
         revealLocation(location)
       }
@@ -110,7 +137,8 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const applyViewChanges = useCallbackRef(async (viewId: ViewId, change: ViewChange) => {
     try {
-      const location = await languageClient().sendRequest(changeView, { viewId, change })
+      languageClient().diagnostics
+      const location = await languageClient().sendRequest(ChangeView.Req, { viewId, change })
       if (location) {
         revealLocation(location)
       }
@@ -132,20 +160,22 @@ export function LanguageClientSync({ config, wrapper }: {
       .then(async () => {
         logger.debug`initialize memory files`
 
+        const ctx = playground.getContext()
+        const { docs, activeModel } = createMemoryFileSystem(
+          config.fsProvider,
+          ctx.files,
+          ctx.activeFilename,
+        )
+        if (activeModel) {
+          wrapper.getEditor()?.setModel(activeModel)
+        }
+
         const clientWrapper = wrapper.getLanguageClientWrapper('likec4')
         invariant(clientWrapper, 'MonacoEditorLanguageClientWrapper is missing LikeC4 LanguageClientWrapper')
 
-        const docs = createMemoryFileSystem(
-          config.fsProvider,
-          playground.getContext().files,
-        )
-        const activeFile = playground.getActiveFile()
-        setActiveEditor(monaco.Uri.file(activeFile.filename))
-
         if (clientWrapper.isStarted()) {
+          logger.debug`restart language client`
           await clientWrapper.restartLanguageClient(loadLikeC4Worker())
-        } else {
-          await clientWrapper.start()
         }
 
         const throttled = funnel(requestComputedModel, {
@@ -160,7 +190,7 @@ export function LanguageClientSync({ config, wrapper }: {
         )
 
         // Initial request for model
-        await languageClient().sendRequest(buildDocuments, { docs })
+        await languageClient().sendRequest(BuildDocuments.Req, { docs })
         await requestComputedModel()
 
         playground.send({
@@ -170,7 +200,11 @@ export function LanguageClientSync({ config, wrapper }: {
       .catch(err => {
         logger.error(loggable(err))
       })
-  }, [workspaceId])
+    return () => {
+      logger.debug`cleanDisposables`
+      cleanDisposables(disposables)
+    }
+  }, [workspaceId, wrapper])
 
   useEffect(() => {
     const subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {
@@ -215,6 +249,9 @@ export function LanguageClientSync({ config, wrapper }: {
       }),
       playground.actor.on('workspace.applyViewChanges', ({ viewId, change }) => {
         applyViewChanges(viewId, change)
+      }),
+      playground.actor.on('workspace.request-layouted-data', () => {
+        requestLayoutedData()
       }),
     ]
     return () => listeners.forEach(l => l.unsubscribe())

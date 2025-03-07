@@ -2,7 +2,7 @@ import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { memo } from 'react'
+import { type PropsWithChildren, memo } from 'react'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
@@ -50,9 +50,14 @@ type Picked = EnforceOptional<
     | 'nodesSelectable'
   >
 >
-export type LikeC4DiagramXYFlowProps = Required<Picked>
+export type LikeC4DiagramXYFlowProps = PropsWithChildren<Required<Picked>>
 
-export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background, nodesDraggable, nodesSelectable }) => {
+export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
+  background,
+  nodesDraggable,
+  nodesSelectable,
+  children,
+}) => {
   const diagram = useDiagram()
   const {
     initialized,
@@ -150,6 +155,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background,
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>
       <DiagramUI />
+      {children}
     </BaseXYFlow>
   )
 }, shallowEqual)

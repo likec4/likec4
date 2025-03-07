@@ -1,6 +1,6 @@
 import useDocumentSelector from '#useDocumentSelector'
 import type { ViewId } from '@likec4/core'
-import type { LocateParams } from '@likec4/language-server/protocol'
+import type { Locate } from '@likec4/language-server/protocol'
 import {
   executeCommand,
   nextTick,
@@ -173,7 +173,7 @@ function activateLc(
     telemetry.sendTelemetryErrorEvent('open-preview')
   })
 
-  useCommand(commands.locate, async (params: LocateParams) => {
+  useCommand(commands.locate, async (params: Locate.Params) => {
     const loc = await rpc.locate(params)
     if (!loc) return
     const location = rpc.client.protocol2CodeConverter.asLocation(loc)

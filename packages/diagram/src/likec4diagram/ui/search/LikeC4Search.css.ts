@@ -1,8 +1,6 @@
 import { rem } from '@mantine/core'
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { reactFlow } from '../../../LikeC4Diagram.css'
-import { mantine } from '../../../theme-vars'
-import { vars, whereDark, whereLight } from '../../../theme-vars.css'
+import { mantine, vars, whereDark, whereLight } from '../../../theme-vars'
 import { button, buttonFocused } from './_shared.css'
 export { focusable } from './_shared.css'
 

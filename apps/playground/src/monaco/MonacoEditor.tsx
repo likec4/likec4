@@ -3,7 +3,7 @@ import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react'
-import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
+import type { MonacoEditorLanguageClientWrapper, TextContents } from 'monaco-editor-wrapper'
 import { memo, useMemo, useState } from 'react'
 import { createWrapperConfig } from './config'
 import { LanguageClientSync } from './LanguageClientSync'
@@ -31,19 +31,21 @@ const LazyMonacoEditor = memo(() => {
   }, [wrapperConfig])
 
   const onLoad = useCallbackRef((wrapper: MonacoEditorLanguageClientWrapper) => {
-    setWrapper(wrapper)
-    // Anything else?
-  })
+    if (import.meta.env.DEV) {
+      console.log('MonacoEditor: wrapper loaded', wrapper)
+      console.log(`Wrapper.isInitializing: ${wrapper.isInitializing()}`)
+      console.log(`Wrapper.isStarting: ${wrapper.isStarting()}`)
+      console.log(`Wrapper.isStarted: ${wrapper.isStarted()}`)
+      console.log(`Wrapper.haveLanguageClients: ${wrapper.haveLanguageClients()}`)
+    }
 
-  // const onTextChanged = useCallbackRef((textChanges: TextContents) => {
-  //   logger.debug('onTextChanged', { textChanges })
-  //   const { filename, text } = playground.getActiveFile()
-  //   playground.send({
-  //     type: 'monaco.onTextChanged',
-  //     filename,
-  //     modified: textChanges.modified ?? text,
-  //   })
-  // })
+    const likeC4ClientWrapper = wrapper.getLanguageClientWrapper('likec4')
+    if (!likeC4ClientWrapper) {
+      console.warn('LikeC4 LanguageClientWrapper not found, waiting for it to be created')
+      return
+    }
+    setWrapper(wrapper)
+  })
 
   return (
     <>
@@ -51,10 +53,18 @@ const LazyMonacoEditor = memo(() => {
         style={{ width: '100%', height: '100%' }}
         wrapperConfig={wrapperConfig}
         onLoad={onLoad}
-        // onTextChanged={onTextChanged}
-        onError={err => {
+        onTextChanged={useCallbackRef((textChanges: TextContents) => {
+          console.debug('onTextChanged', { textChanges })
+          // const { filename, text } = playground.getActiveFile()
+          // playground.send({
+          //   type: 'monaco.onTextChanged',
+          //   filename,
+          //   modified: textChanges.modified ?? text,
+          // })
+        })}
+        onError={useCallbackRef(err => {
           logger.error(loggable(err))
-        }}
+        })}
       />
       {wrapper && <LanguageClientSync config={wrapperConfig} wrapper={wrapper} />}
     </>

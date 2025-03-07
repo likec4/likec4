@@ -7,7 +7,11 @@ import { createContext, use } from 'react'
 export const PlaygroundActorSafeContext = createContext<PlaygroundActorRef>(null as any)
 PlaygroundActorSafeContext.displayName = 'PlaygroundActorSafeContext'
 
-export const usePlaygroundActorRef = () => {
+export const _useOptionalPlaygroundActorRef = () => {
+  return use(PlaygroundActorSafeContext) as PlaygroundActorRef | null
+}
+
+export const _usePlaygroundActorRef = () => {
   const ctx = use(PlaygroundActorSafeContext)
   if (ctx === null) {
     throw new Error('PlaygroundActorRef is not provided')

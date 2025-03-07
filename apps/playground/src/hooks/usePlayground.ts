@@ -1,18 +1,22 @@
+import { Examples } from '$/examples'
 import {
   type PlaygroundActorRef,
   type PlaygroundActorSnapshot,
   type PlaygroundContext,
 } from '$state/types'
 import { type ViewChange, type ViewId, nonNullable } from '@likec4/core'
-import type { LocateParams } from '@likec4/language-server/protocol'
+import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useMemo } from 'react'
 import { keys } from 'remeda'
-import { usePlaygroundActorRef } from './safeContext'
+import {
+  _useOptionalPlaygroundActorRef as useOptionalPlaygroundActorRef,
+  _usePlaygroundActorRef as usePlaygroundActorRef,
+} from './safeContext'
 
-export { usePlaygroundActorRef }
+export { useOptionalPlaygroundActorRef, usePlaygroundActorRef }
 
 export function usePlayground() {
   const playgroundActor = usePlaygroundActorRef()
@@ -56,7 +60,7 @@ export function usePlayground() {
       })
     },
 
-    openSources: (target: LocateParams) => {
+    openSources: (target: LocateRequest.Params) => {
       playgroundActor.send({
         type: 'workspace.openSources',
         target,
@@ -93,6 +97,7 @@ const selectWorkspace = (snapshot: PlaygroundActorSnapshot) => ({
   workspaceTitle: snapshot.context.workspaceTitle,
   filenames: keys(snapshot.context.files),
   activeFilename: snapshot.context.activeFilename,
+  isExample: !!Examples[snapshot.context.workspaceId as keyof typeof Examples],
   hasChanges: !shallowEqual(snapshot.context.files, snapshot.context.originalFiles),
 })
 export function usePlaygroundWorkspace() {

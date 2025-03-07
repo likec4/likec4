@@ -1,17 +1,8 @@
 diff --git a/package.json b/package.json
-index dbab8c9292947a27478455e116188a7f073cb572..e95dd0fceeb164c159db9ade501249a475e577eb 100644
+index d8476ff177b9d4bc00cb4c71680b49d55eb660c8..bc7d7fcf4c28f62dc2900575da1d7030e6b8261f 100644
 --- a/package.json
 +++ b/package.json
-@@ -9,15 +9,16 @@
-     "test": "mocha",
-     "test:exports": "cd test/exports && npm i && npm run test"
-   },
--  "main": "./index.js",
--  "module": "./index.mjs",
--  "types": "./index.d.ts",
-   "exports": {
-     ".": {
-       "types": "./index.d.ts",
+@@ -18,6 +18,10 @@
        "require": "./index.js",
        "import": "./index.mjs"
      },
@@ -24,18 +15,17 @@ index dbab8c9292947a27478455e116188a7f073cb572..e95dd0fceeb164c159db9ade501249a4
        "require": "./*.js"
 diff --git a/patch.d.ts b/patch.d.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..02661c36fb3283b602a80ae5469c93027876597b
+index 0000000000000000000000000000000000000000..0065e8bad6a48136d1efe43050015399800b7fdc
 --- /dev/null
 +++ b/patch.d.ts
-@@ -0,0 +1,13 @@
-+export {
-+  DefaultMap,
-+  DefaultWeakMap,
-+  LinkedList,
-+  Queue,
-+  Stack,
-+  MultiMap
-+} from './index';
+@@ -0,0 +1,12 @@
++export { default as DefaultMap } from './default-map';
++export { default as DefaultWeakMap } from './default-weak-map';
++export { default as LinkedList } from './linked-list';
++export { default as Queue } from './queue';
++export { default as MultiMap } from './multi-map';
++export { default as Stack } from './stack';
++
 +export {
 +  intersection,
 +  symmetricDifference,
@@ -43,15 +33,15 @@ index 0000000000000000000000000000000000000000..02661c36fb3283b602a80ae5469c9302
 +} from './set';
 diff --git a/patch.mjs b/patch.mjs
 new file mode 100644
-index 0000000000000000000000000000000000000000..ca4e93dbba841a307679ae32f2deda0a28717486
+index 0000000000000000000000000000000000000000..7b269dbf3d20b4230de95edf631713edde9eb77d
 --- /dev/null
 +++ b/patch.mjs
 @@ -0,0 +1,11 @@
 +export { default as DefaultMap } from './default-map.js';
 +export { default as DefaultWeakMap } from './default-weak-map.js';
 +export { default as LinkedList } from './linked-list.js';
-+export { default as Queue } from './queue.js';
 +export { default as MultiMap } from './multi-map.js';
++export { default as Queue } from './queue.js';
 +export {
 +  intersection,
 +  symmetricDifference,

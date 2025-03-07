@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css'
 import { mantine } from '../theme-vars'
-import { easings, transitions, whereDark } from '../theme-vars.css'
+import { easings, transitions, whereDark } from '../theme-vars'
 
 export const elementLink = style({
   display: 'flex',

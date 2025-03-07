@@ -1,7 +1,10 @@
+import { css as style } from '$styled-system/css'
 import { rem } from '@mantine/core'
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
 
 export const icon = style({
   width: rem(18),
-  height: rem(18)
+  height: rem(18),
+  __likec4NodeHovered: {
+    opacity: 0.1,
+  },
 })

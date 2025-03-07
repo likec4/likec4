@@ -1,6 +1,6 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall, reactFlowReducedGraphics, whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { easings, mantine, vars } from '../../../theme-vars'
+import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
+import { easings, mantine, vars, whereNotReducedGraphics } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
 const indicatorKeyframes = keyframes({

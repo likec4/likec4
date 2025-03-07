@@ -6,16 +6,24 @@
   "tasks": {
     "generate": {
       "outputs": [
-        "src/routeTree.gen.ts"
+        "src/routeTree.gen.ts",
+        ".wrangler/types",
+        "styled-system",
+        "worker-configuration.d.ts"
       ],
       "inputs": [
-        "vite.config.mts",
+        "*.config.ts",
+        "wrangler.toml",
         "src/routes/*.tsx",
         "tsr.config.json",
         "package.json"
       ]
     },
     "build": {
+      "env": [
+        "NODE_ENV",
+        "CLOUDFLARE_ENV"
+      ],
       "dependsOn": [
         "generate",
         "^build"

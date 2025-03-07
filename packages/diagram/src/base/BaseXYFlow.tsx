@@ -9,11 +9,11 @@ import {
 } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useIsReducedGraphics } from '../hooks/useIsReducedGraphics'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
-import { useIsZoomTooSmall } from '../hooks/useXYFlow'
+import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
 import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
@@ -80,6 +80,17 @@ export const BaseXYFlow = <
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
   const reduceGraphics = useIsReducedGraphics()
+
+  const isPanningRef = useRef(false)
+
+  const xystore = useXYStoreApi()
+
+  useEffect(() => {
+    return xystore.subscribe((state) => {
+      isPanningRef.current = state.paneDragging
+    })
+  }, [xystore])
+
   return (
     <ReactFlow<NodeType, EdgeType>
       colorMode={colorMode}
@@ -122,7 +133,6 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
-      onlyRenderVisibleElements={reduceGraphics}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
@@ -135,6 +145,7 @@ export const BaseXYFlow = <
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
+        if (isPanningRef.current) return
         onNodesChange([{
           id: node.id,
           type: 'replace',
@@ -142,6 +153,7 @@ export const BaseXYFlow = <
         }])
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
+        if (node.data.hovered !== true) return
         onNodesChange([{
           id: node.id,
           type: 'replace',
@@ -149,6 +161,7 @@ export const BaseXYFlow = <
         }])
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+        if (isPanningRef.current) return
         onEdgesChange([{
           id: edge.id,
           type: 'replace',
@@ -156,6 +169,7 @@ export const BaseXYFlow = <
         }])
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+        if (edge.data.hovered !== true) return
         onEdgesChange([{
           id: edge.id,
           type: 'replace',

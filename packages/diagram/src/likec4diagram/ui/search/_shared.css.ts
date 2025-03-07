@@ -1,6 +1,5 @@
-import { type StyleRule, createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
-import { whereDark, whereLight } from '../../../theme-vars.css'
+import { type StyleRule, createVar, fallbackVar, style } from '@vanilla-extract/css'
+import { mantine, whereDark, whereLight } from '../../../theme-vars'
 
 export const titleColor = createVar('title-color')
 export const descriptionColor = createVar('description-color')

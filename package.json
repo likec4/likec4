@@ -3,7 +3,7 @@
   "version": "1.24.1",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.5.2",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -56,10 +56,11 @@
       "vscode-languageserver-protocol": "3.17.5",
       "vscode-languageserver-types": "3.17.5",
       "vscode-oniguruma": "2.0.1",
-      "vscode-uri": "3.1.0"
+      "vscode-uri": "3.1.0",
+      "mnemonist": "0.40.3"
     },
     "patchedDependencies": {
-      "mnemonist@0.40.2": "patches/mnemonist@0.40.2.patch"
+      "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch"
     }
   },
   "nano-staged": {

@@ -1,8 +1,8 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
 import { type PropsWithChildren, createContext, createRef, useContext, useRef } from 'react'
-import { rootClassName } from '../globals.css'
 import { useIsReducedGraphics } from '../hooks/useIsReducedGraphics'
+import { rootClassName } from '../theme-vars'
 
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 

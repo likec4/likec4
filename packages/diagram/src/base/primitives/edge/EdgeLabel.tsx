@@ -1,12 +1,12 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent, Text } from '@mantine/core'
-import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
+import { getVarName } from '../../../utils/css'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
 import * as css from './EdgeLabel.css'
@@ -40,6 +40,8 @@ const toCssVarValue = (value: number | string | undefined) => {
   if (value === undefined) return undefined
   return isNumber(value) ? `${value}px` : value
 }
+
+const varTranslate = getVarName(css.varTranslate)
 
 export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
   forwardRef<HTMLDivElement, EdgeLabelProps>(({
@@ -96,13 +98,9 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
           style={{
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),
-            // ...assignInlineVars({
-            //   [css.varLabelX]: toCssVarValue(labelX),
-            //   [css.varLabelY]: toCssVarValue(labelY),
-            // }),
-            ...(translate && assignInlineVars({
-              [css.varTranslate]: translate,
-            })),
+            ...(translate && {
+              [varTranslate]: translate,
+            }),
             ...(labelBBox && {
               maxWidth: labelBBox.width + 18,
             }),

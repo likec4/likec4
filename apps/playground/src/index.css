@@ -1,3 +1,5 @@
+@layer reset, base, mantine, tokens, recipes, utilities;
+
 :root {
   --likec4-app-font:
     "IBM Plex Sans",ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
@@ -6,14 +8,7 @@
   --mantine-default-font-family: var(--likec4-app-font);
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  width: 100dvw;
-  height: 100dvh;
-}
-
-#like4-root {
+#likec4-root {
   margin: 0;
   padding: 0;
   width: 100dvw;

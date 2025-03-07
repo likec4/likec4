@@ -1,5 +1,5 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
-import { useRef } from 'react'
+import { type PropsWithChildren, useRef } from 'react'
 import { isEmpty } from 'remeda'
 import {
   DiagramEventHandlers,
@@ -9,6 +9,7 @@ import {
   IconRendererProvider,
   RootContainer,
 } from './context'
+import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
 import { ReducedGraphicsContext } from './hooks/useIsReducedGraphics'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
@@ -18,7 +19,7 @@ import { LikeC4DiagramXYFlow } from './likec4diagram/XYFlow'
 import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
-export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
+export type LikeC4DiagramProps = PropsWithChildren<LikeC4DiagramProperties & LikeC4DiagramEventHandlers>
 export function LikeC4Diagram({
   view,
   className,
@@ -55,8 +56,10 @@ export function LikeC4Diagram({
   onOpenSource,
   onBurgerMenuClick,
   renderIcon,
+  renderControls,
   where,
   showNavigationButtons = !!onNavigateTo,
+  children,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
   const initialRef = useRef<{
@@ -90,7 +93,9 @@ export function LikeC4Diagram({
 
   return (
     <EnsureMantine>
-      <FramerMotionConfig>
+      <FramerMotionConfig
+        {...isReducedGraphicsMode && { reducedMotion: 'always' }}
+      >
         <IconRendererProvider value={renderIcon ?? null}>
           <DiagramFeatures
             features={{
@@ -143,11 +148,15 @@ export function LikeC4Diagram({
                         fitViewPadding,
                         ...xyNodesEdges,
                       }}>
-                      <LikeC4DiagramXYFlow
-                        nodesDraggable={nodesDraggable}
-                        nodesSelectable={nodesSelectable}
-                        background={background}
-                      />
+                      <ControlsCustomLayoutProvider value={renderControls ?? null}>
+                        <LikeC4DiagramXYFlow
+                          nodesDraggable={nodesDraggable}
+                          nodesSelectable={nodesSelectable}
+                          background={background}
+                        >
+                          {children}
+                        </LikeC4DiagramXYFlow>
+                      </ControlsCustomLayoutProvider>
                     </DiagramActorProvider>
                   </XYFlowProvider>
                 </RootContainer>

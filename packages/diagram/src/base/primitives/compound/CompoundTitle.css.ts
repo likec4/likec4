@@ -1,7 +1,7 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall, whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { vars } from '../../../theme-vars'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { vars, whereNotReducedGraphics } from '../../../theme-vars'
 
 export const compoundTitle = style([hiddenIfZoomTooSmall, {
   position: 'absolute',

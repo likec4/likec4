@@ -7,6 +7,7 @@ import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
+import { getVarName } from '../../utils/css'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -19,6 +20,9 @@ type OverlayProps = PropsWithChildren<
     onClick?: never
   }
 >
+
+const backdropBlur = getVarName(css.backdropBlur) as '--backdrop-blur'
+const backdropOpacity = getVarName(css.backdropOpacity) as '--backdrop-opacity'
 
 export function Overlay({ children, onClose, className, classes, ...rest }: OverlayProps) {
   const [opened, setOpened] = useState(false)
@@ -68,15 +72,15 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       ref={dialogRef}
       className={clsx(css.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
       initial={{
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '5%',
+        [backdropBlur]: '0px',
+        [backdropOpacity]: '5%',
         opacity: 0.85,
         translateY: 12,
         // opacity: 02.8,
       }}
       animate={{
-        '--backdrop-blur': '6px',
-        '--backdrop-opacity': '60%',
+        [backdropBlur]: '6px',
+        // [backdropOpacity]: '60%',
         translateY: 0,
         opacity: 1,
         // transition: {
@@ -86,8 +90,8 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       exit={{
         opacity: 0,
         translateY: -10,
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '0%',
+        [backdropBlur]: '0px',
+        [backdropOpacity]: '0%',
         transition: {
           duration: 0.1,
         },

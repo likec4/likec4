@@ -9,6 +9,7 @@ import type {
   WhereOperator,
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 
 export type { WhereOperator }
 
@@ -184,6 +185,11 @@ export interface LikeC4DiagramProperties {
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
+
+  /**
+   * Customize layout of the controls on the top left
+   */
+  renderControls?: ControlsCustomLayout | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges

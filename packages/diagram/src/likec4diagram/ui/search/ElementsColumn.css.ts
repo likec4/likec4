@@ -1,6 +1,5 @@
 import { createContainer, createGlobalVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
-import { whereLight } from '../../../theme-vars.css'
+import { mantine, whereLight } from '../../../theme-vars'
 import { button, buttonFocused, description, descriptionColor, iconColor, title } from './_shared.css'
 
 export { focusable } from './_shared.css'

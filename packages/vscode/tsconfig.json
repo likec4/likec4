@@ -1,6 +1,9 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "customConditions": [
+      "sources"
+    ],
     "noUnusedParameters": false,
     "lib": [
       "ES2022",

@@ -19,10 +19,13 @@ import prettyMs from 'pretty-ms'
 import {
   filter,
   groupBy,
+  isNot,
   mapToObj,
   pipe,
+  prop,
   values,
 } from 'remeda'
+import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
@@ -62,7 +65,10 @@ export class LikeC4ModelBuilder extends ADisposable {
       this.DocumentBuilder.onBuildPhase(
         DocumentState.Validated,
         (docs, _cancelToken) => {
-          this.notifyListeners(docs.map(d => d.uri))
+          const validated = docs.map(prop('uri')).filter(isNot(isLikeC4Builtin))
+          if (validated.length > 0) {
+            this.notifyListeners(validated)
+          }
         },
       ),
     )
