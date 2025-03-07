@@ -154,7 +154,7 @@
     "monaco-editor-wrapper": "6.5.0",
     "monaco-languageclient": "9.4.1",
     "nanoid": "^5.0.9",
-    "nanostores": "0.11.3",
+    "nanostores": "0.11.4",
     "postcss": "^8.5.3",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
