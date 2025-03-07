@@ -15,7 +15,7 @@ export type ShareHistoryItem = {
   createdAt: ISODatetime
   expiresAt: ISODatetime
   userId: number | null
-  options: ShareOptions
+  shareOptions: ShareOptions
 }
 export type LocalWorkspace = {
   workspaceId: string

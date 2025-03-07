@@ -44,6 +44,7 @@ function createRouter() {
     defaultErrorComponent: ({ error, reset }) => {
       return <Fallback error={error} resetErrorBoundary={reset} />
     },
+    defaultViewTransition: true,
     // defaultPendingMinMs: 600,
     // defaultPendingMs: 300,
     defaultPreload: false,

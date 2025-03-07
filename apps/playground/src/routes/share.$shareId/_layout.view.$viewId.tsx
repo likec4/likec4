@@ -9,6 +9,7 @@ import { type ControlsCustomLayout, LikeC4Diagram, useLikeC4Model } from '@likec
 import { Button, UnstyledButton } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
+import { m } from 'framer-motion'
 
 export const Route = createFileRoute('/share/$shareId/_layout/view/$viewId')({
   component: RouteComponent,
@@ -76,7 +77,21 @@ const ControlsLayout: ControlsCustomLayout = ({
   burgerMenu,
   search,
 }) => (
-  <Box className="react-flow__panel top left">
+  <m.div
+    initial={{
+      opacity: 0.05,
+      translateY: '-50%',
+    }}
+    animate={{
+      opacity: 1,
+      translateY: 0,
+    }}
+    exit={{
+      opacity: 0.05,
+      translateY: '-50%',
+    }}
+    className="react-flow__panel top left"
+  >
     <VStack gap="lg">
       <HStack gap="md">
         {/* {burgerMenu} */}
@@ -98,7 +113,7 @@ const ControlsLayout: ControlsCustomLayout = ({
       </HStack>
       {actionsGroup}
     </VStack>
-  </Box>
+  </m.div>
 )
 
 const ForkPlaygroundWorkspace = ({ workspace: { workspaceId: _id, ...workspace } }: { workspace: LocalWorkspace }) => {

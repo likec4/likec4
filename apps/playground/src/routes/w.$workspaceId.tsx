@@ -24,7 +24,9 @@ export const Route = createFileRoute('/w/$workspaceId')({
         workspaceId: id,
         activeFilename: Examples[id].currentFilename,
         title: Examples[id].title,
-        files: Examples[id].files,
+        files: {
+          ...Examples[id].files,
+        },
       }
     }
     return WorkspacePersistence.read(id) ?? {
