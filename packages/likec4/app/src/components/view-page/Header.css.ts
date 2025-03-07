@@ -10,6 +10,13 @@ export const cssHeader = style({
     [`:where([data-mantine-color-scheme='dark']) &`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
     },
+    [`#likec4-root:has([data-likec4-reduced-graphics='true']) &`]: {
+      boxShadow: 'none',
+      borderRadius: '0px',
+      backgroundColor: mantine.colors.body,
+      WebkitBackdropFilter: 'none',
+      backdropFilter: 'none',
+    },
   },
   // paddingLeft: 60,
   // paddingRight: 20,ody,

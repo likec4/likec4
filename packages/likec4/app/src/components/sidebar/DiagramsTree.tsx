@@ -185,6 +185,7 @@ function DiagramPreview({
           fitView
           fitViewPadding={0}
           enableElementDetails={false}
+          reduceGraphics
           initialWidth={width}
           initialHeight={height}
         />
