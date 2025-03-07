@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.17",
+    "@types/node": "^20.17.23",
     "typescript": "catalog:",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.6"
