@@ -17,7 +17,7 @@ export const panel = style({
   pointerEvents: 'none',
 })
 
-globalStyle(`${panel} :where(button, .action-icon)`, {
+globalStyle(`${panel} :where(button, .action-icon, [role="dialog"])`, {
   pointerEvents: 'all',
 })
 

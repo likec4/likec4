@@ -13,6 +13,7 @@ import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from
 import { useEnabledFeature } from '../../../context'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
@@ -27,6 +28,7 @@ const curve = d3line<XYPosition>()
   .y(d => d.y)
 
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+  const isReducedGraphicsMode = useIsReducedGraphics()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
@@ -47,7 +49,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     selected = false,
     data: {
       id: edgeId,
-      navigateTo,
       points,
       hovered = false,
       active = false,
@@ -57,6 +58,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       ...data
     },
   } = props
+
+  const navigateTo = enableNavigateTo ? data.navigateTo : undefined
 
   const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
@@ -299,7 +302,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           <div {...props} />
         </NotePopover>
       )
-    } else if (enableRelationshipDetails && (hovered || selected || active)) {
+    } else if (enableRelationshipDetails && (!isReducedGraphicsMode || hovered || selected || active)) {
       renderLabel = (props: any) => (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}
@@ -342,7 +345,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         }}
         {...renderLabel && { renderRoot: renderLabel }}
       >
-        {!isControlPointDragging && enableNavigateTo && navigateTo && (
+        {!isControlPointDragging && navigateTo && (
           <EdgeActionButton
             {...props}
             onClick={e => {
