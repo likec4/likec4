@@ -40,10 +40,15 @@ export function cleanDisposables(disposables: IDisposable[]) {
   disposables.length = 0
 }
 
-export function createMemoryFileSystem(fsProvider: RegisteredFileSystemProvider, files: Record<string, string>) {
+export function createMemoryFileSystem(
+  fsProvider: RegisteredFileSystemProvider,
+  files: Record<string, string>,
+  activeFilename: string,
+) {
   const log = logger.getChild('createMemoryFileSystem')
-  const uris = [] as string[]
+  const docs = [] as string[]
   const currentModels = new Map(monaco.editor.getModels().map((model) => [model.uri.toString(), model]))
+  let activeModel
   for (let [file, content] of Object.entries(files)) {
     try {
       const uri = monaco.Uri.file(file)
@@ -62,7 +67,10 @@ export function createMemoryFileSystem(fsProvider: RegisteredFileSystemProvider,
         }
         model = monaco.editor.createModel(content, 'likec4', uri)
       }
-      uris.push(uriAsString)
+      if (file === activeFilename) {
+        activeModel = model
+      }
+      docs.push(uriAsString)
     } catch (e) {
       log.error(loggable(e))
     }
@@ -81,5 +89,8 @@ export function createMemoryFileSystem(fsProvider: RegisteredFileSystemProvider,
     })
   }
 
-  return uris
+  return {
+    docs,
+    activeModel,
+  }
 }

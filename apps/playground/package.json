@@ -1,5 +1,5 @@
 {
-  "name": "@likec4/playground-v2",
+  "name": "@likec4/playground",
   "version": "1.24.1",
   "private": true,
   "scripts": {
@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "wrangler:deploy": "wireit",
-    "build-and-deploy": "wireit",
+    "wrangler:preview": "wireit",
+    "deploy:prod": "wireit",
     "clean": "rm -r -f dist"
   },
   "wireit": {
@@ -39,14 +40,26 @@
     "build-with-turbo": {
       "command": "turbo run build"
     },
-    "build-and-deploy": {
+    "build-and-preview": {
+      "dependencies": [
+        "build-with-turbo",
+        "wrangler:preview"
+      ]
+    },
+    "deploy:prod": {
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler deploy -c dist/playground/wrangler.json"
+      "command": "wrangler deploy -c dist/playground/wrangler.json",
+      "env": {
+        "CLOUDFLARE_ENV": "production"
+      }
     },
     "wrangler:deploy": {
       "command": "wrangler deploy -c dist/playground/wrangler.json"
+    },
+    "wrangler:preview": {
+      "command": "wrangler versions upload -c dist/playground/wrangler.json"
     }
   },
   "imports": {
@@ -55,22 +68,22 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.5.2",
   "dependencies": {
     "type-fest": "4.34.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^0.1.7",
+    "@cloudflare/vite-plugin": "0.1.7",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
-    "@codingame/monaco-vscode-editor-api": "14.0.5",
-    "@codingame/monaco-vscode-editor-service-override": "14.0.5",
-    "@codingame/monaco-vscode-files-service-override": "14.0.5",
-    "@codingame/monaco-vscode-keybindings-service-override": "14.0.5",
-    "@codingame/monaco-vscode-lifecycle-service-override": "14.0.5",
-    "@codingame/monaco-vscode-textmate-service-override": "14.0.5",
-    "@codingame/monaco-vscode-theme-defaults-default-extension": "14.0.5",
-    "@codingame/monaco-vscode-theme-service-override": "14.0.5",
-    "@codingame/monaco-vscode-views-service-override": "14.0.5",
+    "@codingame/monaco-vscode-editor-api": "14.0.6",
+    "@codingame/monaco-vscode-editor-service-override": "14.0.6",
+    "@codingame/monaco-vscode-files-service-override": "14.0.6",
+    "@codingame/monaco-vscode-keybindings-service-override": "14.0.6",
+    "@codingame/monaco-vscode-lifecycle-service-override": "14.0.6",
+    "@codingame/monaco-vscode-textmate-service-override": "14.0.6",
+    "@codingame/monaco-vscode-theme-defaults-default-extension": "14.0.6",
+    "@codingame/monaco-vscode-theme-service-override": "14.0.6",
+    "@codingame/monaco-vscode-views-service-override": "14.0.6",
     "@hono/oauth-providers": "^0.6.2",
     "@hono/valibot-validator": "^0.5.2",
     "@hpcc-js/wasm-graphviz": "1.7.0",
@@ -81,11 +94,11 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/core": "7.17.0",
-    "@mantine/hooks": "7.17.0",
-    "@mantine/modals": "7.17.0",
-    "@mantine/notifications": "^7.17.1",
-    "@mantine/vanilla-extract": "7.17.0",
+    "@mantine/core": "catalog:",
+    "@mantine/hooks": "catalog:",
+    "@mantine/modals": "catalog:",
+    "@mantine/notifications": "catalog:",
+    "@mantine/vanilla-extract": "catalog:",
     "@nanostores/react": "0.8.4",
     "@pandacss/dev": "^0.53.0",
     "@react-hookz/web": "^25.0.1",
@@ -94,12 +107,11 @@
     "@tanstack/react-router": "1.105.0",
     "@tanstack/router-cli": "1.105.0",
     "@tanstack/router-vite-plugin": "1.105.0",
-    "@typefox/monaco-editor-react": "6.4.0",
+    "@typefox/monaco-editor-react": "6.5.0",
     "@types/node": "^20.17.17",
     "@types/react": "~19.0.8",
     "@types/react-dom": "~19.0.3",
     "@vanilla-extract/css": "^1.17.1",
-    "@vanilla-extract/dynamic": "^2.1.2",
     "@vanilla-extract/esbuild-plugin": "^2.3.15",
     "@vanilla-extract/vite-plugin": "^5.0.1",
     "@vitejs/plugin-react": "4.3.4",
@@ -113,8 +125,8 @@
     "hono": "^4.7.2",
     "hono-sessions": "^0.7.1",
     "langium": "3.3.1",
-    "monaco-editor-wrapper": "6.4.0",
-    "monaco-languageclient": "9.4.0",
+    "monaco-editor-wrapper": "6.5.0",
+    "monaco-languageclient": "9.4.1",
     "nanoid": "^5.0.9",
     "nanostores": "0.11.3",
     "postcss": "^8.5.3",
@@ -132,7 +144,7 @@
     "vite": "6.2.0",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vscode": "npm:@codingame/monaco-vscode-extension-api@14.0.5",
+    "vscode": "npm:@codingame/monaco-vscode-extension-api@14.0.6",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",

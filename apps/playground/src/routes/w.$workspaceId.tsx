@@ -1,16 +1,14 @@
 import { Examples } from '$/examples'
+import { MonacoEditor } from '$/monaco'
 import { Header } from '$components/appshell/Header'
 import { WorkspaceFileTabs } from '$components/workspace/WorkspaceFileTabs'
 import { PlaygroundActorContextProvider } from '$state/context'
 import { WorkspacePersistence, WorkspaceSessionPersistence } from '$state/persistence'
-import { AppShell, AppShellHeader, AppShellMain, Button, Stack } from '@mantine/core'
+import { AppShell, AppShellHeader, AppShellMain, Box, Stack } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { lazy, Suspense } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import * as css from './styles.css'
-
-const MonacoEditor = lazy(() => import('$/monaco'))
 
 export const Route = createFileRoute('/w/$workspaceId')({
   component: WorkspaceContextPage,
@@ -59,9 +57,9 @@ function WorkspaceContextPage() {
               defaultSize={40}>
               <Stack h="100%" gap={0}>
                 <WorkspaceFileTabs />
-                <Suspense fallback={<div>Loading...</div>}>
+                <Box flex={1}>
                   <MonacoEditor />
-                </Suspense>
+                </Box>
               </Stack>
             </Panel>
             <PanelResizeHandle

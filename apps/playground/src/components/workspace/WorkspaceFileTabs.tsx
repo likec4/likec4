@@ -4,11 +4,8 @@ import { Box, Tabs, TabsList } from '@mantine/core'
 export function WorkspaceFileTabs() {
   const playground = usePlayground()
   const { filenames, activeFilename } = usePlaygroundWorkspace()
-  if (filenames.length <= 1) {
-    return null
-  }
   return (
-    <Box flex={0}>
+    <Box flex={'0 0 auto'}>
       <Tabs
         style={{
           overflowX: 'scroll',
@@ -26,6 +23,20 @@ export function WorkspaceFileTabs() {
               {filename}
             </Tabs.Tab>
           ))}
+          {
+            /* <Button
+            size="compact-xs"
+            color="gray"
+            variant="subtle"
+            className={css({
+              alignSelf: 'center',
+              fontWeight: 'medium',
+              color: 'dimmed'
+              // color: 'gray.7',
+            })}>
+            + add
+          </Button> */
+          }
         </TabsList>
       </Tabs>
     </Box>

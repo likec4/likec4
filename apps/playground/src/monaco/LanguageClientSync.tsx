@@ -17,11 +17,10 @@ import { useRouter } from '@tanstack/react-router'
 import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { createMemoryFileSystem, setActiveEditor } from './utils'
-import { loadLikeC4Worker } from './workers'
+import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
+import { cleanDisposables, createMemoryFileSystem, setActiveEditor } from './utils'
 
 import type { Location } from 'vscode-languageserver-types'
-import type { CustomWrapperConfig } from './config'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
 
@@ -161,20 +160,22 @@ export function LanguageClientSync({ config, wrapper }: {
       .then(async () => {
         logger.debug`initialize memory files`
 
+        const ctx = playground.getContext()
+        const { docs, activeModel } = createMemoryFileSystem(
+          config.fsProvider,
+          ctx.files,
+          ctx.activeFilename,
+        )
+        if (activeModel) {
+          wrapper.getEditor()?.setModel(activeModel)
+        }
+
         const clientWrapper = wrapper.getLanguageClientWrapper('likec4')
         invariant(clientWrapper, 'MonacoEditorLanguageClientWrapper is missing LikeC4 LanguageClientWrapper')
 
-        const docs = createMemoryFileSystem(
-          config.fsProvider,
-          playground.getContext().files,
-        )
-        const activeFile = playground.getActiveFile()
-        setActiveEditor(monaco.Uri.file(activeFile.filename))
-
         if (clientWrapper.isStarted()) {
+          logger.debug`restart language client`
           await clientWrapper.restartLanguageClient(loadLikeC4Worker())
-        } else {
-          await clientWrapper.start()
         }
 
         const throttled = funnel(requestComputedModel, {
@@ -199,7 +200,11 @@ export function LanguageClientSync({ config, wrapper }: {
       .catch(err => {
         logger.error(loggable(err))
       })
-  }, [workspaceId])
+    return () => {
+      logger.debug`cleanDisposables`
+      cleanDisposables(disposables)
+    }
+  }, [workspaceId, wrapper])
 
   useEffect(() => {
     const subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {

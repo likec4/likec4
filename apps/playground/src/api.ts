@@ -36,6 +36,7 @@ export const api = {
     me: json(workerApi.auth.me.$get),
   },
   share: {
+    my: json(workerApi.api.share.my.$get),
     create: json(workerApi.api.share.$post),
     checkPin: async (shareId: string, pincode: string) => {
       const response = await workerApi.api.share[':shareId']['check-pincode'].$post({

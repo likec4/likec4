@@ -30,7 +30,7 @@
     "./package.json": "./package.json",
     "./diagram.css": "./dist/diagram.css"
   },
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.5.2",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "vite build",
@@ -48,7 +48,7 @@
   "dependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
-    "@mantine/vanilla-extract": "7.17.0",
+    "@mantine/vanilla-extract": "catalog:",
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.29.0",
@@ -69,8 +69,8 @@
     "xstate": "^5.19.2"
   },
   "peerDependencies": {
-    "@mantine/core": "7.17.0",
-    "@mantine/hooks": "7.17.0",
+    "@mantine/core": "catalog:",
+    "@mantine/hooks": "catalog:",
     "react": "~19.0.0",
     "react-dom": "~19.0.0"
   },

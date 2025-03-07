@@ -42,10 +42,16 @@ export function readUserSession(c: HonoContext): UserSession | null {
 export const cookieSessionMiddleware = factory.createMiddleware(async (c, next) => {
   const store = new CookieStore()
 
+  let encryptionKey = c.env.SESSION_ENCRYPTION_KEY
+  if (!encryptionKey) {
+    console.warn('secret SESSION_ENCRYPTION_KEY is not set, using default dev key')
+    encryptionKey = 'VFRAdSem81cuALVeOMC4PJyLXf30tckV'
+  }
+
   const m = sessionMiddleware({
     store,
     sessionCookieName: 'lkc4.plgrnd',
-    encryptionKey: c.env.SESSION_ENCRYPTION_KEY,
+    encryptionKey,
     // 1 month in seconds
     expireAfterSeconds: 2_592_000,
     cookieOptions: {

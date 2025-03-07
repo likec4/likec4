@@ -8,6 +8,10 @@ const CheckPincodeSchema = v.strictObject({
 })
 
 export const apiShareRoute = factory.createApp()
+  .get('/my', async c => {
+    const kv = sharesKV(c)
+    return c.json(await kv.myshares())
+  })
   .get('/:shareId', async c => {
     const kv = sharesKV(c)
     const shareId = c.req.param('shareId')
@@ -17,7 +21,12 @@ export const apiShareRoute = factory.createApp()
   })
   .post(
     '/:shareId/check-pincode',
-    vValidator('json', CheckPincodeSchema),
+    vValidator('json', CheckPincodeSchema, (result, c) => {
+      if (!result.success) {
+        console.warn('check-pincode validation failed', result.issues)
+        return c.json(result.issues, 400) as never
+      }
+    }),
     async c => {
       const kv = sharesKV(c)
       const shareId = c.req.param('shareId')
@@ -36,7 +45,12 @@ export const apiShareRoute = factory.createApp()
   )
   .post(
     '/',
-    vValidator('json', SharePlaygroundReqSchema),
+    vValidator('json', SharePlaygroundReqSchema, (result, c) => {
+      if (!result.success) {
+        console.warn('create share validation failed', result.issues)
+        return c.json(result.issues, 400) as never
+      }
+    }),
     async c => {
       const payload = c.req.valid('json')
       const kv = sharesKV(c)

@@ -17,20 +17,21 @@ export default defineConfig(({ command }) => ({
   resolve: {
     alias,
     conditions: ['sources'],
+    dedupe: ['vscode'],
   },
   optimizeDeps: {
     include: [
       '@likec4/icons/all',
-      'vscode-textmate',
-      'vscode-oniguruma',
-      'vscode-uri',
       '@hpcc-js/wasm-graphviz',
       'vscode-languageserver/browser',
       'vscode-languageclient/browser',
       'vscode-languageclient',
       'vscode-languageserver-types',
       'vscode-languageserver',
-      '@tabler/icons-react',
+      'vscode-textmate',
+      'vscode-oniguruma',
+      'vscode-jsonrpc',
+      'vscode-uri',
     ],
     holdUntilCrawlEnd: false,
     esbuildOptions: {

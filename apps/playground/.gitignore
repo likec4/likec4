@@ -9,6 +9,6 @@ styled-system-studio
 
 worker-configuration.d.ts
 
-.dev.vars
+.dev.vars*
 .env.*
 .wireit

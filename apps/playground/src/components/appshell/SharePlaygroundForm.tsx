@@ -62,10 +62,9 @@ export function SharePlaygroundForm() {
   }))
 
   const shareLinkHref = shareRequest?.success && router.buildLocation({
-    to: '/share/$shareId/view/$viewId/',
+    to: '/share/$shareId/',
     params: {
       shareId: shareRequest.success.shareId,
-      viewId: viewId,
     },
   }).href
   const shareLink = shareLinkHref ? `${window.location.origin}${shareLinkHref}` : null
