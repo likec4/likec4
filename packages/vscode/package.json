@@ -230,7 +230,7 @@
     "std-env": "^3.8.0",
     "tslib": "^2.8.1",
     "tsx": "~4.19.3",
-    "turbo": "^2.4.2",
+    "turbo": "^2.4.4",
     "type-fest": "4.34.1",
     "typescript": "catalog:",
     "vscode-ext-gen": "^1.0.2",
