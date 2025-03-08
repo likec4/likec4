@@ -4,13 +4,12 @@ import type {
   DiagramView,
   EdgeId,
   Fqn,
-  GenericLikeC4Model,
-  IteratorLike,
+  GenericLikeC4ModelData,
   KeysOf,
-  LayoutedLikeC4Model,
+  LayoutedLikeC4ModelData,
   LikeC4ModelDump,
   NodeId,
-  ParsedLikeC4Model,
+  ParsedLikeC4ModelData,
   RelationId,
   ViewId,
 } from '../types'
@@ -66,7 +65,7 @@ export interface Aux<
   NodeOrId: LiteralUnion<this['NodeIdLiteral'], string> | WithId<this['NodeId']>
   EdgeOrId: LiteralUnion<this['EdgeIdLiteral'], string> | WithId<this['EdgeId']>
 
-  Model: Simplify<Omit<GenericLikeC4Model, 'views'> & WithViews<this['ViewId'], ViewType>>
+  Model: Simplify<Omit<GenericLikeC4ModelData, 'views'> & WithViews<this['ViewId'], ViewType>>
 }
 
 export type AnyAux = Aux<
@@ -83,7 +82,7 @@ export namespace Strict {
 }
 
 export namespace Aux {
-  export type FromParsed<M> = M extends ParsedLikeC4Model ? Aux<
+  export type FromParsed<M> = M extends ParsedLikeC4ModelData ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
@@ -91,11 +90,11 @@ export namespace Aux {
     >
     : never
 
-  export type FromModel<M> = M extends GenericLikeC4Model ? Aux<
+  export type FromModel<M> = M extends GenericLikeC4ModelData ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
-      M extends LayoutedLikeC4Model ? DiagramView<ViewId<KeysOf<M['views']>>, string>
+      M extends LayoutedLikeC4ModelData ? DiagramView<ViewId<KeysOf<M['views']>>, string>
         : ComputedView<ViewId<KeysOf<M['views']>>, string>
     >
     : never

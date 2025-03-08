@@ -8,7 +8,7 @@ import type {
   ElementShape,
   KeysOf,
   NonEmptyArray,
-  ParsedLikeC4Model,
+  ParsedLikeC4ModelData,
   RelationshipArrowType,
   RelationshipKindSpecification,
   RelationshipLineType,
@@ -275,7 +275,7 @@ export namespace Types {
       >
     : never
 
-  export type ToParsedLikeC4Model<T> = T extends AnyTypes ? ParsedLikeC4Model<
+  export type ToParsedLikeC4Model<T> = T extends AnyTypes ? ParsedLikeC4ModelData<
       T['ElementKind'],
       T['RelationshipKind'],
       T['Tag'],

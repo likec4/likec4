@@ -9,6 +9,7 @@ export type {
   NTuple,
   Point,
   Predicate,
+  ProjectId,
   XYPoint,
 } from './_common'
 
@@ -102,13 +103,13 @@ export type {
 } from './global'
 
 export type {
-  AnyParsedLikeC4Model,
-  ComputedLikeC4Model,
-  GenericLikeC4Model,
-  LayoutedLikeC4Model,
+  AnyParsedLikeC4ModelData,
+  ComputedLikeC4ModelData,
+  GenericLikeC4ModelData,
+  LayoutedLikeC4ModelData,
   LikeC4ModelDump,
-  ParsedLikeC4Model,
-} from './model'
+  ParsedLikeC4ModelData,
+} from './model-data'
 
 export {
   isAndOperator,

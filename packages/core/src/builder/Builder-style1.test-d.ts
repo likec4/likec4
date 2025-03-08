@@ -1,6 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
 import type { LikeC4Model } from '../model/LikeC4Model'
-import type { ParsedLikeC4Model } from '../types'
+import type { ParsedLikeC4ModelData } from '../types'
 import { Builder } from './Builder'
 
 test('Builder types - style 1', () => {
@@ -178,7 +178,7 @@ test('Builder types - style 1', () => {
   )
 
   expectTypeOf(m.build()).toEqualTypeOf(
-    {} as ParsedLikeC4Model<
+    {} as ParsedLikeC4ModelData<
       'actor' | 'system' | 'component',
       'like' | 'dislike',
       'tag1' | 'tag2',

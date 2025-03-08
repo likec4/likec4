@@ -2,7 +2,7 @@ import type {
   DeploymentElement,
   DeploymentNodeKind,
   DeploymentNodeKindSpecification,
-  DeploymentRelation
+  DeploymentRelation,
 } from './deployments'
 import type { ElementKindSpecification, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
@@ -23,13 +23,13 @@ import type { ComputedView, DiagramView, LikeC4View } from './view'
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4Model<
+export interface ParsedLikeC4ModelData<
   ElementKinds extends string = string,
   RelationKinds extends string = string,
   Tags extends string = string,
   Fqns extends string = string,
   Views extends string = string,
-  DeploymentFqns extends string = string
+  DeploymentFqns extends string = string,
 > {
   // To prevent accidental use of this type
   __?: never
@@ -52,7 +52,7 @@ export interface ParsedLikeC4Model<
   }
 }
 
-export type AnyParsedLikeC4Model = ParsedLikeC4Model<any, any, any, any, any, any>
+export type AnyParsedLikeC4ModelData = ParsedLikeC4ModelData<any, any, any, any, any, any>
 /**
  * Hook to get types from dump
  */
@@ -71,34 +71,34 @@ export type LikeC4ModelDump = {
 }
 
 /**
- * Same as {@link ParsedLikeC4Model}, but with computed views or layouted views.
+ * Same as {@link ParsedLikeC4ModelData}, but with computed views or layouted views.
  */
-export interface GenericLikeC4Model<
+export interface GenericLikeC4ModelData<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
   Tags extends string = string,
-  T = 'computed' | 'layouted'
-> extends Omit<ParsedLikeC4Model<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views' | '__'> {
+  T = 'computed' | 'layouted',
+> extends Omit<ParsedLikeC4ModelData<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views' | '__'> {
   __?: T
   views: Record<Views, ComputedView<Views> | DiagramView<Views>>
 }
 
-export interface ComputedLikeC4Model<
+export interface ComputedLikeC4ModelData<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
-  Tags extends string = string
-> extends Omit<GenericLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
+  Tags extends string = string,
+> extends Omit<GenericLikeC4ModelData<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
   views: Record<Views, ComputedView<Views>>
 }
 
-export interface LayoutedLikeC4Model<
+export interface LayoutedLikeC4ModelData<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
-  Tags extends string = string
-> extends Omit<GenericLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
+  Tags extends string = string,
+> extends Omit<GenericLikeC4ModelData<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
   __: 'layouted'
   views: Record<Views, DiagramView<Views, Tags>>
 }

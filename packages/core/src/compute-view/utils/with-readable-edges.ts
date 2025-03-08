@@ -1,5 +1,5 @@
 import { map, mapToObj, mapValues, omit } from 'remeda'
-import type { ComputedLikeC4Model } from '../../types'
+import type { ComputedLikeC4ModelData } from '../../types'
 import type { ComputedView, EdgeId } from '../../types/view'
 
 /**
@@ -28,7 +28,7 @@ export function withReadableEdges<T extends ComputedView>({ edges, nodes, ...vie
   } as any
 }
 
-export function viewsWithReadableEdges<M extends ComputedLikeC4Model>({ views, ...model }: M): M {
+export function viewsWithReadableEdges<M extends ComputedLikeC4ModelData>({ views, ...model }: M): M {
   return {
     ...model,
     views: mapValues(views, v => omit(withReadableEdges(v), ['nodeIds', 'edgeIds'])),
