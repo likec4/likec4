@@ -1108,8 +1108,8 @@ importers:
         specifier: ^7.7.1
         version: 7.7.1
       std-env:
-        specifier: ^3.8.0
-        version: 3.8.0
+        specifier: ^3.8.1
+        version: 3.8.1
       strip-indent:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1190,8 +1190,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       std-env:
-        specifier: ^3.8.0
-        version: 3.8.0
+        specifier: ^3.8.1
+        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -1273,8 +1273,8 @@ importers:
         specifier: ^2.20.2
         version: 2.21.0
       std-env:
-        specifier: ^3.8.0
-        version: 3.8.0
+        specifier: ^3.8.1
+        version: 3.8.1
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -7867,6 +7867,9 @@ packages:
 
   std-env@3.8.0:
     resolution: {integrity: sha512-Bc3YwwCB+OzldMxOXJIIvC6cPRWr/LxOp48CdQTOkPyk/t4JWWJbrilwBd7RJzKV8QW7tJkcgAmeuLLJugl5/w==}
+
+  std-env@3.8.1:
+    resolution: {integrity: sha512-vj5lIj3Mwf9D79hBkltk5qmkFI+biIKWS2IBxEyEU3AX1tUf7AoL8nSazCOiiqQsGKIq01SClsKEzweu34uwvA==}
 
   stoppable@1.1.0:
     resolution: {integrity: sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==}
@@ -17047,6 +17050,8 @@ snapshots:
       - supports-color
 
   std-env@3.8.0: {}
+
+  std-env@3.8.1: {}
 
   stoppable@1.1.0: {}
 

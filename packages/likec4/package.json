@@ -175,7 +175,7 @@
     "react-shadow": "^20.6.0",
     "remeda": "^2.20.2",
     "semver": "^7.7.1",
-    "std-env": "^3.8.0",
+    "std-env": "^3.8.1",
     "strip-indent": "^4.0.0",
     "terser": "^5.39.0",
     "tinyrainbow": "^2.0.0",
