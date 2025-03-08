@@ -106,7 +106,7 @@
     "playwright": "1.50.1",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
-    "rollup": "4.34.6",
+    "rollup": "4.34.9",
     "type-fest": "4.34.1",
     "vite": "5.4.14"
   },
