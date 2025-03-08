@@ -141,7 +141,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.1(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.34.8)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)))
       starlight-links-validator:
-        specifier: ^0.14.2
+        specifier: ^0.14.3
         version: 0.14.3(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.34.8)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)))
       typescript:
         specifier: 'catalog:'
