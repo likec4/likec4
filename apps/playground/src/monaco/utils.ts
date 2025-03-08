@@ -5,7 +5,7 @@ import {
   RegisteredMemoryFile,
 } from '@codingame/monaco-vscode-files-service-override'
 import { loggable, logger } from '@likec4/log'
-import { first } from 'remeda'
+import { first, forEach } from 'remeda'
 
 export const setActiveEditor = (filename: monaco.Uri) => {
   const activeTextEditor = first(monaco.editor.getEditors())
@@ -77,13 +77,13 @@ export function createMemoryFileSystem(
 
   // Clean up models that are not in the files
   if (currentModels.size > 0) {
-    currentModels.values().forEach((model) => {
+    forEach([...currentModels.values()], (model) => {
       try {
-        log.debug(`dispose monaco model: ${model.uri.toString()}`)
         model.dispose()
+        log.debug`disposed monaco model: ${model.uri.toString()}`
       }
       catch (e) {
-        // Ignore errors
+        console.warn(`Failed to dispose monaco model ${model.uri.toString()}`, e)
       }
     })
   }

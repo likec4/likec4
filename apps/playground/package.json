@@ -78,6 +78,7 @@
       ],
       "command": "wrangler deploy -c dist/playground/wrangler.json",
       "env": {
+        "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"
       }
     },
