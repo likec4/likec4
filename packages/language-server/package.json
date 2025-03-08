@@ -105,7 +105,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@msgpack/msgpack": "^3.1.0",
     "@smithy/util-base64": "^4.0.0",
-    "@types/node": "^20.17.17",
+    "@types/node": "^20.17.23",
     "@types/which": "^3.0.4",
     "@vitest/coverage-v8": "^3.0.6",
     "esm-env": "^1.2.2",
