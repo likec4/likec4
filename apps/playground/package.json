@@ -127,7 +127,7 @@
     "@mantine/notifications": "catalog:",
     "@mantine/vanilla-extract": "catalog:",
     "@nanostores/react": "0.8.4",
-    "@pandacss/dev": "^0.53.0",
+    "@pandacss/dev": "^0.53.1",
     "@react-hookz/web": "^25.0.1",
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "3.29.0",
