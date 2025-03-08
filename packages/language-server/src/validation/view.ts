@@ -1,11 +1,12 @@
 import { type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4View> => {
   const index = services.shared.workspace.IndexManager
-  return tryOrLog((el, accept) => {
+  return tryOrLog((node, accept) => {
     // const commentNode = CstUtils.findCommentNode(el.$cstNode, ['BLOCK_COMMENT'])
     // if (commentNode && hasManualLayout(commentNode.text) && !deserializeFromComment(commentNode.text)) {
     //   accept('warning', `Malformed @likec4-generated (ignored)`, {
@@ -13,23 +14,24 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4
     //     range: commentNode.range
     //   })
     // }
-    if (!el.name) {
+    if (!node.name) {
       return
     }
-    if (RESERVED_WORDS.includes(el.name)) {
-      accept('error', `Reserved word: ${el.name}`, {
-        node: el,
+    if (RESERVED_WORDS.includes(node.name)) {
+      accept('error', `Reserved word: ${node.name}`, {
+        node: node,
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const anotherViews = index
-      .allElements(ast.LikeC4View)
-      .filter(n => n.name === el.name)
+      .projectElements(projectId, ast.LikeC4View)
+      .filter(n => n.name === node.name)
       .limit(2)
       .count()
     if (anotherViews > 1) {
-      accept('error', `Duplicate view '${el.name}'`, {
-        node: el,
+      accept('error', `Duplicate view '${node.name}'`, {
+        node: node,
         property: 'name',
       })
     }

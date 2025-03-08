@@ -5,11 +5,11 @@ import { type ViewChange, type ViewId, invariant, LikeC4Model, nonNullable } fro
 import {
   BuildDocuments,
   ChangeView,
+  DidChangeModelNotification,
   FetchComputedModel,
   FetchLayoutedModel,
   LayoutView,
   Locate,
-  onDidChangeModel,
 } from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
@@ -53,7 +53,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestComputedModel = useCallbackRef(async () => {
     try {
-      const { model } = await languageClient().sendRequest(FetchComputedModel.Req, { cleanCaches: false })
+      const { model } = await languageClient().sendRequest(FetchComputedModel.req, { cleanCaches: false })
       if (model) {
         playground.send({
           type: 'likec4.lsp.onDidChangeModel',
@@ -67,7 +67,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestLayoutedData = useCallbackRef(async () => {
     try {
-      const { model } = await languageClient().sendRequest(FetchLayoutedModel.Req)
+      const { model } = await languageClient().sendRequest(FetchLayoutedModel.req, {})
       if (model) {
         playground.send({ type: 'likec4.lsp.onLayoutedModel', model })
       } else {
@@ -82,7 +82,7 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const requestLayoutView = useCallbackRef(async (viewId: ViewId) => {
     try {
-      const { result } = await languageClient().sendRequest(LayoutView.Req, { viewId })
+      const { result } = await languageClient().sendRequest(LayoutView.req, { viewId })
       if (result) {
         playground.send({ type: 'likec4.lsp.onLayoutDone', ...result })
       } else {
@@ -174,7 +174,7 @@ export function LanguageClientSync({ config, wrapper }: {
         })
 
         disposables.push(
-          languageClient().onNotification(onDidChangeModel, () => {
+          languageClient().onNotification(DidChangeModelNotification.type, () => {
             try {
               const errors: string[] = []
               languageClient().diagnostics?.forEach((uri, diagnostics) => {

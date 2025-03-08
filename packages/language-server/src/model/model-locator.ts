@@ -6,6 +6,8 @@ import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
+import type { ProjectsManager } from '../workspace'
 import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
@@ -18,22 +20,36 @@ export class LikeC4ModelLocator {
   private deploymentsIndex: DeploymentsIndex
   private langiumDocuments: LangiumDocuments
   private parser: LikeC4ModelParser
+  private projects: ProjectsManager
 
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
     this.deploymentsIndex = services.likec4.DeploymentsIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     this.parser = services.likec4.ModelParser
+    this.projects = services.shared.workspace.ProjectsManager
   }
 
-  private documents() {
-    return this.parser.documents()
+  private documents(projectId: c4.ProjectId) {
+    return this.parser.documents(projectId)
   }
 
-  public getParsedElement(astNodeOrFqn: ast.Element | c4.Fqn): ParsedAstElement | null {
+  // public getParsedElement(astNodeOrFqn: ast.Element): ParsedAstElement | null
+  // public getParsedElement(astNodeOrFqn: c4.Fqn, projectId?: c4.ProjectId): ParsedAstElement | null
+  public getParsedElement(...args: [ast.Element] | [c4.Fqn] | [c4.Fqn, c4.ProjectId]): ParsedAstElement | null {
+    let astNodeOrFqn
+    let projectId
+    if (args.length === 2) {
+      astNodeOrFqn = args[0]
+      projectId = args[1]
+    } else {
+      astNodeOrFqn = args[0]
+      projectId = isString(astNodeOrFqn) ? this.projects.ensureProjectId() : projectIdFrom(astNodeOrFqn)
+    }
+
     if (isString(astNodeOrFqn)) {
       const fqn = astNodeOrFqn
-      const entry = this.fqnIndex.byFqn(astNodeOrFqn).head()
+      const entry = this.fqnIndex.byFqn(projectId, astNodeOrFqn).head()
       if (!entry) {
         return null
       }
@@ -50,18 +66,8 @@ export class LikeC4ModelLocator {
   }
 
   public locateElement(fqn: c4.Fqn, _prop?: string): Location | null {
-    const entry = this.fqnIndex.byFqn(fqn).head()
-    const docsegment = entry?.nameSegment ?? entry?.selectionSegment
-    if (!entry || !docsegment) {
-      return null
-    }
-    return {
-      uri: entry.documentUri.toString(),
-      range: docsegment.range,
-    }
-  }
-  public locateDeploymentElement(fqn: c4.Fqn, _prop?: string): Location | null {
-    const entry = this.deploymentsIndex.byFqn(fqn).head()
+    const projectId = this.projects.ensureProjectId()
+    const entry = this.fqnIndex.byFqn(projectId, fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null
@@ -72,8 +78,22 @@ export class LikeC4ModelLocator {
     }
   }
 
-  public locateRelation(relationId: c4.RelationId): Location | null {
-    for (const doc of this.documents()) {
+  public locateDeploymentElement(fqn: c4.Fqn, _prop?: string): Location | null {
+    const projectId = this.projects.ensureProjectId()
+    const entry = this.deploymentsIndex.byFqn(projectId, fqn).head()
+    const docsegment = entry?.nameSegment ?? entry?.selectionSegment
+    if (!entry || !docsegment) {
+      return null
+    }
+    return {
+      uri: entry.documentUri.toString(),
+      range: docsegment.range,
+    }
+  }
+
+  public locateRelation(relationId: c4.RelationId, projectId?: c4.ProjectId): Location | null {
+    const project = this.projects.ensureProjectId(projectId)
+    for (const doc of this.documents(project)) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
         ?? doc.c4DeploymentRelations.find(r => r.id === relationId)
       if (!relation) {
@@ -105,7 +125,8 @@ export class LikeC4ModelLocator {
   }
 
   public locateViewAst(viewId: c4.ViewId) {
-    for (const doc of this.documents()) {
+    const project = this.projects.ensureProjectId()
+    for (const doc of this.documents(project)) {
       const view = doc.c4Views.find(r => r.id === viewId)
       if (!view) {
         continue

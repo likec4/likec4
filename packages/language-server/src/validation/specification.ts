@@ -1,6 +1,7 @@
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 export const specificationRuleChecks = (
@@ -47,8 +48,9 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKind = index
-      .allElements(ast.ElementKind)
+      .projectElements(projectId, ast.ElementKind)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -81,8 +83,9 @@ export const deploymentNodeKindChecks = (services: LikeC4Services): ValidationCh
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKind = index
-      .allElements(ast.DeploymentNodeKind)
+      .projectElements(projectId, ast.DeploymentNodeKind)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -110,8 +113,9 @@ export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> =>
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
     const tagname = '#' + node.name
+    const projectId = projectIdFrom(node)
     const sameTag = index
-      .allElements(ast.Tag)
+      .projectElements(projectId, ast.Tag)
       .filter(n => n.name === tagname && n.node !== node)
       .head()
     if (sameTag) {
@@ -150,8 +154,9 @@ export const relationshipChecks = (
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKinds = index
-      .allElements(ast.RelationshipKind)
+      .projectElements(projectId, ast.RelationshipKind)
       .filter(n => n.name === node.name)
       .limit(2)
       .count()
@@ -169,8 +174,10 @@ export const globalPredicateChecks = (
 ): ValidationCheck<ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
-    const predicateGroups = index.allElements(ast.GlobalPredicateGroup)
-    const dynamicPredicateGroups = index.allElements(ast.GlobalDynamicPredicateGroup)
+    const projectId = projectIdFrom(node)
+
+    const predicateGroups = index.projectElements(projectId, ast.GlobalPredicateGroup)
+    const dynamicPredicateGroups = index.projectElements(projectId, ast.GlobalDynamicPredicateGroup)
     const sameName = predicateGroups
       .concat(dynamicPredicateGroups)
       .filter(s => s.name === node.name)
@@ -190,8 +197,9 @@ export const globalStyleIdChecks = (
 ): ValidationCheck<ast.GlobalStyleId> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
+    const projectId = projectIdFrom(node)
     const sameName = index
-      .allElements(ast.GlobalStyleId)
+      .projectElements(projectId, ast.GlobalStyleId)
       .filter(s => s.name === node.name)
       .limit(2)
       .count()

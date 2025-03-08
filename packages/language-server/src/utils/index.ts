@@ -1,2 +1,5 @@
 export * from './disposable'
+export * from './elementRef'
+export * from './fqnRef'
+export * from './projectId'
 export * from './stringHash'

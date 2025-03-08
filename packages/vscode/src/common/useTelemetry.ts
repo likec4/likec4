@@ -22,19 +22,10 @@ export function activateTelemetry(rpc: Rpc) {
 
   async function fetchMetrics() {
     const t0 = performance.now()
-    const { model } = await rpc.fetchComputedModel(true)
+    const { metrics } = await rpc.fetchMetrics()
     const t1 = performance.now()
     return {
-      metrics: model
-        ? {
-          elementKinds: keys(model.specification.elements).length,
-          relationshipKinds: keys(model.specification.relationships).length,
-          tags: keys(model.specification.tags).length,
-          elements: keys(model.elements).length,
-          relationships: keys(model.relations).length,
-          views: keys(model.views).length,
-        }
-        : null,
+      metrics,
       ms: Math.round(t1 - t0),
     }
   }

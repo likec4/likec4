@@ -1,8 +1,14 @@
-import { filter, funnel, indexBy, map, pipe } from 'remeda'
+import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, reduce, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
-import { type DiagramView, type LayoutedLikeC4Model, LikeC4Model, nonexhaustive } from '@likec4/core'
+import {
+  type DiagramView,
+  type LayoutedLikeC4ModelData,
+  type ProjectId,
+  LikeC4Model,
+  nonexhaustive,
+} from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
@@ -11,11 +17,14 @@ import {
   BuildDocuments,
   ChangeView,
   ComputeView,
+  DidChangeModelNotification,
   FetchComputedModel,
   FetchLayoutedModel,
+  FetchProjects,
+  FetchTelemetryMetrics,
+  FetchViewsFromAllProjects,
   LayoutView,
   Locate,
-  onDidChangeModel,
   ValidateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
@@ -33,6 +42,7 @@ export class Rpc extends ADisposable {
     const modelEditor = this.services.likec4.ModelChanges
     const views = this.services.likec4.Views
     const connection = this.services.shared.lsp.Connection
+    const projects = this.services.shared.workspace.ProjectsManager
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)
       return
@@ -44,7 +54,7 @@ export class Rpc extends ADisposable {
     const notifyModelParsed = funnel(
       () => {
         logger.debug`sendNotification ${'onDidChangeModel'}`
-        connection.sendNotification(onDidChangeModel, '').catch(e => {
+        connection.sendNotification(DidChangeModelNotification.type, '').catch(e => {
           logger.warn(`[ServerRpc] error sending onDidChangeModel: ${e}`)
           return Promise.resolve()
         })
@@ -61,47 +71,86 @@ export class Rpc extends ADisposable {
 
     this.onDispose(
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
-      connection.onRequest(FetchComputedModel.Req, async ({ cleanCaches }, cancelToken) => {
+      connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'}`
         if (cleanCaches) {
-          const all = LangiumDocuments.all.map(d => d.uri).toArray()
-          await DocumentBuilder.update(all, [], cancelToken)
+          const docs = projectId ? LangiumDocuments.projectDocuments(projectId as ProjectId) : LangiumDocuments.all
+          const uris = docs.map(d => d.uri).toArray()
+          await DocumentBuilder.update(uris, [], cancelToken)
         }
-        const likec4model = await modelBuilder.buildLikeC4Model(cancelToken)
+        const likec4model = await modelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
           return { model: likec4model.$model }
         }
         return { model: null }
       }),
-      connection.onRequest(ComputeView.Req, async ({ viewId }, cancelToken) => {
-        const view = await modelBuilder.computeView(viewId, cancelToken)
+      connection.onRequest(ComputeView.req, async ({ viewId, projectId }, cancelToken) => {
+        const view = await modelBuilder.computeView(viewId, projectId as ProjectId, cancelToken)
         return { view }
       }),
-      connection.onRequest(FetchLayoutedModel.Req, async (cancelToken) => {
-        const model = await modelBuilder.parseModel(cancelToken)
+      connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
+        const model = await modelBuilder.parseModel(projectId as ProjectId, cancelToken)
         if (model === null) {
           return { model: null }
         }
-        const diagrams = await views.diagrams()
+        const diagrams = await views.diagrams(projectId as ProjectId, cancelToken)
         return {
           model: {
             ...model,
             __: 'layouted' as const,
             views: indexBy(diagrams, d => d.id),
-          } satisfies LayoutedLikeC4Model,
+          } satisfies LayoutedLikeC4ModelData,
         }
       }),
-      connection.onRequest(LayoutView.Req, async ({ viewId }, cancelToken) => {
+      connection.onRequest(LayoutView.req, async ({ viewId, projectId }, cancelToken) => {
         logger.debug`received request ${'layoutView'} of ${viewId}`
-        const result = await views.layoutView(viewId, cancelToken)
+        const result = await views.layoutView(viewId, projectId as ProjectId, cancelToken)
         return { result }
       }),
-      connection.onRequest(ValidateLayout.Req, async (cancelToken) => {
-        const layouts = await views.layoutAllViews(cancelToken)
+      connection.onRequest(ValidateLayout.Req, async ({ projectId }, cancelToken) => {
+        const layouts = await views.layoutAllViews(projectId as ProjectId, cancelToken)
 
         const result = reportLayoutDrift(layouts.map(l => l.diagram))
 
         return { result }
+      }),
+      connection.onRequest(FetchProjects.req, async (_cancelToken) => {
+        const docsByProject = LangiumDocuments.groupedByProject()
+        return {
+          projects: mapValues(docsByProject, docs => map(docs, d => d.uri.toString())),
+        }
+      }),
+      connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
+        const promises = projects.all.map(async projectId => {
+          const computedViews = await views.computedViews(projectId, cancelToken)
+          return pipe(
+            computedViews,
+            map(v => ({
+              id: v.id,
+              title: v.title ?? v.id,
+              projectId,
+            })),
+            sort((a, b) => {
+              if (a.id === 'index') {
+                return -1
+              }
+              if (b.id === 'index') {
+                return 1
+              }
+              return a.title.localeCompare(b.title)
+            }),
+          )
+        })
+        const results = await Promise.allSettled(promises)
+        await interruptAndCheck(cancelToken)
+
+        return {
+          views: pipe(
+            results,
+            filter(r => r.status === 'fulfilled'),
+            flatMap(r => r.value),
+          ),
+        }
       }),
       connection.onRequest(BuildDocuments.Req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
@@ -143,7 +192,7 @@ export class Rpc extends ADisposable {
           case 'element' in params:
             return modelLocator.locateElement(params.element, params.property ?? 'name')
           case 'relation' in params:
-            return modelLocator.locateRelation(params.relation)
+            return modelLocator.locateRelation(params.relation, params.projectId as ProjectId)
           case 'view' in params:
             return modelLocator.locateView(params.view)
           case 'deployment' in params:
@@ -155,6 +204,36 @@ export class Rpc extends ADisposable {
       connection.onRequest(ChangeView.Req, async (request, _cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId}`
         return await modelEditor.applyChange(request)
+      }),
+      connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
+        const projectsIds = [...projects.all]
+        const promises = projectsIds.map(async projectId => {
+          const model = await modelBuilder.buildLikeC4Model(projectId, cancelToken)
+          return {
+            elementKinds: keys(model.$model.specification.elements).length,
+            relationshipKinds: keys(model.$model.specification.relationships).length,
+            tags: model.$model.specification.tags.length,
+            elements: keys(model.$model.elements).length,
+            relationships: keys(model.$model.relations).length,
+            views: keys(model.$model.views).length,
+            projects: 1,
+          }
+        })
+        const results = await Promise.allSettled(promises)
+        await interruptAndCheck(cancelToken)
+
+        const metrics = results.filter(r => r.status === 'fulfilled').map(r => r.value).reduce((acc, r) => ({
+          elementKinds: acc.elementKinds + r.elementKinds,
+          relationshipKinds: acc.relationshipKinds + r.relationshipKinds,
+          tags: acc.tags + r.tags,
+          elements: acc.elements + r.elements,
+          relationships: acc.relationships + r.relationships,
+          views: acc.views + r.views,
+          projects: acc.projects + 1,
+        })) ?? null
+        return {
+          metrics,
+        }
       }),
       Disposable.create(() => {
         notifyModelParsed.cancel()

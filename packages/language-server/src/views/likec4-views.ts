@@ -1,9 +1,10 @@
-import type { ComputedView, DiagramView, OverviewGraph, ViewId } from '@likec4/core'
+import type { ComputedView, DiagramView, OverviewGraph, ProjectId, ViewId } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type Cancellation, type WorkspaceCache } from 'langium'
 import prettyMs from 'pretty-ms'
 import { values } from 'remeda'
+import { CancellationToken } from 'vscode-jsonrpc'
 import { logError, logger as rootLogger, logWarnError } from '../logger'
 import { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
@@ -35,13 +36,19 @@ export class LikeC4Views {
     return this.services.likec4.Layouter
   }
 
-  async computedViews(cancelToken?: Cancellation.CancellationToken): Promise<ComputedView[]> {
-    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(cancelToken)
+  async computedViews(
+    projectId?: ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<ComputedView[]> {
+    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     return values(likeC4Model.$model.views)
   }
 
-  async layoutAllViews(cancelToken?: Cancellation.CancellationToken): Promise<Array<Readonly<GraphvizOut>>> {
-    const views = await this.computedViews(cancelToken)
+  async layoutAllViews(
+    projectId?: ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<Array<Readonly<GraphvizOut>>> {
+    const views = await this.computedViews(projectId, cancelToken)
     if (views.length === 0) {
       return []
     }
@@ -78,8 +85,12 @@ export class LikeC4Views {
     return results
   }
 
-  async layoutView(viewId: ViewId, cancelToken?: Cancellation.CancellationToken): Promise<GraphvizOut | null> {
-    const model = await this.ModelBuilder.buildLikeC4Model(cancelToken)
+  async layoutView(
+    viewId: ViewId,
+    projectId?: ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<GraphvizOut | null> {
+    const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
@@ -108,18 +119,24 @@ export class LikeC4Views {
     }
   }
 
-  async diagrams(): Promise<Array<DiagramView>> {
-    const layouted = await this.layoutAllViews()
+  async diagrams(
+    projectId?: ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<Array<DiagramView>> {
+    const layouted = await this.layoutAllViews(projectId, cancelToken)
     return layouted.map(l => l.diagram)
   }
 
-  async viewsAsGraphvizOut(): Promise<Array<GraphvizSvgOut>> {
+  async viewsAsGraphvizOut(
+    projectId?: ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<Array<GraphvizSvgOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
     const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
-    const views = await this.computedViews()
+    const views = await this.computedViews(projectId, cancelToken)
     const tasks = views.map(async view => {
       const { dot, svg } = await this.layouter.svg(view)
       return {

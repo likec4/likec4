@@ -89,7 +89,7 @@ export default function App() {
           showNavigationButtons
           showNotations
           enableRelationshipDetails
-          showDiagramTitle
+          showDiagramTitle={false}
           renderIcon={IconRenderer}
           onNavigateTo={(to, event) => {
             setLastClickedNode()

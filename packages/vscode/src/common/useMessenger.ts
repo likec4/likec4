@@ -1,3 +1,4 @@
+import { nonNullable } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import {
   BroadcastModelUpdate,
@@ -36,7 +37,8 @@ export function activateMessenger(rpc: Rpc) {
   useDisposable(messenger.onRequest(FetchComputedModel, async () => {
     const t0 = performance.now()
     try {
-      const result = await rpc.fetchComputedModel()
+      const projectId = preview.projectId()
+      const result = await rpc.fetchComputedModel(projectId ?? 'default')
       const t1 = performance.now()
       logger.debug(`request {req} in ${prettyMs(t1 - t0)}`, { req: 'fetchComputedModel' })
       return result
@@ -50,7 +52,8 @@ export function activateMessenger(rpc: Rpc) {
   useDisposable(messenger.onRequest(FetchDiagramView, async (viewId) => {
     const t0 = performance.now()
     try {
-      const result = await rpc.layoutView(viewId)
+      const projectId = preview.projectId()
+      const result = await rpc.layoutView({ viewId, projectId })
       const t1 = performance.now()
       logger.debug(`request {req} of {viewId} in ${prettyMs(t1 - t0)}`, { req: 'layoutView', viewId })
       return result
@@ -82,12 +85,14 @@ export function activateMessenger(rpc: Rpc) {
   }))
 
   useDisposable(messenger.onNotification(WebviewMsgs.NavigateTo, ({ viewId }) => {
-    preview.open(viewId)
+    const projectId = nonNullable(preview.projectId(), 'PreviewPanel is missing projectId')
+    preview.open(viewId, projectId)
   }))
 
   useDisposable(messenger.onNotification(WebviewMsgs.OnChange, async ({ viewId, change }) => {
     try {
-      let loc = await rpc.changeView({ viewId, change })
+      const projectId = preview.projectId()
+      let loc = await rpc.changeView({ viewId, projectId, change })
       if (!loc) {
         logger.warn(`rpc.changeView returned null`)
         return

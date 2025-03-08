@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type LangiumDocument, type Stream, DocumentState } from 'langium'
@@ -65,8 +66,8 @@ export class LikeC4ModelParser {
     )
   }
 
-  documents(): Stream<ParsedLikeC4LangiumDocument> {
-    return this.services.shared.workspace.LangiumDocuments.all.map(
+  documents(projectId: ProjectId): Stream<ParsedLikeC4LangiumDocument> {
+    return this.services.shared.workspace.LangiumDocuments.projectDocuments(projectId).map(
       d => this.parse(d),
     )
   }
