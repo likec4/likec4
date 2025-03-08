@@ -1,5 +1,5 @@
 import useDocumentSelector from '#useDocumentSelector'
-import type { ViewId } from '@likec4/core'
+import type { ProjectId, ViewId } from '@likec4/core'
 import type { Locate } from '@likec4/language-server/protocol'
 import {
   executeCommand,
@@ -13,7 +13,7 @@ import {
   useVscodeContext,
   watch,
 } from 'reactive-vscode'
-import { entries, groupBy, map, pipe, prop, values } from 'remeda'
+import { countBy, entries, flatMap, groupBy, keys, map, mapValues, pipe, piped, prop, sort } from 'remeda'
 import * as vscode from 'vscode'
 import {
   type BaseLanguageClient,
@@ -134,42 +134,36 @@ function activateLc(
 
   const preview = useDiagramPreview()
   useCommand(commands.restart, restartServer)
-  useCommand(commands.openPreview, async (viewId?: ViewId) => {
+  useCommand(commands.openPreview, async (viewId?: ViewId, projectId = 'default' as ProjectId) => {
     if (!viewId) {
       try {
-        const { model } = await rpc.fetchComputedModel()
-        const views = values(model?.views ?? {}).map(v => ({
-          label: v.id,
-          description: v.title ?? '',
-          viewId: v.id,
-        })).sort((a, b) => {
-          if (a.label === 'index') {
-            return -1
-          }
-          if (b.label === 'index') {
-            return 1
-          }
-          return a.label.localeCompare(b.label)
-        })
+        const views = await rpc.fetchViewsFromAllProjects()
         if (views.length === 0) {
           await vscode.window.showWarningMessage('No views found', { modal: true })
           return
         }
-        const selected = await vscode.window.showQuickPick(views, {
+        const isSingleProject = keys(countBy(views, (v) => v.projectId)).length === 1
+        const items = views.map((v) => ({
+          label: isSingleProject ? v.id : `${v.projectId}: ${v.id}`,
+          description: v.title ?? '',
+          viewId: v.id,
+          projectId: v.projectId,
+        }))
+        const selected = await vscode.window.showQuickPick(items, {
           canPickMany: false,
           title: 'Select a view',
         })
         if (!selected) {
           return
         }
-
         viewId = selected.viewId
+        projectId = selected.projectId
       } catch (e) {
         logWarn(e)
         return
       }
     }
-    preview.open(viewId)
+    preview.open(viewId, projectId)
     telemetry.sendTelemetryErrorEvent('open-preview')
   })
 
@@ -200,11 +194,12 @@ function activateLc(
 
   useCommand(commands.printDotOfCurrentview, async () => {
     const viewId = preview.viewId()
-    if (!viewId) {
+    const projectId = preview.projectId()
+    if (!viewId || !projectId) {
       logger.warn(`No preview panel found`)
       return
     }
-    const result = await rpc.layoutView(viewId)
+    const result = await rpc.layoutView({ viewId, projectId })
     if (!result) {
       logger.warn(`Failed to layout view ${viewId}`)
       return

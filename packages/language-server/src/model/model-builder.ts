@@ -7,7 +7,6 @@ import {
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
-  type Cancellation,
   type DocumentBuilder,
   type LangiumDocuments,
   type URI,
@@ -25,22 +24,25 @@ import {
   prop,
   values,
 } from 'remeda'
+import { CancellationToken } from 'vscode-jsonrpc'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { assignNavigateTo } from '../view-utils'
+import type { ProjectsManager } from '../workspace'
 import { buildModel } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
 
-const CACHE_KEY_PARSED_MODEL = 'ParsedLikeC4Model'
-const CACHE_KEY_COMPUTED_MODEL = 'ComputedLikeC4Model'
+const parsedModelCacheKey = (projectId: c4.ProjectId) => `parsed-model-${projectId}`
+const computedModelCacheKey = (projectId: c4.ProjectId) => `computed-model-${projectId}`
 
 const logger = mainLogger.getChild('ModelBuilder')
 
 type ModelParsedListener = (docs: URI[]) => void
 
 export class LikeC4ModelBuilder extends ADisposable {
+  private projects: ProjectsManager
   private parser: LikeC4ModelParser
   private listeners: ModelParsedListener[] = []
   private cache: WorkspaceCache<string, unknown>
@@ -49,6 +51,7 @@ export class LikeC4ModelBuilder extends ADisposable {
 
   constructor(services: LikeC4Services) {
     super()
+    this.projects = services.shared.workspace.ProjectsManager
     this.parser = services.likec4.ModelParser
     this.cache = services.ValidatedWorkspaceCache
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
@@ -80,50 +83,55 @@ export class LikeC4ModelBuilder extends ADisposable {
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  private unsafeSyncParseModel(): c4.ParsedLikeC4Model | null {
-    const docs = this.documents()
+  private unsafeSyncParseModel(projectId: c4.ProjectId): c4.ParsedLikeC4ModelData | null {
+    const docs = this.documents(projectId)
     if (docs.length === 0) {
-      logger.debug('no documents to build model from')
+      logger.debug(`no documents to build model - project ${projectId}`)
       return null
     }
 
-    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4Model>
-    return cache.get(CACHE_KEY_PARSED_MODEL, () => {
+    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData>
+    return cache.get(parsedModelCacheKey(projectId), () => {
       return buildModel(docs)
     })
   }
 
-  public async parseModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.ParsedLikeC4Model | null> {
-    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4Model>
-    const cached = cache.get(CACHE_KEY_PARSED_MODEL)
+  public async parseModel(
+    projectId?: c4.ProjectId | undefined,
+    cancelToken = CancellationToken.None,
+  ): Promise<c4.ParsedLikeC4ModelData | null> {
+    const project = this.projects.ensureProjectId(projectId)
+    const log = logger.getChild(['project', project])
+    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData>
+    const cached = cache.get(parsedModelCacheKey(project))
     if (cached) {
-      logger.debug('parseModel from cache')
+      log.debug('parseModel from cache')
       return cached
     }
 
     if (this.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
-      logger.debug('parseModel: waiting for documents to be validated')
+      log.debug('parseModel: waiting for documents to be validated')
       await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
-      logger.debug('parseModel: documents are validated')
+      log.debug('parseModel: documents are validated')
     }
     const t0 = performance.now()
-    const result = this.unsafeSyncParseModel()
-    logger.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
+    const result = this.unsafeSyncParseModel(project)
+    log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
     return result
   }
 
-  private previousViews: Record<ViewId, c4.ComputedView> = {}
+  private previousViews: Record<string, c4.ComputedView> = {}
 
   /**
    * WARNING:
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  public unsafeSyncBuildModel(): LikeC4Model.Computed {
+  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed {
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
-    return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-      const parsed = this.unsafeSyncParseModel()
+    return cache.get(computedModelCacheKey(projectId), () => {
+      const parsed = this.unsafeSyncParseModel(projectId)
       if (!parsed) {
         return LikeC4Model.EMPTY
       }
@@ -146,12 +154,13 @@ export class LikeC4ModelBuilder extends ADisposable {
       }
       assignNavigateTo(allViews)
       const views = mapToObj(allViews, v => {
-        const previous = this.previousViews[v.id]
+        const key = computedViewKey(projectId, v.id)
+        const previous = this.previousViews[key]
         const view = previous && eq(v, previous) ? previous : v
-        viewsCache.set(computedViewKey(v.id), view)
+        viewsCache.set(key, view)
         return [v.id, view] as const
       })
-      this.previousViews = { ...views }
+      this.previousViews = { ...this.previousViews, ...views }
       return LikeC4Model.create({
         ...model,
         views,
@@ -160,45 +169,51 @@ export class LikeC4ModelBuilder extends ADisposable {
   }
 
   public async buildLikeC4Model(
-    cancelToken?: Cancellation.CancellationToken,
+    projectId?: c4.ProjectId | undefined,
+    cancelToken = CancellationToken.None,
   ): Promise<LikeC4Model.Computed> {
+    const project = this.projects.ensureProjectId(projectId)
+    const log = logger.getChild(['project', project])
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
-    const cached = cache.get(CACHE_KEY_COMPUTED_MODEL)
+    const cached = cache.get(computedModelCacheKey(project))
     if (cached) {
-      logger.debug('buildLikeC4Model from cache')
+      log.debug('buildLikeC4Model from cache')
       return cached
     }
     const t0 = performance.now()
-    const model = await this.parseModel(cancelToken)
+    const model = await this.parseModel(project, cancelToken)
     if (!model) {
-      logger.debug('buildLikeC4Model: no model')
+      log.debug('buildLikeC4Model: no model')
       return LikeC4Model.EMPTY
     }
-    const result = this.unsafeSyncBuildModel()
-    logger.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
+    const result = this.unsafeSyncBuildModel(project)
+    log.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
     return result
   }
 
   public async computeView(
     viewId: ViewId,
-    cancelToken?: Cancellation.CancellationToken,
+    projectId?: c4.ProjectId | undefined,
+    cancelToken = CancellationToken.None,
   ): Promise<c4.ComputedView | null> {
+    const project = this.projects.ensureProjectId(projectId)
+    const log = logger.getChild(['project', project])
     const cache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
-    const cacheKey = computedViewKey(viewId)
+    const cacheKey = computedViewKey(project, viewId)
     if (cache.has(cacheKey)) {
       return cache.get(cacheKey)!
     }
-    const parsed = await this.parseModel(cancelToken)
+    const parsed = await this.parseModel(project, cancelToken)
     if (!parsed) {
       return null
     }
     return cache.get(cacheKey, () => {
       const view = parsed.views[viewId]
       if (!view) {
-        logger.warn`computeView: cant find view ${viewId}`
+        log.warn`computeView: cant find view ${viewId}`
         return null
       }
-      logger.debug`computeView: ${viewId}`
+      log.debug`computeView: ${viewId}`
       const computeView = LikeC4Model.makeCompute(parsed)
       const result = computeView(view)
       if (!result.isSuccess) {
@@ -224,11 +239,11 @@ export class LikeC4ModelBuilder extends ADisposable {
         }
       }
 
-      const previous = this.previousViews[viewId]
+      const previous = this.previousViews[cacheKey]
       if (previous && eq(computedView, previous)) {
         computedView = previous
       } else {
-        this.previousViews[viewId] = computedView
+        this.previousViews[cacheKey] = computedView
       }
 
       return computedView
@@ -245,8 +260,8 @@ export class LikeC4ModelBuilder extends ADisposable {
     })
   }
 
-  private documents() {
-    return this.parser.documents().toArray()
+  private documents(projectId: c4.ProjectId) {
+    return this.parser.documents(projectId).toArray()
   }
 
   private notifyListeners(docs: URI[]) {
@@ -260,6 +275,6 @@ export class LikeC4ModelBuilder extends ADisposable {
   }
 }
 
-function computedViewKey(viewId: string): string {
-  return `computed-view-${viewId}`
+function computedViewKey(projectId: c4.ProjectId, viewId: string): string {
+  return `computed-view-${projectId}-${viewId}`
 }

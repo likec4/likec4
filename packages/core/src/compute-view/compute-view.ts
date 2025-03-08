@@ -2,13 +2,13 @@ import { mapValues } from 'remeda'
 import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
-  type ComputedLikeC4Model,
+  type ComputedLikeC4ModelData,
   type ComputedView,
+  type LikeC4View,
+  type ParsedLikeC4ModelData,
   isDeploymentView,
   isDynamicView,
   isElementView,
-  type LikeC4View,
-  type ParsedLikeC4Model
 } from '../types'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
@@ -28,7 +28,7 @@ export type ComputeViewResult<V extends ComputedView = ComputedView> =
 
 export function unsafeComputeView(
   viewsource: LikeC4View,
-  likec4model: LikeC4Model
+  likec4model: LikeC4Model,
 ): ComputedView {
   switch (true) {
     case isDeploymentView(viewsource): {
@@ -45,27 +45,27 @@ export function unsafeComputeView(
 
 export function computeView<V extends LikeC4View>(
   viewsource: V,
-  likec4model: LikeC4Model
+  likec4model: LikeC4Model,
 ): ComputeViewResult {
   try {
     return {
       isSuccess: true,
-      view: unsafeComputeView(viewsource, likec4model)
+      view: unsafeComputeView(viewsource, likec4model),
     }
   } catch (e) {
     return {
       isSuccess: false,
       error: e instanceof Error ? e : new Error(`Unknown error: ${e}`),
-      view: undefined
+      view: undefined,
     }
   }
 }
 
-export function computeViews<P extends ParsedLikeC4Model>(parsed: P): ComputedLikeC4Model {
+export function computeViews<P extends ParsedLikeC4ModelData>(parsed: P): ComputedLikeC4ModelData {
   const { views, ...rest } = parsed as Omit<P, '__'>
   const likec4model = LikeC4Model.create({
     ...rest,
-    views: {}
+    views: {},
   })
   const compute = (source: LikeC4View): ComputedView => {
     const result = computeView(source, likec4model)
@@ -78,6 +78,6 @@ export function computeViews<P extends ParsedLikeC4Model>(parsed: P): ComputedLi
   return {
     ...rest,
     __: 'computed',
-    views: mapValues(parsed.views, compute)
+    views: mapValues(parsed.views, compute),
   }
 }

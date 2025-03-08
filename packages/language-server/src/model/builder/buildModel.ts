@@ -30,7 +30,7 @@ import { resolveRelativePaths } from '../../view-utils'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
-export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
+export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4ModelData {
   // Merge specifications and globals from all documents
   const c4Specification = new MergedSpecification(docs)
 
@@ -62,7 +62,7 @@ export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4
         acc[el.id] = elementExtends.apply(el)
         return acc
       },
-      {} as c4.ParsedLikeC4Model['elements'],
+      {} as c4.ParsedLikeC4ModelData['elements'],
     ),
   )
 

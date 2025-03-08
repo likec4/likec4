@@ -8,14 +8,20 @@ import { createTestServices } from '../test'
 function asserts(services: LikeC4Services, expect: ExpectStatic) {
   return {
     expectDirectChildrenOf(fqn: string) {
-      const children = services.likec4.FqnIndex.directChildrenOf(fqn as Fqn).toArray().map(({ name, id }) => ({
+      const projectId = services.shared.workspace.ProjectsManager.defaultProjectId!
+      const children = services.likec4.FqnIndex.directChildrenOf(projectId, fqn as Fqn).toArray().map((
+        { name, id },
+      ) => ({
         name,
         fqn: id,
       }))
       return expect(children)
     },
     expectDescendantsOf(fqn: string) {
-      const children = services.likec4.FqnIndex.uniqueDescedants(fqn as Fqn).toArray().map(({ name, id }) => ({
+      const projectId = services.shared.workspace.ProjectsManager.defaultProjectId!
+      const children = services.likec4.FqnIndex.uniqueDescedants(projectId, fqn as Fqn).toArray().map((
+        { name, id },
+      ) => ({
         name,
         fqn: id,
       }))
@@ -26,9 +32,9 @@ function asserts(services: LikeC4Services, expect: ExpectStatic) {
 
 describe('Fqn Index', () => {
   it('one document - one level', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+    const { addDocument, validateAll, services } = createTestServices()
     const { expectDirectChildrenOf, expectDescendantsOf } = asserts(services, expect)
-    await validate(`
+    await addDocument(`
         specification {
           element component
         }
@@ -40,6 +46,8 @@ describe('Fqn Index', () => {
           }
         }
       `)
+
+    await validateAll()
 
     expectDirectChildrenOf('c1').toEqual([
       { name: 'c3', fqn: 'c1.c3' },

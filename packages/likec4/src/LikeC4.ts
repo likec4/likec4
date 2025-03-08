@@ -161,7 +161,8 @@ export class LikeC4 {
    * Not ready for rendering, but enough to traverse
    */
   computedModel(): LikeC4Model.Computed {
-    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
+    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId()
+    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel(projectId)
   }
 
   /**

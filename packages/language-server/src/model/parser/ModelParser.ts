@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
+import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
@@ -10,12 +11,14 @@ import {
   toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
-import { logWarnError } from '../../logger'
+import { logger as mainLogger } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
 import { type Base, removeIndent, toSingleLine } from './Base'
 
 export type WithModel = ReturnType<typeof ModelParser>
+
+const logger = mainLogger.getChild('ModelParser')
 
 function resolveRelationPoints(node: ast.Relation): {
   source: ast.Element
@@ -89,7 +92,14 @@ export function ModelParser<TBase extends Base>(B: TBase) {
           }
           nonexhaustive(el)
         } catch (e) {
-          logWarnError(e)
+          const astPath = this.getAstNodePath(el)
+          const error = loggable(e)
+          const message = e instanceof Error ? e.message : String(error)
+          logger.warn(`Error on {eltype}: ${message}\n document: {path}\n astpath: {astPath}\n${error}`, {
+            path: doc.uri.path,
+            eltype: el.$type,
+            astPath,
+          })
         }
       }
     }

@@ -1,5 +1,12 @@
-import { describe, expect, it, vi } from 'vitest'
-import { createTestServices } from '../test'
+import { describe, expect, it } from 'vitest'
+import { createMultiProjectTestServices, createTestServices } from '../test'
+
+const specs = `
+  specification {
+    element system
+    element component
+  }
+`
 
 describe('elementChecks', () => {
   it('should report duplicate element names', async () => {
@@ -15,10 +22,59 @@ describe('elementChecks', () => {
       }
     `)
     expect(diagnostics).toHaveLength(2)
-    for (const diagnostic of diagnostics) {
-      expect(diagnostic.severity, 'diagnostic severity').toBe(1)
-      expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element name c1')
-    }
+    expect(diagnostics).toMatchObject([
+      { severity: 1, message: 'Duplicate element name c1' },
+      { severity: 1, message: 'Duplicate element name c1' },
+    ])
+  })
+
+  it('should report duplicate element names in same project', async () => {
+    const { validateAll } = await createMultiProjectTestServices({
+      project1: {
+        specs,
+        model1: `
+          model {
+            component c1
+          }
+        `,
+        model2: `
+          model {
+            component c1
+          }
+        `,
+      },
+    })
+    const { diagnostics } = await validateAll()
+    expect(diagnostics).toHaveLength(2)
+    expect(diagnostics).toMatchObject([
+      { severity: 1, message: 'Duplicate element name c1' },
+      { severity: 1, message: 'Duplicate element name c1' },
+    ])
+  })
+
+  it('should not report duplicate element names from different projects', async ({ expect }) => {
+    const { validateAll } = await createMultiProjectTestServices({
+      project1: {
+        specs,
+        model: `
+          model {
+            component c1
+          }
+        `,
+      },
+      project2: {
+        specs,
+        model: `
+          model {
+            component c1
+          }
+        `,
+      },
+    })
+
+    const { errors, warnings } = await validateAll()
+    expect(errors).toHaveLength(0)
+    expect(warnings).toHaveLength(0)
   })
 
   it('should report duplicate element names in extendElement', async () => {

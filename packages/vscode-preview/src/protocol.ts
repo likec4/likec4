@@ -1,4 +1,4 @@
-import type { ComputedLikeC4Model, DiagramView, Fqn, RelationId, ViewChange, ViewId } from '@likec4/core'
+import type { ComputedLikeC4ModelData, DiagramView, Fqn, ProjectId, RelationId, ViewChange, ViewId } from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 /**
@@ -8,7 +8,7 @@ export const BroadcastModelUpdate: NotificationType<never> = {
   method: 'model-update',
 }
 
-export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4Model | null }> = {
+export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4ModelData | null }> = {
   method: 'fetch-computed-model',
 }
 
@@ -19,7 +19,7 @@ export const FetchDiagramView: RequestType<ViewId, {
   method: 'fetch-diagram-view',
 }
 
-export const OnOpenView: NotificationType<{ viewId: ViewId }> = {
+export const OnOpenView: NotificationType<{ viewId: ViewId; projectId: ProjectId }> = {
   method: 'on-open-view',
 }
 

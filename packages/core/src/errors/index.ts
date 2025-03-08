@@ -1,9 +1,10 @@
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function nonNullable<T>(value: T, message?: string): NonNullable<T> {
+export function nonNullable<T>(value: T, message?: string | (() => string)): NonNullable<T> {
   if (typeof value === 'undefined' || value == null) {
-    throw new Error(message ?? `Expected defined value, but received ${value}`)
+    const msg = typeof message === 'function' ? message() : message
+    throw new Error(msg ?? `Expected defined value, but received ${value}`)
   }
   return value
 }
@@ -15,7 +16,7 @@ export function invariant(
   condition: any,
   // Can provide a string, or a function that returns a string for cases where
   // the message takes a fair amount of effort to compute
-  message?: string
+  message?: string,
 ): asserts condition {
   if (condition) {
     return

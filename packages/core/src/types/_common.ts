@@ -1,5 +1,7 @@
 import type { Simplify, Tagged, UnionToIntersection } from 'type-fest'
 
+export type ProjectId = Tagged<string, 'ProjectID'>
+
 export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]

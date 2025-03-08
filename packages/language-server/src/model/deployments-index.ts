@@ -108,6 +108,6 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
         logWarnError(e)
       }
     }
-    return new DocumentFqnIndex(root, children, descendants, byfqn)
+    return new DocumentFqnIndex(root, children, descendants, byfqn, this.projects.belongsTo(document))
   }
 }

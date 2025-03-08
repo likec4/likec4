@@ -14,6 +14,16 @@ export { ast }
 
 const idattr = Symbol.for('idattr')
 
+declare module 'langium' {
+  export interface LangiumDocument {
+    likec4ProjectId?: c4.ProjectId
+  }
+
+  export interface AstNodeDescription {
+    likec4ProjectId?: c4.ProjectId
+  }
+}
+
 declare module './generated/ast' {
   export interface Element {
     [idattr]?: c4.Fqn | undefined
@@ -213,8 +223,12 @@ export interface LikeC4DocumentProps {
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
-export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {}
-export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
+export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
+  likec4ProjectId: c4.ProjectId
+}
+export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
+  likec4ProjectId: c4.ProjectId
+}
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId

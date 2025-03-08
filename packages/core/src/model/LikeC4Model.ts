@@ -6,7 +6,7 @@ import { invariant, nonNullable } from '../errors'
 import type { ComputedView, DiagramView, IteratorLike, LikeC4View, ModelGlobals } from '../types'
 import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
-import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '../types/model'
+import type { AnyParsedLikeC4ModelData, GenericLikeC4ModelData, LikeC4ModelDump } from '../types/model-data'
 import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
@@ -68,7 +68,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * @param parsed - The parsed LikeC4 model to compute from
    * @returns A new LikeC4Model instance with computed relationships and structure
    */
-  static compute<const M extends AnyParsedLikeC4Model>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
+  static compute<const M extends AnyParsedLikeC4ModelData>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
     let { views, ...rest } = parsed as Omit<M, '__'>
     const model = new LikeC4Model({ ...rest, views: {} })
     return new LikeC4Model({
@@ -84,7 +84,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * const compute = LikeC4Model.makeCompute(parsedModel);
    * const result = compute(viewSource);
    */
-  static makeCompute<M extends AnyParsedLikeC4Model>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
+  static makeCompute<M extends AnyParsedLikeC4ModelData>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
     let { views, ...rest } = parsed as Omit<M, '__'>
     const model = new LikeC4Model({ ...rest, views: {} })
     return (viewsource) => computeView(viewsource, model)
@@ -97,7 +97,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * @param model - The model data to create a LikeC4Model from
    * @returns A new LikeC4Model instance with the type derived from the input model
    */
-  static create<const M extends GenericLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
+  static create<const M extends GenericLikeC4ModelData>(model: M): LikeC4Model<Aux.FromModel<M>> {
     return new LikeC4Model(model as any)
   }
 
