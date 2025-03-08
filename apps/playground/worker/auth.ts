@@ -4,22 +4,22 @@ import { CookieStore, sessionMiddleware } from 'hono-sessions'
 import { type GithubLogin, type HonoContext, type UserSession, factory } from './types'
 
 export function readUserSession(c: HonoContext): UserSession | null {
-  const session = c.get('session')
+  const session = c.var.session
   if (!session.sessionValid()) {
     return null
   }
   const userId = session.get('userId'),
-    login = session.get('login'),
-    name = session.get('name'),
-    email = session.get('email') ?? null,
-    avatarUrl = session.get('avatarUrl') ?? null
+    login = session.get('login')
   if (!userId && !login) {
     return null
   }
+  const name = session.get('name') ?? login,
+    email = session.get('email') ?? null,
+    avatarUrl = session.get('avatarUrl') ?? null
   try {
-    invariant(userId, 'User ID is required')
-    invariant(login, 'User login is required')
-    invariant(name, 'Name is required')
+    invariant(userId, 'user id is missing in session')
+    invariant(login, 'login is missing in session')
+    invariant(name, 'name is missing in session')
     session.updateAccess()
     return {
       userId,

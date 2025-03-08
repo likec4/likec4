@@ -8,6 +8,7 @@ import { proxy } from 'hono/proxy'
 import { apiShareRoute } from './api.share'
 import { auth, cookieSessionMiddleware } from './auth'
 import { sharesKV } from './kv'
+import { factory } from './types'
 import { viewKv } from './viewkv'
 
 export type SessionData = {
@@ -26,7 +27,7 @@ type HonoEnv = {
   Bindings: Env
 }
 
-const api = new Hono<HonoEnv>()
+const api = factory.createApp()
   .use('*', cookieSessionMiddleware)
   .use(
     bodyLimit({
@@ -68,8 +69,7 @@ const api = new Hono<HonoEnv>()
     })
   })
   .onError((error, c) => {
-    const session = c.get('session')
-    console.error(`Failed ${c.req.url} ${error.message}${error.stack ? '\n' + error.stack : ''}`, { session })
+    console.error(`Failed ${c.req.url} ${error.message}${error.stack ? '\n' + error.stack : ''}`)
     if (error instanceof HTTPException) {
       // Get the custom response
       return error.getResponse()
