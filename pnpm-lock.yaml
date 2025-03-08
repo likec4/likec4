@@ -338,7 +338,7 @@ importers:
         specifier: 9.4.1
         version: 9.4.1
       nanoid:
-        specifier: ^5.0.9
+        specifier: ^5.1.2
         version: 5.1.2
       nanostores:
         specifier: 0.11.4
