@@ -42,7 +42,7 @@
     "@vanilla-extract/vite-plugin": "^5.0.1",
     "@vitejs/plugin-react": "4.3.4",
     "esm-env": "^1.2.2",
-    "nanostores": "0.11.3",
+    "nanostores": "0.11.4",
     "object-hash": "^3.0.0",
     "postcss": "^8.5.3",
     "react": "~19.0.0",

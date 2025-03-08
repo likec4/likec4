@@ -255,7 +255,7 @@ importers:
         version: 7.17.1(@mantine/core@7.17.1(@mantine/hooks@7.17.1(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@nanostores/react':
         specifier: 0.8.4
-        version: 0.8.4(nanostores@0.11.3)(react@19.0.0)
+        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@pandacss/dev':
         specifier: ^0.53.0
         version: 0.53.0(typescript@5.7.3)
@@ -341,8 +341,8 @@ importers:
         specifier: ^5.0.9
         version: 5.1.2
       nanostores:
-        specifier: 0.11.3
-        version: 0.11.3
+        specifier: 0.11.4
+        version: 0.11.4
       postcss:
         specifier: ^8.5.3
         version: 8.5.3
@@ -535,7 +535,7 @@ importers:
         version: 7.17.1(@mantine/core@7.17.1(@mantine/hooks@7.17.1(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@nanostores/react':
         specifier: 0.8.4
-        version: 0.8.4(nanostores@0.11.3)(react@19.0.0)
+        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@react-hookz/web':
         specifier: ^25.0.1
         version: 25.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -573,8 +573,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       nanostores:
-        specifier: 0.11.3
-        version: 0.11.3
+        specifier: 0.11.4
+        version: 0.11.4
       react:
         specifier: ~19.0.0
         version: 19.0.0
@@ -953,7 +953,7 @@ importers:
         version: 7.17.1(@mantine/core@7.17.1(@mantine/hooks@7.17.1(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@nanostores/react':
         specifier: 0.8.4
-        version: 0.8.4(nanostores@0.11.3)(react@19.0.0)
+        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@react-hookz/web':
         specifier: ^25.0.1
         version: 25.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1069,8 +1069,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       nanostores:
-        specifier: 0.11.3
-        version: 0.11.3
+        specifier: 0.11.4
+        version: 0.11.4
       npm-run-all2:
         specifier: ^7.0.1
         version: 7.0.2
@@ -1343,7 +1343,7 @@ importers:
         version: 7.17.1(@mantine/core@7.17.1(@mantine/hooks@7.17.1(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@nanostores/react':
         specifier: 0.8.4
-        version: 0.8.4(nanostores@0.11.3)(react@19.0.0)
+        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@react-hookz/web':
         specifier: ^25.0.1
         version: 25.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1381,8 +1381,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
       nanostores:
-        specifier: 0.11.3
-        version: 0.11.3
+        specifier: 0.11.4
+        version: 0.11.4
       object-hash:
         specifier: ^3.0.0
         version: 3.0.0
@@ -6598,8 +6598,8 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  nanostores@0.11.3:
-    resolution: {integrity: sha512-TUes3xKIX33re4QzdxwZ6tdbodjmn3tWXCEc1uokiEmo14sI1EaGYNs2k3bU2pyyGNmBqFGAVl6jAGWd06AVIg==}
+  nanostores@0.11.4:
+    resolution: {integrity: sha512-k1oiVNN4hDK8NcNERSZLQiMfRzEGtfnvZvdBvey3SQbgn8Dcrk0h1I6vpxApjb10PFUflZrgJ2WEZyJQ+5v7YQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
 
   natural-compare-lite@1.4.0:
@@ -11091,9 +11091,9 @@ snapshots:
 
   '@msgpack/msgpack@3.1.0': {}
 
-  '@nanostores/react@0.8.4(nanostores@0.11.3)(react@19.0.0)':
+  '@nanostores/react@0.8.4(nanostores@0.11.4)(react@19.0.0)':
     dependencies:
-      nanostores: 0.11.3
+      nanostores: 0.11.4
       react: 19.0.0
 
   '@nevware21/ts-async@0.5.4':
@@ -15565,7 +15565,7 @@ snapshots:
 
   nanoid@5.1.2: {}
 
-  nanostores@0.11.3: {}
+  nanostores@0.11.4: {}
 
   natural-compare-lite@1.4.0: {}
 
