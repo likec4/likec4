@@ -149,7 +149,7 @@
     "date-fns": "^4.1.0",
     "fast-equals": "^5.2.2",
     "framer-motion": "^12.4.7",
-    "hono": "^4.7.2",
+    "hono": "^4.7.4",
     "hono-sessions": "^0.7.1",
     "langium": "3.3.1",
     "monaco-editor-wrapper": "6.5.0",
