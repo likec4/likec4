@@ -42,7 +42,7 @@
     "consola": "^3.4.0",
     "merge-error-cause": "^5.0.0",
     "safe-stringify": "^1.1.1",
-    "std-env": "^3.8.0",
+    "std-env": "^3.8.1",
     "typescript": "catalog:",
     "unbuild": "^3.3.1",
     "wrap-error-message": "^3.0.0"
