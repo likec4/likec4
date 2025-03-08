@@ -210,10 +210,10 @@ importers:
         version: 14.0.6
       '@hono/oauth-providers':
         specifier: ^0.6.2
-        version: 0.6.2(hono@4.7.2)
+        version: 0.6.2(hono@4.7.4)
       '@hono/valibot-validator':
         specifier: ^0.5.2
-        version: 0.5.2(hono@4.7.2)(valibot@1.0.0-rc.3(typescript@5.7.3))
+        version: 0.5.2(hono@4.7.4)(valibot@1.0.0-rc.3(typescript@5.7.3))
       '@hpcc-js/wasm-graphviz':
         specifier: 1.7.0
         version: 1.7.0
@@ -323,8 +323,8 @@ importers:
         specifier: ^12.4.7
         version: 12.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       hono:
-        specifier: ^4.7.2
-        version: 4.7.2
+        specifier: ^4.7.4
+        version: 4.7.4
       hono-sessions:
         specifier: ^0.7.1
         version: 0.7.1
@@ -5636,8 +5636,8 @@ packages:
   hono-sessions@0.7.1:
     resolution: {integrity: sha512-GHIXltc74BfGZNzlHzapc2mwQJHF7/YNpeT9tZ76j8DEXldoE111elLjFvZ3i5wveTU+/IiQwnl2INAji/ZEaA==}
 
-  hono@4.7.2:
-    resolution: {integrity: sha512-8V5XxoOF6SI12jkHkzX/6aLBMU5GEF5g387EjVSQipS0DlxWgWGSMeEayY3CRBjtTUQYwLHx9JYouWqKzy2Vng==}
+  hono@4.7.4:
+    resolution: {integrity: sha512-Pst8FuGqz3L7tFF+u9Pu70eI0xa5S3LPUmrNd5Jm8nTHze9FxLTK9Kaj5g/k4UcwuJSXTP65SyHOPLrffpcAJg==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -10781,13 +10781,13 @@ snapshots:
       cac: 6.7.14
       mime-types: 2.1.35
 
-  '@hono/oauth-providers@0.6.2(hono@4.7.2)':
+  '@hono/oauth-providers@0.6.2(hono@4.7.4)':
     dependencies:
-      hono: 4.7.2
+      hono: 4.7.4
 
-  '@hono/valibot-validator@0.5.2(hono@4.7.2)(valibot@1.0.0-rc.3(typescript@5.7.3))':
+  '@hono/valibot-validator@0.5.2(hono@4.7.4)(valibot@1.0.0-rc.3(typescript@5.7.3))':
     dependencies:
-      hono: 4.7.2
+      hono: 4.7.4
       valibot: 1.0.0-rc.3(typescript@5.7.3)
 
   '@hpcc-js/wasm-graphviz@1.7.0': {}
@@ -14364,10 +14364,10 @@ snapshots:
 
   hono-sessions@0.7.1:
     dependencies:
-      hono: 4.7.2
+      hono: 4.7.4
       iron-webcrypto: 0.10.1
 
-  hono@4.7.2: {}
+  hono@4.7.4: {}
 
   hookable@5.5.3: {}
 
