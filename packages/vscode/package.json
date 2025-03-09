@@ -254,7 +254,7 @@
     "pretty-ms": "^9.2.0",
     "reactive-vscode": "^0.2.13",
     "remeda": "^2.20.2",
-    "std-env": "^3.8.0",
+    "std-env": "^3.8.1",
     "tslib": "^2.8.1",
     "valibot": "^1.0.0-rc.3",
     "tsx": "~4.19.3",
