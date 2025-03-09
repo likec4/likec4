@@ -57,7 +57,7 @@ importers:
         specifier: ^20.17.23
         version: 20.17.23
       '@vitest/ui':
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(vitest@3.0.7)
       dprint:
         specifier: 0.49.0
@@ -96,7 +96,7 @@ importers:
         specifier: 6.1.0
         version: 6.1.0(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   apps/docs:
@@ -486,7 +486,7 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(typescript@5.7.3)
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   packages/create-likec4:
@@ -634,7 +634,7 @@ importers:
         specifier: ^4.5.0
         version: 4.5.1(@types/node@20.17.23)(rollup@4.34.8)(typescript@5.7.3)(vite@6.1.0(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       wireit:
         specifier: 'catalog:'
@@ -668,7 +668,7 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(typescript@5.7.3)
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   packages/icons:
@@ -734,7 +734,7 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4
       '@vitest/coverage-v8':
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(vitest@3.0.7)
       esm-env:
         specifier: ^1.2.2
@@ -791,7 +791,7 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(typescript@5.7.3)
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vscode-jsonrpc:
         specifier: 8.2.0
@@ -879,7 +879,7 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(typescript@5.7.3)
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   packages/likec4:
@@ -1147,7 +1147,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(rollup@4.34.6)(vite@5.4.14(@types/node@20.17.23)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0))
       vitest:
-        specifier: ^3.0.6
+        specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.7)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vscode-jsonrpc:
         specifier: 8.2.0
