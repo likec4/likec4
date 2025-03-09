@@ -125,7 +125,7 @@
     "type-fest": "4.34.1",
     "typescript": "catalog:",
     "ufo": "^1.5.4",
-    "unbuild": "^3.3.1",
+    "unbuild": "^3.5.0",
     "vitest": "^3.0.7",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
