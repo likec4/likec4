@@ -359,7 +359,7 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       strip-indent:
         specifier: ^4.0.0
@@ -474,7 +474,7 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       turbo:
         specifier: ^2.4.4
@@ -585,7 +585,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(react@19.0.0)
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       type-fest:
         specifier: 4.34.1
@@ -652,7 +652,7 @@ importers:
         specifier: 3.3.1
         version: 3.3.1
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
     devDependencies:
       '@likec4/tsconfig':
@@ -767,7 +767,7 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       strip-indent:
         specifier: ^4.0.0
@@ -842,7 +842,7 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       strip-indent:
         specifier: ^4.0.0
@@ -1102,7 +1102,7 @@ importers:
         specifier: ^20.6.0
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       semver:
         specifier: ^7.7.1
@@ -1270,7 +1270,7 @@ importers:
         specifier: ^0.2.13
         version: 0.2.13(@types/vscode@1.97.0)
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       std-env:
         specifier: ^3.8.1
@@ -1399,7 +1399,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(react@19.0.0)
       remeda:
-        specifier: ^2.20.2
+        specifier: ^2.21.0
         version: 2.21.0
       tsx:
         specifier: ~4.19.3
