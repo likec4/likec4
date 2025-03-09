@@ -17,7 +17,6 @@ import prettyMs from 'pretty-ms'
 import {
   filter,
   groupBy,
-  isEmpty,
   isNot,
   mapToObj,
   pipe,
@@ -92,11 +91,7 @@ export class LikeC4ModelBuilder extends ADisposable {
 
     const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData | null>
     return cache.get(parsedModelCacheKey(projectId), () => {
-      const parsedModelData = buildModel(docs)
-      if (isEmpty(parsedModelData.elements) && isEmpty(parsedModelData.deployments.elements)) {
-        return null
-      }
-      return parsedModelData
+      return buildModel(docs)
     })
   }
 
