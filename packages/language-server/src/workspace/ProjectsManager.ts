@@ -153,6 +153,7 @@ export class ProjectsManager {
   }
 
   protected get mappingsToProject(): WorkspaceCache<string, ProjectId> {
-    return (this._mappingsToProject ??= new WorkspaceCache(this.services))
+    this._mappingsToProject ??= new WorkspaceCache(this.services)
+    return this._mappingsToProject
   }
 }

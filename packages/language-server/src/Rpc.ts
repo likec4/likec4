@@ -72,7 +72,7 @@ export class Rpc extends ADisposable {
     this.onDispose(
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
-        logger.debug`received request ${'fetchComputedModel'}`
+        logger.debug`received request ${'fetchComputedModel'} for project ${projectId}`
         if (cleanCaches) {
           const docs = projectId ? LangiumDocuments.projectDocuments(projectId as ProjectId) : LangiumDocuments.all
           const uris = docs.map(d => d.uri).toArray()
@@ -103,7 +103,7 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(LayoutView.req, async ({ viewId, projectId }, cancelToken) => {
-        logger.debug`received request ${'layoutView'} of ${viewId}`
+        logger.debug`received request ${'layoutView'} of ${viewId} from project ${projectId}`
         const result = await views.layoutView(viewId, projectId as ProjectId, cancelToken)
         return { result }
       }),
@@ -115,12 +115,14 @@ export class Rpc extends ADisposable {
         return { result }
       }),
       connection.onRequest(FetchProjects.req, async (_cancelToken) => {
+        logger.debug`received request ${'FetchProjects'}`
         const docsByProject = LangiumDocuments.groupedByProject()
         return {
           projects: mapValues(docsByProject, docs => map(docs, d => d.uri.toString())),
         }
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
+        logger.debug`received request ${'FetchViewsFromAllProjects'}`
         const promises = projects.all.map(async projectId => {
           const computedViews = await views.computedViews(projectId, cancelToken)
           return pipe(
@@ -155,9 +157,9 @@ export class Rpc extends ADisposable {
       connection.onRequest(BuildDocuments.Req, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
-        const deleted = LangiumDocuments.all
+        const deleted = LangiumDocuments.allExcludingBuiltin
           .toArray()
-          .filter(d => !isLikeC4Builtin(d.uri) && isLikeC4LangiumDocument(d) && notChanged(d.uri))
+          .filter(d => notChanged(d.uri))
           .map(d => d.uri)
 
         logger.debug(
@@ -202,7 +204,7 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(ChangeView.Req, async (request, _cancelToken) => {
-        logger.debug`received request ${'changeView'} of ${request.viewId}`
+        logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
         return await modelEditor.applyChange(request)
       }),
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {

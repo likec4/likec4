@@ -102,9 +102,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const validateAll = async () => {
     const docs = langiumDocuments.all.toArray()
     assert.ok(docs.length > 0, 'no documents to validate')
-    await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
-      await documentBuilder.build(docs, { validation: true }, cancelToken)
-    })
+    await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -138,7 +136,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
    */
   const resetState = async () => {
     await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
-      const docs = langiumDocuments.all.toArray().map(doc => doc.uri)
+      const docs = langiumDocuments.allExcludingBuiltin.toArray().map(doc => doc.uri)
       await documentBuilder.update([], docs, cancelToken)
     })
   }
