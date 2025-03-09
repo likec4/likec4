@@ -60,7 +60,7 @@
     "khroma": "^2.1.0",
     "nano-spawn": "^0.2.0",
     "p-limit": "^6.2.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "4.34.1",

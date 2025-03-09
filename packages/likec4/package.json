@@ -173,7 +173,7 @@
     "react-error-boundary": "^5.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-shadow": "^20.6.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "semver": "^7.7.1",
     "std-env": "^3.8.1",
     "strip-indent": "^4.0.0",
