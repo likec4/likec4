@@ -3,7 +3,7 @@ packages:
   - "packages/*"
 
 catalog:
-  typescript: 5.7.3
+  typescript: 5.8.2
   wireit: "^0.14.11"
   wrangler: "^3.114.0"
   "@mantine/core": "7.17.1"
