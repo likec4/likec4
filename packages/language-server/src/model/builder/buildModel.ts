@@ -30,8 +30,14 @@ import { resolveRelativePaths } from '../../view-utils'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
+/**
+ * Each document was parsed into a ParsedLikeC4LangiumDocument, where elements
+ * do not inherit styles from specification.
+ *
+ * This function builds a model from all documents, merging the specifications
+ * and globals, and applying the extends to the elements.
+ */
 export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4ModelData {
-  // Merge specifications and globals from all documents
   const c4Specification = new MergedSpecification(docs)
 
   const customColorDefinitions: c4.CustomColorDefinitions = mapValues(

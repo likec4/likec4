@@ -3,7 +3,7 @@ import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import { isString } from 'remeda'
 import type { Location } from 'vscode-languageserver-types'
-import type { ParsedAstElement } from '../ast'
+import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
@@ -65,9 +65,9 @@ export class LikeC4ModelLocator {
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
-  public locateElement(fqn: c4.Fqn, _prop?: string): Location | null {
-    const projectId = this.projects.ensureProjectId()
-    const entry = this.fqnIndex.byFqn(projectId, fqn).head()
+  public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
+    const _projectId = this.projects.ensureProjectId(projectId)
+    const entry = this.fqnIndex.byFqn(_projectId, fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null
@@ -78,9 +78,9 @@ export class LikeC4ModelLocator {
     }
   }
 
-  public locateDeploymentElement(fqn: c4.Fqn, _prop?: string): Location | null {
-    const projectId = this.projects.ensureProjectId()
-    const entry = this.deploymentsIndex.byFqn(projectId, fqn).head()
+  public locateDeploymentElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
+    const _projectId = this.projects.ensureProjectId(projectId)
+    const entry = this.deploymentsIndex.byFqn(_projectId, fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null
@@ -124,8 +124,11 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateViewAst(viewId: c4.ViewId) {
-    const project = this.projects.ensureProjectId()
+  public locateViewAst(
+    viewId: c4.ViewId,
+    projectId?: c4.ProjectId | undefined,
+  ): null | { doc: ParsedLikeC4LangiumDocument; view: ParsedAstView; viewAst: ast.LikeC4View } {
+    const project = this.projects.ensureProjectId(projectId)
     for (const doc of this.documents(project)) {
       const view = doc.c4Views.find(r => r.id === viewId)
       if (!view) {
@@ -146,8 +149,8 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateView(viewId: c4.ViewId): Location | null {
-    const res = this.locateViewAst(viewId)
+  public locateView(viewId: c4.ViewId, projectId?: c4.ProjectId): Location | null {
+    const res = this.locateViewAst(viewId, projectId)
     if (!res) {
       return null
     }

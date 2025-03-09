@@ -1,0 +1,12 @@
+views {
+  deployment view development-env {
+    title 'Environment: Development'
+    description '
+      Overview of the development environment.
+    '
+
+    include
+      dev,
+      dev.**
+  }
+}

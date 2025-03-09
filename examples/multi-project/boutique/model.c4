@@ -1,0 +1,188 @@
+model {
+
+  customer = actor 'Customer' {
+    -> boutique.frontend 'browses and buys products' {
+      navigateTo place-order
+      link https://github.com/likec4/template 'Repository'
+    }
+    -> boutique.frontend.catalogue 'browses products'
+    -> boutique.frontend.checkout 'buys products' {
+      navigateTo place-order
+      link https://github.com/likec4/template/issues 'Issues'
+    }
+    -> boutique.frontend.profile 'manages account and reviews history'
+  }
+  customer -> boutique 'uses'
+
+  boutique = system 'Online Boutique System' {
+
+    link https://github.com/likec4/template 'Repository'
+    link ./model.c4#L18 'Model'
+
+    description '
+      E-commerce app for browsing items, add them to the cart,
+      and purchasing them.
+    '
+
+    email = service 'Email Service' {
+      description 'Sends emails to customers using templates and customer data.'
+
+      -> email-provider 'delegates email sending'
+    }
+
+    checkout = service 'Checkout Service' {
+      #teamB
+      icon tech:nodejs    
+      description 'Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.'
+      link https://github.com/likec4/template 'Repository'
+      metadata {
+        npm '@boutique/checkout'
+        version: '1.0.0'
+      }
+
+      -> payments.processor 'sends payment request' {
+        navigateTo place-order
+      }
+      -> shipping 'sends checkout data' {
+        navigateTo order-fulfillment
+      }      
+      -> email 'sends order confirmation'
+      -> actionLog 'sends activity data' #v2 #next
+    }
+
+    cart = service 'Cart Service' {
+      #teamA
+      icon tech:nodejs
+      description "Stores the items in the user's shopping cart in Redis and retrieves it."
+
+      api = component 'Cart API' {
+        #v1, #teamA
+        icon tech:fastify
+        technology 'fastify'
+        description 'Provides access to cart data.'
+        link https://github.com/likec4/template 'Repository'
+        metadata {
+          npm '@boutique/cart-api'
+          version: '1.0.0'
+        }
+      }
+
+      cache = component 'Cart Cache' {
+        #deprecated
+        icon tech:redis
+        technology 'Redis'
+        description 'Stores cart data.'
+      }
+
+      api -> cache 'gets cart data' #deprecated
+      api -> catalogue 'gets product data'
+      api -> actionLog 'sends activity data' #v2 #next
+    }
+
+    actionLog = service 'Action Log Service' {
+      icon tech:go
+      description 'Manages user activity and search history.'
+    }
+
+    payments = service 'Payment Service' {
+      icon tech:scala
+      description 'Charges the given credit card info with the given amount and returns a transaction ID.'
+
+      processor = component 'Payment Processor' {
+        description 'Charges the given credit card info with the given amount and returns a transaction ID.'
+        -> payment-gateway 'processes payments' {
+          navigateTo order-fulfillment
+        }
+        -> db.orders 'updates order status'
+      }
+
+      currency = component 'Currency Service' {
+        description 'Converts one money amount to another currency.'
+      }
+    }
+
+    shipping = service 'Shipping Service' {
+      icon tech:net
+      description 'Gives shipping cost estimates based on the shopping cart. Ships items to the given address.'
+
+      -> db.orders 'updates shipping data'
+    }
+
+    catalogue = service 'Product Catalogue Service' {
+      icon tech:fast-api
+      description 'Provides a list of products and ability to search products and get individual products.'
+      -> db.products 'gets products'
+    }
+
+    frontend = webapp 'Frontend' {
+      icon tech:vue
+      technology 'VUE SPA'
+      description 'Provides access to boutique services.'
+
+      -> actionLog 'sends user activity data'
+
+      catalogue = component 'Product Catalogue' {
+        icon tech:vue
+        technology 'VUE single-page application'
+        description 'Displays products and allows users to search and view individual products.'
+      }
+
+      checkout = component 'Checkout' {
+        icon tech:vue
+        technology 'VUE single-page application'
+        description 'Allows users to review their cart, enter shipping information, and complete the purchase.'
+      }
+
+      profile = component 'User Profile' {
+        icon tech:vue
+        technology 'VUE single-page application'
+        description 'Displays user information and order history.'
+      }
+
+      -> cart 'gets cart data'
+      catalogue -> boutique.catalogue 'gets product data'
+      catalogue -> cart.api 'puts items in cart'
+      checkout -> payments.currency 'gets exchange rates'
+      checkout -> cart.api 'gets cart data'
+      checkout -> boutique.checkout 'sends checkout information' {
+        navigateTo place-order
+        link https://github.com/likec4/template 'Repository'
+      }
+      checkout -> shipping 'gets shipping cost'
+    }
+
+    db = database 'Boutique Database' {
+      icon tech:postgresql
+      technology 'PostgreSQL'
+      description 'Stores all product, order, and user data.'
+
+      products = db_table 'Products' {
+        description 'Stores all product data.'
+      }
+
+      orders = db_table 'Orders' {
+        description 'Stores all order data.'
+      }
+
+      users = db_table 'Users' {
+        description 'Stores all user data.'
+      }
+
+      orders -> products
+      orders -> users
+    }
+  }
+
+  payment-gateway = external-system 'Payment Gateway' {
+    description '
+      Platform to process online payments
+    '
+  }
+
+  email-provider = external-system 'Email Provider' {
+    description '
+      3rd Party Platform to send transactional emails
+    '
+  }
+
+}

@@ -42,7 +42,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   ): Promise<void> {
     const content = await this.fileSystemProvider.readDirectory(folderPath)
     await Promise.all(content.map(async entry => {
-      if (this.projects.loadConfigFile(entry)) {
+      if (await this.projects.loadConfigFile(entry)) {
         return // skip processing further for project config
       }
       if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {

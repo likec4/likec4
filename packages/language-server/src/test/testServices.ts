@@ -173,9 +173,13 @@ export async function createMultiProjectTestServices<const Projects extends Reco
   }
 
   for (const [name, files] of entries(data)) {
-    const folder = UriUtils.joinPath(URI.parse(workspace), 'src', name)
-    const config = UriUtils.joinPath(folder, 'likec4.config.json')
-    services.shared.workspace.ProjectsManager.registerProject(config)
+    const folderUri = UriUtils.joinPath(URI.parse(workspace), 'src', name)
+    services.shared.workspace.ProjectsManager.registerProject({
+      config: {
+        name,
+      },
+      folderUri,
+    })
     // @ts-ignore
     projects[name] = {} as any
 

@@ -81,7 +81,8 @@ export function activateMessenger(rpc: Rpc) {
   }))
 
   useDisposable(messenger.onNotification(WebviewMsgs.Locate, async (params) => {
-    await executeCommand(commands.locate, params)
+    const projectId = preview.projectId()
+    await executeCommand(commands.locate, { ...params, projectId })
   }))
 
   useDisposable(messenger.onNotification(WebviewMsgs.NavigateTo, ({ viewId }) => {

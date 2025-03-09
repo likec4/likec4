@@ -42,6 +42,14 @@
         "default": "./dist/browser.js"
       }
     },
+    "./config": {
+      "sources": "./src/config/index.ts",
+      "default": {
+        "types": "./dist/config/index.d.ts",
+        "import": "./dist/config/index.js",
+        "default": "./dist/config/index.js"
+      }
+    },
     "./likec4lib": {
       "sources": "./src/likec4lib.ts",
       "default": {
@@ -107,7 +115,6 @@
     "@smithy/util-base64": "^4.0.0",
     "@types/node": "^20.17.23",
     "@types/which": "^3.0.4",
-    "@valibot/to-json-schema": "1.0.0-rc.0",
     "@vitest/coverage-v8": "^3.0.6",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",

@@ -8,7 +8,6 @@ import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
   type DocumentBuilder,
-  type LangiumDocuments,
   type URI,
   Disposable,
   DocumentState,
@@ -18,6 +17,7 @@ import prettyMs from 'pretty-ms'
 import {
   filter,
   groupBy,
+  isEmpty,
   isNot,
   mapToObj,
   pipe,
@@ -30,7 +30,7 @@ import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import type { ProjectsManager } from '../workspace'
+import type { LangiumDocuments, ProjectsManager } from '../workspace'
 import { buildModel } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
 
@@ -90,9 +90,13 @@ export class LikeC4ModelBuilder extends ADisposable {
       return null
     }
 
-    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData>
+    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData | null>
     return cache.get(parsedModelCacheKey(projectId), () => {
-      return buildModel(docs)
+      const parsedModelData = buildModel(docs)
+      if (isEmpty(parsedModelData.elements) && isEmpty(parsedModelData.deployments.elements)) {
+        return null
+      }
+      return parsedModelData
     })
   }
 
@@ -108,13 +112,12 @@ export class LikeC4ModelBuilder extends ADisposable {
       log.debug('parseModel from cache')
       return cached
     }
-
-    if (this.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+    const t0 = performance.now()
+    if (this.LangiumDocuments.projectDocuments(project).some(doc => doc.state < DocumentState.Validated)) {
       log.debug('parseModel: waiting for documents to be validated')
       await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
       log.debug('parseModel: documents are validated')
     }
-    const t0 = performance.now()
     const result = this.unsafeSyncParseModel(project)
     log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
     return result

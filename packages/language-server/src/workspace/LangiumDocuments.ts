@@ -17,7 +17,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   /**
    * Returns all user documents, excluding built-in documents.
    */
-  get userDocuments(): Stream<LikeC4LangiumDocument> {
+  get allExcludingBuiltin(): Stream<LikeC4LangiumDocument> {
     return super.all.filter((doc): doc is LikeC4LangiumDocument => {
       if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri)) {
         return false
@@ -30,10 +30,10 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   }
 
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
-    return this.userDocuments.filter(doc => doc.likec4ProjectId === projectId)
+    return this.allExcludingBuiltin.filter(doc => doc.likec4ProjectId === projectId)
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
-    return groupBy(this.userDocuments.toArray(), prop('likec4ProjectId'))
+    return groupBy(this.allExcludingBuiltin.toArray(), prop('likec4ProjectId'))
   }
 }

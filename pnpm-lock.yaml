@@ -733,9 +733,6 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
-      '@valibot/to-json-schema':
-        specifier: 1.0.0-rc.0
-        version: 1.0.0-rc.0(valibot@1.0.0-rc.3(typescript@5.7.3))
       '@vitest/coverage-v8':
         specifier: ^3.0.6
         version: 3.0.7(vitest@3.0.7)
@@ -1242,6 +1239,9 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      '@valibot/to-json-schema':
+        specifier: 1.0.0-rc.0
+        version: 1.0.0-rc.0(valibot@1.0.0-rc.3(typescript@5.7.3))
       '@vscode/extension-telemetry':
         specifier: ^0.9.8
         version: 0.9.8(tslib@2.8.1)
@@ -1296,6 +1296,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
+      valibot:
+        specifier: ^1.0.0-rc.3
+        version: 1.0.0-rc.3(typescript@5.7.3)
       vscode-ext-gen:
         specifier: ^1.0.2
         version: 1.0.2

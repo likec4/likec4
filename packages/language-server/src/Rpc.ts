@@ -1,4 +1,4 @@
-import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, reduce, sort } from 'remeda'
+import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
@@ -190,13 +190,13 @@ export class Rpc extends ADisposable {
       connection.onRequest(Locate.Req, params => {
         switch (true) {
           case 'element' in params:
-            return modelLocator.locateElement(params.element, params.property ?? 'name')
+            return modelLocator.locateElement(params.element, params.projectId as ProjectId)
           case 'relation' in params:
             return modelLocator.locateRelation(params.relation, params.projectId as ProjectId)
           case 'view' in params:
-            return modelLocator.locateView(params.view)
+            return modelLocator.locateView(params.view, params.projectId as ProjectId)
           case 'deployment' in params:
-            return modelLocator.locateDeploymentElement(params.deployment, params.property ?? 'name')
+            return modelLocator.locateDeploymentElement(params.deployment, params.projectId as ProjectId)
           default:
             nonexhaustive(params)
         }
@@ -209,6 +209,9 @@ export class Rpc extends ADisposable {
         const projectsIds = [...projects.all]
         const promises = projectsIds.map(async projectId => {
           const model = await modelBuilder.buildLikeC4Model(projectId, cancelToken)
+          if (model === LikeC4Model.EMPTY) {
+            return Promise.reject(new Error(`Model is empty`))
+          }
           return {
             elementKinds: keys(model.$model.specification.elements).length,
             relationshipKinds: keys(model.$model.specification.relationships).length,
@@ -222,15 +225,19 @@ export class Rpc extends ADisposable {
         const results = await Promise.allSettled(promises)
         await interruptAndCheck(cancelToken)
 
-        const metrics = results.filter(r => r.status === 'fulfilled').map(r => r.value).reduce((acc, r) => ({
-          elementKinds: acc.elementKinds + r.elementKinds,
-          relationshipKinds: acc.relationshipKinds + r.relationshipKinds,
-          tags: acc.tags + r.tags,
-          elements: acc.elements + r.elements,
-          relationships: acc.relationships + r.relationships,
-          views: acc.views + r.views,
-          projects: acc.projects + 1,
-        })) ?? null
+        const values = results.filter(r => r.status === 'fulfilled').map(r => r.value)
+
+        const metrics = values.length > 0
+          ? values.reduce((acc, r) => ({
+            elementKinds: acc.elementKinds + r.elementKinds,
+            relationshipKinds: acc.relationshipKinds + r.relationshipKinds,
+            tags: acc.tags + r.tags,
+            elements: acc.elements + r.elements,
+            relationships: acc.relationships + r.relationships,
+            views: acc.views + r.views,
+            projects: acc.projects + 1,
+          }))
+          : null
         return {
           metrics,
         }

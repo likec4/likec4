@@ -26,12 +26,12 @@
     "dependencies": false
   },
   "scripts": {
-    "vscode:prepublish": "tsx scripts/prepublish.mts",
+    "vscode:prepublish": "tsx --conditions=sources scripts/prepublish.mts",
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
-    "build": "tsx scripts/build.mts",
+    "build": "tsx --conditions=sources scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f contrib dist src/generated",
     "vsce:pack": "pnpx vsce package",
@@ -62,7 +62,33 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ],
+        "url": "./data/config.schema.json"
+      }
+    ],
     "languages": [
+      {
+        "id": "jsonc",
+        "filenames": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ]
+      },
+      {
+        "id": "json5",
+        "filenames": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ]
+      },
       {
         "id": "likec4",
         "aliases": [
@@ -219,6 +245,7 @@
     "consola": "^3.4.0",
     "esbuild": "^0.25.0",
     "esbuild-plugins-node-modules-polyfill": "^1.7.0",
+    "@valibot/to-json-schema": "1.0.0-rc.0",
     "esm-env": "^1.2.2",
     "execa": "^9.5.2",
     "fast-equals": "^5.2.2",
@@ -229,6 +256,7 @@
     "remeda": "^2.20.2",
     "std-env": "^3.8.0",
     "tslib": "^2.8.1",
+    "valibot": "^1.0.0-rc.3",
     "tsx": "~4.19.3",
     "turbo": "^2.4.4",
     "type-fest": "4.34.1",

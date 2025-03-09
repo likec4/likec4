@@ -1,0 +1,100 @@
+specification {
+  color custom #6BD731
+
+  element actor {
+    notation "Person"
+    style {
+      shape person
+    }
+  }
+
+  element system {
+    notation "Software system"
+    style {
+      opacity 10%
+    }
+  }
+
+  element externalSystem {
+    notation "External System"
+    style {
+      color secondary
+      opacity 10%
+    }
+  }
+
+  element container {
+    style {
+      opacity 50%
+    }
+  }
+  element app {
+    notation "Application"
+    style {
+      multiple true
+    }
+  }
+  element component {
+    style {
+      opacity 50%
+    }
+  }
+
+  element mobileApp {
+    notation "Mobile Application"
+    style {
+      shape mobile
+      icon tech:swift
+      //icon https://icon.icepanel.io/Technology/svg/Swift.svg
+    }
+  }
+
+  element queue {
+    notation "Message queue"
+    style {
+      shape queue
+      color secondary
+      icon aws:simple-queue-service
+    }
+  }
+
+  element database {
+    notation "Database"
+    style {
+      shape storage
+    }
+  }
+  element table {
+    notation "Database Table"
+    style {
+      shape storage
+    }
+  }
+  element gqlMutation {
+    notation "GraphQL Mutation"
+    style {
+      icon tech:graphql
+    }
+  }
+  element gqlQuery {
+    notation "GraphQL Query"
+    style {
+      icon tech:graphql
+    }
+  }
+  element lambda {
+    notation "Serverless function"
+    style {
+      icon aws:lambda
+    }
+  }
+
+  relationship uses
+  relationship requests
+
+  tag deprecated
+  tag next
+  tag api
+  tag db
+
+}
