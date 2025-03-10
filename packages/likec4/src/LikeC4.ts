@@ -151,6 +151,18 @@ export class LikeC4 {
     return this.langium.shared.workspace.LangiumDocuments
   }
 
+  ensureSingleProject(): void {
+    const projects = this.langium.likec4.LanguageServices.projects()
+    if (projects.length > 1) {
+      this.logger.error(`Multiple projects found:
+${projects.map(p => `  - ${p.folder.fsPath}`).join('\n')}
+
+${k.red('Please specify a project folder')}
+`)
+      throw new Error(`Multiple projects found`)
+    }
+  }
+
   /**
    * Diagram is a computed view, layouted using Graphviz
    * Used in React components
