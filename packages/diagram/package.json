@@ -30,7 +30,7 @@
     "./package.json": "./package.json",
     "./diagram.css": "./dist/diagram.css"
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.6.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "vite build",

@@ -196,5 +196,5 @@
     "which": "^5.0.0",
     "yargs": "17.7.2"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }
