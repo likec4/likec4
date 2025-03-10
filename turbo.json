@@ -24,7 +24,10 @@
         "topo",
         "generate"
       ],
-      "outputs": [],
+      "outputs": [
+        ".tsbuildinfo",
+        "**/*.tsbuildinfo"
+      ],
       "outputLogs": "new-only"
     },
     "build": {
@@ -36,17 +39,6 @@
         "dist/**"
       ],
       "outputLogs": "new-only"
-    },
-    "dev": {
-      "dependsOn": [
-        "^generate",
-        "generate"
-      ],
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
     }
   }
 }

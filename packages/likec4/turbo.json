@@ -12,12 +12,6 @@
         "app/src/routeTree.gen.ts",
         "icons/**"
       ],
-      "inputs": [
-        "scripts/generate.ts",
-        "app/src/routes/**/*.tsx",
-        "tsr.config.json",
-        "package.json"
-      ],
       "outputLogs": "new-only"
     },
     "build-app": {

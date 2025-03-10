@@ -1,0 +1,33 @@
+{
+  // This file is used by VSCode task runner
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/playground/tsconfig.json"
+    },
+    {
+      "path": "./packages/core/tsconfig.json",
+    },
+    {
+      "path": "./packages/diagram/tsconfig.json"
+    },
+    {
+      "path": "./packages/generators/tsconfig.json"
+    },
+    {
+      "path": "./packages/language-server/tsconfig.json"
+    },
+    {
+      "path": "./packages/layouts/tsconfig.json"
+    },
+    {
+      "path": "./packages/likec4/tsconfig.json"
+    },
+    {
+      "path": "./packages/vscode/tsconfig.json"
+    },
+    {
+      "path": "./packages/vscode-preview/tsconfig.json"
+    }
+  ]
+}

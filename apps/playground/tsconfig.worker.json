@@ -5,8 +5,8 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "composite": true,
-    "tsBuildInfoFile": ".tsbuildinfo/worker.tsbuildinfo",
     "noEmit": false,
+    "tsBuildInfoFile": ".tsbuildinfo/worker.tsbuildinfo"
   },
   "include": [
     "./worker-configuration.d.ts",

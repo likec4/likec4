@@ -1,5 +1,6 @@
 // import { type ClientResponse, type InferResponseType, hc } from 'hono/client'
 import type { ApiType } from '#worker'
+import type { SharedPlayground } from '#worker/types'
 import { notFound } from '@tanstack/react-router'
 import { type ClientResponse, type InferRequestType, type InferResponseType, hc } from 'hono/client'
 import type { Get } from 'type-fest'
@@ -52,6 +53,7 @@ export const api = {
       }
       return await response.json()
     },
-    get: json(workerApi.api.share[':shareId'].$get),
+    // Force type cast to make TypeScript happy
+    get: json<SharedPlayground, [{ param: { shareId: string } }]>(workerApi.api.share[':shareId'].$get as any),
   },
 }

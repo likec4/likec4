@@ -47,6 +47,7 @@
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "**/.wireit": true,
+    "**/.wrangler": true,
     ".pnpm-store/**": true,
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,

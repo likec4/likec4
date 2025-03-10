@@ -11,7 +11,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { m } from 'framer-motion'
 
-export const Route = createFileRoute('/share/$shareId/_layout/view/$viewId')({
+export const Route = createFileRoute('/share/$shareId/view/$viewId')({
   component: RouteComponent,
 })
 

@@ -1,4 +1,4 @@
-import type { LayoutedLikeC4Model } from '@likec4/core'
+import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import { formatISO } from 'date-fns'
 import { type Context } from 'hono'
 import type { Session } from 'hono-sessions'
@@ -97,14 +97,14 @@ export type SharedPlayground = {
   forkable: true
   localWorkspace: LocalWorkspace
   title: string
-  model: LayoutedLikeC4Model
+  model: LayoutedLikeC4ModelData
   author: GithubLogin | null
   createdAt: ISODatetime
   expiresAt: ISODatetime
 } | {
   forkable: false
   title: string
-  model: LayoutedLikeC4Model
+  model: LayoutedLikeC4ModelData
   author: GithubLogin | null
   createdAt: ISODatetime
   expiresAt: ISODatetime
