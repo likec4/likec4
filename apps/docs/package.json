@@ -1,8 +1,8 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.25.0",
-  "packageManager": "pnpm@10.5.2",
+  "version": "1.25.1",
+  "packageManager": "pnpm@10.6.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -28,7 +28,7 @@
     "@astrojs/starlight": "0.31.1",
     "@expressive-code/plugin-collapsible-sections": "^0.40.2",
     "@expressive-code/plugin-line-numbers": "^0.40.2",
-    "@fontsource/ibm-plex-sans": "^5.1.1",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
     "astro": "5.2.5",
     "astro-og-canvas": "^0.5.6",
     "canvaskit-wasm": "^0.39.1",

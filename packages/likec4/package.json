@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -112,7 +112,7 @@
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
-    "@fontsource/ibm-plex-sans": "^5.1.1",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -153,7 +153,7 @@
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
     "fdir": "^6.4.3",
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^12.4.10",
     "get-port": "^7.1.0",
     "glob": "^11.0.1",
     "html-to-image": "^1.11.13",
@@ -174,7 +174,7 @@
     "react-error-boundary": "^5.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-shadow": "^20.6.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "semver": "^7.7.1",
     "std-env": "^3.8.1",
     "strip-indent": "^4.0.0",
@@ -198,5 +198,5 @@
     "which": "^5.0.0",
     "yargs": "17.7.2"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }

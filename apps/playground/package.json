@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "private": true,
   "scripts": {
     "generate": "wireit",
@@ -95,7 +95,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.6.1",
   "dependencies": {
     "type-fest": "4.34.1"
   },
@@ -148,7 +148,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^12.4.10",
     "hono": "^4.7.4",
     "hono-sessions": "^0.7.1",
     "langium": "3.3.1",
@@ -161,7 +161,7 @@
     "react-dom": "~19.0.0",
     "react-error-boundary": "^5.0.0",
     "react-resizable-panels": "^2.1.7",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "strip-indent": "^4.0.0",
     "tsx": "~4.19.3",
     "turbo": "^2.4.4",

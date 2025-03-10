@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -253,7 +253,7 @@
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
     "reactive-vscode": "^0.2.13",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "std-env": "^3.8.1",
     "tslib": "^2.8.1",
     "valibot": "^1.0.0-rc.3",
@@ -270,5 +270,5 @@
     "vscode-messenger-common": "^0.5.1",
     "vscode-uri": "3.1.0"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -126,7 +126,7 @@
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "^4.0.0",
     "pretty-ms": "^9.2.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "strip-indent": "^4.0.0",
     "tsx": "~4.19.3",
     "turbo": "^2.4.4",
@@ -142,5 +142,5 @@
     "vscode-uri": "3.1.0",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -30,7 +30,7 @@
     "./package.json": "./package.json",
     "./diagram.css": "./dist/diagram.css"
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.6.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "vite build",
@@ -60,11 +60,11 @@
     "d3-shape": "^3.2.0",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^12.4.10",
     "khroma": "^2.1.0",
     "nanostores": "0.11.4",
     "react-error-boundary": "^5.0.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "type-fest": "4.34.1",
     "xstate": "^5.19.2"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.25.0",
+  "version": "1.25.1",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -21,7 +21,7 @@
     "clean": "rm -r -f dist"
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.1.1",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -48,7 +48,7 @@
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "react-error-boundary": "^5.0.0",
-    "remeda": "^2.20.2",
+    "remeda": "^2.21.0",
     "tsx": "~4.19.3",
     "type-fest": "4.34.1",
     "typescript": "catalog:",

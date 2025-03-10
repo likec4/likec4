@@ -1,6 +1,6 @@
 {
   "name": "@likec4/icons",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -66,5 +66,5 @@
     "react-dom": "~19.0.0",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }
