@@ -1,3 +1,22 @@
+## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @fontsource/ibm-plex-sans to ^5.2.5 ([#1702](https://github.com/likec4/likec4/issues/1702)) ([75cb254](https://github.com/likec4/likec4/commit/75cb25442d5387fc1f957e6bcd8a8b467f04d5de))
+* **deps:** update dependency framer-motion to ^12.4.10 ([#1698](https://github.com/likec4/likec4/issues/1698)) ([dba98f9](https://github.com/likec4/likec4/commit/dba98f923b10063311d57896062a7c2423a01431))
+* **deps:** update dependency remeda to ^2.21.0 ([#1699](https://github.com/likec4/likec4/issues/1699)) ([a63e9fe](https://github.com/likec4/likec4/commit/a63e9fe9e3e86b40077482b81324e422ba3321a2))
+* **deps:** update dependency starlight-links-validator to ^0.14.3 ([#1664](https://github.com/likec4/likec4/issues/1664)) ([0a0de09](https://github.com/likec4/likec4/commit/0a0de09fc4cfb5763866691817edab641200266b))
+* **diagram:** optimize feature state management ([cf3bf90](https://github.com/likec4/likec4/commit/cf3bf9032648f1363de93931694a63d46f956874))
+* **playground:** broken playground in iOS Safari ([a4d6439](https://github.com/likec4/likec4/commit/a4d6439583720f64b8f8e934770d91f7f9b45c70))
+
+
+### Features
+
+* **diagram:** reduce graphics on panning/zooming ([fa184a6](https://github.com/likec4/likec4/commit/fa184a666a68f6adf7e3520bea4c0a8522e809d4))
+
+
+
 # [1.25.0](https://github.com/likec4/likec4/compare/v1.24.1...v1.25.0) (2025-03-07)
 
 ### 🚀 Features
