@@ -1,6 +1,6 @@
 import type { NonEmptyArray, Point } from '@likec4/core'
+import type { ViewId as LikeC4ViewId } from '@likec4/core'
 import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState, Rect } from '@xyflow/react'
-import type { LikeC4ViewId } from 'virtual:likec4/model'
 
 export type FolderXYNode = Node<{
   dimmed: boolean

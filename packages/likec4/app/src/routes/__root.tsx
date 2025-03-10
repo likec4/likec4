@@ -1,5 +1,4 @@
-import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
-import { LikeC4Model } from '../components/LikeC4Model'
+import { createRootRouteWithContext } from '@tanstack/react-router'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
   if (typeof v !== 'string') {
@@ -28,7 +27,7 @@ export type SearchParams = {
 }
 
 export const Route = createRootRouteWithContext<{}>()({
-  component: RootComponent,
+  // component: RootComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     // validate and parse the search params into a typed state
     return {
@@ -38,14 +37,12 @@ export const Route = createRootRouteWithContext<{}>()({
   },
 })
 
-function RootComponent() {
-  const { theme } = Route.useSearch()
-  return (
-    <>
-      <ScrollRestoration />
-      <LikeC4Model>
-        <Outlet />
-      </LikeC4Model>
-    </>
-  )
-}
+// function RootComponent() {
+//   const { theme } = Route.useSearch()
+//   return (
+//     <>
+//       <Outlet />
+//       {/* <TanStackRouterDevtools /> */}
+//     </>
+//   )
+// }

@@ -48,16 +48,15 @@ export async function handler({
   base,
   listen,
 }: HandlerParams) {
+  // Explicitly set NODE_ENV to development
+  process.env['NODE_ENV'] = 'development'
   const languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite',
+    // logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })
-
-  // Explicitly set NODE_ENV to development
-  process.env['NODE_ENV'] = 'development'
 
   const server = await viteDev({
     buildWebcomponent: !DEV,

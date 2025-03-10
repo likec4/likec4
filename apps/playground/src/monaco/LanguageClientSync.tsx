@@ -1,8 +1,7 @@
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
-import { type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
+import { type ViewChange, type ViewId, invariant, LikeC4Model, nonNullable } from '@likec4/core'
 import {
   BuildDocuments,
   ChangeView,

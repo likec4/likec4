@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
+import { mantine } from '../../mantine'
 
 export const cssHeader = style({
   position: 'absolute',

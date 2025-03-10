@@ -3,8 +3,8 @@ import { LikeC4Model } from '@likec4/core'
 /**
  * Used by vite plugin to generate `virtual:likec4/model`
  */
-export function createLikeC4Model(model: any): LikeC4Model {
-  return LikeC4Model.create(model) as LikeC4Model
+export function createLikeC4Model(model: any): LikeC4Model.Layouted {
+  return LikeC4Model.create(model) as LikeC4Model.Layouted
 }
 
 export {

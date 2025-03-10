@@ -21,6 +21,7 @@ import {
   LikeC4GeneratedModule,
   LikeC4GeneratedSharedModule,
 } from './generated/module'
+import { LikeC4LanguageServices } from './LikeC4LanguageServices'
 import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
@@ -104,6 +105,7 @@ export interface LikeC4AddedServices {
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
+    LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
     Layouter: GraphvizLayouter
     DeploymentsIndex: DeploymentsIndex
@@ -144,6 +146,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   likec4: {
+    LanguageServices: bind(LikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
       logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
       return new GraphvizLayouter(new GraphvizWasmAdapter())

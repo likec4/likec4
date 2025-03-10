@@ -3,7 +3,7 @@ import { IconLoader } from '@tabler/icons-react'
 import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { memo } from 'react'
-import { usePreviewUrl } from 'virtual:likec4/previews'
+// import { usePreviewUrl } from 'virtual:likec4/previews'
 import * as css from './Nodes.css'
 import type { ViewXYNode } from './types'
 
@@ -21,7 +21,8 @@ export const ViewNode = /* @__PURE__ */ memo(function ViewNode({
   // const flow = useReactFlow()
 
   const titleHeight = 60
-  const imageUrl = usePreviewUrl(data.viewId)
+  // const imageUrl = usePreviewUrl(data.viewId)
+  const imageUrl = null // usePreviewUrl(data.viewId)
 
   // const edges = [...out, ...ine]
 

@@ -63,6 +63,26 @@ export class ProjectsManager {
     return [ProjectsManager.DefaultProjectId]
   }
 
+  getProject(projectId: ProjectId): {
+    folder: URI
+    config: Readonly<ProjectConfig>
+  } {
+    if (projectId === ProjectsManager.DefaultProjectId) {
+      const folder = this.services.workspace.WorkspaceManager.workspaceUri
+      return {
+        folder,
+        config: {
+          name: ProjectsManager.DefaultProjectId,
+        },
+      }
+    }
+    const project = nonNullable(this._projects.find(({ id }) => id === projectId), `Project "${projectId}" not found`)
+    return {
+      folder: URI.parse(project.folder),
+      config: project.config,
+    }
+  }
+
   ensureProjectId(projectId?: ProjectId | undefined): ProjectId {
     if (projectId === ProjectsManager.DefaultProjectId) {
       return projectId

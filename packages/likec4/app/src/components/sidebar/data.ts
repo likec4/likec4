@@ -1,9 +1,7 @@
-import { compareNatural, nonexhaustive } from '@likec4/core'
-import { type DiagramView, ComputedView } from '@likec4/core/types'
+import { type DiagramView, compareNatural, ComputedView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
-import { useMemo } from 'react'
-import { find, values } from 'remeda'
-import { useLikeC4Model } from 'virtual:likec4/model'
+import { find } from 'remeda'
+// import { useLikeC4Model } from 'virtual:likec4/model'
 
 interface DiagramTreeNodeData {
   label: string
@@ -97,6 +95,7 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
 }
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
-  const views = useLikeC4Model().$model.views
-  return useMemo(() => buildDiagramTreeData(values(views), groupBy), [views, groupBy])
+  // const views = useLikeC4Model().$model.views
+  // return useMemo(() => buildDiagramTreeData(values(views), groupBy), [views, groupBy])
+  return []
 }

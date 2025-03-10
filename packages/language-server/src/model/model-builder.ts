@@ -9,10 +9,12 @@ import { deepEqual as eq } from 'fast-equals'
 import {
   type DocumentBuilder,
   type URI,
+  type WorkspaceLock,
   Disposable,
   DocumentState,
   WorkspaceCache,
 } from 'langium'
+import PQueue from 'p-queue'
 import prettyMs from 'pretty-ms'
 import {
   filter,
@@ -47,6 +49,7 @@ export class LikeC4ModelBuilder extends ADisposable {
   private cache: WorkspaceCache<string, unknown>
   private DocumentBuilder: DocumentBuilder
   private LangiumDocuments: LangiumDocuments
+  private mutex: WorkspaceLock
 
   constructor(services: LikeC4Services) {
     super()
@@ -55,6 +58,7 @@ export class LikeC4ModelBuilder extends ADisposable {
     this.cache = services.ValidatedWorkspaceCache
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.LangiumDocuments = services.shared.workspace.LangiumDocuments
+    this.mutex = services.shared.workspace.WorkspaceLock
 
     this.onDispose(
       this.DocumentBuilder.onUpdate((_changed, deleted) => {
@@ -83,14 +87,18 @@ export class LikeC4ModelBuilder extends ADisposable {
    * Otherwise, the model may be incomplete.
    */
   private unsafeSyncParseModel(projectId: c4.ProjectId): c4.ParsedLikeC4ModelData | null {
-    const docs = this.documents(projectId)
-    if (docs.length === 0) {
-      logger.debug(`no documents to build model - project ${projectId}`)
-      return null
-    }
-
     const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData | null>
+    const log = logger.getChild(['project', projectId])
+    if (cache.has(parsedModelCacheKey(projectId))) {
+      log.debug('unsafeSyncParseModel from cache')
+    }
     return cache.get(parsedModelCacheKey(projectId), () => {
+      const docs = this.documents(projectId)
+      if (docs.length === 0) {
+        logger.debug(`no documents to build model - project ${projectId}`)
+        return null
+      }
+      log.debug('unsafeSyncParseModel from documents')
       return buildModel(docs)
     })
   }
@@ -107,15 +115,17 @@ export class LikeC4ModelBuilder extends ADisposable {
       log.debug('parseModel from cache')
       return cached
     }
-    const t0 = performance.now()
     if (this.LangiumDocuments.projectDocuments(project).some(doc => doc.state < DocumentState.Validated)) {
       log.debug('parseModel: waiting for documents to be validated')
       await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
       log.debug('parseModel: documents are validated')
     }
-    const result = this.unsafeSyncParseModel(project)
-    log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
-    return result
+    return await this.mutex.read(async () => {
+      const t0 = performance.now()
+      const result = this.unsafeSyncParseModel(project)
+      log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
+      return result
+    })
   }
 
   private previousViews: Record<string, c4.ComputedView> = {}
@@ -178,7 +188,9 @@ export class LikeC4ModelBuilder extends ADisposable {
       log.debug('buildLikeC4Model from cache')
       return cached
     }
+    log.debug`buildLikeC4Model`
     const t0 = performance.now()
+    log.debug`buildLikeC4Model started`
     const model = await this.parseModel(project, cancelToken)
     if (!model) {
       log.debug('buildLikeC4Model: no model')

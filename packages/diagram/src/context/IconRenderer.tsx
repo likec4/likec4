@@ -10,12 +10,32 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { type ForwardRefExoticComponent, type ReactNode, type RefAttributes, createContext, useContext } from 'react'
+import {
+  type ForwardRefExoticComponent,
+  type PropsWithChildren,
+  type ReactNode,
+  type RefAttributes,
+  createContext,
+  useContext,
+} from 'react'
 import type { ElementIconRenderer } from '../LikeC4Diagram.props'
 
 const IconRendererContext = createContext<ElementIconRenderer | null>(null)
 
-export const IconRendererProvider = IconRendererContext.Provider
+export function IconRendererProvider({
+  value,
+  children,
+}: PropsWithChildren<{ value: ElementIconRenderer | null }>) {
+  const outerScope = useContext(IconRendererContext)
+  if (outerScope) {
+    return <>{children}</>
+  }
+  return (
+    <IconRendererContext.Provider value={value}>
+      {children}
+    </IconRendererContext.Provider>
+  )
+}
 
 export function IconRenderer({
   element,

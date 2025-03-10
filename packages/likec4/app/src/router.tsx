@@ -1,4 +1,3 @@
-import { MantineProvider } from '@mantine/core'
 import {
   createBrowserHistory,
   createHashHistory,
@@ -9,18 +8,27 @@ import { useMemo } from 'react'
 import { NotFound } from './components/NotFound'
 import { basepath, useHashHistory } from './const'
 import { routeTree } from './routeTree.gen'
-import { theme as mantineTheme } from './theme'
 
 type RouteTree = typeof routeTree
 
 function createRouter() {
-  return createTanstackRouter<RouteTree, 'preserve', true>({
+  // const singleProjectIndex = createRouteMask({
+  //   routeTree,
+  //   unmaskOnReload: true,
+  //   from: '/single-index',
+  //   to: '/',
+  // })
+
+  return createTanstackRouter<RouteTree, 'always', true>({
     routeTree,
     context: {},
     basepath,
-    trailingSlash: 'preserve',
+    trailingSlash: 'always',
+    defaultViewTransition: true,
     history: useHashHistory ? createHashHistory() : createBrowserHistory(),
     defaultStaleTime: Infinity,
+    scrollRestoration: false,
+    defaultStructuralSharing: true,
     defaultNotFoundComponent: () => {
       return <NotFound />
     },
@@ -40,13 +48,5 @@ declare module '@tanstack/react-router' {
 
 export function Routes() {
   const router = useMemo(() => createRouter(), [])
-  const { theme } = router.parseLocation().search
-  return (
-    <MantineProvider
-      {...(theme && { forceColorScheme: theme })}
-      defaultColorScheme={theme ?? 'auto'}
-      theme={mantineTheme}>
-      <RouterProvider router={router} />
-    </MantineProvider>
-  )
+  return <RouterProvider router={router} />
 }

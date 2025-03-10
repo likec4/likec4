@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
@@ -69,8 +69,6 @@ export async function bundleApp() {
       lib: {
         entry: {
           'main': 'src/main.tsx',
-          // 'lazy-data': 'src/routes/-view-lazy-data.ts',
-          'icons': 'src/components/RenderIcon.tsx',
         },
         formats: ['es'],
       },
@@ -87,26 +85,27 @@ export async function bundleApp() {
         },
         output: {
           hoistTransitiveImports: false,
-          interop: 'auto',
-          format: 'esm',
-          entryFileNames: '[name].js',
-          assetFileNames: '[name][extname]',
-          chunkFileNames: 'chunks/[name]-[hash].js',
-          manualChunks: (id) => {
-            if (id.includes('.css')) {
-              return null
-            }
-            if (id.includes('@mantine')) {
-              return 'mantine'
-            }
-            if (id.includes('@tanstack')) {
-              return 'tanstack-router'
-            }
-            if (id.includes('@likec4') || id.includes('@xyflow')) {
-              return 'likec4'
-            }
-            return null
-          },
+          // interop: 'auto',
+          // format: 'esm',
+          // entryFileNames: '[name].js',
+          // assetFileNames: '[name][extname]',
+          // chunkFileNames: 'chunks/[name]-[hash].js',
+          // preserveModules: true,
+          // manualChunks: (id) => {
+          //   if (id.includes('.css')) {
+          //     return null
+          //   }
+          //   if (id.includes('@mantine')) {
+          //     return 'mantine'
+          //   }
+          //   if (id.includes('@tanstack')) {
+          //     return 'tanstack-router'
+          //   }
+          //   if (id.includes('likec4') || id.includes('@xyflow')) {
+          //     return 'likec4'
+          //   }
+          //   return null
+          // },
         },
         external: [
           'react/jsx-runtime',
@@ -151,6 +150,7 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
+    rename('__app__/src/likec4.css', '__app__/src/styles.css'),
   ])
 }
 

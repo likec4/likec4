@@ -10,3 +10,5 @@ export { BundledStyles, FontCss, useBundledStyleSheet, useColorScheme } from './
 export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
 export * as nano from './nanostores'
+
+export { deepEqual } from 'fast-equals'
