@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "packageManager": "pnpm@10.6.1",
   "private": true,
   "scripts": {

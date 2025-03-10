@@ -1,3 +1,16 @@
+## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
+
+### Improvements
+
+* **diagram:** reduce graphics on panning/zooming only ([fa184a6](https://github.com/likec4/likec4/commit/fa184a666a68f6adf7e3520bea4c0a8522e809d4))
+
+
+### Bug Fixes
+
+* **lsp:** fixed typo in `likec4-language-server` bin entry
+
+
+
 # [1.25.0](https://github.com/likec4/likec4/compare/v1.24.1...v1.25.0) (2025-03-07)
 
 ### 🚀 Features
