@@ -47,5 +47,5 @@
     "unbuild": "^3.3.1",
     "wrap-error-message": "^3.0.0"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.6.1"
 }
