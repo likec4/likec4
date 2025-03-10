@@ -99,7 +99,7 @@
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
-    "mnemonist": "0.40.2",
+    "mnemonist": "0.40.3",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
     "obliterator": "^2.0.5",

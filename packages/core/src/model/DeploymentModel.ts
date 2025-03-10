@@ -5,7 +5,7 @@ import {
   type ComputedDeploymentView,
   type DeploymentRef,
   type DeploymentRelation,
-  type GenericLikeC4Model,
+  type GenericLikeC4ModelData,
   type IteratorLike,
   type Tag as C4Tag,
   DeploymentElement,
@@ -64,7 +64,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: GenericLikeC4Model['deployments'],
+    public readonly $deployments: GenericLikeC4ModelData['deployments'],
   ) {
     for (const element of sortParentsFirst(values($deployments.elements))) {
       const el = this.addElement(element)

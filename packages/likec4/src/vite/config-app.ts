@@ -10,10 +10,11 @@ import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
+import { likec4 } from '../vite-plugin'
 import type { LikeC4ViteConfig } from './config-app.prod'
-import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 export type { LikeC4ViteConfig }
@@ -130,11 +131,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     customLogger,
     plugins: [
-      vanillaExtractPlugin({
-        unstable_mode: 'transform',
-      }),
-      likec4Plugin({
-        languageServices,
+      vanillaExtractPlugin(),
+      likec4({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,
       }),
       TanStackRouterVite({
@@ -144,6 +143,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         quoteStyle: 'single',
       }),
       react(),
+      Inspect(),
     ].concat(
       cfg.outputSingleFile ? [viteSingleFile()] : [cssInjectedByJsPlugin({
         injectionCodeFormat: 'esm',

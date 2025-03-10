@@ -2,6 +2,7 @@ import '@xyflow/react/dist/style.css'
 
 export type { ControlsCustomLayout, ControlsCustomLayoutProps } from './context/ControlsCustomLayout'
 export { FramerMotionConfig } from './context/FramerMotionConfig'
+export { IconRendererProvider } from './context/IconRenderer'
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
 export { Overlay } from './overlays/overlay/Overlay'

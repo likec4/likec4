@@ -1,4 +1,11 @@
-import { type ComputedLikeC4Model, type DiagramView, type ViewId, DiagramNode, LikeC4Model } from '@likec4/core'
+import {
+  type ComputedLikeC4ModelData,
+  type DiagramView,
+  type ProjectId,
+  type ViewId,
+  DiagramNode,
+  LikeC4Model,
+} from '@likec4/core'
 import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
@@ -8,6 +15,7 @@ import { type VscodeState, ExtensionApi, getVscodeState, messenger, saveVscodeSt
 
 const {
   viewId,
+  projectId,
   view,
   ...appstate
 } = getVscodeState()
@@ -45,8 +53,9 @@ export const useIsModelLoaded = () => useStore($initialized)
  * Current view id
  */
 export const $viewId = atom(viewId)
+export const $projectId = atom(projectId)
 
-export const changeViewId = (viewId: ViewId) => {
+export const changeViewId = (viewId: ViewId, projectId?: ProjectId) => {
   const diagramState = $likeC4Diagrams.get()[viewId]
   if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {
@@ -60,14 +69,17 @@ export const changeViewId = (viewId: ViewId) => {
       state: 'stale',
     })
   }
-  if (viewId !== $viewId.get()) {
-    $viewId.set(viewId)
+  $viewId.set(viewId)
+  projectId = projectId ?? $projectId.get()
+  if ($projectId.get() !== projectId) {
+    $projectId.set(projectId)
+    fetchComputedModel()
   }
-  saveVscodeState({ viewId })
+  saveVscodeState({ viewId, projectId })
 }
 
-messenger.onNotification(OnOpenView, ({ viewId }) => {
-  changeViewId(viewId)
+messenger.onNotification(OnOpenView, ({ viewId, projectId }) => {
+  changeViewId(viewId, projectId)
 })
 
 export type LikeC4DiagramsAtom = Record<
@@ -103,7 +115,7 @@ export const $likeC4Diagrams = map<LikeC4DiagramsAtom>(
     : {},
 )
 
-const EMPTY: ComputedLikeC4Model = {
+const EMPTY: ComputedLikeC4ModelData = {
   specification: {
     tags: [],
     elements: {},
@@ -126,7 +138,7 @@ const EMPTY: ComputedLikeC4Model = {
 
 export const $likeC4ModelSource = deepMap({ ...EMPTY })
 
-function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
+function updateLikeC4ModelSource(model: ComputedLikeC4ModelData) {
   const currentViews = $likeC4ModelSource.get().views
 
   const likeC4Diagrams = $likeC4Diagrams.get()
@@ -193,7 +205,7 @@ messenger.onNotification(BroadcastModelUpdate, () => {
   fetchComputedModel()
 })
 
-export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.create(m as ComputedLikeC4Model))
+export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.create(m as ComputedLikeC4ModelData))
 
 const $likeC4View = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.view ?? null)
 const $likeC4ViewState = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.state ?? null)

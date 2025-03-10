@@ -14,10 +14,19 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconChevronDown, IconShare } from '@tabler/icons-react'
-import { type RegisteredRouter, type RouteIds, Link, useParams, useRouterState } from '@tanstack/react-router'
-import { usePreviewUrl } from 'virtual:likec4/previews'
+import {
+  type RegisteredRouter,
+  type RouteIds,
+  Link,
+  useMatch,
+  useParams,
+  useParentMatches,
+  useRouterState,
+} from '@tanstack/react-router'
+// import { usePreviewUrl } from 'virtual:likec4/previews'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'
+import { SelectProject } from './SelectProject'
 import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -29,7 +38,9 @@ type HeaderProps = {
 export function Header({ diagram }: HeaderProps) {
   const routerState = useRouterState()
   const isReactDiagramRoute = routerState.matches.some(({ routeId }) =>
-    routeId === '/view/$viewId/' || routeId === '/view/$viewId/editor'
+    routeId === '/_single/view/$viewId/'
+    || routeId === '/_single/view/$viewId/editor'
+    || routeId === '/project/$projectId/view/$viewId'
   )
 
   const { breakpoints } = useMantineTheme()
@@ -48,11 +59,11 @@ export function Header({ diagram }: HeaderProps) {
           ? (
             <>
               {/* <ViewPageButton isTablet={isTablet} /> */}
-
+              <SelectProject />
               <Button size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
                 Share
               </Button>
-              <ExportButton />
+              <ExportButton diagram={diagram} />
             </>
           )
           : (
@@ -78,11 +89,13 @@ export function Header({ diagram }: HeaderProps) {
   )
 }
 
-function ExportButton() {
-  const params = useParams({
-    from: '/view/$viewId',
-  })
-  const previewUrl = usePreviewUrl(params.viewId)
+function ExportButton({ diagram }: HeaderProps) {
+  const params = useParams({ strict: false })
+  const m = useParentMatches()
+  const isInsideProject = m.some((match) => match.routeId === '/project/$projectId')
+  // const previewUrl = usePreviewUrl(params.viewId)
+  const previewUrl = undefined
+  const viewId = diagram.id
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -105,7 +118,7 @@ function ExportButton() {
             <MenuItem
               component={'a'}
               href={previewUrl}
-              download={`${params.viewId}.png`}
+              download={`${diagram.id}.png`}
               target="_blank">
               Export as .png
             </MenuItem>
@@ -115,9 +128,9 @@ function ExportButton() {
               renderRoot={(props) => (
                 <Link
                   target="_blank"
-                  to={'/export/$viewId'}
+                  to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
                   search={{ download: true }}
-                  params={params}
+                  params
                   {...props} />
               )}
             >
@@ -125,17 +138,19 @@ function ExportButton() {
             </MenuItem>
           )}
         <MenuItem
+          disabled={isInsideProject}
           renderRoot={(props) => (
             <Link
               to={'/view/$viewId/dot'}
               search
-              params={params}
+              params
               {...props} />
           )}
         >
           Export as .dot
         </MenuItem>
         <MenuItem
+          disabled={isInsideProject}
           renderRoot={(props) => (
             <Link
               to={'/view/$viewId/d2'}
@@ -147,11 +162,14 @@ function ExportButton() {
           Export as .d2
         </MenuItem>
         <MenuItem
+          disabled={isInsideProject}
           renderRoot={(props) => (
             <Link
               to={'/view/$viewId/mmd'}
               search
-              params={params}
+              params={{
+                viewId,
+              }}
               {...props} />
           )}>
           Export as .mmd

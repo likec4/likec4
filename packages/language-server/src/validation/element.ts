@@ -1,6 +1,7 @@
-import { AstUtils, type ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -13,21 +14,21 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
     if (!fqn) {
       accept('error', 'Not indexed element', {
         node: el,
-        property: 'name'
+        property: 'name',
       })
       return
     }
     if (RESERVED_WORDS.includes(el.name)) {
       accept('error', `Reserved word: ${el.name}`, {
         node: el,
-        property: 'name'
+        property: 'name',
       })
     }
     const doc = getDocument(el)
     const docUri = doc.uri
     const elPath = locator.getAstNodePath(el)
     const withSameFqn = fqnIndex
-      .byFqn(fqn)
+      .byFqn(projectIdFrom(doc), fqn)
       .filter(v => v.documentUri !== docUri || v.path !== elPath)
       .head()
     if (withSameFqn) {
@@ -43,13 +44,13 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
               {
                 location: {
                   range: (withSameFqn.nameSegment?.range ?? withSameFqn.selectionSegment?.range)!,
-                  uri: withSameFqn.documentUri.toString()
+                  uri: withSameFqn.documentUri.toString(),
                 },
-                message: `conflicting element`
-              }
-            ]
-          }
-        }
+                message: `conflicting element`,
+              },
+            ],
+          },
+        },
       )
     }
   })

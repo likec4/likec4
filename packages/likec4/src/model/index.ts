@@ -3,8 +3,8 @@ import { LikeC4Model } from '@likec4/core'
 /**
  * Used by vite plugin to generate `virtual:likec4/model`
  */
-export function createLikeC4Model(model: any): LikeC4Model {
-  return LikeC4Model.create(model) as LikeC4Model
+export function createLikeC4Model(model: any): LikeC4Model.Layouted {
+  return LikeC4Model.create(model) as LikeC4Model.Layouted
 }
 
 export {
@@ -57,7 +57,7 @@ export type {
   ComputedDynamicView,
   ComputedEdge,
   ComputedElementView,
-  ComputedLikeC4Model,
+  ComputedLikeC4ModelData,
   DeployedInstance,
   DeploymentElement,
   DeploymentNode,
@@ -73,11 +73,11 @@ export type {
   ElementView,
   Fqn,
   HexColorLiteral,
-  LayoutedLikeC4Model,
+  LayoutedLikeC4ModelData,
   LikeC4View,
   NodeId,
   OverviewGraph,
-  ParsedLikeC4Model,
+  ParsedLikeC4ModelData,
   Point,
   RelationExpr,
   RelationId,

@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="../../src/vite-plugin/modules.d.ts" />
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean
@@ -16,4 +17,9 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
+}
+
+declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {
+  import mermaid from 'mermaid'
+  export default mermaid
 }

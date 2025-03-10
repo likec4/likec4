@@ -1,0 +1,135 @@
+// Define deployment node kinds
+specification {
+  deploymentNode node
+  deploymentNode region {
+    notation 'Geo Region'
+  }
+  deploymentNode zone
+  deploymentNode group
+  deploymentNode environment {
+    notation 'Environment'
+    style {
+      color gray
+    }
+  }
+}
+
+// Deployment model
+deployment {
+
+  node customer {
+    instanceOf customer
+  }
+
+  environment prod {
+    title 'Production environment'
+    technology 'OpenTofu'
+
+    region eu 'EU' {
+
+      zone zone1 {
+        node server1 {
+          instanceOf cloud.ui
+          instanceOf cloud.next.graphql
+        }
+        node server2 {
+          instanceOf cloud.ui
+          instanceOf cloud.next.graphql
+        }
+        node server3 {
+          instanceOf cloud.next.backend
+         // instanceOf cloud.legacy
+          instanceOf cloud.next.events
+        }
+        node server4 {
+          instanceOf cloud.next.backend
+          //instanceOf cloud.legacy
+        }
+
+        group amazon 'Amazon' {
+          instanceOf amazon.rds
+        }
+
+        server4.backend -> server3.events 'reuse' {
+
+        }
+        server3.events -> server4.backend 'reuse' {
+           style {
+              color red
+            }
+        }
+      }
+    }
+    region us 'US' {
+      node serv1 {
+        instanceOf cloud.ui
+        instanceOf cloud.next.graphql
+        // instanceOf cloud.next.events
+      }
+      node serv2 {
+        instanceOf cloud.next.backend
+      }
+      group amazon 'Amazon'  {
+        instanceOf amazon.rds
+        instanceOf amazon.sqs
+      }
+    }
+
+    eu.rds -> us.rds 'replicates' {
+      style {
+         color green
+      }
+    }
+    us.rds -> eu.rds 'replicates' {
+      style {
+       color green
+      }
+    }
+  }
+
+}
+
+views {
+
+  deployment view production {
+    title 'Production deployment'
+
+    include
+      * -> prod,
+      prod.**
+
+    exclude
+      us.sqs,
+      server1.ui -> zone1.rds,
+      server2.ui -> zone1.rds,
+      serv1.ui -> us.rds,
+      serv1.ui -> zone1.rds,
+      server1.ui -> us.rds,
+      server2.ui -> us.rds,
+
+    //   server3.legacy -> zone1.rds,
+    //   server4.legacy -> zone1.rds
+    include
+      eu.amazon.* <-> us.amazon.*,
+      server3.backend -> eu.rds,
+      server4.backend -> eu.rds,
+      //serv1.backend -> us.amazon.*
+
+    style eu._ {
+      color muted
+    }
+
+    style server1._, server4._ {
+      color green
+    }
+    style server2._ {
+      color indigo
+    }
+
+    style us.amazon._, eu.amazon._ {
+      color amber
+    }
+
+	}
+
+}

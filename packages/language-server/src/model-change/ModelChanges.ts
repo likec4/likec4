@@ -1,4 +1,4 @@
-import { invariant, nonexhaustive } from '@likec4/core'
+import { type ProjectId, invariant, nonexhaustive } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { Location, Range, TextEdit } from 'vscode-languageserver-types'
 import { type ParsedLikeC4LangiumDocument } from '../ast'
@@ -53,12 +53,12 @@ export class LikeC4ModelChanges {
     return result
   }
 
-  protected convertToTextEdit({ viewId, change }: ChangeView.Params): {
+  protected convertToTextEdit({ viewId, projectId, change }: ChangeView.Params): {
     doc: ParsedLikeC4LangiumDocument
     modifiedRange: Range
     edits: TextEdit[]
   } {
-    const lookup = this.locator.locateViewAst(viewId)
+    const lookup = this.locator.locateViewAst(viewId, projectId as ProjectId)
     if (!lookup) {
       throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
     }

@@ -1,4 +1,4 @@
-import { StaticLikeC4Diagram, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
+import { useLikeC4Model } from '@likec4/diagram'
 import {
   type BoxProps,
   type TreeNodeData,
@@ -10,7 +10,6 @@ import {
   ThemeIcon,
   Tree,
   useComputedColorScheme,
-  useTree,
 } from '@mantine/core'
 import {
   IconFileCode,
@@ -20,9 +19,8 @@ import {
   IconStack2,
   IconStarFilled,
 } from '@tabler/icons-react'
-import { useParams, useRouter } from '@tanstack/react-router'
-import { type MouseEvent, type PropsWithChildren, memo, useEffect, useTransition } from 'react'
-import { RenderIcon } from '../RenderIcon'
+import { useRouter } from '@tanstack/react-router'
+import { type MouseEvent, type PropsWithChildren } from 'react'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -42,47 +40,49 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
-export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupBy | undefined }) => {
+export const DiagramsTree = /* @__PURE__ */ ({ groupBy, viewId }: {
+  viewId: string
+  groupBy: GroupBy | undefined
+}) => {
+  // const data = [] as TreeNodeData[]
   const data = useDiagramsTreeData(groupBy)
-  const { viewId } = useParams({
-    from: '/view/$viewId',
-  })
   const router = useRouter()
-  const diagram = useLikeC4Model(true).findView(viewId)?.$view
+  // const diagram = useLikeC4Model(true).findView(viewId)?.$view
 
-  const tree = useTree({
-    multiple: false,
-  })
+  // const tree = useTree({
+  //   multiple: false,
+  // })
 
-  const relativePath = diagram?.relativePath ?? null
+  // const relativePath = diagram?.relativePath ?? null
+  const relativePath = null
 
-  useUpdateEffect(() => {
-    tree.collapseAllNodes()
-  }, [groupBy])
+  // useUpdateEffect(() => {
+  //   tree.collapseAllNodes()
+  // }, [groupBy])
 
-  useEffect(() => {
-    if (relativePath) {
-      const segments = relativePath.split('/')
-      let path = '@fs'
-      for (const segment of segments) {
-        path += `/${segment}`
-        tree.expand(path)
-      }
-    }
-  }, [relativePath, groupBy])
+  // useEffect(() => {
+  //   if (relativePath) {
+  //     const segments = relativePath.split('/')
+  //     let path = '@fs'
+  //     for (const segment of segments) {
+  //       path += `/${segment}`
+  //       tree.expand(path)
+  //     }
+  //   }
+  // }, [relativePath, groupBy])
 
-  useEffect(() => {
-    tree.select(viewId)
-  }, [viewId])
+  // useEffect(() => {
+  //   tree.select(viewId)
+  // }, [viewId])
 
   const theme = useComputedColorScheme()
-  const [, startTransition] = useTransition()
+  // const [, startTransition] = useTransition()
 
   return (
     <Box>
       <Tree
         allowRangeSelection={false}
-        tree={tree}
+        // tree={tree}
         data={data}
         styles={{
           node: {
@@ -96,6 +96,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
+              // color={theme === 'light' ? 'dark' : 'gray'}
               variant={selected ? 'transparent' : 'subtle'}
               size="sm"
               fz={'sm'}
@@ -121,13 +122,13 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  startTransition(() =>
-                    router.buildAndCommitLocation({
-                      params: {
-                        viewId: node.value,
-                      },
-                    })
-                  )
+                  // startTransition(() =>
+                  //   // router.buildAndCommitLocation({
+                  //   //   params: {
+                  //   //     viewId: node.value,
+                  //   //   },
+                  //   // })
+                  // )
                 },
               })}
             >
@@ -138,7 +139,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
       />
     </Box>
   )
-})
+}
 
 function DiagramPreviewHoverCard({
   viewId,
@@ -179,16 +180,17 @@ function DiagramPreview({
         {children}
       </HoverCardTarget>
       <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
-        <StaticLikeC4Diagram
+        {
+          /* <StaticLikeC4Diagram
           view={diagram}
-          renderIcon={RenderIcon}
           fitView
           fitViewPadding={0}
           enableElementDetails={false}
           reduceGraphics
           initialWidth={width}
           initialHeight={height}
-        />
+        /> */
+        }
       </HoverCardDropdown>
     </HoverCard>
   )

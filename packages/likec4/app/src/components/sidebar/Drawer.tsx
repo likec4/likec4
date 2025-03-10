@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router'
 import { DiagramsTree } from './DiagramsTree'
 import { SidebarDrawerOps, useDrawerOpened } from './state'
 
-export function SidebarDrawer() {
+export function SidebarDrawer({ viewId }: { viewId: string }) {
   const opened = useDrawerOpened()
 
   const [grouping, setGrouping] = useLocalStorage({
@@ -74,7 +74,7 @@ export function SidebarDrawer() {
           <Drawer.CloseButton />
         </Drawer.Header>
         <Drawer.Body>
-          <DiagramsTree groupBy={grouping} />
+          <DiagramsTree groupBy={grouping} viewId={viewId} />
         </Drawer.Body>
       </Drawer.Content>
     </Drawer.Root>

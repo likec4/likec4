@@ -1,19 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-import { lazy, Suspense } from 'react'
-import { withOverviewGraph } from '../const'
-import IndexPage from './-index-page'
-
-const OverviewGraph = /* @__PURE__ */ lazy(() => import('./-index-overview'))
-
-function WithOverviewGraph() {
-  return (
-    <Suspense>
-      <OverviewGraph />
-    </Suspense>
-  )
-}
+import { createFileRoute, Navigate, redirect } from '@tanstack/react-router'
+import { isSingleProject } from 'virtual:likec4/projects'
 
 export const Route = createFileRoute('/')({
-  component: withOverviewGraph ? WithOverviewGraph : IndexPage
+  beforeLoad: () => {
+    if (!isSingleProject) {
+      throw redirect({
+        to: '/projects/',
+        replace: true,
+      })
+    }
+  },
+  component: () => (
+    <Navigate
+      to="/single-index/"
+      mask={{
+        to: '/',
+        unmaskOnReload: true,
+      }}
+    />
+  ),
 })

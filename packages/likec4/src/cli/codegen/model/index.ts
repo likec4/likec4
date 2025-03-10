@@ -24,6 +24,7 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   logger.info(`${k.dim('format')} ${k.green('model')}`)
 

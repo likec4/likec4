@@ -22,6 +22,7 @@
       ],
       "outputs": [
         "dist/**",
+        "data/config.schema.json",
         "!dist/src/**",
         "!dist/**/*.metafile.json"
       ]

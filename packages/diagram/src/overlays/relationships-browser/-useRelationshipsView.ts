@@ -14,6 +14,7 @@ import type {
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import type { ElementModel, RelationshipModel } from '@likec4/core'
 import {
   DefaultMap,
   invariant,
@@ -23,7 +24,6 @@ import {
   sortParentsFirst,
   toArray,
 } from '@likec4/core'
-import type { ElementModel, RelationshipModel } from '@likec4/core/model'
 import {
   concat,
   filter,

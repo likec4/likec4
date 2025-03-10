@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
+import { likec4 } from '../vite-plugin'
 import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
-import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
@@ -86,8 +86,8 @@ export async function viteWebcomponentConfig({
       vanillaExtractPlugin({
         unstable_mode: 'transform',
       }),
-      likec4Plugin({
-        languageServices,
+      likec4({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),
     ],
