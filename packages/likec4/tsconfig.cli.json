@@ -23,5 +23,8 @@
   "include": [
     "./src",
     "package.json"
+  ],
+  "exclude": [
+    "./src/vite-plugin/modules.d.ts"
   ]
 }
