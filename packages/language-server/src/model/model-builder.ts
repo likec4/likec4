@@ -14,7 +14,6 @@ import {
   DocumentState,
   WorkspaceCache,
 } from 'langium'
-import PQueue from 'p-queue'
 import prettyMs from 'pretty-ms'
 import {
   filter,
