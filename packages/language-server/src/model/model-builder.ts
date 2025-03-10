@@ -12,6 +12,7 @@ import {
   type WorkspaceLock,
   Disposable,
   DocumentState,
+  interruptAndCheck,
   WorkspaceCache,
 } from 'langium'
 import prettyMs from 'pretty-ms'
@@ -114,13 +115,9 @@ export class LikeC4ModelBuilder extends ADisposable {
       log.debug('parseModel from cache')
       return cached
     }
-    if (this.LangiumDocuments.projectDocuments(project).some(doc => doc.state < DocumentState.Validated)) {
-      log.debug('parseModel: waiting for documents to be validated')
-      await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
-      log.debug('parseModel: documents are validated')
-    }
+    const t0 = performance.now()
     return await this.mutex.read(async () => {
-      const t0 = performance.now()
+      await interruptAndCheck(cancelToken)
       const result = this.unsafeSyncParseModel(project)
       log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
       return result
@@ -187,17 +184,13 @@ export class LikeC4ModelBuilder extends ADisposable {
       log.debug('buildLikeC4Model from cache')
       return cached
     }
-    log.debug`buildLikeC4Model`
     const t0 = performance.now()
-    log.debug`buildLikeC4Model started`
-    const model = await this.parseModel(project, cancelToken)
-    if (!model) {
-      log.debug('buildLikeC4Model: no model')
-      return LikeC4Model.EMPTY
-    }
-    const result = this.unsafeSyncBuildModel(project)
-    log.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
-    return result
+    return await this.mutex.read(async () => {
+      await interruptAndCheck(cancelToken)
+      const result = this.unsafeSyncBuildModel(project)
+      log.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
+      return result
+    })
   }
 
   public async computeView(
