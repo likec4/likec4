@@ -17,6 +17,6 @@ createRoot(document.getElementById('likec4-root')!).render(
   <StrictMode>
     <MantineProvider defaultColorScheme={'auto'} theme={theme}>
       <Routes />
-    </MantineProvider>,
+    </MantineProvider>
   </StrictMode>,
 )

@@ -150,7 +150,7 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
-    rename('__app__/src/likec4.css', '__app__/src/styles.css'),
+    rename('__app__/src/likec4.css', '__app__/src/style.css'),
   ])
 }
 
