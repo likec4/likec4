@@ -41,7 +41,8 @@
         "@likec4/language-server#build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "vite-plugin-modules.d.ts"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

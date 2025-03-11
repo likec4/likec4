@@ -1,0 +1,252 @@
+---
+title: LikeC4 Vite Plugin
+description: Learn how to use LikeC4 Vite Plugin to build and serve your architecture diagrams.
+head:
+  - tag: title
+    content: LikeC4 Vite Plugin
+sidebar:
+  label: Vite Plugin
+  order: 4
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6
+---
+import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
+
+LikeC4 Vite Plugin allows you to embed views from your LikeC4 model into your Vite-based application.
+The plugin will automatically generate the necessary code to render the views in your application.
+
+This is useful for building documentation, tutorials, or any other application where you want to display architecture diagrams.  
+
+## Start a new project
+
+<Steps>
+
+1. ##### Create Vite project
+
+    To get started, we will need to create a new Vite project using react-ts template.
+
+    ```sh npm2yarn
+    npm create vite@latest test-likec4 -- --template react-ts
+    cd test-likec4
+    npm install
+    ```
+
+2. ##### Install LikeC4
+    Install LikeC4 as a development dependency:
+
+    ```sh npm2yarn
+    npm install --save-dev likec4
+    ```
+
+3. ##### Configure Vite
+    Add LikeC4 plugin to the Vite config:
+
+    ```ts
+    // vite.config.ts
+    import { defineConfig } from 'vite'
+    import react from '@vitejs/plugin-react'
+    import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+    export default defineConfig({
+      plugins: [
+        react(),
+        LikeC4VitePlugin({}),
+      ],
+    })
+    ```
+
+4. ##### Add LikeC4 model
+
+    Creat `src/tutorial.c4` and copy the following model from tutorial:
+
+    ```likec4 showLineNumbers copy collapse={14-57}
+    //src/tutorial.c4
+    // Tutorial - https://likec4.dev/tutorial/
+
+    specification {
+      element actor
+      element system
+      element component
+    }
+
+    model {
+      customer = actor 'Customer' {
+        description 'The regular customer of the system'
+      }
+
+      saas = system 'Our SaaS' {
+        component ui 'Frontend' {
+          description 'Nextjs application, hosted on Vercel'
+          style {
+            icon tech:nextjs
+            shape browser
+          }
+        }
+        component backend 'Backend Services' {
+          description '
+            Implements business logic
+            and exposes as REST API
+          '
+        }
+
+        // UI requests data from the Backend
+        ui -> backend 'fetches via HTTPS'
+      }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
+      customer -> saas 'enjoys our product'
+    }
+
+    views {
+
+      view index {
+        title 'Landscape view'
+
+        include *
+      }
+
+      view saas of saas {
+        include *
+
+        style * {
+          opacity 25%
+        }
+        style customer {
+          color muted
+        }
+      }
+
+    }
+    ```
+
+5. ##### Use LikeC4 view in your app
+
+    Add types reference to the `vite-env.d.ts` file (or create new one, like `src/likec4.d.ts`):
+
+    ```ts
+    // src/vite-env.d.ts
+    /// <reference types="vite/client" />
+    /// <reference types="likec4/vite-plugin-modules" />
+    ```
+    
+    Change the `src/main.tsx` file to use LikeC4 view:
+
+    ```tsx
+    // src/main.tsx
+    import { StrictMode } from 'react'
+    import { createRoot } from 'react-dom/client'
+    import { LikeC4View } from 'virtual:likec4'
+
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <LikeC4View viewId='index' />
+      </StrictMode>
+    )
+    ```
+
+6. ##### Start the dev server
+
+    ```sh
+    npm run dev
+    ```    
+
+    Open the browser and navigate to `http://localhost:5173/`.  
+    You should see the LikeC4 diagram rendered in your app.
+
+</Steps>
+
+## Available options
+
+The plugin accepts the following options:
+| Property         | Description                                                                                         |
+| -----------------| --------------------------------------------------------------------------------------------------- |
+| `workspace`      | directory with source files (defaults vite root) |
+| `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | return rejected promise if model is invalid  (default `false`) |
+| `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
+
+It is also possible to initiate using [LikeC4 API](/tooling/model-api):
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { LikeC4 } from 'likec4'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+const { languageServices } = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`)
+
+export default defineConfig({
+  plugins: [
+    react(),
+    LikeC4VitePlugin({
+      languageServices,
+    }),
+  ],
+})
+```
+
+## Use with Astro
+
+You can use LikeC4 Vite Plugin with <a href="https://astro.build/" target='_blank'>Astro</a> and <a href="https://starlight.astro.build/" target='_blank'>Starlight</a> documentation tool as well.
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'Your architecture docs site',
+    }),
+  ],
+  vite: {
+    plugins: [
+      LikeC4VitePlugin({}),
+    ],
+  },  
+});
+```
+
+To use React components in your documentation, you need to wrap them in astro components:
+
+```astro
+// src/components/LikeC4View.astro
+---
+import { LikeC4View as ReactLikeC4View, type LikeC4ViewId } from 'likec4:react';
+interface Props {
+  viewId: LikeC4ViewId;
+}
+const { viewId } = Astro.props
+---
+<ReactLikeC4View
+  viewId={viewId}
+  client:only="react">
+</ReactLikeC4View>
+```
+
+Then you can import this component in astro components or markdown files.
+
+:::tip
+You can use LikeC4 with other frameworks as well:
+- With Nextjs see [React code generation](/tooling/code-generation/react/)  
+- For non-react-based documentation tools like Docusaurus, see [Webcomponents](/tooling/code-generation/webcomponent/)
+:::
