@@ -5,13 +5,13 @@ import { type Atom, type WritableAtom, computed } from 'nanostores'
 import { useMemo } from 'react'
 import { mapValues } from 'remeda'
 
-export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>): {
+const typedCreateHooksForModel = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
   updateModel: (data: LayoutedLikeC4ModelData) => void
   $likec4model: Atom<LikeC4Model.Layouted>
   useLikeC4Model: () => LikeC4Model.Layouted
   useLikeC4Views: () => ReadonlyArray<DiagramView>
   useLikeC4View: (viewId: string) => DiagramView | null
-} {
+} => {
   const $likec4model: Atom<LikeC4Model.Layouted> = computed($atom, (data) => createLikeC4Model(data))
 
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
@@ -54,4 +54,6 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     useLikeC4View,
   }
 }
-import.meta.hot?.acceptExports
+
+// This is a workaround to avoid type errors in the Vite plugin
+export const createHooksForModel = typedCreateHooksForModel as (arg: unknown) => unknown
