@@ -12,3 +12,10 @@ catalog:
   "@mantine/modals": "7.17.1"
   "@mantine/notifications": "7.17.1"
   "@mantine/colors-generator": "7.17.1"
+  "@types/node": 20.8.3
+
+onlyBuiltDependencies:
+  - dprint
+  - esbuild
+  - sharp
+  - workerd
