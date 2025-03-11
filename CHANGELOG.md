@@ -1,3 +1,23 @@
+# [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
+
+
+### Bug Fixes
+
+* **deps:** update mnemonist to version 0.40.3 ([101bb24](https://github.com/likec4/likec4/commit/101bb2469d6085949d92022a60be79829a1d09ee))
+* downgrade wrangler version to 3.112.0 due to compatibility issues ([001e286](https://github.com/likec4/likec4/commit/001e28687d10f7495a2dbd62bf85c2012bf345de))
+* resolve type errors in Vite plugin by casting createHooksForModel ([24900f2](https://github.com/likec4/likec4/commit/24900f2d78a3283e0b06c948e79b487ae271970a))
+* update vite version specifier to allow minor updates ([7bf03b6](https://github.com/likec4/likec4/commit/7bf03b6f68ff223eef4c18d106952a4acac97ffc))
+
+
+### Features
+
+* extract vite-plugin ([b2b3519](https://github.com/likec4/likec4/commit/b2b351902a261f21c7bd51b303db55edfa82add2))
+* **lsp:** multiple projects ([6975d42](https://github.com/likec4/likec4/commit/6975d4202a577d6787ee07b26308ba2a6df694b7))
+* **multi-project:** add configuration files and deployment views ([8a4c8db](https://github.com/likec4/likec4/commit/8a4c8db225dd919d08ac155e33b6e52ba3d810bb))
+* **vite-plugin:** zero-config for vite-plugin ([e330f99](https://github.com/likec4/likec4/commit/e330f99c4a9bfad360d3e2db47cf7dcdabedc684))
+
+
+
 ## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
 
 ### Improvements
