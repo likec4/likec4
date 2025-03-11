@@ -1,9 +1,8 @@
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
+import { LikeC4ModelProvider } from '@likec4/diagram'
 import { createLikeC4Model } from 'likec4/model'
-import { LikeC4ModelProvider } from 'likec4/react'
 import { nano } from 'likec4/react'
 import { type PropsWithChildren, createContext, use, useMemo } from 'react'
-// import { useLikeC4Model } from 'virtual:likc4/model'
 
 const LikeC4ModelDataContext = createContext<nano.Atom<LayoutedLikeC4ModelData>>(null as any)
 
