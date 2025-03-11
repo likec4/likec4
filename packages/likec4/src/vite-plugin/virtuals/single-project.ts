@@ -1,12 +1,14 @@
-import { invariant } from '@likec4/core'
-import { first, only } from 'remeda'
+import { first } from 'remeda'
 import { type VirtualModule, k } from './_shared'
 
 const code = (id: string) => `
 export { IconRenderer } from 'virtual:likec4/${id}/icons'
 export {
   $likec4data,
-  $likec4model
+  $likec4model,
+  useLikeC4Model,
+  useLikeC4Views,
+  useLikeC4View
 } from 'virtual:likec4/${id}/model'
 export const projectId = ${JSON.stringify(id)}
 `

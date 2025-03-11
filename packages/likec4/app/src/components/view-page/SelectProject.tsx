@@ -29,12 +29,13 @@ export function SelectProject() {
             key={projectId}
             renderRoot={(props) => (
               <Link
-                target="_blank"
-                to={'/project/$projectId/'}
+                {...props}
+                to={'/project/$projectId/view/$viewId/'}
                 params={{
                   projectId,
+                  viewId: 'index',
                 }}
-                {...props} />
+              />
             )}
           >
             {projectId}

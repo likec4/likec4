@@ -10,6 +10,7 @@
 !package.json
 !LICENSE
 !README.md
+!src/vite-plugin/modules.d.ts
 
 # Exclude the following
 **/*.spec.ts

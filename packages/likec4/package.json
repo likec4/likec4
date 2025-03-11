@@ -44,6 +44,17 @@
         "default": "./react/index.js"
       }
     },
+    "./vite-plugin-modules": {
+      "types": "./src/vite-plugin/modules.d.ts"
+    },
+    "./vite-plugin": {
+      "sources": "./src/vite-plugin/index.ts",
+      "default": {
+        "types": "./dist/vite-plugin/index.d.ts",
+        "import": "./dist/vite-plugin/index.js",
+        "default": "./dist/vite-plugin/index.js"
+      }
+    },
     "./react/style.css": "./react/style.css",
     "./icons/all": {
       "types": "./icons/all.d.ts",

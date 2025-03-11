@@ -17,6 +17,9 @@
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
+      ],
+      "likec4/react": [
+        "./app/react/components/*"
       ]
     }
   },

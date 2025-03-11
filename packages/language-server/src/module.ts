@@ -21,7 +21,7 @@ import {
   LikeC4GeneratedModule,
   LikeC4GeneratedSharedModule,
 } from './generated/module'
-import { LikeC4LanguageServices } from './LikeC4LanguageServices'
+import { type LikeC4LanguageServices, DefaultLikeC4LanguageServices } from './LikeC4LanguageServices'
 import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
@@ -33,9 +33,10 @@ import {
   LikeC4SemanticTokenProvider,
 } from './lsp'
 import {
+  type LikeC4ModelBuilder,
+  DefaultLikeC4ModelBuilder,
   DeploymentsIndex,
   FqnIndex,
-  LikeC4ModelBuilder,
   LikeC4ModelLocator,
   LikeC4ModelParser,
 } from './model'
@@ -51,7 +52,7 @@ import {
   WorkspaceSymbolProvider,
 } from './shared'
 import { registerValidationChecks } from './validation'
-import { LikeC4Views } from './views'
+import { type LikeC4Views, DefaultLikeC4Views } from './views'
 import {
   AstNodeDescriptionProvider,
   IndexManager,
@@ -146,17 +147,17 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   likec4: {
-    LanguageServices: bind(LikeC4LanguageServices),
+    LanguageServices: bind(DefaultLikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
       logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
       return new GraphvizLayouter(new GraphvizWasmAdapter())
     },
-    Views: bind(LikeC4Views),
+    Views: bind(DefaultLikeC4Views),
     DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
-    ModelBuilder: bind(LikeC4ModelBuilder),
+    ModelBuilder: bind(DefaultLikeC4ModelBuilder),
     ModelLocator: bind(LikeC4ModelLocator),
   },
   lsp: {

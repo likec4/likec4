@@ -42,7 +42,22 @@ const logger = mainLogger.getChild('ModelBuilder')
 
 type ModelParsedListener = (docs: URI[]) => void
 
-export class LikeC4ModelBuilder extends ADisposable {
+export interface LikeC4ModelBuilder {
+  parseModel(
+    projectId?: c4.ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<c4.ParsedLikeC4ModelData | null>
+  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed
+  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
+  computeView(
+    viewId: ViewId,
+    projectId?: c4.ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<c4.ComputedView | null>
+  onModelParsed(callback: ModelParsedListener): Disposable
+}
+
+export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4ModelBuilder {
   private projects: ProjectsManager
   private parser: LikeC4ModelParser
   private listeners: ModelParsedListener[] = []

@@ -1,12 +1,12 @@
 import type { ComputedView, DiagramView, OverviewGraph, ProjectId, ViewId } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
-import { type Cancellation, type WorkspaceCache } from 'langium'
+import { type WorkspaceCache } from 'langium'
 import prettyMs from 'pretty-ms'
 import { values } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
 import { logError, logger as rootLogger, logWarnError } from '../logger'
-import { LikeC4ModelBuilder } from '../model/model-builder'
+import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 
 export type GraphvizOut = {
@@ -22,7 +22,16 @@ type GraphvizSvgOut = {
 
 const logger = rootLogger.getChild('Views')
 
-export class LikeC4Views {
+export interface LikeC4Views {
+  computedViews(projectId?: ProjectId | undefined): Promise<ComputedView[]>
+  layoutAllViews(projectId?: ProjectId | undefined): Promise<Array<Readonly<GraphvizOut>>>
+  layoutView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<GraphvizOut | null>
+  diagrams(projectId?: ProjectId | undefined): Promise<Array<DiagramView>>
+  viewsAsGraphvizOut(projectId?: ProjectId | undefined): Promise<Array<GraphvizSvgOut>>
+  overviewGraph(): Promise<OverviewGraph>
+}
+
+export class DefaultLikeC4Views implements LikeC4Views {
   private cache = new WeakMap<ComputedView, GraphvizOut>()
 
   private viewsWithReportedErrors = new Set<ViewId>()

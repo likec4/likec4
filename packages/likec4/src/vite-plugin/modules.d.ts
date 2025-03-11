@@ -1,33 +1,81 @@
+// import type { DiagramView } from 'likec4/model'
+// import type { nano } from 'likec4/react'
+// import type { ReactNode } from 'react'
+
+// type ElementIconRendererProps = {
+//   node: {
+//     id: string
+//     title: string
+//     icon?: string | null | undefined
+//   }
+// }
+
+// type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
+
 declare module 'virtual:likec4/projects' {
-  import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
   export const isSingleProject: boolean
-  export const projects: NonEmptyReadonlyArray<ProjectId>
+  export const projects: readonly [string, ...string[]]
 }
 
 declare module 'virtual:likec4/icons' {
-  import type { ElementIconRenderer } from '@likec4/diagram'
+  import type { ReactNode } from 'react'
+  type ElementIconRendererProps = {
+    node: {
+      id: string
+      title: string
+      icon?: string | null | undefined
+    }
+  }
+
+  export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
+
   export const ProjectIcons: (projectId: string) => ElementIconRenderer
 }
 
 declare module 'virtual:likec4/model' {
-  import type { LayoutedLikeC4ModelData, LikeC4Model } from '@likec4/core'
-  import type { Atom } from 'nanostores'
+  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
+  import type { nano } from 'likec4/react'
+
+  export type Atom<T> = nano.Atom<T>
+
+  export type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model }
 
   export function loadModel(projectId: string): Promise<{
     $likec4data: Atom<LayoutedLikeC4ModelData>
     $likec4model: Atom<LikeC4Model.Layouted>
+    useLikeC4Model: () => LikeC4Model.Layouted
+    useLikeC4Views: () => ReadonlyArray<DiagramView>
+    useLikeC4View: (viewId: string) => DiagramView | null
   }>
 }
 
 declare module 'virtual:likec4/single-project' {
-  import type { ProjectId } from '@likec4/core'
-  import type { ElementIconRenderer } from '@likec4/diagram'
+  import type { ElementIconRenderer } from 'virtual:likec4/icons'
+  import type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model } from 'virtual:likec4/model'
 
   export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model.Layouted>
+  export function useLikeC4Model(): LikeC4Model.Layouted
+  export function useLikeC4Views(): ReadonlyArray<DiagramView>
+  export function useLikeC4View(viewId: string): DiagramView | null
+
   export const IconRenderer: ElementIconRenderer
 
-  export const projectId: ProjectId
+  export const projectId: string
+}
+
+declare module 'virtual:likec4/react' {
+  import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type { JSX, PropsWithChildren } from 'react'
+  import type { DiagramView, LikeC4Model } from 'virtual:likec4/model'
+
+  export function useLikeC4Model(): LikeC4Model.Layouted
+  export function useLikeC4Views(): ReadonlyArray<DiagramView>
+  export function useLikeC4View(viewId: string): DiagramView | null
+
+  export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props): JSX.Element
 }
 
 declare module 'virtual:likec4/dot' {
@@ -46,21 +94,3 @@ declare module 'virtual:likec4/mmd' {
     mmdSource(viewId: string): string
   }>
 }
-
-// declare module 'virtual:likec4/model/*.js' {
-//   import type { DiagramView as CoreDiagramView, LikeC4Model } from '@likec4/core'
-
-//   export type LikeC4ViewId = 'likec4-view-id'
-
-//   export type LikeC4Tag = 'likec4-tag'
-
-//   export type LikeC4ElementKind = 'likec4-element-kind'
-
-//   export type DiagramView<ViewId extends LikeC4ViewId = LikeC4ViewId> = CoreDiagramView<ViewId>
-
-//   export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
-
-//   export const likeC4Model: LikeC4Model.Layouted
-
-//   export function useLikeC4Model(): LikeC4Model.Layouted
-// }

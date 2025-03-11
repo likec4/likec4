@@ -5,23 +5,26 @@ import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } fro
 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
 import { createLikeC4Model } from 'likec4/model'
-import { nano, deepEqual } from 'likec4/react'
+import { nano, createHooksForModel } from 'likec4/react'
 
 export const $likec4data = nano.atom(${JSON5.stringify(model.$model)})
 
-export const $likec4model = /* @__PURE__ */ nano.computed($likec4data, (data) => /* @__PURE__ */ createLikeC4Model(data))
+export const {
+  updateModel,
+  $likec4model,
+  useLikeC4Model,
+  useLikeC4Views,
+  useLikeC4View
+}= /* @__PURE__ */ createHooksForModel($likec4data)
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$current) {
-      import.meta.hot.data.$current = $likec4data
+    if (!import.meta.hot.data.$update) {
+      import.meta.hot.data.$update = updateModel
     }
     const update = md.$likec4data?.value
     if (update) {
-      const current = import.meta.hot.data.$current.get()
-      if (!deepEqual(current, update)) {
-        import.meta.hot.data.$current.set(update)
-      }
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }

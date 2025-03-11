@@ -12,10 +12,32 @@ import { ProjectsManager } from './workspace'
 
 const logger = mainLogger.getChild('LikeC4LanguageServices')
 
+export interface LikeC4LanguageServices {
+  readonly views: LikeC4Views
+  readonly builder: LikeC4ModelBuilder
+  readonly workspaceUri: URI
+  projects(): NonEmptyArray<{
+    id: ProjectId
+    folder: URI
+    config: ProjectConfig
+    documents: NonEmptyArray<URI> | null
+  }>
+  diagrams(): Promise<DiagramView[]>
+  computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed>
+  layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted>
+  getErrors(): Array<{
+    message: string
+    line: number
+    range: Range
+    sourceFsPath: string
+  }>
+  notifyUpdate(update: { changed?: string; removed?: string }): Promise<boolean>
+}
+
 /**
  * Public Language Services
  */
-export class LikeC4LanguageServices {
+export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   public readonly views: LikeC4Views
   public readonly builder: LikeC4ModelBuilder
 

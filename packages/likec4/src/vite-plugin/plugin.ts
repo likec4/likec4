@@ -9,11 +9,11 @@ import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
 import { projectsModule } from './virtuals/projects'
+import { reactModule } from './virtuals/react'
 import { singleProjectModule } from './virtuals/single-project'
 
 export type LikeC4PluginOptions = {
   languageServices: LikeC4LanguageServices
-  useOverviewGraph?: boolean
 }
 
 const projectVirtuals = [
@@ -34,6 +34,7 @@ const virtuals = [
   projectsModule,
   modelModule,
   singleProjectModule,
+  reactModule,
   d2Module,
   dotModule,
   mmdModule,
@@ -46,9 +47,9 @@ const isTarget = (path: string) => {
 }
 
 export function likec4({
-  useOverviewGraph = false,
   languageServices: likec4,
 }: LikeC4PluginOptions): PluginOption {
+  const useOverviewGraph = false
   let logger: ViteLogger
   let assetsDir = likec4.workspaceUri.fsPath
 
