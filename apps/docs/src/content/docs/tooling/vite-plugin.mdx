@@ -7,9 +7,6 @@ head:
 sidebar:
   label: Vite Plugin
   order: 4
-tableOfContents:
-  minHeadingLevel: 2
-  maxHeadingLevel: 6
 ---
 import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
 
@@ -22,7 +19,7 @@ This is useful for building documentation, tutorials, or any other application w
 
 <Steps>
 
-1. ##### Create Vite project
+1. ### Create Vite project
 
     To get started, we will need to create a new Vite project using react-ts template.
 
@@ -32,14 +29,14 @@ This is useful for building documentation, tutorials, or any other application w
     npm install
     ```
 
-2. ##### Install LikeC4
+2. ### Install LikeC4
     Install LikeC4 as a development dependency:
 
     ```sh npm2yarn
     npm install --save-dev likec4
     ```
 
-3. ##### Configure Vite
+3. ### Configure Vite
     Add LikeC4 plugin to the Vite config:
 
     ```ts
@@ -56,7 +53,7 @@ This is useful for building documentation, tutorials, or any other application w
     })
     ```
 
-4. ##### Add LikeC4 model
+4. ### Add LikeC4 model
 
     Creat `src/tutorial.c4` and copy the following model from tutorial:
 
@@ -121,7 +118,7 @@ This is useful for building documentation, tutorials, or any other application w
     }
     ```
 
-5. ##### Use LikeC4 view in your app
+5. ### Use LikeC4 view in your app
 
     Add types reference to the `vite-env.d.ts` file (or create new one, like `src/likec4.d.ts`):
 
@@ -137,7 +134,7 @@ This is useful for building documentation, tutorials, or any other application w
     // src/main.tsx
     import { StrictMode } from 'react'
     import { createRoot } from 'react-dom/client'
-    import { LikeC4View } from 'virtual:likec4'
+    import { LikeC4View } from 'likec4:react'
 
     createRoot(document.getElementById('root')!).render(
       <StrictMode>
@@ -146,7 +143,7 @@ This is useful for building documentation, tutorials, or any other application w
     )
     ```
 
-6. ##### Start the dev server
+6. ### Start the dev server
 
     ```sh
     npm run dev
@@ -157,7 +154,7 @@ This is useful for building documentation, tutorials, or any other application w
 
 </Steps>
 
-## Available options
+## Options
 
 The plugin accepts the following options:
 | Property         | Description                                                                                         |
@@ -201,6 +198,22 @@ export default defineConfig({
   ],
 })
 ```
+
+## Available modules
+
+Use can use other modules to get access to your model:
+
+```tsx
+// For multi-project workspaces
+import { projects } from 'likec4:projects'
+
+// Pick first one
+import { useLikeC4Views, useLikeC4View } from 'likec4:single-project'
+
+import { loadDotSources } from 'likec4:dot'
+```
+
+Check sources for complete list - <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/src/vite-plugin/modules.d.ts">vite-plugin/modules.d.ts</a>
 
 ## Use with Astro
 

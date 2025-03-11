@@ -1,3 +1,58 @@
+# [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
+
+This release marks a **huge first step** in simplifying LikeC4 integration with any Vite-based application.
+
+### 🚀 Features
+
+* **🔌 Vite Plugin**  
+ 
+  The new Vite plugin allows you to **embed LikeC4 views** directly into your application or documentation website.  
+  Configure:
+  
+  ```ts  
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+  import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+  export default defineConfig({
+    plugins: [
+      react(),
+      LikeC4VitePlugin({}),
+    ],
+  })
+  ```
+
+  Use:
+  ```tsx
+  import { StrictMode } from 'react'
+  import { createRoot } from 'react-dom/client'
+  import { LikeC4View } from 'likec4:react'
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <LikeC4View viewId='index' />
+    </StrictMode>
+  )
+  ```
+
+  [📖 Read the documentation](https://likec4.dev/tooling/vite-plugin/)
+
+* **📂 Multi-Project Workspaces**  
+  
+  This release adds multi-project support in both the CLI and VS Code.
+  Simply create a likec4.config.json file in a folder, and it will be recognized as a LikeC4 project.
+  
+  [📖 Learn more](https://likec4.dev/dsl/projects/)
+
+* **llms.txt support**  
+  Thanks to @simonwfarrow for suggesting this in [#1683](https://github.com/likec4/likec4/discussions/1683).
+  likec4.dev now provides:
+  - [llms.txt](https://likec4.dev/llms.txt)
+  - [llms-full.txt](https://likec4.dev/llms-full.txt) 
+  
+  [Read more about llms.txt](https://llmstxt.org/)
+
+
 ## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
 
 ### Improvements
