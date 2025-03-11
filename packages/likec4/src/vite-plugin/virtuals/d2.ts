@@ -49,7 +49,7 @@ const code = (views: ComputedView[]) => {
 export const projectD2Module = {
   ...generateMatches('d2'),
   async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating virtual:likec4/d2/${projectId}`))
+    logger.info(k.dim(`generating likec4:d2/${projectId}`))
     const views = await likec4.views.computedViews(projectId)
     return code(views)
   },

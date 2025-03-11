@@ -11,8 +11,6 @@ import {
 } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
-import { isLikeC4LangiumDocument } from './ast'
-import { isLikeC4Builtin } from './likec4lib'
 import {
   BuildDocuments,
   ChangeView,
@@ -61,7 +59,7 @@ export class Rpc extends ADisposable {
       },
       {
         triggerAt: 'end',
-        minQuietPeriodMs: 150,
+        minQuietPeriodMs: 100,
         maxBurstDurationMs: 500,
         minGapMs: 300,
       },

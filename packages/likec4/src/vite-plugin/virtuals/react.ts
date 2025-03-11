@@ -3,7 +3,7 @@ import { type VirtualModule, k } from './_shared'
 const code = () => `
 import { jsx as _jsx } from "react/jsx-runtime";
 import { LikeC4ModelProvider as Provider, LikeC4View as GenericLikeC4View, ReactLikeC4 as GenericReactLikeC4 } from 'likec4/react';
-import { IconRenderer, useLikeC4Model, useLikeC4View, useLikeC4Views } from 'virtual:likec4/single-project';
+import { IconRenderer, useLikeC4Model, useLikeC4View, useLikeC4Views } from 'likec4:single-project';
 
 export function LikeC4ModelProvider({ children }) {
   const likeC4Model = useLikeC4Model()
@@ -24,10 +24,10 @@ export {
 `
 
 export const reactModule = {
-  id: 'virtual:likec4',
-  virtualId: '\0likec4-plugin/react.js',
+  id: 'likec4:react',
+  virtualId: 'likec4:plugin/react.js',
   async load({ logger }) {
-    logger.info(k.dim('generating virtual:likec4/react'))
+    logger.info(k.dim('generating likec4:react'))
     return code()
   },
 } satisfies VirtualModule

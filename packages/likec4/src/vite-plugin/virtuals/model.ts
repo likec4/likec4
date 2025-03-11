@@ -4,6 +4,8 @@ import { LikeC4Model } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } from './_shared'
 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
+'use client'
+
 import { createLikeC4Model } from 'likec4/model'
 import { nano, createHooksForModel } from 'likec4/react'
 
@@ -35,19 +37,19 @@ if (import.meta.hot) {
 export const projectModelModule = {
   ...generateMatches('model'),
   async load({ likec4, projectId, logger, assetsDir }) {
-    logger.info(k.dim(`generating virtual:likec4/model/${projectId}`))
+    logger.info(k.dim(`generating likec4:model/${projectId}`))
     const model = await likec4.layoutedModel(projectId)
     return projectModelCode(model)
   },
 } satisfies ProjectVirtualModule
 
 export const modelModule = {
-  id: 'virtual:likec4/model',
-  virtualId: '\0likec4-plugin/model.js',
+  id: 'likec4:model',
+  virtualId: 'likec4:plugin/model.js',
   async load({ likec4, logger, projects, assetsDir }) {
-    logger.info(k.dim('generating virtual:likec4/model'))
+    logger.info(k.dim('generating likec4:model'))
     const cases = projects.map(({ id }) => {
-      const pkg = joinURL('virtual:likec4', id, 'model')
+      const pkg = joinURL('likec4:model', id)
       return ` case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
     })
     return `

@@ -40,14 +40,12 @@ export interface ProjectVirtualModule {
 export function generateMatches(moduleId: string) {
   return {
     matches: (id: string): ProjectId | null => {
-      let { module, projectId } =
-        id.match(/^(?:virtual:likec4|\0likec4-plugin)\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ?? {}
+      let { module, projectId } = id.match(/^likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
+        id.match(/^likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
       if (!module || !projectId) {
         return null
       }
-      if (module.endsWith('.jsx')) {
-        module = module.slice(0, -4)
-      } else if (module.endsWith('.js')) {
+      if (module.endsWith('.js')) {
         module = module.slice(0, -3)
       }
       if (module === moduleId) {
@@ -55,18 +53,18 @@ export function generateMatches(moduleId: string) {
       }
       return null
     },
-    virtualId: (projectId: ProjectId): string => joinURL(`\0likec4-plugin`, projectId, moduleId) + '.js',
+    virtualId: (projectId: ProjectId): string => joinURL(`likec4:plugin`, projectId, moduleId) + '.js',
   }
 }
 
 export function generateCombinedProjects(moduleId: string, fnName: string): VirtualModule {
   return {
-    id: `virtual:likec4/${moduleId}`,
-    virtualId: `\0likec4-plugin/${moduleId}.js`,
+    id: `likec4:${moduleId}`,
+    virtualId: `likec4:plugin/${moduleId}.js`,
     async load({ likec4, logger, projects, assetsDir }) {
-      logger.info(k.dim(`generating virtual:likec4/${moduleId}`))
+      logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
-        const pkg = joinURL('virtual:likec4', id, moduleId)
+        const pkg = joinURL(`likec4:${moduleId}`, id)
         return ` case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
       })
       return `

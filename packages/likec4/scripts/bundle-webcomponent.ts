@@ -88,7 +88,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'likec4/model',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           /@likec4\/core.*/,
-          /virtual\:likec4/,
+          /likec4:/,
         ],
       },
     },

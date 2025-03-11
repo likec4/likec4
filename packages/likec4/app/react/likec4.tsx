@@ -6,8 +6,8 @@ import {
   LikeC4View as GenericLikeC4View,
   ReactLikeC4 as GenericReactLikeC4,
 } from 'likec4/react'
+import { $likec4data, $likec4model, IconRenderer } from 'likec4:single-project'
 import { type PropsWithChildren } from 'react'
-import { $likec4data, $likec4model, IconRenderer } from 'virtual:likec4/single-project'
 
 export const likeC4Model = $likec4model.get()
 
@@ -15,7 +15,7 @@ export {
   IconRenderer as RenderIcon,
   useLikeC4Model,
   useLikeC4View,
-} from 'virtual:likec4/single-project'
+} from 'likec4:single-project'
 
 export function isLikeC4ViewId(value: unknown): value is ViewId {
   const model = $likec4data.get()

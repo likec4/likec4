@@ -1,5 +1,6 @@
 import type { ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
+import { relative } from 'node:path'
 import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
 import { LikeC4 } from '../LikeC4'
@@ -85,6 +86,7 @@ export function LikeC4VitePlugin({
   useOverviewGraph = false,
   ...opts
 }: LikeC4VitePluginOptions): any {
+  let viteRoot: string
   let logger: ViteLogger
   let likec4: LikeC4LanguageServices
   let assetsDir: string
@@ -93,6 +95,7 @@ export function LikeC4VitePlugin({
     name: 'vite-plugin-likec4',
 
     async configResolved(config) {
+      viteRoot = config.root
       logger = config.logger
       if (useOverviewGraph === true) {
         const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
@@ -176,11 +179,29 @@ export function LikeC4VitePlugin({
         .on('unlink', notifyUpdate('removed'))
 
       likec4.builder.onModelParsed(async () => {
+        const [error] = likec4.getErrors()
+        if (error) {
+          server.ws.send({
+            type: 'error',
+            err: {
+              name: 'LikeC4ValidationError',
+              message: 'Validation failed\n' + error.message.slice(0, 500),
+              stack: '',
+              plugin: 'vite-plugin-likec4',
+              loc: {
+                file: relative(viteRoot, error.sourceFsPath),
+                line: error.range.start.line + 1,
+                column: error.range.start.character + 1,
+              },
+            },
+          })
+          return
+        }
         for (const project of likec4.projects()) {
           for (const projectModule of projectVirtuals) {
             const md = server.moduleGraph.getModuleById(projectModule.virtualId(project.id))
             if (md && md.importers.size > 0) {
-              logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)
+              logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
               try {
                 await server.reloadModule(md)
               } catch (err) {

@@ -1,7 +1,7 @@
 import type { DiagramNode, DiagramView, EdgeId, Fqn, NodeId, Point, ViewId } from '@likec4/core'
 import { computeRelationshipsView } from '@likec4/core'
 import { useMemo } from 'react'
-// import { useLikeC4Model } from 'virtual:likec4/model'
+// import { useLikeC4Model } from 'likec4:model'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, RelationshipModel } from '@likec4/core'

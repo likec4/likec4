@@ -1,7 +1,6 @@
 import { Button, Container, Stack, Text } from '@mantine/core'
-import { createFileRoute } from '@tanstack/react-router'
-import { Link } from '@tanstack/react-router'
-import { projects } from 'virtual:likec4/projects'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
 
 export const Route = createFileRoute('/projects')({
   component: RouteComponent,

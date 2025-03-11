@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate, redirect } from '@tanstack/react-router'
-import { isSingleProject } from 'virtual:likec4/projects'
+import { isSingleProject } from 'likec4:projects'
 
 export const Route = createFileRoute('/')({
   beforeLoad: () => {

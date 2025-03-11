@@ -1,7 +1,7 @@
 import { type DiagramView, compareNatural, ComputedView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { find } from 'remeda'
-// import { useLikeC4Model } from 'virtual:likec4/model'
+// import { useLikeC4Model } from 'likec4:model'
 
 interface DiagramTreeNodeData {
   label: string

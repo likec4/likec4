@@ -60,26 +60,25 @@ if (import.meta.hot) {
 
 export const projectIconsModule = {
   ...generateMatches('icons'),
-  virtualId: (projectId) => joinURL(`\0likec4-plugin`, projectId, 'icons.jsx'),
   async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating virtual:likec4/icons/${projectId}`))
+    logger.info(k.dim(`generating likec4:icons/${projectId}`))
     const views = await likec4.views.computedViews(projectId)
     return code(views)
   },
 } satisfies ProjectVirtualModule
 
 export const iconsModule = {
-  id: 'virtual:likec4/icons',
-  virtualId: '\0likec4-plugin/icons.js',
+  id: 'likec4:icons',
+  virtualId: 'likec4:plugin/icons.js',
   async load({ likec4, projects, logger }) {
-    logger.info(k.dim(`generating virtual:likec4/icons`))
+    logger.info(k.dim(`generating likec4:icons`))
 
     const {
       imports,
       cases,
     } = projects.reduce((acc, { id }, i) => {
       const Component = 'Icons' + i.toString().padStart(2, '0')
-      const pkg = joinURL('virtual:likec4', id, 'icons')
+      const pkg = joinURL('likec4:icons', id)
       acc.imports.push(`import { IconRenderer as ${Component} } from ${JSON.stringify(pkg)}`)
       acc.cases.push(`   case ${JSON.stringify(id)}: return ${Component}`)
       return acc

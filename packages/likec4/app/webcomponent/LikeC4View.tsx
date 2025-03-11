@@ -1,24 +1,7 @@
-import {
-  type LikeC4ViewProps,
-  LikeC4ModelProvider,
-  LikeC4View as GenericLikeC4View,
-  nano,
-} from 'likec4/react'
+import { LikeC4View as ReactLikeC4View } from 'likec4:react'
 import { type Root, createRoot } from 'react-dom/client'
-import { $likec4model, IconRenderer } from 'virtual:likec4/single-project'
 // import { Icons } from 'virtual:likec4/icons'
 // import { likeC4Model } from 'virtual:likec4/model'
-
-function ReactLikeC4View(props: LikeC4ViewProps<string, string, string>) {
-  const likeC4Model = nano.useStore($likec4model)
-  return (
-    <LikeC4ModelProvider likec4model={likeC4Model}>
-      <GenericLikeC4View
-        renderIcon={IconRenderer}
-        {...props} />
-    </LikeC4ModelProvider>
-  )
-}
 
 export class LikeC4View extends HTMLElement {
   static observedAttributes = ['view-id', 'browser']

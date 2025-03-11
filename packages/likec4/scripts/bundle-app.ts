@@ -118,7 +118,7 @@ export async function bundleApp() {
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
-          /virtual\:likec4/,
+          /likec4:/,
         ],
       },
     },

@@ -3,7 +3,7 @@ import { IconLoader } from '@tabler/icons-react'
 import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { memo } from 'react'
-// import { usePreviewUrl } from 'virtual:likec4/previews'
+// import { usePreviewUrl } from 'likec4:previews'
 import * as css from './Nodes.css'
 import type { ViewXYNode } from './types'
 

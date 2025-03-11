@@ -1,7 +1,7 @@
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
-import { projects } from 'virtual:likec4/projects'
+import { projects } from 'likec4:projects'
 import { useCurrentProjectd } from '../../hooks'
 
 export function SelectProject() {

@@ -8,7 +8,7 @@ import * as css from './view.css'
 
 export const Route = createFileRoute('/_single')({
   loader: async ({ params }) => {
-    return await import('virtual:likec4/single-project')
+    return await import('likec4:single-project')
   },
   component: RouteComponent,
 })

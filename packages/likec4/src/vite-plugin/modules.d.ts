@@ -1,9 +1,9 @@
-declare module 'virtual:likec4/projects' {
+declare module 'likec4:projects' {
   export const isSingleProject: boolean
   export const projects: readonly [string, ...string[]]
 }
 
-declare module 'virtual:likec4/icons' {
+declare module 'likec4:icons' {
   import type { ReactNode } from 'react'
   type ElementIconRendererProps = {
     node: {
@@ -18,7 +18,7 @@ declare module 'virtual:likec4/icons' {
   export const ProjectIcons: (projectId: string) => ElementIconRenderer
 }
 
-declare module 'virtual:likec4/model' {
+declare module 'likec4:model' {
   import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
   import type { nano } from 'likec4/react'
 
@@ -35,9 +35,9 @@ declare module 'virtual:likec4/model' {
   }>
 }
 
-declare module 'virtual:likec4/single-project' {
-  import type { ElementIconRenderer } from 'virtual:likec4/icons'
-  import type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model } from 'virtual:likec4/model'
+declare module 'likec4:single-project' {
+  import type { ElementIconRenderer } from 'likec4:icons'
+  import type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model } from 'likec4:model'
 
   export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model.Layouted>
@@ -50,7 +50,7 @@ declare module 'virtual:likec4/single-project' {
   export const projectId: string
 }
 
-declare module 'virtual:likec4' {
+declare module 'likec4:react' {
   import type { Aux, DiagramView, LikeC4Model } from 'likec4/model'
   import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
@@ -67,18 +67,18 @@ declare module 'virtual:likec4' {
   export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types['View']>): JSX.Element
 }
 
-declare module 'virtual:likec4/dot' {
+declare module 'likec4:dot' {
   export function loadDotSources(projectId: string): Promise<{
     dotSource(viewId: string): string
     svgSource(viewId: string): string
   }>
 }
-declare module 'virtual:likec4/d2' {
+declare module 'likec4:d2' {
   export function loadD2Sources(projectId: string): Promise<{
     d2Source(viewId: string): string
   }>
 }
-declare module 'virtual:likec4/mmd' {
+declare module 'likec4:mmd' {
   export function loadMmdSources(projectId: string): Promise<{
     mmdSource(viewId: string): string
   }>

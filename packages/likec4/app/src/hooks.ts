@@ -2,8 +2,8 @@ import type { DiagramView, ProjectId } from '@likec4/core'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
 import { nano } from 'likec4/react'
+import { projects } from 'likec4:projects'
 import { useMemo } from 'react'
-import { projects } from 'virtual:likec4/projects'
 import { useLikeC4ModelDataContext } from './context/LikeC4ModelContext'
 
 // To get the transparent background
