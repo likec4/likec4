@@ -7,9 +7,18 @@ export const ProjectConfig = v.object({
     v.nonEmpty(),
     v.description('Project name, must be unique in the workspace'),
   ),
-  exclude: v.pipe(
-    v.exactOptional(v.array(v.string())),
-    v.description('List of file patterns to exclude from the project, default is ["node_modules"]'),
+  contactPerson: v.optional(
+    v.pipe(
+      v.string(),
+      v.nonEmpty(),
+      v.description('A person who has been involved in creating or maintaining this project'),
+    ),
+  ),
+  exclude: v.optional(
+    v.pipe(
+      v.array(v.string()),
+      v.description('List of file patterns to exclude from the project, default is ["node_modules"]'),
+    ),
   ),
 })
 
