@@ -1,10 +1,8 @@
 ## [1.26.1](https://github.com/likec4/likec4/compare/v1.26.0...v1.26.1) (2025-03-11)
 
-
-### Bug Fixes
+### Hot Fixe
 
 * **app:** wrong `LikeC4ModelProvider` in generated app ([d09c709](https://github.com/likec4/likec4/commit/d09c7090f09f11adb03815dae3b138499847fb7b))
-
 
 
 # [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
