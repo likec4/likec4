@@ -73,7 +73,7 @@
     "@types/which": "^3.0.4",
     "turbo": "^2.4.4",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
+    "unbuild": "^3.5.0",
     "vitest": "^3.0.8"
   },
   "packageManager": "pnpm@10.6.2"

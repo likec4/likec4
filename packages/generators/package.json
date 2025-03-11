@@ -48,7 +48,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.23",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
+    "unbuild": "^3.5.0",
     "vitest": "^3.0.8"
   },
   "packageManager": "pnpm@10.6.2"

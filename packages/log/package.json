@@ -44,7 +44,7 @@
     "safe-stringify": "^1.1.1",
     "std-env": "^3.8.1",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
+    "unbuild": "^3.5.0",
     "wrap-error-message": "^3.0.0"
   },
   "packageManager": "pnpm@10.6.2"
