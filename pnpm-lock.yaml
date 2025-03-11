@@ -6,19 +6,10 @@ settings:
 
 catalogs:
   default:
-    '@mantine/colors-generator':
-      specifier: 7.17.1
-      version: 7.17.1
     '@mantine/core':
       specifier: 7.17.1
       version: 7.17.1
     '@mantine/hooks':
-      specifier: 7.17.1
-      version: 7.17.1
-    '@mantine/modals':
-      specifier: 7.17.1
-      version: 7.17.1
-    '@mantine/notifications':
       specifier: 7.17.1
       version: 7.17.1
     '@mantine/vanilla-extract':
@@ -27,12 +18,6 @@ catalogs:
     typescript:
       specifier: 5.8.2
       version: 5.8.2
-    wireit:
-      specifier: ^0.14.11
-      version: 0.14.11
-    wrangler:
-      specifier: ^3.114.0
-      version: 3.114.0
 
 overrides:
   vscode-jsonrpc: 8.2.0
@@ -8869,6 +8854,7 @@ packages:
   wrangler@3.114.0:
     resolution: {integrity: sha512-cY0HxgU5yuc24tE1Y4KD2n9UzYYEx+9lSL7p/Sqj18SgDfwyiMPY/FryXQAPYLuD/S+dxArRQyeEkFSokIr75Q==}
     engines: {node: '>=16.17.0'}
+    deprecated: Deployments with nodejs_compat are broken. Please downgrade to 3.112.0
     hasBin: true
     peerDependencies:
       '@cloudflare/workers-types': ^4.20250224.0

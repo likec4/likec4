@@ -5,7 +5,7 @@ packages:
 catalog:
   typescript: 5.8.2
   wireit: "^0.14.11"
-  wrangler: "^3.114.0"
+  wrangler: "3.112.0"
   "@mantine/core": "7.17.1"
   "@mantine/hooks": "7.17.1"
   "@mantine/vanilla-extract": "7.17.1"
