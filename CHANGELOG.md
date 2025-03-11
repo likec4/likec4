@@ -1,5 +1,39 @@
 # [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
 
+This release is the first, but HUGE step, that simplifies LikeC4 integration with any vite-based applications.
+
+### 🚀 Features
+
+* **Vite plugin**  
+  Plugin allows you directly embed LikeC4 views to your application or documentation website.  
+  Configure:
+  
+  ```ts  
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+  import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+  export default defineConfig({
+    plugins: [
+      react(),
+      LikeC4VitePlugin({}),
+    ],
+  })
+  ```
+
+  Use:
+  ```tsx
+  import { StrictMode } from 'react'
+  import { createRoot } from 'react-dom/client'
+  import { LikeC4View } from 'virtual:likec4'
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <LikeC4View viewId='index' />
+    </StrictMode>
+  )
+  ```
+
 
 ### Bug Fixes
 
