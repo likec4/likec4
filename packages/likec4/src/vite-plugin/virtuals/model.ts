@@ -4,8 +4,6 @@ import { LikeC4Model } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } from './_shared'
 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
-'use client'
-
 import { createLikeC4Model } from 'likec4/model'
 import { nano, createHooksForModel } from 'likec4/react'
 

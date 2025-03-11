@@ -47,6 +47,7 @@ export async function bundleApp() {
     },
     esbuild: {
       jsxDev: false,
+      minifyIdentifiers: false,
       tsconfigRaw: {
         compilerOptions: {
           useDefineForClassFields: true,
@@ -85,27 +86,6 @@ export async function bundleApp() {
         },
         output: {
           hoistTransitiveImports: false,
-          // interop: 'auto',
-          // format: 'esm',
-          // entryFileNames: '[name].js',
-          // assetFileNames: '[name][extname]',
-          // chunkFileNames: 'chunks/[name]-[hash].js',
-          // preserveModules: true,
-          // manualChunks: (id) => {
-          //   if (id.includes('.css')) {
-          //     return null
-          //   }
-          //   if (id.includes('@mantine')) {
-          //     return 'mantine'
-          //   }
-          //   if (id.includes('@tanstack')) {
-          //     return 'tanstack-router'
-          //   }
-          //   if (id.includes('likec4') || id.includes('@xyflow')) {
-          //     return 'likec4'
-          //   }
-          //   return null
-          // },
         },
         external: [
           'react/jsx-runtime',
