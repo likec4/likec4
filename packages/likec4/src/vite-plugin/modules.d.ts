@@ -55,16 +55,19 @@ declare module 'likec4:react' {
   import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
 
+  // This will be used later for augmenting the types
   interface Types extends Aux<string, string, string, DiagramView> {
   }
 
+  export type LikeC4ViewId = Types['View']
+
   export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types['View']>>
-  export function useLikeC4View(viewId: Types['View']): DiagramView | null
+  export function useLikeC4Views(): ReadonlyArray<DiagramView<LikeC4ViewId>>
+  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView | null
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
-  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types['View']>): JSX.Element
-  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types['View']>): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<LikeC4ViewId>): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<LikeC4ViewId>): JSX.Element
 }
 
 declare module 'likec4:dot' {
