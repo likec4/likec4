@@ -1,4 +1,4 @@
-import { type ViewId, nonNullable } from '@likec4/core'
+import { type ProjectId, type ViewId, nonNullable } from '@likec4/core'
 import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '@likec4/vscode-preview/protocol'
 import {
   type EffectScope,
@@ -16,7 +16,7 @@ import {
 import { type Webview, type WebviewPanel, Uri, ViewColumn, window } from 'vscode'
 import { isProd } from '../const'
 import { logger as rootLogger } from '../logger'
-import { computedModel } from '../state'
+import { computedModels } from '../state'
 import { useMessenger } from './useMessenger'
 
 export const ViewType = 'likec4-preview' as const
@@ -35,11 +35,14 @@ export const useDiagramPreview = createSingletonComposable(() => {
     current = currentScope = null
   }
 
-  function ensureCurrent(initialViewId: string) {
+  function ensureCurrent(
+    initialViewId: ViewId,
+    initialProjectId: ProjectId,
+  ) {
     if (!current) {
       currentScope = effectScope()
       current = nonNullable(
-        currentScope.run(() => createDiagramPreview(initialViewId)),
+        currentScope.run(() => createDiagramPreview(initialViewId, initialProjectId)),
         'failed to create diagram preview panel',
       )
       current.panel.onDidDispose(close)
@@ -47,20 +50,30 @@ export const useDiagramPreview = createSingletonComposable(() => {
     return current
   }
 
-  function open(viewId: string) {
-    const { panel, visible, viewId: currentViewId } = ensureCurrent(viewId)
+  function open(viewId: ViewId, projectId: ProjectId) {
+    const {
+      panel,
+      visible,
+      viewId: currentViewId,
+      projectId: currentProjectId,
+    } = ensureCurrent(viewId, projectId)
     currentViewId.value = viewId
+    currentProjectId.value = projectId
     if (visible.value !== true) {
       panel.reveal()
     }
   }
 
-  function deserialize(panel: WebviewPanel, state: { viewId?: string }) {
+  function deserialize(panel: WebviewPanel, state: { viewId?: string; projectId?: string }) {
     logger.debug`deserialize ${state.viewId}`
     close()
     currentScope = effectScope()
     current = nonNullable(
-      currentScope.run(() => createDiagramPreview(state.viewId ?? 'index', () => panel)),
+      currentScope.run(() => {
+        const viewId = (state.viewId ?? 'index') as ViewId
+        const projectId = (state.projectId ?? 'default') as ProjectId
+        return createDiagramPreview(viewId, projectId, () => panel)
+      }),
       'failed to deserialize diagram preview panel',
     )
     current.panel.onDidDispose(close)
@@ -71,6 +84,7 @@ export const useDiagramPreview = createSingletonComposable(() => {
     open,
     close,
     viewId: () => current?.viewId.value as ViewId | null ?? null,
+    projectId: () => current?.projectId.value,
     getLastClickedElement: async () => {
       if (!current) {
         return {
@@ -99,15 +113,20 @@ const defaultCreatePanel: CreatePanel = () => {
   ))
 }
 
-function createDiagramPreview(initialViewId: string, createPanel = defaultCreatePanel) {
-  logger.debug`createDiagramPreview ${initialViewId}`
+function createDiagramPreview(
+  initialViewId: ViewId,
+  initialProjectId: ProjectId,
+  createPanel = defaultCreatePanel,
+) {
+  logger.debug`createDiagramPreview ${initialViewId} (project: ${initialProjectId})`
   const messenger = useMessenger()
   const viewId = ref(initialViewId)
+  const projectId = ref(initialProjectId)
 
   const panel = createPanel()
 
   const title = computed(() => {
-    return computedModel.value?.views[viewId.value]?.title ?? 'Diagram Preview'
+    return computedModels.value[projectId.value]?.views[viewId.value]?.title ?? 'Diagram Preview'
   })
 
   useViewTitle(panel, title)
@@ -146,6 +165,7 @@ function createDiagramPreview(initialViewId: string, createPanel = defaultCreate
   <body class="${theme}">
     <script nonce="${nonce}">
       var __VIEW_ID = ${JSON.stringify(initialViewId)};
+      var __PROJECT_ID = ${JSON.stringify(initialProjectId)};
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
     <div id="root" nonce="${nonce}"></div>
@@ -156,12 +176,13 @@ function createDiagramPreview(initialViewId: string, createPanel = defaultCreate
   const participantId = messenger.registerWebviewPanel(panel, {
     broadcastMethods: [BroadcastModelUpdate.method],
   })
-  watch(viewId, (viewId) => {
-    logger.debug`sendNotification ${'OpenView ' + viewId}`
-    messenger.sendNotification(OnOpenView, participantId, { viewId })
+  watch([viewId, projectId], ([viewId, projectId]) => {
+    logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
+    messenger.sendNotification(OnOpenView, participantId, { projectId, viewId })
   })
   return {
     viewId,
+    projectId,
     panel,
     visible,
     getLastClickedElement: async () => {

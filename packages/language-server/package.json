@@ -42,6 +42,14 @@
         "default": "./dist/browser.js"
       }
     },
+    "./config": {
+      "sources": "./src/config/index.ts",
+      "default": {
+        "types": "./dist/config/index.d.ts",
+        "import": "./dist/config/index.js",
+        "default": "./dist/config/index.js"
+      }
+    },
     "./likec4lib": {
       "sources": "./src/likec4lib.ts",
       "default": {
@@ -126,6 +134,7 @@
     "typescript": "catalog:",
     "ufo": "^1.5.4",
     "unbuild": "^3.3.1",
+    "valibot": "^1.0.0-rc.3",
     "vitest": "^3.0.8",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
@@ -133,5 +142,5 @@
     "vscode-uri": "3.1.0",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.6.1"
+  "packageManager": "pnpm@10.6.2"
 }

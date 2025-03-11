@@ -34,6 +34,7 @@ export async function webcomponentHandler({
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 

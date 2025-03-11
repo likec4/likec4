@@ -27,6 +27,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   logger.info(`${k.dim('format')} ${k.green('react')}`)
 

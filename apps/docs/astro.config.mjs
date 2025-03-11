@@ -3,6 +3,7 @@ import starlight from '@astrojs/starlight'
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections'
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightLinksValidator from 'starlight-links-validator'
 import { searchForWorkspaceRoot } from 'vite'
@@ -151,5 +152,10 @@ export default defineConfig({
         allow: [searchForWorkspaceRoot(process.cwd())],
       },
     },
+    plugins: [
+      LikeC4VitePlugin({
+        workspace: 'src/components/bigbank/',
+      }),
+    ],
   },
 })

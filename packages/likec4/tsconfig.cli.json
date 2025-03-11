@@ -17,11 +17,17 @@
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
+      ],
+      "likec4/react": [
+        "./app/react/components/*"
       ]
     }
   },
   "include": [
     "./src",
     "package.json"
+  ],
+  "exclude": [
+    "./src/vite-plugin/modules.d.ts"
   ]
 }

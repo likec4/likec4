@@ -5,4 +5,5 @@ declare const __INTERNAL_STATE:
   }>
   | undefined
 
-declare const __VIEW_ID: ViewID
+declare const __VIEW_ID: string
+declare const __PROJECT_ID: string

@@ -1,11 +1,12 @@
-import type { LikeC4Views } from '@likec4/language-server'
+import type { NonEmptyArray, ProjectId } from '@likec4/core'
+import type { LikeC4LanguageServices, LikeC4Views } from '@likec4/language-server'
 import { loggable } from '@likec4/log'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { indexBy, prop } from 'remeda'
+import { hasAtLeast, indexBy, prop } from 'remeda'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
@@ -14,7 +15,7 @@ import { type DiagramView, LikeC4Model } from './model'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
-type LikeC4Options = {
+export type LikeC4Options = {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
@@ -125,7 +126,6 @@ export class LikeC4 {
     return likec4
   }
 
-  private modelLayoutedRef: WeakRef<LikeC4Model.Layouted> | undefined
   private logger: Logger
 
   private constructor(
@@ -139,12 +139,28 @@ export class LikeC4 {
     }
   }
 
+  get languageServices(): LikeC4LanguageServices {
+    return this.langium.likec4.LanguageServices
+  }
+
   get viewsService(): LikeC4Views {
     return this.langium.likec4.Views
   }
 
   private get LangiumDocuments() {
     return this.langium.shared.workspace.LangiumDocuments
+  }
+
+  ensureSingleProject(): void {
+    const projects = this.langium.likec4.LanguageServices.projects()
+    if (projects.length > 1) {
+      this.logger.error(`Multiple projects found:
+${projects.map(p => `  - ${p.folder.fsPath}`).join('\n')}
+
+${k.red('Please specify a project folder')}
+`)
+      throw new Error(`Multiple projects found`)
+    }
   }
 
   /**
@@ -160,30 +176,45 @@ export class LikeC4 {
    * Only computes view predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
    */
-  computedModel(): LikeC4Model.Computed {
-    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
+  computedModel(project?: ProjectId | undefined): LikeC4Model.Computed {
+    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
+    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel(projectId)
+  }
+
+  async projects(): Promise<NonEmptyArray<ProjectId>> {
+    const defaultId = this.langium.shared.workspace.ProjectsManager.defaultProjectId
+    if (defaultId) {
+      return [defaultId]
+    }
+    const projects = await Promise.allSettled(
+      this.langium.shared.workspace.ProjectsManager.all.map(async projectId => {
+        const model = await this.langium.likec4.ModelBuilder.parseModel(projectId)
+        return model ? projectId : undefined
+      }),
+    )
+    const validProjects = projects.filter(p => p.status === 'fulfilled').flatMap(p => p.value ?? [])
+    if (hasAtLeast(validProjects, 1)) {
+      return validProjects
+    }
+    return ['default' as ProjectId]
   }
 
   /**
    * Same as {@link computedModel()}, but also applies layout
    * Ready for rendering
    */
-  async layoutedModel(): Promise<LikeC4Model.Layouted> {
-    let ref = this.modelLayoutedRef?.deref()
-    if (!ref) {
-      const parsed = await this.langium.likec4.ModelBuilder.parseModel()
-      if (!parsed) {
-        throw new Error('Failed to parse model')
-      }
-      const diagrams = await this.viewsService.diagrams()
-      ref = LikeC4Model.create({
-        ...parsed,
-        __: 'layouted' as const,
-        views: indexBy(diagrams, prop('id')),
-      })
-      this.modelLayoutedRef = new WeakRef(ref)
+  async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
+    const projectId = this.langium.shared.workspace.ProjectsManager.ensureProjectId(project)
+    const parsed = await this.langium.likec4.ModelBuilder.parseModel(projectId)
+    if (!parsed) {
+      throw new Error('Failed to parse model')
     }
-    return ref
+    const diagrams = await this.viewsService.diagrams(projectId)
+    return LikeC4Model.create({
+      ...parsed,
+      __: 'layouted' as const,
+      views: indexBy(diagrams, prop('id')),
+    })
   }
 
   getErrors() {
@@ -242,7 +273,6 @@ export class LikeC4 {
    * TODO Replace with watcher
    */
   async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }): Promise<boolean> {
-    this.modelLayoutedRef = undefined
     const mutex = this.langium.shared.workspace.WorkspaceLock
     try {
       let completed = false

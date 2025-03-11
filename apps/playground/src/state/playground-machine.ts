@@ -1,10 +1,9 @@
-import { ISODatetime } from '#worker/types'
 import { type Api, api } from '$/api'
 import {
   type ComputedView,
   type DiagramView,
   type ExclusiveUnion,
-  type LayoutedLikeC4Model,
+  type LayoutedLikeC4ModelData,
   type ViewChange,
   type ViewId,
   LikeC4Model,
@@ -94,7 +93,7 @@ export interface PlaygroundContext {
   diagnosticErrors: string[]
 
   shareRequest: null | {
-    layoutedLikeC4Data: LayoutedLikeC4Model | null
+    layoutedLikeC4Data: LayoutedLikeC4ModelData | null
     options: ShareOptions
     success?: Api.Share.Response
     error?: string | null
@@ -105,7 +104,7 @@ export type PlaygroundEvents =
   // Monaco events
   | { type: 'monaco.onTextChanged'; filename: string; modified: string }
   // LikeC4 Language Server events
-  | { type: 'likec4.lsp.onLayoutedModel'; model: LayoutedLikeC4Model }
+  | { type: 'likec4.lsp.onLayoutedModel'; model: LayoutedLikeC4ModelData }
   | { type: 'likec4.lsp.onLayoutedModelError'; error: string }
   | { type: 'likec4.lsp.onDidChangeModel'; model: LikeC4Model.Computed }
   | { type: 'likec4.lsp.onLayoutDone'; dot: string; diagram: DiagramView }

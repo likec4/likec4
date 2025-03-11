@@ -5,45 +5,28 @@
   "scripts": {
     "generate": "wireit",
     "dev": "wireit",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build": "vite build",
     "preview": "vite preview",
     "wrangler:deploy": "wireit",
     "wrangler:preview": "wireit",
-    "deploy:prod": "wireit",
-    "clean": "rm -r -f dist"
+    "deploy:prod": "wireit"
   },
   "wireit": {
     "generate-panda": {
       "command": "panda codegen",
-      "files": [
-        "package.json",
-        "src/index.css",
-        "panda.config.ts"
-      ],
       "output": [
         "styled-system/*"
       ]
     },
     "generate-tsr": {
       "command": "tsr generate",
-      "files": [
-        "package.json",
-        "tsr.config.json",
-        "vite.config.ts",
-        "src/routes/*.tsx"
-      ],
       "output": [
         "src/routeTree.gen.ts"
       ]
     },
     "generate-wrangler": {
       "command": "wrangler types --experimental-include-runtime",
-      "files": [
-        "package.json",
-        "tsconfig.worker.json",
-        "wrangler.toml"
-      ],
       "output": [
         ".wrangler/types",
         "worker-configuration.d.ts"
@@ -95,7 +78,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.6.1",
+  "packageManager": "pnpm@10.6.2",
   "dependencies": {
     "type-fest": "4.34.1"
   },

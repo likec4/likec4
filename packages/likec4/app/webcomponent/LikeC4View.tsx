@@ -1,34 +1,7 @@
-import {
-  type LikeC4ViewProps,
-  LikeC4ModelProvider,
-  LikeC4View as GenericLikeC4View,
-} from 'likec4/react'
+import { LikeC4View as ReactLikeC4View } from 'likec4:react'
 import { type Root, createRoot } from 'react-dom/client'
-import { Icons } from 'virtual:likec4/icons'
-import { likeC4Model } from 'virtual:likec4/model'
-
-type IconRendererProps = {
-  node: {
-    id: string
-    title: string
-    icon?: string | null | undefined
-  }
-}
-
-const RenderIcon = ({ node }: IconRendererProps) => {
-  const IconComponent = Icons[node.icon ?? '']
-  return IconComponent ? <IconComponent /> : null
-}
-
-function ReactLikeC4View(props: LikeC4ViewProps<string, string, string>) {
-  return (
-    <LikeC4ModelProvider likec4model={likeC4Model}>
-      <GenericLikeC4View
-        renderIcon={RenderIcon}
-        {...props} />
-    </LikeC4ModelProvider>
-  )
-}
+// import { Icons } from 'virtual:likec4/icons'
+// import { likeC4Model } from 'virtual:likec4/model'
 
 export class LikeC4View extends HTMLElement {
   static observedAttributes = ['view-id', 'browser']

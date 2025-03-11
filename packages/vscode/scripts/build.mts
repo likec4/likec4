@@ -1,8 +1,10 @@
+import { ProjectConfig } from '@likec4/language-server/config'
+import { toJsonSchema } from '@valibot/to-json-schema'
 import { consola } from 'consola'
 import { type BuildOptions, analyzeMetafileSync, build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { cp, mkdir } from 'node:fs/promises'
+import { cp, mkdir, writeFile } from 'node:fs/promises'
 import { isProduction } from 'std-env'
 
 import { resolve } from 'node:path'
@@ -36,6 +38,8 @@ await cp(
   'dist/preview',
   { recursive: true },
 )
+
+await writeFile('./data/config.schema.json', JSON.stringify(toJsonSchema(ProjectConfig), null, 2))
 
 consola.start('Build vscode extension')
 

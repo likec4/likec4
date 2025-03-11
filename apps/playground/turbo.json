@@ -10,13 +10,6 @@
         ".wrangler/types",
         "styled-system",
         "worker-configuration.d.ts"
-      ],
-      "inputs": [
-        "*.config.ts",
-        "wrangler.toml",
-        "src/routes/*.tsx",
-        "tsr.config.json",
-        "package.json"
       ]
     },
     "build": {

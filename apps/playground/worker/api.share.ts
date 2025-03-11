@@ -1,7 +1,7 @@
 import { vValidator } from '@hono/valibot-validator'
 import * as v from 'valibot'
 import { SharePlaygroundReqSchema, sharesKV } from './kv'
-import { type SharedPlayground, factory } from './types'
+import { factory } from './types'
 
 const CheckPincodeSchema = v.strictObject({
   pincode: v.string(),
@@ -17,7 +17,11 @@ export const apiShareRoute = factory.createApp()
     const shareId = c.req.param('shareId')
     const { value, metadata } = await kv.find(shareId)
     await kv.ensureAccess(shareId, metadata.shareOptions)
-    return c.json<SharedPlayground>(value)
+    /*
+      TypeScript fails to infer the type of value
+      Thats why I cast it in ../src/api.ts#L57
+    */
+    return c.json(value) as never
   })
   .post(
     '/:shareId/check-pincode',

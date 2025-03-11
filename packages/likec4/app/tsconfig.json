@@ -23,15 +23,14 @@
     "checkJs": true,
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
-    "rootDir": ".",
     "types": [
       "vite/client"
     ]
   },
   "include": [
-    "src",
-    "react",
-    "webcomponent"
+    "./src",
+    "./react",
+    "./webcomponent"
   ],
   "references": [
     {

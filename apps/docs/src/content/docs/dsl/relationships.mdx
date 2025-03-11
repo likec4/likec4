@@ -4,9 +4,6 @@ description: How to define connections, data flows and interactions inside your 
 sidebar: 
   label: Relationships
   order: 4
-tableOfContents:
-  minHeadingLevel: 4
-  maxHeadingLevel: 6
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -23,7 +20,7 @@ model {
 }
 ```
 
-#### Relationship kinds
+## Relationship kinds
 
 Relationships can be "kinded":
 
@@ -56,7 +53,7 @@ It's up to you to define the relationship kinds that make sense for your context
   With kinds you can customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>
 
-#### Relationship definition
+## Relationship definition
 
 Relationships may be nested
 
@@ -127,9 +124,9 @@ model {
 ```
 :::
 
-#### Relationship Properties
+## Relationship Properties
 
-##### Title
+### Title
 
 Relationships may have a title (and better to have one):
 
@@ -150,7 +147,7 @@ model {
 }
 ```
 
-##### Technology
+### Technology
 
 ```likec4
 model {
@@ -163,7 +160,7 @@ model {
 }
 ```
 
-##### Description
+### Description
 
 ```likec4
 model {
@@ -180,7 +177,7 @@ In progress
 
 :::
 
-##### Metadata
+### Metadata
 
 Same as [elements metadata](/dsl/model/#element-metadata):
 
@@ -195,7 +192,7 @@ model {
 }
 ```
 
-##### Tags
+### Tags
 
 Relationships may be tagged
 
@@ -211,7 +208,7 @@ model {
 }
 ```
 
-##### Links
+### Links
 
 Relationships may have multiple links:
 
@@ -231,7 +228,7 @@ model {
 ```
 
 
-##### Navigate To
+### Navigate To
 
 Relationship may have a `navigateTo` property, which is a link to some [dynamic view](/dsl/dynamic-views).  
 This allows to "zoom-in" and see more details about this relationship.

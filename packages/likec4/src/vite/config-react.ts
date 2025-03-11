@@ -6,7 +6,7 @@ import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { likec4Plugin } from './plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, findPkgRoot, JsBanners, viteLogger } from './utils'
 
 type LikeC4ViteReactConfig = {
@@ -95,8 +95,8 @@ export async function viteReactConfig({
     },
     plugins: [
       react(),
-      likec4Plugin({
-        languageServices,
+      LikeC4VitePlugin({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),
     ],

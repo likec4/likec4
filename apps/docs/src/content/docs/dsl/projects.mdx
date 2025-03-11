@@ -1,0 +1,58 @@
+---
+title: Multi-projects
+description: Learn how to separate your LikeC4 model into multiple projects
+sidebar: 
+  label: Multi-projects
+  order: 13
+---
+
+import { Card, FileTree } from '@astrojs/starlight/components';
+
+<Card title="Active development" icon="warning">
+  This feature is under active development and not feature-complete yet.
+
+  Please see <a href="https://github.com/likec4/likec4/discussions/1674" target='_blank'>GitHub discussion</a> for more details and what to expect.
+</Card>
+
+Sometimes you may want to separate your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
+
+You can do this by creating multiple projects in your workspace and linking them together.
+You can also use this feature to share your model with other teams or projects.
+
+## Usage
+
+To mark a folder as a project, create a `likec4.config.json` file in the folder:
+
+<FileTree>
+- cloud
+  - likec4.config.json
+  - service1.c4
+  - service2.c4
+  - ...
+- externals
+  - likec4.config.json
+  - amazon.c4
+  - ...
+</FileTree>
+
+The `likec4.config.json` file must have the name of the project and must be unique in the workspace.
+
+
+```json
+{
+  "name": "project-name"
+}
+```
+
+:::tip
+You can use these names for the config file:
+- `.likec4rc`
+- `.likec4.config.json`
+- `likec4.config.json`
+
+LikeC4 interprets any file as JSON5
+:::
+
+## Linking projects
+
+In development...

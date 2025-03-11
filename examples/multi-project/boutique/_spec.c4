@@ -1,0 +1,69 @@
+specification {
+
+  element actor {
+    style {
+      shape person
+      color secondary
+    }
+  }
+
+  element system {
+    notation "Software System"
+    style {
+      opacity 20%
+    }
+  }
+
+  element external-system {
+    notation "External Software System"
+    style {
+      opacity 20%
+      color secondary
+    }
+  }
+
+  element application
+
+  element component {
+    style {
+      opacity 20%
+    }
+  }
+  element service
+  element webapp {
+    notation "Web Application"
+    style {
+      shape browser
+    }
+  }
+  element mobile {
+    notation "Mobile Application"
+    style {
+      shape mobile
+    }
+  }
+  element database {
+    notation "Database"
+    style {
+      shape storage
+    }
+  }
+  element db_table {
+    notation "Database Table"
+    style {
+      shape storage
+    }
+  }
+
+  tag deprecated
+  tag next
+  tag v1  
+  tag v1_1
+  tag v2
+  tag teamA
+  tag teamB
+
+  relationship solid {
+    line solid
+  }
+}

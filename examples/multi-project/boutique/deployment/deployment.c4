@@ -1,0 +1,78 @@
+specification {
+  deploymentNode internet {
+  }
+
+  deploymentNode environment {
+    notation 'Deployment Environment'
+    style {
+      opacity 0%
+    }
+  }
+
+  deploymentNode vm {
+    notation 'Virtual Machine'
+    style {
+      opacity 5%
+    }
+  }
+}
+
+deployment {
+  dev = environment 'Development' {
+    description 'Development environment.'
+
+    developer = instanceOf customer {
+      title 'Developer'
+    }
+
+    devmachine = vm 'Developer Machine' {
+      technology 'Ubuntu'
+
+      instanceOf boutique.frontend
+      instanceOf boutique.catalogue
+      instanceOf boutique.cart
+      instanceOf boutique.checkout
+    }
+
+    containers = vm 'Shared Containers' {
+      instanceOf boutique.payments
+      instanceOf boutique.shipping
+      instanceOf boutique.db
+    }
+  }
+
+  internet internet {
+    instanceOf customer
+  }
+
+  prod = environment 'Production' {
+    description 'Production environment.'
+
+    vm1 = vm 'Web Server 1' {
+      instanceOf boutique.frontend
+      instanceOf boutique.cart
+      instanceOf boutique.catalogue
+    }
+
+    vm2 = vm 'Web Server 2' {
+      instanceOf boutique.frontend
+      instanceOf boutique.cart
+      instanceOf boutique.catalogue
+    }
+
+    appvms = vm 'Application Servers (x2)' {
+      instanceOf boutique.checkout
+      instanceOf boutique.payments
+      instanceOf boutique.shipping
+    }
+
+    dbvm1 = vm 'Database Server 1' {
+      instanceOf boutique.db
+    }
+    dbvm2 = vm 'Database Server 2' {
+      instanceOf boutique.db
+    }
+
+    dbvm1.db -> dbvm2.db 'replicates'
+  }
+}

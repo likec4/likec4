@@ -1,7 +1,3 @@
-import { Hono } from 'hono'
-import {
-  Session,
-} from 'hono-sessions'
 import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
 import { proxy } from 'hono/proxy'
@@ -11,20 +7,12 @@ import { sharesKV } from './kv'
 import { factory } from './types'
 import { viewKv } from './viewkv'
 
-export type SessionData = {
+export interface SessionData {
   login: string
   userId: number
   name: string
   email: string | null
   avatarUrl: string | null
-}
-
-type HonoEnv = {
-  Variables: {
-    session: Session<SessionData>
-    session_key_rotation: boolean
-  }
-  Bindings: Env
 }
 
 const api = factory.createApp()
@@ -38,8 +26,11 @@ const api = factory.createApp()
     }),
   )
   .route('/auth', auth)
-  .route('/viewkv', viewKv)
   .route('/api/share', apiShareRoute)
+export type ApiType = typeof api
+
+const app = api
+  .route('/viewkv', viewKv)
   .get('/share/:shareId/enter-pincode', async c => {
     const kv = sharesKV(c)
     const { shareOptions } = await kv.readMetadata(c.req.param('shareId'))
@@ -77,8 +68,6 @@ const api = factory.createApp()
     return c.text('Internal Server Error', { status: 500 })
   })
 
-export type ApiType = typeof api
-
 const ByHono = [
   '/api',
   '/auth',
@@ -89,7 +78,7 @@ export default {
   fetch(request, env) {
     const url = new URL(request.url)
     if (ByHono.some(path => url.pathname.startsWith(path))) {
-      return api.fetch(request, env)
+      return app.fetch(request, env)
     }
 
     return env.ASSETS.fetch(request)

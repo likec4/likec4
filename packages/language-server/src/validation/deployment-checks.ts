@@ -3,6 +3,7 @@ import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -26,9 +27,10 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
         range,
       })
     }
+    const projectId = projectIdFrom(el)
     const fqnName = DeploymentsIndex.getFqn(el)
 
-    const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
+    const withSameName = DeploymentsIndex.byFqn(projectId, fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
       accept(
         'error',
@@ -62,10 +64,10 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
         range,
       })
     }
-
+    const projectId = projectIdFrom(el)
     const fqnName = DeploymentsIndex.getFqn(el)
 
-    const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
+    const withSameName = DeploymentsIndex.byFqn(projectId, fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
       accept(
         'error',

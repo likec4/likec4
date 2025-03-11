@@ -10,5 +10,6 @@
   },
   "include": [
     "./*.config.ts",
+    "./package.json"
   ]
 }

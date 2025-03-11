@@ -6,6 +6,11 @@ workers_dev = true
 
 assets = { not_found_handling = "single-page-application", binding = "ASSETS" }
 
+[env.development.vars]
+GITHUB_ID=""
+GITHUB_SECRET=""
+SESSION_ENCRYPTION_KEY="VFRAdSem81cuALVeOMC4PJyLXf30tckV"
+
 [placement]
 mode = "smart"
 

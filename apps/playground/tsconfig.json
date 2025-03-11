@@ -2,13 +2,13 @@
   "files": [],
   "references": [
     {
-      "path": "./tsconfig.vite.json"
-    },
-        {
-      "path": "./tsconfig.frontend.json"
+      "path": "./tsconfig.worker.json"
     },
     {
-      "path": "./tsconfig.worker.json"
-    }
+      "path": "./tsconfig.vite.json"
+    },
+    {
+      "path": "./tsconfig.frontend.json"
+    },
   ]
 }

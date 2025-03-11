@@ -1,0 +1,37 @@
+views {
+
+  deployment view production-env {
+    title 'Environment: Production'
+    description '
+      Overview of the production environment.
+    '
+
+    include
+      prod,
+      prod.**,
+      internet.customer
+
+    exclude
+      boutique.frontend -> boutique.payments,
+      boutique.* -> prod.dbvm2.db,
+      boutique.payments -> prod.dbvm2.db,
+      boutique.shipping -> prod.dbvm2.db
+
+    style boutique.frontend, prod.appvms._ {
+      multiple true
+    }
+    style prod {
+      color muted
+    }
+    style prod.vm1._ {
+      color green
+    }
+    style prod.vm2._ {
+      color indigo
+    }
+    style prod.dbvm1._, prod.dbvm2._, {
+      color amber
+      multiple true
+    }
+  }
+}

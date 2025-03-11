@@ -37,9 +37,6 @@
     "./src",
     "./styled-system"
   ],
-  "exclude": [
-    "./worker/**/*"
-  ],
   "references": [
     {
       "path": "./tsconfig.worker.json"

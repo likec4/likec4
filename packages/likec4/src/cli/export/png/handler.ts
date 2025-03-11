@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type DiagramView, hasAtLeast, type NonEmptyArray } from '@likec4/core'
+import { type DiagramView, type NonEmptyArray, hasAtLeast } from '@likec4/core'
 import { hrtime } from 'node:process'
 import { chromium } from 'playwright'
 import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
-import { createLikeC4Logger, inMillis, type Logger, type ViteLogger } from '../../../logger'
+import { type Logger, type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
@@ -44,7 +44,7 @@ export async function exportViewsToPNG(
     views,
     output,
     outputType = 'relative',
-    maxAttempts = 3
+    maxAttempts = 3,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -54,7 +54,7 @@ export async function exportViewsToPNG(
     output: string
     outputType?: 'relative' | 'flat'
     maxAttempts?: number
-  }
+  },
 ) {
   logger.info(`${k.cyan('export output')} ${k.dim(output)}`)
   logger.info(`${k.cyan('from server')} ${k.dim(serverUrl)}`)
@@ -70,7 +70,7 @@ export async function exportViewsToPNG(
     baseURL: serverUrl,
     ignoreHTTPSErrors: true,
     reducedMotion: 'reduce',
-    isMobile: false
+    isMobile: false,
   })
   browserContext.setDefaultNavigationTimeout(timeoutMs)
   browserContext.setDefaultTimeout(timeoutMs)
@@ -83,7 +83,7 @@ export async function exportViewsToPNG(
       logger,
       maxAttempts,
       timeout: timeoutMs,
-      theme
+      theme,
     })
   } finally {
     logger.info(k.cyan(`close chromium`))
@@ -101,15 +101,16 @@ export async function pngHandler({
   serverUrl,
   ignore = false,
   timeoutMs = 10_000,
-  maxAttempts = 3
+  maxAttempts = 3,
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const startTakeScreenshot = hrtime()
 
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   output ??= languageServices.workspace
 
@@ -126,7 +127,7 @@ export async function pngHandler({
       buildWebcomponent: false,
       openBrowser: false,
       useOverviewGraph: false,
-      hmr: false
+      hmr: false,
     })
     serverUrl = resolveServerUrl(server)
     if (!serverUrl) {
@@ -143,7 +144,7 @@ export async function pngHandler({
       views,
       output,
       outputType,
-      maxAttempts
+      maxAttempts,
     })
     const { pretty } = inMillis(startTakeScreenshot)
 
@@ -153,7 +154,7 @@ export async function pngHandler({
     if (succeed.length !== views.length) {
       if (ignore && succeed.length > 0) {
         logger.info(
-          k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`)
+          k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`),
         )
       } else {
         logger.error(k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))

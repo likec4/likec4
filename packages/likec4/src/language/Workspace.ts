@@ -54,14 +54,14 @@ export class CliWorkspace {
       await DocumentBuilder.build(alldocuments, { validation: true })
     }
 
-    const model = await modelBuilder.buildLikeC4Model()
-    const viewsCount = [...model.views()].length
+    // const model = await modelBuilder.buildLikeC4Model()
+    // const viewsCount = [...model.views()].length
 
-    if (viewsCount === 0) {
-      logger.warn(`${k.dim('workspace:')} no views found`)
-      return
-    }
+    // if (viewsCount === 0) {
+    //   logger.warn(`${k.dim('workspace:')} no views found`)
+    //   return
+    // }
 
-    logger.info(`${k.dim('workspace:')} ${k.green(`✓ computed ${viewsCount} views`)}`)
+    // logger.info(`${k.dim('workspace:')} ${k.green(`✓ computed ${viewsCount} views`)}`)
   }
 }
