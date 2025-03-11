@@ -2,6 +2,7 @@ import type { ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
+import { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -12,8 +13,47 @@ import { projectsModule } from './virtuals/projects'
 import { reactModule } from './virtuals/react'
 import { singleProjectModule } from './virtuals/single-project'
 
-export type LikeC4PluginOptions = {
+export type LikeC4VitePluginOptions = {
+  /**
+   * Initializes a LikeC4 instance from the specified workspace path.
+   * By default it is vite project root.
+   */
+  workspace?: string
+  /**
+   * By default, if LikeC4 model is invalid, errors are printed to the console.
+   * Disable this behavior by setting this option to false.
+   *
+   * @default true
+   */
+  printErrors?: boolean
+  /**
+   * If true, initialization will return rejected promise with the LikeC4 instance.
+   * Use `likec4.getErrors()` to get the errors.
+   * @default false
+   */
+  throwIfInvalid?: boolean
+  /**
+   * Whether to use the `dot` binary for layouting or the WebAssembly version.
+   * @default 'wasm'
+   */
+  graphviz?: 'wasm' | 'binary'
+
+  /**
+   * If you have instance of {@link LikeC4}
+   * you can pass `languageServices` from it.
+   */
+  languageServices?: LikeC4LanguageServices
+
+  /**
+   * @deprecated
+   */
+  useOverviewGraph?: boolean
+} | {
   languageServices: LikeC4LanguageServices
+  workspace?: never
+  printErrors?: never
+  throwIfInvalid?: never
+  graphviz?: never
   useOverviewGraph?: boolean
 }
 
@@ -23,12 +63,6 @@ const projectVirtuals = [
   projectD2Module,
   projectDotSourcesModule,
   projectMmdSourcesModule,
-  // dotSourcesModule,
-  // d2SourcesModule,
-  // mmdSourcesModule,
-  // overviewGraphModule,
-  // previewsModule,
-  // likec4ProjectModelModule,
 ]
 
 const virtuals = [
@@ -47,19 +81,20 @@ const isTarget = (path: string) => {
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }
 
-export function likec4({
-  languageServices: likec4,
+export function LikeC4VitePlugin({
   useOverviewGraph = false,
-}: LikeC4PluginOptions): PluginOption {
+  ...opts
+}: LikeC4VitePluginOptions): any {
   let logger: ViteLogger
-  let assetsDir = likec4.workspaceUri.fsPath
+  let likec4: LikeC4LanguageServices
+  let assetsDir: string
 
   return {
     name: 'vite-plugin-likec4',
 
-    configResolved(config) {
+    async configResolved(config) {
       logger = config.logger
-      if (useOverviewGraph) {
+      if (useOverviewGraph === true) {
         const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
         if (resolvedAlias) {
           assetsDir = resolvedAlias
@@ -68,6 +103,17 @@ export function likec4({
           logger.warn('likec4/previews alias not found')
         }
       }
+      if (opts.languageServices) {
+        likec4 = opts.languageServices
+      } else {
+        const instance = await LikeC4.fromWorkspace(opts.workspace ?? config.root, {
+          graphviz: opts.graphviz ?? 'wasm',
+          printErrors: opts.printErrors ?? true,
+          throwIfInvalid: opts.throwIfInvalid ?? false,
+        })
+        likec4 = instance.languageServices
+      }
+      assetsDir = likec4.workspaceUri.fsPath
     },
 
     resolveId(id) {
@@ -114,43 +160,6 @@ export function likec4({
     },
 
     configureServer(server) {
-      // const limit = pLimit(1)
-      // const triggerHMR = () => {
-      //   limit.clearQueue()
-      //   void limit(async () => {
-      //     const [error] = likec4.getErrors()
-      //     if (error) {
-      //       server.ws.send({
-      //         type: 'error',
-      //         err: {
-      //           name: 'LikeC4ValidationError',
-      //           message: 'Validation error: ' + error.message.slice(0, 500),
-      //           stack: '',
-      //           plugin: 'vite-plugin-likec4',
-      //           loc: {
-      //             file: error.sourceFsPath,
-      //             line: error.range.start.line + 1,
-      //             column: error.range.start.character + 1,
-      //           },
-      //         },
-      //       })
-      //       return
-      //     }
-      //     for (const module of modules) {
-      //       const md = server.moduleGraph.getModuleById(module.virtualId)
-      //       if (md && md.importers.size > 0) {
-      //         logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)
-      //         try {
-      //           await server.reloadModule(md)
-      //         } catch (err) {
-      //           logger.error(err)
-      //         }
-      //       }
-      //     }
-      //     return
-      //   })
-      // }
-
       const patterns = likec4.projects().map(({ folder }) => folder.fsPath)
       for (const pattern of patterns) {
         logger.info(`${k.dim('watch')} ${pattern}`)
@@ -181,25 +190,6 @@ export function likec4({
           }
         }
       })
-
-      // if (useOverviewGraph && !assetsDir.startsWith(likec4.workspace)) {
-      //   logger.info(`${k.dim('watch')} ${assetsDir}`)
-      //   const reloadPreviews = () => {
-      //     const md = server.moduleGraph.getModuleById(previewsModule.virtualId)
-      //     if (md && md.importers.size > 0) {
-      //       server.reloadModule(md)
-      //     }
-      //   }
-      //   server.watcher.add(assetsDir)
-      //     .on('add', reloadPreviews)
-      //     .on('change', reloadPreviews)
-      //     .on('unlink', reloadPreviews)
-      // }
-
-      // likec4.onModelUpdate(() => {
-      //   rootLogger.debug('likec4 model update triggered')
-      //   triggerHMR()
-      // })
     },
-  }
+  } satisfies PluginOption
 }

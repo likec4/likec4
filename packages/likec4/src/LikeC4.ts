@@ -15,7 +15,7 @@ import { type DiagramView, LikeC4Model } from './model'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
-type LikeC4Options = {
+export type LikeC4Options = {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { likec4 } from '../vite-plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot, viteLogger } from './utils'
 
 type LikeC4ViteReactConfig = {
@@ -92,7 +92,7 @@ export async function viteReactConfig({
     },
     plugins: [
       react({}),
-      likec4({
+      LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),

@@ -6,3 +6,4 @@ dev/dist/**
 .vscode/**
 app/src/routeTree.gen.ts
 __app__/**
+vite-plugin-modules.d.ts

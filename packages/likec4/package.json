@@ -45,14 +45,14 @@
       }
     },
     "./vite-plugin-modules": {
-      "types": "./src/vite-plugin/modules.d.ts"
+      "types": "./vite-plugin-modules.d.ts"
     },
     "./vite-plugin": {
       "sources": "./src/vite-plugin/index.ts",
       "default": {
-        "types": "./dist/vite-plugin/index.d.ts",
-        "import": "./dist/vite-plugin/index.js",
-        "default": "./dist/vite-plugin/index.js"
+        "types": "./dist/vite-plugin/index.d.mts",
+        "import": "./dist/vite-plugin/index.mjs",
+        "default": "./dist/vite-plugin/index.mjs"
       }
     },
     "./react/style.css": "./react/style.css",
@@ -119,7 +119,7 @@
     "react-dom": "~19.0.0",
     "rollup": "4.34.6",
     "type-fest": "4.34.1",
-    "vite": "6.2.0"
+    "vite": "^6.2.0"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",

@@ -13,7 +13,7 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
-import { likec4 } from '../vite-plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 
@@ -132,7 +132,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     customLogger,
     plugins: [
       vanillaExtractPlugin(),
-      likec4({
+      LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,
       }),

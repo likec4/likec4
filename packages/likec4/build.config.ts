@@ -1,4 +1,5 @@
 import { consola } from 'consola'
+import { copyFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { isProduction } from 'std-env'
 import { defineBuildConfig } from 'unbuild'
@@ -12,6 +13,7 @@ export default defineBuildConfig({
     'src/index.ts',
     'src/cli/index.ts',
     'src/model/index.ts',
+    'src/vite-plugin/index.ts',
   ],
   clean: isProduction,
   outDir: 'dist',
@@ -80,6 +82,11 @@ export default defineBuildConfig({
         skipLibCheck: true,
         skipDefaultLibCheck: true,
       },
+    },
+  },
+  hooks: {
+    async 'build:before'() {
+      await copyFile('./src/vite-plugin/modules.d.ts', './vite-plugin-modules.d.ts')
     },
   },
 })

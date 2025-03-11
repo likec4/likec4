@@ -2,7 +2,7 @@ import { viteAliases } from '@/vite/aliases'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { likec4 } from '../vite-plugin/plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
@@ -80,7 +80,7 @@ export async function viteWebcomponentConfig({
     },
     customLogger,
     plugins: [
-      likec4({
+      LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),
