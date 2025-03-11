@@ -4,6 +4,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "rootDir": "src",
+    "tsBuildInfoFile": ".tsbuildinfo/diagram.tsbuildinfo",
     "types": [
       "vite/client",
     ],

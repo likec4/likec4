@@ -23,11 +23,19 @@ type GraphvizSvgOut = {
 const logger = rootLogger.getChild('Views')
 
 export interface LikeC4Views {
-  computedViews(projectId?: ProjectId | undefined): Promise<ComputedView[]>
-  layoutAllViews(projectId?: ProjectId | undefined): Promise<Array<Readonly<GraphvizOut>>>
-  layoutView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<GraphvizOut | null>
-  diagrams(projectId?: ProjectId | undefined): Promise<Array<DiagramView>>
-  viewsAsGraphvizOut(projectId?: ProjectId | undefined): Promise<Array<GraphvizSvgOut>>
+  readonly layouter: GraphvizLayouter
+  computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
+  layoutAllViews(
+    projectId?: ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<Array<Readonly<GraphvizOut>>>
+  layoutView(
+    viewId: ViewId,
+    projectId?: ProjectId | undefined,
+    cancelToken?: CancellationToken,
+  ): Promise<GraphvizOut | null>
+  diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
+  viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
   overviewGraph(): Promise<OverviewGraph>
 }
 

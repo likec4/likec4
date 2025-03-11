@@ -14,6 +14,7 @@ import { singleProjectModule } from './virtuals/single-project'
 
 export type LikeC4PluginOptions = {
   languageServices: LikeC4LanguageServices
+  useOverviewGraph?: boolean
 }
 
 const projectVirtuals = [
@@ -48,8 +49,8 @@ const isTarget = (path: string) => {
 
 export function likec4({
   languageServices: likec4,
+  useOverviewGraph = false,
 }: LikeC4PluginOptions): PluginOption {
-  const useOverviewGraph = false
   let logger: ViteLogger
   let assetsDir = likec4.workspaceUri.fsPath
 
