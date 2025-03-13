@@ -4,6 +4,7 @@ import { useParams } from '@tanstack/react-router'
 import { nano } from 'likec4/react'
 import { projects } from 'likec4:projects'
 import { useMemo } from 'react'
+import { values } from 'remeda'
 import { useLikeC4ModelDataContext } from './context/LikeC4ModelContext'
 
 // To get the transparent background
@@ -19,6 +20,14 @@ export function useTransparentBackground(enabled = true) {
       htmlEl.classList.remove(classname)
     }
   }, [enabled])
+}
+
+export function useLikeC4Views(): ReadonlyArray<DiagramView> {
+  const $likec4data = useLikeC4ModelDataContext()
+  const $viewsAtom = useMemo(() => {
+    return nano.computed($likec4data, (model) => values(model.views))
+  }, [$likec4data])
+  return nano.useStore($viewsAtom)
 }
 
 export function useCurrentDiagram(): DiagramView | null {

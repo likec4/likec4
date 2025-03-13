@@ -1,4 +1,4 @@
-import { useLikeC4Model } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import {
   type BoxProps,
   type TreeNodeData,
@@ -10,6 +10,7 @@ import {
   ThemeIcon,
   Tree,
   useComputedColorScheme,
+  useTree,
 } from '@mantine/core'
 import {
   IconFileCode,
@@ -20,7 +21,8 @@ import {
   IconStarFilled,
 } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
-import { type MouseEvent, type PropsWithChildren } from 'react'
+import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
+import { useCurrentDiagram } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -40,49 +42,48 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
-export const DiagramsTree = /* @__PURE__ */ ({ groupBy, viewId }: {
-  viewId: string
+export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   groupBy: GroupBy | undefined
 }) => {
-  // const data = [] as TreeNodeData[]
   const data = useDiagramsTreeData(groupBy)
   const router = useRouter()
-  // const diagram = useLikeC4Model(true).findView(viewId)?.$view
+  const diagram = useCurrentDiagram()
+  const viewId = diagram?.id ?? null
 
-  // const tree = useTree({
-  //   multiple: false,
-  // })
+  const tree = useTree({
+    multiple: false,
+  })
 
-  // const relativePath = diagram?.relativePath ?? null
-  const relativePath = null
+  const relativePath = diagram?.relativePath ?? null
 
-  // useUpdateEffect(() => {
-  //   tree.collapseAllNodes()
-  // }, [groupBy])
+  useUpdateEffect(() => {
+    tree.collapseAllNodes()
+  }, [groupBy])
 
-  // useEffect(() => {
-  //   if (relativePath) {
-  //     const segments = relativePath.split('/')
-  //     let path = '@fs'
-  //     for (const segment of segments) {
-  //       path += `/${segment}`
-  //       tree.expand(path)
-  //     }
-  //   }
-  // }, [relativePath, groupBy])
+  useEffect(() => {
+    if (relativePath) {
+      const segments = relativePath.split('/')
+      let path = '@fs'
+      for (const segment of segments) {
+        path += `/${segment}`
+        tree.expand(path)
+      }
+    }
+  }, [relativePath, groupBy])
 
-  // useEffect(() => {
-  //   tree.select(viewId)
-  // }, [viewId])
+  useEffect(() => {
+    if (viewId) {
+      tree.select(viewId)
+    }
+  }, [viewId])
 
   const theme = useComputedColorScheme()
-  // const [, startTransition] = useTransition()
 
   return (
     <Box>
       <Tree
         allowRangeSelection={false}
-        // tree={tree}
+        tree={tree}
         data={data}
         styles={{
           node: {
@@ -122,13 +123,15 @@ export const DiagramsTree = /* @__PURE__ */ ({ groupBy, viewId }: {
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  // startTransition(() =>
-                  //   // router.buildAndCommitLocation({
-                  //   //   params: {
-                  //   //     viewId: node.value,
-                  //   //   },
-                  //   // })
-                  // )
+                  router.commitLocation(
+                    router.buildLocation({
+                      to: '.',
+                      params: (p: any) => ({
+                        ...p,
+                        viewId: node.value,
+                      }),
+                    }),
+                  )
                 },
               })}
             >
@@ -139,7 +142,7 @@ export const DiagramsTree = /* @__PURE__ */ ({ groupBy, viewId }: {
       />
     </Box>
   )
-}
+})
 
 function DiagramPreviewHoverCard({
   viewId,
@@ -180,8 +183,7 @@ function DiagramPreview({
         {children}
       </HoverCardTarget>
       <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
-        {
-          /* <StaticLikeC4Diagram
+        <StaticLikeC4Diagram
           view={diagram}
           fitView
           fitViewPadding={0}
@@ -189,8 +191,7 @@ function DiagramPreview({
           reduceGraphics
           initialWidth={width}
           initialHeight={height}
-        /> */
-        }
+        />
       </HoverCardDropdown>
     </HoverCard>
   )
