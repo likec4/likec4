@@ -9,12 +9,11 @@ export const Route = createFileRoute('/project/$projectId/view/$viewId')({
 })
 
 function ViewLayout() {
-  const { viewId } = Route.useParams()
   return (
     <>
       <Outlet />
       <ViewHeader />
-      {!withOverviewGraph && <SidebarDrawer viewId={viewId} />}
+      {!withOverviewGraph && <SidebarDrawer />}
     </>
   )
 }
