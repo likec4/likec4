@@ -1,3 +1,15 @@
+## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
+
+
+### Bug Fixes
+
+* empty sidebar ([788dcdc](https://github.com/likec4/likec4/commit/788dcdc6da690dd97ae16cf16d53f71d84624586)), closes [#1715](https://github.com/likec4/likec4/issues/1715)
+* extending a view does not inherit title or description ([0f3fe40](https://github.com/likec4/likec4/commit/0f3fe400c5cd6aae01f313b75b0b04a1502b6a8e)), closes [#1719](https://github.com/likec4/likec4/issues/1719)
+* unexpected arrow style derived from model to dynamic view ([02e6186](https://github.com/likec4/likec4/commit/02e61865102d92fc1756adf462def8e1a544f0a9)), closes [#1723](https://github.com/likec4/likec4/issues/1723)
+* update Playwright installation and dependencies in workflows and package.json ([330d4d6](https://github.com/likec4/likec4/commit/330d4d6eabce7ee113815fde9cd9e83a008e9162))
+
+
+
 ## [1.26.1](https://github.com/likec4/likec4/compare/v1.26.0...v1.26.1) (2025-03-11)
 
 ### Hot Fix
