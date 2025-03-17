@@ -1,7 +1,7 @@
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
+import type { SystemStyleObject } from '@likec4/styles/types'
 
-export const container = style({
+export const container = css({
   position: 'absolute',
   bottom: '0.5rem',
   left: '50%',
@@ -12,50 +12,47 @@ export const container = style({
   flexDirection: 'column',
   gap: '0.4rem',
   alignItems: 'center',
-  '@media': {
-    [mantine.largerThan('md')]: {
-      gap: '0.6rem',
-    },
+  md: {
+    gap: '0.6rem',
   },
 })
 
-export const buttons = style({
+const tablerIcons = {
+  '& .tabler-icon': {
+    width: '0.85em',
+    height: '0.85em',
+  },
+} satisfies SystemStyleObject
+
+export const buttons = css({
   backdropFilter: 'blur(8px)',
   transition: 'all 175ms ease-in',
-  ':hover': {
+  _hover: {
     transitionTimingFunction: 'ease-out',
     transform: 'scale(1.1)',
   },
-  ':active': {
+  _active: {
     transitionDuration: '100ms',
     transform: 'scale(0.98) translateY(3px)',
   },
+  ...tablerIcons,
 })
 
-var transparency = createVar()
-export const btn = style({
+const transparency = '--transparency'
+export const btn = css({
   transition: 'all 175ms ease-in',
   backgroundColor: 'var(--button-bg)',
-  vars: {
-    [transparency]: '35%',
-    ['--button-bg']: `color-mix(in srgb, ${mantine.colors.primaryColors.filled}, transparent ${transparency})`,
-    ['--button-hover']: `color-mix(in srgb, ${mantine.colors.primaryColors.filledHover}, transparent ${transparency})`,
+  [transparency]: '35%',
+  _light: {
+    [transparency]: '15%',
   },
-  selectors: {
-    [mantine.lightSelector]: {
-      vars: {
-        [transparency]: '15%',
-      },
-    },
-  },
+  ['--button-bg']: `color-mix(in srgb, {colors.mantine.colors.primary.filled}, transparent var(${transparency}))`,
+  ['--button-hover']:
+    `color-mix(in srgb, {colors.mantine.colors.primary.filledHover}, transparent var(${transparency}))`,
+  ...tablerIcons,
 })
 
-globalStyle(`:where(${buttons}, ${btn}) .tabler-icon`, {
-  width: '0.85em',
-  height: '0.85em',
-})
-
-export const parallelStateFrame = style({
+export const parallelStateFrame = css({
   position: 'absolute',
   margin: 0,
   padding: 0,
@@ -63,11 +60,10 @@ export const parallelStateFrame = style({
   left: 0,
   width: '100%',
   height: '100%',
-  border: `2px solid ${mantine.colors.orange[6]}`,
+  border: `2px solid`,
+  borderColor: 'mantine.colors.orange[6]',
   pointerEvents: 'none',
-  '@media': {
-    [mantine.largerThan('md')]: {
-      borderWidth: 4,
-    },
+  md: {
+    borderWidth: 4,
   },
 })

@@ -1,7 +1,6 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
 import { type PropsWithChildren, createContext, createRef, useContext, useRef } from 'react'
-import { rootClassName } from '../theme-vars'
 
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
@@ -16,7 +15,7 @@ export function RootContainer({
   const ref = useRef<HTMLDivElement>(null)
   return (
     <Box
-      className={clsx(rootClassName, className)}
+      className={clsx('likec4-diagram-root', className)}
       ref={ref}
       {...reduceGraphics && {
         ['data-likec4-reduced-graphics']: true,

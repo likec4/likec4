@@ -1,0 +1,69 @@
+{
+  "name": "@likec4/styles",
+  "license": "MIT",
+  "version": "1.26.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate": "panda",
+    "emit-pkg": "panda emit-pkg --base dist"
+  },
+  "exports": {
+    "./css": {
+      "types": "./dist/css/index.d.ts",
+      "require": "./dist/css/index.mjs",
+      "import": "./dist/css/index.mjs"
+    },
+    "./tokens": {
+      "types": "./dist/tokens/index.d.ts",
+      "require": "./dist/tokens/index.mjs",
+      "import": "./dist/tokens/index.mjs"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/types/index.mjs",
+      "import": "./dist/types/index.mjs"
+    },
+    "./patterns": {
+      "types": "./dist/patterns/index.d.ts",
+      "require": "./dist/patterns/index.mjs",
+      "import": "./dist/patterns/index.mjs"
+    },
+    "./jsx": {
+      "types": "./dist/jsx/index.d.ts",
+      "require": "./dist/jsx/index.mjs",
+      "import": "./dist/jsx/index.mjs"
+    },
+    "./postcss": {
+      "types": "./postcss.d.mts",
+      "import": "./postcss.mjs"
+    },
+    "./recipes": {
+      "types": "./dist/recipes/index.d.ts",
+      "require": "./dist/recipes/index.mjs",
+      "import": "./dist/recipes/index.mjs"
+    },
+    "./dev": "./dev.ts",
+    "./vars": "./vars.ts"
+  },
+  "dependencies": {
+    "@pandabox/utils": "^0.0.5"
+  },
+  "devDependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@pandabox/panda-plugins": "^0.0.8",
+    "@pandacss/dev": "catalog:css",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "postcss": "catalog:css",
+    "remeda": "catalog:utils",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.6.2"
+}

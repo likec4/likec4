@@ -25,9 +25,6 @@
       "$hooks/*": [
         "./src/hooks/*"
       ],
-      "$styled-system/*": [
-        "./styled-system/*"
-      ],
       "$/*": [
         "./src/*"
       ]

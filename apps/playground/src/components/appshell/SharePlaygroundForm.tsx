@@ -2,9 +2,9 @@ import { PricingAnchor } from '$components/PricingAnchor'
 import { useAtom } from '$hooks/useAtom'
 import { usePlayground, usePlaygroundSnapshot } from '$hooks/usePlayground'
 import { ShareOptions } from '$state/shareOptions'
-import { css } from '$styled-system/css'
-import { HStack } from '$styled-system/jsx'
-import { hstack } from '$styled-system/patterns'
+import { css } from '@likec4/styles/css'
+import { HStack } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import {
   Alert as MantineAlert,
   Anchor,

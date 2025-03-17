@@ -1,35 +1,36 @@
-import { css as style } from '$styled-system/css'
+import { css } from '@likec4/styles/css'
 
-export const content = style({
-  paddingTop: 120,
+export const content = css({
+  paddingTop: '[120px]',
   position: 'relative',
   zIndex: '1',
-  border: '1px solid token(colors.dimmed)',
+  border: '[1px solid]',
+  borderColor: 'mantine.colors.dimmed',
 })
 
-export const image = style({
+export const image = css({
   position: 'absolute',
   inset: '0',
   opacity: 0.2,
 })
 
-export const inner = style({
+export const inner = css({
   position: 'relative',
 })
 
-export const root = style({
+export const root = css({
   paddingTop: '80px',
   paddingBottom: '80px',
 })
 
-export const description = style({
+export const description = css({
   maxWidth: 540,
   margin: 'auto',
   // marginTop: mantine.spacing.xl,
   // marginBottom: `calc(${mantine.spacing.xl}*1.5)`
 })
 
-export const title = style({
+export const title = css({
   // fontFamily: ['Greycliff CF', mantine.fontFamily],
   textAlign: 'center',
   fontWeight: '900',

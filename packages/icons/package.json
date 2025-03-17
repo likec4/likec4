@@ -56,14 +56,14 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "~19.0.10",
-    "@types/react-dom": "~19.0.4",
-    "consola": "^3.4.0",
-    "esbuild": "^0.25.0",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "consola": "catalog:utils",
+    "esbuild": "catalog:esbuild",
     "execa": "^9.5.2",
     "glob": "^11.0.1",
-    "react": "~19.0.0",
-    "react-dom": "~19.0.0",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.6.2"

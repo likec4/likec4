@@ -1,9 +1,9 @@
 import { type DiagramEdge, invariant } from '@likec4/core'
-import clsx from 'clsx'
+import { cx } from '@likec4/styles/css'
 import { type PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
-import * as css from './edge.css'
+import * as styles from './edge.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -20,6 +20,8 @@ type EdgeContainerProps = PropsWithChildren<
   }
 >
 
+// export
+//
 export function EdgeContainer({
   className,
   component = 'g',
@@ -30,24 +32,26 @@ export function EdgeContainer({
     ...data
   },
   children,
+  style,
 }: EdgeContainerProps) {
   const props = {
-    className: clsx(
-      css.edgeContainer,
+    className: cx(
+      styles.edgeVars,
+      styles.edgeContainer,
       className,
     ),
     'data-likec4-color': data.color ?? 'gray',
     'data-edge-dir': data.dir ?? 'forward',
     'data-edge-active': isActive,
     'data-edge-animated': isActive,
-    'data-edge-hovered': isHovered,
+    'data-likec4-hovered': isHovered,
     ...(isDimmed !== false && {
-      'data-edge-dimmed': isDimmed,
+      'data-likec4-dimmed': isDimmed,
     }),
   }
   if (component === 'svg') {
     return (
-      <svg {...props}>
+      <svg style={style} {...props}>
         {children}
       </svg>
     )
@@ -55,7 +59,7 @@ export function EdgeContainer({
   invariant(component === 'g', 'EdgeContainer: component must be "g" or "svg"')
 
   return (
-    <g {...props}>
+    <g style={style} {...props}>
       {children}
     </g>
   )

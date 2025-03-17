@@ -1,37 +1,38 @@
-import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
+import { css, cx } from '@likec4/styles/css'
+
+// import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+// import { mantine } from '../../../theme-vars'
 import { button, description, descriptionColor, iconColor, title } from './_shared.css'
 
 export { emptyBoX, focusable } from './_shared.css'
 
-export const viewButton = style([button, {
-  flexWrap: 'nowrap',
-  display: 'flex',
-}])
+const _viewBtn = 'likec4-view-btn'
 
-globalStyle(`${viewButton} .mantine-ThemeIcon-root`, {
-  // transition: transitions.fast,
-  color: fallbackVar(iconColor, mantine.colors.dark[2]),
-  vars: {
-    '--ti-size': '24px',
-  },
-})
-globalStyle(`${viewButton}[data-disabled] .mantine-ThemeIcon-root`, {
-  opacity: 0.45,
-})
+export const viewButton = cx(
+  css(button, {
+    flexWrap: 'nowrap',
+    display: 'flex',
+    '& .mantine-ThemeIcon-root': {
+      color: `var(${iconColor}, {colors.mantine.colors.dark[2]})`,
+      '--ti-size': '24px',
+    },
+    '&[data-disabled] .mantine-ThemeIcon-root': {
+      opacity: 0.45,
+    },
+  }),
+  _viewBtn,
+)
 
-export const viewTitle = style([title])
-export const viewDescription = style([description])
+export const viewTitle = css(title)
+export const viewDescription = css(description)
 
-export const viewButtonDescription = style({
+export const viewButtonDescription = css({
   marginTop: 4,
   // transition: transitions.fast,
-  color: fallbackVar(descriptionColor, mantine.colors.dimmed),
+  color: `var(${descriptionColor}, {colors.mantine.colors.dimmed})`,
   fontSize: 13,
   lineHeight: 1.4,
-  selectors: {
-    [`:where(${viewButton}[data-disabled]) &`]: {
-      opacity: 0.85,
-    },
+  [`:where(.likec4-view-btn[data-disabled]) &`]: {
+    opacity: 0.85,
   },
 })

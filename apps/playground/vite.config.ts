@@ -1,16 +1,16 @@
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
 import { type AliasOptions, defineConfig } from 'vite'
 import tsconfigpaths from 'vite-tsconfig-paths'
 // import packageJson from './package.json' with { type: 'json' }
 import { cloudflare } from '@cloudflare/vite-plugin'
+// import pandaCss from '@likec4/styles/postcss'
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-  '@likec4/diagram': resolve('../../packages/diagram/dist'),
+  // '@likec4/diagram': resolve('../../packages/diagram/dist'),
 } satisfies AliasOptions
 
 export default defineConfig(({ command }) => ({
@@ -23,6 +23,9 @@ export default defineConfig(({ command }) => ({
     include: [
       '@likec4/icons/all',
       '@hpcc-js/wasm-graphviz',
+      '@codingame/monaco-vscode-editor-service-override',
+      'langium/lsp',
+      'langium',
       'vscode-languageserver/browser',
       'vscode-languageclient/browser',
       'vscode-languageclient',

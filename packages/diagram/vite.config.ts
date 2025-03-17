@@ -1,4 +1,4 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaPostCss from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -52,9 +52,15 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    css: {
+      postcss: {
+        plugins: [
+          pandaPostCss({}) as any,
+        ],
+      },
+    },
     plugins: [
       react(),
-      vanillaExtractPlugin({}),
       ...(isProduction
         ? [
           dts({

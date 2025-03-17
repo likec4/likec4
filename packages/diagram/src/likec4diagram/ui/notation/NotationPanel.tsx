@@ -1,4 +1,5 @@
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
+import { token } from '@likec4/styles/tokens'
 import {
   ActionIcon,
   Badge,
@@ -27,7 +28,6 @@ import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
 import type { DiagramContext } from '../../../state/types'
-import { vars } from '../../../theme-vars'
 import * as css from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
@@ -95,7 +95,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
                   // diagramStore.getState().highlightByElementNotation(value)
                 }}
                 opacity={isNonNullish(onlyKind) && onlyKind !== kind ? 0.25 : 1}
-                color={isNonNullish(onlyKind) && onlyKind !== kind ? 'gray' : vars.element.fill}
+                color={isNonNullish(onlyKind) && onlyKind !== kind ? 'gray' : token('colors.likec4.element.fill')}
               >
                 {kind}
               </Badge>

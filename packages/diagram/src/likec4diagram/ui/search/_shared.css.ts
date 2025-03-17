@@ -1,103 +1,93 @@
-import { type StyleRule, createVar, fallbackVar, style } from '@vanilla-extract/css'
-import { mantine, whereDark, whereLight } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
+import type { SystemStyleObject } from '@likec4/styles/types'
 
-export const titleColor = createVar('title-color')
-export const descriptionColor = createVar('description-color')
-export const iconColor = createVar('icon-color')
+export const titleColor = '--title-color'
+export const descriptionColor = '---description-color'
+export const iconColor = '--icon-color'
 
 export const buttonFocused = {
   outline: 'none',
-  backgroundColor: mantine.colors.primaryColors[8],
-  borderColor: mantine.colors.primaryColors[9],
-  vars: {
-    [iconColor]: mantine.colors.primaryColors[2],
-    [titleColor]: mantine.colors.primaryColors[0],
-    [descriptionColor]: mantine.colors.primaryColors[1],
-  },
-} satisfies StyleRule
+  background: 'mantine.colors.primary[8]',
+  borderColor: 'mantine.colors.primary[9]',
+  [iconColor]: 'mantine.colors.primary[2]',
+  [titleColor]: 'mantine.colors.primary[0]',
+  [descriptionColor]: 'mantine.colors.primary[1]',
+} satisfies SystemStyleObject
 
-export const button = style({
+export const button = css.raw({
   display: 'flex',
   width: '100%',
-  background: mantine.colors.body,
-  borderRadius: mantine.radius.sm,
+  background: 'mantine.colors.body',
+  borderRadius: 'sm',
   padding: `12px 8px 12px 14px`,
-  minHeight: 60,
-  gap: 10,
+  minHeight: '60px',
+  gap: '8',
   // alignItems: 'flex-start',
   // transition: `all 50ms ${easings.inOut}`,
-  border: `1px solid ${mantine.colors.defaultBorder}`,
-  vars: {
-    [titleColor]: mantine.colors.dark[1],
-    [iconColor]: mantine.colors.dimmed,
-    [descriptionColor]: mantine.colors.dimmed,
-  },
-  ':hover': {
+  border: `1px solid`,
+  borderColor: 'mantine.colors.defaultBorder',
+  [titleColor]: '{colors.mantine.colors.dark[1]}',
+  [iconColor]: '{colors.mantine.colors.dimmed}',
+  [descriptionColor]: '{colors.mantine.colors.dimmed}',
+  _hover: {
     ...buttonFocused,
-    borderColor: mantine.colors.primaryColors[9],
-    backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
+    borderColor: 'mantine.colors.primary[9]',
+    background: `mantine.colors.primary[8]/60`,
   },
-  ':focus': buttonFocused,
-  selectors: {
-    [`${whereDark} &`]: {
-      borderColor: 'transparent',
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
-      // background: mantine.colors.dark[6],
-    },
-    [`${whereLight} &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.white}, transparent 10%)`,
-      vars: {
-        [iconColor]: mantine.colors.gray[6],
-        [titleColor]: mantine.colors.gray[7],
-      },
-    },
-    [`${whereLight} &:hover`]: {
-      borderColor: mantine.colors.primaryColors[6],
-      backgroundColor: mantine.colors.primaryColors[5],
-      vars: {
-        [iconColor]: mantine.colors.primaryColors[3],
-        [titleColor]: mantine.colors.primaryColors[0],
-        [descriptionColor]: mantine.colors.primaryColors[1],
-      },
+  _focus: buttonFocused,
+  _dark: {
+    borderColor: 'transparent',
+    background: `mantine.colors.dark[6]/80`,
+    // background: 'mantine.colors.dark[6]',
+  },
+  _light: {
+    background: `mantine.colors.white/90`,
+    [iconColor]: '{colors.mantine.colors.gray[6]}',
+    [titleColor]: '{colors.mantine.colors.gray[7]}',
+    _hover: {
+      borderColor: 'mantine.colors.primary[6]',
+      backgroundColor: 'mantine.colors.primary[5]',
+      [iconColor]: '{colors.mantine.colors.primary[3])',
+      [titleColor]: '{colors.mantine.colors.primary[0])',
+      [descriptionColor]: '{colors.mantine.colors.primary[1]}',
     },
   },
 })
 
-export const focusable = style({})
+export const focusable = css({})
 
-export const title = style({
-  color: fallbackVar(titleColor, mantine.colors.gray[7]),
-  fontSize: 16,
+export const title = css.raw({
+  color: `[var(${titleColor}, {colors.mantine.colors.gray[7]})]`,
+  fontSize: '16px',
   fontWeight: 500,
-  lineHeight: 1.1,
-  selectors: {
-    [`:where([data-disabled]) &`]: {
-      opacity: 0.4,
-    },
+  lineHeight: '1.1',
+
+  [`:where([data-disabled]) &`]: {
+    opacity: 0.4,
   },
 })
-export const description = style({
+export const description = css.raw({
   marginTop: 4,
-  color: fallbackVar(descriptionColor, mantine.colors.dimmed),
+  color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
   fontSize: 12,
   lineHeight: 1.4,
-  selectors: {
-    [`:where([data-disabled]) &`]: {
-      opacity: 0.85,
-    },
+
+  [`:where([data-disabled]) &`]: {
+    opacity: 0.85,
   },
 })
 
-export const emptyBoX = style({
+export const emptyBoX = css({
   width: '100%',
   height: '100%',
-  border: `2px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
+  border: `2px dashed`,
+  borderColor: 'mantine.colors.defaultBorder',
+  rounded: 'md',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  fontSize: mantine.fontSizes.md,
-  color: mantine.colors.dimmed,
-  padding: mantine.spacing.md,
-  paddingBlock: mantine.spacing.xl,
+  fontSize: 'md',
+  color: 'mantine.colors.dimmed',
+  padding: 'md',
+  paddingBlock: 'xl',
 })

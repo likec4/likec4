@@ -1,18 +1,76 @@
 packages:
   - "apps/*"
+  - "styled-system/*"
   - "packages/*"
 
 catalog:
-  typescript: 5.8.2
+  typescript: "^5.8.2"
   wireit: "^0.14.11"
   wrangler: "3.112.0"
-  "@mantine/core": "7.17.1"
-  "@mantine/hooks": "7.17.1"
-  "@mantine/vanilla-extract": "7.17.1"
-  "@mantine/modals": "7.17.1"
-  "@mantine/notifications": "7.17.1"
-  "@mantine/colors-generator": "7.17.1"
-  "@types/node": 20.8.3
+  "@types/node": "^20.17.23"
+  unbuild: "^3.3.1"
+  turbo: "^2.4.4"
+  tsx: "~4.19.3"
+
+catalogs:
+  utils:
+    remeda: ^2.21.1
+    type-fest: "^4.35.0"
+    fast-equals: "^5.2.2"
+    "@react-hookz/web": "^25.0.1"
+    std-env: "^3.8.1"
+    consola: "^3.4.0"
+    "@hpcc-js/wasm-graphviz": "1.7.0"
+  esbuild:
+    esbuild: "^0.25.0"
+    esbuild-node-externals: "^1.18.0"
+    esbuild-plugins-node-modules-polyfill: "^1.7.0"
+  react:
+    react: ^19.0.0
+    react-dom: ^19.0.0
+    "@types/react": ^19.0.10
+    "@types/react-dom": ^19.0.4
+    react-error-boundary: "^5.0.0"
+  router:
+    "@tanstack/react-router": ^1.114.13
+    "@tanstack/router-vite-plugin": ^1.114.13
+    "@tanstack/router-cli": ^1.114.13
+  mantine:
+    "@mantine/core": "7.17.1"
+    "@mantine/hooks": "7.17.1"
+    "@mantine/vanilla-extract": "7.17.1"
+    "@mantine/modals": "7.17.1"
+    "@mantine/notifications": "7.17.1"
+    "@mantine/colors-generator": "7.17.1"
+  vite:
+    "@vitejs/plugin-react": "4.3.4"
+    vite: "6.2.1"
+    vite-plugin-dts: "^4.5.0"
+    vite-plugin-node-polyfills: "^0.23.0"
+    vite-tsconfig-paths: "^5.1.4"
+  vitest:
+    vitest: "^3.0.8"
+    "@vitest/coverage-c8": "^3.0.8"
+    "@vitest/ui": "^3.0.8"
+  css:
+    postcss: "^8.5.3"
+    "@vanilla-extract/css": "^1.17.1"
+    "@vanilla-extract/dynamic": "^2.1.2"
+    "@vanilla-extract/vite-plugin": "^5.0.1"
+    "@vanilla-extract/css-utils": "^0.1.4"
+    "@vanilla-extract/esbuild-plugin": "^2.3.15"
+    "@pandacss/dev": "^0.53.1"
+    "@pandacss/preset-panda": "^0.53.1"
+  vscode:
+    vscode-jsonrpc: "8.2.0"
+    vscode-languageclient: "9.0.1"
+    vscode-languageserver: "9.0.1"
+    vscode-languageserver-protocol: "3.17.5"
+    vscode-languageserver-types: "3.17.5"
+    vscode-uri: "3.1.0"
+    vscode-oniguruma: "2.0.1"
+    vscode-textmate: "9.2.0"
+    "@types/vscode": "^1.84.0"
 
 onlyBuiltDependencies:
   - dprint

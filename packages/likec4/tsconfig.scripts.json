@@ -18,6 +18,9 @@
   "references": [
     {
       "path": "./tsconfig.cli.json"
+    },
+    {
+      "path": "./app/tsconfig.json"
     }
   ]
 }

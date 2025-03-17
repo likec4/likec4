@@ -12,6 +12,8 @@
   },
   "include": [
     "protocol.ts",
-    "src"
+    "src",
+    "vite.config.ts",
+    "panda.config.ts"
   ]
 }

@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'
+import { ZIndexes } from '../../../base/const'
 import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from '../../../base/primitives'
 import { useEnabledFeature } from '../../../context'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
@@ -58,6 +59,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       labelXY,
       ...data
     },
+    style = {},
   } = props
 
   const navigateTo = enableNavigateTo ? data.navigateTo : undefined
@@ -316,6 +318,12 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     }
   }
 
+  let zIndex = ZIndexes.Edge
+  if (hovered || active) {
+    // Move above the elements
+    zIndex = ZIndexes.Element + 1
+  }
+
   return (
     <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
       <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
@@ -340,7 +348,15 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       {/* Render control points above edge label  */}
       {enableEdgeEditing && controlPoints.length > 0 && (
         <EdgeLabelRenderer>
-          <EdgeContainer component="svg" className={edgesCss.controlPointsContainer} {...props}>
+          <EdgeContainer
+            component="svg"
+            className={edgesCss.controlPointsContainer}
+            {...props}
+            style={{
+              ...style,
+              zIndex,
+            }}
+          >
             <g
               onContextMenu={e => {
                 e.preventDefault()

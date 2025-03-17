@@ -1,13 +1,12 @@
-import { style } from '@vanilla-extract/css'
-import { mantine, vars } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const menuDropdown = style({
+export const menuDropdown = css({
   overflowY: 'scroll',
-  minWidth: 250,
+  minWidth: '250px',
   maxWidth: 'min(90vw, 500px)',
 })
 
-export const menuItemRelationship = style({
+export const menuItemRelationship = css({
   // padding: mantine.spacing.sm,
   // paddingTop: mantine.spacing.xs,
   // borderRadius: mantine.radius.sm,
@@ -15,7 +14,7 @@ export const menuItemRelationship = style({
   // paddingBottom: mantine.spacing.xs,
   gap: 4,
   // cursor: 'pointer',
-  // ':hover': {
+  // _hover: {
   // borderColor: mantine.colors.gray.light,
   // background: mantine.colors.gray[2]
   // },
@@ -30,32 +29,21 @@ export const menuItemRelationship = style({
   // }
 })
 
-export const endpoint = style({
+export const endpoint = css({
   display: 'block',
   fontSize: 10,
   fontWeight: 500,
   whiteSpace: 'nowrap',
   padding: '2px 5px',
   borderRadius: 2,
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent 45%)`,
+  background: `likec4.element.fill/55`,
   lineHeight: 1.1,
-  selectors: {
-    [`:where([data-mantine-color-scheme="dark"]) &`]: {
-      color: vars.element.loContrast,
-    },
+  _dark: {
+    color: 'likec4.element.loContrast',
   },
 })
 
-export const title = style({
+export const title = css({
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: mantine.fontSizes.sm,
+  fontSize: 'sm',
 })
-//
-// export const sourceId = style({
-//
-// })
-//
-// export const targetId = style({
-//   fontSize: 11,
-//   whiteSpace: 'nowrap'
-// })

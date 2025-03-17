@@ -1,15 +1,15 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent, Text } from '@mantine/core'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import clsx from 'clsx'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
-import { getVarName } from '../../../utils/css'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
-import * as css from './EdgeLabel.css'
+import { edgeVars } from './edge.css'
+import * as styles from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -40,8 +40,6 @@ const toCssVarValue = (value: number | string | undefined) => {
   if (value === undefined) return undefined
   return isNumber(value) ? `${value}px` : value
 }
-
-const varTranslate = getVarName(css.varTranslate)
 
 export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
   forwardRef<HTMLDivElement, EdgeLabelProps>(({
@@ -82,23 +80,24 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     return (
       <EdgeLabelRenderer>
         <Box
-          className={clsx(
+          className={cx(
+            edgeVars,
+            styles.edgeLabelContainer,
             'nodrag nopan',
-            css.edgeLabelContainer,
             className,
           )}
           data-likec4-color={data.color ?? 'gray'}
           data-edge-active={isActive}
           data-edge-animated={isActive}
-          data-edge-hovered={isHovered}
+          data-likec4-hovered={isHovered}
           {...isDimmed !== false && {
-            'data-edge-dimmed': isDimmed,
+            'data-likec4-dimmed': isDimmed,
           }}
           style={{
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),
             ...(translate && {
-              [varTranslate]: translate,
+              [styles._translate]: translate,
             }),
             ...(labelBBox && {
               maxWidth: labelBBox.width + 18,
@@ -107,20 +106,20 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
             ...style,
           }}
         >
-          <Box ref={ref} className={css.edgeLabel} {...rest}>
+          <Box ref={ref} className={styles.edgeLabel} {...rest}>
             {stepNum !== null && (
-              <Box className={css.stepEdgeNumber}>
+              <Box className={styles.stepEdgeNumber}>
                 {stepNum}
               </Box>
             )}
-            <Box className={css.secondColumn}>
+            <Box className={styles.secondColumn}>
               {isTruthy(data.label) && (
-                <Text component="div" className={css.edgeLabelText} lineClamp={5}>
+                <Text component="div" className={styles.edgeLabelText} lineClamp={5}>
                   {data.label}
                 </Text>
               )}
               {isTruthy(technology) && (
-                <Text component="div" className={css.edgeLabelTechnology}>
+                <Text component="div" className={styles.edgeLabelTechnology}>
                   {'[ ' + technology + ' ]'}
                 </Text>
               )}

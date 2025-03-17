@@ -1,6 +1,6 @@
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
-import * as css from './ColorSchemeToggle.css'
+import * as styles from './ColorSchemeToggle.css'
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme()
@@ -8,7 +8,7 @@ export function ColorSchemeToggle() {
 
   return (
     <ActionIcon
-      className={css.icon}
+      className={styles.icon}
       visibleFrom="lg"
       size={'md'}
       variant="subtle"

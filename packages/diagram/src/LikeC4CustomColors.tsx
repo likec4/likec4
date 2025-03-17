@@ -3,7 +3,7 @@ import { useMantineStyleNonce } from '@mantine/core'
 import { deepEqual } from 'fast-equals'
 import { memo } from 'react'
 import { entries } from 'remeda'
-import { vars } from './theme-vars'
+// import { vars } from './theme-vars'
 
 type CSSVarFunction = `var(--${string})` | `var(--${string}, ${string | number} )`
 
@@ -13,10 +13,10 @@ interface LikeC4CustomColorsProperties {
 
 function toStyle(name: String, colorValues: ThemeColorValues): String {
   const rules = [
-    ...entries(colorValues.elements)
-      .map(([key, value]) => `${stripCssVarReference(vars.element[key])}: ${value};`),
-    ...entries(colorValues.relationships)
-      .map(([key, value]) => `${stripCssVarReference(vars.relation[key])}: ${value};`)
+    // ...entries(colorValues.elements)
+    //   .map(([key, value]) => `${stripCssVarReference(vars.element[key])}: ${value};`),
+    // ...entries(colorValues.relationships)
+    //   .map(([key, value]) => `${stripCssVarReference(vars.relation[key])}: ${value};`)
   ]
     .join('\n')
 

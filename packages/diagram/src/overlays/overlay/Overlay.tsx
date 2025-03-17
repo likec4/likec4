@@ -7,8 +7,7 @@ import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
-import { getVarName } from '../../utils/css'
-import * as css from './Overlay.css'
+import * as styles from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
   HTMLMotionProps<'dialog'> & {
@@ -20,9 +19,6 @@ type OverlayProps = PropsWithChildren<
     onClick?: never
   }
 >
-
-const backdropBlur = getVarName(css.backdropBlur) as '--backdrop-blur'
-const backdropOpacity = getVarName(css.backdropOpacity) as '--backdrop-opacity'
 
 export function Overlay({ children, onClose, className, classes, ...rest }: OverlayProps) {
   const [opened, setOpened] = useState(false)
@@ -70,16 +66,17 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   return (
     <m.dialog
       ref={dialogRef}
-      className={clsx(css.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
+      className={clsx(styles.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
       initial={{
-        [backdropBlur]: '0px',
-        [backdropOpacity]: '5%',
+        [styles.backdropBlur]: '0px',
+        [styles.backdropOpacity]: '5%',
         opacity: 0.85,
         translateY: 12,
         // opacity: 02.8,
       }}
       animate={{
-        [backdropBlur]: '6px',
+        [styles.backdropBlur]: '6px',
+        [styles.backdropOpacity]: '50%',
         // [backdropOpacity]: '60%',
         translateY: 0,
         opacity: 1,
@@ -90,8 +87,8 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       exit={{
         opacity: 0,
         translateY: -10,
-        [backdropBlur]: '0px',
-        [backdropOpacity]: '0%',
+        [styles.backdropBlur]: '0px',
+        [styles.backdropOpacity]: '0%',
         transition: {
           duration: 0.1,
         },
@@ -112,7 +109,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       {...rest}
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
-        <Box className={clsx(css.body, classes?.body)}>
+        <Box className={clsx(styles.body, classes?.body)}>
           {opened && <>{children}</>}
         </Box>
       </RemoveScroll>

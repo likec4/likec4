@@ -36,7 +36,8 @@
         "generate"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "styled-system/**"
       ],
       "outputLogs": "new-only"
     }

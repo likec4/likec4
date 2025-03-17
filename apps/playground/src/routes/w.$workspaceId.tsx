@@ -8,7 +8,7 @@ import { AppShell, AppShellHeader, AppShellMain, Box, Stack } from '@mantine/cor
 import { useMediaQuery } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import * as css from './styles.css'
+import * as styles from './styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
   component: WorkspaceContextPage,
@@ -53,7 +53,7 @@ function WorkspaceContextPage() {
             direction={isMobile ? 'vertical' : 'horizontal'}
             autoSaveId={`playground`}>
             <Panel
-              className={css.panel}
+              className={styles.panel}
               collapsible={true}
               minSize={5}
               defaultSize={40}>
@@ -65,11 +65,12 @@ function WorkspaceContextPage() {
               </Stack>
             </Panel>
             <PanelResizeHandle
-              className={css.resize}
+              className={styles.resize}
               style={{
+                // color: mantine.colors.dimmed,
                 padding: isMobile ? '1px 0' : '0 1px',
               }} />
-            <Panel className={css.panel}>
+            <Panel className={styles.panel}>
               <Outlet />
             </Panel>
           </PanelGroup>

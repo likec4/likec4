@@ -1,3 +1,7 @@
+@layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+@import "@mantine/core/styles.layer.css";
+@import "@xyflow/react/dist/style.css" layer(xyflow);
+
 *,
 :before,
 :after {
@@ -9,12 +13,8 @@
 }
 
 :root {
-  --likec4-app-font: 'IBM Plex Sans', ui-sans-serif,
-    system-ui,
-    sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Segoe UI Symbol",
+  --likec4-app-font:
+    "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji";
   --likec4-default-font-family: var(--likec4-app-font);
   --mantine-default-font-family: var(--likec4-app-font);

@@ -1,11 +1,11 @@
+import { css, cx } from '@likec4/styles/css'
+import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
-import * as css from './CompoundActionButton.css'
 
 type CompoundActionButtonProps = NodeProps & {
   icon?: React.ReactNode
@@ -20,9 +20,33 @@ export function CompoundActionButton({
   onClick,
 }: CompoundActionButtonProps) {
   return (
-    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'compound-action')}>
+    <Box
+      className={cx(
+        css({
+          position: 'absolute',
+          top: '4px',
+          left: '2px',
+        }),
+        hiddenIfZoomTooSmall,
+        'compound-action',
+      )}>
       <ActionIcon
-        className={clsx('nodrag nopan', css.actionIcon)}
+        className={cx(
+          'nodrag nopan',
+          actionBtn(),
+          css({
+            _light: {
+              _compoundTransparent: {
+                opacity: 0.85,
+                '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 20%)`,
+                '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 10%)`,
+              },
+              _whenHovered: {
+                opacity: 1,
+              },
+            },
+          }),
+        )}
         component={m.button}
         initial={false}
         animate={{
@@ -36,8 +60,6 @@ export function CompoundActionButton({
           // y: 1,
         }}
         whileTap={{ scale: 1 }}
-        size={'md'}
-        radius="md"
         // Otherwise node receives click event and is selected
         onClick={onClick}
         onDoubleClick={stopPropagation}

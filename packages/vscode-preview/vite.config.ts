@@ -1,4 +1,4 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
@@ -22,6 +22,13 @@ export default defineConfig(({ mode }) => {
     },
     esbuild: {
       jsxDev: false,
+    },
+    css: {
+      postcss: {
+        plugins: [
+          pandaCss(),
+        ],
+      },
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
@@ -58,13 +65,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      vanillaExtractPlugin(
-        isDev
-          ? {
-            unstable_mode: 'transform',
-          }
-          : {},
-      ),
     ],
   }
 })

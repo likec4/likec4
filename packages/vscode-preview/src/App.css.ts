@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@'
 
 globalStyle('*, :before, :after', {
   boxSizing: 'border-box',

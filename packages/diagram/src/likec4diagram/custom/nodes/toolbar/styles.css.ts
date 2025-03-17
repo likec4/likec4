@@ -1,7 +1,7 @@
+import { css } from '@likec4/styles/css'
 import { rem } from '@mantine/core'
-import { style } from '@vanilla-extract/css'
 
-export const toolbarTitle = style({
+export const toolbarTitle = css({
   fontSize: rem(10),
   fontWeight: 600,
   cursor: 'default',

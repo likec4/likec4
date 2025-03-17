@@ -1,0 +1,39 @@
+{
+  "name": "@likec4/style-preset",
+  "license": "MIT",
+  "version": "1.26.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "generate": "tsx ./generate.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "unbuild"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./dist": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "dependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/preset-panda": "catalog:css"
+  },
+  "devDependencies": {
+    "remeda": "catalog:utils",
+    "@likec4/core": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@mantine/vanilla-extract": "catalog:mantine",
+    "@mantine/core": "catalog:mantine",
+    "unbuild": "catalog:",
+    "khroma": "^2.1.0",
+    "json5": "^2.2.3",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.6.2"
+}

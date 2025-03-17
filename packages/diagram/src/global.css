@@ -1,0 +1,4 @@
+@layer reset, base, mantine, tokens, recipes, utilities;
+@import url("@mantine/core/styles.layer.css");
+/* @import url("@xyflow/react/dist/style.css"); */
+@import url("@likec4/diagram/diagram.css");

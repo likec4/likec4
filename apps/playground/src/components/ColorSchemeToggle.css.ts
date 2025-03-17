@@ -1,7 +1,6 @@
-import { css as style } from '$styled-system/css'
-import { rem } from '@mantine/core'
+import { css as style } from '@likec4/styles/css'
 
 export const icon = style({
-  width: rem(18),
-  height: rem(18),
+  width: '[18px]',
+  height: '[18px]',
 })

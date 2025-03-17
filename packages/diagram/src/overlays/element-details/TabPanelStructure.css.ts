@@ -1,36 +1,36 @@
-import { globalStyle, style } from '@vanilla-extract/css'
-import { easings, mantine, transitions, whereDark } from '../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const treeNodeLabel = style({
-  marginTop: mantine.spacing.sm,
-  marginBottom: mantine.spacing.sm,
+export const treeNodeLabel = css({
+  marginTop: 'sm',
+  marginBottom: 'sm',
 })
 
-export const elementLabel = style({
+export const elementLabel = css({
   display: 'inline-flex',
-  transition: transitions.fast,
-  border: `1px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.sm,
-  padding: `${mantine.spacing.xs} ${mantine.spacing.md}`,
+  transition: 'fast',
+  border: `1px dashed`,
+  borderColor: 'mantine.colors.defaultBorder',
+  borderRadius: 'sm',
+  px: 'md',
+  py: 'xs',
   alignItems: 'center',
   cursor: 'pointer',
-  color: mantine.colors.gray[7],
-  ':hover': {
-    transitionTimingFunction: easings.out,
-    borderStyle: 'solid',
-    color: mantine.colors.defaultColor,
-    background: mantine.colors.defaultHover,
+  color: 'mantine.colors.gray[7]',
+
+  _dark: {
+    color: 'mantine.colors.dark[1]',
   },
-  selectors: {
-    [`${whereDark} &`]: {
-      color: mantine.colors.dark[1],
+  '& > *': {
+    transition: 'fast',
+  },
+  _hover: {
+    transitionTimingFunction: 'out',
+    borderStyle: 'solid',
+    color: 'mantine.colors.defaultColor',
+    background: 'mantine.colors.defaultHover',
+    '& > *': {
+      transitionTimingFunction: 'out',
+      transform: 'translateX(1px)',
     },
   },
-})
-globalStyle(`${elementLabel} > *`, {
-  transition: transitions.fast,
-})
-globalStyle(`${elementLabel}:hover > *`, {
-  transitionTimingFunction: easings.out,
-  transform: 'translateX(1px)',
 })

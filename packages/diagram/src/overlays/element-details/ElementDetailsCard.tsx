@@ -9,6 +9,7 @@ import {
   isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
 import {
   type TextProps,
   ActionIcon,
@@ -37,7 +38,6 @@ import { useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
 import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
-import clsx from 'clsx'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'framer-motion'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
@@ -48,14 +48,10 @@ import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import { stopPropagation } from '../../utils'
-import { getVarName } from '../../utils/css'
-import * as css from './ElementDetailsCard.css'
+import * as styles from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
-
-const backdropBlur = getVarName(css.backdropBlur) as '--backdrop-blur'
-const backdropOpacity = getVarName(css.backdropOpacity) as '--backdrop-opacity'
 
 const Divider = MantineDivider.withProps({
   mb: 8,
@@ -84,7 +80,7 @@ const PropertyLabel = Text.withProps({
   component: 'div',
   fz: 'xs',
   c: 'dimmed',
-  className: css.propertyLabel,
+  className: styles.propertyLabel,
 })
 
 type ElementDetailsCardProps = {
@@ -210,7 +206,7 @@ export function ElementDetailsCard({
       title: elementModel.title,
       icon: nodeModel?.icon ?? elementModel.icon,
     },
-    className: css.elementIcon,
+    className: styles.elementIcon,
   })
 
   useTimeoutEffect(() => {
@@ -226,20 +222,20 @@ export function ElementDetailsCard({
   return (
     <m.dialog
       ref={ref}
-      className={clsx(css.dialog, RemoveScroll.classNames.fullWidth)}
+      className={cx(styles.dialog, RemoveScroll.classNames.fullWidth)}
       layout
       layoutRoot
       initial={{
-        [backdropBlur]: '0px',
-        [backdropOpacity]: '10%',
+        [styles.backdropBlur]: '0px',
+        [styles.backdropOpacity]: '5%',
       }}
       animate={{
-        [backdropBlur]: '3px',
-        [backdropOpacity]: '60%',
+        [styles.backdropBlur]: '3px',
+        [styles.backdropOpacity]: '60%',
       }}
       exit={{
-        [backdropBlur]: '0px',
-        [backdropOpacity]: '0%',
+        [styles.backdropBlur]: '0px',
+        [styles.backdropOpacity]: '0%',
         transition: {
           duration: 0.1,
         },
@@ -267,7 +263,7 @@ export function ElementDetailsCard({
           withBorder
           shadow="md"
           component={m.div}
-          className={css.card}
+          className={styles.card}
           initial={{
             top,
             left,
@@ -297,7 +293,7 @@ export function ElementDetailsCard({
           }}
           data-likec4-color={nodeModel?.color ?? elementModel.color}>
           <Box
-            className={css.cardHeader}
+            className={styles.cardHeader}
             onPointerDown={e => controls.start(e)}>
             <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
               <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
@@ -305,7 +301,7 @@ export function ElementDetailsCard({
                 <Box>
                   <Text
                     component={'div'}
-                    className={css.title}>
+                    className={styles.title}>
                     {elementModel.title}
                   </Text>
                   {notation && (
@@ -390,10 +386,10 @@ export function ElementDetailsCard({
             onChange={v => setActiveTab(v as any)}
             variant="none"
             classNames={{
-              root: css.tabsRoot,
-              list: css.tabsList,
-              tab: css.tabsTab,
-              panel: css.tabsPanel,
+              root: styles.tabsRoot,
+              list: styles.tabsList,
+              tab: styles.tabsTab,
+              panel: styles.tabsPanel,
             }}>
             <TabsList>
               {TABS.map(tab => (
@@ -405,7 +401,7 @@ export function ElementDetailsCard({
 
             <TabsPanel value="Properties">
               <ScrollArea scrollbars="y" type="auto">
-                <Box className={css.propertiesGrid} pt={'xs'}>
+                <Box className={styles.propertiesGrid} pt={'xs'}>
                   <ElementProperty title="description" emptyValue="no description">
                     {elementModel.description}
                   </ElementProperty>
@@ -487,7 +483,7 @@ export function ElementDetailsCard({
             </TabsPanel>
           </Tabs>
           <m.div
-            className={css.resizeHandle}
+            className={styles.resizeHandle}
             drag
             dragElastic={0}
             dragMomentum={false}
@@ -507,7 +503,7 @@ const ViewButton = ({
   onNavigateTo: OnNavigateTo
 }) => {
   return (
-    <UnstyledButton className={css.viewButton} onClick={e => onNavigateTo(view.id, e)}>
+    <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
           {isDeploymentView(view)
@@ -515,7 +511,7 @@ const ViewButton = ({
             : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>
         <Box>
-          <Text component="div" className={css.viewButtonTitle} lineClamp={1}>
+          <Text component="div" className={styles.viewButtonTitle} lineClamp={1}>
             {view.title || 'untitled'}
           </Text>
           {view.description && (
