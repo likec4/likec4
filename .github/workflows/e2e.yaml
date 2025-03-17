@@ -28,6 +28,7 @@ jobs:
           NODE_ENV: development
         run: |
           pnpm install
+          pnpm install:chromium
           pnpm bootstrap
 
       - name: ⚙️ run playwright tests

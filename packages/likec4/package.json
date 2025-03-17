@@ -114,7 +114,7 @@
     "@likec4/core": "workspace:~",
     "@vitejs/plugin-react": "4.3.4",
     "boxen": "^8.0.1",
-    "playwright": "1.50.1",
+    "playwright": "^1.51.1",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "rollup": "4.34.6",
