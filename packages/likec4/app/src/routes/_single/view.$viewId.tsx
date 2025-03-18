@@ -62,12 +62,11 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
 }
 
 function ViewLayout() {
-  const { viewId } = Route.useParams()
   return (
     <>
       <Outlet />
       <ViewHeader />
-      {!withOverviewGraph && <SidebarDrawer viewId={viewId} />}
+      {!withOverviewGraph && <SidebarDrawer />}
     </>
   )
 }
