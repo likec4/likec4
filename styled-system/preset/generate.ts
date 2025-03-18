@@ -388,7 +388,7 @@ export const conditions = ${
       ]),
       ...pipe(
         defaultTheme.sizes,
-        mapValues((value, key) => `:where([data-likec4-shape-size='${key}']) &`),
+        mapValues((_, key) => `:where([data-likec4-shape-size='${key}']) &`),
         mapKeys((key) => 'shapeSize' + capitalize(key)),
       ),
       ...mapToObj(ElementShapes, (shape) => [
@@ -404,7 +404,7 @@ export const conditions = ${
 export const globalCss = ${
   JSON5.stringify(
     {
-      ...mapToObj(entries(defaultTheme.textSizes), ([size, value]) => [
+      ...mapToObj(entries(defaultTheme.textSizes), ([size]) => [
         `:where([data-likec4-text-size='${size}'])`,
         {
           '--likec4-text-size': `{fontSizes.likec4.${size}}`,
