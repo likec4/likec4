@@ -1,3 +1,12 @@
+## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
+
+### Bug Fixes
+
+* empty sidebar, closes [#1715](https://github.com/likec4/likec4/issues/1715)
+* extending a view does not inherit title or description, closes [#1719](https://github.com/likec4/likec4/issues/1719)
+* unexpected arrow style derived from model to dynamic view, closes [#1723](https://github.com/likec4/likec4/issues/1723)
+
+
 ## [1.26.1](https://github.com/likec4/likec4/compare/v1.26.0...v1.26.1) (2025-03-11)
 
 ### Hot Fix
