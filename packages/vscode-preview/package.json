@@ -13,7 +13,7 @@
     "!**/*.map"
   ],
   "scripts": {
-    "generate": "panda codegen",
+    "prebuild": "panda codegen",
     "typecheck": "tsc --noEmit",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
