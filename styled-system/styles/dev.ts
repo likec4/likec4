@@ -20,7 +20,9 @@ export function defineConfig(config: Config) {
     logLevel: 'info',
     plugins: [
       // pluginMissingCssWarnings(),
+      // @ts-ignore
       pluginStrictTokensScope({ categories: ['fonts', 'colors', 'animations'] }),
+      // @ts-ignore
       pluginRemoveNegativeSpacing({ spacingTokenType: true, tokenType: true }),
     ],
     ...config,
