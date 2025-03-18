@@ -41,6 +41,8 @@
     "@types/vscode": "catalog:vscode",
     "@types/vscode-webview": "^1.57.5",
     "@vitejs/plugin-react": "catalog:vite",
+    "@xyflow/react": "12.4.4",
+    "@xyflow/system": "0.0.52",
     "esm-env": "^1.2.2",
     "nanostores": "0.11.4",
     "object-hash": "^3.0.0",
