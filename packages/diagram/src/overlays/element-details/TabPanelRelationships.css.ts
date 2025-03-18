@@ -7,7 +7,7 @@ export const fqn = css({
   whiteSpace: 'nowrap',
   padding: '3px 6px',
   borderRadius: 3,
-  background: `color-mix(in srgb , {colors.likec4.element.fill},  transparent 25%)`,
+  background: `likec4.element.fill/75`,
   lineHeight: 1.2,
   color: 'likec4.element.hiContrast',
   // selectors: {
@@ -29,8 +29,8 @@ export const relationshipStat = css({
   // },
   [`&[data-missing]`]: {
     color: 'mantine.colors.orange[4]',
-    background: `color-mix(in srgb, {colors.mantine.colors.orange[8]} 15%, transparent)`,
-    borderColor: `color-mix(in srgb, {colors.mantine.colors.orange[5]} 20%, transparent)`,
+    background: `mantine.colors.orange[8]/15`,
+    borderColor: `mantine.colors.orange[5]/20`,
     _light: {
       color: 'mantine.colors.orange[8]',
     },
@@ -86,7 +86,7 @@ export const edgeNum = css({
   },
   [`&[data-missing]`]: {
     color: 'mantine.colors.orange[4]',
-    background: `color-mix(in srgb, {colors.mantine.colors.orange[8]} 20%, transparent)`,
+    background: `mantine.colors.orange[8]/20`,
   },
   // _light: {
   //   background: 'mantine.colors.gray[4]',

@@ -21,11 +21,11 @@ export const card = css({
   },
   _notReducedGraphics: {
     borderRadius: 'sm',
-    backgroundColor: `color-mix(in srgb, {colors.mantine.colors.body}, transparent 20%)`,
+    backgroundColor: `mantine.colors.body/80`,
     // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
     // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
     _dark: {
-      backgroundColor: `color-mix(in srgb, {colors.mantine.colors.dark[6]}, transparent 20%)`,
+      backgroundColor: `mantine.colors.dark[6]/80`,
     },
   },
 })

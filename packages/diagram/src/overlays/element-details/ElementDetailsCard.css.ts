@@ -141,7 +141,7 @@ export const viewButton = css({
 
 export const viewButtonTitle = css({
   transition: 'fast',
-  color: `var(${viewTitleColor}, {colors.mantine.colors.gray[7]})`,
+  color: `[var(${viewTitleColor}, {colors.mantine.colors.gray[7]})]`,
   fontSize: 15,
   fontWeight: 500,
   lineHeight: 1.4,

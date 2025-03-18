@@ -41,7 +41,7 @@ export const buttons = css({
 const transparency = '--transparency'
 export const btn = css({
   transition: 'all 175ms ease-in',
-  backgroundColor: 'var(--button-bg)',
+  backgroundColor: '[var(--button-bg)]',
   [transparency]: '35%',
   _light: {
     [transparency]: '15%',

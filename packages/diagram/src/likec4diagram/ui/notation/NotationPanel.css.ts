@@ -23,7 +23,7 @@ export const card = css({
   userSelect: 'none',
   minWidth: 200,
   maxWidth: 'calc(100vw - 20px)',
-  backgroundColor: `color-mix(in srgb, {colors.mantine.colors.body}, transparent 20%)`,
+  backgroundColor: `mantine.colors.body/80`,
   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   sm: {
@@ -34,7 +34,7 @@ export const card = css({
     maxWidth: `40vw`,
   },
   _dark: {
-    backgroundColor: `color-mix(in srgb, {colors.mantine.colors.dark[6]}, transparent 20%)`,
+    backgroundColor: `mantine.colors.dark[6]/80`,
   },
 })
 
@@ -63,11 +63,11 @@ export const elementNotation = css({
   _hover: {
     transition: 'all 120ms ease-out',
     // backgroundColor:
-    backgroundColor: `color-mix(in srgb, {colors.mantine.colors.primary[2]}, transparent 50%)`,
+    backgroundColor: `mantine.colors.primary[2]/50`,
   },
   _dark: {
     _hover: {
-      backgroundColor: `color-mix(in srgb, {colors.mantine.colors.dark[3]}, transparent 60%)`,
+      backgroundColor: `mantine.colors.dark[3]/40`,
     },
   },
 })
