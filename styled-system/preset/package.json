@@ -8,18 +8,34 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "generate": "tsx --conditions=sources ./generate.ts",
+    "prepare": "wireit",
     "typecheck": "tsc --noEmit",
-    "build": "unbuild"
+    "build": "wireit"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "wireit": {
+    "prepare": {
+      "command": "tsx --conditions=sources ./generate.ts",
+      "files": [
+        "generate.ts"
+      ],
+      "output": [
+        "src/generated.ts"
+      ]
+    },
+    "build": {
+      "command": "unbuild"
+    }
   },
   "exports": {
     ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      }
-    }
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./src": "./src/index.ts"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css"
@@ -36,6 +52,7 @@
     "khroma": "^2.1.0",
     "json5": "^2.2.3",
     "tsx": "catalog:",
+    "wireit": "catalog:",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.6.2"

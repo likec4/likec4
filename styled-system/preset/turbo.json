@@ -4,19 +4,12 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "build": {
       "dependsOn": [
         "topo"
       ],
       "outputs": [
-        "src/generated.ts"
-      ]
-    },
-    "build": {
-      "dependsOn": [
-        "generate"
-      ],
-      "outputs": [
+        "src/generated.ts",
         "dist/**"
       ]
     }
