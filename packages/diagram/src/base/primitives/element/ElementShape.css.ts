@@ -107,6 +107,9 @@ export const shapeSvg = css(shapeBase, {
         drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
         `,
   },
+  _whenSelected: {
+    filter: 'none',
+  },
   _smallZoom: {
     filter: 'none',
   },

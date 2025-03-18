@@ -1,7 +1,7 @@
 import likec4preset from '@likec4/style-preset/src'
 import { pluginRemoveNegativeSpacing, pluginStrictTokensScope } from '@pandabox/panda-plugins'
 import { type Config, defineConfig as pandaDefineConfig } from '@pandacss/dev'
-import { isDevelopment, isProduction } from 'std-env'
+import { isProduction } from 'std-env'
 
 export function defineConfig(config: Config) {
   return pandaDefineConfig({
@@ -19,7 +19,7 @@ export function defineConfig(config: Config) {
     // globalVars: {},
     strictTokens: true,
     jsxFramework: 'react',
-    logLevel: isDevelopment ? 'debug' : 'info',
+    logLevel: 'info',
     plugins: [
       // pluginMissingCssWarnings(),
       // @ts-ignore

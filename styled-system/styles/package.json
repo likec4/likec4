@@ -14,14 +14,9 @@
   },
   "wireit": {
     "generate": {
-      "command": "panda",
+      "command": "panda codegen",
       "dependencies": [
         "../preset:prepare"
-      ],
-      "files": [
-        "panda.config.ts",
-        "dev.ts",
-        "package.json"
       ],
       "output": [
         "dist/**"

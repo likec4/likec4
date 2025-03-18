@@ -8,8 +8,8 @@ export const conditions = {
     light: ':where([data-mantine-color-scheme="light"]) &',
     dark: ':where([data-mantine-color-scheme="dark"]) &',
 
-    reducedGraphics: '.likec4-diagram-root:is([data-likec4-reduced-graphics="true"]) &',
-    notReducedGraphics: '.likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) &',
+    reducedGraphics: ':where(.likec4-diagram-root:is([data-likec4-reduced-graphics="true"])) &',
+    notReducedGraphics: ':where(.likec4-diagram-root:is(:not([data-likec4-reduced-graphics]))) &',
     smallZoom: ':where([data-likec4-zoom-small="true"]) &',
 
     // compoundTransparent: '&[data-compound-transparent="true"], :where([data-compound-transparent="true"]) &',
@@ -21,6 +21,8 @@ export const conditions = {
     whenSelected: ':where(.react-flow__node.selected, .react-flow__edge.selected) &',
     whenDimmed: ':where([data-likec4-dimmed="true"]) &',
     whenDimmedImmediate: ':where([data-likec4-dimmed="immediate"]) &',
+
+    likec4Color: ':where([data-likec4-color]) &',
     ...generated,
   },
 } satisfies ExtendableConditions

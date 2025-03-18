@@ -38,17 +38,18 @@ export const buttons = css({
   ...tablerIcons,
 })
 
-const transparency = '--transparency'
 export const btn = css({
   transition: 'all 175ms ease-in',
-  backgroundColor: '[var(--button-bg)]',
-  [transparency]: '35%',
-  _light: {
-    [transparency]: '15%',
+  background: 'mantine.colors.primary.filled/65',
+  _hover: {
+    background: 'mantine.colors.primary.filledHover/65',
   },
-  ['--button-bg']: `color-mix(in srgb, {colors.mantine.colors.primary.filled}, transparent var(${transparency}))`,
-  ['--button-hover']:
-    `color-mix(in srgb, {colors.mantine.colors.primary.filledHover}, transparent var(${transparency}))`,
+  _light: {
+    background: 'mantine.colors.primary.filled/85',
+    _hover: {
+      background: 'mantine.colors.primary.filledHover/85',
+    },
+  },
   ...tablerIcons,
 })
 

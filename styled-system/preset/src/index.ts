@@ -26,6 +26,21 @@ export default definePreset({
     '--opacity': {
       syntax: '<number>',
     },
+    // '--xy-edge-stroke': {
+    //   syntax: '<color>', // Added syntax for '--xy-edge-'
+    // },
+    // '--xy-edge-stroke-selected': {
+    //   syntax: '<color>', // Added syntax for '--xy-edge-stroke-selected'
+    // },
+    // '--xy-edge-label-color': {
+    //   syntax: '<color>', // Added syntax for '--xy-edge-label-color'
+    // },
+    // '--xy-edge-label-background-color': {
+    //   syntax: '<color>', // Added syntax for '--xy-edge-label-background-color'
+    // },
+    // '--xy-edge-stroke-width': {
+    //   syntax: '<length>', // Added syntax for '--xy-edge-stroke-width'
+    // },
     // '--mix-color': {
     //   syntax: '<color>',
     // },

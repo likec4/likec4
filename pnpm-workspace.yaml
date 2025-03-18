@@ -21,6 +21,7 @@ catalogs:
     std-env: "^3.8.1"
     consola: "^3.4.0"
     "@hpcc-js/wasm-graphviz": "1.7.0"
+    valibot: "1.0.0-rc.3"
   esbuild:
     esbuild: "^0.25.0"
     esbuild-node-externals: "^1.18.0"

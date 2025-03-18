@@ -16,9 +16,7 @@ import {
   useDisclosure,
   useFocusReturn,
   useFocusTrap,
-  useFocusWithin,
   useHotkeys,
-  useMergedRef,
   useWindowEvent,
 } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
@@ -124,6 +122,7 @@ function LikeC4SearchOverlay() {
     <m.div
       ref={ref}
       className={css.root}
+      data-likec4-search
       // initial={{
       //   opacity: 0,
       //   // scale: 0.9,

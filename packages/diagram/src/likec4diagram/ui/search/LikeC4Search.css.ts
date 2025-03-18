@@ -4,14 +4,12 @@ export { focusable } from './_shared.css'
 export const backdrop = css({
   position: 'fixed',
   zIndex: 900,
-  inset: 0,
+  inset: '0px',
   backgroundColor: '[rgb(34 34 34 / 0.95)]',
-  // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
-  // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
   backdropFilter: 'auto',
-  backdropBlur: '6px',
+  backdropBlur: '10px',
   _light: {
-    backgroundColor: '[rgb(255 255 255 / 0.92  )]',
+    backgroundColor: '[rgb(255 255 255 / 0.92 )]',
   },
 })
 export const root = css({
@@ -36,7 +34,7 @@ export const root = css({
 })
 export const input = css({
   border: 'transparent',
-  background: '[transparent]',
+  background: 'transparent',
   _focusWithin: {
     background: `mantine.colors.gray[3]/55`,
     _dark: {
@@ -50,10 +48,10 @@ export const pickviewBackdrop = css({
   inset: 0,
   width: '100%',
   height: '100%',
-  backgroundColor: '[rgb(34 34 34 / 0.5)]',
+  backgroundColor: '[rgb(34 34 34 / 0.7)]',
   zIndex: 902,
-  // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
-  // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
+  backdropFilter: 'auto',
+  backdropBlur: '10px',
   _light: {
     backgroundColor: '[rgb(255 255 255 / 0.6)]',
   },
@@ -63,8 +61,8 @@ export const pickview = css({
   top: '2rem',
   left: '50%',
   width: '100%',
-  maxWidth: 600,
-  minWidth: 200,
+  maxWidth: '600px',
+  minWidth: '200px',
   transform: 'translateX(-50%)',
   zIndex: 903,
 })

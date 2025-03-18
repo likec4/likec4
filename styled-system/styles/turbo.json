@@ -6,7 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "topo"
+        "@likec4/style-preset#generate"
       ],
       "outputs": [
         "dist/**"

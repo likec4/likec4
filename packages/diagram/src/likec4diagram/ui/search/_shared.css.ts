@@ -1,20 +1,38 @@
-import { css } from '@likec4/styles/css'
+import { css, sva } from '@likec4/styles/css'
+import type { ColorToken } from '@likec4/styles/tokens'
 import type { SystemStyleObject } from '@likec4/styles/types'
 
-export const titleColor = '--title-color'
-export const descriptionColor = '---description-color'
-export const iconColor = '--icon-color'
+// export const titleColor = '--title-color'
+// export const descriptionColor = '---description-color'
+// export const iconColor = '--icon-color'
 
-export const buttonFocused = {
+const buttonFocused = {
   outline: 'none',
   background: 'mantine.colors.primary[8]',
   borderColor: 'mantine.colors.primary[9]',
-  [iconColor]: 'mantine.colors.primary[2]',
-  [titleColor]: 'mantine.colors.primary[0]',
-  [descriptionColor]: 'mantine.colors.primary[1]',
+  // [iconColor]: 'mantine.colors.primary[2]',
+  // [titleColor]: 'mantine.colors.primary[0]',
+  // [descriptionColor]: 'mantine.colors.primary[1]',
 } satisfies SystemStyleObject
 
-export const button = css.raw({
+const _treenodefocus = '.mantine-Tree-node:focus > .mantine-Tree-label &'
+
+function colors(color: ColorToken, hover: ColorToken) {
+  return {
+    color,
+    _groupHover: {
+      color: hover,
+    },
+    _groupFocus: {
+      color: hover,
+    },
+    [_treenodefocus]: {
+      color: hover,
+    },
+  }
+}
+
+const button = css.raw({
   display: 'flex',
   width: '100%',
   background: 'mantine.colors.body',
@@ -26,15 +44,16 @@ export const button = css.raw({
   // transition: `all 50ms ${easings.inOut}`,
   border: `1px solid`,
   borderColor: 'mantine.colors.defaultBorder',
-  [titleColor]: '{colors.mantine.colors.dark[1]}',
-  [iconColor]: '{colors.mantine.colors.dimmed}',
-  [descriptionColor]: '{colors.mantine.colors.dimmed}',
+  // [titleColor]: '{colors.mantine.colors.dark[1]}',
+  // [iconColor]: '{colors.mantine.colors.dimmed}',
+  // [descriptionColor]: '{colors.mantine.colors.dimmed}',
   _hover: {
     ...buttonFocused,
     borderColor: 'mantine.colors.primary[9]',
     background: `mantine.colors.primary[8]/60`,
   },
   _focus: buttonFocused,
+  [_treenodefocus]: buttonFocused,
   _dark: {
     borderColor: 'transparent',
     background: `mantine.colors.dark[6]/80`,
@@ -42,35 +61,120 @@ export const button = css.raw({
   },
   _light: {
     background: `mantine.colors.white/80`,
-    [iconColor]: '{colors.mantine.colors.gray[6]}',
-    [titleColor]: '{colors.mantine.colors.gray[7]}',
+    // [iconColor]: '{colors.mantine.colors.gray[6]}',
+    // [titleColor]: '{colors.mantine.colors.gray[7]}',
     _hover: {
       borderColor: 'mantine.colors.primary[6]',
       backgroundColor: 'mantine.colors.primary[5]',
-      [iconColor]: '{colors.mantine.colors.primary[3])',
-      [titleColor]: '{colors.mantine.colors.primary[0])',
-      [descriptionColor]: '{colors.mantine.colors.primary[1]}',
+      // [iconColor]: '{colors.mantine.colors.primary[3])',
+      // [titleColor]: '{colors.mantine.colors.primary[0])',
+      // [descriptionColor]: '{colors.mantine.colors.primary[1]}',
     },
   },
 })
 
-export const focusable = css({})
+export const focusable = 'likec4-focusable'
 
-export const title = css.raw({
-  color: `[var(${titleColor}, {colors.mantine.colors.gray[7]})]`,
+const iconSize = {
+  ref: 'var(--likec4-icon-size, 24px)',
+}
+
+const icon = css.raw({
+  // color: 'mantine.colors.dimmed',
+  // _groupHover: {
+  //   color: 'mantine.colors.primary[0]',
+  // },
+  // _groupFocus: {
+  //   color: 'mantine.colors.primary[0]',
+  // },
+  ...colors('mantine.colors.dimmed', 'mantine.colors.primary[0]'),
+  _light: {
+    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
+    // color: ``,
+    // _groupHover: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
+    // _groupFocus: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
+  },
+  flex: `0 0 ${iconSize.ref}`,
+  height: iconSize.ref,
+  width: iconSize.ref,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  alignSelf: 'flex-start',
+
+  ['--ti-size']: iconSize.ref,
+  [`& svg, & img`]: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: '100%',
+    pointerEvents: 'none',
+  },
+  [`& img`]: {
+    objectFit: 'contain',
+  },
+  '&.likec4-shape-icon svg': {
+    // color: `[var(${iconColor})]`,
+    strokeWidth: 1.5,
+  },
+  // [iconSize]: '24px',
+  // [whenContainerIsNarrow]: {
+  //   [iconSize]: '18px',
+  // },
+})
+
+const title = css.raw({
   fontSize: '16px',
   fontWeight: 500,
   lineHeight: '1.1',
-
   [`:where([data-disabled]) &`]: {
     opacity: 0.4,
   },
+
+  // color: 'mantine.colors.dark[1]',
+  // _groupHover: {
+  //   color: 'mantine.colors.primary[1]',
+  // },
+  // _groupFocus: {
+  //   color: 'mantine.colors.primary[1]',
+  // },
+  ...colors('mantine.colors.dark[1]', 'mantine.colors.primary[1]'),
+  _light: {
+    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
+    // color: `mantine.colors.gray[6]`,
+    // _groupHover: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
+    // _groupFocus: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
+  },
 })
-export const description = css.raw({
-  marginTop: 4,
-  color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
-  fontSize: 12,
-  lineHeight: 1.4,
+const descriptionColor = css.raw({
+  color: 'mantine.colors.dimmed',
+  _groupHover: {
+    color: 'mantine.colors.primary[1]',
+  },
+  _groupFocus: {
+    color: 'mantine.colors.primary[0]',
+  },
+  [_treenodefocus]: {
+    color: 'mantine.colors.primary[0]',
+  },
+  _light: {
+    _groupHover: {
+      color: 'mantine.colors.primary[0]',
+    },
+  },
+})
+
+const description = css.raw(descriptionColor, {
+  marginTop: '4px',
+  fontSize: '12px',
+  lineHeight: '1.4',
 
   [`:where([data-disabled]) &`]: {
     opacity: 0.85,
@@ -90,4 +194,16 @@ export const emptyBoX = css({
   color: 'mantine.colors.dimmed',
   padding: 'md',
   paddingBlock: 'xl',
+})
+
+export const buttonsva = sva({
+  slots: ['root', 'icon', 'title', 'description', 'descriptionColor'],
+  className: 'search-button',
+  base: {
+    root: button,
+    icon,
+    title,
+    description,
+    descriptionColor,
+  },
 })

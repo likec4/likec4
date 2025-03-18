@@ -40,27 +40,31 @@ const generateLikeC4SemanticTokens = () => ({
     fill: {
       description: 'Element fill color',
       value: {
-        base: `${defaultTheme.elements.primary.fill}`,
-        // ...mapToObj(ThemeColors, (color) => [
-        //   '_likec4Color' + capitalize(color),
-        //   defaultTheme.elements[color].fill,
-        // ]),
+        // base: `${defaultTheme.elements.primary.fill}`,
+        ...mapToObj(ThemeColors, (color) => [
+          '_likec4Color' + capitalize(color),
+          {
+            base: defaultTheme.elements[color].fill,
+          },
+        ]),
       },
     },
     stroke: {
       description: 'Element stroke color',
       value: {
-        base: `${defaultTheme.elements.primary.stroke}`,
-        // ...mapToObj(ThemeColors, (color) => [
-        //   '_likec4Color' + capitalize(color),
-        //   defaultTheme.elements[color].stroke,
-        // ]),
+        // base: `${defaultTheme.elements.primary.stroke}`,
+        ...mapToObj(ThemeColors, (color) => [
+          '_likec4Color' + capitalize(color),
+          {
+            base: defaultTheme.elements[color].stroke,
+          },
+        ]),
       },
     },
     hiContrast: {
       description: 'Element hiContrast text color (title)',
       value: {
-        base: `${defaultTheme.elements.primary.hiContrast}`,
+        // base: `${defaultTheme.elements.primary.hiContrast}`,
         ...mapToObj(ThemeColors, (color) => [
           '_likec4Color' + capitalize(color),
           defaultTheme.elements[color].hiContrast,
@@ -70,7 +74,7 @@ const generateLikeC4SemanticTokens = () => ({
     loContrast: {
       description: 'Element loContrast text color (description)',
       value: {
-        base: `${defaultTheme.elements.primary.loContrast}`,
+        // base: `${defaultTheme.elements.primary.loContrast}`,
         ...mapToObj(ThemeColors, (color) => [
           '_likec4Color' + capitalize(color),
           defaultTheme.elements[color].loContrast,
@@ -90,7 +94,7 @@ const generateLikeC4SemanticTokens = () => ({
     line: {
       description: 'Relationship line color',
       value: {
-        base: `${defaultTheme.relationships.gray.lineColor}`,
+        // base: `${defaultTheme.relationships.gray.lineColor}`,
         ...mapToObj(ThemeColors, (color) => [
           '_likec4Color' + capitalize(color),
           defaultTheme.relationships[color].lineColor,
@@ -101,7 +105,7 @@ const generateLikeC4SemanticTokens = () => ({
       DEFAULT: {
         description: 'Relationship label color',
         value: {
-          base: `${defaultTheme.relationships.gray.labelColor}`,
+          // base: `${defaultTheme.relationships.gray.labelColor}`,
           ...mapToObj(ThemeColors, (color) => [
             '_likec4Color' + capitalize(color),
             defaultTheme.relationships[color].labelColor,
@@ -306,8 +310,8 @@ const likec4theme = {
           pattern: {
             description: 'Background pattern color',
             value: {
-              base: '{colors.mantine.colors.gray[4]}',
-              _dark: '{colors.mantine.colors.dark[5]}',
+              base: '{colors.mantine.colors.dark[5]}',
+              _light: '{colors.mantine.colors.gray[4]}',
             },
           },
         },

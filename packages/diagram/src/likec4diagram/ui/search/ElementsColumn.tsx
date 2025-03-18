@@ -7,6 +7,7 @@ import {
   sortParentsFirst,
   toArray,
 } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
@@ -28,6 +29,7 @@ import { first, indexBy, isEmpty, only, partition, pipe, prop, reduce } from 're
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
+import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
 import { setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput, stopAndPrevent } from './utils'
@@ -53,6 +55,8 @@ function buildNode(
     children: [...element.children()].map(e => buildNode(e, searchTerms)).sort(sortByLabel),
   }
 }
+
+const btn = buttonsva()
 
 export function ElementsColumn() {
   const search = useNormalizedSearch()
@@ -140,7 +144,7 @@ export function ElementsColumn() {
         levelOffset={'lg'}
         classNames={{
           root: styles.treeRoot,
-          node: clsx(styles.focusable, styles.treeNode),
+          node: cx(styles.focusable, styles.treeNode),
           label: styles.treeLabel,
           subtree: styles.treeSubtree,
         }}
@@ -199,7 +203,7 @@ function ElementTreeNode(
       shape: element.shape,
       icon: element.icon,
     },
-    className: styles.elementIcon,
+    className: cx(btn.icon, styles.elementIcon),
   })
   const views = [...element.views()]
 
@@ -229,7 +233,7 @@ function ElementTreeNode(
         component={m.button}
         layout
         tabIndex={-1}
-        className={clsx(styles.elementButton, 'likec4-element-button')}
+        className={clsx(btn.root, 'group', 'likec4-element-button')}
         {...views.length > 0 && {
           onClick: (e) => {
             if (!hasChildren || expanded) {
@@ -242,21 +246,24 @@ function ElementTreeNode(
         {elementIcon}
         <Box style={{ flexGrow: 1 }}>
           <Group gap={'xs'} wrap="nowrap" align="center" className={styles.elementTitleAndId}>
-            <Highlight component="div" highlight={searchTerms} className={styles.elementTitle}>
+            <Highlight component="div" highlight={searchTerms} className={btn.title!}>
               {node.label as any}
             </Highlight>
             <Tooltip label={element.id} withinPortal={false} fz={'xs'} disabled={!element.id.includes('.')}>
-              <Highlight component="div" highlight={searchTerms} className={styles.elementId}>
+              <Highlight
+                component="div"
+                highlight={searchTerms}
+                className={cx(styles.elementId, btn.descriptionColor)}>
                 {nameFromFqn(element.id)}
               </Highlight>
             </Tooltip>
           </Group>
-          <Highlight component="div" highlight={searchTerms} className={styles.elementDescription} lineClamp={1}>
+          <Highlight component="div" highlight={searchTerms} className={btn.description!} lineClamp={1}>
             {element.description || 'No description'}
           </Highlight>
         </Box>
 
-        <Text component="div" className={styles.elementViewsCount}>
+        <Text component="div" className={cx(styles.elementViewsCount, btn.descriptionColor)} fz={'xs'}>
           {views.length === 0 ? 'No views' : (
             <>
               {views.length} view{views.length > 1 ? 's' : ''}

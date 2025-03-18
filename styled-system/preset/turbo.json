@@ -4,13 +4,17 @@
     "//"
   ],
   "tasks": {
-    "build": {
+    "generate": {
       "dependsOn": [
         "topo"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/generated.ts"
+      "outputs": [
+        "src/generated.ts"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "generate"
       ],
       "outputs": [
         "dist/**"

@@ -43,6 +43,10 @@ export const container = css({
     },
   },
 
+  _whenSelected: {
+    boxShadow: 'none',
+  },
+
   [`:where(.react-flow__node.dragging) &`]: {
     boxShadow: 'none',
   },

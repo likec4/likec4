@@ -10,6 +10,7 @@ import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
 import { edgeVars } from './edge.css'
 import * as styles from './EdgeLabel.css'
+import { labelsva } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -76,13 +77,16 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
       return null
     }
     const translate = labelXY?.translate
+    const classes = labelsva({
+      isStepEdge: isStepEdgeId(id),
+    })
 
     return (
       <EdgeLabelRenderer>
         <Box
           className={cx(
             edgeVars,
-            styles.edgeLabelContainer,
+            classes.root,
             'nodrag nopan',
             className,
           )}
@@ -97,7 +101,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),
             ...(translate && {
-              [styles._translate]: translate,
+              [styles.translate.var]: translate,
             }),
             ...(labelBBox && {
               maxWidth: labelBBox.width + 18,
@@ -106,20 +110,20 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
             ...style,
           }}
         >
-          <Box ref={ref} className={styles.edgeLabel} {...rest}>
+          <Box ref={ref} className={classes.wrapper!} {...rest}>
             {stepNum !== null && (
-              <Box className={styles.stepEdgeNumber}>
+              <Box className={classes.stepNumber!}>
                 {stepNum}
               </Box>
             )}
-            <Box className={styles.secondColumn}>
+            <Box className={classes.labelContents!}>
               {isTruthy(data.label) && (
-                <Text component="div" className={styles.edgeLabelText} lineClamp={5}>
+                <Text component="div" className={classes.labelText!} lineClamp={5}>
                   {data.label}
                 </Text>
               )}
               {isTruthy(technology) && (
-                <Text component="div" className={styles.edgeLabelTechnology}>
+                <Text component="div" className={classes.labelTechnology!}>
                   {'[ ' + technology + ' ]'}
                 </Text>
               )}

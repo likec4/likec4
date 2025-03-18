@@ -1,6 +1,8 @@
 import { css } from '@likec4/styles/css'
-import { xyvars } from '@likec4/styles/vars'
-// import {
+import type { ColorToken } from '@likec4/styles/tokens'
+import { xyvars } from './xyvars'
+// import { xyvars } from '@likec4/styles/vars'
+
 //   reactFlow,
 // } from '../../../LikeC4Diagram.css'
 // import {
@@ -15,30 +17,80 @@ import { xyvars } from '@likec4/styles/vars'
 
 // export const xyvars = {
 //   edge: {
-//     stroke: '--xy-edge-stroke',
-//     strokeSelected: '--xy-edge-stroke-selected',
-//     labelColor: '--xy-edge-label-color',
-//     labelBgColor: '--xy-edge-label-background-color',
-//     strokeWidth: '--xy-edge-stroke-width',
+//     stroke: {
+//       var: '--xy-edge-stroke',
+//       ref: 'var(--xy-edge-stroke)',
+//     },
+//     strokeSelected: {
+//       var: '--xy-edge-stroke-selected',
+//       ref: 'var(--xy-edge-stroke-selected)',
+//     },
+//     labelColor: {
+//       var: '--xy-edge-label-color',
+//       ref: 'var(--xy-edge-label-color)',
+//     },
+//     labelBgColor: {
+//       var: '--xy-edge-label-background-color',
+//       ref: 'var(--xy-edge-label-background-color)',
+//     },
+//     strokeWidth: {
+//       var: '--xy-edge-stroke-width',
+//       ref: 'var(--xy-edge-stroke-width)',
+//     },
 //   },
+//   // edge: cssVar.scope('xy-edge', [
+//   //   'stroke',
+//   //   ['strokeSelected', 'stroke-selected'],
+//   //   ['labelColor', 'label-color'],
+//   //   ['labelBgColor', 'label-background-color'],
+//   //   ['strokeWidth', 'stroke-width'],
+//   // ]),
 // } as const
 
 const isSelected = '.react-flow__edge.selected'
 
+// stroke: {
+//         DEFAULT: {
+//           description: 'The stroke color of the XYEdge',
+//           value: {
+//             base: '{colors.likec4.relation.line}',
+//             _whenHovered: '{colors.xyedge.stroke.selected}',
+//             _whenSelected: '{colors.xyedge.stroke.selected}',
+//           },
+//         },
+//         selected: {
+//           value: {
+//             base: 'color-mix(in srgb, {colors.likec4.relation.line}, {colors.likec4.mixColor} 35%)',
+//             _dark: 'color-mix(in srgb, {colors.likec4.relation.line}, white 35%)',
+//             _light: 'color-mix(in srgb, {colors.likec4.relation.line}, black 20%)',
+//           },
+//         },
+//       },
+
 export const edgeVars = css({
+  // ''
   // color: 'likec4.'
-  [xyvars.edge.stroke.var]: '{colors.xyedge.stroke}',
-  [xyvars.edge.strokeSelected.var]: '{colors.xyedge.stroke.selected}',
-  [xyvars.edge.labelColor.var]: '{colors.xyedge.label}',
-  [xyvars.edge.labelBgColor.var]: '{colors.xyedge.label.bg}',
-  [xyvars.edge.strokeWidth.var]: '3',
-  _whenSelected: {
-    [xyvars.edge.stroke.var]: '{colors.xyedge.stroke.selected}',
+  ['--xy-edge-stroke']: '{colors.xyedge.stroke}',
+  // ['--xy-edge-stroke']: '{colors.likec4.relation.line}',
+  ['--xy-edge-stroke-selected']: '{colors.xyedge.stroke.selected}',
+  ['--xy-edge-label-color']: '{colors.likec4.relation.label}',
+  ['--xy-edge-label-background-color']: '{colors.likec4.relation.label.bg}',
+  ['--xy-edge-stroke-width']: '3',
+  // '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
+  //   ['--xy-edge-stroke']: 'var(--xy-edge-stroke-selected)',
+  //   ['--xy-edge-stroke-width']: '3',
+  // },
+  // _whenSelected: {
+  //   ['--xy-edge-stroke']: xyvars.edge.strokeSelected.ref,
+  // },
+  _light: {
+    [xyvars.edge.labelColor.var]: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
+    [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 40%)`,
   },
-  '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
-    [xyvars.edge.stroke.var]: '{colors.xyedge.stroke.selected}',
-    [xyvars.edge.strokeWidth.var]: '3',
+  _dark: {
+    [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 50%)`,
   },
+  // },
   // globalStyle(`${edgeVars}:is([data-likec4-hovered='true'],[data-edge-active='true'])`, {
   //   vars: {
   //     // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
@@ -46,15 +98,7 @@ export const edgeVars = css({
   //     [xyvars.edge.strokeWidth]: '3',
   //   },
   // })
-  // _notReducedGraphics: {
-  //   _light: {
-  //     [xyvars.edge.labelColor.var]: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
-  //     [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 40%)`,
-  //   },
-  //   _dark: {
-  //     [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 50%)`,
-  //   },
-  // },
+
   // _whenSelected: {
   //   [xyvars.edge.stroke.var]: xyvars.edge.strokeSelected.ref,
   //   [xyvars.edge.strokeWidth.var]: '3',
@@ -149,8 +193,8 @@ export const edgePathBg = css({
 
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = css({
-  fill: 'xyedge.stroke',
-  stroke: 'xyedge.stroke',
+  fill: xyvars.edge.stroke.ref as ColorToken,
+  stroke: xyvars.edge.stroke.ref as ColorToken,
 })
 
 // const strokeKeyframes = keyframes({
@@ -192,4 +236,39 @@ export const cssEdgePath = css({
 
 export const looseReduce = css({
   animationName: 'none',
+})
+
+const aiBg = {
+  var: '--ai-bg',
+  ref: 'var(--ai-bg)',
+} as const
+
+export const actionBtn = css({
+  // zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  pointerEvents: 'all',
+  // color: `xyedge.label`,
+  cursor: 'pointer',
+  opacity: 0.75,
+  transition: 'fast',
+  // backgroundColor: aiBg.ref,
+  [aiBg.var]: '{colors.likec4.relation.label.bg}',
+  '--ai-hover': `color-mix(in srgb , {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 10%)`,
+  '--ai-size': `var(--ai-size-sm)`,
+  '--ai-radius': `var(--mantine-radius-sm)`,
+  _hover: {
+    translateY: '1px',
+    scale: 1.15,
+  },
+  _active: {
+    translateY: '-1px',
+    scale: '0.9',
+  },
+  _whenHovered: {
+    opacity: 1,
+  },
+  '& .tabler-icon': {
+    width: '80%',
+    height: '80%',
+    strokeWidth: '2',
+  },
 })

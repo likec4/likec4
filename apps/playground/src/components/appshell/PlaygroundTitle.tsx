@@ -23,7 +23,7 @@ function PlaygroundEditableTitle({ workspaceTitle }: { workspaceTitle: string })
   return <UnstyledButton
     className={css({
       fontSize: 'sm',
-      color: 'defaultText',
+      color: 'mantine.colors.text',
     })}
   >
     {workspaceTitle}

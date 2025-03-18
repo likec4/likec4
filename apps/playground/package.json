@@ -42,6 +42,7 @@
     "dev": {
       "command": "vite dev",
       "dependencies": [
+        "../../styled-system/styles:generate",
         "generate"
       ]
     },
@@ -79,7 +80,6 @@
   "type": "module",
   "packageManager": "pnpm@10.6.2",
   "dependencies": {
-    "type-fest": "catalog:utils",
     "@cloudflare/vite-plugin": "0.1.7",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
     "@codingame/monaco-vscode-editor-api": "14.0.6",
@@ -100,9 +100,8 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/styles": "workspace:*",
-    "@likec4/style-preset": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@mantine/modals": "catalog:mantine",
@@ -143,9 +142,11 @@
     "strip-indent": "^4.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
+    "std-env": "catalog:utils",
+    "type-fest": "catalog:utils",
     "typescript": "catalog:",
     "ufo": "^1.5.4",
-    "valibot": "1.0.0-rc.3",
+    "valibot": "catalog:utils",
     "vite": "catalog:vite",
     "vite-plugin-node-polyfills": "catalog:vite",
     "vite-tsconfig-paths": "catalog:vite",

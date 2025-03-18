@@ -9,6 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "prepare": "wireit",
+    "generate": "wireit",
     "typecheck": "tsc --noEmit",
     "build": "wireit"
   },
@@ -25,6 +26,11 @@
       ],
       "output": [
         "src/generated.ts"
+      ]
+    },
+    "generate": {
+      "dependencies": [
+        "prepare"
       ]
     },
     "build": {
