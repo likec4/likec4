@@ -9,8 +9,30 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "generate": "panda",
-    "emit-pkg": "panda emit-pkg --base dist"
+    "generate": "wireit",
+    "emit-pkg": "wireit"
+  },
+  "wireit": {
+    "generate": {
+      "command": "panda",
+      "dependencies": [
+        "../preset:prepare"
+      ],
+      "files": [
+        "panda.config.ts",
+        "dev.ts",
+        "package.json"
+      ],
+      "output": [
+        "dist/**"
+      ]
+    },
+    "emit-pkg": {
+      "command": "panda emit-pkg --base dist",
+      "dependencies": [
+        "generate"
+      ]
+    }
   },
   "exports": {
     "./css": {
@@ -51,17 +73,19 @@
     "./vars": "./vars.ts"
   },
   "dependencies": {
-    "@pandabox/utils": "^0.0.5",
-    "@likec4/style-preset": "workspace:*"
+    "@pandabox/utils": "^0.0.5"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandacss/dev": "catalog:css",
+    "std-env": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
+    "wireit": "catalog:",
     "remeda": "catalog:utils",
     "typescript": "catalog:"
   },

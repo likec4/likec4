@@ -20,7 +20,8 @@
     "prepare": {
       "command": "tsx --conditions=sources ./generate.ts",
       "files": [
-        "generate.ts"
+        "generate.ts",
+        "package.json"
       ],
       "output": [
         "src/generated.ts"
@@ -37,11 +38,10 @@
     },
     "./src": "./src/index.ts"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@pandacss/dev": "catalog:css"
   },
   "devDependencies": {
-    "@pandacss/dev": "catalog:css",
     "@pandacss/preset-panda": "catalog:css",
     "remeda": "catalog:utils",
     "@likec4/core": "workspace:*",

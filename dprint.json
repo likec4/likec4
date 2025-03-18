@@ -31,7 +31,8 @@
     "packages/*/contrib",
     "**/routeTree.gen.ts",
     "packages/vscode/src/meta.ts",
-    "packages/*/src/generated"
+    "packages/*/src/generated",
+    "styled-system/preset/src/generated.ts"
   ],
   "markdown": {},
   "toml": {},

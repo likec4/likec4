@@ -462,6 +462,9 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.21.2
+      std-env:
+        specifier: catalog:utils
+        version: 3.8.1
       strip-indent:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1528,6 +1531,10 @@ importers:
         version: 0.5.1
 
   styled-system/preset:
+    dependencies:
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 0.53.1(typescript@5.8.2)
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1541,9 +1548,6 @@ importers:
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
         version: 7.17.1(@mantine/core@7.17.1(@mantine/hooks@7.17.1(react@19.0.0))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
-      '@pandacss/dev':
-        specifier: catalog:css
-        version: 0.53.1(typescript@5.8.2)
       '@pandacss/preset-panda':
         specifier: catalog:css
         version: 0.53.1
@@ -1565,12 +1569,12 @@ importers:
       unbuild:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.8.2)
+      wireit:
+        specifier: 'catalog:'
+        version: 0.14.11
 
   styled-system/styles:
     dependencies:
-      '@likec4/style-preset':
-        specifier: workspace:*
-        version: link:../preset
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
@@ -1578,6 +1582,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../preset
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
@@ -1599,9 +1606,15 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.21.2
+      std-env:
+        specifier: catalog:utils
+        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
+      wireit:
+        specifier: 'catalog:'
+        version: 0.14.11
 
 packages:
 

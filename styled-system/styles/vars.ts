@@ -270,13 +270,13 @@ export const vars = {
 // } as const
 
 export const xyvars = {
-  edge: {
-    stroke: cssVar.create('xy-edge-stroke'),
-    strokeSelected: cssVar.create('xy-edge-stroke-selected'),
-    labelColor: cssVar.create('xy-edge-label-color'),
-    labelBgColor: cssVar.create('xy-edge-label-background-color'),
-    strokeWidth: cssVar.create('xy-edge-stroke-width'),
-  },
+  edge: cssVar.scope('xy-edge', [
+    'stroke',
+    ['strokeSelected', 'stroke-selected'],
+    ['labelColor', 'label-color'],
+    ['labelBgColor', 'label-background-color'],
+    ['strokeWidth', 'stroke-width'],
+  ]),
 }
 
 export {

@@ -8,8 +8,11 @@
       "dependsOn": [
         "topo"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/generated.ts"
+      ],
       "outputs": [
-        "src/generated.ts",
         "dist/**"
       ]
     }
