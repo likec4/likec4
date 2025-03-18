@@ -88,7 +88,7 @@ function RouteComponent() {
                 <Center mt={'md'}>
                   <IconRosetteDiscountCheck
                     className={css({
-                      color: 'green.6',
+                      color: 'mantine.colors.green[6]',
                     })}
                     size={100} />
                 </Center>
@@ -120,8 +120,8 @@ function RouteComponent() {
                     <Box
                       css={{
                         display: 'inline-block',
-                        bg: 'mantine.red.light',
-                        color: 'red',
+                        bg: 'mantine.colors.red.light',
+                        color: 'mantine.colors.red',
                         py: 'xs',
                         px: 'md',
                       }}>
