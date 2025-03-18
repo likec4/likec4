@@ -8,13 +8,21 @@
 .pnpm-store/
 .wireit
 
+apps/*/dist
+apps/*/styled-system
+apps/*/styled-system-studio
+
 examples/*/.vscode
 examples/failed
 packages/*/contrib
 packages/*/dist
-apps/*/dist
+packages/*/styled-system
+packages/*/styled-system-studio
+
 styled-system/*/dist
-apps/playground/prebuild
+styled-system/preset/src/generated.ts
+styled-system/*/styled-system
+
 packages/diagram/bundle
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
@@ -86,6 +94,3 @@ jspm_packages/
 dist
 
 ## Panda
-styled-system/*/styled-system
-packages/*/styled-system
-packages/*/styled-system-studio

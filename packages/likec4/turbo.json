@@ -6,11 +6,13 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "@likec4/icons#generate"
+        "@likec4/icons#generate",
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "app/src/routeTree.gen.ts",
-        "icons/**"
+        "icons/**",
+        "styled-system/**"
       ],
       "outputLogs": "new-only"
     },

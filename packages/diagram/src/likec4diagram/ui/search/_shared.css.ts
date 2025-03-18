@@ -18,7 +18,7 @@ export const button = css.raw({
   display: 'flex',
   width: '100%',
   background: 'mantine.colors.body',
-  borderRadius: 'sm',
+  rounded: 'sm',
   padding: `12px 8px 12px 14px`,
   minHeight: '60px',
   gap: '8',
@@ -41,7 +41,7 @@ export const button = css.raw({
     // background: 'mantine.colors.dark[6]',
   },
   _light: {
-    background: `mantine.colors.white/90`,
+    background: `mantine.colors.white/80`,
     [iconColor]: '{colors.mantine.colors.gray[6]}',
     [titleColor]: '{colors.mantine.colors.gray[7]}',
     _hover: {

@@ -1,3 +1,4 @@
+import { cx } from '@likec4/styles/css'
 import {
   Box,
   RemoveScroll,
@@ -109,7 +110,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       {...rest}
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
-        <Box className={clsx(styles.body, classes?.body)}>
+        <Box className={cx(styles.body, classes?.body)}>
           {opened && <>{children}</>}
         </Box>
       </RemoveScroll>

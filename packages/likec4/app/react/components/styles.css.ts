@@ -1,6 +1,6 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { css } from '@likec4/styles/css'
 
-export const shadowRoot = style({
+export const shadowRoot = css({
   margin: 0,
   padding: 0,
   display: 'block',
@@ -9,28 +9,24 @@ export const shadowRoot = style({
   overflow: 'hidden',
   backgroundColor: 'transparent',
   position: 'relative',
-  vars: {
-    ['--likec4-default-font-family']:
-      `"IBM Plex Sans",ui-sans-serif system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
-    // ['--mantine-font-family']: 'var(--likec4-default-font-family)'
+
+  ['--likec4-default-font-family']:
+    `"IBM Plex Sans",ui-sans-serif system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
+  // ['--mantine-font-family']: 'var(--likec4-default-font-family)'
+})
+
+export const cssLikeC4View = css({})
+
+export const cssInteractive = css({
+  cursor: 'pointer',
+  ['--mantine-cursor-pointer']: 'pointer',
+  '& :where(.likec4-diagram, .likec4-compound-node, .likec4-element-node)': {
+    cursor: 'pointer',
   },
 })
 
-export const cssLikeC4View = style({})
+export const cssLikeC4Browser = css({})
 
-export const cssInteractive = style({
-  cursor: 'pointer',
-  vars: {
-    ['--mantine-cursor-pointer']: 'pointer',
-  },
-})
-
-globalStyle(`${cssInteractive} :where(.likec4-diagram, .likec4-compound-node, .likec4-element-node)`, {
-  cursor: 'pointer',
-})
-
-export const cssLikeC4Browser = style({})
-
-export const browserOverlay = style({
+export const browserOverlay = css({
   inset: '2rem',
 })

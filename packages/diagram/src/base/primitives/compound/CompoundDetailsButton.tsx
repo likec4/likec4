@@ -26,49 +26,46 @@ export function CompoundDetailsButton({
           position: 'absolute',
           top: '[2px]',
           right: '[2px]',
+          // [`:where([data-mantine-color-scheme='light']) [data-compound-transparent="true"] &:hover`]: {
+          //   ['--_compound-title-color']: '{colors.likec4.element.loContrast}',
+          // },
+          // },
         }),
         hiddenIfZoomTooSmall,
         'details-button',
       )}
       onClick={stopPropagation}>
-      <ActionIcon
-        component={m.div}
+      <m.div
         layout
-        className={cx(
-          'nodrag nopan',
-          actionBtn({ variant: 'transparent' }),
-          css({
-            opacity: 0.4,
-            _whenHovered: {
-              opacity: 0.8,
-            },
-            _hover: {
-              opacity: 1,
-            },
-          }),
-        )}
         initial={false}
-        style={{
-          originX: 0.45,
-          originY: 0.55,
+        animate={{
+          scale: isHovered ? 1.2 : 1,
         }}
-        animate={isHovered
-          ? {
-            scale: 1.2,
-          }
-          : {
-            scale: 1,
-          }}
         whileHover={{
-          scale: 1.42,
+          scale: 1.3,
         }}
-        whileTap={{ scale: 1.15 }}
-        size={'md'}
-        radius="md"
-        onClick={onClick}
-        onDoubleClick={stopPropagation}>
-        {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
-      </ActionIcon>
+        whileTap={{ scale: 1 }}
+      >
+        <ActionIcon
+          className={cx(
+            'nodrag nopan',
+            actionBtn({ variant: 'transparent' }),
+            css({
+              opacity: 0.4,
+              _whenHovered: {
+                opacity: 0.8,
+                transitionDelay: '150ms',
+              },
+              _hover: {
+                opacity: 1,
+              },
+            }),
+          )}
+          onClick={onClick}
+          onDoubleClick={stopPropagation}>
+          {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
+        </ActionIcon>
+      </m.div>
     </Box>
   )
 }

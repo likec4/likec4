@@ -1,4 +1,4 @@
-import pandaPostCss from '@pandacss/dev/postcss'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -8,9 +8,9 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
   console.log('isProduction', isProduction)
   return {
-    // define: {
-    //   'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-    // },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+    },
     resolve: {
       conditions: ['production', 'sources'],
       alias: {
@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
           /framer-motion/,
           /motion-dom/,
           /motion-utils/,
+          /@likec4\/styles/,
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
@@ -54,9 +55,7 @@ export default defineConfig(({ mode }) => {
     },
     css: {
       postcss: {
-        plugins: [
-          pandaPostCss({}) as any,
-        ],
+        plugins: [pandaCss()],
       },
     },
     plugins: [

@@ -13,6 +13,7 @@
     "!**/*.map"
   ],
   "scripts": {
+    "generate": "panda codegen",
     "typecheck": "tsc --noEmit",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
@@ -29,7 +30,6 @@
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
-    "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "catalog:utils",

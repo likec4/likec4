@@ -101,7 +101,7 @@ export const viewButton = css({
   // gap: 6,
   // alignItems: 'flex-start',
   transition: 'fast',
-  border: `1px solid`,
+  border: `1px dashed`,
   borderColor: 'mantine.colors.defaultBorder',
   [viewTitleColor]: '{colors.mantine.colors.dark[1]}',
   _hover: {
@@ -123,7 +123,7 @@ export const viewButton = css({
   '& .mantine-ThemeIcon-root': {
     transition: 'fast',
     // color: fallbackVar(iconColor, 'mantine.colors.dark[2])',
-    color: `var(${iconColor}, {colors.mantine.colors.dark[2]})`,
+    color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
     '--ti-size': '22px',
     _hover: {
       color: 'mantine.colors.defaultColor',

@@ -1,4 +1,5 @@
 import { definePreset } from '@pandacss/dev'
+import { preset as PandaPreset } from '@pandacss/preset-panda'
 import { conditions } from './conditions'
 import { globalCss } from './generated'
 import { theme } from './theme'
@@ -7,8 +8,7 @@ export default definePreset({
   name: 'likec4',
   // Whether to use css reset
   presets: [
-    '@pandacss/preset-base',
-    '@pandacss/preset-panda',
+    PandaPreset as any,
   ],
   globalVars: {
     // Override mantine font-size
@@ -69,6 +69,18 @@ export default definePreset({
       height: '75%',
     },
     '.likec4-diagram-root :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed="true"])': {
+      opacity: 0.25,
+      filter: 'auto',
+      // transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+      // transform; ''
+      transitionProperty: 'opacity, filter',
+      transitionTimingFunction: '{easings.inOut}',
+      transitionDuration: '800ms',
+      transitionDelay: '200ms',
+      grayscale: 0.85,
+      blur: '2px',
+    },
+    ':where(.likec4-diagram-root .react-flow__edgelabel-renderer) [data-likec4-dimmed="true"]': {
       opacity: 0.25,
       filter: 'auto',
       // transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',

@@ -35,6 +35,7 @@ export const container = css({
     background: 'likec4.element.fill',
     backgroundClip: 'padding-box',
   },
+  ['--_compound-title-color']: '{colors.likec4.element.loContrast}',
   _notReducedGraphics: {
     boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     _before: {
@@ -52,12 +53,14 @@ export const container = css({
       opacity: compoundOpacity,
       borderWidth: `calc(${borderWidth} - 1px)`,
     },
+    _light: {
+      ['--_compound-title-color']: '{colors.likec4.element.stroke}',
+    },
   },
 })
 
 const _borderColor = '--_compound-border-color'
-const borderColor = `var(${_borderColor})`
-
+const borderColor = `var(${_borderColor}, {colors.likec4.element.stroke})`
 export const compoundBorder = css({
   borderRadius: borderRadius,
   padding: '0',
@@ -73,7 +76,6 @@ export const compoundBorder = css({
   background: '[transparent]',
   borderStyle: 'dashed',
   borderWidth: borderWidth,
-  [_borderColor]: '{colors.likec4.element.stroke}',
   borderColor: `[color-mix(in srgb , ${borderColor}, transparent var(${_borderTransparency}, 5%))]`,
   _compoundTransparent: {
     _dark: {
@@ -107,12 +109,12 @@ export const indicator = sva({
       _light: {
         stroke: `[color-mix(in srgb, {colors.likec4.element.stroke} 80%, {colors.likec4.mixColor})]`,
       },
-      ':where(.react-flow__node.selected:not(:focus-visible)) &': {
-        strokeWidth: '6',
-      },
-      ':where(.react-flow__node:focus-within:not(.selected)) &': {
-        strokeWidth: '8',
-      },
+      // ':where(.react-flow__node.selected:not(:focus-visible)) &': {
+      //   strokeWidth: '6',
+      // },
+      // ':where(.react-flow__node:focus-within:not(.selected)) &': {
+      //   strokeWidth: '3',
+      // },
     },
   },
 })

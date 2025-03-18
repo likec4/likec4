@@ -79,7 +79,8 @@
         "import": "./dist/types/index.mjs",
         "default": "./dist/types/index.mjs"
       }
-    }
+    },
+    "./src": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

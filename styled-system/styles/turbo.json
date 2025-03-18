@@ -4,15 +4,20 @@
     "//"
   ],
   "tasks": {
-    "build": {
+    "generate": {
       "dependsOn": [
-        "@likec4/styles#build",
+        "@likec4/style-preset#build",
         "topo"
       ],
       "outputs": [
-        "dist/**",
-        "styled-system/**"
+        "dist/**"
       ]
+    },
+    "build": {
+      "dependsOn": [
+        "generate"
+      ],
+      "outputs": []
     }
   }
 }

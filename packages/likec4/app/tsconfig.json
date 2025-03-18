@@ -13,7 +13,6 @@
       "sources"
     ],
     "outDir": "../__app__",
-    "noEmit": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "noPropertyAccessFromIndexSignature": false,

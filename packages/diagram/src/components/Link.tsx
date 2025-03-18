@@ -14,6 +14,8 @@ const link = cva({
     transitionProperty: 'all',
     transitionDuration: 'fast',
     transitionTimingFunction: 'in-out',
+    border: `1px dashed {colors.mantine.colors.defaultBorder}`,
+    rounded: 'sm',
     cursor: 'pointer',
     color: 'mantine.colors.gray[7]',
     _dark: {

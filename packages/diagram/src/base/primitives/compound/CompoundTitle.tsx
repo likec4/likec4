@@ -19,7 +19,7 @@ const cssCompoundTitle = css({
   alignItems: 'center',
   gap: '6px',
   left: '14px',
-  top: '6px',
+  top: '4px',
   right: '30px',
   width: 'auto',
   minHeight: '30px',
@@ -30,7 +30,7 @@ const cssCompoundTitle = css({
     cursor: 'grab',
   },
   [`.likec4-compound-node:has(.compound-action) &`]: {
-    paddingLeft: '30px',
+    paddingLeft: '22px',
   },
 })
 
@@ -41,7 +41,7 @@ const cssTitle = css({
   fontSize: '15px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  color: 'likec4.compound.title',
+  color: '[var(--_compound-title-color, {colors.likec4.compound.title})]',
   _light: {
     _compoundTransparent: {
       color: 'likec4.element.stroke',

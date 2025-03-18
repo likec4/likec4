@@ -19,7 +19,7 @@ export function SidebarDrawer({ viewId }: { viewId: string }) {
       opened={opened}
       scrollAreaComponent={ScrollArea.Autosize}
       onClose={SidebarDrawerOps.close}>
-      <Drawer.Overlay blur={.5} />
+      <Drawer.Overlay blur={2} />
       <Drawer.Content>
         <Drawer.Header>
           <Group gap={'xs'}>

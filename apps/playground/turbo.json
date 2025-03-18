@@ -5,6 +5,10 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "^generate",
+        "topo"
+      ],
       "outputs": [
         "src/routeTree.gen.ts",
         ".wrangler/types",

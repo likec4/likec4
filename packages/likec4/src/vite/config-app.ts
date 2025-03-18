@@ -1,7 +1,6 @@
 import { viteAliases } from '@/vite/aliases'
-import pandaCss from '@pandacss/dev/postcss'
+import pandaCss from '@likec4/styles/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -124,14 +123,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     css: {
       postcss: {
-        plugins: [
-          pandaCss() as any,
-        ],
+        plugins: [pandaCss()],
       },
     },
     customLogger,
     plugins: [
-      vanillaExtractPlugin(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,

@@ -24,34 +24,23 @@ export function CompoundActionButton({
       className={cx(
         css({
           position: 'absolute',
-          top: '4px',
+          top: '5px',
           left: '2px',
+          // Panda did not merge this conditions
+          [`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"][data-likec4-hovered="true"]) &`]:
+            {
+              ['--_color']: '{colors.likec4.element.loContrast}',
+            },
         }),
         hiddenIfZoomTooSmall,
         'compound-action',
       )}>
-      <ActionIcon
-        className={cx(
-          'nodrag nopan',
-          actionBtn(),
-          css({
-            _light: {
-              _compoundTransparent: {
-                opacity: 0.85,
-                '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 20%)`,
-                '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 10%)`,
-              },
-              _whenHovered: {
-                opacity: 1,
-              },
-            },
-          }),
-        )}
-        component={m.button}
+      <m.div
         initial={false}
         animate={{
           scale: isHovered ? 1.2 : 1,
           x: isHovered ? -1 : 0,
+          opacity: isHovered ? 1 : 0.8,
           // y: isHovered ? -1 : 0,
         }}
         whileHover={{
@@ -60,12 +49,35 @@ export function CompoundActionButton({
           // y: 1,
         }}
         whileTap={{ scale: 1 }}
-        // Otherwise node receives click event and is selected
-        onClick={onClick}
-        onDoubleClick={stopPropagation}
       >
-        {icon ?? <IconZoomScan stroke={2} />}
-      </ActionIcon>
+        <ActionIcon
+          className={cx(
+            'nodrag nopan',
+            actionBtn(),
+            css({
+              color: '[var(--_compound-title-color)]',
+              _whenHovered: {
+                transitionDelay: '150ms',
+              },
+              _light: {
+                _compoundTransparent: {
+                  opacity: 0.85,
+                  '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 70%)`,
+                  '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 10%)`,
+                },
+                _whenHovered: {
+                  opacity: 1,
+                },
+              },
+            }),
+          )}
+          // Otherwise node receives click event and is selected
+          onClick={onClick}
+          onDoubleClick={stopPropagation}
+        >
+          {icon ?? <IconZoomScan stroke={2} />}
+        </ActionIcon>
+      </m.div>
     </Box>
   )
 }

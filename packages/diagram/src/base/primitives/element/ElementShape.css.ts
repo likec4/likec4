@@ -1,42 +1,20 @@
-// import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-// import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
-// import { easings, mantine, vars, whereNotReducedGraphics } from '../../../theme-vars'
-// import { container, stokeFillMix } from './ElementNodeContainer.css'
 import { css } from '@likec4/styles/css'
-
-// const indicatorKeyframes = keyframes({
-//   'from': {
-//     strokeOpacity: 0.8,
-//   },
-//   'to': {
-//     strokeOpacity: 0.5,
-//   },
-// })
-
-// const outlineColor = fallbackVar(
-//   mantine.colors.primaryColors.outline,
-//   mantine.colors.primaryColors.filled,
-//   vars.element.stroke,
-// )
-
-const indicatorStroke = '--indicator-stroke'
 
 export const indicator = css({
   _smallZoom: {
     visibility: 'hidden',
   },
-  stroke: indicatorStroke,
-  fill: 'none',
+  stroke: 'likec4.element.loContrast',
+  fill: '[none]',
   animationStyle: 'indicator',
   strokeWidth: 6,
   strokeOpacity: 0.8,
   visibility: 'hidden',
   pointerEvents: 'none',
-  [indicatorStroke]: '{colors.likec4.element.loContrast}',
   _light: {
-    [indicatorStroke]: `color-mix(in srgb, {colors.likec4.element.fill} 50%, #3c3c3c)`,
+    stroke: `[color-mix(in srgb, {colors.likec4.element.fill} 50%,rgb(121, 121, 121))]`,
   },
-  ':where(.react-flow__node.selected) &': {
+  _whenSelected: {
     visibility: 'visible',
   },
   _notReducedGraphics: {
@@ -49,8 +27,14 @@ export const indicator = css({
   //   stroke: outlineColor,
   //   visibility: 'visible',
   // },
-  ':where([data-likec4-shape="queue"], [data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-    strokeWidth: 10,
+  _shapeQueue: {
+    strokeWidth: 8,
+  },
+  _shapeCylinder: {
+    strokeWidth: 8,
+  },
+  _shapeStorage: {
+    strokeWidth: 8,
   },
 })
 
@@ -63,10 +47,8 @@ export const fillElementStroke = css({
 })
 
 export const fillMixStroke = css({
-  fill: 'likec4.mixStrokeFill',
+  fill: '[color-mix(in srgb, {colors.likec4.element.stroke} 90%, {colors.likec4.element.fill})]',
 })
-
-const filterShadow = '--filter-shadow'
 
 const shapeBase = css.raw({
   top: 0,
@@ -104,23 +86,22 @@ export const shapeSvgMultiple = css(shapeBase, {
 //   fill: vars.element.fill,
 // })
 export const shapeSvg = css(shapeBase, {
-  filter: `var(${filterShadow})`,
   transition: `fill 120ms linear, filter 130ms {easings.inOut}`,
   transitionDelay: '0ms',
-  [filterShadow]: `
+  filter: `
       drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))
       drop-shadow(0 1px 1px color-mix(in srgb, {colors.likec4.element.stroke} 40%, transparent))
       drop-shadow(0 5px 3px rgba(0, 0, 0, 0.1))
     `,
   _whenHovered: {
-    [filterShadow]: `
+    filter: `
         drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
         drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
         drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
         `,
   },
   [`:where([data-likec4-level='true']) &`]: {
-    [filterShadow]: `
+    filter: `
         drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
         drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
         drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))

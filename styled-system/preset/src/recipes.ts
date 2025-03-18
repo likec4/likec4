@@ -6,8 +6,9 @@ export const actionBtn = defineRecipe({
   base: {
     pointerEvents: 'all',
     cursor: 'pointer',
-    color: '{colors.likec4.element.loContrast}',
+    color: '[var(--_color, {colors.likec4.element.loContrast})]',
     opacity: 0.75,
+    '--_color': 'var(--_compound-title-color, {colors.likec4.element.loContrast})',
     '--_idle': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 99%)`,
     '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill} 65%, {colors.likec4.element.stroke})`,
     '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill} 50%, {colors.likec4.element.stroke})`,
@@ -20,7 +21,7 @@ export const actionBtn = defineRecipe({
       '--ai-bg': `var(--_node-hovered)`,
     },
     _hover: {
-      color: '{colors.likec4.element.hiContrast}',
+      color: '[var(--_color, {colors.likec4.element.hiContrast})]',
       '--ai-bg': `var(--_btn-hovered)`,
     },
     _reducedGraphics: {

@@ -37,3 +37,5 @@ const copyFiles = [
   '../icons/all.js',
 ]
 await $`cp ${copyFiles} icons/`
+
+await $`panda codegen`

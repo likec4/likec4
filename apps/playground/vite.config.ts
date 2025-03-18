@@ -1,16 +1,14 @@
+import { cloudflare } from '@cloudflare/vite-plugin'
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { type AliasOptions, defineConfig } from 'vite'
 import tsconfigpaths from 'vite-tsconfig-paths'
-// import packageJson from './package.json' with { type: 'json' }
-import { cloudflare } from '@cloudflare/vite-plugin'
-// import pandaCss from '@likec4/styles/postcss'
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-  // '@likec4/diagram': resolve('../../packages/diagram/dist'),
 } satisfies AliasOptions
 
 export default defineConfig(({ command }) => ({
@@ -41,6 +39,11 @@ export default defineConfig(({ command }) => ({
       plugins: [
         importMetaUrlPlugin as any,
       ],
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [pandaCss()],
     },
   },
   esbuild: {

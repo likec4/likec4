@@ -2,12 +2,9 @@ import { defineConfig } from '@likec4/styles/dev'
 
 export default defineConfig({
   include: [
-    // './src/**/*.css.ts',
-    // './src/index.css',
     './app/src/**/*.{ts,tsx}',
-    // '..',
-    // '../../styled-system/**/vars.ts',
+    './app/webcomponent/**/*.{ts,tsx}',
+    './app/react/**/*.{ts,tsx}',
     '../diagram/src/**/*.{js,jsx,ts,tsx}',
-    // '../../packages/diagram/src/**/*.{js,jsx,ts,tsx}',
   ],
 })

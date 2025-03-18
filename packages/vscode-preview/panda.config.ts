@@ -1,21 +1,8 @@
-import { defineConfig } from '@pandacss/dev'
+import { defineConfig } from '@likec4/styles/dev'
 
 export default defineConfig({
-  // Whether to use css reset
-  importMap: '@likec4/styles',
-  presets: [
-    '@likec4/style-preset',
+  include: [
+    './src/**/*.{ts,tsx}',
+    '../diagram/src/**/*.{js,jsx,ts,tsx}',
   ],
-  // globalVars: {},
-  jsxFramework: 'react',
-  include: ['./src/**/*.{js,jsx,ts,tsx}', '../diagram/src/**/*.{js,jsx,ts,tsx}'],
-  theme: {
-    extend: {
-      tokens: {
-        colors: {},
-      },
-    },
-  },
-  // The output directory for your css system
-  outdir: 'styled-system',
 })

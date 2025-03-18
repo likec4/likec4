@@ -1,11 +1,9 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'path'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import dts from 'vite-plugin-dts'
 import { shadowStyle } from 'vite-plugin-shadow-style'
@@ -101,16 +99,12 @@ export async function buildReact(_isDev = false) {
     css: {
       postcss: {
         plugins: [
-          autoprefixer(),
-          postcssPresetMantine(),
+          pandaCss(),
         ],
       },
     },
     plugins: [
       react(),
-      vanillaExtractPlugin({
-        identifiers: 'short',
-      }),
       dts({
         // entryRoot: resolve('app/react/components'),
         tsconfigPath: resolve('app/react/tsconfig.dts-bundle.json'),

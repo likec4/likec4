@@ -1,4 +1,4 @@
-import { defaultTheme, ElementShapes, ThemeColors } from '@likec4/core'
+import { defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
 import { DEFAULT_THEME, rem } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config, SystemStyleObject } from '@pandacss/dev'
@@ -61,20 +61,20 @@ const generateLikeC4SemanticTokens = () => ({
       description: 'Element hiContrast text color (title)',
       value: {
         base: `${defaultTheme.elements.primary.hiContrast}`,
-        // ...mapToObj(ThemeColors, (color) => [
-        //   '_likec4Color' + capitalize(color),
-        //   defaultTheme.elements[color].hiContrast,
-        // ]),
+        ...mapToObj(ThemeColors, (color) => [
+          '_likec4Color' + capitalize(color),
+          defaultTheme.elements[color].hiContrast,
+        ]),
       },
     },
     loContrast: {
       description: 'Element loContrast text color (description)',
       value: {
         base: `${defaultTheme.elements.primary.loContrast}`,
-        // ...mapToObj(ThemeColors, (color) => [
-        //   '_likec4Color' + capitalize(color),
-        //   defaultTheme.elements[color].loContrast,
-        // ]),
+        ...mapToObj(ThemeColors, (color) => [
+          '_likec4Color' + capitalize(color),
+          defaultTheme.elements[color].loContrast,
+        ]),
       },
     },
   },
@@ -91,10 +91,10 @@ const generateLikeC4SemanticTokens = () => ({
       description: 'Relationship line color',
       value: {
         base: `${defaultTheme.relationships.gray.lineColor}`,
-        // ...mapToObj(ThemeColors, (color) => [
-        //   '_likec4Color' + capitalize(color),
-        //   defaultTheme.relationships[color].lineColor,
-        // ]),
+        ...mapToObj(ThemeColors, (color) => [
+          '_likec4Color' + capitalize(color),
+          defaultTheme.relationships[color].lineColor,
+        ]),
       },
     },
     label: {
@@ -102,20 +102,20 @@ const generateLikeC4SemanticTokens = () => ({
         description: 'Relationship label color',
         value: {
           base: `${defaultTheme.relationships.gray.labelColor}`,
-          // ...mapToObj(ThemeColors, (color) => [
-          //   '_likec4Color' + capitalize(color),
-          //   defaultTheme.relationships[color].labelColor,
-          // ]),
+          ...mapToObj(ThemeColors, (color) => [
+            '_likec4Color' + capitalize(color),
+            defaultTheme.relationships[color].labelColor,
+          ]),
         },
       },
       bg: {
         description: 'Relationship label background color',
         value: {
           base: `${defaultTheme.relationships.gray.labelBgColor}`,
-          // ...mapToObj(ThemeColors, (color) => [
-          //   '_likec4Color' + capitalize(color),
-          //   defaultTheme.relationships[color].labelBgColor,
-          // ]),
+          ...mapToObj(ThemeColors, (color) => [
+            '_likec4Color' + capitalize(color),
+            defaultTheme.relationships[color].labelBgColor,
+          ]),
         },
       },
     },
@@ -143,11 +143,11 @@ const generateCompoundColors = () => {
     classes.set(`:where([data-likec4-color='${color}'])`, {
       '--colors-likec4-element-fill': defaultTheme.elements[color].fill,
       '--colors-likec4-element-stroke': defaultTheme.elements[color].stroke,
-      '--colors-likec4-element-hiContrast': defaultTheme.elements[color].hiContrast,
-      '--colors-likec4-element-loContrast': defaultTheme.elements[color].loContrast,
-      '--colors-likec4-relation-line': defaultTheme.relationships[color].lineColor,
-      '--colors-likec4-relation-label': defaultTheme.relationships[color].labelColor,
-      '--colors-likec4-relation-label-bg': defaultTheme.relationships[color].labelBgColor,
+      // '--colors-likec4-element-hiContrast': defaultTheme.elements[color].hiContrast,
+      // '--colors-likec4-element-loContrast': defaultTheme.elements[color].loContrast,
+      // '--colors-likec4-relation-line': defaultTheme.relationships[color].lineColor,
+      // '--colors-likec4-relation-label': defaultTheme.relationships[color].labelColor,
+      // '--colors-likec4-relation-label-bg': defaultTheme.relationships[color].labelBgColor,
     })
     for (let depth = 1; depth <= 6; depth++) {
       classes.set(`:where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`, {
@@ -277,12 +277,6 @@ const likec4theme = {
           // ...mapcolors('teal'),
           // ...mapcolors('pink'),
           // ...mapcolors('yellow'),
-        },
-      },
-      likec4: {
-        mixStrokeFill: {
-          description: 'Mix of stroke and fill colors, used for "darker" areas',
-          value: 'color-mix(in srgb, {colors.likec4.element.stroke} 90%, {colors.likec4.element.fill})',
         },
       },
     },

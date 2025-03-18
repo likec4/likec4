@@ -128,6 +128,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#25467d',
     '--colors-likec4-element-stroke': '#243b6c',
   },
+  ':where([data-likec4-color=\'primary\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#2a5293',
+    '--colors-likec4-element-stroke': '#2a447f',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'primary\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#25416d',
+    '--colors-likec4-element-stroke': '#24365f',
+  },
   ':where([data-likec4-color=\'blue\'])': {
     '--colors-likec4-element-fill': '#3b82f6',
     '--colors-likec4-element-stroke': '#2563eb',
@@ -171,6 +179,14 @@ export const globalCss = {
   ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'blue\'][data-compound-depth=\'5\'])': {
     '--colors-likec4-element-fill': '#25467d',
     '--colors-likec4-element-stroke': '#243b6c',
+  },
+  ':where([data-likec4-color=\'blue\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#2a5293',
+    '--colors-likec4-element-stroke': '#2a447f',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'blue\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#25416d',
+    '--colors-likec4-element-stroke': '#24365f',
   },
   ':where([data-likec4-color=\'secondary\'])': {
     '--colors-likec4-element-fill': '#0284c7',
@@ -216,6 +232,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#163f55',
     '--colors-likec4-element-stroke': '#123345',
   },
+  ':where([data-likec4-color=\'secondary\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#194a64',
+    '--colors-likec4-element-stroke': '#153c51',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'secondary\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#17384a',
+    '--colors-likec4-element-stroke': '#132d3c',
+  },
   ':where([data-likec4-color=\'sky\'])': {
     '--colors-likec4-element-fill': '#0284c7',
     '--colors-likec4-element-stroke': '#0369a1',
@@ -259,6 +283,14 @@ export const globalCss = {
   ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'sky\'][data-compound-depth=\'5\'])': {
     '--colors-likec4-element-fill': '#163f55',
     '--colors-likec4-element-stroke': '#123345',
+  },
+  ':where([data-likec4-color=\'sky\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#194a64',
+    '--colors-likec4-element-stroke': '#153c51',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'sky\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#17384a',
+    '--colors-likec4-element-stroke': '#132d3c',
   },
   ':where([data-likec4-color=\'muted\'])': {
     '--colors-likec4-element-fill': '#64748b',
@@ -304,6 +336,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#393e46',
     '--colors-likec4-element-stroke': '#292e34',
   },
+  ':where([data-likec4-color=\'muted\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#434951',
+    '--colors-likec4-element-stroke': '#30353d',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'muted\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#34383e',
+    '--colors-likec4-element-stroke': '#26292f',
+  },
   ':where([data-likec4-color=\'slate\'])': {
     '--colors-likec4-element-fill': '#64748b',
     '--colors-likec4-element-stroke': '#475569',
@@ -347,6 +387,14 @@ export const globalCss = {
   ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'slate\'][data-compound-depth=\'5\'])': {
     '--colors-likec4-element-fill': '#393e46',
     '--colors-likec4-element-stroke': '#292e34',
+  },
+  ':where([data-likec4-color=\'slate\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#434951',
+    '--colors-likec4-element-stroke': '#30353d',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'slate\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#34383e',
+    '--colors-likec4-element-stroke': '#26292f',
   },
   ':where([data-likec4-color=\'gray\'])': {
     '--colors-likec4-element-fill': '#737373',
@@ -392,6 +440,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#3d3d3d',
     '--colors-likec4-element-stroke': '#2b2b2b',
   },
+  ':where([data-likec4-color=\'gray\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#474747',
+    '--colors-likec4-element-stroke': '#333333',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'gray\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#373737',
+    '--colors-likec4-element-stroke': '#272727',
+  },
   ':where([data-likec4-color=\'red\'])': {
     '--colors-likec4-element-fill': '#AC4D39',
     '--colors-likec4-element-stroke': '#853A2D',
@@ -435,6 +491,14 @@ export const globalCss = {
   ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'red\'][data-compound-depth=\'5\'])': {
     '--colors-likec4-element-fill': '#4f312a',
     '--colors-likec4-element-stroke': '#3d2521',
+  },
+  ':where([data-likec4-color=\'red\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#5d3931',
+    '--colors-likec4-element-stroke': '#482b27',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'red\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#462d28',
+    '--colors-likec4-element-stroke': '#36231f',
   },
   ':where([data-likec4-color=\'green\'])': {
     '--colors-likec4-element-fill': '#428a4f',
@@ -480,6 +544,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#2b422f',
     '--colors-likec4-element-stroke': '#1d2c21',
   },
+  ':where([data-likec4-color=\'green\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#324d37',
+    '--colors-likec4-element-stroke': '#223426',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'green\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#283a2b',
+    '--colors-likec4-element-stroke': '#1b271e',
+  },
   ':where([data-likec4-color=\'amber\'])': {
     '--colors-likec4-element-fill': '#A35829',
     '--colors-likec4-element-stroke': '#7E451D',
@@ -524,6 +596,14 @@ export const globalCss = {
     '--colors-likec4-element-fill': '#493223',
     '--colors-likec4-element-stroke': '#38261a',
   },
+  ':where([data-likec4-color=\'amber\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#563a28',
+    '--colors-likec4-element-stroke': '#422d1e',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'amber\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#412d21',
+    '--colors-likec4-element-stroke': '#322319',
+  },
   ':where([data-likec4-color=\'indigo\'])': {
     '--colors-likec4-element-fill': '#6366f1',
     '--colors-likec4-element-stroke': '#4f46e5',
@@ -567,6 +647,14 @@ export const globalCss = {
   ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'indigo\'][data-compound-depth=\'5\'])': {
     '--colors-likec4-element-fill': '#2d2f87',
     '--colors-likec4-element-stroke': '#2f2b73',
+  },
+  ':where([data-likec4-color=\'indigo\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#34369f',
+    '--colors-likec4-element-stroke': '#373287',
+  },
+  ':where([data-mantine-color-scheme="dark"]) :where([data-likec4-color=\'indigo\'][data-compound-depth=\'6\'])': {
+    '--colors-likec4-element-fill': '#2d2e76',
+    '--colors-likec4-element-stroke': '#2e2b65',
   },
 }
 
@@ -1442,12 +1530,6 @@ export const theme = {
           yellow: {
             value: 'var(--mantine-color-yellow-6)',
           },
-        },
-      },
-      likec4: {
-        mixStrokeFill: {
-          description: 'Mix of stroke and fill colors, used for "darker" areas',
-          value: 'color-mix(in srgb, {colors.likec4.element.stroke} 90%, {colors.likec4.element.fill})',
         },
       },
     },

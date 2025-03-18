@@ -16,7 +16,7 @@ export const dialog = css({
   maxHeight: '100vh',
   background: `mantine.colors.defaultBorder/50`,
   shadow: 'xl',
-  border: `0 solid transparent`,
+  border: 'transparent',
   outline: 'none',
   borderRadius: `var(${borderRadius}, 8px)`,
   padding: '6px',

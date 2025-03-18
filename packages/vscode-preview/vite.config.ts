@@ -1,4 +1,4 @@
-import pandaCss from '@pandacss/dev/postcss'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'

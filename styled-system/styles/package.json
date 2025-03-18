@@ -51,11 +51,11 @@
     "./vars": "./vars.ts"
   },
   "dependencies": {
-    "@pandabox/utils": "^0.0.5"
+    "@pandabox/utils": "^0.0.5",
+    "@likec4/style-preset": "workspace:*"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
-    "@likec4/style-preset": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandacss/dev": "catalog:css",

@@ -1,16 +1,9 @@
 @layer reset, base, mantine, xyflow, tokens, recipes, utilities;
 @import "@mantine/core/styles.layer.css";
 @import "@xyflow/react/dist/style.css" layer(xyflow);
-
-*,
-:before,
-:after {
-  box-sizing: border-box;
-  outline: none;
-  border-width: 0;
-  border-style: solid;
-  border-color: transparent;
-}
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
 
 :root {
   --likec4-app-font:

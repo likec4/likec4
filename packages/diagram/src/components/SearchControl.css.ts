@@ -12,6 +12,7 @@ export const root = style({
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
+  borderColor: 'mantine.colors.defaultBorder',
   cursor: 'pointer',
   background: 'mantine.colors.default',
   width: '100%',
@@ -52,8 +53,8 @@ export const root = style({
 export const placeholder = style({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
-  paddingRight: 50,
-  flex: 1,
+  paddingRight: '50px',
+  flex: '1',
 })
 
 export const shortcut = style({
@@ -68,7 +69,7 @@ export const shortcut = style({
     borderColor: 'mantine.colors.gray[2]',
     backgroundColor: 'mantine.colors.gray[2]',
     _notReducedGraphics: {
-      // backgroundColor: `color-mix(in srgb, ${'mantine.colors.gray[2]}, transparent 20%)`',
+      backgroundColor: 'mantine.colors.gray[2]/80',
     },
   },
   _dark: {
