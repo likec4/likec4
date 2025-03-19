@@ -44,7 +44,7 @@ const cssTitle = css({
   color: '[var(--_compound-title-color, {colors.likec4.compound.title})]',
   _light: {
     _compoundTransparent: {
-      color: 'likec4.element.stroke',
+      color: 'likec4.palette.stroke',
     },
   },
   _notReducedGraphics: {

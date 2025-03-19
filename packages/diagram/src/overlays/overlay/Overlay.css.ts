@@ -4,7 +4,7 @@ export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
 const backdropColor = '--backdrop-color'
 
-const borderRadius = '--border-radius'
+const borderRadius = '8px'
 export const dialog = css({
   boxSizing: 'border-box',
   margin: 0,
@@ -18,7 +18,7 @@ export const dialog = css({
   shadow: 'xl',
   border: 'transparent',
   outline: 'none',
-  borderRadius: `var(${borderRadius}, 8px)`,
+  borderRadius: borderRadius,
   padding: '6px',
   // [borderRadius]: '8px',
   // [backdropColor]: '34 34 34',

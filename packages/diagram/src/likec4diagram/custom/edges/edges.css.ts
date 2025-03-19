@@ -13,8 +13,8 @@ export const controlPointsContainer = css({
 })
 
 export const controlPoint = css({
-  fill: `xyedge.stroke`,
-  stroke: `xyedge.stroke`,
+  fill: `likec4.relation.stroke`,
+  stroke: `likec4.relation.stroke`,
   fillOpacity: 0.75,
   strokeWidth: 1,
   cursor: 'grab',

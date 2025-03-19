@@ -24,36 +24,37 @@ export const semanticTokens = defineSemanticTokens({
           _light: 'bilack',
         },
       },
-    },
-    xyedge: {
-      stroke: {
+      background: {
         DEFAULT: {
-          description: 'The stroke color of the XYEdge',
+          description: 'Background color',
           value: {
-            _likec4Color: '{colors.likec4.relation.line}',
-            // _whenHovered: '{colors.xyedge.stroke.selected}',
-            // _whenSelected: '{colors.xyedge.stroke.selected}',
+            base: '{colors.mantine.colors.body}',
           },
         },
-        selected: {
+        pattern: {
+          description: 'Background pattern color',
           value: {
-            _dark: {
-              base: 'white',
-              [':where([data-likec4-color]) &']: 'color-mix(in srgb, {colors.likec4.relation.line}, white 35%)',
-            },
-            // _likec4Color: {
-            //   base: 'color-mix(in srgb, {colors.likec4.relation.line}, black 20%)',
-            //   _dark: 'color-mix(in srgb, {colors.likec4.relation.line}, white 35%)',
-            // },
-            // // base: 'color-mix(in srgb, {colors.likec4.relation.line}, {colors.likec4.mixColor} 35%)',
-            // _light: {
-            //   _likec4Color: 'color-mix(in srgb, {colors.likec4.relation.line}, black 20%)',
-            // },
-            // _dark: {
-            //   _likec4Color: 'color-mix(in srgb, {colors.likec4.relation.line}, white 35%)',
-            // },
-            // },
+            base: '{colors.mantine.colors.dark[5]}',
+            _light: '{colors.mantine.colors.gray[4]}',
           },
+        },
+      },
+      //
+      palette: {
+        DEFAULT: { value: `var(--likec4-palette, 'likec4.primary')` },
+        fill: { value: '{colors.likec4.primary.element.fill}' },
+        stroke: { value: '{colors.likec4.primary.element.stroke}' },
+        hiContrast: { value: '{colors.likec4.primary.element.hiContrast}' },
+        loContrast: { value: '{colors.likec4.primary.element.loContrast}' },
+      },
+      relation: {
+        stroke: {
+          DEFAULT: { value: '{colors.likec4.gray.relation.stroke}' },
+          selected: { value: '{colors.likec4.gray.relation.stroke.selected}' },
+        },
+        label: {
+          DEFAULT: { value: '{colors.likec4.gray.relation.label}' },
+          bg: { value: '{colors.likec4.gray.relation.label.bg}' },
         },
       },
     },

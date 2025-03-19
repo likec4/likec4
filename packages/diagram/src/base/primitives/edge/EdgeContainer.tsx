@@ -1,5 +1,5 @@
 import { type DiagramEdge, invariant } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
@@ -26,6 +26,7 @@ export function EdgeContainer({
   className,
   component = 'g',
   data: {
+    color = 'gray',
     hovered: isHovered = false,
     active: isActive = false,
     dimmed: isDimmed = false,
@@ -36,11 +37,14 @@ export function EdgeContainer({
 }: EdgeContainerProps) {
   const props = {
     className: cx(
+      css({
+        likec4RelationPalette: color,
+      }),
       styles.edgeVars,
       styles.edgeContainer,
       className,
     ),
-    'data-likec4-color': data.color ?? 'gray',
+    'data-likec4-color': color,
     'data-edge-dir': data.dir ?? 'forward',
     'data-edge-active': isActive,
     'data-edge-animated': isActive,

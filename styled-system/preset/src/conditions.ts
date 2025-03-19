@@ -5,8 +5,8 @@ type ExtendableConditions = NonNullable<Config['conditions']>
 
 export const conditions = {
   extend: {
-    light: ':where([data-mantine-color-scheme="light"]) &',
-    dark: ':where([data-mantine-color-scheme="dark"]) &',
+    light: '[data-mantine-color-scheme="light"] &',
+    dark: '[data-mantine-color-scheme="dark"] &',
 
     reducedGraphics: ':where(.likec4-diagram-root:is([data-likec4-reduced-graphics="true"])) &',
     notReducedGraphics: ':where(.likec4-diagram-root:is(:not([data-likec4-reduced-graphics]))) &',

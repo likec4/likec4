@@ -3,6 +3,7 @@ import { theme as generated } from './generated'
 import { actionBtn } from './recipes'
 import { semanticTokens } from './theme.semantic-tokens'
 import { textStyles } from './theme.text-styles'
+import { tokens } from './theme.tokens'
 
 type ExtendableTheme = NonNullable<Config['theme']>
 
@@ -10,34 +11,11 @@ export const theme: ExtendableTheme = {
   ...generated,
   extend: {
     textStyles,
+    tokens,
+    semanticTokens,
     recipes: {
       actionBtn,
     },
-
-    tokens: {
-      lineHeights: {
-        '1': {
-          value: '1',
-        },
-      },
-      borders: {
-        'transparent': {
-          value: '0px solid transparent',
-        },
-        'default_0px': {
-          value: '0px solid {colors.mantine.colors.defaultBorder}',
-        },
-      },
-      colors: {
-        // For typesafety, otherwise wrap with []
-        'transparent': {
-          value: 'transparent',
-        },
-      },
-    },
-
-    semanticTokens,
-
     keyframes: {
       'indicatorStrokeOpacity': {
         '0%': {
@@ -59,12 +37,10 @@ export const theme: ExtendableTheme = {
     animationStyles: {
       'indicator': {
         value: {
-          _notReducedGraphics: {
-            animationDuration: '1s',
-            animationIterationCount: 'infinite',
-            animationDirection: 'alternate',
-            animationName: 'indicatorStrokeOpacity',
-          },
+          animationDuration: '1s',
+          animationIterationCount: 'infinite',
+          animationDirection: 'alternate',
+          animationName: 'indicatorStrokeOpacity',
         },
       },
     },

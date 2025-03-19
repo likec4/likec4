@@ -1,6 +1,4 @@
 import { css } from '@likec4/styles/css'
-import type { ColorToken } from '@likec4/styles/tokens'
-import { xyvars } from './xyvars'
 // import { xyvars } from '@likec4/styles/vars'
 
 //   reactFlow,
@@ -18,11 +16,11 @@ import { xyvars } from './xyvars'
 // export const xyvars = {
 //   edge: {
 //     stroke: {
-//       var: '--xy-edge-stroke',
+//       var: edgeStroke,
 //       ref: 'var(--xy-edge-stroke)',
 //     },
 //     strokeSelected: {
-//       var: '--xy-edge-stroke-selected',
+//       var: edgeStrokeSelected,
 //       ref: 'var(--xy-edge-stroke-selected)',
 //     },
 //     labelColor: {
@@ -30,7 +28,7 @@ import { xyvars } from './xyvars'
 //       ref: 'var(--xy-edge-label-color)',
 //     },
 //     labelBgColor: {
-//       var: '--xy-edge-label-background-color',
+//       var: labelBg,
 //       ref: 'var(--xy-edge-label-background-color)',
 //     },
 //     strokeWidth: {
@@ -66,29 +64,32 @@ const isSelected = '.react-flow__edge.selected'
 //           },
 //         },
 //       },
+const edgeStroke = '--xy-edge-stroke'
+const edgeStrokeSelected = '--xy-edge-stroke-selected'
+const labelColor = '--xy-edge-label-color'
+const labelBg = '--xy-edge-label-background-color'
 
 export const edgeVars = css({
   // ''
   // color: 'likec4.'
-  ['--xy-edge-stroke']: '{colors.xyedge.stroke}',
-  // ['--xy-edge-stroke']: '{colors.likec4.relation.line}',
-  ['--xy-edge-stroke-selected']: '{colors.xyedge.stroke.selected}',
-  ['--xy-edge-label-color']: '{colors.likec4.relation.label}',
-  ['--xy-edge-label-background-color']: '{colors.likec4.relation.label.bg}',
+  [edgeStroke]: '{colors.likec4.relation.stroke}',
+  [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
+  [labelColor]: '{colors.likec4.relation.label}',
+  [labelBg]: '{colors.likec4.relation.label.bg}',
   ['--xy-edge-stroke-width']: '3',
-  // '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
-  //   ['--xy-edge-stroke']: 'var(--xy-edge-stroke-selected)',
-  //   ['--xy-edge-stroke-width']: '3',
-  // },
+  '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
+    [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
+    ['--xy-edge-stroke-width']: '3',
+  },
   // _whenSelected: {
-  //   ['--xy-edge-stroke']: xyvars.edge.strokeSelected.ref,
+  //   [edgeStroke]: xyvars.edge.strokeSelected.ref,
   // },
   _light: {
-    [xyvars.edge.labelColor.var]: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
-    [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 40%)`,
+    [labelColor]: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
+    [labelBg]: `{colors.likec4.relation.label.bg/60}`,
   },
   _dark: {
-    [xyvars.edge.labelBgColor.var]: `color-mix(in srgb, {colors.likec4.relation.label.bg}, transparent 50%)`,
+    [labelBg]: `{colors.likec4.relation.label.bg/50}`,
   },
   // },
   // globalStyle(`${edgeVars}:is([data-likec4-hovered='true'],[data-edge-active='true'])`, {
@@ -193,8 +194,8 @@ export const edgePathBg = css({
 
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = css({
-  fill: xyvars.edge.stroke.ref as ColorToken,
-  stroke: xyvars.edge.stroke.ref as ColorToken,
+  fill: `[var(${edgeStroke})]`,
+  stroke: `[var(${edgeStroke})]`,
 })
 
 // const strokeKeyframes = keyframes({
@@ -251,8 +252,8 @@ export const actionBtn = css({
   opacity: 0.75,
   transition: 'fast',
   // backgroundColor: aiBg.ref,
-  [aiBg.var]: '{colors.likec4.relation.label.bg}',
-  '--ai-hover': `color-mix(in srgb , {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 10%)`,
+  [aiBg.var]: 'var(--xy-edge-label-background-color)',
+  '--ai-hover': `color-mix(in srgb , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
   '--ai-size': `var(--ai-size-sm)`,
   '--ai-radius': `var(--mantine-radius-sm)`,
   _hover: {

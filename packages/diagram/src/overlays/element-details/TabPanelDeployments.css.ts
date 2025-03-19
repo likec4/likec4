@@ -1,9 +1,8 @@
 import { css, cx } from '@likec4/styles/css'
-import { rem } from '@mantine/core'
 
 export const treeNode = css({
   [`&[data-level='1']`]: {
-    marginBottom: rem(16),
+    marginBottom: 'sm',
   },
 })
 
@@ -44,9 +43,9 @@ export const instanceLabel = cx(
     width: '100%',
     justifyContent: 'stretch',
     flexWrap: 'nowrap',
-    height: rem(36),
-    paddingInlineStart: rem(16),
-    paddingInlineEnd: rem(10),
+    height: '36px',
+    paddingInlineStart: '16px',
+    paddingInlineEnd: '10px',
     borderRadius: 'sm',
     alignItems: 'center',
     color: 'mantine.colors.gray[7]',

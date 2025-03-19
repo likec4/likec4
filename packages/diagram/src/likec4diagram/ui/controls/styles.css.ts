@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-import { rem } from '@mantine/core'
 
 export const navigationButtons = css({
   gap: 'micro',
@@ -48,7 +47,7 @@ export const autolayoutButton = css({
   textAlign: 'center',
   fontWeight: 500,
   padding: '4px 6px',
-  fontSize: rem(11),
+  fontSize: '11px',
   zIndex: 1,
 })
 

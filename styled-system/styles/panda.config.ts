@@ -1,4 +1,3 @@
-// import likec4preset from '@likec4/style-preset'
 import { defineConfig } from './dev'
 
 export default defineConfig({

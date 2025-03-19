@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-import { rem } from '@mantine/core'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
@@ -235,7 +234,7 @@ export const propertiesGrid = css({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: `${rem(20)} ${rem(16)}`,
+  gap: `[20px 16px]`,
   alignItems: 'baseline',
   justifyItems: 'stretch',
 })

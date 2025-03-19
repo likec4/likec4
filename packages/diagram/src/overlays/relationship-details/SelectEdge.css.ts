@@ -7,7 +7,7 @@ const edgeEnpoint = css.raw({
   '& .mantine-Text-root': {
     fontSize: 'xs',
     fontWeight: 500,
-    lineHeight: '',
+    lineHeight: '1.1',
   },
 })
 
@@ -43,13 +43,6 @@ export const edgeLabel = cx(
       lineHeight: 1,
       color: 'mantine.colors.dimmed',
     },
-    // gridArea: '2 / 1 / 3 / 3',
-    // selectors: {
-    //   '&:last-child': {
-    //     borderBottom: 'none',
-    //     marginBottom: 0
-    //   }
-    // }
   }),
 )
 
@@ -75,21 +68,6 @@ export const edgeGrid = css({
   gridAutoRows: 'min-content max-content',
   gap: 0,
   alignItems: 'stretch',
-  // gridTemplateColumns: 'auto',
-  // gridTemplateRows: `
-  //   [row1-start] "source target" auto [row1-end]
-  //   [row2-start] "label label" 50px [row2-end]
-  // `,
-  // gridTemplateAreas: `
-  //   "source target"
-  //   "label label"
-  // `
-
-  // gridTemplateRows: `
-  //   repeat(auto-fill, [row1-start] "source target" 20px [row1-end]
-  //                     [row2-start] "label" . 20px [row2-end])
-  // `,
-  // gridAutoFlow: 'row',
 })
 
 export const edgeDataGrid = css({

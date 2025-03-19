@@ -36,10 +36,10 @@ export const endpoint = css({
   whiteSpace: 'nowrap',
   padding: '2px 5px',
   borderRadius: 2,
-  background: `likec4.element.fill/55`,
+  background: `likec4.palette.fill/55`,
   lineHeight: 1.1,
   _dark: {
-    color: 'likec4.element.loContrast',
+    color: 'likec4.palette.loContrast',
   },
 })
 

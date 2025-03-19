@@ -1,23 +1,18 @@
 import { css, sva } from '@likec4/styles/css'
-// import { calc } from '@vanilla-extract/css-utils'
-// import { vars } from '../../../theme-vars'
-// import { iconSize, paddingSize, textSize } from './vars.css'
 
 export const iconSize = '--icon-size'
-
-// const _textAlign = cssVar.create('text-align')
-// const textAlign = _textAlign.ref as CssProperties['textAlign']
 
 const title = css.raw({
   textStyle: 'likec4.node.primary',
   flex: '0 0 auto',
   textAlign: 'center',
-  color: 'likec4.element.hiContrast',
+  color: 'likec4.palette.hiContrast',
 })
 
 const description = css.raw({
   flex: '0 1 auto',
   textStyle: 'likec4.node.secondary',
+  color: 'likec4.palette.loContrast',
   textAlign: 'center',
   textOverflow: 'ellipsis',
   overflow: 'hidden',
@@ -29,6 +24,7 @@ const description = css.raw({
 const technology = css.raw({
   flex: '0 0 auto',
   textStyle: 'likec4.node.secondary',
+  color: 'likec4.palette.loContrast',
   fontSize: `calc(var(--likec4-text-size) * 0.635)`,
   lineHeight: 1.125,
   textAlign: 'center',
@@ -45,7 +41,7 @@ const technology = css.raw({
   },
 })
 
-const varIconSize = `var(${iconSize}, 40px)`
+const varIconSize = `var(${iconSize})`
 export const elementIcon = css({
   flex: `0 0 ${varIconSize}`,
   height: varIconSize,
@@ -108,10 +104,22 @@ export const elementTitle = sva({
         paddingTop: '32px',
         paddingBottom: '28px',
       },
+
+      _shapeSizeXs: {
+        [iconSize]: '24px',
+      },
+      _shapeSizeSm: {
+        [iconSize]: '36px',
+      },
+      _shapeSizeMd: {
+        [iconSize]: '60px',
+      },
       _shapeSizeLg: {
+        [iconSize]: '82px',
         gap: '16px',
       },
       _shapeSizeXl: {
+        [iconSize]: '90px',
         gap: '16px',
       },
     },

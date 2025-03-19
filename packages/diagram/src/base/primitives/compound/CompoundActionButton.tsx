@@ -27,10 +27,10 @@ export function CompoundActionButton({
           top: '5px',
           left: '2px',
           // Panda did not merge this conditions
-          [`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"][data-likec4-hovered="true"]) &`]:
-            {
-              ['--_color']: '{colors.likec4.element.loContrast}',
-            },
+          // [`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"][data-likec4-hovered="true"]) &`]:
+          //   {
+          //     ['--_color']: '{colors.likec4.palette.loContrast}',
+          //   },
         }),
         hiddenIfZoomTooSmall,
         'compound-action',
@@ -55,15 +55,15 @@ export function CompoundActionButton({
             'nodrag nopan',
             actionBtn(),
             css({
-              color: '[var(--_compound-title-color)]',
+              // color: '[var(--_compound-title-color)]',
               _whenHovered: {
                 transitionDelay: '150ms',
               },
               _light: {
                 _compoundTransparent: {
                   opacity: 0.85,
-                  '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 70%)`,
-                  '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 10%)`,
+                  '--_node-hovered': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 70%)`,
+                  '--_btn-hovered': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 10%)`,
                 },
                 _whenHovered: {
                   opacity: 1,

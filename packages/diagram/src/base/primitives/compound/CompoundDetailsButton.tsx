@@ -27,7 +27,7 @@ export function CompoundDetailsButton({
           top: '[2px]',
           right: '[2px]',
           // [`:where([data-mantine-color-scheme='light']) [data-compound-transparent="true"] &:hover`]: {
-          //   ['--_compound-title-color']: '{colors.likec4.element.loContrast}',
+          //   ['--_compound-title-color']: '{colors.likec4.palette.loContrast}',
           // },
           // },
         }),

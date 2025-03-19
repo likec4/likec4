@@ -1,10 +1,10 @@
 import { css } from '@likec4/styles/css'
 
 export const content = css({
-  paddingTop: '[120px]',
+  paddingTop: '120px',
   position: 'relative',
   zIndex: '1',
-  border: '[1px solid]',
+  border: '1px solid',
   borderColor: 'mantine.colors.dimmed',
 })
 

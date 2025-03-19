@@ -5,7 +5,7 @@ import {
   DefaultShapeSize,
   DefaultTextSize,
 } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
@@ -84,6 +84,9 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         component={m.div}
         ref={ref}
         className={cx(
+          css({
+            likec4Palette: data.color,
+          }),
           styles.container,
           'likec4-element-node',
         )}

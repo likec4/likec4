@@ -3,20 +3,36 @@ import { css, sva } from '@likec4/styles/css'
 // import { calc } from '@vanilla-extract/css-utils'
 // import { easings, vars, whereLight, whereNotReducedGraphics } from '../../../theme-vars'
 
-export const _compoundOpacity = '--_compound-opacity'
-const compoundOpacity = `var(${_compoundOpacity})`
-// const varCompoundOpacity = createVar('compound-opacity')
+// export const _compoundOpacity = '--_compound-opacity'
+// const compoundOpacity = `var(${_compoundOpacity})`
+// // const varCompoundOpacity = createVar('compound-opacity')
 
-export const _borderTransparency = '--_compound-border-transparency'
-const borderTransparency = `var(${_borderTransparency})`
+// export const _borderTransparency = '--_compound-border-transparency'
+// const borderTransparency = `var(${_borderTransparency})`
 
-export const _borderWidth = '--_border-width'
+// export const _borderWidth =
 // const borderWidth = `var(${_borderWidth})`
-const borderWidth = `3px`
-export const _borderRadius = '--_border-radius'
-const borderRadius = `var(${_borderRadius})`
+export const borderWidth = {
+  var: '--_border-width',
+  ref: 'var(--_border-width, 2px)',
+} as const
 
-export const container = css({
+export const borderRadius = {
+  var: '--_border-radius',
+  ref: 'var(--_border-radius, 4px)',
+} as const
+
+export const compoundOpacity = {
+  var: '--_compound-opacity',
+  ref: 'var(--_compound-opacity, 1)',
+} as const
+
+export const borderOpacityPercent = {
+  var: '--_border-opacity-percent',
+  ref: 'var(--_border-opacity-percent, 100%)',
+} as const
+
+const root = css.raw({
   position: 'relative',
   width: '100%',
   height: '100%',
@@ -24,7 +40,7 @@ export const container = css({
   margin: '0',
   border: 'transparent',
   _before: {
-    borderRadius: borderRadius,
+    borderRadius: borderRadius.ref,
     content: '" "',
     position: 'absolute',
     top: '0',
@@ -32,10 +48,9 @@ export const container = css({
     width: '100%',
     height: '100%',
     border: 'transparent',
-    background: 'likec4.element.fill',
+    background: 'likec4.palette.fill',
     backgroundClip: 'padding-box',
   },
-  ['--_compound-title-color']: '{colors.likec4.element.loContrast}',
   _notReducedGraphics: {
     boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     _before: {
@@ -54,19 +69,17 @@ export const container = css({
   '&[data-compound-transparent="true"]': {
     boxShadow: 'none !important',
     _before: {
-      opacity: compoundOpacity,
-      borderWidth: `calc(${borderWidth} - 1px)`,
+      opacity: compoundOpacity.ref,
+      borderWidth: `calc(${borderWidth.ref} - 1px)`,
     },
     _light: {
-      ['--_compound-title-color']: '{colors.likec4.element.stroke}',
+      ['--_compound-title-color']: '{colors.likec4.palette.stroke}',
     },
   },
 })
 
-const _borderColor = '--_compound-border-color'
-const borderColor = `var(${_borderColor}, {colors.likec4.element.stroke})`
-export const compoundBorder = css({
-  borderRadius: borderRadius,
+const compoundBorder = css.raw({
+  borderRadius: borderRadius.ref,
   padding: '0',
   margin: '0',
   transition: `all 250ms {easings.inOut}`,
@@ -77,48 +90,43 @@ export const compoundBorder = css({
   width: '100%',
   height: '100%',
   pointerEvents: 'none',
-  background: '[transparent]',
+  background: 'transparent',
   borderStyle: 'dashed',
-  borderWidth: borderWidth,
-  borderColor: `[color-mix(in srgb , ${borderColor}, transparent var(${_borderTransparency}, 5%))]`,
-  _compoundTransparent: {
-    _dark: {
-      [_borderColor]: `color-mix(in srgb, {colors.likec4.compound.title} 25%, {colors.likec4.element.stroke})`,
-    },
+  borderWidth: `[${borderWidth.ref}]`,
+  borderColor: `[color-mix(in srgb, {colors.likec4.palette.stroke} ${borderOpacityPercent.ref}, transparent)]`,
+})
+
+const indicatorSvg = css.raw({
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  width: '100%',
+  height: '100%',
+  pointerEvents: 'none',
+  overflow: 'visible',
+  visibility: 'hidden',
+  ':where(.react-flow__node.selected:not(:focus-visible)) &': {
+    visibility: 'visible',
   },
 })
 
-export const indicator = sva({
-  slots: ['root', 'rect'],
-  className: 'compound-indicator',
+const indicatorRect = css.raw({
+  stroke: `[color-mix(in srgb, {colors.likec4.palette.stroke} 60%, {colors.likec4.palette.hiContrast})]`,
+  strokeWidth: '4',
+  fill: '[none]',
+  animationStyle: 'indicator',
+  _light: {
+    stroke: `[color-mix(in srgb, {colors.likec4.palette.stroke} 80%, {colors.likec4.palette.hiContrast})]`,
+  },
+})
+
+export const compound = sva({
+  slots: ['root', 'compoundBorder', 'indicatorSvg', 'indicatorRect'],
+  className: 'compound-container',
   base: {
-    root: {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      width: '100%',
-      height: '100%',
-      pointerEvents: 'none',
-      overflow: 'visible',
-      visibility: 'hidden',
-      ':where(.react-flow__node.selected:not(:focus-visible)) &': {
-        visibility: 'visible',
-      },
-    },
-    rect: {
-      stroke: `[color-mix(in srgb, {colors.likec4.element.stroke} 30%, {colors.likec4.element.loContrast})]`,
-      strokeWidth: '3',
-      fill: '[none]',
-      animationStyle: 'indicator',
-      _light: {
-        stroke: `[color-mix(in srgb, {colors.likec4.element.stroke} 80%, {colors.likec4.mixColor})]`,
-      },
-      // ':where(.react-flow__node.selected:not(:focus-visible)) &': {
-      //   strokeWidth: '6',
-      // },
-      // ':where(.react-flow__node:focus-within:not(.selected)) &': {
-      //   strokeWidth: '3',
-      // },
-    },
+    root,
+    compoundBorder,
+    indicatorSvg,
+    indicatorRect,
   },
 })

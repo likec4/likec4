@@ -23,21 +23,21 @@ export const container = style({
     pointerEvents: 'all',
   },
 
-  _whenDimmed: {
-    opacity: 0.25,
-    transition: `opacity 400ms {easings.inOut}, filter 500ms {easings.inOut}`,
-    transitionDelay: '50ms',
-    grayscale: 0.85,
-    blur: '2px',
-    // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  },
-  _whenDimmedImmediate: {
-    opacity: 0.25,
-    grayscale: 0.85,
-    blur: '2px',
-    // transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
-    // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  },
+  // _whenDimmed: {
+  //   opacity: 0.25,
+  //   transition: `opacity 400ms {easings.inOut}, filter 500ms {easings.inOut}`,
+  //   transitionDelay: '50ms',
+  //   grayscale: 0.85,
+  //   blur: '2px',
+  //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  // },
+  // _whenDimmedImmediate: {
+  //   opacity: 0.25,
+  //   grayscale: 0.85,
+  //   blur: '2px',
+  //   // transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
+  //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  // },
   _reducedGraphics: {
     _after: {
       display: 'none',
@@ -48,35 +48,6 @@ export const container = style({
     cursor: 'pointer',
   },
 })
-
-// globalStyle(`${container}`, {
-//   vars: {
-//     [textSize]: rem(defaultTheme.textSizes.md),
-//     [paddingSize]: rem(defaultTheme.spacing.md),
-//     [iconSize]: '60px',
-//   },
-// })
-
-// globalStyle(`${container}[data-likec4-shape-size="xs"]`, {
-//   vars: {
-//     [iconSize]: '24px',
-//   },
-// })
-// globalStyle(`${container}[data-likec4-shape-size="sm"]`, {
-//   vars: {
-//     [iconSize]: '36px',
-//   },
-// })
-// globalStyle(`${container}[data-likec4-shape-size="lg"]`, {
-//   vars: {
-//     [iconSize]: '82px',
-//   },
-// })
-// globalStyle(`${container}[data-likec4-shape-size="xl"]`, {
-//   vars: {
-//     [iconSize]: '90px',
-//   },
-// })
 
 // const sizes = ['xs', 'sm', 'lg', 'xl'] as const
 // sizes.forEach((size) => {

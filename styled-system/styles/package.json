@@ -64,8 +64,7 @@
       "require": "./dist/recipes/index.mjs",
       "import": "./dist/recipes/index.mjs"
     },
-    "./dev": "./dev.ts",
-    "./vars": "./vars.ts"
+    "./dev": "./dev.ts"
   },
   "dependencies": {
     "@pandabox/utils": "^0.0.5"

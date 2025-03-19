@@ -26,7 +26,6 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   const dialogRef = useRef<HTMLDialogElement>(null)
   const isClosingRef = useRef(false)
 
-  // Move dialog to the top of the DOM
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
     () => {
@@ -37,14 +36,6 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
     [],
     50,
   )
-  // const close = useCallbackRef(() => {
-  //   if (isOpenedRef.current) {
-  //     isOpenedRef.current = false
-  //     requestAnimationFrame(() => {
-  //       onClose()
-  //     })
-  //   }
-  // })
 
   useLayoutEffect(() => {
     const cancel = (e: Event) => {
@@ -59,6 +50,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
 
   useTimeoutEffect(() => {
     if (!dialogRef.current?.open) {
+      // Move dialog to the top of the DOM
       dialogRef.current?.showModal()
     }
     setOpened(true)
@@ -73,17 +65,12 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
         [styles.backdropOpacity]: '5%',
         opacity: 0.85,
         translateY: 12,
-        // opacity: 02.8,
       }}
       animate={{
         [styles.backdropBlur]: '6px',
         [styles.backdropOpacity]: '50%',
-        // [backdropOpacity]: '60%',
         translateY: 0,
         opacity: 1,
-        // transition: {
-        //   delay: 0.25,
-        // }
       }}
       exit={{
         opacity: 0,

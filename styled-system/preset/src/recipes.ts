@@ -4,14 +4,15 @@ export const actionBtn = defineRecipe({
   className: 'action-btn',
   description: 'The styles for the Action Buttons',
   base: {
+    // colorPalette: 'var(--likec4-palette)',
     pointerEvents: 'all',
     cursor: 'pointer',
-    color: '[var(--_color, {colors.likec4.element.loContrast})]',
+    color: 'likec4.palette.loContrast',
     opacity: 0.75,
-    '--_color': 'var(--_compound-title-color, {colors.likec4.element.loContrast})',
-    '--_idle': `color-mix(in srgb , {colors.likec4.element.fill},  transparent 99%)`,
-    '--_node-hovered': `color-mix(in srgb , {colors.likec4.element.fill} 65%, {colors.likec4.element.stroke})`,
-    '--_btn-hovered': `color-mix(in srgb , {colors.likec4.element.fill} 50%, {colors.likec4.element.stroke})`,
+    // '--_color': '{colors.colorPalette.loContrast}',
+    '--_idle': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 99%)`,
+    '--_node-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 65%, {colors.likec4.palette.stroke})`,
+    '--_btn-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 50%, {colors.likec4.palette.stroke})`,
 
     '--ai-bg': `var(--_idle)`,
     background: `var(--ai-bg)`,
@@ -21,7 +22,7 @@ export const actionBtn = defineRecipe({
       '--ai-bg': `var(--_node-hovered)`,
     },
     _hover: {
-      color: '[var(--_color, {colors.likec4.element.hiContrast})]',
+      color: 'likec4.palette.hiContrast',
       '--ai-bg': `var(--_btn-hovered)`,
     },
     _reducedGraphics: {
@@ -63,9 +64,6 @@ export const actionBtn = defineRecipe({
     size: ['md'],
     radius: ['md'],
     variant: ['*'],
-    conditions: [
-      'whenHovered',
-      'compoundTransparent',
-    ],
+    conditions: ['*'],
   }],
 })

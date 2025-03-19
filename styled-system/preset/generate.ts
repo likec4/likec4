@@ -1,18 +1,33 @@
-import { defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
+import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
 import { DEFAULT_THEME, rem } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
-import type { Config, SystemStyleObject } from '@pandacss/dev'
+import type { Config } from '@pandacss/dev'
 import PresetPanda from '@pandacss/preset-panda'
 import JSON5 from 'json5'
-import { scale, toHex } from 'khroma'
+import { mix, scale, toHex } from 'khroma'
 import { writeFileSync } from 'node:fs'
-import { capitalize, concat, entries, fromEntries, keys, map, mapKeys, mapToObj, mapValues, pipe } from 'remeda'
+import {
+  capitalize,
+  entries,
+  flatMap,
+  fromKeys,
+  join,
+  keys,
+  map,
+  mapKeys,
+  mapToObj,
+  mapValues,
+  pipe,
+  range,
+  times,
+} from 'remeda'
 const mantineVars = themeToVars({})
 
 const PandaTheme = PresetPanda.theme
 const { colors: _, ...pandaTokens } = PandaTheme.tokens
 // omitting stack her
 type MantineColors = typeof mantineVars.colors
+type MantineColorValues = typeof mantineVars.colors.primaryColors
 type ExtendableTheme = NonNullable<Config['theme']>
 
 const mapcolorToVar = <C extends keyof MantineColors>(color: C) => ({
@@ -23,183 +38,106 @@ const mapcolorToVar = <C extends keyof MantineColors>(color: C) => ({
   [key in C]: { value: string }
 })
 
-const mapcolors = (color: keyof MantineColors, prefix = color) =>
-  pipe(
-    mantineVars.colors[color] as typeof mantineVars.colors.blue,
-    entries(),
-    map(([prop, value]) => {
-      const key = prop.match(/^\d$/) ? `[${prop}]` : `.${prop}`
-      return [`${prefix}${key}`, { value }] as [string, { value: string }]
-    }),
-    concat([[`${prefix}`, { value: mantineVars.colors[color]![6] }]] as [[string, { value: string }]]),
-    fromEntries(),
-  )
-
-const generateLikeC4SemanticTokens = () => ({
-  element: {
-    fill: {
-      description: 'Element fill color',
-      value: {
-        // base: `${defaultTheme.elements.primary.fill}`,
-        ...mapToObj(ThemeColors, (color) => [
-          '_likec4Color' + capitalize(color),
-          {
-            base: defaultTheme.elements[color].fill,
-          },
-        ]),
-      },
+const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
+  const color = mantineVars.colors[colorkey] as MantineColorValues
+  return ({
+    [prefix]: {
+      DEFAULT: { value: color[6] },
+      filled: { value: color.filled },
+      filledHover: { value: color.filledHover },
+      light: { value: color.light },
+      lightHover: { value: color.lightHover },
+      lightColor: { value: color.lightColor },
+      outline: { value: color.outline },
+      outlineHover: { value: color.outlineHover },
     },
-    stroke: {
-      description: 'Element stroke color',
-      value: {
-        // base: `${defaultTheme.elements.primary.stroke}`,
-        ...mapToObj(ThemeColors, (color) => [
-          '_likec4Color' + capitalize(color),
-          {
-            base: defaultTheme.elements[color].stroke,
-          },
-        ]),
-      },
-    },
-    hiContrast: {
-      description: 'Element hiContrast text color (title)',
-      value: {
-        // base: `${defaultTheme.elements.primary.hiContrast}`,
-        ...mapToObj(ThemeColors, (color) => [
-          '_likec4Color' + capitalize(color),
-          defaultTheme.elements[color].hiContrast,
-        ]),
-      },
-    },
-    loContrast: {
-      description: 'Element loContrast text color (description)',
-      value: {
-        // base: `${defaultTheme.elements.primary.loContrast}`,
-        ...mapToObj(ThemeColors, (color) => [
-          '_likec4Color' + capitalize(color),
-          defaultTheme.elements[color].loContrast,
-        ]),
-      },
-    },
-  },
-  compound: {
-    title: {
-      description: 'Compound title color',
-      value: {
-        base: `{colors.likec4.element.loContrast}`,
-      },
-    },
-  },
-  relation: {
-    line: {
-      description: 'Relationship line color',
-      value: {
-        // base: `${defaultTheme.relationships.gray.lineColor}`,
-        ...mapToObj(ThemeColors, (color) => [
-          '_likec4Color' + capitalize(color),
-          defaultTheme.relationships[color].lineColor,
-        ]),
-      },
-    },
-    label: {
-      DEFAULT: {
-        description: 'Relationship label color',
-        value: {
-          // base: `${defaultTheme.relationships.gray.labelColor}`,
-          ...mapToObj(ThemeColors, (color) => [
-            '_likec4Color' + capitalize(color),
-            defaultTheme.relationships[color].labelColor,
-          ]),
-        },
-      },
-      bg: {
-        description: 'Relationship label background color',
-        value: {
-          base: `${defaultTheme.relationships.gray.labelBgColor}`,
-          ...mapToObj(ThemeColors, (color) => [
-            '_likec4Color' + capitalize(color),
-            defaultTheme.relationships[color].labelBgColor,
-          ]),
-        },
-      },
-    },
-  },
-})
-
-const generateCompoundColors = () => {
-  const compoundDarkColor = (color: string, depth: number) =>
+    ...mapToObj(range(0, 9), idx => [
+      `${prefix}[${idx}]`,
+      // @ts-ignore
+      { value: color[idx] },
+    ]),
+  })
+}
+// pipe(
+//   mantineVars.colors[color] as typeof mantineVars.colors.blue,
+//   entries(),
+//   map(([prop, value]) => {
+//     const key = prop.match(/^\d$/) ? `[${prop}]` : `.${prop}`
+//     return [`${prefix}${key}`, { value }] as [string, { value: string }]
+//   }),
+//   concat([[`${prefix}`, { value: mantineVars.colors[color]![6] }]] as [[string, { value: string }]]),
+//   fromEntries(),
+// )
+const MAX_DEPTH = 5
+const generateCompoundColors = (color: ThemeColor, depth: number) => {
+  const compoundDarkColor = (color: string) =>
     toHex(
       scale(color, {
         l: -22 - 5 * depth,
         s: -10 - 6 * depth,
       }),
     )
-  const compoundLightColor = (color: string, depth: number) =>
+  const compoundLightColor = (color: string) =>
     toHex(
       scale(color, {
         l: -20 - 3 * depth,
         s: -3 - 6 * depth,
       }),
     )
-
-  const classes = new Map<string, SystemStyleObject>()
-  for (const color of keys(defaultTheme.elements)) {
-    classes.set(`:where([data-likec4-color='${color}'])`, {
-      '--colors-likec4-element-fill': defaultTheme.elements[color].fill,
-      '--colors-likec4-element-stroke': defaultTheme.elements[color].stroke,
-      // '--colors-likec4-element-hiContrast': defaultTheme.elements[color].hiContrast,
-      // '--colors-likec4-element-loContrast': defaultTheme.elements[color].loContrast,
-      // '--colors-likec4-relation-line': defaultTheme.relationships[color].lineColor,
-      // '--colors-likec4-relation-label': defaultTheme.relationships[color].labelColor,
-      // '--colors-likec4-relation-label-bg': defaultTheme.relationships[color].labelBgColor,
-    })
-    for (let depth = 1; depth <= 6; depth++) {
-      classes.set(`:where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`, {
-        '--colors-likec4-element-fill': compoundLightColor(defaultTheme.elements[color].fill, depth),
-        '--colors-likec4-element-stroke': compoundLightColor(defaultTheme.elements[color].stroke, depth),
-      })
-      classes.set(
-        `:where([data-mantine-color-scheme="dark"]) :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
-        {
-          '--colors-likec4-element-fill': compoundDarkColor(defaultTheme.elements[color].fill, depth),
-          '--colors-likec4-element-stroke': compoundDarkColor(defaultTheme.elements[color].stroke, depth),
-        },
-      )
-    }
+  return {
+    hiContrast: { value: `{colors.likec4.${color}.element.hiContrast}` },
+    loContrast: { value: `{colors.likec4.${color}.element.loContrast}` },
+    fill: {
+      value: {
+        base: compoundLightColor(defaultTheme.elements[color].fill),
+        _dark: compoundDarkColor(defaultTheme.elements[color].fill),
+      },
+    },
+    stroke: {
+      value: {
+        base: compoundLightColor(defaultTheme.elements[color].stroke),
+        _dark: compoundDarkColor(defaultTheme.elements[color].stroke),
+      },
+    },
   }
+}
 
-  return fromEntries([...classes.entries()])
+const generateRelationColors = (color: ThemeColor) => ({
+  relation: {
+    stroke: {
+      DEFAULT: { value: defaultTheme.relationships[color].lineColor },
+      selected: {
+        value: {
+          base: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 85)),
+          _dark: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
+        },
+      },
+    },
+    label: {
+      DEFAULT: { value: defaultTheme.relationships[color].labelColor },
+      bg: { value: defaultTheme.relationships[color].labelBgColor },
+    },
+  },
+})
+
+const generateLikeC4ElementColor = (color: ThemeColor) => {
+  return {
+    element: {
+      fill: { value: defaultTheme.elements[color].fill },
+      stroke: { value: defaultTheme.elements[color].stroke },
+      hiContrast: { value: defaultTheme.elements[color].hiContrast },
+      loContrast: { value: defaultTheme.elements[color].loContrast },
+    },
+  }
 }
 
 const likec4theme = {
-  ...PandaTheme,
   breakpoints: {
     ...DEFAULT_THEME.breakpoints,
   },
   tokens: {
-    ...pandaTokens as any,
-    sizes: {},
-    containerNames: {},
     spacing: {
       ...mapValues(DEFAULT_THEME.spacing, (value) => ({ value })),
-      '0': {
-        value: '0px',
-      },
-      '2': {
-        value: '2px',
-      },
-      '4': {
-        value: '4px',
-      },
-      'micro': {
-        value: '4px',
-      },
-      '2xs': {
-        value: '8px',
-      },
-      '8': {
-        value: '8px',
-      },
       likec4: {
         ...mapValues(defaultTheme.spacing, (value, key) => ({
           description: `LikeC4 style spacing: ${key}`,
@@ -207,23 +145,14 @@ const likec4theme = {
         })),
       },
     },
-    // spacing: {
-    //   mantine: {
-    //     spacing: {
-    //       ...mapValues(mantine.spacing, (value) => ({ value })),
-    //     },
-    //   },
-    // },
-    // sizes
     radii: {
       ...mapValues(mantineVars.radius, (value) => ({ value })),
     },
     fontSizes: {
-      // ...pandaTokens.fontSizes,
-      ...mapValues(DEFAULT_THEME.fontSizes, (value) => ({ value })),
-      '2xs': {
+      'xxs': {
         value: rem(10),
       },
+      ...mapValues(DEFAULT_THEME.fontSizes, (value) => ({ value })),
       likec4: {
         ...mapValues(defaultTheme.textSizes, (value, key) => ({
           description: `LikeC4 style text size: ${key}`,
@@ -233,26 +162,6 @@ const likec4theme = {
     },
     lineHeights: {
       ...mapValues(DEFAULT_THEME.lineHeights, (value) => ({ value })),
-    },
-    fonts: {
-      ...pandaTokens.fonts,
-      body: {
-        value: 'var(--likec4-app-font, var(--likec4-app-font-default))',
-      },
-      likec4: {
-        DEFAULT: {
-          value: 'var(--likec4-app-font, var(--likec4-app-font-default))',
-        },
-        element: {
-          value: 'var(--likec4-element-font, {fonts.likec4})',
-        },
-        compound: {
-          value: 'var(--likec4-compound-font, {fonts.likec4})',
-        },
-        relation: {
-          value: 'var(--likec4-relation-font, {fonts.likec4})',
-        },
-      },
     },
     colors: {
       mantine: {
@@ -268,7 +177,6 @@ const likec4theme = {
           ...mapcolorToVar('default'),
           ...mapcolorToVar('error'),
           ...mapcolorToVar('placeholder'),
-          ...mapcolorToVar('primary'),
           ...mapcolors('gray'),
           ...mapcolors('dark'),
           ...mapcolors('orange'),
@@ -276,21 +184,7 @@ const likec4theme = {
           ...mapcolors('red'),
           ...mapcolors('green'),
           ...mapcolors('yellow'),
-          // ...mapcolors('green'),
-          // ...mapcolors('red'),
-          // ...mapcolors('teal'),
-          // ...mapcolors('pink'),
-          // ...mapcolors('yellow'),
         },
-      },
-    },
-    easings: {
-      ...pandaTokens.easings,
-      out: {
-        value: 'cubic-bezier(0, 0, 0.40, 1)',
-      },
-      inOut: {
-        value: 'cubic-bezier(0.50, 0, 0.2, 1)',
       },
     },
     shadows: {
@@ -303,9 +197,7 @@ const likec4theme = {
         background: {
           DEFAULT: {
             description: 'Background color',
-            value: {
-              base: '{colors.mantine.colors.body}',
-            },
+            value: '{colors.mantine.colors.body}',
           },
           pattern: {
             description: 'Background pattern color',
@@ -315,56 +207,49 @@ const likec4theme = {
             },
           },
         },
-        // primary: generateLikeC4SemanticTokens('blue'),
-        // secondary: generateLikeC4SemanticTokens('indigo'),
-        // muted: generateLikeC4SemanticTokens('slate'),
-        // ...generateLikeC4SemanticTokens('primary'),
-        ...generateLikeC4SemanticTokens(),
+        ...fromKeys(ThemeColors, (color) => ({
+          ...generateLikeC4ElementColor(color),
+          ...generateRelationColors(color),
+        })),
+        ...mapToObj(range(1, MAX_DEPTH + 1), (depth) => [
+          `compound${depth}`,
+          fromKeys(ThemeColors, (color) => ({
+            ...generateCompoundColors(color, depth),
+          })),
+        ]),
       },
     },
   },
 } satisfies ExtendableTheme
 
-// const staticCssIncludeColors = flatMap(LikeC4Colors, (color) => [
-//   `likec4.${color}.element.fill`,
-//   `likec4.${color}.element.stroke`,
-//   `likec4.${color}.element.hiContrast`,
-//   `likec4.${color}.element.loContrast`,
-//   `likec4.${color}.compound.title`,
-//   `likec4.${color}.relation.line`,
-//   `likec4.${color}.relation.label`,
-//   `likec4.${color}.relation.label.bg`,
-// ])
-// staticCssIncludeColors.push(...[
-//   'mantine.white',
-//   'mantine.text',
-//   'mantine.body',
-//   'mantine.dimmed',
-//   'mantine.defaultBorder',
-//   'mantine.defaultColor',
-//   'mantine.defaultHover',
-//   'mantine.default',
-//   'mantine.error',
-//   'mantine.placeholder',
-// ])
-
 const ts = `// This file is auto-generated by scripts/generate.ts
+
+export const themeColors = [
+${map(ThemeColors, (color) => `  '${color}' as const`).join(',\n')}
+]
+
+export const compoundColors = [
+${
+  pipe(
+    ThemeColors,
+    flatMap((color) => times(MAX_DEPTH, d => `${color}.${d + 1}`)),
+    map((color) => `  '${color}' as const`),
+    join(',\n'),
+  )
+}
+]
 
 export const staticCssIncludeProps = ${
   JSON5.stringify(
     {
-      fill: [
-        'likec4.element.fill',
-      ],
-      stroke: [
-        'likec4.element.stroke',
-        'likec4.relation.line',
+      colorPalette: [
+        ...map(ThemeColors, (color) => `likec4.${color}`),
+        ...pipe(
+          ThemeColors,
+          flatMap((color) => times(MAX_DEPTH, d => `likec4.compound${d + 1}.${color}`)),
+        ),
       ],
       color: [
-        'likec4.element.hiContrast',
-        'likec4.element.loContrast',
-        'likec4.compound.title',
-        'likec4.relation.label',
         'mantine.colors.text',
         'mantine.colors.dimmed',
         'mantine.colors.defaultColor',
@@ -375,7 +260,6 @@ export const staticCssIncludeProps = ${
         'likec4.background',
         'mantine.colors.body',
         'mantine.colors.defaultHover',
-        'likec4.relation.label.bg',
       ],
     },
     null,
@@ -386,10 +270,10 @@ export const staticCssIncludeProps = ${
 export const conditions = ${
   JSON5.stringify(
     {
-      ...mapToObj(ThemeColors, (color) => [
-        'likec4Color' + capitalize(color),
-        `:where([data-likec4-color='${color}']) &`,
-      ]),
+      // ...mapToObj(ThemeColors, (color) => [
+      //   'likec4Color' + capitalize(color),
+      //   `:where([data-likec4-color='${color}']) &`,
+      // ]),
       ...pipe(
         defaultTheme.sizes,
         mapValues((_, key) => `:where([data-likec4-shape-size='${key}']) &`),
@@ -420,7 +304,7 @@ export const globalCss = ${
           '--likec4-spacing': `{spacing.likec4.${size}}`,
         },
       ]),
-      ...generateCompoundColors(),
+      // ...generateCompoundColors(),
     },
     null,
     2,

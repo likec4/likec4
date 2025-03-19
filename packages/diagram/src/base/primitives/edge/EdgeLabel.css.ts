@@ -1,5 +1,4 @@
 import { css, sva } from '@likec4/styles/css'
-import { xyvars } from './xyvars'
 // import { xyvars } from '@likec4/styles/vars'
 // import { createVar, fallbackVar, globalStyle } from '@vanilla-extract/css'
 // import {
@@ -80,7 +79,7 @@ export const labelsva = sva({
       cursor: 'pointer',
       width: 'auto',
       height: 'auto',
-      background: xyvars.edge.labelBgColor.ref,
+      background: '[var(--xy-edge-label-background-color)]',
       color: '[var(--xy-edge-label-color)]',
       border: '0px solid transparent',
       _notReducedGraphics: {
@@ -121,7 +120,7 @@ export const labelsva = sva({
       background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 5%)]`,
       fontVariantNumeric: 'tabular-nums',
       _dark: {
-        _likec4ColorGray: {
+        [':where([data-likec4-color="gray"]) &']: {
           background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 15%)]`,
         },
       },

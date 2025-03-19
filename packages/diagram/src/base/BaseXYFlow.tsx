@@ -1,3 +1,4 @@
+import { css, cx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
@@ -5,13 +6,11 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import clsx from 'clsx'
 import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useIsReducedGraphics } from '../hooks/useReducedGraphics'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
-import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -52,6 +51,31 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
   >
 >
 
+const cssTransparentBg = css({
+  background: 'transparent !important',
+  ['--xy-background-color']: 'transparent !important',
+})
+
+const cssReactFlow = css({
+  // '@supports': {
+  //   // https://wojtek.im/journal/targeting-safari-with-css-media-query
+  //   '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
+  //     // TODO: this workaround disables animations in Safari (to improve performance)
+  //     vars: {
+  //       [vars.safariAnimationHook]: '',
+  //     },
+  //   },
+  // },
+  ['--xy-background-color']: '{colors.likec4.background}',
+  ['--xy-background-pattern-color']: '{colors.likec4.background.pattern}',
+  '& .react-flow__pane': {
+    WebkitUserSelect: 'none',
+  },
+  '& .react-flow__attribution': {
+    display: 'none',
+  },
+})
+
 export const BaseXYFlow = <
   NodeType extends Base.Node,
   EdgeType extends Base.Edge,
@@ -86,10 +110,10 @@ export const BaseXYFlow = <
       colorMode={colorMode}
       nodes={nodes}
       edges={edges}
-      className={clsx(
-        css.cssReactFlow,
-        pannable !== true && css.cssDisablePan,
-        background === 'transparent' && css.cssTransparentBg,
+      className={cx(
+        cssReactFlow,
+        background === 'transparent' && cssTransparentBg,
+        cssTransparentBg,
         className,
       )}
       {...isZoomTooSmall && {

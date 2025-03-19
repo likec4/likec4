@@ -70,7 +70,7 @@ export const textStyles = defineTextStyles({
           textWrap: 'balance',
           whiteSpace: 'preserve-breaks',
           // workaround type error
-          ...({ color: 'likec4.element.hiContrast' }),
+          ...({ color: 'likec4.palatte.hiContrast' }),
         },
       },
       secondary: {
@@ -83,7 +83,7 @@ export const textStyles = defineTextStyles({
           textWrap: 'pretty',
           whiteSpace: 'preserve-breaks',
           // workaround type error
-          ...({ color: 'likec4.element.loContrast' }),
+          ...({ color: 'likec4.palatte.loContrast' }),
           // color: 'likec4.element.loContrast',
           // whiteSpaceCollapse: 'preserve-breaks',
         },

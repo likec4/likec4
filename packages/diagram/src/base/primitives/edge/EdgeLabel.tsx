@@ -1,5 +1,5 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent, Text } from '@mantine/core'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { type PropsWithChildren, forwardRef } from 'react'
@@ -52,6 +52,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
         active: isActive = false,
         dimmed: isDimmed = false,
         labelBBox,
+        color = 'gray',
         ...data
       },
     },
@@ -85,12 +86,15 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
       <EdgeLabelRenderer>
         <Box
           className={cx(
+            css({
+              likec4RelationPalette: color,
+            }),
             edgeVars,
             classes.root,
             'nodrag nopan',
             className,
           )}
-          data-likec4-color={data.color ?? 'gray'}
+          data-likec4-color={color}
           data-edge-active={isActive}
           data-edge-animated={isActive}
           data-likec4-hovered={isHovered}

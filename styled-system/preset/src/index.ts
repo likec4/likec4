@@ -1,62 +1,26 @@
 import { definePreset } from '@pandacss/dev'
-import { preset as PandaPreset } from '@pandacss/preset-panda'
 import { conditions } from './conditions'
-import { globalCss } from './generated'
+import { compoundColors, globalCss, staticCssIncludeProps, themeColors } from './generated'
 import { theme } from './theme'
+import { likec4Palette, likec4RelationPalette } from './utilities'
 
 export default definePreset({
   name: 'likec4',
   // Whether to use css reset
-  presets: [
-    PandaPreset as any,
-  ],
+  // presets: [
+  //   PandaPreset as any,
+  // ],
   globalVars: {
-    // Override mantine font-size
-    '--text-fz': {
-      syntax: '<length>',
+    '--likec4-palette': {
+      syntax: staticCssIncludeProps.colorPalette.join(' | '),
+      initialValue: 'likec4.primary',
     },
     '--likec4-text-size': {
       syntax: '<length> | <percentage>',
-      inherits: true,
     },
     '--likec4-spacing': {
       syntax: '<length> | <percentage>',
-      inherits: true,
     },
-    '--opacity': {
-      syntax: '<number>',
-    },
-    // '--xy-edge-stroke': {
-    //   syntax: '<color>', // Added syntax for '--xy-edge-'
-    // },
-    // '--xy-edge-stroke-selected': {
-    //   syntax: '<color>', // Added syntax for '--xy-edge-stroke-selected'
-    // },
-    // '--xy-edge-label-color': {
-    //   syntax: '<color>', // Added syntax for '--xy-edge-label-color'
-    // },
-    // '--xy-edge-label-background-color': {
-    //   syntax: '<color>', // Added syntax for '--xy-edge-label-background-color'
-    // },
-    // '--xy-edge-stroke-width': {
-    //   syntax: '<length>', // Added syntax for '--xy-edge-stroke-width'
-    // },
-    // '--mix-color': {
-    //   syntax: '<color>',
-    // },
-    // // '--action-btn-bg': {
-    //   syntax: '<color>',
-    // '--likec4-app-font': {
-    //   syntax: '*',
-    //   initialValue: 'var(--likec4-default-font)',
-    // },
-    // likec4: {
-    //   background: {
-    //     pattern: {
-    //       color: mantine.colors.gray[4],
-    //     },
-    //   },
-    // },
   },
   globalCss: {
     // '@supports ((hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none))': {
@@ -95,7 +59,7 @@ export default definePreset({
       grayscale: 0.85,
       blur: '2px',
     },
-    ':where(.likec4-diagram-root .react-flow__edgelabel-renderer) [data-likec4-dimmed="true"]': {
+    '.likec4-diagram-root .react-flow__edgelabel-renderer [data-likec4-dimmed="true"]': {
       opacity: 0.25,
       filter: 'auto',
       // transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
@@ -121,27 +85,23 @@ export default definePreset({
       {
         mixBlendMode: 'plus-lighter',
       },
-    // globalStyle(`${reactFlow} `, {
-    //
-    // })
-    // globalStyle(`${whereLight} ${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
-    //   mixBlendMode: 'screen',
-    // })
-
     ...globalCss,
   },
   staticCss: {
     extend: {
       themes: ['light', 'dark'],
-      // css: [{
-      //   properties: staticCssIncludeProps,
-      //   conditions: ['notReducedGraphics'],
-      //   // }, {
-      //   //   properties: {
-      //   //     background: ['xyedge.label.bg'],
-      //   //   },
-      //   //   conditions: ['*'],
-      // }],
+      css: [
+        {
+          properties: staticCssIncludeProps,
+          conditions: ['light', 'dark'],
+        },
+        {
+          properties: {
+            likec4Palette: [...themeColors, ...compoundColors],
+            likec4RelationPalette: themeColors,
+          },
+        },
+      ],
     },
   },
 
@@ -163,6 +123,8 @@ export default definePreset({
           }
         },
       },
+      likec4Palette,
+      likec4RelationPalette,
     },
   },
 

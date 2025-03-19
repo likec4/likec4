@@ -59,7 +59,7 @@
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler deploy -c dist/playground/wrangler.json",
+      "command": "wrangler deploy -e production -c dist/playground/wrangler.json",
       "env": {
         "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"

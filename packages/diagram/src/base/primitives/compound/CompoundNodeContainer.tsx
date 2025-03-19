@@ -1,5 +1,5 @@
 import type { DiagramNode } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { m } from 'framer-motion'
@@ -23,8 +23,6 @@ type CompoundNodeContainerProps =
     nodeProps: NodeProps<RequiredData>
   }>
 
-const indicator = styles.indicator()
-
 export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundNodeContainerProps>(
   forwardRef<HTMLDivElement, CompoundNodeContainerProps>(({
     nodeProps: {
@@ -34,6 +32,8 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         dimmed: isDimmed = false,
         ...data
       },
+      width = 100,
+      height = 100,
     },
     children,
     style,
@@ -51,10 +51,16 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
 
     const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
 
-    const MAX_TRANSPARENCY = 65
-    const borderTransparency = clamp(MAX_TRANSPARENCY - 0.8 * opacity * MAX_TRANSPARENCY, {
+    const MIN_OPACITY = 65
+    const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * opacity, {
       min: 0,
-      max: MAX_TRANSPARENCY,
+      max: 100 - MIN_OPACITY,
+    })
+
+    const classes = styles.compound()
+    const depth = clamp(data.depth ?? 1, {
+      min: 1,
+      max: 5,
     })
 
     return (
@@ -62,7 +68,10 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         ref={ref}
         component={m.div}
         className={cx(
-          styles.container,
+          css({
+            likec4Palette: `${data.color}.${depth}`,
+          }),
+          classes.root,
           // css({
           //   _before: {
           //     content: '""',
@@ -73,31 +82,31 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         initial={false}
         data-likec4-hovered={isHovered}
         data-likec4-color={data.color}
-        data-compound-depth={data.depth ?? 1}
+        data-compound-depth={depth}
         data-compound-transparent={isTransparent}
         data-likec4-dimmed={isDimmed}
         data-likec4-shape={data.shape}
         style={{
           ...style,
-          [styles._compoundOpacity]: opacity,
-          [styles._borderWidth]: `3px`,
-          [styles._borderRadius]: `6px`,
-          [styles._borderTransparency]: `${borderTransparency}%`,
+          [styles.compoundOpacity.var]: opacity,
+          [styles.borderWidth.var]: `3px`,
+          [styles.borderRadius.var]: `6px`,
+          [styles.borderOpacityPercent.var]: `${borderOpacity}%`,
         }}
         {...rest}
       >
-        {isTransparent && !isSelected && data.style.border !== 'none' && (
+        {isTransparent && data.style.border !== 'none' && (
           <div
-            className={styles.compoundBorder}
+            className={classes.compoundBorder}
             style={{
               borderStyle: data.style.border ?? 'dashed',
             }}
           />
         )}
         {isSelected && (
-          <svg className={indicator.root}>
+          <svg className={classes.indicatorSvg}>
             <rect
-              className={indicator.rect}
+              className={classes.indicatorRect}
               x={0}
               y={0}
               width={'100%'}
