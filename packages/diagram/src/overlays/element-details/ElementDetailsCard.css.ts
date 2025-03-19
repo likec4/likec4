@@ -29,13 +29,13 @@ export const card = css({
   justifyContent: 'stretch',
   backgroundColor: 'mantine.colors.body',
   backgroundImage:
-    `linear-gradient(180deg, {colors.likec4.element.fill}, {colors.likec4.element.fill} 4px, transparent 4px)`,
-  borderTopColor: 'likec4.element.fill',
+    `linear-gradient(180deg, {colors.likec4.palette.fill}, {colors.likec4.palette.fill} 4px, transparent 4px)`,
+  borderTopColor: 'likec4.palette.fill',
   _dark: {
     backgroundColor: `mantine.colors.dark[6]`,
     backgroundImage: `
-          linear-gradient(180deg, color-mix(in srgb, {colors.likec4.element.fill} 15%, transparent), transparent 80px),
-          linear-gradient(180deg, {colors.likec4.element.fill}, {colors.likec4.element.fill} 4px, transparent 4px)
+          linear-gradient(180deg, color-mix(in srgb, {colors.likec4.palette.fill} 15%, transparent), transparent 80px),
+          linear-gradient(180deg, {colors.likec4.palette.fill}, {colors.likec4.palette.fill} 4px, transparent 4px)
         `,
   },
   '& .react-flow__attribution': {

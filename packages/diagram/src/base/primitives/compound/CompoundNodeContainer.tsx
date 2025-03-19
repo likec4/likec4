@@ -32,8 +32,6 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         dimmed: isDimmed = false,
         ...data
       },
-      width = 100,
-      height = 100,
     },
     children,
     style,

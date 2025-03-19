@@ -12,7 +12,7 @@ export const panel = css({
   left: '1rem',
   margin: 0,
   pointerEvents: 'none',
-  '& :where(button, .action-icon, [role="dialog"])': {
+  '& :where(button, .action-icon, [role=\'dialog\'])': {
     pointerEvents: 'all',
   },
   ['& .action-icon']: {

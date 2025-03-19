@@ -9,7 +9,7 @@ import {
   isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import {
   type TextProps,
   ActionIcon,
@@ -263,7 +263,12 @@ export function ElementDetailsCard({
           withBorder
           shadow="md"
           component={m.div}
-          className={styles.card}
+          className={cx(
+            css({
+              likec4Palette: nodeModel?.color ?? elementModel.color,
+            }),
+            styles.card,
+          )}
           initial={{
             top,
             left,
@@ -290,8 +295,7 @@ export function ElementDetailsCard({
             // `style` prop in Mantine doesn't accept motion values
             width: width as any,
             height: height as any,
-          }}
-          data-likec4-color={nodeModel?.color ?? elementModel.color}>
+          }}>
           <Box
             className={styles.cardHeader}
             onPointerDown={e => controls.start(e)}>

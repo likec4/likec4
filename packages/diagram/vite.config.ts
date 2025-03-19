@@ -19,9 +19,10 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       emptyOutDir: isProduction,
-      cssCodeSplit: false,
+      cssCodeSplit: true,
       cssMinify: true,
       minify: false,
+      target: 'esnext',
       lib: {
         entry: 'src/index.ts',
         formats: ['es'],
@@ -30,7 +31,10 @@ export default defineConfig(({ mode }) => {
         },
       },
       rollupOptions: {
-        input: ['src/index.ts'],
+        input: [
+          'src/index.ts',
+          'src/bundle/index.ts',
+        ],
         experimentalLogSideEffects: true,
         external: [
           ...Object.keys(packageJson.dependencies || {}),

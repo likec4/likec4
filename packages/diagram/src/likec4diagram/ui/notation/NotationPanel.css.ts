@@ -73,8 +73,8 @@ export const elementNotation = css({
 })
 
 export const shapeSvg = css({
-  fill: 'likec4.element.fill',
-  stroke: 'likec4.element.stroke',
+  fill: 'likec4.palette.fill',
+  stroke: 'likec4.palette.stroke',
   strokeWidth: 1,
   overflow: 'visible',
   width: '100%',

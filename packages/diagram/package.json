@@ -12,6 +12,7 @@
   },
   "files": [
     "dist",
+    "bundle",
     "src",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
@@ -27,8 +28,15 @@
         "default": "./dist/index.js"
       }
     },
-    "./package.json": "./package.json",
-    "./diagram.css": "./dist/diagram.css"
+    "./bundle": {
+      "sources": "./src/bundle/index.ts",
+      "default": {
+        "types": "./bundle/index.ts.d.ts",
+        "import": "./bundle/index.js",
+        "default": "./bundle/index.js"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "packageManager": "pnpm@10.6.2",
   "scripts": {
@@ -36,6 +44,7 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "build:watch": "wireit",
+    "bundle": "vite build -c vite-bundle.config.ts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g \"dist/*\" .tsbuildinfo",
     "test": "vitest run --no-isolate"
@@ -64,6 +73,7 @@
     "framer-motion": "^12.4.10",
     "nanostores": "0.11.4",
     "react-error-boundary": "catalog:react",
+    "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
     "xstate": "^5.19.2"
@@ -75,9 +85,10 @@
     "react-dom": "catalog:react"
   },
   "devDependencies": {
-    "@pandacss/dev": "catalog:css",
     "@likec4/style-preset": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@pandabox/unplugin": "^0.2.1",
+    "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
     "@types/bezier-js": "^4.1.3",
     "@types/d3-shape": "^3.1.7",

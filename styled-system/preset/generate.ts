@@ -51,7 +51,7 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
       outline: { value: color.outline },
       outlineHover: { value: color.outlineHover },
     },
-    ...mapToObj(range(0, 9), idx => [
+    ...mapToObj(range(0, 10), idx => [
       `${prefix}[${idx}]`,
       // @ts-ignore
       { value: color[idx] },
