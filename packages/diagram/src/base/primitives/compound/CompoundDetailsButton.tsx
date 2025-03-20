@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import { m } from 'framer-motion'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
@@ -19,6 +20,9 @@ export function CompoundDetailsButton({
   icon,
   onClick,
 }: CompoundDetailsButtonProps) {
+  // Debounce first "isHovered"
+  const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
+  const isHoverDebounced = debounced[0] && isHovered
   return (
     <Box
       className={cx(
@@ -26,40 +30,48 @@ export function CompoundDetailsButton({
           position: 'absolute',
           top: '[2px]',
           right: '[2px]',
-          // [`:where([data-mantine-color-scheme='light']) [data-compound-transparent="true"] &:hover`]: {
-          //   ['--_compound-title-color']: '{colors.likec4.palette.loContrast}',
-          // },
-          // },
         }),
         hiddenIfZoomTooSmall,
         'details-button',
       )}
       onClick={stopPropagation}>
       <m.div
-        layout
         initial={false}
         animate={{
-          scale: isHovered ? 1.2 : 1,
+          scale: isHoverDebounced ? 1.2 : 1,
+          opacity: isHoverDebounced ? 1 : 0.6,
         }}
         whileHover={{
-          scale: 1.3,
+          scale: 1.4,
         }}
         whileTap={{ scale: 1 }}
       >
         <ActionIcon
           className={cx(
             'nodrag nopan',
-            actionBtn({ variant: 'transparent' }),
             css({
-              opacity: 0.4,
+              transitionDuration: 'normal',
+              // Debounce CSS transition
+              transitionDelay: {
+                base: isHovered && !isHoverDebounced ? '0.25s' : '0s',
+                _hover: '0s',
+              },
+              '[data-compound-title-inverse] &': {
+                _light: {
+                  '--actionbtn-color': '{colors.likec4.palette.stroke}',
+                  '--actionbtn-color-hovered': '{colors.likec4.palette.stroke}',
+                  '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
+                  '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
+                },
+              },
               _whenHovered: {
-                opacity: 0.8,
-                transitionDelay: '150ms',
+                opacity: .75,
               },
               _hover: {
                 opacity: 1,
               },
             }),
+            actionBtn({ variant: 'transparent' }),
           )}
           onClick={onClick}
           onDoubleClick={stopPropagation}>

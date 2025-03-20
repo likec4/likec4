@@ -21,7 +21,7 @@ export const semanticTokens = defineSemanticTokens({
         description: 'Color to be used in color-mix',
         value: {
           base: 'white',
-          _light: 'black',
+          _light: 'bilack',
         },
       },
       background: {
@@ -41,7 +41,7 @@ export const semanticTokens = defineSemanticTokens({
       },
       //
       palette: {
-        DEFAULT: { value: `var(--likec4-palette, 'likec4.primary')` },
+        DEFAULT: { value: `var(--likec4-palette,'likec4.primary')` },
         fill: { value: '{colors.likec4.primary.element.fill}' },
         stroke: { value: '{colors.likec4.primary.element.stroke}' },
         hiContrast: { value: '{colors.likec4.primary.element.hiContrast}' },

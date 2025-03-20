@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
 import { m } from 'framer-motion'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
@@ -19,18 +20,16 @@ export function CompoundActionButton({
   icon,
   onClick,
 }: CompoundActionButtonProps) {
+  // Debounce first "isHovered"
+  const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
+  const isHoverDebounced = debounced[0] && isHovered
   return (
     <Box
       className={cx(
         css({
           position: 'absolute',
           top: '5px',
-          left: '2px',
-          // Panda did not merge this conditions
-          // [`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"][data-likec4-hovered="true"]) &`]:
-          //   {
-          //     ['--_color']: '{colors.likec4.palette.loContrast}',
-          //   },
+          left: '4px',
         }),
         hiddenIfZoomTooSmall,
         'compound-action',
@@ -38,38 +37,37 @@ export function CompoundActionButton({
       <m.div
         initial={false}
         animate={{
-          scale: isHovered ? 1.2 : 1,
-          x: isHovered ? -1 : 0,
-          opacity: isHovered ? 1 : 0.8,
-          // y: isHovered ? -1 : 0,
+          scale: isHoverDebounced ? 1.2 : 1,
+          x: isHoverDebounced ? -1 : 0,
+          y: isHoverDebounced ? -1 : 0,
         }}
         whileHover={{
-          scale: 1.35,
-          x: -1,
-          // y: 1,
+          scale: 1.4,
+          x: -2,
+          y: -2,
         }}
         whileTap={{ scale: 1 }}
       >
         <ActionIcon
           className={cx(
             'nodrag nopan',
-            actionBtn(),
             css({
-              // color: '[var(--_compound-title-color)]',
-              _whenHovered: {
-                transitionDelay: '150ms',
+              transitionDuration: 'normal',
+              transitionDelay: {
+                base: isHovered && !isHoverDebounced ? '0.25s' : '0s',
+                _hover: '0s',
               },
-              _light: {
-                _compoundTransparent: {
-                  opacity: 0.85,
-                  '--_node-hovered': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 70%)`,
-                  '--_btn-hovered': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 10%)`,
-                },
-                _whenHovered: {
-                  opacity: 1,
+              '[data-compound-title-inverse] &': {
+                _light: {
+                  '--actionbtn-color': '{colors.likec4.palette.stroke}',
+                  '--actionbtn-color-hovered': '{colors.likec4.palette.stroke}',
+                  '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
+                  '--actionbtn-bg-hovered': `{colors.likec4.palette.fill/50}`,
+                  '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
                 },
               },
             }),
+            actionBtn(),
           )}
           // Otherwise node receives click event and is selected
           onClick={onClick}

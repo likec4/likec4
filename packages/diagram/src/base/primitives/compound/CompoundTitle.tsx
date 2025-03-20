@@ -9,11 +9,12 @@ type Data = Pick<
   | 'color'
   | 'title'
   | 'icon'
+  | 'style'
 >
 
 type CompoundTitleProps = NodeProps<Data>
 
-const cssCompoundTitle = css({
+const titleContainer = css({
   position: 'absolute',
   display: 'flex',
   alignItems: 'center',
@@ -34,20 +35,21 @@ const cssCompoundTitle = css({
   },
 })
 
-const cssTitle = css({
+const titleText = css({
   flex: '1',
   fontFamily: 'likec4.compound',
   fontWeight: 600,
   fontSize: '15px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  // TODO
-  // color: '[var(--_compound-title-color, {colors.likec4.compound.title})]',
-  _light: {
-    _compoundTransparent: {
+  color: 'likec4.palette.loContrast',
+  // _light: {
+  '[data-compound-title-inverse] &': {
+    _light: {
       color: 'likec4.palette.stroke',
     },
   },
+  // },
   _notReducedGraphics: {
     mixBlendMode: 'screen',
   },
@@ -91,11 +93,11 @@ export function CompoundTitle({ id, data }: CompoundTitleProps) {
   return (
     <Box
       className={cx(
-        cssCompoundTitle,
+        titleContainer,
         'likec4-compound-title',
       )}>
       {elementIcon}
-      <Text className={cssTitle} truncate="end">
+      <Text className={titleText} truncate="end">
         {data.title}
       </Text>
     </Box>

@@ -1,54 +1,11 @@
 import { css, sva } from '@likec4/styles/css'
-// import { xyvars } from '@likec4/styles/vars'
-// import { createVar, fallbackVar, globalStyle } from '@vanilla-extract/css'
-// import {
-//   easings,
-//   mantine,
-//   transitions,
-//   vars,
-//   whereLight,
-//   whereNotReducedGraphics,
-//   xyvars,
-// } from '../../../theme-vars'
-// import { edgeVars, mixColor } from './edge.css'
 
 const labelBorderRadius = '4px'
-const stepEdgeNumber = css({
-  alignSelf: 'stretch',
-  flex: '0 0 auto',
-  fontWeight: 600,
-  fontSize: '14px',
-  lineHeight: '1',
-  padding: '5px 5px',
-  textAlign: 'center',
-  minWidth: '22px',
-  borderTopLeftRadius: labelBorderRadius,
-  borderBottomLeftRadius: labelBorderRadius,
-  backgroundColor: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 5%)]`,
-  fontVariantNumeric: 'tabular-nums',
-  // selectors: {
-  //   [`${whereDark} :where([data-likec4-color="gray"]) &`]: {
-  //     backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`,
-  //   },
-  //   [`:where([data-edge-active='true'], [data-edge-hovered="true"]) &`]: {
-  //     transition: transitions.fast,
-  //     backgroundColor: 'transparent',
-  //   },
-  // },
-})
-
-// export const varLabelX = createVar('label-x')
-// export const varLabelY = createVar('label-y')
-
-// globalStyle(`${edgeLabel}:has(${stepEdgeNumber}) ${edgeLabelText}`, {
-//   padding: '2px 5px 4px 2px',
-// })
 
 export const edgeNoteCloseButton = css({
   position: 'absolute',
   top: 4,
   right: 4,
-  // zIndex: 9,
 })
 
 export const edgeNoteText = css({
@@ -117,16 +74,14 @@ export const labelsva = sva({
       minWidth: '22px',
       borderTopLeftRadius: labelBorderRadius,
       borderBottomLeftRadius: labelBorderRadius,
-      background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 5%)]`,
+      background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 10%)]`,
       fontVariantNumeric: 'tabular-nums',
-      _dark: {
-        [':where([data-likec4-color="gray"]) &']: {
+      // _dark: {
+      [':where([data-likec4-color="gray"]) &']: {
+        _dark: {
           background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 15%)]`,
         },
       },
-      //  [`${whereDark} :where([data-likec4-color="gray"]) &`]: {
-      //     backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`,
-      //   },
     },
     labelContents: {
       display: 'contents',
@@ -138,10 +93,8 @@ export const labelsva = sva({
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '14px',
       lineHeight: '1.185',
-      // color: xyvars.edge.labelColor.ref,
     },
     labelTechnology: {
-      // color: xyvars.edge.labelColor.ref,
       textAlign: 'center',
       whiteSpaceCollapse: 'preserve-breaks',
       fontSize: '11px',
@@ -155,11 +108,14 @@ export const labelsva = sva({
       true: {
         wrapper: {
           flexDirection: 'row',
-          padding: '0',
-          gap: '0',
+          gap: '4px',
+          padding: '0px',
+        },
+        labelContents: {
+          padding: '2px 5px 4px 0px',
         },
         labelText: {
-          padding: '2px 5px 4px 2px',
+          padding: '2px 6px 4px 0px',
         },
       },
     },

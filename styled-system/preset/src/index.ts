@@ -12,14 +12,19 @@ export default definePreset({
   // ],
   globalVars: {
     '--likec4-palette': {
-      syntax: staticCssIncludeProps.colorPalette.join(' | '),
+      syntax: '*',
+      inherits: false,
       initialValue: 'likec4.primary',
     },
     '--likec4-text-size': {
-      syntax: '<length> | <percentage>',
+      syntax: '*',
+      inherits: false,
+      initialValue: '',
     },
     '--likec4-spacing': {
-      syntax: '<length> | <percentage>',
+      syntax: '*',
+      inherits: false,
+      initialValue: '',
     },
   },
   globalCss: {
@@ -83,7 +88,7 @@ export default definePreset({
       },
     ':where([data-mantine-color-scheme="light"]) .likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
       {
-        mixBlendMode: 'plus-lighter',
+        mixBlendMode: 'normal',
       },
     ...globalCss,
   },

@@ -1,7 +1,6 @@
 import type { DiagramNode } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
@@ -39,15 +38,15 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
   }, ref) => {
     const isReducedGraphics = useIsReducedGraphics()
     const isTransparent = isNumber(data.style.opacity) && data.style.opacity < 100
-    let _opacity = clamp((data.style.opacity ?? 100) / 100, {
+    let opacity = clamp((data.style.opacity ?? 100) / 100, {
       min: 0,
       max: 1,
     })
     if (isTransparent && isHovered && !isReducedGraphics) {
-      _opacity = Math.min(_opacity + 0.08, 1)
+      opacity = Math.min(opacity + 0.08, 1)
     }
 
-    const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
+    // const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
 
     const MIN_OPACITY = 65
     const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * opacity, {
@@ -76,9 +75,14 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         data-likec4-hovered={isHovered}
         data-likec4-color={data.color}
         data-compound-depth={depth}
-        data-compound-transparent={isTransparent}
-        data-likec4-dimmed={isDimmed}
         data-likec4-shape={data.shape}
+        mod={{
+          'compound-transparent': isTransparent,
+          'compound-title-inverse': opacity < 0.6,
+          ...(isDimmed !== false && {
+            'likec4-dimmed': isDimmed,
+          }),
+        }}
         style={{
           ...style,
           [styles.compoundOpacity.var]: opacity,

@@ -7,37 +7,47 @@ export const actionBtn = defineRecipe({
     // colorPalette: 'var(--likec4-palette)',
     pointerEvents: 'all',
     cursor: 'pointer',
-    color: 'likec4.palette.loContrast',
+    color: 'var(--actionbtn-color)',
     opacity: 0.75,
-    // '--_color': '{colors.colorPalette.loContrast}',
-    '--_idle': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 99%)`,
-    '--_node-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 65%, {colors.likec4.palette.stroke})`,
-    '--_btn-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 50%, {colors.likec4.palette.stroke})`,
+    // transition: 'fast',
+    // transitionDelay: '.15s',
+    // transitionTimingFunction: 'ease-in',
 
-    '--ai-bg': `var(--_idle)`,
+    '--actionbtn-color': '{colors.likec4.palette.loContrast}',
+    '--actionbtn-color-hovered': '{colors.likec4.palette.loContrast}',
+    '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
+
+    '--actionbtn-bg-idle': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 99%)`,
+    '--actionbtn-bg-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 65%, {colors.likec4.palette.stroke})`,
+    '--actionbtn-bg-hovered-btn':
+      `color-mix(in srgb , {colors.likec4.palette.fill} 50%, {colors.likec4.palette.stroke})`,
+
+    '--ai-bg': `var(--actionbtn-bg-idle)`,
+
     background: `var(--ai-bg)`,
-    boxShadow: '1px 1px 3px 0px transparent',
+
     _whenHovered: {
       opacity: 1,
-      '--ai-bg': `var(--_node-hovered)`,
+      color: 'var(--actionbtn-color-hovered)',
+      '--ai-bg': `var(--actionbtn-bg-hovered)`,
     },
     _hover: {
-      color: 'likec4.palette.hiContrast',
-      '--ai-bg': `var(--_btn-hovered)`,
+      color: 'var(--actionbtn-color-hovered-btn)',
+      '--ai-bg': `var(--actionbtn-bg-hovered-btn)`,
     },
-    _reducedGraphics: {
-      boxShadow: 'none',
+    _notReducedGraphics: {
+      boxShadow: `var(--actionbtn-shadow, 1px 1px 3px 0px transparent)`,
     },
   },
 
   variants: {
     variant: {
       transparent: {
-        '--_node-hovered': `var(--_idle)`,
+        '--actionbtn-bg-hovered': `var(--actionbtn-bg-idle)`,
       },
       filled: {
         _whenHovered: {
-          boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
+          '--actionbtn-shadow': '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
         },
       },
     },
@@ -50,7 +60,6 @@ export const actionBtn = defineRecipe({
       },
     },
     radius: {
-      xs: { '--ai-radius': `var(--mantine-radius-xs)` },
       sm: { '--ai-radius': `var(--mantine-radius-sm)` },
       md: { '--ai-radius': `var(--mantine-radius-md)` },
     },
@@ -64,6 +73,6 @@ export const actionBtn = defineRecipe({
     size: ['md'],
     radius: ['md'],
     variant: ['*'],
-    conditions: ['*'],
+    conditions: ['whenHovered', 'hover', 'notReducedGraphics'],
   }],
 })

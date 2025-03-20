@@ -1,5 +1,3 @@
-import './main.css'
-
 import { MantineProvider } from '@mantine/core'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

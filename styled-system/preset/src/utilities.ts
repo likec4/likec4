@@ -19,6 +19,11 @@ export const likec4Palette = defineUtility({
       throw new Error(`Invalid value "${value}" for likec4ColorPalette`)
     }
     const [color, depth] = value.split('.') as [string, string | undefined]
+    // console.log('🚀 ~ transform ~ color:', color)
+    // const name = `colors.likec4.${color}.element.fill`
+    // console.log('🚀 ~ transform ~ fillColor:', token(name))
+    // console.log('🚀 ~ transform ~ fillColor token:', token.raw(name)?.extensions?['var'])
+
     if (depth) {
       return {
         ['--likec4-palette']: `likec4.compound${depth}.${color}`,

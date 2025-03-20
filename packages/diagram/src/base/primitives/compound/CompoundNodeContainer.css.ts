@@ -50,11 +50,18 @@ const root = css.raw({
     border: 'transparent',
     background: 'likec4.palette.fill',
     backgroundClip: 'padding-box',
+    transitionDelay: '.075ms',
   },
   _notReducedGraphics: {
     boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     _before: {
-      transition: `all 200ms {easings.inOut}`,
+      transition: `all {durations.slow} {easings.inOut}`,
+    },
+    '&[data-likec4-hovered=\'true\']': {
+      _before: {
+        transitionDelay: '.2s',
+        transitionTimingFunction: 'ease-in',
+      },
     },
   },
 
@@ -71,9 +78,6 @@ const root = css.raw({
     _before: {
       opacity: compoundOpacity.ref,
       borderWidth: `calc(${borderWidth.ref} - 1px)`,
-    },
-    _light: {
-      ['--_compound-title-color']: '{colors.likec4.palette.stroke}',
     },
   },
 })
