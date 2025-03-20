@@ -152,7 +152,7 @@
     "@vanilla-extract/vite-plugin": "^5.0.1",
     "@xyflow/react": "12.4.4",
     "@xyflow/system": "0.0.52",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.21",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "conf": "^13.1.0",
