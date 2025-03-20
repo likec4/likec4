@@ -14,7 +14,7 @@ import {
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
-import { EmptyNode } from './EmptyNode'
+import { EmptyNode as EmptyNodeRender } from './EmptyNode'
 
 const ElementDetailsButtonWithHandler = (
   props: NodeProps<RelationshipsBrowserTypes.ElementNodeData | RelationshipsBrowserTypes.CompoundNodeData>,
@@ -32,32 +32,31 @@ const ElementDetailsButtonWithHandler = (
   )
 }
 
-export const nodeTypes = {
-  element: customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
-    return (
-      <ElementNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
-        <ElementShape {...props} />
-        <ElementTitle {...props} iconSize={40} />
-        <ElementDetailsButtonWithHandler {...props} />
-        <ElementActions {...props} />
-        <ElementPorts {...props} />
-      </ElementNodeContainer>
-    )
-  }),
+export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
+  return (
+    <ElementNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
+      <ElementShape {...props} />
+      <ElementTitle {...props} iconSize={40} />
+      <ElementDetailsButtonWithHandler {...props} />
+      <ElementActions {...props} />
+      <ElementPorts {...props} />
+    </ElementNodeContainer>
+  )
+})
 
-  compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
-    return (
-      <CompoundNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props} />
-        <CompoundTitle {...props} />
-        <CompoundPorts {...props} />
-      </CompoundNodeContainer>
-    )
-  }),
-  empty: customNode<RelationshipsBrowserTypes.EmptyNodeData>((props) => {
-    return <EmptyNode {...props} />
-  }),
-} satisfies { [key in RelationshipsBrowserTypes.Node['type']]: any }
+export const CompoundNode = customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
+  return (
+    <CompoundNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
+      <ElementDetailsButtonWithHandler {...props} />
+      <CompoundTitle {...props} />
+      <CompoundPorts {...props} />
+    </CompoundNodeContainer>
+  )
+})
+
+export const EmptyNode = customNode<RelationshipsBrowserTypes.EmptyNodeData>((props) => {
+  return <EmptyNodeRender {...props} />
+})
 
 type ElementPortsProps = NodeProps<
   Pick<

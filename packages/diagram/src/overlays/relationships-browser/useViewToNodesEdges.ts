@@ -171,7 +171,7 @@ export function viewToNodesEdge(
 
     xyedges.push({
       id,
-      type: 'relationships',
+      type: 'relationship',
       source: ns + source,
       target: ns + target,
       sourceHandle: edge.sourceHandle,

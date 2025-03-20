@@ -3,7 +3,6 @@ import { cx } from '@likec4/styles/css'
 import { Box, Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import type { NodeProps } from '../../types'
 import { nodeSizes } from './ElementNodeContainer'
 import * as styles from './ElementTitle.css'
@@ -66,7 +65,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         {data.technology && (
           <Text
             component="div"
-            className={cx(classes.technology, hiddenIfZoomTooSmall, 'likec4-element-technology')}>
+            className={cx(classes.technology, 'likec4-element-technology')}>
             {data.technology}
           </Text>
         )}

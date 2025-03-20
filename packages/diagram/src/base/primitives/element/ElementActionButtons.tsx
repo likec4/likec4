@@ -20,6 +20,9 @@ const container = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  _smallZoom: {
+    display: 'none',
+  },
   // zIndex: 10,
 })
 

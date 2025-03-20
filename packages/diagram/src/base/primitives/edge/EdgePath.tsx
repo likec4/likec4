@@ -1,10 +1,9 @@
 import type { DiagramEdge } from '@likec4/core'
-import clsx from 'clsx'
+import { cx } from '@likec4/styles/css'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import { useIsReducedGraphics, useLooseReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { EdgeProps } from '../../types'
-import * as css from './edge.css'
+import { cssEdgePath, edgePathBg, hideOnReducedGraphics, markerContext } from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
 type Data = UndefinedOnPartialDeep<
@@ -30,17 +29,13 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
     dir,
     tail,
     head,
-    ...data
   },
   strokeWidth,
   svgPath,
   style,
-  animated = false,
   interactionWidth,
   onEdgePointerDown,
 }, svgPathRef) => {
-  const isReducedGraphics = useIsReducedGraphics()
-  const isLooseReduce = useLooseReducedGraphics()
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
   if (dir === 'back') {
@@ -59,48 +54,47 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   } else if (isDashed) {
     strokeDasharray = '8,10'
   }
-  if (isLooseReduce) {
-    strokeDasharray = undefined
-  }
+  // if (isLooseReduce) {
+  //   strokeDasharray = undefined
+  // }
 
-  const isAnimated = (animated || data.hovered || data.active) && !data.dimmed
-  if (isLooseReduce && isAnimated) {
-    style = {
-      ...style,
-      animationName: 'none',
-    }
-  }
+  // const isAnimated = (animated || data.hovered || data.active) && !data.dimmed
+  // if (isLooseReduce && isAnimated) {
+  //   style = {
+  //     ...style,
+  //     animationName: 'none',
+  //   }
+  // }
 
   return (
     <>
-      {!isLooseReduce && (
-        <path
-          className={clsx('react-flow__edge-interaction')}
-          d={svgPath}
-          fill="none"
-          stroke={'transparent'}
-          strokeWidth={interactionWidth ?? 10}
-        />
-      )}
-      <g className={css.markerContext} onPointerDown={onEdgePointerDown}>
+      <path
+        className={cx('react-flow__edge-interaction', hideOnReducedGraphics)}
+        d={svgPath}
+        fill="none"
+        stroke={'transparent'}
+        strokeWidth={interactionWidth ?? 10}
+      />
+      <g className={markerContext} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
-        {!isReducedGraphics && (
-          <path
-            className={clsx('react-flow__edge-path', css.edgePathBg)}
-            d={svgPath}
-            style={style}
-            strokeLinecap={'round'}
-          />
-        )}
+        <path
+          className={cx('react-flow__edge-path', edgePathBg)}
+          d={svgPath}
+          style={style}
+          strokeLinecap={'round'}
+        />
         <path
           ref={svgPathRef}
-          className={clsx(
+          className={cx(
             'react-flow__edge-path',
             'react-flow__edge-interaction',
-            css.cssEdgePath,
+            cssEdgePath,
+            // css({
+            //   strokeDasharray: strokeDasharray,
+            // }),
           )}
           d={svgPath}
           style={style}

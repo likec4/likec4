@@ -1,12 +1,12 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
+import { useCallbackRef, useTimeout } from '@mantine/hooks'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { ReduceGraphicsViewportListener } from '../context/ReduceGraphics'
+import { usePanningAtom } from '../context/ReduceGraphics'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
@@ -87,6 +87,12 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     diagram.send({ type: 'xyflow.resized' })
   })
 
+  const $isPanning = usePanningAtom()
+
+  const notPanning = useTimeout(() => {
+    $isPanning.set(false)
+  }, 150)
+
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
       nodes={nodes}
@@ -124,7 +130,16 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
+      onMoveStart={useCallbackRef(() => {
+        notPanning.clear()
+      })}
+      onMove={useCallbackRef(() => {
+        if (!$isPanning.get()) {
+          $isPanning.set(true)
+        }
+      })}
       onMoveEnd={useCallbackRef((event, viewport) => {
+        notPanning.start()
         // if event is present, the move was triggered by user
         diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
       })}
@@ -155,7 +170,6 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       nodesSelectable={nodesSelectable}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>
-      <ReduceGraphicsViewportListener />
       <DiagramUI />
       {children}
     </BaseXYFlow>

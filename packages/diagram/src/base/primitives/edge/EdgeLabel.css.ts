@@ -25,35 +25,45 @@ export const translate = {
   ref: 'var(--edge-translate)',
 } as const
 
+export const edgeLabelContainer = css({
+  top: 0,
+  left: 0,
+  position: 'absolute',
+  pointerEvents: 'all',
+  cursor: 'pointer',
+  width: 'auto',
+  height: 'auto',
+  background: '[var(--xy-edge-label-background-color)]',
+  color: '[var(--xy-edge-label-color)]',
+  border: '0px solid transparent',
+
+  borderRadius: labelBorderRadius,
+
+  transform: translate.ref,
+  transition: 'fast',
+  _whenHovered: {
+    transition: `all 190ms {easings.inOut}`,
+    transform: `${translate.ref} scale(1.12)`,
+  },
+  _notReducedGraphics: {
+    mixBlendMode: {
+      base: 'plus-lighter',
+      _light: 'screen',
+    },
+  },
+
+  _smallZoom: {
+    display: 'none',
+  },
+  _reducedGraphics: {
+    display: 'none',
+  },
+})
+
 export const labelsva = sva({
-  slots: ['root', 'wrapper', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
+  slots: ['root', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
   base: {
     root: {
-      top: 0,
-      left: 0,
-      position: 'absolute',
-      pointerEvents: 'all',
-      cursor: 'pointer',
-      width: 'auto',
-      height: 'auto',
-      background: '[var(--xy-edge-label-background-color)]',
-      color: '[var(--xy-edge-label-color)]',
-      border: '0px solid transparent',
-      _notReducedGraphics: {
-        borderRadius: labelBorderRadius,
-        mixBlendMode: 'plus-lighter',
-        transform: translate.ref,
-        transition: 'fast',
-        _whenHovered: {
-          transition: `all 190ms {easings.inOut}`,
-          transform: `${translate.ref} scale(1.12)`,
-        },
-        _light: {
-          mixBlendMode: 'screen',
-        },
-      },
-    },
-    wrapper: {
       fontFamily: 'likec4.relation',
       padding: '3px 5px 5px 5px',
       display: 'flex',
@@ -106,7 +116,7 @@ export const labelsva = sva({
     isStepEdge: {
       false: {},
       true: {
-        wrapper: {
+        root: {
           flexDirection: 'row',
           gap: '4px',
           padding: '0px',

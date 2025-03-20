@@ -5,8 +5,6 @@ import ReactDOM from 'react-dom/client'
 import { theme } from './mantine'
 import { Routes } from './router'
 
-import './index.css'
-
 configureLogger({
   sinks: {
     console: getConsoleSink({

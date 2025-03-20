@@ -14,18 +14,19 @@ export default definePreset({
     '--likec4-palette': {
       syntax: '*',
       inherits: false,
-      initialValue: 'likec4.primary',
+      initialValue: `'likec4.primary'`,
     },
     '--likec4-text-size': {
-      syntax: '*',
+      syntax: '<length-percentage>',
       inherits: false,
-      initialValue: '',
+      initialValue: '1rem',
     },
     '--likec4-spacing': {
-      syntax: '*',
+      syntax: '<length-percentage>',
       inherits: false,
-      initialValue: '',
+      initialValue: '1rem',
     },
+    '--xy-edge-stroke': {},
   },
   globalCss: {
     // '@supports ((hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none))': {
@@ -82,14 +83,14 @@ export default definePreset({
       grayscale: 0.85,
       blur: '2px',
     },
-    '.likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
+    ':where([data-mantine-color-scheme="dark"]) .likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
       {
         mixBlendMode: 'plus-lighter',
       },
-    ':where([data-mantine-color-scheme="light"]) .likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
-      {
-        mixBlendMode: 'normal',
-      },
+    // ':where([data-mantine-color-scheme="light"]) .likec4-diagram-root :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
+    //   {
+    //     mixBlendMode: 'normal',
+    //   },
     ...globalCss,
   },
   staticCss: {

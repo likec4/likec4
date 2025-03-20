@@ -1,1 +1,1 @@
-export { useIsReducedGraphics, useLooseReducedGraphics } from '../context/ReduceGraphics'
+export { useIsReducedGraphics } from '../context/ReduceGraphics'

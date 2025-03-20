@@ -4,7 +4,6 @@ import { ActionIcon, Box } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
 import { m } from 'framer-motion'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 
@@ -30,8 +29,10 @@ export function CompoundActionButton({
           position: 'absolute',
           top: '5px',
           left: '4px',
+          _smallZoom: {
+            display: 'none',
+          },
         }),
-        hiddenIfZoomTooSmall,
         'compound-action',
       )}>
       <m.div

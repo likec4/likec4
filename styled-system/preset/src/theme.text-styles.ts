@@ -65,12 +65,10 @@ export const textStyles = defineTextStyles({
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: '500',
-          fontSize: 'var(--likec4-text-size)',
+          fontSize: '[var(--likec4-text-size)]',
           lineHeight: '1.15',
           textWrap: 'balance',
           whiteSpace: 'preserve-breaks',
-          // workaround type error
-          ...({ color: 'likec4.palatte.hiContrast' }),
         },
       },
       secondary: {
@@ -78,14 +76,10 @@ export const textStyles = defineTextStyles({
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: '400',
-          fontSize: `calc(var(--likec4-text-size) * 0.74)`,
+          fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
           lineHeight: '1.2',
           textWrap: 'pretty',
           whiteSpace: 'preserve-breaks',
-          // workaround type error
-          ...({ color: 'likec4.palatte.loContrast' }),
-          // color: 'likec4.element.loContrast',
-          // whiteSpaceCollapse: 'preserve-breaks',
         },
       },
     },

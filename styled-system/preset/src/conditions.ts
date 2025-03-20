@@ -8,11 +8,18 @@ export const conditions = {
     light: '[data-mantine-color-scheme="light"] &',
     dark: '[data-mantine-color-scheme="dark"] &',
 
-    reducedGraphics: ':where(.likec4-diagram-root:is([data-likec4-reduced-graphics="true"])) &',
+    reducedGraphics: [
+      ':where(.likec4-diagram-root:is(',
+      '[data-likec4-reduced-graphics="true"]',
+      '[data-likec4-diagram-panning]',
+      ')) &',
+    ].join(''),
+
+    // panning: ':where(.likec4-diagram-root:is([data-likec4-diagram-panning])) &',
+
     notReducedGraphics: ':where(.likec4-diagram-root:is(:not([data-likec4-reduced-graphics]))) &',
     smallZoom: ':where([data-likec4-zoom-small="true"]) &',
 
-    // compoundTransparent: '&[data-compound-transparent="true"], :where([data-compound-transparent="true"]) &',
     compoundTransparent: ':where([data-compound-transparent="true"]) &',
 
     edgeActive: ':where([data-likec4-edge-active="true"]) &',

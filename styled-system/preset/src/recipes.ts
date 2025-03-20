@@ -35,9 +35,6 @@ export const actionBtn = defineRecipe({
       color: 'var(--actionbtn-color-hovered-btn)',
       '--ai-bg': `var(--actionbtn-bg-hovered-btn)`,
     },
-    _notReducedGraphics: {
-      boxShadow: `var(--actionbtn-shadow, 1px 1px 3px 0px transparent)`,
-    },
   },
 
   variants: {
@@ -46,8 +43,10 @@ export const actionBtn = defineRecipe({
         '--actionbtn-bg-hovered': `var(--actionbtn-bg-idle)`,
       },
       filled: {
-        _whenHovered: {
-          '--actionbtn-shadow': '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
+        boxShadow: {
+          base: '1px 1px 3px 0px transparent',
+          _whenHovered: '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
+          _reducedGraphics: 'none !important',
         },
       },
     },
@@ -73,6 +72,6 @@ export const actionBtn = defineRecipe({
     size: ['md'],
     radius: ['md'],
     variant: ['*'],
-    conditions: ['whenHovered', 'hover', 'notReducedGraphics'],
+    conditions: ['whenHovered', 'hover', 'reducedGraphics'],
   }],
 })

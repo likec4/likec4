@@ -3,7 +3,6 @@ import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
 import { IconId } from '@tabler/icons-react'
 import { m } from 'framer-motion'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 
@@ -29,6 +28,9 @@ const container = css({
     top: '1px',
     right: '12px',
   },
+  _smallZoom: {
+    display: 'none',
+  },
 })
 
 export function ElementDetailsButton({
@@ -40,7 +42,7 @@ export function ElementDetailsButton({
   onClick,
 }: ElementDetailsButtonProps) {
   return (
-    <Box className={cx(container, hiddenIfZoomTooSmall, 'details-button')}>
+    <Box className={cx(container, 'details-button')}>
       <ActionIcon
         className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
         component={m.button}

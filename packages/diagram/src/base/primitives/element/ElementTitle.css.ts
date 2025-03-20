@@ -19,6 +19,9 @@ const description = css.raw({
   _shapeSizeXs: {
     display: 'none',
   },
+  _smallZoom: {
+    visibility: 'hidden',
+  },
 })
 
 const technology = css.raw({
@@ -38,6 +41,9 @@ const technology = css.raw({
   },
   _shapeSizeSm: {
     display: 'none',
+  },
+  _smallZoom: {
+    visibility: 'hidden',
   },
 })
 

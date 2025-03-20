@@ -24,9 +24,6 @@ const titleContainer = css({
   right: '30px',
   width: 'auto',
   minHeight: '30px',
-  _smallZoom: {
-    visibility: 'hidden',
-  },
   [`:where(.react-flow__node.draggable) &`]: {
     cursor: 'grab',
   },
@@ -44,10 +41,10 @@ const titleText = css({
   letterSpacing: '0.2px',
   color: 'likec4.palette.loContrast',
   '[data-compound-title-inverse] &': {
-    color: 'likec4.palette.stroke',
-  },
-  _notReducedGraphics: {
-    mixBlendMode: 'screen',
+    color: {
+      base: '[color-mix(in srgb, {colors.likec4.palette.loContrast} 60%, {colors.likec4.palette.fill})]',
+      _light: 'likec4.palette.stroke',
+    },
   },
 })
 

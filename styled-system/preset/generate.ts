@@ -1,5 +1,5 @@
 import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
-import { DEFAULT_THEME, rem } from '@mantine/core'
+import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
 import PresetPanda from '@pandacss/preset-panda'
@@ -58,16 +58,11 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
     ]),
   })
 }
-// pipe(
-//   mantineVars.colors[color] as typeof mantineVars.colors.blue,
-//   entries(),
-//   map(([prop, value]) => {
-//     const key = prop.match(/^\d$/) ? `[${prop}]` : `.${prop}`
-//     return [`${prefix}${key}`, { value }] as [string, { value: string }]
-//   }),
-//   concat([[`${prefix}`, { value: mantineVars.colors[color]![6] }]] as [[string, { value: string }]]),
-//   fromEntries(),
-// )
+
+function rem(pixels: number) {
+  return `${(pixels / 16).toPrecision(3)}rem`
+}
+
 const MAX_DEPTH = 5
 const generateCompoundColors = (color: ThemeColor, depth: number) => {
   const compoundDarkColor = (color: string) =>
