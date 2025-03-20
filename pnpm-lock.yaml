@@ -483,7 +483,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       vitest:
         specifier: ^3.0.8
@@ -513,7 +513,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
 
   packages/diagram:
@@ -665,7 +665,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       vitest:
         specifier: ^3.0.8
@@ -788,7 +788,7 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       valibot:
         specifier: ^1.0.0-rc.3
@@ -879,7 +879,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       vitest:
         specifier: ^3.0.8
@@ -1138,7 +1138,7 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       vite-plugin-css-injected-by-js:
         specifier: ^3.5.2
@@ -1205,7 +1205,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       unbuild:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.2)
       wrap-error-message:
         specifier: ^3.0.0
