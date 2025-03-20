@@ -16,7 +16,7 @@
     "generate": {
       "command": "panda codegen",
       "dependencies": [
-        "../preset:prepare"
+        "../preset:generate"
       ],
       "output": [
         "dist/**"
@@ -83,5 +83,5 @@
     "remeda": "catalog:utils",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }

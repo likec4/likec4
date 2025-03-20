@@ -51,8 +51,10 @@
     ".pnpm-store/**": true,
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,
-    "packages/*/node_modules/**": true,
+    "packages/*/node_modules": true,
+    "packages/*/styled-system": true,
     "apps/*/node_modules/**": true,
+    "apps/*/styled-system": true,
     "styled-system/*/node_modules/**": true,
     "e2e/node_modules/**": true
   },

@@ -6,7 +6,7 @@
   "tasks": {
     "build": {
       "dependsOn": [
-        "@likec4/styles#build",
+        "@likec4/styles#generate",
         "topo"
       ],
       "outputs": [

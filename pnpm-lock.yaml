@@ -1271,6 +1271,9 @@ importers:
       which:
         specifier: ^5.0.0
         version: 5.0.0
+      wireit:
+        specifier: 'catalog:'
+        version: 0.14.11
       yargs:
         specifier: 17.7.2
         version: 17.7.2

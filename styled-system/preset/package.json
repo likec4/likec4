@@ -8,7 +8,6 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "prepare": "wireit",
     "generate": "wireit",
     "typecheck": "tsc --noEmit",
     "build": "wireit"
@@ -18,7 +17,7 @@
     "src"
   ],
   "wireit": {
-    "prepare": {
+    "generate": {
       "command": "tsx --conditions=sources ./generate.ts",
       "files": [
         "generate.ts",
@@ -26,11 +25,6 @@
       ],
       "output": [
         "src/generated.ts"
-      ]
-    },
-    "generate": {
-      "dependencies": [
-        "prepare"
       ]
     },
     "build": {
@@ -61,5 +55,5 @@
     "wireit": "catalog:",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }

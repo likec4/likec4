@@ -66,5 +66,5 @@
     "react-dom": "catalog:react",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }

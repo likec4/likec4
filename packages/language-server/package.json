@@ -142,5 +142,5 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }
