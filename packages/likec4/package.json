@@ -119,7 +119,7 @@
     "react-dom": "~19.0.0",
     "rollup": "4.34.6",
     "type-fest": "4.34.1",
-    "vite": "^6.2.0"
+    "vite": "^6.2.2"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",

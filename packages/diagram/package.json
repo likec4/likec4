@@ -86,7 +86,7 @@
     "@vanilla-extract/vite-plugin": "^5.0.1",
     "@vitejs/plugin-react": "4.3.4",
     "typescript": "catalog:",
-    "vite": "6.1.0",
+    "vite": "6.2.2",
     "vite-plugin-dts": "^4.5.3",
     "vitest": "^3.0.8",
     "wireit": "catalog:"
