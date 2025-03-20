@@ -13,28 +13,21 @@
     "deploy:prod": "wireit"
   },
   "wireit": {
-    "generate-panda": {
-      "command": "panda codegen",
-      "output": [
-        "styled-system/*"
-      ]
-    },
     "generate-tsr": {
-      "command": "tsr generate",
-      "output": [
-        "src/routeTree.gen.ts"
-      ]
+      "command": "tsr generate"
     },
     "generate-wrangler": {
-      "command": "wrangler types --experimental-include-runtime",
+      "command": "wrangler types",
+      "files": [
+        "wrangler.toml",
+        "package.json"
+      ],
       "output": [
-        ".wrangler/types",
         "worker-configuration.d.ts"
       ]
     },
     "generate": {
       "dependencies": [
-        "generate-panda",
         "generate-tsr",
         "generate-wrangler"
       ]
@@ -42,7 +35,6 @@
     "dev": {
       "command": "vite dev",
       "dependencies": [
-        "../../styled-system/styles:generate",
         "generate"
       ]
     },
@@ -80,7 +72,7 @@
   "type": "module",
   "packageManager": "pnpm@10.6.5",
   "dependencies": {
-    "@cloudflare/vite-plugin": "0.1.7",
+    "@cloudflare/vite-plugin": "0.1.13",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
     "@codingame/monaco-vscode-editor-api": "14.0.6",
     "@codingame/monaco-vscode-editor-service-override": "14.0.6",

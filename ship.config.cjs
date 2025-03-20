@@ -4,7 +4,7 @@ module.exports = {
     mainVersionFile: 'package.json', // or `lerna.json`, or whatever a json file you can read the latest `version` from.
     packagesToBump: [
       'packages/*',
-      'apps/*'
+      'apps/*',
     ],
     packagesToPublish: [
       'packages/core',
@@ -13,10 +13,11 @@ module.exports = {
       'packages/diagram',
       'packages/language-server',
       'packages/layouts',
-      'packages/likec4'
-    ]
+      'packages/likec4',
+      'styled-system/preset',
+    ],
   },
   installCommand: () => 'pnpm install',
-  buildCommand: () =>  'pnpm build',
-  publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public`
+  buildCommand: () => 'pnpm build',
+  publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public`,
 }

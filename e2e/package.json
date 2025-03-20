@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.6.5",
   "type": "module",
   "scripts": {
     "install:chromium": "playwright install chromium --with-deps",
@@ -17,10 +17,14 @@
     "@likec4/core": "file:../packages/core/package.tgz",
     "@playwright/test": "^1.51.1",
     "likec4": "file:../packages/likec4/package.tgz",
-    "react": "catalog:react",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "std-env": "^3.7.0",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "vitest": "^3.0.4",
+    "wrangler": "4.2.0",
     "zx": "^8.1.8"
   },
   "pnpm": {
