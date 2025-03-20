@@ -50,6 +50,10 @@
   },
   "pnpm": {
     "overrides": {
+      "react": "catalog:react",
+      "react-dom": "catalog:react",
+      "@types/react": "catalog:react",
+      "@types/react-dom": "catalog:react",
       "vscode-jsonrpc": "catalog:vscode",
       "vscode-languageclient": "catalog:vscode",
       "vscode-languageserver": "catalog:vscode",
@@ -57,6 +61,7 @@
       "vscode-languageserver-types": "catalog:vscode",
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
+      "type-fest": "catalog:utils",
       "mnemonist": "0.40.3"
     },
     "patchedDependencies": {

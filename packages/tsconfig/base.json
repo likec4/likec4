@@ -2,11 +2,10 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Base Strictest",
   "exclude": [
-    "node_modules",
-    "**/node_modules/**",
-    "${configDir}/node_modules",
-    "dist",
-    "${configDir}/dist"
+    "${configDir}/node_modules/**",
+    "${configDir}/dist/**",
+    "${configDir}/build/**",
+    "${configDir}/bundle/**"
   ],
   "include": [
     "${configDir}/src"

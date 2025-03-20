@@ -71,9 +71,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
-    "typecheck:cli": "tsc --noEmit -p ./tsconfig.cli.json",
-    "typecheck": "run-p --print-label \"typecheck:*\"",
+    "typecheck": "tsc -b",
     "build-cli": "unbuild",
     "build-app": "run-p --print-label \"bundle:*\"",
     "bundle:app": "tsx scripts/bundle-app.ts",

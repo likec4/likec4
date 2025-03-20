@@ -1,5 +1,6 @@
 {
-  "extends": "@likec4/tsconfig/react-lib.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
     "target": "ES2022",
@@ -12,6 +13,8 @@
     "customConditions": [
       "sources"
     ],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "esModuleInterop": true,
     "isolatedModules": true,

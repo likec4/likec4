@@ -12,6 +12,8 @@
     "customConditions": [
       "sources"
     ],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "outDir": "../__app__",
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -34,6 +36,9 @@
   "references": [
     {
       "path": "../tsconfig.cli.json"
+    },
+    {
+      "path": "../react/tsconfig.json"
     }
   ]
 }

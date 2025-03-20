@@ -41,7 +41,7 @@
   "packageManager": "pnpm@10.6.5",
   "scripts": {
     "prebuild": "panda codegen",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build:vite": "wireit",
     "build": "wireit",
     "bundle": "wireit",
