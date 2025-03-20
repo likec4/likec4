@@ -8,7 +8,7 @@ catalog:
   wireit: "^0.14.11"
   wrangler: "3.112.0"
   "@types/node": "^20.17.23"
-  unbuild: "^3.3.1"
+  unbuild: "^3.5.0"
   turbo: "^2.4.4"
   tsx: "~4.19.3"
 
@@ -46,7 +46,7 @@ catalogs:
   vite:
     "@vitejs/plugin-react": "4.3.4"
     vite: "6.2.1"
-    vite-plugin-dts: "^4.5.0"
+    vite-plugin-dts: "^4.5.3"
     vite-plugin-node-polyfills: "^0.23.0"
     vite-tsconfig-paths: "^5.1.4"
   vitest:

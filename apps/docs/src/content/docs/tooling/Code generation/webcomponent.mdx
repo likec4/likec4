@@ -1,11 +1,11 @@
 ---
-title: Generate Webcomponents
-description: How to generate React components, Webcomponents, and TypeScript models from the LikeC4 DSL.
+title: Generate Web Components
+description: How to generate React components, Web Components, and TypeScript models from the LikeC4 DSL.
 head:
   - tag: title
-    content: Webcomponents | LikeC4
+    content: Web Components | LikeC4
 sidebar:
-  label: Webcomponents
+  label: Web Components
   order: 7
 tableOfContents:
   # minHeadingLevel: 3
@@ -24,9 +24,9 @@ Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your depende
 npm add likec4
 ```
 
-## Webcomponent
+## Web Component
 
-Generate javascript bundle with webcomponent:
+Generate javascript bundle with web component:
 
 ```sh
 npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
@@ -39,7 +39,7 @@ Use it:
 <likec4-view view-id="index"></likec4-view>
 ```
 
-By default, cli generates a `likec4-view` webcomponent.  
+By default, cli generates a `likec4-view` web component.  
 You can change the `likec4` prefix by `-w, --webcomponent-prefix`.
 
 For example:
@@ -55,6 +55,6 @@ And in HTML:
 ```
 
 :::note
-CLI command [build](/tooling/cli/#build-static-website) always generates javascript with webcomponents.  
+CLI command [build](/tooling/cli/#build-static-website) always generates javascript with web components.  
 Check `Share` button on the top at <a href="https://template.likec4.dev/view/cloud" target="_blank">this example</a>
 :::
