@@ -60,6 +60,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         ...data
       },
     },
+    style,
     children,
     ...rest
   }, ref) => {
@@ -106,6 +107,9 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         {...(isDimmed !== false && {
           'data-likec4-dimmed': isDimmed,
         })}
+        style={{
+          ...style,
+        }}
         {...rest}
       >
         {children}

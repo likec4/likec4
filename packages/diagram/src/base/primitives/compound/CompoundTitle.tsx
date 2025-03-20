@@ -43,13 +43,9 @@ const titleText = css({
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   color: 'likec4.palette.loContrast',
-  // _light: {
   '[data-compound-title-inverse] &': {
-    _light: {
-      color: 'likec4.palette.stroke',
-    },
+    color: 'likec4.palette.stroke',
   },
-  // },
   _notReducedGraphics: {
     mixBlendMode: 'screen',
   },

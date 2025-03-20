@@ -7,26 +7,7 @@ export const menuDropdown = css({
 })
 
 export const menuItemRelationship = css({
-  // padding: mantine.spacing.sm,
-  // paddingTop: mantine.spacing.xs,
-  // borderRadius: mantine.radius.sm,
-  // paddingTop: mantine.spacing.xs,
-  // paddingBottom: mantine.spacing.xs,
   gap: 4,
-  // cursor: 'pointer',
-  // _hover: {
-  // borderColor: mantine.colors.gray.light,
-  // background: mantine.colors.gray[2]
-  // },
-
-  // selectors: {
-  //   [`:where([data-mantine-color-scheme="dark"]) &`]: {
-  //     // borderColor: mantine.colors.dark[6]
-  //   },
-  //   [`:where([data-mantine-color-scheme="dark"]) &:hover`]: {
-  //     // background: mantine.colors.dark[5]
-  //   }
-  // }
 })
 
 export const endpoint = css({

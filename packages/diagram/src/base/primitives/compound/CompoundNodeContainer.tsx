@@ -78,7 +78,7 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         data-likec4-shape={data.shape}
         mod={{
           'compound-transparent': isTransparent,
-          'compound-title-inverse': opacity < 0.6,
+          'compound-title-inverse': opacity < 0.5,
           ...(isDimmed !== false && {
             'likec4-dimmed': isDimmed,
           }),

@@ -57,12 +57,10 @@ export function CompoundDetailsButton({
                 _hover: '0s',
               },
               '[data-compound-title-inverse] &': {
-                _light: {
-                  '--actionbtn-color': '{colors.likec4.palette.stroke}',
-                  '--actionbtn-color-hovered': '{colors.likec4.palette.stroke}',
-                  '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
-                  '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
-                },
+                '--actionbtn-color': '{colors.likec4.palette.stroke}',
+                '--actionbtn-color-hovered': '{colors.likec4.palette.stroke}',
+                '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
+                '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
               },
               _whenHovered: {
                 opacity: .75,
