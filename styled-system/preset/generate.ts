@@ -108,7 +108,7 @@ const generateRelationColors = (color: ThemeColor) => ({
       DEFAULT: { value: defaultTheme.relationships[color].lineColor },
       selected: {
         value: {
-          base: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 85)),
+          base: toHex(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
           _dark: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
         },
       },

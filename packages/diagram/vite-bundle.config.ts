@@ -1,5 +1,6 @@
 import pandabox from '@pandabox/unplugin'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -9,8 +10,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+      'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
     },
   },
+  mode: 'production',
   esbuild: {
     jsxDev: false,
     minifyIdentifiers: false,
@@ -39,7 +42,6 @@ export default defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
-        'react-dom/server',
         /@likec4\/core.*/,
         '@emotion/is-prop-valid', // dev-only import from framer-motion
       ],
@@ -48,13 +50,5 @@ export default defineConfig({
   plugins: [
     pandabox.vite({}),
     react(),
-    // dts({
-    //   tsconfigPath: 'tsconfig.bundle.json',
-    //   // staticImport: true,
-    //   rollupTypes: true,
-    //   aliasesExclude: [
-    //     'framer-motion',
-    //   ],
-    // }),
   ],
 })
