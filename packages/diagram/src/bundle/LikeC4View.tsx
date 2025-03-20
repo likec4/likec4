@@ -14,7 +14,7 @@ import { Overlay } from '../overlays/overlay/Overlay'
 import type { LikeC4ViewProps } from './LikeC4View.props'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
-import * as css from './styles.css'
+import * as styles from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
 export function LikeC4View<
@@ -120,7 +120,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
           theme={mantineTheme}
           colorScheme={colorScheme}
           styleNonce={styleNonce}
-          className={cx(isBrowserEnabled && css.cssInteractive)}
+          className={cx(isBrowserEnabled && styles.cssInteractive)}
         >
           <FramerMotionConfig>
             <LikeC4Diagram
@@ -155,7 +155,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
               {...props}
             />
             {browserView && (
-              <Overlay className={css.browserOverlay} onClose={() => onNavigateTo(null)}>
+              <Overlay onClose={() => onNavigateTo(null)}>
                 <LikeC4Diagram
                   view={browserView}
                   background="dots"

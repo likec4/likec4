@@ -5,7 +5,7 @@ import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMut
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useId, useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
-import inlinedCss from '../styles.css?inline'
+import inlinedStyles from '../styles.css?inline'
 import fontsCss from './font.css?inline'
 
 export const DefaultTheme = createTheme({
@@ -39,10 +39,9 @@ export const DefaultTheme = createTheme({
 // Also used by MantineProvider as cssVariablesSelector
 const shadowRoot = 'likec4-shadow-root'
 export const ShadowRootCssSelector = `.${shadowRoot}`
-const BundlesCss = inlinedCss
-  .replaceAll('body {', `${ShadowRootCssSelector}{`)
-  .replaceAll('body{', `${ShadowRootCssSelector}{`)
-  .replaceAll(':root', `${ShadowRootCssSelector}`)
+// const BundlesCss = inlinedCss
+//   .replaceAll('body {', `${ShadowRootCssSelector}{`)
+//   .replaceAll('body{', `${ShadowRootCssSelector}{`)
 
 export const root = cx(
   shadowRoot,
@@ -66,10 +65,6 @@ export const cssInteractive = css({
   },
 })
 
-export const browserOverlay = css({
-  inset: '2rem',
-})
-
 export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
   const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
 
@@ -91,12 +86,12 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
 
   useIsomorphicLayoutEffect(() => {
     const css = new CSSStyleSheet()
-    css.replaceSync(BundlesCss)
+    css.replaceSync(inlinedStyles)
     setStyleSheets([css])
     return () => {
       css.replaceSync('')
     }
-  }, [BundlesCss])
+  }, [inlinedStyles])
 
   return styleSheets
 }

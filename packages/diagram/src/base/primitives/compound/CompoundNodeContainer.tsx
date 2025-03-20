@@ -70,11 +70,6 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
             likec4Palette: `${data.color}.${depth}`,
           }),
           classes.root,
-          // css({
-          //   _before: {
-          //     content: '""',
-          //   },
-          // }),
           'likec4-compound-node',
         )}
         initial={false}

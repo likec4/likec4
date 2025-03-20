@@ -1,14 +1,12 @@
 import pandabox from '@pandabox/unplugin'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   define: {
-    'process.env.NODE_ENV': '\'production\'',
+    'process.env.NODE_ENV': JSON.stringify('production'),
   },
   resolve: {
-    conditions: ['production', 'sources'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
     },
@@ -16,6 +14,8 @@ export default defineConfig({
   esbuild: {
     jsxDev: false,
     minifyIdentifiers: false,
+    minifyWhitespace: true,
+    minifySyntax: true,
   },
   build: {
     outDir: 'bundle',
@@ -27,13 +27,11 @@ export default defineConfig({
     lib: {
       entry: 'src/bundle/index.ts',
       formats: ['es'],
+      fileName: 'index',
     },
     rollupOptions: {
       treeshake: {
-        preset: 'safest',
-      },
-      output: {
-        compact: true,
+        preset: 'recommended',
       },
       external: [
         'react',
@@ -41,6 +39,7 @@ export default defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
+        'react-dom/server',
         /@likec4\/core.*/,
         '@emotion/is-prop-valid', // dev-only import from framer-motion
       ],
@@ -49,12 +48,13 @@ export default defineConfig({
   plugins: [
     pandabox.vite({}),
     react(),
-    dts({
-      staticImport: true,
-      rollupTypes: true,
-      compilerOptions: {
-        declarationMap: false,
-      },
-    }),
+    // dts({
+    //   tsconfigPath: 'tsconfig.bundle.json',
+    //   // staticImport: true,
+    //   rollupTypes: true,
+    //   aliasesExclude: [
+    //     'framer-motion',
+    //   ],
+    // }),
   ],
 })

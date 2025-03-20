@@ -1,19 +1,15 @@
 import { css, sva } from '@likec4/styles/css'
 import type { ColorToken } from '@likec4/styles/tokens'
-import type { SystemStyleObject } from '@likec4/styles/types'
 
 // export const titleColor = '--title-color'
 // export const descriptionColor = '---description-color'
 // export const iconColor = '--icon-color'
 
-const buttonFocused = {
+const buttonFocused = css.raw({
   outline: 'none',
   background: 'mantine.colors.primary[8]',
   borderColor: 'mantine.colors.primary[9]',
-  // [iconColor]: 'mantine.colors.primary[2]',
-  // [titleColor]: 'mantine.colors.primary[0]',
-  // [descriptionColor]: 'mantine.colors.primary[1]',
-} satisfies SystemStyleObject
+})
 
 const _treenodefocus = '.mantine-Tree-node:focus > .mantine-Tree-label &'
 
@@ -80,23 +76,9 @@ const iconSize = {
 }
 
 const icon = css.raw({
-  // color: 'mantine.colors.dimmed',
-  // _groupHover: {
-  //   color: 'mantine.colors.primary[0]',
-  // },
-  // _groupFocus: {
-  //   color: 'mantine.colors.primary[0]',
-  // },
   ...colors('mantine.colors.dimmed', 'mantine.colors.primary[0]'),
   _light: {
     ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
-    // color: ``,
-    // _groupHover: {
-    //   color: 'mantine.colors.primary[3]',
-    // },
-    // _groupFocus: {
-    //   color: 'mantine.colors.primary[3]',
-    // },
   },
   flex: `0 0 ${iconSize.ref}`,
   height: iconSize.ref,
@@ -154,20 +136,16 @@ const title = css.raw({
   },
 })
 const descriptionColor = css.raw({
-  color: 'mantine.colors.dimmed',
-  _groupHover: {
-    color: 'mantine.colors.primary[1]',
-  },
-  _groupFocus: {
-    color: 'mantine.colors.primary[0]',
+  color: {
+    base: 'mantine.colors.dimmed',
+    _groupHover: {
+      base: 'mantine.colors.primary[1]',
+      _light: 'mantine.colors.primary[0]',
+    },
+    _groupFocus: 'mantine.colors.primary[0]',
   },
   [_treenodefocus]: {
     color: 'mantine.colors.primary[0]',
-  },
-  _light: {
-    _groupHover: {
-      color: 'mantine.colors.primary[0]',
-    },
   },
 })
 

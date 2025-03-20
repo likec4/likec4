@@ -31,7 +31,7 @@
     "./bundle": {
       "sources": "./src/bundle/index.ts",
       "default": {
-        "types": "./bundle/index.ts.d.ts",
+        "types": "./dist/bundle/index.d.ts",
         "import": "./bundle/index.js",
         "default": "./bundle/index.js"
       }
@@ -42,17 +42,25 @@
   "scripts": {
     "prebuild": "panda codegen",
     "typecheck": "tsc --noEmit",
-    "build": "vite build",
-    "build:watch": "wireit",
-    "bundle": "vite build -c vite-bundle.config.ts",
+    "build:vite": "wireit",
+    "build": "wireit",
+    "bundle": "wireit",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g \"dist/*\" .tsbuildinfo",
     "test": "vitest run --no-isolate"
   },
   "wireit": {
-    "build:watch": {
-      "command": "vite build --watch --mode development --clearScreen=false -l warn",
-      "service": true
+    "build:vite": {
+      "command": "vite build"
+    },
+    "bundle": {
+      "command": "vite build -c vite-bundle.config.ts"
+    },
+    "build": {
+      "dependencies": [
+        "build:vite",
+        "bundle"
+      ]
     }
   },
   "dependencies": {

@@ -1,7 +1,4 @@
-// import { createVar, globalStyle, style } from '@vanilla-extract/css'
-
 import { css } from '@likec4/styles/css'
-import { cssVar } from '@likec4/styles/vars'
 
 // Index page
 
@@ -21,7 +18,10 @@ export const svgContainer = css({
   },
 })
 
-export const headerHeight = cssVar.create('header-height')
+export const headerHeight = {
+  var: '--header-height',
+  ref: 'var(--header-height)',
+} as const
 
 export const cssViewOutlet = css({
   padding: 0,

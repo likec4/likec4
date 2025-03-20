@@ -23,11 +23,11 @@
         "generate"
       ],
       "outputs": [
-        "__app__/**",
-        "react/**"
+        "__app__/**"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "!react/**",
         "!src/**",
         "!test/**",
         "!build.config.ts"
@@ -40,10 +40,13 @@
         "@likec4/log#build",
         "@likec4/generators#build",
         "@likec4/layouts#build",
-        "@likec4/language-server#build"
+        "@likec4/language-server#build",
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "dist/**",
+        "react/*.mjs",
+        "react/*.d.ts",
         "vite-plugin-modules.d.ts"
       ],
       "inputs": [

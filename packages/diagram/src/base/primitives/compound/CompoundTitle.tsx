@@ -41,7 +41,8 @@ const cssTitle = css({
   fontSize: '15px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  color: '[var(--_compound-title-color, {colors.likec4.compound.title})]',
+  // TODO
+  // color: '[var(--_compound-title-color, {colors.likec4.compound.title})]',
   _light: {
     _compoundTransparent: {
       color: 'likec4.palette.stroke',

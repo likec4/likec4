@@ -4,7 +4,6 @@ import {
   RemoveScroll,
 } from '@mantine/core'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
-import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
@@ -59,7 +58,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   return (
     <m.dialog
       ref={dialogRef}
-      className={clsx(styles.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
+      className={cx(RemoveScroll.classNames.fullWidth, styles.dialog, classes?.dialog, className)}
       initial={{
         [styles.backdropBlur]: '0px',
         [styles.backdropOpacity]: '5%',

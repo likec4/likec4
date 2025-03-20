@@ -1,0 +1,37 @@
+{
+  "extends": "@likec4/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "customConditions": [
+      "sources"
+    ],
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "checkJs": false,
+    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "."
+  ],
+  "exclude": [
+    "./dist",
+  ],
+  "references": [
+    {
+      "path": "../tsconfig.cli.json"
+    }
+  ]
+}

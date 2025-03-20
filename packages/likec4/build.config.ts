@@ -2,13 +2,45 @@ import { consola } from 'consola'
 import { copyFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { isProduction } from 'std-env'
-import { defineBuildConfig } from 'unbuild'
+import { type BuildConfig, defineBuildConfig } from 'unbuild'
 
 if (!isProduction) {
   consola.warn('Bundling CLI in development mode')
 }
 
-export default defineBuildConfig({
+const reactbundle: BuildConfig = {
+  entries: [
+    'react/index.ts',
+  ],
+  clean: false,
+  outDir: '.',
+  stub: false,
+  declaration: isProduction,
+  rollup: {
+    emitCJS: false,
+    inlineDependencies: [
+      '@likec4/diagram/bundle',
+      '@nanostores/react',
+      'nanostores',
+      'react',
+      'remeda',
+      'fast-equals',
+    ],
+    dts: {
+      tsconfig: 'react/tsconfig.json',
+      compilerOptions: {
+        customConditions: [],
+        noEmitOnError: false,
+        strict: false,
+        alwaysStrict: false,
+        skipLibCheck: true,
+        skipDefaultLibCheck: true,
+      },
+    },
+  },
+}
+
+const cli: BuildConfig = {
   entries: [
     'src/index.ts',
     'src/cli/index.ts',
@@ -89,4 +121,9 @@ export default defineBuildConfig({
       await copyFile('./src/vite-plugin/modules.d.ts', './vite-plugin-modules.d.ts')
     },
   },
-})
+}
+
+export default defineBuildConfig([
+  reactbundle,
+  cli,
+])

@@ -37,11 +37,11 @@
       }
     },
     "./react": {
-      "sources": "./app/react/components/index.ts",
+      "sources": "./react/index.ts",
       "default": {
         "types": "./react/index.d.ts",
-        "import": "./react/index.js",
-        "default": "./react/index.js"
+        "import": "./react/index.mjs",
+        "default": "./react/index.mjs"
       }
     },
     "./vite-plugin-modules": {
@@ -55,7 +55,6 @@
         "default": "./dist/vite-plugin/index.mjs"
       }
     },
-    "./react/style.css": "./react/style.css",
     "./icons/all": {
       "types": "./icons/all.d.ts",
       "import": "./icons/all.js",
@@ -72,14 +71,12 @@
     "access": "public"
   },
   "scripts": {
-    "turbo-build": "turbo run build --log-prefix=none --log-order=grouped",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.cli.json",
     "typecheck": "run-p --print-label \"typecheck:*\"",
     "build-cli": "unbuild",
     "build-app": "run-p --print-label \"bundle:*\"",
     "bundle:app": "tsx scripts/bundle-app.ts",
-    "bundle:react": "tsx scripts/bundle-react.ts",
     "bundle:webcomponent": "tsx scripts/bundle-webcomponent.ts",
     "generate": "tsx --conditions=sources scripts/generate.ts",
     "prepack": "turbo run build --log-prefix=none --log-order=grouped",
@@ -202,6 +199,7 @@
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
+    "wireit": "catalog:",
     "which": "^5.0.0",
     "yargs": "17.7.2"
   },

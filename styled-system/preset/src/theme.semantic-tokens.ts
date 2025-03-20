@@ -21,7 +21,7 @@ export const semanticTokens = defineSemanticTokens({
         description: 'Color to be used in color-mix',
         value: {
           base: 'white',
-          _light: 'bilack',
+          _light: 'black',
         },
       },
       background: {

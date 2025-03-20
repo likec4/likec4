@@ -1,0 +1,18 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "@likec4/styles#generate",
+        "@likec4/core#build"
+      ],
+      "outputs": [
+        "dist/**",
+        "bundle/**"
+      ]
+    }
+  }
+}
