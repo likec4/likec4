@@ -72,15 +72,37 @@ This repository's contents are:
 
 ### Packages
 
-- `core`: model and type definitions
-- `create-likec4`: scaffolding tool
-- `diagram`: react components rendering diagrams
-- `generators`: _LikeC4 -> Other formats_
-- `icons`: prebundled icons
-- `language-server`: parser and language server
-- `layouts`: layout algorithms for views
-- `likec4`: CLI, published to npm as `likec4`
-- `log`: Common loqgger
-- `tsconfig`: typescript configuration
-- `vscode`: vscode extension
-- `vscode-preview`: preview panel in vscode extension
+#### CLI (`/packages/likec4`)
+- **Purpose**: Command-line interface and integration point, main entry point for the tool.
+- **Technology**: Uses [yargs](https://yargs.js.org/)
+
+#### Core (`/packages/core`)
+- **Technology**: Pure TypeScript, no frameworks. Heavy use of [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) and [remeda](https://remedajs.com/)
+- **Purpose**: Core type definitions and domain model. `compute-view` contains logic for computing diagram views
+- **Suggestions**: A great way to start contributing is by adding more tests for compute-view. This will help you understand how it works while also benefiting the project. There are also open questions from @pavelpykhtin, who has made significant contributions.
+
+#### Diagrams (`/packages/diagram`)
+- **Purpose**: Renders the actual diagrams
+- **Technology**: Uses [React](https://react.dev/), [ReactFlow](https://reactflow.dev/), [XState](https://xstate.js.org/)
+
+#### Language Server (`/packages/language-server`)
+- **Purpose**: Parses DSL, builds models, and computes views
+- **Technology**: Built with [Langium](https://langium.org/)
+
+#### Layouts (`/packages/layouts`)
+- **Purpose**: Transforms computed views into visual graph layouts
+- **Technology**: Uses [Graphviz](https://graphviz.org/) for layout algorithms
+
+#### VSCode Extension (`/packages/vscode`)
+- **Purpose**: Integrates LikeC4 into Visual Studio Code.
+- **Technology**: Uses [reactive-vscode](https://github.com/KermanX/reactive-vscode) and follows [VS Code extension patterns](https://vscode-docs.readthedocs.io/en/stable/extensions/patterns-and-principles/).
+
+
+#### Additional Packages
+- `create-likec4`: Scaffolding tool for new projects
+- `generators`: Converts LikeC4 to other formats
+- `icons`: Pre-bundled icon sets
+- `log`: Common logger implementation
+- `tsconfig`: TypeScript configuration
+- `vscode-preview`: Preview panel component for VS Code extension
+
