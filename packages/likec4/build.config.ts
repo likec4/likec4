@@ -15,6 +15,7 @@ const reactbundle: BuildConfig = {
   clean: false,
   outDir: '.',
   stub: false,
+  failOnWarn: false,
   declaration: isProduction,
   rollup: {
     emitCJS: false,
@@ -77,7 +78,6 @@ const cli: BuildConfig = {
       }
       : {}),
   },
-  failOnWarn: false,
   declaration: isProduction,
   rollup: {
     emitCJS: false,
