@@ -40,11 +40,11 @@
     "yarn.lock": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
+    "packages/*/bundle/**": true,
     "**/routeTree.gen.ts": true
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
-    "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "**/.wireit": true,
     "**/.wrangler": true,

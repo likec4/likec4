@@ -27,7 +27,7 @@ export const trigger = css({
   cursor: 'pointer',
   _before: {
     transitionProperty: 'all',
-    transitionTimingFunction: 'cubic-bezier(0,0.31,0,1.03)',
+    transitionTimingFunction: '[cubic-bezier(0,0.31,0,1.03)]',
     transitionDuration: '140ms',
     position: 'absolute',
     content: '',

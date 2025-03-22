@@ -4,12 +4,16 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "composite": true,
-    "noEmit": false,
-    "tsBuildInfoFile": ".tsbuildinfo/worker.tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo/worker.tsbuildinfo",
+    "outDir": ".tsbuildinfo/worker"
   },
   "include": [
     "./worker-configuration.d.ts",
     "./worker"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core/tsconfig.json"
+    }
   ]
 }

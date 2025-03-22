@@ -11,9 +11,16 @@
     ],
   },
   "include": [
-    "protocol.ts",
-    "src",
+    "./src/",
     "vite.config.ts",
     "panda.config.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../diagram/tsconfig.json"
+    }
   ]
 }

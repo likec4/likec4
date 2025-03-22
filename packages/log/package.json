@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build": "unbuild"
   },
   "dependencies": {

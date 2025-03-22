@@ -14,7 +14,8 @@
     ],
     "noEmit": false,
     "emitDeclarationOnly": true,
-    "outDir": "../__app__",
+    "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
+    "outDir": "../.tsbuildinfo/app",
     "esModuleInterop": true,
     "isolatedModules": true,
     "noPropertyAccessFromIndexSignature": false,
@@ -39,6 +40,12 @@
     },
     {
       "path": "../react/tsconfig.json"
+    },
+    {
+      "path": "../../core/tsconfig.json"
+    },
+    {
+      "path": "../../diagram/tsconfig.json"
     }
   ]
 }

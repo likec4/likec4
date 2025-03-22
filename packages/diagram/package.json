@@ -36,6 +36,7 @@
         "default": "./bundle/index.js"
       }
     },
+    "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
   "packageManager": "pnpm@10.6.5",

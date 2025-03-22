@@ -20,13 +20,11 @@
     },
     "typecheck": {
       "dependsOn": [
-        "^generate",
-        "topo",
+        "^typecheck",
         "generate"
       ],
       "outputs": [
-        ".tsbuildinfo",
-        "**/*.tsbuildinfo"
+        ".tsbuildinfo"
       ],
       "outputLogs": "new-only"
     },

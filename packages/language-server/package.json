@@ -89,7 +89,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "prepack": "turbo run build",
     "build": "unbuild",
     "pregenerate": "rm -f src/generated/*",

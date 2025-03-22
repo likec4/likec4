@@ -11,7 +11,6 @@
     "${configDir}/src"
   ],
   "compilerOptions": {
-    "outDir": "${configDir}/dist",
     "target": "es2022",
     "module": "es2022",
     "moduleResolution": "bundler",
@@ -31,9 +30,9 @@
     "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -47,7 +46,10 @@
     "skipLibCheck": true,
     "strict": true,
     "strictBuiltinIteratorReturn": true,
-    "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/.tsbuildinfo/.tsbuildinfo",
+    "outDir": "${configDir}/.tsbuildinfo/dist",
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
   }

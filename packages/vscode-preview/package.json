@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "prebuild": "panda codegen",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

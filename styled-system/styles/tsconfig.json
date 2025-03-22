@@ -5,7 +5,7 @@
     "module": "esnext"
   },
   "include": [
-    ".",
+    "*.ts",
   ],
   "exclude": [
     "./dist/**",

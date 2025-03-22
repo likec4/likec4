@@ -8,7 +8,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "generate": "wireit",
     "emit-pkg": "wireit"
   },

@@ -41,7 +41,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "prepack": "turbo run build",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",

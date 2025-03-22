@@ -2,11 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "node_modules/.tmp/",
     "tsBuildInfoFile": ".tsbuildinfo/node.tsbuildinfo",
-    "module": "Preserve",
-    "composite": true,
-    "noEmit": false
+    "outDir": ".tsbuildinfo/node",
+    "module": "Preserve"
   },
   "include": [
     "./*.config.ts",

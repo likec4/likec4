@@ -2,6 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "../.tsbuildinfo/react.tsbuildinfo",
+    "outDir": "../.tsbuildinfo/react",
     "composite": true,
     "target": "ES2022",
     "lib": [
@@ -15,7 +17,6 @@
     ],
     "noEmit": false,
     "emitDeclarationOnly": true,
-    "outDir": "dist",
     "esModuleInterop": true,
     "isolatedModules": true,
     "allowJs": true,
@@ -33,6 +34,12 @@
     "./dist",
   ],
   "references": [
+    {
+      "path": "../../diagram/tsconfig.json"
+    },
+    {
+      "path": "../../core/tsconfig.json"
+    },
     {
       "path": "../tsconfig.cli.json"
     }

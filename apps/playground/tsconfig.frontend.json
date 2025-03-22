@@ -3,6 +3,7 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "tsBuildInfoFile": ".tsbuildinfo/frontend.tsbuildinfo",
+    "outDir": ".tsbuildinfo/frontend",
     "composite": true,
     "noEmit": false,
     "jsx": "react-jsx",
@@ -37,6 +38,15 @@
   "references": [
     {
       "path": "./tsconfig.worker.json"
+    },
+    {
+      "path": "../../packages/core/tsconfig.json"
+    },
+    {
+      "path": "../../packages/diagram/tsconfig.json"
+    },
+    {
+      "path": "../../packages/language-server/tsconfig.json"
     }
   ]
 }
