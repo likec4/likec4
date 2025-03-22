@@ -170,7 +170,7 @@
     "html-to-image": "^1.11.13",
     "json5": "^2.2.3",
     "ky": "^1.7.5",
-    "langium": "3.3.1",
+    "langium": "3.4.0",
     "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nano-spawn": "^0.2.0",
