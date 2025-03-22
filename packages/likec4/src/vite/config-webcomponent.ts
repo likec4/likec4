@@ -1,6 +1,6 @@
 import { viteAliases } from '@/vite/aliases'
 import { logger as consola } from '@likec4/log'
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -81,11 +81,13 @@ export async function viteWebcomponentConfig({
         ],
       },
     },
+    css: {
+      postcss: {
+        plugins: [pandaCss()],
+      },
+    },
     plugins: [
       react({}),
-      vanillaExtractPlugin({
-        unstable_mode: 'transform',
-      }),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         useOverviewGraph: false,

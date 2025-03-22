@@ -1,25 +1,23 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { css } from '@likec4/styles/css'
 import { headerHeight } from './view.css'
 
 // Index page
 
-export const cssScrollArea = style({
+export const cssScrollArea = css({
   height: '100%',
+  '& .mantine-ScrollArea-viewport': {
+    minHeight: '100%',
+  },
+  '& .mantine-ScrollArea-viewport > div': {
+    minHeight: '100%',
+    height: '100%',
+  },
 })
 
-globalStyle(`.${cssScrollArea} .mantine-ScrollArea-viewport`, {
+export const cssCodeBlock = css({
   minHeight: '100%',
 })
 
-globalStyle(`.${cssScrollArea} .mantine-ScrollArea-viewport > div`, {
-  minHeight: '100%',
-  height: '100%',
-})
-
-export const cssCodeBlock = style({
-  minHeight: '100%',
-})
-
-export const viewWithTopPadding = style({
-  paddingTop: headerHeight,
+export const viewWithTopPadding = css({
+  paddingTop: headerHeight.ref,
 })

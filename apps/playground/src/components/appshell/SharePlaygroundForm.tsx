@@ -2,9 +2,9 @@ import { PricingAnchor } from '$components/PricingAnchor'
 import { useAtom } from '$hooks/useAtom'
 import { usePlayground, usePlaygroundSnapshot } from '$hooks/usePlayground'
 import { ShareOptions } from '$state/shareOptions'
-import { css } from '$styled-system/css'
-import { HStack } from '$styled-system/jsx'
-import { hstack } from '$styled-system/patterns'
+import { css } from '@likec4/styles/css'
+import { HStack } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import {
   Alert as MantineAlert,
   Anchor,
@@ -130,7 +130,7 @@ export function SharePlaygroundForm() {
                   <UnstyledButton
                     className={css({
                       fontSize: 'x-small',
-                      color: 'dimmed',
+                      color: 'mantine.colors.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
@@ -144,7 +144,7 @@ export function SharePlaygroundForm() {
                     disabled={pincode.length < 4}
                     className={css({
                       fontSize: 'x-small',
-                      color: 'dimmed',
+                      color: 'mantine.colors.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
@@ -197,7 +197,7 @@ export function SharePlaygroundForm() {
                       href="mailto:denis@davydkov.com?subject=Feature%3A%20allow%20access%20via%20GitHub"
                       className={css({
                         fontSize: 'xs',
-                        color: 'text',
+                        color: 'mantine.colors.text',
                       })}
                     >
                       Contact
@@ -249,7 +249,7 @@ export function SharePlaygroundForm() {
                       cursor: 'pointer',
                       // borderColor: 'transparent',
                       // backgroundColor: 'transparent',
-                      color: 'green',
+                      color: 'mantine.colors.green',
                       fontSize: 'xs',
                       userSelect: 'all',
                     }),

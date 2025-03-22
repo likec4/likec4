@@ -130,7 +130,7 @@ export function LikeC4SearchInput() {
           combobox.closeDropdown()
           // Let react to display filtered elements
           setTimeout(() => {
-            document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
+            document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
           }, 50)
         }
       }}
@@ -217,7 +217,7 @@ export function LikeC4SearchInput() {
             ) {
               combobox.closeDropdown()
               stopAndPrevent(e)
-              document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
+              document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
               return
             }
           }} />

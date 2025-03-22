@@ -6,6 +6,7 @@ import {
   DiagramNode,
   nameFromFqn,
 } from '@likec4/core'
+import { css, cx } from '@likec4/styles/css'
 import {
   type StackProps,
   ActionIcon,
@@ -24,7 +25,6 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../../components/Link'
@@ -33,7 +33,7 @@ import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useLikeC4Model } from '../../../likec4model'
 import { findDiagramEdge, findDiagramNode } from '../../../state/utils'
-import * as css from './RelationshipsDropdownMenu.css'
+import * as styles from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
 
@@ -137,7 +137,7 @@ export function RelationshipsDropdownMenu({
         {children}
       </MenuTarget>
       <MenuDropdown
-        className={css.menuDropdown}
+        className={styles.menuDropdown}
         onPointerDownCapture={stopPropagation}
         onPointerDown={stopPropagation}
         onClick={stopPropagation}
@@ -196,13 +196,13 @@ const Relationship = forwardRef<
   const links = r.links
 
   return (
-    <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>
+    <Stack ref={ref} className={cx(styles.menuItemRelationship, className)} {...props}>
       <Group gap={4}>
-        <Text component="div" className={css.endpoint} data-likec4-color={sourceNode.color}>
+        <Text component="div" className={cx(css({ likec4Palette: sourceNode.color }), styles.endpoint)}>
           {sourceId}
         </Text>
-        <IconArrowRight stroke={2.5} size={11} />
-        <Text component="div" className={css.endpoint} data-likec4-color={targetNode.color}>
+        <IconArrowRight stroke={2.5} size={'11px'} />
+        <Text component="div" className={cx(css({ likec4Palette: targetNode.color }), styles.endpoint)}>
           {targetId}
         </Text>
         {(navigateTo || !!onOpenSource) && (
@@ -211,7 +211,7 @@ const Relationship = forwardRef<
             {navigateTo && (
               <Tooltip label={'Open dynamic view'}>
                 <ActionIcon
-                  className={clsx('nodrag nopan')}
+                  className={cx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
                   variant="default"
@@ -229,7 +229,7 @@ const Relationship = forwardRef<
             <IfEnabled feature="Vscode">
               <Tooltip label={'Open source'}>
                 <ActionIcon
-                  className={clsx('nodrag nopan')}
+                  className={cx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
                   variant="default"
@@ -247,7 +247,7 @@ const Relationship = forwardRef<
           </TooltipGroup>
         )}
       </Group>
-      <Box className={css.title}>{r.title || 'untitled'}</Box>
+      <Box className={styles.title}>{r.title || 'untitled'}</Box>
       {r.description && <Text size="xs" c="dimmed">{r.description}</Text>}
       {links.length > 0 && (
         <Stack

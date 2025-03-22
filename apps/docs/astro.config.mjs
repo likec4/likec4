@@ -135,13 +135,17 @@ export default defineConfig({
     }),
   ],
 
+  experimental: {
+    contentIntellisense: true,
+  },
+
   vite: {
     resolve: {
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
         'likec4/model': new URL('../../packages/likec4/src/model', import.meta.url).pathname,
-        // Alias to bundled React components, can't use 'development' condition html#server
+        // Alias to bundled React components, can't use 'development' condition
         'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname,
       },

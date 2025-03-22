@@ -1,14 +1,36 @@
+import { css, cx } from '@likec4/styles/css'
+import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
-import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
-import * as css from './ElementActionButtons.css'
 
 type ElementActionButtonsProps = NodeProps & {
   buttons: ElementActionButtons.Item[]
 }
+
+const container = css({
+  position: 'absolute',
+  top: `calc(100% - 28px)`,
+  // transform: 'translateY(-100%)',
+  left: 0,
+  width: '100%',
+  minHeight: '28px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  _smallZoom: {
+    display: 'none',
+  },
+  // zIndex: 10,
+})
+
+const actionButtons = css({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+})
 
 export function ElementActionButtons({
   id,
@@ -23,22 +45,22 @@ export function ElementActionButtons({
     return null
   }
   return (
-    <Box className={clsx(css.container)}>
+    <Box className={container}>
       <Box
         component={m.div}
         layoutRoot
         initial={false}
         style={{
           originY: 0,
-          gap: '6px',
+          gap: '8px',
         }}
         animate={{
           opacity: (isHovered || selected) ? 1 : 0.75,
           scale: isHovered ? 1.1 : (selected ? 0.9 : 0.8),
           y: (isHovered || selected) ? 6 : 0,
         }}
-        data-hovered={isHovered}
-        className={clsx('nodrag nopan', css.actionButtons)}
+        data-likec4-hovered={isHovered}
+        className={cx('nodrag nopan', actionButtons)}
       >
         {buttons.map((button, index) => (
           <m.div
@@ -50,11 +72,9 @@ export function ElementActionButtons({
             }}
           >
             <ActionIcon
-              className={css.actionIcon}
-              size={'md'}
-              radius="md"
-              // Otherwise node receives click event and is selected
+              className={actionBtn({})}
               onClick={button.onClick}
+              // Otherwise node receives click event and is selected
               onDoubleClick={stopPropagation}
             >
               {button.icon}

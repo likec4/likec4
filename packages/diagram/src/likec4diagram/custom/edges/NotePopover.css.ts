@@ -1,27 +1,21 @@
-import { style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
+// import { mantine } from '../../../theme-vars'
 
-export const edgeNoteCloseButton = style({
+export const edgeNoteCloseButton = css({
   position: 'absolute',
   top: 1,
   right: 1,
   zIndex: 9,
 })
 
-export const edgeNoteText = style({
+export const edgeNoteText = css({
   userSelect: 'all',
   textAlign: 'left',
   whiteSpaceCollapse: 'preserve-breaks',
   textWrap: 'pretty',
   lineHeight: 1.25,
-  vars: {
-    '--text-fz': mantine.fontSizes.sm,
-  },
-  '@media': {
-    [mantine.largerThan('md')]: {
-      vars: {
-        '--text-fz': mantine.fontSizes.md,
-      },
-    },
+  '--text-fz': '{fontSizes.sm}',
+  md: {
+    '--text-fz': '{fontSizes.md}',
   },
 })

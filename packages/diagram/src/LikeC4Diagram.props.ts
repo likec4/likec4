@@ -8,6 +8,7 @@ import type {
   ViewId,
   WhereOperator,
 } from '@likec4/core'
+import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 
@@ -55,6 +56,32 @@ export type ChangeEvent = {
 export type OnChange = (event: ChangeEvent) => void
 
 export type LikeC4ColorScheme = 'light' | 'dark'
+
+export type OverrideReactFlowProps = Pick<
+  XYFlowProps,
+  | 'paneClickDistance'
+  | 'nodeClickDistance'
+  | 'selectionKeyCode'
+  | 'panActivationKeyCode'
+  | 'multiSelectionKeyCode'
+  | 'zoomActivationKeyCode'
+  | 'snapToGrid'
+  | 'snapGrid'
+  | 'onlyRenderVisibleElements'
+  | 'nodesDraggable'
+  | 'nodesFocusable'
+  | 'elementsSelectable'
+  | 'selectNodesOnDrag'
+  | 'panOnDrag'
+  | 'preventScrolling'
+  | 'zoomOnScroll'
+  | 'zoomOnPinch'
+  | 'panOnScroll'
+  | 'panOnScrollSpeed'
+  | 'panOnScrollMode'
+  | 'zoomOnDoubleClick'
+  | 'nodeDragThreshold'
+>
 
 export interface LikeC4DiagramProperties {
   view: DiagramView
@@ -195,6 +222,11 @@ export interface LikeC4DiagramProperties {
    * Dynamic filter, applies both to nodes and edges
    */
   where?: WhereOperator<string, string> | undefined
+
+  /**
+   * Override ReactFlow props
+   */
+  reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
 export type OpenSourceParams =

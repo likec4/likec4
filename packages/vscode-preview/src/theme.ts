@@ -1,20 +1,19 @@
-import { createTheme, type MantineTheme } from '@mantine/core'
+import { type MantineTheme, createTheme } from '@mantine/core'
 
 export const theme = createTheme({
   autoContrast: true,
   primaryColor: 'indigo',
   defaultRadius: 'sm',
-  fontFamily: `var(--likec4-default-font-family)`,
   headings: {
     fontWeight: '500',
     sizes: {
       h1: {
         // fontSize: '2rem',
-        fontWeight: '600'
+        fontWeight: '600',
       },
       h2: {
         // fontSize: '1.85rem',
-      }
-    }
-  }
+      },
+    },
+  },
 }) as MantineTheme

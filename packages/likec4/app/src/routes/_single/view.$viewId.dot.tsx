@@ -5,7 +5,7 @@ import { projectId } from 'likec4:single-project'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
-import * as css from './view.css'
+import * as styles from './view.css'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/_single/view/$viewId/dot')({
@@ -53,7 +53,7 @@ function ViewAsDot() {
           }} />
         <Panel>
           <ScrollArea h={'100%'}>
-            <div className={css.svgContainer} dangerouslySetInnerHTML={{ __html: dotSvg }}></div>
+            <div className={styles.svgContainer} dangerouslySetInnerHTML={{ __html: dotSvg }}></div>
           </ScrollArea>
         </Panel>
       </PanelGroup>

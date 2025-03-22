@@ -1,6 +1,6 @@
 import { usePlayground, usePlaygroundContext, usePlaygroundWorkspace } from '$hooks/usePlayground'
-import { css } from '$styled-system/css'
-import { HStack, VStack } from '$styled-system/jsx'
+import { css } from '@likec4/styles/css'
+import { HStack, VStack } from '@likec4/styles/jsx'
 import { HoverCard, Tabs, TabsList, Text, ThemeIcon } from '@mantine/core'
 import { IconAlertTriangle } from '@tabler/icons-react'
 
@@ -53,7 +53,14 @@ export function WorkspaceFileTabs() {
             </ThemeIcon>
           </HoverCard.Target>
           <HoverCard.Dropdown p={0}>
-            <VStack bg={'red.6/20'} alignItems={'flex-start'} p="xs">
+            <VStack
+              // css={{
+              //   _
+              //   bg: 'mantine.red.6/20',
+              //   alignItems: 'flex-start',
+              //   p: 'xs',
+              // }}>
+            >
               {diagnosticErrors.map((error, i) => <Text component="div" c="red.7" key={i} fz="sm">{error}</Text>)}
             </VStack>
           </HoverCard.Dropdown>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { style } from '@vanilla-extract/css'
 import { mantine, whereLight } from '../../../mantine'
 

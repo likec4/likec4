@@ -9,8 +9,8 @@
     ],
     "noEmit": false,
     "composite": true,
-    "tsBuildInfoFile": "cli.tsbuildinfo",
-    // "baseUrl": ".",
+    "tsBuildInfoFile": ".tsbuildinfo/cli.tsbuildinfo",
+    "outDir": ".tsbuildinfo/cli",
     "types": [
       "node"
     ],
@@ -29,5 +29,13 @@
   ],
   "exclude": [
     "./src/vite-plugin/modules.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../language-server/tsconfig.json"
+    }
   ]
 }

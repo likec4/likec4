@@ -11,8 +11,15 @@
     ],
     "rootDir": "."
   },
-  "include": [
-    "src"
-  ],
-  "exclude": []
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../language-server/tsconfig.json"
+    },
+    {
+      "path": "../vscode-preview/tsconfig.json"
+    }
+  ]
 }

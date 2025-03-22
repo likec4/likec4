@@ -171,7 +171,7 @@ export function viewToNodesEdge(
 
     xyedges.push({
       id,
-      type: 'relationships',
+      type: 'relationship',
       source: ns + source,
       target: ns + target,
       sourceHandle: edge.sourceHandle,
@@ -185,16 +185,7 @@ export function viewToNodesEdge(
         color: edge.color ?? 'gray',
         label: edge.label,
         navigateTo: edge.navigateTo ?? null,
-
-        // technology: edge.technology,
-        // navigateTo: edge.navigateTo,
-        // labelBBox: edge.labelBBox ?? null,
-        // points: edge.points,
-        // color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',
-        // dir: edge.dir ?? 'forward',
-        // head: edge.head ?? 'normal',
-        // tail: edge.tail ?? 'none',
       },
       interactionWidth: 20,
     })

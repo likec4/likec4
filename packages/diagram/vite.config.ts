@@ -1,4 +1,4 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -8,9 +8,9 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
   console.log('isProduction', isProduction)
   return {
-    // define: {
-    //   'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-    // },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+    },
     resolve: {
       conditions: ['production', 'sources'],
       alias: {
@@ -19,9 +19,10 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       emptyOutDir: isProduction,
-      cssCodeSplit: false,
+      cssCodeSplit: true,
       cssMinify: true,
       minify: false,
+      target: 'esnext',
       lib: {
         entry: 'src/index.ts',
         formats: ['es'],
@@ -30,7 +31,11 @@ export default defineConfig(({ mode }) => {
         },
       },
       rollupOptions: {
-        input: ['src/index.ts'],
+        input: [
+          'src/index.ts',
+          'src/bundle/index.ts',
+          ...isProduction ? ['src/styles.css'] : [],
+        ],
         experimentalLogSideEffects: true,
         external: [
           ...Object.keys(packageJson.dependencies || {}),
@@ -38,6 +43,7 @@ export default defineConfig(({ mode }) => {
           /framer-motion/,
           /motion-dom/,
           /motion-utils/,
+          /@likec4\/styles/,
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
@@ -52,9 +58,13 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    css: {
+      postcss: {
+        plugins: [pandaCss()],
+      },
+    },
     plugins: [
       react(),
-      vanillaExtractPlugin({}),
       ...(isProduction
         ? [
           dts({

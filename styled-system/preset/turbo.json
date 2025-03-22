@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "dependsOn": [
+        "topo"
+      ],
+      "outputs": [
+        "src/generated.ts"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "generate"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    }
+  }
+}

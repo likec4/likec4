@@ -1,25 +1,24 @@
-import { style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine'
+import { css } from '@likec4/styles/css'
 
-export const dimmed = style({
-  color: 'var(--color-text-dimmed)',
+export const dimmed = css({
+  color: 'mantine.colors.dimmed',
 })
 
-export const header = style({
-  background: 'var(--color-surface)',
+export const header = css({
+  // background: 'var(--color-surface)',
 })
 
-export const previewBg = style({
+export const previewBg = css({
   position: 'relative',
   overflow: 'hidden',
   padding: 0,
   margin: 0,
   backgroundOrigin: 'padding-box',
-  backgroundImage: `radial-gradient(${mantine.colors.defaultBorder} 15%, ${mantine.colors.body} 15%)`,
+  backgroundImage: `radial-gradient({colors.mantine.colors.defaultBorder} 15%, {colors.mantine.colors.body} 15%)`,
   backgroundPosition: '0 0',
   backgroundSize: '12px 12px',
-  ':after': {
-    content: '',
+  _after: {
+    content: '" "',
     position: 'absolute',
     top: '0',
     left: '0',
@@ -29,7 +28,7 @@ export const previewBg = style({
   },
 })
 
-export const cardLink = style({
+export const cardLink = css({
   position: 'absolute',
   inset: 0,
   zIndex: 5,

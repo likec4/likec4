@@ -3,10 +3,13 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "tsBuildInfoFile": ".tsbuildinfo/vite.tsbuildinfo",
+    "outDir": ".tsbuildinfo/vite",
     "module": "preserve"
   },
   "include": [
     "./*.config.ts",
+    "./package.json",
+    "./tsr.config.json"
   ],
   "references": [
     {

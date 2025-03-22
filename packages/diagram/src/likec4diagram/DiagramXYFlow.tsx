@@ -1,12 +1,11 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
-import clsx from 'clsx'
-import { shallowEqual } from 'fast-equals'
+import { cx } from '@likec4/styles/css'
+import { useCallbackRef, useTimeout } from '@mantine/hooks'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
-import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { ReduceGraphicsViewportListener } from '../context/ReduceGraphics'
+import { usePanningAtom } from '../context/ReduceGraphics'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
@@ -41,22 +40,29 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.enableReadOnly === b.enableReadOnly &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
-  shallowEqual(a.viewport, b.viewport)
+  shallowEqual(a.viewport ?? null, b.viewport ?? null)
 
-type Picked = EnforceOptional<
+export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Pick<
     LikeC4DiagramProperties,
     | 'background'
     | 'nodesDraggable'
     | 'nodesSelectable'
+    | 'reactFlowProps'
   >
 >
-export type LikeC4DiagramXYFlowProps = PropsWithChildren<Required<Picked>>
+
+const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =>
+  a.nodesDraggable === b.nodesDraggable &&
+  a.nodesSelectable === b.nodesSelectable &&
+  deepEqual(a.background, b.background) &&
+  deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {})
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
-  background,
-  nodesDraggable,
-  nodesSelectable,
+  background = 'dots',
+  nodesDraggable = false,
+  nodesSelectable = false,
+  reactFlowProps = {},
   children,
 }) => {
   const diagram = useDiagram()
@@ -79,19 +85,32 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const notReadOnly = !enableReadOnly
-
-  const layoutConstraints = useLayoutConstraints()
-
-  const onViewportResize = useCallbackRef(() => {
-    diagram.send({ type: 'xyflow.resized' })
-  })
+  const notReadOnly = !enableReadOnly,
+    layoutConstraints = useLayoutConstraints(),
+    $isPanning = usePanningAtom(),
+    isPanning = useTimeout(() => {
+      $isPanning.set(true)
+    }, 100),
+    notPanning = useTimeout(() => {
+      isPanning.clear()
+      $isPanning.set(false)
+    }, 75),
+    onViewportResize = useCallbackRef(() => {
+      diagram.send({ type: 'xyflow.resized' })
+    }),
+    onMove = useCallbackRef(() => {
+      if (!$isPanning.get()) {
+        isPanning.start()
+      }
+      notPanning.clear()
+      notPanning.start()
+    })
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
       nodes={nodes}
       edges={edges}
-      className={clsx(initialized ? 'initialized' : 'not-initialized')}
+      className={cx(initialized ? 'initialized' : 'not-initialized')}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodesChange={useCallbackRef((changes) => {
@@ -124,7 +143,11 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
+      {...props.pannable && {
+        onMove,
+      }}
       onMoveEnd={useCallbackRef((event, viewport) => {
+        notPanning.start()
         // if event is present, the move was triggered by user
         diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
       })}
@@ -154,10 +177,11 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       nodesDraggable={notReadOnly && nodesDraggable}
       nodesSelectable={nodesSelectable}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
-      {...props}>
-      <ReduceGraphicsViewportListener />
+      {...props}
+      {...reactFlowProps}>
       <DiagramUI />
       {children}
     </BaseXYFlow>
   )
-}, shallowEqual)
+}, compareProps)
+LikeC4DiagramXYFlow.displayName = 'LikeC4DiagramXYFlow'

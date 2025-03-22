@@ -1,4 +1,6 @@
-@layer reset, base, mantine, tokens, recipes, utilities;
+@layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+@import "@mantine/core/styles.layer.css";
+@import "@xyflow/react/dist/style.css" layer(xyflow);
 
 :root {
   --likec4-app-font:

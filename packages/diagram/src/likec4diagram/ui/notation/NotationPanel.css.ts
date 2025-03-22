@@ -1,58 +1,48 @@
-import { fallbackVar, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
-import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
+// import { fallbackVar, style } from '@vanilla-extract/css'
+// import { calc } from '@vanilla-extract/css-utils'
+// import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
 // import { stokeFillMix } from '../../xyflow/nodes/element/element.css'
 
-export const container = style({
+export const container = css({
   bottom: 0,
   right: 0,
   padding: 8,
   margin: 0,
 })
 
-export const icon = style({
-  vars: {
-    ['--ai-radius']: '0px',
-  },
-  selectors: {
-    [`${whereNotReducedGraphics} &`]: {
-      vars: {
-        ['--ai-radius']: mantine.radius.md,
-      },
-    },
+export const icon = css({
+  ['--ai-radius']: '0px',
+  _noReduceGraphics: {
+    ['--ai-radius']: '{radii.md}',
   },
 })
 
-export const card = style({
+export const card = css({
   cursor: 'default',
   userSelect: 'none',
   minWidth: 200,
   maxWidth: 'calc(100vw - 20px)',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  '@media': {
-    [mantine.largerThan('sm')]: {
-      minWidth: 300,
-      maxWidth: `65vw`,
-    },
-    [mantine.largerThan('md')]: {
-      // minWidth: 350,
-      maxWidth: `40vw`,
-    },
+  backgroundColor: `mantine.colors.body/80`,
+  // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  sm: {
+    minWidth: 300,
+    maxWidth: `65vw`,
   },
-  selectors: {
-    [`${whereDark} &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
-    },
+  md: {
+    maxWidth: `40vw`,
+  },
+  _dark: {
+    backgroundColor: `mantine.colors.dark[6]/80`,
   },
 })
 
-export const tabPanel = style({
-  padding: calc(mantine.spacing.xs).divide(2).toString(),
+export const tabPanel = css({
+  padding: '2xs',
 })
 
-// export const description = style({
+// export const description = css({
 //   whiteSpaceCollapse: 'preserve-breaks',
 //   color: mantine.colors.gray[7],
 //   selectors: {
@@ -62,29 +52,29 @@ export const tabPanel = style({
 //   }
 // })
 
-export const elementNotation = style({
+export const elementNotation = css({
   backgroundColor: 'transparent',
   transition: 'all 100ms ease-in',
   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  vars: {
-    // [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
-  },
-  ':hover': {
+  // vars: {
+  //   // [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
+  // },
+  _hover: {
     transition: 'all 120ms ease-out',
     // backgroundColor:
-    backgroundColor: `color-mix(in srgb, ${mantine.colors.primaryColors[2]}, transparent 50%)`,
+    backgroundColor: `mantine.colors.primary[2]/50`,
   },
-  selectors: {
-    [`${whereDark} &:hover`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[3]}, transparent 60%)`,
+  _dark: {
+    _hover: {
+      backgroundColor: `mantine.colors.dark[3]/40`,
     },
   },
 })
 
-export const shapeSvg = style({
-  fill: vars.element.fill,
-  stroke: vars.element.stroke,
+export const shapeSvg = css({
+  fill: 'likec4.palette.fill',
+  stroke: 'likec4.palette.stroke',
   strokeWidth: 1,
   overflow: 'visible',
   width: '100%',
@@ -95,7 +85,7 @@ export const shapeSvg = style({
   `,
 })
 
-export const shapeBadge = style({
+export const shapeBadge = css({
   fontWeight: 500,
   letterSpacing: '0.2px',
   paddingTop: 0,
@@ -103,13 +93,11 @@ export const shapeBadge = style({
   textTransform: 'lowercase',
   transition: 'all 150ms ease-in-out',
   cursor: 'pointer',
-  vars: {
-    ['--badge-radius']: '2px',
-    ['--badge-fz']: '9.5px',
-    ['--badge-padding-x']: '3px',
-    ['--badge-height']: '13.5px',
-    ['--badge-lh']: '1',
-    // ['--badge-bg']: vars.element.fill,
-    // ['--badge-color']: vars.element.hiContrast
-  },
+  ['--badge-radius']: '2px',
+  ['--badge-fz']: '9.5px',
+  ['--badge-padding-x']: '3px',
+  ['--badge-height']: '13.5px',
+  ['--badge-lh']: '1',
+  // ['--badge-bg']: vars.element.fill,
+  // ['--badge-color']: vars.element.hiContrast
 })

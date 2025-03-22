@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import { type PropsWithChildren, createContext, createRef, useContext, useRef } from 'react'
-import { rootClassName } from '../theme-vars'
+import { type PropsWithChildren, createContext, createRef, useContext, useEffect, useRef } from 'react'
+import { usePanningAtom } from './ReduceGraphics'
 
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
@@ -14,9 +14,21 @@ export function RootContainer({
   reduceGraphics?: boolean
 }>) {
   const ref = useRef<HTMLDivElement>(null)
+  const $isPanning = usePanningAtom()
+
+  useEffect(() => {
+    return $isPanning.listen((isPanning) => {
+      if (isPanning) {
+        ref.current?.setAttribute('data-likec4-diagram-panning', 'true')
+      } else {
+        ref.current?.removeAttribute('data-likec4-diagram-panning')
+      }
+    })
+  }, [$isPanning])
+
   return (
     <Box
-      className={clsx(rootClassName, className)}
+      className={clsx('likec4-diagram-root', className)}
       ref={ref}
       {...reduceGraphics && {
         ['data-likec4-reduced-graphics']: true,

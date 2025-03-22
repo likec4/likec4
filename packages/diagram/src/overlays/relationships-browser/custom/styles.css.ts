@@ -1,12 +1,11 @@
-import { rem } from '@mantine/core'
-import { globalStyle, style } from '@vanilla-extract/css'
-import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const emptyNode = style({
+export const emptyNode = css({
   width: '100%',
   height: '100%',
-  border: `3px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
+  border: `3px dashed`,
+  borderColor: `mantine.colors.defaultBorder`,
+  borderRadius: 'md',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

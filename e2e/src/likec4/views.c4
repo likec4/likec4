@@ -30,13 +30,25 @@ views {
   }
 
   view view-with-custom-colors {
-    include *,
-    cloud -> * with {
-      color custom
-    }
+    include
+      *,
+      customer -> with {
+        color custom
+      },
+      cloud.ui,
+      cloud.next with {
+        color custom
+        opacity 100%
+      },
+      cloud.next.graphql,
+      cloud.next.backend,
+      -> amazon with {
+        color custom
+      }
 
-    style cloud {
+    style cloud, cloud.ui {
       color custom
+      opacity 20%
     }
   }
 }

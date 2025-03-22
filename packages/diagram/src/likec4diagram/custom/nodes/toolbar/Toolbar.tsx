@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import type { Base } from '../../../../base'
 import { useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
-import * as css from './styles.css'
+import * as styles from './styles.css'
 
 export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
   nodeProps: Base.NodeProps
@@ -63,9 +63,9 @@ export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) 
         onClick={stopPropagation}
         onDoubleClick={stopPropagation}
         withBorder>
-        <Stack gap={6}>
-          <Box pl={2}>
-            <Text c="dimmed" className={css.toolbarTitle}>{title}</Text>
+        <Stack gap={'6px'}>
+          <Box px={'4px'}>
+            <Text c="dimmed" className={styles.toolbarTitle}>{title}</Text>
           </Box>
           <Group gap={4}>
             {children}

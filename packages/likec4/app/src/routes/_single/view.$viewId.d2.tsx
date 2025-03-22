@@ -8,7 +8,7 @@ import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
 import { krokiD2SvgUrl } from '../../const'
 import { svgContainer } from './view.css'
-import * as css from './view_viewId_.css'
+import * as styles from './view_viewId_.css'
 
 export const Route = createFileRoute('/_single/view/$viewId/d2')({
   component: ViewAsD2,
@@ -48,17 +48,17 @@ function ViewAsD2() {
   const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
   return (
     <>
-      <PanelGroup className={css.viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
+      <PanelGroup className={styles.viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
         <Panel>
           <ScrollArea
-            className={css.cssScrollArea}
+            className={styles.cssScrollArea}
             p={5}
             styles={{
               viewport: {
                 borderRadius: 6,
               },
             }}>
-            <Code block className={css.cssCodeBlock}>
+            <Code block className={styles.cssCodeBlock}>
               {source}
             </Code>
             <CopyToClipboard text={source} />

@@ -5,6 +5,7 @@
     "jsx": "react-jsx",
     "rootDir": "src",
     "tsBuildInfoFile": ".tsbuildinfo/diagram.tsbuildinfo",
+    "outDir": ".tsbuildinfo/diagram",
     "types": [
       "vite/client",
     ],
@@ -13,6 +14,9 @@
     "./src/"
   ],
   "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
     {
       "path": "./tsconfig.vite.json"
     }

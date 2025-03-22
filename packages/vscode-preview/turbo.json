@@ -6,10 +6,12 @@
   "tasks": {
     "build": {
       "dependsOn": [
+        "@likec4/styles#generate",
         "topo"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "styled-system/**"
       ]
     }
   }

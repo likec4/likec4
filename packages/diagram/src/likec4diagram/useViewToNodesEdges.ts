@@ -94,7 +94,7 @@ function viewToNodesEdge(opts: {
     const base = {
       id,
       selectable: selectable && node.kind !== ElementKind.Group,
-      focusable: selectable && !isCompound,
+      focusable: selectable && node.kind !== ElementKind.Group,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -171,6 +171,7 @@ function viewToNodesEdge(opts: {
               deploymentFqn: deploymentFqn,
               modelFqn,
             },
+            dragHandle: '.likec4-compound-title',
           } satisfies Types.CompoundDeploymentNode,
         )
         break

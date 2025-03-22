@@ -1,42 +1,38 @@
+import { css } from '@likec4/styles/css'
 import { rem } from '@mantine/core'
-import { style } from '@vanilla-extract/css'
-import { mantine } from '../mantine'
 
-export const content = style({
+export const content = css({
   paddingTop: 120,
   position: 'relative',
   zIndex: '1',
-  '@media': {
-    [mantine.largerThan('sm')]: {
-      paddingTop: 220,
-    },
+  sm: {
+    paddingTop: 220,
   },
 })
 
-export const image = style({
+export const image = css({
   position: 'absolute',
   inset: '0',
   opacity: 0.2,
 })
 
-export const inner = style({
+export const inner = css({
   position: 'relative',
 })
 
-export const root = style({
+export const root = css({
   paddingTop: '80px',
   paddingBottom: '80px',
 })
 
-export const description = style({
+export const description = css({
   maxWidth: rem(540),
   margin: 'auto',
-  marginTop: mantine.spacing.xl,
-  marginBottom: `calc(${mantine.spacing.xl}*1.5)`,
+  marginTop: 'xl',
+  marginBottom: `calc({spacing.xl}*1.5)`,
 })
 
-export const title = style({
-  fontFamily: ['Greycliff CF', mantine.fontFamily],
+export const title = css({
   textAlign: 'center',
   fontWeight: '900',
   fontSize: rem(38),

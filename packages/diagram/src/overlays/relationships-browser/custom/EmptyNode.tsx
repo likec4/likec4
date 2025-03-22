@@ -1,7 +1,7 @@
 import { Box, Text } from '@mantine/core'
 import type { NodeProps } from '../../../base'
 import type { RelationshipsBrowserTypes } from '../_types'
-import * as css from './styles.css'
+import { emptyNode } from './styles.css'
 
 type EmptyNodeProps = NodeProps<Pick<RelationshipsBrowserTypes.EmptyNodeData, 'column'>>
 
@@ -11,7 +11,7 @@ export function EmptyNode({
   },
 }: EmptyNodeProps) {
   return (
-    <Box className={css.emptyNode}>
+    <Box className={emptyNode}>
       <Text c={'dimmed'} fz={'lg'} fw={500}>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Text>
     </Box>
   )

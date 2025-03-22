@@ -1,6 +1,5 @@
 import { type DiagramNode, type ElementShape, nonexhaustive } from '@likec4/core'
 import clsx from 'clsx'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { toDomPrecision } from '../../../utils/xyflow'
 import * as css from './ElementShape.css'
 

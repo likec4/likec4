@@ -1,0 +1,31 @@
+# `@likec4/style-preset`
+
+Shared preset for [PandaCSS](https://panda-css.com/)
+
+## Usage
+
+```bash
+pnpm add -D @likec4/style-preset @likec4/styles @pandacss/dev
+```
+
+Configure your `panda.config.ts`:
+
+```ts
+import { defineConfig } from '@pandacss/dev'
+
+export default defineConfig({
+  // Whether to use css reset
+  importMap: '@likec4/styles',
+  presets: [
+    '@likec4/style-preset',
+  ],
+  jsxFramework: 'react',
+  include: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    // TODO: will be replaced with ship info
+    '../diagram/src/**/*.{js,jsx,ts,tsx}',
+  ],
+})
+```
+
+TODO: configure PostCSS or use cli

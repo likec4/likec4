@@ -5,12 +5,12 @@ import {
   DefaultShapeSize,
   DefaultTextSize,
 } from '@likec4/core'
+import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
-import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import type { NodeProps } from '../../types'
-import * as css from './ElementNodeContainer.css'
+import * as styles from './ElementNodeContainer.css'
 
 type RequiredData = Pick<
   DiagramNode,
@@ -60,6 +60,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         ...data
       },
     },
+    style,
     children,
     ...rest
   }, ref) => {
@@ -83,10 +84,13 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
       <Box
         component={m.div}
         ref={ref}
-        className={clsx([
-          css.container,
+        className={cx(
+          css({
+            likec4Palette: data.color,
+          }),
+          styles.container,
           'likec4-element-node',
-        ])}
+        )}
         initial={false}
         {...selectable && {
           animate: {
@@ -94,13 +98,18 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
           },
           whileTap: { scale: 0.98 },
         }}
-        data-hovered={isHovered}
+        data-likec4-hovered={isHovered}
         data-likec4-color={data.color}
         data-likec4-shape={data.shape}
         data-likec4-shape-size={size}
-        data-likec4-padding={padding}
+        data-likec4-spacing={padding}
         data-likec4-text-size={textSize}
-        data-likec4-dimmed={isDimmed}
+        {...(isDimmed !== false && {
+          'data-likec4-dimmed': isDimmed,
+        })}
+        style={{
+          ...style,
+        }}
         {...rest}
       >
         {children}

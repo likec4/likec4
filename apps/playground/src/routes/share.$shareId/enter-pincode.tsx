@@ -1,7 +1,7 @@
 import { api } from '$/api'
-import { css } from '$styled-system/css'
-import { Box } from '$styled-system/jsx'
 import {} from '@likec4/core'
+import { css } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import {
   Button,
   Center,
@@ -16,7 +16,6 @@ import { useAsync, useLocalStorageValue, usePrevious } from '@react-hookz/web'
 import { IconRosetteDiscountCheck } from '@tabler/icons-react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
-import { isEmpty } from 'remeda'
 
 export const Route = createFileRoute('/share/$shareId/enter-pincode')({
   component: RouteComponent,
@@ -89,7 +88,7 @@ function RouteComponent() {
                 <Center mt={'md'}>
                   <IconRosetteDiscountCheck
                     className={css({
-                      color: 'green.6',
+                      color: 'mantine.colors.green[6]',
                     })}
                     size={100} />
                 </Center>
@@ -114,15 +113,18 @@ function RouteComponent() {
                   </Text>
                 </div>
                 {pincodeError && (
-                  <Box textAlign={'center'}>
+                  <Box
+                    css={{
+                      textAlign: 'center',
+                    }}>
                     <Box
-                      className={css({
+                      css={{
                         display: 'inline-block',
-                        bg: 'red.light',
-                        color: 'red',
+                        bg: 'mantine.colors.red.light',
+                        color: 'mantine.colors.red',
                         py: 'xs',
                         px: 'md',
-                      })}>
+                      }}>
                       {pincodeError}
                     </Box>
                   </Box>

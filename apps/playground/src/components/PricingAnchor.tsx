@@ -1,5 +1,4 @@
-import { HStack } from '$styled-system/jsx'
-import { hstack } from '$styled-system/patterns'
+import { hstack } from '@likec4/styles/patterns'
 import { Anchor } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 

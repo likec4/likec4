@@ -1,0 +1,59 @@
+{
+  "name": "@likec4/style-preset",
+  "license": "MIT",
+  "version": "1.26.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "generate": "wireit",
+    "typecheck": "tsc --noEmit",
+    "build": "wireit"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "wireit": {
+    "generate": {
+      "command": "tsx --conditions=sources ./generate.ts",
+      "files": [
+        "generate.ts",
+        "package.json"
+      ],
+      "output": [
+        "src/generated.ts"
+      ]
+    },
+    "build": {
+      "command": "unbuild"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./src": "./src/index.ts"
+  },
+  "dependencies": {
+    "@pandacss/dev": "catalog:css"
+  },
+  "devDependencies": {
+    "@pandacss/preset-panda": "catalog:css",
+    "remeda": "catalog:utils",
+    "@likec4/core": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@mantine/vanilla-extract": "catalog:mantine",
+    "@mantine/core": "catalog:mantine",
+    "unbuild": "catalog:",
+    "khroma": "^2.1.0",
+    "json5": "catalog:utils",
+    "tsx": "catalog:",
+    "wireit": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.6.5"
+}

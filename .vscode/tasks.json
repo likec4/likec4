@@ -12,6 +12,16 @@
         "kind": "build",
         "isDefault": true
       },
+      "promptOnClose": false,
+      "presentation": {
+        "echo": false,
+        "showReuseMessage": false,
+        "reveal": "always",
+        "revealProblems": "onProblem",
+        "group": "build",
+        "close": true,
+        "clear": true,
+      }
     },
     {
       "label": "ts: watch",

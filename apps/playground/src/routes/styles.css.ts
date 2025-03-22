@@ -1,17 +1,19 @@
 // import { createVar, globalStyle } from '@vanilla-extract/css'
-import { css as style } from '$styled-system/css'
+import { css } from '@likec4/styles/css'
 
 // const bg = createVar()
 
-export const panel = style({})
+export const panel = css({
+  backgroundColor: 'mantine.colors.body',
+})
 
-export const resize = style({
+export const resize = css({
   cursor: 'ew-resize',
   userSelect: 'none',
   boxSizing: 'border-box',
   borderLeft: '0px solid transparent',
   transition: 'all 175ms ease-in-out',
-  backgroundColor: 'defaultBorder',
+  backgroundColor: 'mantine.colors.defaultBorder',
   backgroundClip: 'content-box',
   flex: '0 0 6px',
   // position: 'relative',
@@ -35,15 +37,19 @@ export const resize = style({
   // },
 
   _hover: {
-    scaleX: 2,
-    backgroundColor: 'primary.filledHover',
+    scaleX: 2.2,
+    backgroundColor: 'mantine.colors.primary.filledHover',
+    // color: token('colors.gray.6'),
+    // color: mantine.colors.dimmed,
+    // content: `' ${token.var('colors.gray.light')}'`,
+    // content: `${token('colors.green.6')}`,
     // vars: {
     //   [bg]: mantine.colors.primaryColors.filledHover
     // },
   },
 })
 
-export const stateAlert = style({
+export const stateAlert = css({
   position: 'absolute',
   top: '0.75rem',
   left: '0.5rem',

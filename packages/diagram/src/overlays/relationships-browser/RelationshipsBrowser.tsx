@@ -13,8 +13,7 @@ import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
 import { ViewPadding } from './const'
-import { edgeTypes } from './custom/edgeTypes'
-import { nodeTypes } from './custom/nodeTypes'
+import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
 import {
   RelationshipsBrowserActorContext,
   useRelationshipsBrowser,
@@ -22,9 +21,24 @@ import {
 } from './hooks'
 import { SelectElement } from './SelectElement'
 
+const nodeTypes = {
+  element: ElementNode,
+  compound: CompoundNode,
+  empty: EmptyNode,
+} satisfies {
+  [key in RelationshipsBrowserTypes.Node['type']]: any
+}
+
+export const edgeTypes = {
+  relationship: RelationshipEdge,
+} satisfies {
+  [key in RelationshipsBrowserTypes.Edge['type']]: any
+}
+
 export type RelationshipsBrowserProps = {
   actorRef: RelationshipsBrowserActorRef
 }
+
 export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   // const actorRef = useDiagramActorState(s => s.children.relationshipsBrowser)
   // if (actorRef == null) {
