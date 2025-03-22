@@ -50,6 +50,7 @@
   },
   "pnpm": {
     "overrides": {
+      "esbuild": "catalog:esbuild",
       "react": "catalog:react",
       "react-dom": "catalog:react",
       "@types/react": "catalog:react",

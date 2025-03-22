@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
         input: [
           'src/index.ts',
           'src/bundle/index.ts',
+          ...isProduction ? ['src/styles.css'] : [],
         ],
         experimentalLogSideEffects: true,
         external: [

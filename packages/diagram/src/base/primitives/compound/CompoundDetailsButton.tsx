@@ -6,6 +6,7 @@ import { IconId } from '@tabler/icons-react'
 import { m } from 'framer-motion'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
+import { compoundActionBtn } from './actionbtns.css'
 
 type CompoundDetailsButtonProps = NodeProps & {
   icon?: React.ReactNode
@@ -50,19 +51,10 @@ export function CompoundDetailsButton({
         <ActionIcon
           className={cx(
             'nodrag nopan',
+            compoundActionBtn({
+              delay: isHovered && !isHoverDebounced,
+            }),
             css({
-              transitionDuration: 'normal',
-              // Debounce CSS transition
-              transitionDelay: {
-                base: isHovered && !isHoverDebounced ? '0.25s' : '0s',
-                _hover: '0s',
-              },
-              '[data-compound-title-inverse] &': {
-                '--actionbtn-color': '{colors.likec4.palette.stroke}',
-                '--actionbtn-color-hovered': '{colors.likec4.palette.stroke}',
-                '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
-                '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
-              },
               _whenHovered: {
                 opacity: .75,
               },

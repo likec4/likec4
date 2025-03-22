@@ -50,7 +50,7 @@
     "@mantine/core": "catalog:mantine",
     "unbuild": "catalog:",
     "khroma": "^2.1.0",
-    "json5": "^2.2.3",
+    "json5": "catalog:utils",
     "tsx": "catalog:",
     "wireit": "catalog:",
     "typescript": "catalog:"

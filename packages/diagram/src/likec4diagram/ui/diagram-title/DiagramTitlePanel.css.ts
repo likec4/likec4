@@ -19,7 +19,7 @@ export const card = css({
   _dark: {
     backgroundColor: 'mantine.colors.dark[6]',
   },
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     borderRadius: 'sm',
     backgroundColor: `mantine.colors.body/80`,
     // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),

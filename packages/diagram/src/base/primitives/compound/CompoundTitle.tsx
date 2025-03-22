@@ -25,6 +25,7 @@ const titleContainer = css({
   width: 'auto',
   minHeight: '30px',
   [`:where(.react-flow__node.draggable) &`]: {
+    pointerEvents: 'all',
     cursor: 'grab',
   },
   [`.likec4-compound-node:has(.compound-action) &`]: {

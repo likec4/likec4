@@ -45,7 +45,7 @@ export const edgeLabelContainer = css({
     transition: `all 190ms {easings.inOut}`,
     transform: `${translate.ref} scale(1.12)`,
   },
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     mixBlendMode: {
       base: 'plus-lighter',
       _light: 'screen',
@@ -55,7 +55,7 @@ export const edgeLabelContainer = css({
   _smallZoom: {
     display: 'none',
   },
-  _reducedGraphics: {
+  _reduceGraphicsOnPan: {
     display: 'none',
   },
 })

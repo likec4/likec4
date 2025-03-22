@@ -8,37 +8,36 @@ const labelColor = '--xy-edge-label-color'
 const labelBg = '--xy-edge-label-background-color'
 
 export const edgeVars = css({
-  // ''
-  // color: 'likec4.'
   [edgeStroke]: '{colors.likec4.relation.stroke}',
   [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
-  [labelColor]: '{colors.likec4.relation.label}',
-  [labelBg]: '{colors.likec4.relation.label.bg}',
+  [labelColor]: {
+    base: '{colors.likec4.relation.label}',
+    _light: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
+  },
+  [labelBg]: {
+    _light: `{colors.likec4.relation.label.bg/60}`,
+    _dark: `{colors.likec4.relation.label.bg/50}`,
+  },
   ['--xy-edge-stroke-width']: '3',
   '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
     [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
-    ['--xy-edge-stroke-width']: '3',
     _whenSelected: {
       ['--xy-edge-stroke-width']: '4',
     },
   },
-  _light: {
-    [labelColor]: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
-    [labelBg]: `{colors.likec4.relation.label.bg/60}`,
-  },
-  _dark: {
-    [labelBg]: `{colors.likec4.relation.label.bg/50}`,
-  },
 })
 
 export const edgeContainer = css({
-  _reducedGraphics: {
+  _reduceGraphics: {
     transition: 'none',
   },
 })
 
 const _hideOnReducedGraphics = css.raw({
-  _reducedGraphics: {
+  _reduceGraphicsOnPan: {
+    display: 'none',
+  },
+  _smallZoom: {
     display: 'none',
   },
 })
@@ -49,11 +48,9 @@ export const edgePathBg = css(_hideOnReducedGraphics, {
   strokeOpacity: 0.08,
   transitionProperty: 'stroke-width, stroke-opacity',
   transitionDuration: 'fast',
-  transitionTimingFunction: 'ease-out',
-  _smallZoom: {
-    display: 'none',
-  },
+  transitionTimingFunction: 'inOut',
   _whenHovered: {
+    transitionTimingFunction: 'out',
     strokeWidth: 'calc(var(--xy-edge-stroke-width) + 4)',
     strokeOpacity: 0.2,
   },
@@ -73,20 +70,16 @@ export const markerContext = css({
 })
 
 export const cssEdgePath = css({
-  animationDuration: '800ms',
-  animationIterationCount: 'infinite',
-  animationTimingFunction: 'linear',
-  animationFillMode: 'both',
   strokeDashoffset: 10,
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
   },
   _whenHovered: {
-    animationName: 'xyedgeAnimated',
+    animationStyle: 'xyedgeAnimated',
     animationDelay: '450ms',
   },
   [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
-    animationName: 'xyedgeAnimated',
+    animationStyle: 'xyedgeAnimated',
     animationDelay: '0ms',
   },
   [`:where([data-edge-dir='back']) &`]: {
@@ -98,10 +91,10 @@ export const cssEdgePath = css({
   _smallZoom: {
     animationName: 'none',
   },
-  // _panning: {
-  //   strokeDasharray: 'none !important',
-  //   animationName: 'none',
-  // },
+  _whenPanning: {
+    strokeDasharray: 'none !important',
+    animationName: 'none',
+  },
 })
 
 const aiBg = {

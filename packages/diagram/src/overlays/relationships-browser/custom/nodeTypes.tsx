@@ -46,7 +46,7 @@ export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>
 
 export const CompoundNode = customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
   return (
-    <CompoundNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
+    <CompoundNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
       <ElementDetailsButtonWithHandler {...props} />
       <CompoundTitle {...props} />
       <CompoundPorts {...props} />

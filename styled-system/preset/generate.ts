@@ -234,34 +234,6 @@ ${
 }
 ]
 
-export const staticCssIncludeProps = ${
-  JSON5.stringify(
-    {
-      colorPalette: [
-        ...map(ThemeColors, (color) => `likec4.${color}`),
-        ...pipe(
-          ThemeColors,
-          flatMap((color) => times(MAX_DEPTH, d => `likec4.compound${d + 1}.${color}`)),
-        ),
-      ],
-      color: [
-        'mantine.colors.text',
-        'mantine.colors.dimmed',
-        'mantine.colors.defaultColor',
-        'mantine.colors.default',
-        'mantine.colors.placeholder',
-      ],
-      background: [
-        'likec4.background',
-        'mantine.colors.body',
-        'mantine.colors.defaultHover',
-      ],
-    },
-    null,
-    2,
-  )
-}
-
 export const conditions = ${
   JSON5.stringify(
     {

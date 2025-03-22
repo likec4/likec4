@@ -43,6 +43,15 @@ export const theme: ExtendableTheme = {
           animationName: 'indicatorStrokeOpacity',
         },
       },
+      'xyedgeAnimated': {
+        value: {
+          animationDuration: '800ms',
+          animationIterationCount: 'infinite',
+          animationTimingFunction: 'linear',
+          animationFillMode: 'both',
+          animationName: 'xyedgeAnimated',
+        },
+      },
     },
   },
 }

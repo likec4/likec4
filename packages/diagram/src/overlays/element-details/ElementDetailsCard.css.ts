@@ -54,7 +54,7 @@ export const title = css({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 600,
-  fontSize: 24,
+  fontSize: '24px',
   // lineHeight: 1.15,
   lineHeight: 'xs',
   // color: vars.element.hiContrast
@@ -133,7 +133,7 @@ export const viewButton = css({
     transition: `all 130ms {easings.inOut}`,
   },
   '&:hover > *': {
-    transitionTimingFunction: 'ease-out',
+    transitionTimingFunction: 'out',
     transform: 'translateX(1.6px)',
   },
 })
@@ -141,9 +141,9 @@ export const viewButton = css({
 export const viewButtonTitle = css({
   transition: 'fast',
   color: `[var(${viewTitleColor}, {colors.mantine.colors.gray[7]})]`,
-  fontSize: 15,
+  fontSize: '15px',
   fontWeight: 500,
-  lineHeight: 1.4,
+  lineHeight: '1.4',
 })
 // globalStyle(`${viewButton} .tabler-icon`, {
 //   width: '85%',
@@ -171,8 +171,8 @@ export const tabsList = css({
   background: 'mantine.colors.gray[1]',
   borderRadius: 'sm',
   flexWrap: 'nowrap',
-  gap: 6,
-  padding: 4,
+  gap: '6px',
+  padding: '4px',
   _dark: {
     background: 'mantine.colors.dark[7]',
   },
@@ -216,15 +216,15 @@ export const tabsPanel = css({
   overflow: 'hidden',
   position: 'relative',
   '&:not(:has(.mantine-ScrollArea-root))': {
-    paddingLeft: 4,
-    paddingRight: 4,
+    paddingLeft: '4px',
+    paddingRight: '4px',
   },
   '& .mantine-ScrollArea-root': {
     width: '100%',
     height: '100%',
     '& > div': {
-      paddingLeft: 4,
-      paddingRight: 4,
+      paddingLeft: '4px',
+      paddingRight: '4px',
     },
   },
 })
@@ -245,19 +245,19 @@ export const propertyLabel = css({
 
 export const resizeHandle = css({
   position: 'absolute',
-  width: 14,
-  height: 14,
+  width: '14px',
+  height: '14px',
   border: `3.5px solid`,
   borderColor: 'mantine.colors.dark[3]',
   borderTop: 'none',
   borderLeft: 'none',
-  borderRadius: 2,
-  bottom: 2,
-  right: 2,
+  borderRadius: '2px',
+  bottom: '2px',
+  right: '2px',
   transition: 'fast',
   cursor: 'se-resize',
   _hover: {
-    borderWidth: 4,
+    borderWidth: '4px',
     borderColor: 'mantine.colors.dark[1]',
   },
 })

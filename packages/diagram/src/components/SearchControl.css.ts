@@ -12,38 +12,28 @@ export const root = style({
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
-  borderColor: 'mantine.colors.defaultBorder',
+  borderColor: {
+    base: 'mantine.colors.defaultBorder',
+    _light: 'mantine.colors.gray[4]',
+    _dark: 'mantine.colors.dark[4]',
+    _hover: 'mantine.colors.defaultBorder',
+  },
   cursor: 'pointer',
-  background: 'mantine.colors.default',
+  background: {
+    base: 'mantine.colors.default',
+    _light: 'mantine.colors.white',
+    _dark: 'mantine.colors.dark[6]',
+    _hover: 'mantine.colors.defaultHover',
+  },
+
   width: '100%',
-  // vars: {
-  //   [transparent]: '20%',
-  //   [bgColor]: 'mantine.colors.default',
-  // },
-  _light: {
-    borderColor: 'mantine.colors.gray[4]',
-    background: 'mantine.colors.white',
-  },
-  _dark: {
-    borderColor: 'mantine.colors.dark[4]',
-    background: 'mantine.colors.dark[6]',
-  },
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     transition: 'fast',
     borderRadius: 'sm',
     shadow: 'xs',
-    // backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
-    // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-    // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   },
   _hover: {
-    borderColor: 'mantine.colors.defaultBorder',
     shadow: 'sm',
-    background: 'mantine.colors.defaultHover',
-    // vars: {
-    //   [transparent]: '10%',
-    //   [bgColor]: 'mantine.colors.defaultHover',
-    // },
   },
   '& .tabler-icon': {
     color: 'mantine.colors.text',
@@ -54,6 +44,7 @@ export const placeholder = style({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
   paddingRight: '50px',
+  color: 'mantine.colors.placeholder',
   flex: '1',
 })
 
@@ -64,17 +55,21 @@ export const shortcut = style({
   padding: '4px 7px',
   borderRadius: 'sm',
   border: '1px solid',
+  transition: 'fast',
   _light: {
     color: 'mantine.colors.gray[7]',
     borderColor: 'mantine.colors.gray[2]',
-    backgroundColor: 'mantine.colors.gray[2]',
-    _notReducedGraphics: {
-      backgroundColor: 'mantine.colors.gray[2]/80',
-    },
   },
   _dark: {
     color: 'mantine.colors.dark[0]',
     borderColor: 'mantine.colors.dark[7]',
-    backgroundColor: 'mantine.colors.dark[8]',
+  },
+  backgroundColor: {
+    _light: 'mantine.colors.gray[2]/70',
+    _dark: 'mantine.colors.dark[8]/70',
+    _groupHover: {
+      _light: 'mantine.colors.gray[2]',
+      _dark: 'mantine.colors.dark[8]',
+    },
   },
 })

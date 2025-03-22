@@ -13,7 +13,7 @@ export const container = css({
 
 export const icon = css({
   ['--ai-radius']: '0px',
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     ['--ai-radius']: '{radii.md}',
   },
 })

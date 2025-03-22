@@ -22,7 +22,7 @@ export const panel = css({
     width: '65%',
     height: '65%',
   },
-  _reducedGraphics: {
+  _reduceGraphics: {
     '& .action-icon': {
       '--ai-radius': '0px',
     },
@@ -30,7 +30,7 @@ export const panel = css({
 })
 
 export const actionIconGroup = css({
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     shadow: 'md',
   },
 })

@@ -32,13 +32,6 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
       // Omited props
       | 'defaultNodes'
       | 'defaultEdges'
-      | 'panOnScroll'
-      | 'panOnDrag'
-      | 'preventScrolling'
-      | 'zoomOnPinch'
-      | 'zoomActivationKeyCode'
-      | 'zoomOnScroll'
-      | 'elementsSelectable'
       | 'onNodeDoubleClick'
       | 'onEdgeDoubleClick'
       | 'fitViewOptions'
@@ -143,8 +136,8 @@ export const BaseXYFlow = <
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
-      panActivationKeyCode={null}
       {...(!pannable && {
+        panActivationKeyCode: null,
         selectionKeyCode: null,
       })}
       elementsSelectable={nodesSelectable}

@@ -13,7 +13,7 @@ const link = cva({
     justifyContent: 'stretch',
     transitionProperty: 'all',
     transitionDuration: 'fast',
-    transitionTimingFunction: 'in-out',
+    transitionTimingFunction: 'inOut',
     border: `1px dashed {colors.mantine.colors.defaultBorder}`,
     rounded: 'sm',
     cursor: 'pointer',

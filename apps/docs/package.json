@@ -45,6 +45,7 @@
     "@types/react-dom": "catalog:react",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
+    "starlight-package-managers": "^0.10.0",
     "tsx": "catalog:"
   }
 }

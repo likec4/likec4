@@ -1,4 +1,4 @@
-import { css } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 
 export const indicator = css({
   _smallZoom: {
@@ -17,16 +17,10 @@ export const indicator = css({
   _whenSelected: {
     visibility: 'visible',
   },
-  _notReducedGraphics: {
-    [`:where(.react-flow__node.selected)  &`]: {
-      // animationName: fallbackVar(vars.safariAnimationHook, indicatorKeyframes),
-    },
+  _whenFocused: {
+    strokeWidth: 10,
+    visibility: 'visible',
   },
-  // [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-  //   strokeWidth: 10,
-  //   stroke: outlineColor,
-  //   visibility: 'visible',
-  // },
   _shapeQueue: {
     strokeWidth: 8,
   },
@@ -48,6 +42,9 @@ export const fillElementStroke = css({
 
 export const fillMixStroke = css({
   fill: '[color-mix(in srgb, {colors.likec4.palette.stroke} 90%, {colors.likec4.palette.fill})]',
+  '.shape-svg-multiple &': {
+    fill: 'likec4.palette.fill',
+  },
 })
 
 const shapeBase = css.raw({
@@ -65,26 +62,27 @@ const shapeBase = css.raw({
   // zIndex: -1,
 })
 
-export const shapeSvgMultiple = css(shapeBase, {
-  transformOrigin: '50% 25%',
-  transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
-  filter: 'brightness(0.65) saturate(0.8)',
-  stroke: '[none]',
-  // [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-  //   visibility: 'hidden',
-  // },
-  ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-    transformOrigin: '50% 100%',
-  },
-  ':where([data-likec4-shape="queue"]) &': {
-    transformOrigin: '75% 25%',
-    // transform: 'translate(14px,15px) perspective(200px) translateZ(-2px)',
-  },
-  // filter: 'brightness(0.5)'
-})
-// globalStyle(`.${shapeSvgMultiple} ${fillMixStroke}`, {
-//   fill: vars.element.fill,
-// })
+export const shapeSvgMultiple = cx(
+  'shape-svg-multiple',
+  css(shapeBase, {
+    transformOrigin: {
+      base: '50% 50%',
+      _shapeQueue: '75% 25%',
+      _shapeCylinder: '50% 100%',
+      _shapeStorage: '50% 100%',
+    },
+    transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
+    filter: 'brightness(0.65) saturate(0.8)',
+    stroke: '[none]',
+    display: {
+      _smallZoom: 'none',
+      _reduceGraphicsOnPan: 'none',
+      _whenSelected: 'none',
+      _whenFocused: 'none',
+    },
+  }),
+)
+
 export const shapeSvg = css(shapeBase, {
   transition: `fill 120ms linear, filter 130ms {easings.inOut}`,
   transitionDelay: '0ms',
@@ -113,7 +111,7 @@ export const shapeSvg = css(shapeBase, {
   _smallZoom: {
     filter: 'none',
   },
-  _reducedGraphics: {
+  _whenPanning: {
     transition: 'none',
     filter: 'none',
   },

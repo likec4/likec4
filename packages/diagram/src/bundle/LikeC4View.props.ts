@@ -1,6 +1,6 @@
 import type { WhereOperator } from '@likec4/core'
 import type { CSSProperties } from 'react'
-import type { ElementIconRenderer } from '../LikeC4Diagram.props'
+import type { ElementIconRenderer, OverrideReactFlowProps } from '../LikeC4Diagram.props'
 
 export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   /**
@@ -132,6 +132,11 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   where?: WhereOperator<Tag, Kind> | undefined
 
+  /**
+   * Override some react flow props
+   */
+  reactFlowProps?: OverrideReactFlowProps | undefined
+
   className?: string | undefined
   style?: CSSProperties | undefined
 
@@ -234,5 +239,11 @@ export interface LikeC4BrowserProps {
   reduceGraphics?: 'auto' | boolean | undefined
 
   className?: string | undefined
+
   style?: CSSProperties | undefined
+
+  /**
+   * Override some react flow props
+   */
+  reactFlowProps?: OverrideReactFlowProps | undefined
 }

@@ -1,5 +1,4 @@
 import { Box, MantineProvider, Notification } from '@mantine/core'
-import './index.css'
 import { IconX } from '@tabler/icons-react'
 import ReactDOM from 'react-dom/client'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'

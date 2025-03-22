@@ -39,6 +39,7 @@ const root = css.raw({
   padding: '0',
   margin: '0',
   border: 'transparent',
+  pointerEvents: 'none',
   _before: {
     borderRadius: borderRadius.ref,
     content: '" "',
@@ -52,7 +53,7 @@ const root = css.raw({
     backgroundClip: 'padding-box',
     transitionDelay: '.075ms',
   },
-  _notReducedGraphics: {
+  _noReduceGraphics: {
     boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     _before: {
       transition: `all {durations.slow} {easings.inOut}`,
@@ -60,7 +61,7 @@ const root = css.raw({
     '&[data-likec4-hovered=\'true\']': {
       _before: {
         transitionDelay: '.2s',
-        transitionTimingFunction: 'ease-in',
+        transitionTimingFunction: 'in',
       },
     },
   },
@@ -73,12 +74,15 @@ const root = css.raw({
     boxShadow: 'none',
   },
 
-  '&[data-compound-transparent="true"]': {
-    boxShadow: 'none !important',
+  '&:is([data-compound-transparent="true"])': {
     _before: {
       opacity: compoundOpacity.ref,
       borderWidth: `calc(${borderWidth.ref} - 1px)`,
     },
+  },
+
+  _whenPanning: {
+    boxShadow: 'none !important',
   },
 })
 

@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "json5": "^2.2.3",
-    "langium": "3.3.1",
+    "json5": "catalog:utils",
+    "langium": "catalog:langium",
     "remeda": "catalog:utils"
   },
   "devDependencies": {

@@ -78,6 +78,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   mantineTheme,
   styleNonce,
   style,
+  reactFlowProps = {},
   ...props
 }) => {
   const likec4model = useLikeC4Model(true, 'layouted')
@@ -152,6 +153,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                 onCanvasClick: () => onNavigateTo(view.id),
                 onNodeClick: () => onNavigateTo(view.id),
               }}
+              reactFlowProps={reactFlowProps}
               {...props}
             />
             {browserView && (

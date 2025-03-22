@@ -1,8 +1,13 @@
 import { definePreset } from '@pandacss/dev'
 import { conditions } from './conditions'
-import { compoundColors, globalCss, staticCssIncludeProps, themeColors } from './generated'
+import { compoundColors, globalCss, themeColors } from './generated'
 import { theme } from './theme'
 import { likec4Palette, likec4RelationPalette } from './utilities'
+
+const root = '.likec4-diagram-root'
+const rootNotReduced = `${root}:not([data-likec4-reduced-graphics])`
+
+const nodeOrEdge = `:where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container)`
 
 export default definePreset({
   name: 'likec4',
@@ -33,7 +38,7 @@ export default definePreset({
     //   // TODO: this workaround disables animations in Safari (to improve performance)
     //   ['--likec4-safari-animation-hook']: ' ',
     // },
-    '.likec4-diagram-root': {
+    [`${root}`]: {
       overflow: 'hidden',
       position: 'relative',
       width: '100%',
@@ -41,73 +46,51 @@ export default definePreset({
       padding: 0,
       margin: 0,
       boxSizing: 'border-box',
+      border: '0px solid transparent',
       ['--likec4-app-font-default']:
         `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
       ['--mantine-default-font-family']: 'var(--likec4-app-font)',
       ['--likec4-background-color']: 'var(--mantine-color-body)',
     },
-    ':where(.likec4-diagram-root) .react-flow.not-initialized': {
+    [`${root} .react-flow:is(.not-initialized)`]: {
       opacity: 0,
     },
-    ':where(.likec4-diagram-root) .mantine-ActionIcon-icon .tabler-icon': {
+    [`:where(${root} .mantine-ActionIcon-icon) .tabler-icon`]: {
       width: '75%',
       height: '75%',
     },
-    '.likec4-diagram-root :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed="true"])': {
+    [`${root} ${nodeOrEdge}:has([data-likec4-dimmed])`]: {
       opacity: 0.25,
+    },
+    [`${rootNotReduced} ${nodeOrEdge}:has([data-likec4-dimmed])`]: {
       filter: 'auto',
-      // transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-      // transform; ''
+      grayscale: 0.85,
+      blur: '3px',
+    },
+    [`${rootNotReduced} ${nodeOrEdge}:has([data-likec4-dimmed="true"])`]: {
       transitionProperty: 'opacity, filter',
       transitionTimingFunction: '{easings.inOut}',
       transitionDuration: '800ms',
       transitionDelay: '200ms',
-      grayscale: 0.85,
-      blur: '2px',
     },
-    '.likec4-diagram-root .react-flow__edgelabel-renderer [data-likec4-dimmed="true"]': {
-      opacity: 0.25,
-      filter: 'auto',
-      // transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-      // transform; ''
-      transitionProperty: 'opacity, filter',
-      transitionTimingFunction: '{easings.inOut}',
-      transitionDuration: '800ms',
-      transitionDelay: '200ms',
-      grayscale: 0.85,
-      blur: '2px',
+    [`[data-mantine-color-scheme="dark"] ${rootNotReduced} .react-flow__edges > svg`]: {
+      mixBlendMode: 'plus-lighter',
     },
-    '.likec4-diagram-root :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed="immediate"])': {
-      opacity: 0.25,
-      filter: 'auto',
-      grayscale: 0.85,
-      blur: '2px',
-    },
-    ':where([data-mantine-color-scheme="dark"]) .likec4-diagram-root:is(:not([data-likec4-reduced-graphics])) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
-      {
-        mixBlendMode: 'plus-lighter',
-      },
-    // ':where([data-mantine-color-scheme="light"]) .likec4-diagram-root :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg':
-    //   {
-    //     mixBlendMode: 'normal',
-    //   },
     ...globalCss,
   },
   staticCss: {
     extend: {
       themes: ['light', 'dark'],
-      css: [
-        {
-          properties: staticCssIncludeProps,
-          conditions: ['light', 'dark'],
+      css: [{
+        properties: {
+          color: [
+            'likec4.palette.hiContrast',
+            'likec4.palette.loContrast',
+          ],
+          likec4Palette: [...themeColors, ...compoundColors],
+          likec4RelationPalette: themeColors,
         },
-        {
-          properties: {
-            likec4Palette: [...themeColors, ...compoundColors],
-            likec4RelationPalette: themeColors,
-          },
-        },
-      ],
+      }],
     },
   },
 

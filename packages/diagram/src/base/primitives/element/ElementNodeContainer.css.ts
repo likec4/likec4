@@ -38,7 +38,7 @@ export const container = style({
   //   // transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
   //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   // },
-  _reducedGraphics: {
+  _reduceGraphicsOnPan: {
     _after: {
       display: 'none',
     },

@@ -13,6 +13,7 @@ tableOfContents:
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
@@ -20,23 +21,16 @@ import { Card, Aside } from '@astrojs/starlight/components';
 
 Generate source code artifacts from architecture model.
 
-Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
-
-```sh
-npm add likec4
-```
-
 ## Typed Model
 
-```sh
-
-npx likec4 codegen model --outfile ./likec4-model.ts
-
-# Aliases
-npx likec4 gen ts -o ./likec4-model.ts
-
-```
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen model --outfile ./likec4-model.ts"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
 
 <Aside type='caution' title="In progress" >
   Documentation in progress
-</Aside>
+</Aside>import { Card, Aside } from '@astrojs/starlight/components';

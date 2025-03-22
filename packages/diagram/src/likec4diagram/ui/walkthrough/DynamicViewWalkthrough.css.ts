@@ -28,7 +28,7 @@ export const buttons = css({
   backdropFilter: 'blur(8px)',
   transition: 'all 175ms ease-in',
   _hover: {
-    transitionTimingFunction: 'ease-out',
+    transitionTimingFunction: 'out',
     transform: 'scale(1.1)',
   },
   _active: {

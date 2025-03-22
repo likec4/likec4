@@ -9,6 +9,7 @@ sidebar:
   order: 4
 ---
 import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
+import { PackageManagers } from 'starlight-package-managers'
 
 LikeC4 Vite Plugin allows you to embed views from your LikeC4 model into your Vite-based application.
 The plugin will automatically generate the necessary code to render the views in your application.
@@ -23,20 +24,28 @@ This is useful for building documentation, tutorials, or any other application w
 
     To get started, we will need to create a new Vite project using react-ts template.
 
-    ```sh npm2yarn
-    npm create vite@latest test-likec4 -- --template react-ts
-    cd test-likec4
-    npm install
-    ```
+    <PackageManagers
+       type="create"
+       pkg="vite@latest"
+       args="--template react-ts"
+       comment="create a new project with {PKG}"
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
 
 2. ### Install LikeC4
-    Install LikeC4 as a development dependency:
 
-    ```sh npm2yarn
-    npm install --save-dev likec4
-    ```
+    Add `likec4` dependency:
+    
+    <PackageManagers
+       pkg="likec4"
+       dev
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
 
 3. ### Configure Vite
+  
     Add LikeC4 plugin to the Vite config:
 
     ```ts
@@ -53,7 +62,30 @@ This is useful for building documentation, tutorials, or any other application w
     })
     ```
 
-4. ### Add LikeC4 model
+4. ### Add types referencer
+
+    Add types reference to the `vite-env.d.ts` file (or create new one, like `src/likec4.d.ts`):
+
+    ```ts
+    // src/vite-env.d.ts
+    /// <reference types="vite/client" />
+    /// <reference types="likec4/vite-plugin-modules" />
+    ```
+
+    Another option is to add to the `tsconfig.json`:
+
+    ```json
+    // tsconfig.json
+    {
+      "compilerOptions": {
+        "types": [
+          "likec4/vite-plugin-modules"
+        ]
+      }
+    }
+    
+
+5. ### Add LikeC4 model
 
     Create `src/tutorial.c4` and copy the following model from tutorial:
 
@@ -118,16 +150,8 @@ This is useful for building documentation, tutorials, or any other application w
     }
     ```
 
-5. ### Use LikeC4 view in your app
+6. ### Use LikeC4 view in your app
 
-    Add types reference to the `vite-env.d.ts` file (or create new one, like `src/likec4.d.ts`):
-
-    ```ts
-    // src/vite-env.d.ts
-    /// <reference types="vite/client" />
-    /// <reference types="likec4/vite-plugin-modules" />
-    ```
-    
     Change the `src/main.tsx` file to use LikeC4 view:
 
     ```tsx
@@ -143,11 +167,14 @@ This is useful for building documentation, tutorials, or any other application w
     )
     ```
 
-6. ### Start the dev server
+7. ### Start vite dev server
 
-    ```sh
-    npm run dev
-    ```    
+    <PackageManagers
+       type="run"
+       args="dev"
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
 
     Open the browser and navigate to `http://localhost:5173/`.  
     You should see the LikeC4 diagram rendered in your app.

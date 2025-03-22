@@ -103,7 +103,7 @@
     "graphology-types": "^0.24.8",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "^1.4.0",
-    "object-hash": "^3.0.0",
+    "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
     "turbo": "catalog:",
     "typescript": "catalog:",

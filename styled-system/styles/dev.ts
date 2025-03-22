@@ -25,7 +25,7 @@ export function defineConfig(config: Config) {
     logLevel: 'info',
     plugins: [
       // @ts-ignore
-      pluginStrictTokensScope({ categories: ['fonts', 'colors', 'animations'] }),
+      pluginStrictTokensScope({ categories: ['fonts', 'colors', 'animations', 'easings'] }),
       // @ts-ignore
       pluginRemoveNegativeSpacing({ spacingTokenType: true, tokenType: true }),
     ],
