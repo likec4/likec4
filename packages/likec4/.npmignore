@@ -4,7 +4,7 @@
 # Include the following
 !bin/**
 !dist/**
-!react/*.d.ts
+!react/*.d.mts
 !react/*.mjs
 !icons/**
 !__app__/**

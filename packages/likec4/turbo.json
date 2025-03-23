@@ -9,59 +9,80 @@
         "@likec4/icons#generate",
         "@likec4/styles#generate"
       ],
+      "inputs": [
+        "app/src/routes/**",
+        "tsr.config.json"
+      ],
       "outputs": [
         "app/src/routeTree.gen.ts",
-        "icons/**",
-        "styled-system/**"
+        "icons/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "typecheck": {
+      "dependsOn": [
+        "generate",
+        "@likec4/language-server#typecheck",
+        "topo"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "build-react": {
+      "dependsOn": [
+        "@likec4/diagram#build"
+      ],
+      "outputs": [
+        "react/*.d.mts",
+        "react/*.mjs"
+      ],
+      "inputs": [
+        "tsconfig.react*.json",
+        "react",
+        "scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
     },
     "build-app": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/diagram#build",
+        "@likec4/diagram#build:dist",
         "generate"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
-        "$TURBO_DEFAULT$",
-        "!react/**",
-        "!src/**",
-        "!test/**",
-        "!build.config.ts"
+        "app/",
+        "scripts/",
+        "!scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
     },
     "build-cli": {
       "dependsOn": [
-        "generate",
-        "@likec4/log#build",
-        "@likec4/generators#build",
-        "@likec4/layouts#build",
-        "@likec4/language-server#build",
-        "@likec4/diagram#build"
+        "@likec4/icons#generate",
+        "@likec4/language-server#build"
       ],
       "outputs": [
         "dist/**",
-        "react/*.mjs",
-        "react/*.d.ts",
         "vite-plugin-modules.d.ts"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "!react/**",
         "!app/**",
         "!scripts/**",
         "!dev/**",
-        "!test/**"
+        "!test/**",
+        "!tsconfig.react*.json"
       ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
         "build-app",
-        "build-cli"
+        "build-cli",
+        "build-react"
       ],
       "outputs": [],
       "inputs": [],

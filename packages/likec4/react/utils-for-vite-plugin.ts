@@ -1,11 +1,12 @@
-import { useStore } from '@nanostores/react'
 import { deepEqual } from 'fast-equals'
 import { type DiagramView, type LayoutedLikeC4ModelData, type LikeC4Model, createLikeC4Model } from 'likec4/model'
-import { type Atom, type WritableAtom, computed } from 'nanostores'
 import { useMemo } from 'react'
 import { mapValues } from 'remeda'
+import { useStore } from './nanostores'
+import { type Atom, type WritableAtom, computed } from './nanostores'
 
-const typedCreateHooksForModel = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
+// This is a workaround to avoid type errors in the Vite plugin
+export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
   updateModel: (data: LayoutedLikeC4ModelData) => void
   $likec4model: Atom<LikeC4Model.Layouted>
   useLikeC4Model: () => LikeC4Model.Layouted
@@ -54,6 +55,3 @@ const typedCreateHooksForModel = ($atom: WritableAtom<LayoutedLikeC4ModelData>):
     useLikeC4View,
   }
 }
-
-// This is a workaround to avoid type errors in the Vite plugin
-export const createHooksForModel = typedCreateHooksForModel as (arg: unknown) => unknown

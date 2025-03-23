@@ -2,24 +2,14 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "noUnusedParameters": false,
-    "module": "esnext",
-    "customConditions": [
-      "sources"
-    ],
-    "noEmit": false,
-    "composite": true,
-    "tsBuildInfoFile": ".tsbuildinfo/cli.tsbuildinfo",
-    "outDir": ".tsbuildinfo/cli",
+    "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
+    "outDir": "lib/cli",
     "types": [
       "node"
     ],
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
-      ],
-      "likec4/react": [
-        "./app/react/components/*"
       ]
     }
   },
@@ -32,10 +22,19 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../log/"
+    },
+    {
+      "path": "../generators/"
+    },
+    {
+      "path": "../layouts/"
+    },
+    {
+      "path": "../language-server/"
     }
   ]
 }

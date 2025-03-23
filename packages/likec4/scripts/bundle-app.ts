@@ -2,7 +2,7 @@ import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import { build } from 'vite'
@@ -59,12 +59,12 @@ export async function bundleApp() {
       emptyOutDir: true,
       outDir,
       chunkSizeWarningLimit: 2000,
-      cssCodeSplit: false,
-      cssMinify: 'esbuild',
+      cssCodeSplit: true,
+      cssMinify: true,
       minify: true,
       target: 'esnext',
       sourcemap: false,
-      assetsInlineLimit: 1_000_000,
+      assetsInlineLimit: 2_000_000,
       lib: {
         entry: {
           'main': 'src/main.tsx',
@@ -79,6 +79,11 @@ export async function bundleApp() {
         ignoreTryCatch: 'remove',
       },
       rollupOptions: {
+        input: [
+          './app/src/main.tsx',
+          './app/src/fonts.css',
+          './app/src/style.css',
+        ],
         treeshake: {
           preset: 'safest',
         },
@@ -124,7 +129,6 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
-    rename('__app__/src/likec4.css', '__app__/src/style.css'),
   ])
 }
 

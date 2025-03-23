@@ -6,8 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "^generate",
-        "topo"
+        "^generate"
       ],
       "outputs": [
         "src/routeTree.gen.ts",
@@ -15,19 +14,22 @@
         "worker-configuration.d.ts"
       ]
     },
+    "typecheck": {
+      "dependsOn": [
+        "generate",
+        "topo",
+        "@likec4/diagram#typecheck"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
     "build": {
       "env": [
         "NODE_ENV",
         "CLOUDFLARE_ENV"
       ],
       "dependsOn": [
-        "generate",
-        "^build"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/routeTree.gen.ts",
-        "!tsr.config.json"
+        "generate"
       ],
       "outputs": [
         "dist/**"

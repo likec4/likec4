@@ -5,6 +5,9 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "@likec4/language-server#generate"
+      ],
       "outputs": [
         "src/meta.ts"
       ],
@@ -16,7 +19,6 @@
     "build": {
       "dependsOn": [
         "generate",
-        "@likec4/language-server#build",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [

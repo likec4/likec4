@@ -39,7 +39,7 @@
     "./react": {
       "sources": "./react/index.ts",
       "default": {
-        "types": "./react/index.d.ts",
+        "types": "./react/index.d.mts",
         "import": "./react/index.mjs",
         "default": "./react/index.mjs"
       }
@@ -71,9 +71,10 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build-cli": "unbuild",
     "build-app": "run-p --print-label \"bundle:*\"",
+    "build-react": "tsx scripts/bundle-react.ts",
     "bundle:app": "tsx scripts/bundle-app.ts",
     "bundle:webcomponent": "tsx scripts/bundle-webcomponent.ts",
     "generate": "tsx --conditions=sources scripts/generate.ts",
@@ -145,6 +146,7 @@
     "@types/yargs": "^17.0.33",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "dts-bundle-generator": "^9.5.1",
     "autoprefixer": "^10.4.20",
     "classnames": "^2.5.1",
     "clsx": "catalog:react",

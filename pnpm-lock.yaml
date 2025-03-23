@@ -9,9 +9,6 @@ catalogs:
     '@pandacss/dev':
       specifier: ^0.53.2
       version: 0.53.2
-    '@pandacss/preset-panda':
-      specifier: ^0.53.2
-      version: 0.53.2
     postcss:
       specifier: ^8.5.3
       version: 8.5.3
@@ -368,9 +365,6 @@ importers:
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../../packages/language-server
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../../packages/layouts
       '@likec4/log':
         specifier: workspace:*
         version: link:../../packages/log
@@ -563,9 +557,6 @@ importers:
 
   packages/core:
     dependencies:
-      remeda:
-        specifier: catalog:utils
-        version: 2.21.2
       type-fest:
         specifier: ^4.35.0
         version: 4.37.0
@@ -612,6 +603,9 @@ importers:
       obliterator:
         specifier: ^2.0.5
         version: 2.0.5
+      remeda:
+        specifier: catalog:utils
+        version: 2.21.2
       turbo:
         specifier: 'catalog:'
         version: 2.4.4
@@ -624,33 +618,6 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.0.9(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
-
-  packages/create-likec4:
-    devDependencies:
-      '@likec4/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@types/node':
-        specifier: ^20.17.23
-        version: 20.17.23
-      '@types/prompts':
-        specifier: ^2.4.8
-        version: 2.4.9
-      execa:
-        specifier: ^9.5.2
-        version: 9.5.2
-      prompts:
-        specifier: ^2.4.2
-        version: 2.4.2
-      tsx:
-        specifier: 'catalog:'
-        version: 4.19.3
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.2
-      unbuild:
-        specifier: 'catalog:'
-        version: 3.5.0(typescript@5.8.2)
 
   packages/diagram:
     dependencies:
@@ -678,12 +645,6 @@ importers:
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.31.0(react@19.0.0)
-      '@types/react':
-        specifier: ^19.0.12
-        version: 19.0.12
-      '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.0.4(@types/react@19.0.12)
       '@xstate/react':
         specifier: ^5.0.2
         version: 5.0.2(@types/react@19.0.12)(react@19.0.0)(xstate@5.19.2)
@@ -702,9 +663,6 @@ importers:
       d3-shape:
         specifier: ^3.2.0
         version: 3.2.0
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
@@ -736,9 +694,6 @@ importers:
         specifier: ^5.19.2
         version: 5.19.2
     devDependencies:
-      '@likec4/style-preset':
-        specifier: workspace:*
-        version: link:../../styled-system/preset
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -757,6 +712,12 @@ importers:
       '@types/d3-shape':
         specifier: ^3.1.7
         version: 3.1.7
+      '@types/react':
+        specifier: ^19.0.12
+        version: 19.0.12
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.0.4(@types/react@19.0.12)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.3.4(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
@@ -841,10 +802,23 @@ importers:
         version: 5.8.2
 
   packages/language-server:
-    devDependencies:
+    dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
+      vscode-jsonrpc:
+        specifier: 8.2.0
+        version: 8.2.0
+      vscode-languageserver-protocol:
+        specifier: 3.17.5
+        version: 3.17.5
+      vscode-languageserver-types:
+        specifier: 3.17.5
+        version: 3.17.5
+      vscode-uri:
+        specifier: 3.1.0
+        version: 3.1.0
+    devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -932,21 +906,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.0.9(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
-      vscode-jsonrpc:
-        specifier: 8.2.0
-        version: 8.2.0
       vscode-languageserver:
         specifier: 9.0.1
         version: 9.0.1
-      vscode-languageserver-protocol:
-        specifier: 3.17.5
-        version: 3.17.5
-      vscode-languageserver-types:
-        specifier: 3.17.5
-        version: 3.17.5
-      vscode-uri:
-        specifier: 3.1.0
-        version: 3.1.0
       which:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1159,6 +1121,9 @@ importers:
       defu:
         specifier: ^6.1.4
         version: 6.1.4
+      dts-bundle-generator:
+        specifier: ^9.5.1
+        version: 9.5.1
       esbuild:
         specifier: ^0.25.1
         version: 0.25.1
@@ -1319,9 +1284,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.23
-      consola:
-        specifier: catalog:utils
-        version: 3.4.0
       merge-error-cause:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1586,9 +1548,6 @@ importers:
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
         version: 7.17.2(@mantine/core@7.17.2(@mantine/hooks@7.17.2(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
-      '@pandacss/preset-panda':
-        specifier: catalog:css
-        version: 0.53.2
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1613,13 +1572,10 @@ importers:
 
   styled-system/styles:
     dependencies:
-      '@pandabox/utils':
-        specifier: ^0.0.5
-        version: 0.0.5
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 0.53.2(typescript@5.8.2)
     devDependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../preset
@@ -1629,9 +1585,9 @@ importers:
       '@pandabox/panda-plugins':
         specifier: ^0.0.8
         version: 0.0.8
-      '@pandacss/dev':
-        specifier: catalog:css
-        version: 0.53.2(typescript@5.8.2)
+      '@pandabox/utils':
+        specifier: ^0.0.5
+        version: 0.0.5
       '@types/react':
         specifier: ^19.0.12
         version: 19.0.12
@@ -1650,6 +1606,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
+      unbuild:
+        specifier: 'catalog:'
+        version: 3.5.0(typescript@5.8.2)
       wireit:
         specifier: 'catalog:'
         version: 0.14.11
@@ -3599,9 +3558,6 @@ packages:
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
 
-  '@types/prompts@2.4.9':
-    resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
-
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
 
@@ -4666,6 +4622,11 @@ packages:
   dset@3.1.4:
     resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}
     engines: {node: '>=4'}
+
+  dts-bundle-generator@9.5.1:
+    resolution: {integrity: sha512-DxpJOb2FNnEyOzMkG11sxO2dmxPjthoVWxfKqWYJ/bI/rT1rvTMktF5EKjAYrRZu6Z6t3NhOUZ0sZ5ZXevOfbA==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -11177,11 +11138,6 @@ snapshots:
 
   '@types/picomatch@3.0.2': {}
 
-  '@types/prompts@2.4.9':
-    dependencies:
-      '@types/node': 20.17.23
-      kleur: 3.0.3
-
   '@types/prop-types@15.7.14': {}
 
   '@types/react-dom@19.0.4(@types/react@19.0.12)':
@@ -12538,6 +12494,11 @@ snapshots:
       '@dprint/win32-x64': 0.49.0
 
   dset@3.1.4: {}
+
+  dts-bundle-generator@9.5.1:
+    dependencies:
+      typescript: 5.8.2
+      yargs: 17.7.2
 
   dunder-proto@1.0.1:
     dependencies:

@@ -9,6 +9,7 @@
 .wireit
 
 apps/*/dist
+apps/*/lib
 apps/*/styled-system
 apps/*/styled-system-studio
 
@@ -17,14 +18,15 @@ examples/failed
 packages/*/contrib
 packages/*/dist
 packages/*/bundle
+packages/*/lib
 packages/*/styled-system
 packages/*/styled-system-studio
 
-styled-system/*/dist
 styled-system/preset/src/generated.ts
+styled-system/*/dist
+styled-system/*/lib
 styled-system/*/styled-system
 
-packages/diagram/bundle
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
 packages/vscode-preview/src/generated-icons.tsx

@@ -10,7 +10,7 @@ import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
 import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
-import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from './protocol'
+import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
 import { type VscodeState, ExtensionApi, getVscodeState, messenger, saveVscodeState } from './vscode'
 
 const {

@@ -8,38 +8,52 @@ if (!isProduction) {
   consola.warn('Bundling CLI in development mode')
 }
 
-const reactbundle: BuildConfig = {
-  entries: [
-    'react/index.ts',
-  ],
-  clean: false,
-  outDir: '.',
-  stub: false,
-  failOnWarn: false,
-  declaration: isProduction,
-  rollup: {
-    emitCJS: false,
-    inlineDependencies: [
-      '@likec4/diagram/bundle',
-      '@nanostores/react',
-      'nanostores',
-      'react',
-      'remeda',
-      'fast-equals',
-    ],
-    dts: {
-      tsconfig: 'react/tsconfig.json',
-      compilerOptions: {
-        customConditions: [],
-        noEmitOnError: false,
-        strict: false,
-        alwaysStrict: false,
-        skipLibCheck: true,
-        skipDefaultLibCheck: true,
-      },
-    },
-  },
-}
+// const reactbundle: BuildConfig = {
+//   entries: [
+//     'react/index.ts',
+//   ],
+//   clean: false,
+//   outDir: '.',
+//   stub: false,
+//   failOnWarn: false,
+//   declaration: false,
+//   externals: [
+//     'react',
+//     'react/jsx-runtime',
+//     'react/dom',
+//     'likec4/model',
+//     '@likec4/core',
+//   ],
+//   rollup: {
+//     emitCJS: false,
+//     inlineDependencies: true,
+//     esbuild: {
+//       platform: 'browser',
+//       minifyIdentifiers: false,
+//       minifyWhitespace: true,
+//       minifySyntax: true,
+//       lineLimit: 500,
+//     },
+//     output: {
+//       compact: true,
+//     },
+//     resolve: {
+//       exportConditions: ['production'],
+//     },
+//   },
+//   // hooks: {
+//   //   async 'build:before'() {
+//   //     consola.info('Generating TypeScript declaration files for React bundle')
+//   //   },
+//   //   async 'build:done'() {
+//   //     consola.info('Generating TypeScript declaration files for React bundle')
+//   //     await spawn('dts-bundle-generator', ['--config', 'bundle-dts.config.cjs'], {
+//   //       preferLocal: true,
+//   //       stdio: ['ignore', 'inherit', 'inherit'],
+//   //     })
+//   //   },
+//   // },
+// }
 
 const cli: BuildConfig = {
   entries: [
@@ -104,15 +118,15 @@ const cli: BuildConfig = {
       ],
     },
     dts: {
-      // tsconfig: 'tsconfig.cli.json',
-      // respectExternal: true,
+      tsconfig: 'tsconfig.cli.json',
       compilerOptions: {
         customConditions: [],
-        noEmitOnError: false,
+        noCheck: true,
         strict: false,
         alwaysStrict: false,
         skipLibCheck: true,
         skipDefaultLibCheck: true,
+        exactOptionalPropertyTypes: false,
       },
     },
   },
@@ -124,6 +138,6 @@ const cli: BuildConfig = {
 }
 
 export default defineBuildConfig([
-  reactbundle,
+  // reactbundle,
   cli,
 ])

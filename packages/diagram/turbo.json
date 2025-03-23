@@ -4,15 +4,39 @@
     "//"
   ],
   "tasks": {
-    "build": {
+    "generate": {
       "dependsOn": [
-        "@likec4/styles#generate",
-        "@likec4/core#build"
+        "@likec4/styles#generate"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "build:dist": {
+      "dependsOn": [
+        "generate",
+        "topo"
       ],
       "outputs": [
-        "dist/**",
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build:bundle": {
+      "dependsOn": [
+        "generate",
+        "topo"
+      ],
+      "outputs": [
         "bundle/**"
-      ]
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "build:dist",
+        "build:bundle"
+      ],
+      "outputs": []
     }
   }
 }

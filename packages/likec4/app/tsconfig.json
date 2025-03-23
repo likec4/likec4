@@ -1,30 +1,17 @@
 {
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "composite": true,
-    "target": "ES2022",
     "lib": [
       "DOM",
       "DOM.Iterable",
       "ESNext"
     ],
-    "module": "ESNext",
-    "customConditions": [
-      "sources"
-    ],
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
-    "outDir": "../.tsbuildinfo/app",
-    "esModuleInterop": true,
-    "isolatedModules": true,
     "noPropertyAccessFromIndexSignature": false,
-    "noUnusedParameters": false,
-    "useDefineForClassFields": true,
-    "allowJs": true,
-    "checkJs": true,
-    "verbatimModuleSyntax": true,
-    "jsx": "react-jsx",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "tsBuildInfoFile": "../lib/app/.tsbuildinfo",
+    "outDir": "../lib/app",
+    "rootDir": ".",
     "types": [
       "vite/client"
     ]
@@ -39,13 +26,16 @@
       "path": "../tsconfig.cli.json"
     },
     {
-      "path": "../react/tsconfig.json"
+      "path": "../tsconfig.react.json"
     },
     {
-      "path": "../../core/tsconfig.json"
+      "path": "../../core/"
     },
     {
-      "path": "../../diagram/tsconfig.json"
+      "path": "../../diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../../../styled-system/styles/"
     }
   ]
 }

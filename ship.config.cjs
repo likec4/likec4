@@ -5,16 +5,16 @@ module.exports = {
     packagesToBump: [
       'packages/*',
       'apps/*',
+      'styled-system/*',
     ],
     packagesToPublish: [
       'packages/core',
-      'packages/log',
       'packages/icons',
       'packages/diagram',
       'packages/language-server',
-      'packages/layouts',
       'packages/likec4',
       'styled-system/preset',
+      'styled-system/styles',
     ],
   },
   installCommand: () => 'pnpm install',

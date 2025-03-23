@@ -9,7 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "generate": "wireit",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --build --verbose",
     "build": "wireit"
   },
   "publishConfig": {

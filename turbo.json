@@ -5,7 +5,8 @@
   ],
   "globalDependencies": [
     ".tool-versions",
-    "package.json"
+    "package.json",
+    "pnpm-workspace.yaml"
   ],
   "ui": "tui",
   "tasks": {
@@ -20,12 +21,10 @@
     },
     "typecheck": {
       "dependsOn": [
-        "^typecheck",
-        "generate"
+        "generate",
+        "topo"
       ],
-      "outputs": [
-        ".tsbuildinfo"
-      ],
+      "outputs": [],
       "outputLogs": "new-only"
     },
     "build": {

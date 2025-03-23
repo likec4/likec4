@@ -5,16 +5,11 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./src/protocol.ts"
+    "./protocol": "./protocol.ts"
   },
   "sideEffects": false,
-  "files": [
-    "dist",
-    "!**/*.map"
-  ],
   "scripts": {
-    "prebuild": "panda codegen",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

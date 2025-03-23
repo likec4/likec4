@@ -22,7 +22,7 @@
       "path": "./tsconfig.cli.json"
     },
     {
-      "path": "./react/tsconfig.json"
+      "path": "./tsconfig.react.json"
     },
     {
       "path": "./app/tsconfig.json"

@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "styled-system/*"
   - "packages/*"
+  - "!packages/create-likec4"
 
 catalog:
   typescript: "^5.8.2"

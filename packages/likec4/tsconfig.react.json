@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "lib/react/.tsbuildinfo",
+    "outDir": "lib/react",
+    "moduleResolution": "bundler",
+    "rootDir": "react",
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "./react/**/*.ts",
+  ],
+  "references": [
+    {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../core/"
+    },
+    {
+      "path": "./tsconfig.cli.json"
+    }
+  ]
+}

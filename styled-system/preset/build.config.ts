@@ -6,6 +6,9 @@ export default defineBuildConfig({
   declaration: 'node16',
   rollup: {
     inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources'],
+    },
   },
   hooks: {
     async 'build:before'() {

@@ -4,15 +4,29 @@
     "//"
   ],
   "tasks": {
+    "generate": {
+      "dependsOn": [
+        "@likec4/styles#generate"
+      ],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": [
+        "@likec4/diagram#typecheck",
+        "topo"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
-        "@likec4/styles#generate",
+        "generate",
         "topo"
       ],
       "outputs": [
-        "dist/**",
-        "styled-system/**"
-      ]
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

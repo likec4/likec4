@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.react.json",
+  "compilerOptions": {
+    "customConditions": [],
+    "rootDir": ".",
+    "paths": {
+      "likec4/model": [
+        "./src/model/index.ts"
+      ],
+      "@likec4/diagram/*": [
+        "../diagram/dist/*"
+      ],
+    },
+  }
+}

@@ -1,21 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "rootDir": "src",
-    "tsBuildInfoFile": ".tsbuildinfo/diagram.tsbuildinfo",
-    "outDir": ".tsbuildinfo/diagram",
-    "types": [
-      "vite/client",
-    ],
+    "composite": true,
   },
-  "include": [
-    "./src/"
-  ],
+  "files": [],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "./tsconfig.src.json"
     },
     {
       "path": "./tsconfig.vite.json"

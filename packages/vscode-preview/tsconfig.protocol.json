@@ -2,25 +2,18 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "lib": [
-      "ES2022",
-      "WebWorker"
-    ],
-    "target": "ES2022"
+    "tsBuildInfoFile": "lib/protocol.tsbuildinfo",
+    "rootDir": ".",
+    "types": [
+      "vscode-webview"
+    ]
   },
   "include": [
-    "./src"
+    "protocol.ts"
   ],
   "references": [
     {
       "path": "../core/"
-    },
-    {
-      "path": "../log/"
-    },
-    {
-      "path": "../layouts/"
     }
   ]
 }

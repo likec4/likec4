@@ -89,7 +89,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "prepack": "turbo run build",
     "build": "unbuild",
     "pregenerate": "rm -f src/generated/*",
@@ -104,8 +104,14 @@
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
   },
-  "devDependencies": {
+  "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-languageserver-protocol": "catalog:vscode",
+    "vscode-uri": "catalog:vscode"
+  },
+  "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -135,11 +141,7 @@
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
     "vitest": "catalog:vitest",
-    "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode",
-    "vscode-languageserver-protocol": "catalog:vscode",
-    "vscode-uri": "catalog:vscode",
     "which": "^5.0.0"
   },
   "packageManager": "pnpm@10.6.5"

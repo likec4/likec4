@@ -18,16 +18,13 @@
         "src/**/*.langium",
         "langium-config.json",
         "package.json"
-      ]
+      ],
+      "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "^build",
-        "generate"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/**/*.langium"
+        "generate",
+        "topo"
       ],
       "outputs": [
         "dist/**"

@@ -90,7 +90,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       outDir,
       modulePreload: false,
       emptyOutDir: false,
-      cssCodeSplit: false,
       sourcemap: false,
       cssMinify: true,
       minify: true,

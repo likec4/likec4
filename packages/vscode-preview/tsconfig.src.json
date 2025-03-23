@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedLocals": false,
+    "types": [
+      "vite/client",
+      "vscode-webview"
+    ]
+  },
+  "include": [
+    "./src/"
+  ],
+  "references": [
+    {
+      "path": "../core/"
+    },
+    {
+      "path": "./tsconfig.protocol.json"
+    },
+    {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../../styled-system/styles/"
+    }
+  ]
+}

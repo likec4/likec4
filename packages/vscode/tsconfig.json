@@ -13,13 +13,19 @@
   },
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../language-server/tsconfig.json"
+      "path": "../language-server/"
     },
     {
-      "path": "../vscode-preview/tsconfig.json"
+      "path": "../layouts/"
+    },
+    {
+      "path": "../log/"
+    },
+    {
+      "path": "../vscode-preview/tsconfig.protocol.json"
     }
   ]
 }

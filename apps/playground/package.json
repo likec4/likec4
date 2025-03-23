@@ -5,7 +5,7 @@
   "scripts": {
     "generate": "wireit",
     "dev": "wireit",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build": "vite build",
     "preview": "vite preview",
     "wrangler:deploy": "wireit",
@@ -90,7 +90,6 @@
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
-    "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
