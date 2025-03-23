@@ -24,6 +24,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    "noEmit": false,
     "emitDeclarationOnly": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,

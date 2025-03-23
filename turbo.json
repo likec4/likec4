@@ -25,8 +25,8 @@
         "topo"
       ],
       "outputs": [
-        "*.tsbuildinfo",
-        "lib/"
+        ".tsbuildinfo",
+        "lib/**"
       ],
       "outputLogs": "new-only"
     },
