@@ -4,7 +4,7 @@ import {
   pluginStrictTokensScope,
 } from '@pandabox/panda-plugins'
 import { type Config, defineConfig as pandaDefineConfig } from '@pandacss/dev'
-import likec4preset from './preset'
+import likec4preset from './preset.ts'
 
 export function defineConfig(config: Config) {
   return pandaDefineConfig({

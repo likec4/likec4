@@ -15,9 +15,11 @@
     },
     "build": {
       "dependsOn": [
-        "^build"
+        "@likec4/style-preset#build",
+        "generate"
       ],
       "outputs": [
+        "dist/**",
         "preset.d.mts",
         "preset.mjs"
       ]

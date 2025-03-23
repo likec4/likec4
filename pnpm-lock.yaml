@@ -1563,12 +1563,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
-      unbuild:
-        specifier: 'catalog:'
-        version: 3.5.0(typescript@5.8.2)
-      wireit:
-        specifier: 'catalog:'
-        version: 0.14.11
 
   styled-system/styles:
     dependencies:
@@ -1609,9 +1603,6 @@ importers:
       unbuild:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.8.2)
-      wireit:
-        specifier: 'catalog:'
-        version: 0.14.11
 
 packages:
 

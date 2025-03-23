@@ -9,35 +9,22 @@
   "sideEffects": false,
   "files": [
     "dist",
-    "styled-system",
     "postcss.d.mts",
     "postcss.mjs",
     "dev.ts",
+    "preset.ts",
     "preset.d.mts",
-    "preset.mjs",
-    "!**/*.spec.*",
-    "!**/*.d.ts.map"
+    "preset.mjs"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --build --verbose",
+    "typecheck": "tsc --noEmit",
     "build": "unbuild",
-    "generate": "wireit",
-    "emit-pkg": "wireit"
-  },
-  "wireit": {
-    "generate": {
-      "command": "panda codegen && panda cssgen"
-    },
-    "emit-pkg": {
-      "command": "panda emit-pkg --base dist",
-      "dependencies": [
-        "generate"
-      ]
-    }
+    "generate": "panda codegen && panda cssgen",
+    "emit-pkg": "panda emit-pkg --base dist"
   },
   "exports": {
     "./css": {
@@ -70,9 +57,9 @@
     "./preset": {
       "sources": "./preset.ts",
       "default": {
-        "types": "./dist/preset.d.mts",
-        "import": "./dist/preset.mjs",
-        "default": "./dist/preset.mjs"
+        "types": "./preset.d.mts",
+        "import": "./preset.mjs",
+        "default": "./preset.mjs"
       }
     },
     "./dev": "./dev.ts"
@@ -89,7 +76,6 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
-    "wireit": "catalog:",
     "remeda": "catalog:utils",
     "unbuild": "catalog:",
     "typescript": "catalog:"

@@ -1,25 +1,18 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "rootDir": ".",
+    "allowImportingTsExtensions": true,
     "lib": [
       "esnext",
       "dom"
     ],
     "types": [
       "react",
+      "node"
     ]
   },
   "include": [
-    "dev.ts",
-    "panda.config.ts",
-    "preset.ts",
-  ],
-  "references": [
-    {
-      "path": "../preset/"
-    }
+    "*.ts",
   ]
 }

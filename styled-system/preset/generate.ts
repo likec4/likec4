@@ -1,4 +1,4 @@
-import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core'
+import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
 import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
