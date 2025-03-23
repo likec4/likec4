@@ -11,7 +11,7 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
@@ -87,8 +87,7 @@
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "catalog:utils",
-    "remeda": "catalog:utils"
+    "type-fest": "catalog:utils"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
@@ -98,13 +97,14 @@
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
-    "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
+    "graphology": "^0.25.4",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
+    "remeda": "catalog:utils",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
