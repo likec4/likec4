@@ -65,6 +65,7 @@ const cli: BuildConfig = {
   clean: isProduction,
   outDir: 'dist',
   stub: !isProduction,
+  failOnWarn: false,
   stubOptions: {
     jiti: {
       moduleCache: false,

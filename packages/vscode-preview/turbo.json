@@ -15,7 +15,9 @@
         "@likec4/diagram#typecheck",
         "topo"
       ],
-      "outputs": [],
+      "outputs": [
+        "lib/"
+      ],
       "outputLogs": "new-only"
     },
     "build": {

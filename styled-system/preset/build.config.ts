@@ -10,9 +10,9 @@ export default defineBuildConfig({
       exportConditions: ['sources'],
     },
   },
-  hooks: {
-    async 'build:before'() {
-      await import('./generate')
-    },
-  },
+  // hooks: {
+  //   async 'build:before'() {
+  //     await import('./generate')
+  //   },
+  // },
 })

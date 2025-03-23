@@ -61,7 +61,7 @@
     },
     "build-cli": {
       "dependsOn": [
-        "@likec4/icons#generate",
+        "@likec4/core#build",
         "@likec4/language-server#build"
       ],
       "outputs": [

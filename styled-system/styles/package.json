@@ -30,13 +30,7 @@
   },
   "wireit": {
     "generate": {
-      "command": "panda codegen && panda cssgen",
-      "dependencies": [
-        "../preset:generate"
-      ],
-      "output": [
-        "dist/**"
-      ]
+      "command": "panda codegen && panda cssgen"
     },
     "emit-pkg": {
       "command": "panda emit-pkg --base dist",

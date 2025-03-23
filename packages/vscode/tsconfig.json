@@ -11,6 +11,9 @@
     ],
     "rootDir": "."
   },
+  "include": [
+    "./src",
+  ],
   "references": [
     {
       "path": "../core/"

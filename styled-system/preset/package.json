@@ -22,15 +22,7 @@
   ],
   "wireit": {
     "generate": {
-      "command": "tsx --conditions=sources ./generate.ts",
-      "files": [
-        "node_modules/@likec4/core/src/**/*.ts",
-        "generate.ts",
-        "package.json"
-      ],
-      "output": [
-        "src/generated.ts"
-      ]
+      "command": "tsx --conditions=sources ./generate.ts"
     },
     "build": {
       "command": "unbuild"
