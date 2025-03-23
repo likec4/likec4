@@ -14,5 +14,8 @@ export default defineBuildConfig({
   },
   rollup: {
     inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources'],
+    },
   },
 })
