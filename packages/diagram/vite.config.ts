@@ -46,7 +46,7 @@ export default defineConfig({
         'react-dom/server',
       ],
       treeshake: {
-        preset: 'safest',
+        preset: 'recommended',
       },
       output: {
         preserveModules: true,

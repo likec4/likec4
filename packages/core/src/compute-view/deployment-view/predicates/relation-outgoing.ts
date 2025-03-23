@@ -1,7 +1,7 @@
 import { anyPass, filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type { LikeC4DeploymentModel } from '../../../model'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
+import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { type RelationExpr, FqnExpr } from '../../../types'
 import { isAncestor } from '../../../utils'

@@ -6,7 +6,6 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
-  "sideEffects": false,
   "files": [
     "dist",
     "postcss.d.mts",

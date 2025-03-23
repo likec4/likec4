@@ -15,6 +15,7 @@
     "directory": "packages/log"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "sources": "./src/index.ts",

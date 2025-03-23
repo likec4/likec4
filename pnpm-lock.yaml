@@ -582,6 +582,9 @@ importers:
       defu:
         specifier: ^6.1.4
         version: 6.1.4
+      fdir:
+        specifier: ^6.4.3
+        version: 6.4.3(picomatch@4.0.2)
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.8)

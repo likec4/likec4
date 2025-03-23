@@ -3,6 +3,7 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
+    "composite": true,
     "lib": [
       "esnext",
       "dom"

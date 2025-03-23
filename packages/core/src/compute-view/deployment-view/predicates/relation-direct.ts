@@ -1,14 +1,13 @@
 import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type {
-  ConnectionModel,
-  DeploymentElementModel,
-  DeploymentRelationModel,
-  LikeC4DeploymentModel,
-} from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
+import {
+  type ConnectionModel,
+  findConnectionsBetween as findModelConnectionsBetween,
+} from '../../../model/connection/model'
+import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
+import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { type Filterable, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'

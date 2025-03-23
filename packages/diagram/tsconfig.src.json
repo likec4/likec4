@@ -7,17 +7,9 @@
     ],
   },
   "include": [
-    "./src/",
+    "src",
   ],
   "exclude": [
-    "./src/bundle/react-dom-server-mock.ts"
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    },
-    {
-      "path": "../../styled-system/styles/"
-    }
+    "src/bundle/react-dom-server-mock.ts"
   ]
 }

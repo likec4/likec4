@@ -9,5 +9,8 @@ export default defineBuildConfig({
     output: {
       hoistTransitiveImports: false,
     },
+    resolve: {
+      browser: true,
+    },
   },
 })

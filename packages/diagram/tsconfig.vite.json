@@ -3,10 +3,18 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "lib/vite.tsbuildinfo",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": [
+      "node",
+    ],
   },
   "include": [
-    "./*.config.ts",
-    "./package.json"
-  ]
+    "*.config.ts",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "../../styled-system/styles/",
+    }
+  ],
 }

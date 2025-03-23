@@ -1,7 +1,9 @@
 {
   "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "src"
+  },
   "include": [
-    "src",
-    "*.ts",
+    "src"
   ],
 }

@@ -25,7 +25,6 @@ export default defineConfig({
     emptyOutDir: true,
     cssCodeSplit: false,
     cssMinify: true,
-    minify: true,
     target: 'esnext',
     lib: {
       entry: 'src/bundle/index.ts',
