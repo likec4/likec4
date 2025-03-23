@@ -1,6 +1,6 @@
-import { type PluginOptions, pandacss } from '@pandacss/dev/postcss'
+import { type PluginOptions } from '@pandacss/dev/postcss'
 import type { PluginCreator } from 'postcss'
 
-const pandaCss = pandacss as any as PluginCreator<PluginOptions>
+declare const pandaCss: PluginCreator<PluginOptions>
 
-export default pandaCss
+export { pandaCss as default }

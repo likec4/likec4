@@ -1,13 +1,24 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext"
+    "moduleResolution": "bundler",
+    "rootDir": ".",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "react",
+    ]
   },
   "include": [
-    "*.ts",
+    "dev.ts",
+    "panda.config.ts",
+    "preset.ts",
   ],
-  "exclude": [
-    "./dist/**",
+  "references": [
+    {
+      "path": "../preset/"
+    }
   ]
 }

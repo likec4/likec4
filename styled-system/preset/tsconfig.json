@@ -1,13 +1,17 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext"
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "rootDir": ".",
   },
   "include": [
-    ".",
+    "./src",
+    "generate.ts"
   ],
-  "exclude": [
-    "dist",
+  "references": [
+    {
+      "path": "../../packages/core/"
+    }
   ]
 }

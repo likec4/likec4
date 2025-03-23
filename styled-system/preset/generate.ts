@@ -1,8 +1,7 @@
-import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
+import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core'
 import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
-import PresetPanda from '@pandacss/preset-panda'
 import JSON5 from 'json5'
 import { mix, scale, toHex } from 'khroma'
 import { writeFileSync } from 'node:fs'
@@ -23,8 +22,6 @@ import {
 } from 'remeda'
 const mantineVars = themeToVars({})
 
-const PandaTheme = PresetPanda.theme
-const { colors: _, ...pandaTokens } = PandaTheme.tokens
 // omitting stack her
 type MantineColors = typeof mantineVars.colors
 type MantineColorValues = typeof mantineVars.colors.primaryColors

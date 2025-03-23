@@ -8,6 +8,10 @@
       "dependsOn": [
         "topo"
       ],
+      "inputs": [
+        "generate.ts",
+        "package.json"
+      ],
       "outputs": [
         "src/generated.ts"
       ]

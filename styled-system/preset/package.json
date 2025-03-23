@@ -12,6 +12,10 @@
     "typecheck": "tsc --noEmit",
     "build": "wireit"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "files": [
     "dist",
     "src"
@@ -20,6 +24,7 @@
     "generate": {
       "command": "tsx --conditions=sources ./generate.ts",
       "files": [
+        "node_modules/@likec4/core/src/**/*.ts",
         "generate.ts",
         "package.json"
       ],
@@ -33,8 +38,12 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "default": "./dist/index.mjs"
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
     },
     "./src": "./src/index.ts"
   },
@@ -42,7 +51,6 @@
     "@pandacss/dev": "catalog:css"
   },
   "devDependencies": {
-    "@pandacss/preset-panda": "catalog:css",
     "remeda": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",

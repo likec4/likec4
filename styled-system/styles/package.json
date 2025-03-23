@@ -7,19 +7,35 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "sideEffects": false,
+  "files": [
+    "dist",
+    "styled-system",
+    "postcss.d.mts",
+    "postcss.mjs",
+    "dev.ts",
+    "preset.d.mts",
+    "preset.mjs",
+    "!**/*.spec.*",
+    "!**/*.d.ts.map"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
+    "build": "unbuild",
     "generate": "wireit",
     "emit-pkg": "wireit"
   },
   "wireit": {
     "generate": {
-      "command": "panda codegen",
+      "command": "panda codegen && panda cssgen",
       "dependencies": [
         "../preset:generate"
       ],
       "output": [
-        "dist/**"
+        "styled-system/**"
       ]
     },
     "emit-pkg": {
@@ -32,55 +48,56 @@
   "exports": {
     "./css": {
       "types": "./dist/css/index.d.ts",
-      "require": "./dist/css/index.mjs",
-      "import": "./dist/css/index.mjs"
+      "default": "./dist/css/index.mjs"
     },
     "./tokens": {
       "types": "./dist/tokens/index.d.ts",
-      "require": "./dist/tokens/index.mjs",
-      "import": "./dist/tokens/index.mjs"
+      "default": "./dist/tokens/index.mjs"
     },
     "./types": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/types/index.mjs",
-      "import": "./dist/types/index.mjs"
+      "types": "./dist/types/index.d.ts"
     },
     "./patterns": {
       "types": "./dist/patterns/index.d.ts",
-      "require": "./dist/patterns/index.mjs",
-      "import": "./dist/patterns/index.mjs"
+      "default": "./dist/patterns/index.mjs"
     },
     "./jsx": {
       "types": "./dist/jsx/index.d.ts",
-      "require": "./dist/jsx/index.mjs",
-      "import": "./dist/jsx/index.mjs"
+      "default": "./dist/jsx/index.mjs"
     },
     "./postcss": {
       "types": "./postcss.d.mts",
-      "import": "./postcss.mjs"
+      "default": "./postcss.mjs"
     },
     "./recipes": {
       "types": "./dist/recipes/index.d.ts",
-      "require": "./dist/recipes/index.mjs",
-      "import": "./dist/recipes/index.mjs"
+      "default": "./dist/recipes/index.mjs"
+    },
+    "./preset": {
+      "sources": "./preset.ts",
+      "default": {
+        "types": "./dist/preset.d.mts",
+        "import": "./dist/preset.mjs",
+        "default": "./dist/preset.mjs"
+      }
     },
     "./dev": "./dev.ts"
   },
   "dependencies": {
-    "@pandabox/utils": "^0.0.5"
+    "@pandacss/dev": "catalog:css"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
+    "@pandabox/utils": "^0.0.5",
     "@likec4/style-preset": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
-    "@pandacss/dev": "catalog:css",
     "std-env": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
     "wireit": "catalog:",
     "remeda": "catalog:utils",
+    "unbuild": "catalog:",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.6.5"

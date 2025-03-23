@@ -22,7 +22,7 @@ export const likec4Palette = defineUtility({
 
     if (depth) {
       return {
-        ['--likec4-palette']: `likec4.compound${depth}.${color}`,
+        ['--likec4-palette']: `'likec4.compound${depth}.${color}'`,
         ['--colors-likec4-palette-hi-contrast']: token(`colors.likec4.compound${depth}.${color}.hiContrast`),
         ['--colors-likec4-palette-lo-contrast']: token(`colors.likec4.compound${depth}.${color}.loContrast`),
         ['--colors-likec4-palette-fill']: token(`colors.likec4.compound${depth}.${color}.fill`),
@@ -30,7 +30,7 @@ export const likec4Palette = defineUtility({
       }
     } else {
       return {
-        ['--likec4-palette']: `likec4.${color}`,
+        ['--likec4-palette']: `'likec4.${color}'`,
         ['--colors-likec4-palette-fill']: token(`colors.likec4.${color}.element.fill`),
         ['--colors-likec4-palette-stroke']: token(`colors.likec4.${color}.element.stroke`),
         ['--colors-likec4-palette-hi-contrast']: token(`colors.likec4.${color}.element.hiContrast`),
@@ -49,6 +49,7 @@ export const likec4RelationPalette = defineUtility({
       throw new Error(`Invalid value "${value}" for likec4RelationPalette`)
     }
     return {
+      ['--likec4-palette']: `'likec4.${value}'`,
       ['--colors-likec4-relation-stroke']: token(`colors.likec4.${value}.relation.stroke`),
       ['--colors-likec4-relation-stroke-selected']: token(`colors.likec4.${value}.relation.stroke.selected`),
       ['--colors-likec4-relation-label']: token(`colors.likec4.${value}.relation.label`),
