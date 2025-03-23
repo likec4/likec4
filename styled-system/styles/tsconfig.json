@@ -1,6 +1,7 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "module": "esnext",
     "moduleResolution": "bundler",
     "rootDir": ".",
     "lib": [

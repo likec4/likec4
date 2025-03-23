@@ -18,7 +18,8 @@
     },
     "build": {
       "dependsOn": [
-        "generate"
+        "generate",
+        "^build"
       ],
       "outputs": [
         "dist/**"

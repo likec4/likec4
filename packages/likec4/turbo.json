@@ -21,8 +21,8 @@
     },
     "typecheck": {
       "dependsOn": [
+        "^generate",
         "generate",
-        "@likec4/language-server#typecheck",
         "topo"
       ],
       "outputs": [],
@@ -30,7 +30,8 @@
     },
     "build-react": {
       "dependsOn": [
-        "@likec4/diagram#build"
+        "@likec4/diagram#build:dist",
+        "@likec4/diagram#build:bundle"
       ],
       "outputs": [
         "react/*.d.mts",
@@ -38,7 +39,7 @@
       ],
       "inputs": [
         "tsconfig.react*.json",
-        "react",
+        "react/",
         "scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
@@ -99,7 +100,6 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!dev/**",
-        "!scripts/**",
         "!test/**"
       ],
       "outputLogs": "new-only"

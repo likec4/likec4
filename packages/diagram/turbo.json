@@ -36,6 +36,7 @@
         "build:dist",
         "build:bundle"
       ],
+      "inputs": [],
       "outputs": []
     }
   }

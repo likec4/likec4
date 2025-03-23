@@ -4,6 +4,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "Preserve",
+    "moduleResolution": "bundler",
     "moduleDetection": "force",
     "lib": [
       "esnext"

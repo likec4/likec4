@@ -4,7 +4,6 @@
   "compilerOptions": {
     "tsBuildInfoFile": "lib/react/.tsbuildinfo",
     "outDir": "lib/react",
-    "moduleResolution": "bundler",
     "rootDir": "react",
     "types": [
       "vite/client"

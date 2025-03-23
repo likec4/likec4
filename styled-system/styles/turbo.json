@@ -15,7 +15,7 @@
     },
     "build": {
       "dependsOn": [
-        "generate"
+        "^build"
       ],
       "outputs": [
         "preset.d.mts",
