@@ -2,9 +2,10 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   clean: true,
-  declaration: true,
+  stub: false,
+  declaration: 'node16',
   rollup: {
-    emitCJS: true,
+    emitCJS: false,
     inlineDependencies: true,
     // esbuild: {
     //   platform: 'node',

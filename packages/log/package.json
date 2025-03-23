@@ -19,9 +19,9 @@
     ".": {
       "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
+        "default": "./dist/index.mjs"
       }
     }
   },
@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build": "unbuild"
   },
   "dependencies": {
@@ -39,7 +39,6 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "consola": "catalog:utils",
     "merge-error-cause": "^5.0.0",
     "safe-stringify": "^1.1.1",
     "std-env": "catalog:utils",
