@@ -700,9 +700,6 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@pandabox/unplugin':
-        specifier: ^0.2.1
-        version: 0.2.1(@pandacss/config@0.53.2)(@pandacss/core@0.53.2)(@pandacss/node@0.53.2(typescript@5.8.2))(esbuild@0.25.1)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.2(typescript@5.8.2)
@@ -715,6 +712,9 @@ importers:
       '@types/d3-shape':
         specifier: ^3.1.7
         version: 3.1.7
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.17.23
       '@types/react':
         specifier: ^19.0.12
         version: 19.0.12
@@ -735,7 +735,7 @@ importers:
         version: 6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 4.5.3(@types/node@20.17.23)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 4.5.3(@types/node@20.17.23)(rollup@4.34.8)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vitest:
         specifier: catalog:vitest
         version: 3.0.9(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
@@ -1427,7 +1427,7 @@ importers:
 
   packages/vscode-preview:
     devDependencies:
-      '@fontsource/ibm-plex-sans':
+      '@fontsource-variable/ibm-plex-sans':
         specifier: ^5.2.5
         version: 5.2.5
       '@likec4/core':
@@ -1569,6 +1569,9 @@ importers:
 
   styled-system/styles:
     dependencies:
+      '@pandabox/unplugin':
+        specifier: ^0.2.1
+        version: 0.2.1(@pandacss/config@0.53.2)(@pandacss/core@0.53.2)(@pandacss/node@0.53.2(typescript@5.8.2))(esbuild@0.25.1)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.2(typescript@5.8.2)
@@ -2520,6 +2523,9 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@fontsource-variable/ibm-plex-sans@5.2.5':
+    resolution: {integrity: sha512-SrvCxqJK3NI4JBroXsJdBZGfs6QVfY0lK2VIZIIgYPea+/LI/3zYOOTI0AVvrMrmBks87GJQfPGprftlO8yInQ==}
 
   '@fontsource/ibm-plex-sans@5.2.5':
     resolution: {integrity: sha512-W1kkC/fpDuoKQ5pNSQt/Bg0rpV9AATreA9ABwZf678AlwSCY2TQBT1YwAxxB65E9jcT/ysDrU1sGVNUyWCBXRw==}
@@ -9854,6 +9860,8 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
+  '@fontsource-variable/ibm-plex-sans@5.2.5': {}
+
   '@fontsource/ibm-plex-sans@5.2.5': {}
 
   '@hattip/adapter-node@0.0.49':
@@ -16375,10 +16383,10 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-dts@4.5.3(@types/node@20.17.23)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
+  vite-plugin-dts@4.5.3(@types/node@20.17.23)(rollup@4.34.8)(typescript@5.8.2)(vite@6.2.2(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:
       '@microsoft/api-extractor': 7.51.0(@types/node@20.17.23)
-      '@rollup/pluginutils': 5.1.4
+      '@rollup/pluginutils': 5.1.4(rollup@4.34.8)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.8.2)
       compare-versions: 6.1.1

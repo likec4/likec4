@@ -8,12 +8,9 @@
   "type": "module",
   "files": [
     "dist",
-    "postcss.d.mts",
-    "postcss.mjs",
-    "dev.ts",
-    "preset.ts",
-    "preset.d.mts",
-    "preset.mjs"
+    "*.mts",
+    "*.mjs",
+    "*.ts"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -61,10 +58,15 @@
         "default": "./preset.mjs"
       }
     },
+    "./vite": {
+      "types": "./vite.d.mts",
+      "default": "./vite.mjs"
+    },
     "./dev": "./dev.ts"
   },
   "dependencies": {
-    "@pandacss/dev": "catalog:css"
+    "@pandacss/dev": "catalog:css",
+    "@pandabox/unplugin": "^0.2.1"
   },
   "devDependencies": {
     "@pandabox/utils": "^0.0.5",

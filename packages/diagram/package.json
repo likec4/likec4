@@ -75,7 +75,6 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@pandabox/unplugin": "^0.2.1",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
     "@types/bezier-js": "^4.1.3",

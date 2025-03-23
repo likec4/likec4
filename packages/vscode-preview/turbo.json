@@ -10,20 +10,11 @@
       ],
       "outputs": []
     },
-    "typecheck": {
-      "dependsOn": [
-        "@likec4/diagram#typecheck",
-        "topo"
-      ],
-      "outputs": [
-        "lib/"
-      ],
-      "outputLogs": "new-only"
-    },
     "build": {
       "dependsOn": [
         "generate",
-        "topo"
+        "@likec4/core#build",
+        "@likec4/styles#build"
       ],
       "outputs": [
         "dist/**"

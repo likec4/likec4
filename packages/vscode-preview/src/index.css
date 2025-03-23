@@ -1,14 +1,12 @@
 @layer reset, base, mantine, xyflow, tokens, recipes, utilities;
 @import "@mantine/core/styles.layer.css";
 @import "@xyflow/react/dist/style.css" layer(xyflow);
-@import "@fontsource/ibm-plex-sans/400.css";
-@import "@fontsource/ibm-plex-sans/500.css";
-@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource-variable/ibm-plex-sans";
 
 :root {
   --likec4-app-font:
-    "IBM Plex Sans",ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-    "Noto Color Emoji";
+    "IBM Plex Sans Variable",ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
   --likec4-default-font-family: var(--likec4-app-font);
   --mantine-default-font-family: var(--likec4-app-font);
   --mantine-font-family: var(--likec4-default-font-family);

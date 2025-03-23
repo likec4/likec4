@@ -13,6 +13,7 @@
     },
     "build:dist": {
       "dependsOn": [
+        "@likec4/styles#build",
         "generate",
         "topo"
       ],
@@ -23,6 +24,7 @@
     },
     "build:bundle": {
       "dependsOn": [
+        "@likec4/styles#build",
         "generate",
         "topo"
       ],

@@ -6,7 +6,7 @@
     "rootDir": "."
   },
   "include": [
-    "./*.config.ts",
-    "./package.json"
+    "*.config.ts",
+    "package.json"
   ]
 }

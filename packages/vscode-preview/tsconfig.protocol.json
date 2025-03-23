@@ -2,18 +2,14 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "tsBuildInfoFile": "lib/protocol.tsbuildinfo",
     "rootDir": ".",
     "types": [
       "vscode-webview"
     ]
   },
-  "include": [
-    "./protocol.ts"
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    }
+  "files": [
+    "protocol.ts"
   ]
 }

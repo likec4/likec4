@@ -10,20 +10,11 @@
     ]
   },
   "include": [
-    "./src/"
+    "src",
   ],
   "references": [
     {
-      "path": "../core/"
-    },
-    {
       "path": "./tsconfig.protocol.json"
-    },
-    {
-      "path": "../diagram/tsconfig.src.json"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }
