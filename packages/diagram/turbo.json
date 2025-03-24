@@ -4,17 +4,9 @@
     "//"
   ],
   "tasks": {
-    "generate": {
-      "dependsOn": [
-        "@likec4/styles#generate"
-      ],
-      "outputs": [],
-      "outputLogs": "new-only"
-    },
     "build:dist": {
       "dependsOn": [
-        "@likec4/styles#build",
-        "generate",
+        "^generate",
         "topo"
       ],
       "outputs": [
@@ -24,8 +16,7 @@
     },
     "build:bundle": {
       "dependsOn": [
-        "@likec4/styles#build",
-        "generate",
+        "^generate",
         "topo"
       ],
       "outputs": [

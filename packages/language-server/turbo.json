@@ -20,16 +20,6 @@
         "package.json"
       ],
       "outputLogs": "new-only"
-    },
-    "build": {
-      "dependsOn": [
-        "generate",
-        "topo"
-      ],
-      "outputs": [
-        "dist/**"
-      ],
-      "outputLogs": "new-only"
     }
   }
 }

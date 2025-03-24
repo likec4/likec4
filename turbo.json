@@ -21,6 +21,7 @@
     },
     "typecheck": {
       "dependsOn": [
+        "^generate",
         "generate",
         "topo"
       ],
@@ -29,12 +30,21 @@
     },
     "build": {
       "dependsOn": [
-        "^build",
-        "generate"
+        "^generate",
+        "generate",
+        "topo"
       ],
       "outputs": [
-        "dist/**",
-        "styled-system/**"
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "pack": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "package.tgz"
       ],
       "outputLogs": "new-only"
     }

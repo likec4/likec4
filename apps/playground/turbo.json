@@ -5,9 +5,6 @@
   ],
   "tasks": {
     "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
       "outputs": [
         "src/routeTree.gen.ts",
         "styled-system",
@@ -20,6 +17,7 @@
         "CLOUDFLARE_ENV"
       ],
       "dependsOn": [
+        "^generate",
         "generate",
         "topo",
         "@likec4/core#build"

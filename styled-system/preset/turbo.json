@@ -11,14 +11,6 @@
       "outputs": [
         "src/generated.ts"
       ]
-    },
-    "build": {
-      "dependsOn": [
-        "generate"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
     }
   }
 }

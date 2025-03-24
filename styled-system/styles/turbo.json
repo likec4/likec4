@@ -6,8 +6,8 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "@likec4/style-preset#generate",
-        "^topo"
+        "^generate",
+        "topo"
       ],
       "outputs": [
         "dist/**"
@@ -15,7 +15,8 @@
     },
     "build": {
       "dependsOn": [
-        "generate"
+        "generate",
+        "topo"
       ],
       "outputs": [
         "preset.d.mts",

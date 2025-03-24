@@ -5,9 +5,6 @@
   ],
   "tasks": {
     "generate:app": {
-      "dependsOn": [
-        "@likec4/styles#generate"
-      ],
       "inputs": [
         "app/**",
         "tsr.config.json"
@@ -34,18 +31,8 @@
         "generate:app",
         "generate:icons"
       ],
-      "cache": false,
       "outputs": [],
       "inputs": []
-    },
-    "typecheck": {
-      "dependsOn": [
-        "^generate",
-        "generate",
-        "topo"
-      ],
-      "outputs": [],
-      "outputLogs": "new-only"
     },
     "build-react": {
       "dependsOn": [
@@ -65,8 +52,8 @@
     },
     "build-app": {
       "dependsOn": [
-        "@likec4/diagram#build:dist",
-        "generate:app"
+        "generate:app",
+        "@likec4/diagram#topo"
       ],
       "outputs": [
         "__app__/**"
@@ -81,8 +68,8 @@
     },
     "build-cli": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/language-server#build"
+        "@likec4/language-server#topo",
+        "@likec4/generators#topo"
       ],
       "outputs": [
         "dist/**",
@@ -106,24 +93,8 @@
         "build-cli",
         "build-react"
       ],
-      "cache": false,
       "outputs": [],
       "inputs": [],
-      "outputLogs": "new-only"
-    },
-    "pack": {
-      "dependsOn": [
-        "build",
-        "@likec4/core#pack"
-      ],
-      "outputs": [
-        "package.tgz"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!dev/**",
-        "!test/**"
-      ],
       "outputLogs": "new-only"
     }
   }

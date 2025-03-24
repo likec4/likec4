@@ -19,7 +19,6 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "debugWebviews": true,
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-updates",
