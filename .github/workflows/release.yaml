@@ -12,6 +12,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  FORCE_COLOR: true
 
 jobs:
   publish-release:

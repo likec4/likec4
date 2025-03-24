@@ -30,6 +30,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  FORCE_COLOR: true
 
 concurrency:
   group: docs-${{ github.event_name }}-${{ github.ref_name }}
