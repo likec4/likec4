@@ -31,8 +31,7 @@
       matchDepNames: [
         '@types/eslint',
         'prettier',
-        'lint-staged',
-        'dprint',
+        'lint-staged',        
       ],
       matchPackageNames: [
         '@commitlint{/,}**',
@@ -74,7 +73,9 @@
     },
     {
       automerge: true,
-      matchDepNames: [
+      matchPackageNames: [
+        'dprint',
+        'dprint',
         'turbo',
         'pnpm'
       ]
