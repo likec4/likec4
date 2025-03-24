@@ -38,7 +38,7 @@ export default defineConfig({
       input: [
         'src/index.ts',
         'src/bundle/index.ts',
-        'src/styles.css',
+        // 'src/styles.css',
       ],
       experimentalLogSideEffects: true,
       external: [

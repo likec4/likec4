@@ -1,6 +1,7 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
-import { useCallbackRef, useTimeout } from '@mantine/hooks'
+import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
+import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
 import { BaseXYFlow } from '../base/BaseXYFlow'
@@ -90,20 +91,24 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
       $isPanning.set(true)
-    }, 100),
-    notPanning = useTimeout(() => {
+    }, 160),
+    notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       $isPanning.set(false)
-    }, 75),
+    }, 80),
     onViewportResize = useCallbackRef(() => {
       diagram.send({ type: 'xyflow.resized' })
     }),
-    onMove = useCallbackRef(() => {
+    onMove: OnMove = useCallbackRef(() => {
       if (!$isPanning.get()) {
         isPanning.start()
       }
-      notPanning.clear()
-      notPanning.start()
+      notPanning()
+    }),
+    onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
+      notPanning()
+      // if event is present, the move was triggered by user
+      diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
     })
 
   return (
@@ -143,14 +148,34 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
+      onNodeMouseEnter={useCallbackRef((_event, node) => {
+        _event.stopPropagation()
+        if (!node.data.hovered) {
+          diagram.send({ type: 'xyflow.nodeMouseEnter', node })
+        }
+      })}
+      onNodeMouseLeave={useCallbackRef((_event, node) => {
+        _event.stopPropagation()
+        if (node.data.hovered) {
+          diagram.send({ type: 'xyflow.nodeMouseLeave', node })
+        }
+      })}
+      onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+        _event.stopPropagation()
+        if (!edge.data.hovered) {
+          diagram.send({ type: 'xyflow.edgeMouseEnter', edge })
+        }
+      })}
+      onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+        _event.stopPropagation()
+        if (edge.data.hovered) {
+          diagram.send({ type: 'xyflow.edgeMouseLeave', edge })
+        }
+      })}
       {...props.pannable && {
         onMove,
       }}
-      onMoveEnd={useCallbackRef((event, viewport) => {
-        notPanning.start()
-        // if event is present, the move was triggered by user
-        diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
-      })}
+      onMoveEnd={onMoveEnd}
       onInit={useCallbackRef((instance) => {
         diagram.send({ type: 'xyflow.init', instance })
       })}
@@ -179,7 +204,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>
-      <DiagramUI />
+      <DiagramUI key={'DiagramUI'} />
       {children}
     </BaseXYFlow>
   )

@@ -42,6 +42,7 @@ import {
   stopChild,
 } from 'xstate'
 import { MinZoom } from '../base/const'
+import { Base } from '../base/types'
 import { type EnabledFeatures, type FeatureName, AllDisabled } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
@@ -139,6 +140,10 @@ export type Events =
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
   | { type: 'xyflow.resized' }
+  | { type: 'xyflow.nodeMouseEnter'; node: Types.Node }
+  | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
+  | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge }
+  | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge }
   | { type: 'update.nodeData'; nodeId: NodeId; data: Partial<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: Partial<Types.Edge['data']> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
@@ -377,6 +382,47 @@ export const diagramMachine = setup({
         syncLayoutActorRef: null as any,
       })
     }),
+
+    'onNodeMouseEnter': assign(({ context }, params: { node: Types.Node }) => {
+      return {
+        xynodes: context.xynodes.map(n => {
+          if (n.id === params.node.id) {
+            return Base.setHovered(n, true)
+          }
+          return n
+        }),
+      }
+    }),
+    'onNodeMouseLeave': assign(({ context }, params: { node: Types.Node }) => {
+      return {
+        xynodes: context.xynodes.map(n => {
+          if (n.id === params.node.id) {
+            return Base.setHovered(n, false)
+          }
+          return n
+        }),
+      }
+    }),
+    'onEdgeMouseEnter': assign(({ context }, params: { edge: Types.Edge }) => {
+      return {
+        xyedges: context.xyedges.map(e => {
+          if (e.id === params.edge.id) {
+            return Base.setHovered(e, true)
+          }
+          return e
+        }),
+      }
+    }),
+    'onEdgeMouseLeave': assign(({ context }, params: { edge: Types.Edge }) => {
+      return {
+        xyedges: context.xyedges.map(e => {
+          if (e.id === params.edge.id) {
+            return Base.setHovered(e, false)
+          }
+          return e
+        }),
+      }
+    }),
   },
 }).createMachine({
   initial: 'initializing',
@@ -410,169 +456,394 @@ export const diagramMachine = setup({
     initializing: {
       on: {
         'xyflow.init': {
-          actions: enqueueActions(({ enqueue, check }) => {
-            enqueue.assign({
+          actions: [
+            assign(({ context, event }) => ({
               initialized: true,
-              xyflow: ({ event }) => event.instance,
-              navigationHistory: ({ context, event }) => ({
+              xyflow: event.instance,
+              navigationHistory: {
                 currentIndex: 0,
                 history: [{
                   viewId: context.view.id,
                   fromNode: null,
                   viewport: { ...event.instance.getViewport() },
                 }],
-              }),
-            })
-            if (check('enabled: FitView')) {
-              enqueue({
-                type: 'xyflow:fitDiagram',
-                params: { duration: 0 },
-              })
-            }
-          }),
-          target: 'idle',
+              },
+            })),
+            enqueueActions(({ enqueue, check }) => {
+              if (check('enabled: FitView')) {
+                enqueue({
+                  type: 'xyflow:fitDiagram',
+                  params: { duration: 0 },
+                })
+              }
+            }),
+          ],
+          target: 'ready',
         },
       },
     },
-    idle: {
-      id: 'idle',
+    ready: {
+      initial: 'idle',
       on: {
-        'xyflow.nodeClick': [
-          {
-            // TODO: xstate fails to infer the type of the guard
-            guard: and([
-              'enabled: FocusMode',
-              'click: node has connections',
-              or([
-                'click: same node',
-                'click: selected node',
-              ]),
-            ]) as any,
-            actions: [
-              assign({
-                lastClickedNode,
-                focusedNode: ({ event }) => event.node.id as NodeId,
-              }),
-            ],
-            target: 'focused',
-          },
-          {
-            actions: [
-              'assign lastClickedNode',
-              'open source of focused or last clicked node',
-            ],
-          },
-        ],
-        'xyflow.paneClick': {
-          actions: [
-            assign({
-              lastClickedNode: null,
-            }),
-          ],
-        },
-        'xyflow.paneDblClick': {
-          actions: [
-            { type: 'xyflow:fitDiagram' },
-            { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
-          ],
-        },
-        'saveManualLayout.*': {
-          guard: 'not readonly',
-          actions: sendTo((c) => c.context.syncLayoutActorRef, ({ event }) => {
-            if (event.type === 'saveManualLayout.schedule') {
-              return { type: 'sync' }
-            }
-            if (event.type === 'saveManualLayout.cancel') {
-              return { type: 'cancel' }
-            }
-            nonexhaustive(event)
-          }),
-        },
-        'focus.node': {
-          guard: 'enabled: FocusMode',
+        'navigate.to': {
+          guard: 'is another view',
           actions: assign({
-            focusedNode: ({ event }) => event.nodeId as NodeId,
+            lastOnNavigate: ({ context, event }) => ({
+              fromView: context.view.id,
+              toView: event.viewId,
+              fromNode: event.fromNode ?? null,
+            }),
           }),
-          target: 'focused',
+          target: '#navigating',
+        },
+        'navigate.back': {
+          guard: ({ context }: ActionArg) => context.navigationHistory.currentIndex > 0,
+          actions: assign(navigateBack),
+          target: '#navigating',
+        },
+        'navigate.forward': {
+          guard: ({ context }: ActionArg) =>
+            context.navigationHistory.currentIndex < context.navigationHistory.history.length - 1,
+          actions: assign(navigateForward),
+          target: '#navigating',
+        },
+        'layout.align': {
+          guard: 'not readonly',
+          actions: [
+            {
+              type: 'layout.align',
+              params: ({ event }) => ({ mode: event.mode }),
+            },
+            raise({ type: 'saveManualLayout.schedule' }),
+          ],
+        },
+        'layout.resetEdgeControlPoints': {
+          guard: 'not readonly',
+          actions: [
+            assign(resetEdgeControlPoints),
+            raise({ type: 'saveManualLayout.schedule' }),
+          ],
+        },
+        'xyflow.resized': {
+          guard: ({ context }: { context: Context }) =>
+            context.features.enableFitView && !context.viewportChangedManually,
+          actions: [
+            cancel('fitDiagram'),
+            raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
+          ],
+        },
+        'open.elementDetails': {
+          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => {
+            let initiatedFrom = null as null | {
+              node: NodeId
+              clientRect: Rect
+            }
+            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => DiagramNode.modelRef(n) === event.fqn)?.id
+            const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
+            if (fromNodeId && internalNode) {
+              const nodeRect = nodeToRect(internalNode)
+              const zoom = context.xyflow!.getZoom()
+
+              const clientRect = {
+                ...context.xyflow!.flowToScreenPosition(nodeRect),
+                width: nodeRect.width * zoom,
+                height: nodeRect.height * zoom,
+              }
+              initiatedFrom = {
+                node: fromNodeId,
+                clientRect,
+              }
+            }
+            return ({
+              type: 'open.elementDetails' as const,
+              subject: event.fqn,
+              currentView: context.view,
+              ...(initiatedFrom && { initiatedFrom }),
+            })
+          }),
+        },
+        'open.relationshipsBrowser': {
+          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+            type: 'open.relationshipsBrowser',
+            subject: event.fqn,
+            scope: context.view,
+          })),
+        },
+        'open.relationshipDetails': {
+          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+            type: 'open.relationshipDetails',
+            view: context.view,
+            edgeId: event.edgeId,
+          })),
+        },
+        'open.source': {
+          actions: {
+            type: 'trigger:OpenSource',
+            params: prop('event'),
+          },
+        },
+        'walkthrough.start': {
+          guard: 'is dynamic view',
+          target: '.walkthrough',
+        },
+        'toggle.feature': {
+          actions: assign({
+            toggledFeatures: ({ context, event }) => {
+              return DiagramToggledFeaturesPersistence.write({
+                ...context.toggledFeatures,
+                [`enable${event.feature}`]: event.forceValue ??
+                  !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
+              })
+            },
+          }),
+        },
+        'xyflow.nodeMouseEnter': {
+          actions: {
+            type: 'onNodeMouseEnter',
+            params: prop('event'),
+          },
+        },
+        'xyflow.nodeMouseLeave': {
+          actions: {
+            type: 'onNodeMouseLeave',
+            params: prop('event'),
+          },
+        },
+        'xyflow.edgeMouseEnter': {
+          actions: {
+            type: 'onEdgeMouseEnter',
+            params: prop('event'),
+          },
+        },
+        'xyflow.edgeMouseLeave': {
+          actions: {
+            type: 'onEdgeMouseLeave',
+            params: prop('event'),
+          },
         },
       },
-    },
-    focused: {
-      entry: [
-        assign(s => ({
-          ...focusNodesEdges(s),
-          viewportBeforeFocus: { ...s.context.viewport },
-        })),
-        'open source of focused or last clicked node',
-        spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
-        'xyflow:fitFocusedBounds',
+      exit: [
+        cancel('fitDiagram'),
       ],
-      exit: enqueueActions(({ enqueue, context }) => {
-        enqueue.stopChild('hotkey')
-        if (context.viewportBeforeFocus) {
-          enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
-        } else {
-          enqueue({ type: 'xyflow:fitDiagram' })
-        }
-        enqueue.assign((s) => ({
-          ...unfocusNodesEdges(s),
-          viewportBeforeFocus: null,
-          focusedNode: null,
-        }))
-      }),
-      on: {
-        'xyflow.nodeClick': [
-          {
-            guard: 'click: focused node',
-            target: '#idle',
-          },
-          {
-            actions: [
-              assign({
-                lastClickedNode,
-              }),
-              raise(({ event }) => ({
-                type: 'focus.node',
-                nodeId: event.node.id as NodeId,
-              })),
+      states: {
+        idle: {
+          id: 'idle',
+          on: {
+            'xyflow.nodeClick': [
+              {
+                // TODO: xstate fails to infer the type of the guard
+                guard: and([
+                  'enabled: FocusMode',
+                  'click: node has connections',
+                  or([
+                    'click: same node',
+                    'click: selected node',
+                  ]),
+                ]) as any,
+                actions: [
+                  assign({
+                    lastClickedNode,
+                    focusedNode: ({ event }) => event.node.id as NodeId,
+                  }),
+                ],
+                target: 'focused',
+              },
+              {
+                actions: [
+                  'assign lastClickedNode',
+                  'open source of focused or last clicked node',
+                ],
+              },
             ],
+            'xyflow.paneClick': {
+              actions: [
+                assign({
+                  lastClickedNode: null,
+                }),
+              ],
+            },
+            'xyflow.paneDblClick': {
+              actions: [
+                { type: 'xyflow:fitDiagram' },
+                { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
+              ],
+            },
+            'saveManualLayout.*': {
+              guard: 'not readonly',
+              actions: sendTo((c) => c.context.syncLayoutActorRef, ({ event }) => {
+                if (event.type === 'saveManualLayout.schedule') {
+                  return { type: 'sync' }
+                }
+                if (event.type === 'saveManualLayout.cancel') {
+                  return { type: 'cancel' }
+                }
+                nonexhaustive(event)
+              }),
+            },
+            'focus.node': {
+              guard: 'enabled: FocusMode',
+              actions: assign({
+                focusedNode: ({ event }) => event.nodeId as NodeId,
+              }),
+              target: 'focused',
+            },
           },
-        ],
-        'focus.node': {
-          actions: [
-            assign({
-              focusedNode: ({ event }) => event.nodeId,
-            }),
-            assign(focusNodesEdges),
+        },
+        focused: {
+          entry: [
+            assign(s => ({
+              ...focusNodesEdges(s),
+              viewportBeforeFocus: { ...s.context.viewport },
+            })),
             'open source of focused or last clicked node',
+            spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
             'xyflow:fitFocusedBounds',
           ],
-        },
-        'key.esc': {
-          target: 'idle',
-        },
-        'xyflow.paneClick': {
-          actions: assign({
-            lastClickedNode: null,
+          exit: enqueueActions(({ enqueue, context }) => {
+            enqueue.stopChild('hotkey')
+            if (context.viewportBeforeFocus) {
+              enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
+            } else {
+              enqueue({ type: 'xyflow:fitDiagram' })
+            }
+            enqueue.assign((s) => ({
+              ...unfocusNodesEdges(s),
+              viewportBeforeFocus: null,
+              focusedNode: null,
+            }))
           }),
-          target: 'idle',
+          on: {
+            'xyflow.nodeClick': [
+              {
+                guard: 'click: focused node',
+                target: '#idle',
+              },
+              {
+                actions: [
+                  assign({
+                    lastClickedNode,
+                  }),
+                  raise(({ event }) => ({
+                    type: 'focus.node',
+                    nodeId: event.node.id as NodeId,
+                  })),
+                ],
+              },
+            ],
+            'focus.node': {
+              actions: [
+                assign({
+                  focusedNode: ({ event }) => event.nodeId,
+                }),
+                assign(focusNodesEdges),
+                'open source of focused or last clicked node',
+                'xyflow:fitFocusedBounds',
+              ],
+            },
+            'key.esc': {
+              target: 'idle',
+            },
+            'xyflow.paneClick': {
+              actions: assign({
+                lastClickedNode: null,
+              }),
+              target: 'idle',
+            },
+            'saveManualLayout.*': {
+              guard: 'not readonly',
+              actions: sendTo(c => c.context.syncLayoutActorRef, ({ event }) => {
+                if (event.type === 'saveManualLayout.schedule') {
+                  return { type: 'sync' }
+                }
+                if (event.type === 'saveManualLayout.cancel') {
+                  return { type: 'cancel' }
+                }
+                nonexhaustive(event)
+              }),
+            },
+          },
         },
-        'saveManualLayout.*': {
-          guard: 'not readonly',
-          actions: sendTo(c => c.context.syncLayoutActorRef, ({ event }) => {
-            if (event.type === 'saveManualLayout.schedule') {
-              return { type: 'sync' }
+        walkthrough: {
+          entry: [
+            spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
+            assign({
+              viewportBeforeFocus: ({ context }) => context.viewport,
+              activeWalkthrough: ({ context, event }) => {
+                assertEvent(event, 'walkthrough.start')
+                const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
+                return {
+                  stepId,
+                  parallelPrefix: getParallelStepsPrefix(stepId),
+                }
+              },
+            }),
+            assign(updateActiveWalkthrough),
+            'xyflow:fitFocusedBounds',
+          ],
+          on: {
+            'key.esc': {
+              target: 'idle',
+            },
+            'key.arrow.left': {
+              actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+            },
+            'key.arrow.right': {
+              actions: raise({ type: 'walkthrough.step', direction: 'next' }),
+            },
+            'walkthrough.step': {
+              actions: enqueueActions(({ enqueue, context, event }) => {
+                const { stepId } = context.activeWalkthrough!
+                const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
+                const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
+                  min: 0,
+                  max: context.xyedges.length - 1,
+                })
+                if (nextStepIndex === stepIndex) {
+                  return
+                }
+                const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
+                enqueue.assign({
+                  activeWalkthrough: {
+                    stepId: nextStepId,
+                    parallelPrefix: getParallelStepsPrefix(nextStepId),
+                  },
+                })
+                enqueue.assign(updateActiveWalkthrough)
+                enqueue('xyflow:fitFocusedBounds')
+              }),
+            },
+            'walkthrough.end': {
+              target: 'idle',
+            },
+            'xyflow.paneDblClick': {
+              target: 'idle',
+            },
+            // We received another view, close overlay and process event again
+            'update.view': {
+              guard: 'is another view',
+              actions: raise(({ event }) => event, { delay: 50 }),
+              target: 'idle',
+            },
+          },
+          exit: enqueueActions(({ enqueue, context, event }) => {
+            enqueue.stopChild('hotkey')
+            if (context.viewportBeforeFocus) {
+              enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
+            } else {
+              enqueue({ type: 'xyflow:fitDiagram' })
             }
-            if (event.type === 'saveManualLayout.cancel') {
-              return { type: 'cancel' }
-            }
-            nonexhaustive(event)
+            enqueue.assign({
+              activeWalkthrough: null,
+              ...unfocusNodesEdges({ context, event }),
+              viewportBeforeFocus: null,
+            })
           }),
         },
       },
     },
     // Navigating to another view (after `navigateTo` event)
     navigating: {
+      id: 'navigating',
       entry: [
         'closeAllOverlays',
         'stopSyncLayout',
@@ -625,82 +896,6 @@ export const diagramMachine = setup({
         },
       },
     },
-    walkthrough: {
-      entry: [
-        spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
-        assign({
-          viewportBeforeFocus: ({ context }) => context.viewport,
-          activeWalkthrough: ({ context, event }) => {
-            assertEvent(event, 'walkthrough.start')
-            const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
-            return {
-              stepId,
-              parallelPrefix: getParallelStepsPrefix(stepId),
-            }
-          },
-        }),
-        assign(updateActiveWalkthrough),
-        'xyflow:fitFocusedBounds',
-      ],
-      on: {
-        'key.esc': {
-          target: 'idle',
-        },
-        'key.arrow.left': {
-          actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
-        },
-        'key.arrow.right': {
-          actions: raise({ type: 'walkthrough.step', direction: 'next' }),
-        },
-        'walkthrough.step': {
-          actions: enqueueActions(({ enqueue, context, event }) => {
-            const { stepId } = context.activeWalkthrough!
-            const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
-            const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
-              min: 0,
-              max: context.xyedges.length - 1,
-            })
-            if (nextStepIndex === stepIndex) {
-              return
-            }
-            const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
-            enqueue.assign({
-              activeWalkthrough: {
-                stepId: nextStepId,
-                parallelPrefix: getParallelStepsPrefix(nextStepId),
-              },
-            })
-            enqueue.assign(updateActiveWalkthrough)
-            enqueue('xyflow:fitFocusedBounds')
-          }),
-        },
-        'walkthrough.end': {
-          target: 'idle',
-        },
-        'xyflow.paneDblClick': {
-          target: 'idle',
-        },
-        // We received another view, close overlay and process event again
-        'update.view': {
-          guard: 'is another view',
-          actions: raise(({ event }) => event, { delay: 50 }),
-          target: 'idle',
-        },
-      },
-      exit: enqueueActions(({ enqueue, context, event }) => {
-        enqueue.stopChild('hotkey')
-        if (context.viewportBeforeFocus) {
-          enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
-        } else {
-          enqueue({ type: 'xyflow:fitDiagram' })
-        }
-        enqueue.assign({
-          activeWalkthrough: null,
-          ...unfocusNodesEdges({ context, event }),
-          viewportBeforeFocus: null,
-        })
-      }),
-    },
   },
   on: {
     'xyflow.applyNodeChanges': {
@@ -726,27 +921,11 @@ export const diagramMachine = setup({
         params: prop('event'),
       },
     },
-    'navigate.to': {
-      guard: 'is another view',
-      actions: assign({
-        lastOnNavigate: ({ context, event }) => ({
-          fromView: context.view.id,
-          toView: event.viewId,
-          fromNode: event.fromNode ?? null,
-        }),
-      }),
-      target: '.navigating',
+    'update.nodeData': {
+      actions: assign(updateNodeData),
     },
-    'navigate.back': {
-      guard: ({ context }: ActionArg) => context.navigationHistory.currentIndex > 0,
-      actions: assign(navigateBack),
-      target: '.navigating',
-    },
-    'navigate.forward': {
-      guard: ({ context }: ActionArg) =>
-        context.navigationHistory.currentIndex < context.navigationHistory.history.length - 1,
-      actions: assign(navigateForward),
-      target: '.navigating',
+    'update.edgeData': {
+      actions: assign(updateEdgeData),
     },
     'update.view': {
       actions: [
@@ -805,104 +984,10 @@ export const diagramMachine = setup({
     'update.features': {
       actions: 'updateFeatures',
     },
-    'update.nodeData': {
-      actions: assign(updateNodeData),
-    },
-    'update.edgeData': {
-      actions: assign(updateEdgeData),
-    },
-    'layout.align': {
-      guard: 'not readonly',
-      actions: [
-        {
-          type: 'layout.align',
-          params: ({ event }) => ({ mode: event.mode }),
-        },
-        raise({ type: 'saveManualLayout.schedule' }),
-      ],
-    },
-    'layout.resetEdgeControlPoints': {
-      guard: 'not readonly',
-      actions: [
-        assign(resetEdgeControlPoints),
-        raise({ type: 'saveManualLayout.schedule' }),
-      ],
-    },
-    'xyflow.resized': {
-      guard: ({ context }: { context: Context }) => context.features.enableFitView && !context.viewportChangedManually,
-      actions: [
-        cancel('fitDiagram'),
-        raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
-      ],
-    },
-    'open.elementDetails': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => {
-        let initiatedFrom = null as null | {
-          node: NodeId
-          clientRect: Rect
-        }
-        const fromNodeId = event.fromNode ?? context.view.nodes.find(n => DiagramNode.modelRef(n) === event.fqn)?.id
-        const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
-        if (fromNodeId && internalNode) {
-          const nodeRect = nodeToRect(internalNode)
-          const zoom = context.xyflow!.getZoom()
-
-          const clientRect = {
-            ...context.xyflow!.flowToScreenPosition(nodeRect),
-            width: nodeRect.width * zoom,
-            height: nodeRect.height * zoom,
-          }
-          initiatedFrom = {
-            node: fromNodeId,
-            clientRect,
-          }
-        }
-        return ({
-          type: 'open.elementDetails' as const,
-          subject: event.fqn,
-          currentView: context.view,
-          ...(initiatedFrom && { initiatedFrom }),
-        })
-      }),
-    },
-    'open.relationshipsBrowser': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
-        type: 'open.relationshipsBrowser',
-        subject: event.fqn,
-        scope: context.view,
-      })),
-    },
-    'open.relationshipDetails': {
-      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
-        type: 'open.relationshipDetails',
-        view: context.view,
-        edgeId: event.edgeId,
-      })),
-    },
-    'open.source': {
-      actions: {
-        type: 'trigger:OpenSource',
-        params: prop('event'),
-      },
-    },
-    'walkthrough.start': {
-      guard: 'is dynamic view',
-      target: '.walkthrough',
-    },
-    'toggle.feature': {
-      actions: assign({
-        toggledFeatures: ({ context, event }) => {
-          return DiagramToggledFeaturesPersistence.write({
-            ...context.toggledFeatures,
-            [`enable${event.feature}`]: event.forceValue ??
-              !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
-          })
-        },
-      }),
-    },
   },
   exit: [
     'stopSyncLayout',
+    cancel('fitDiagram'),
     stopChild('hotkey'),
     assign({
       xyflow: null,

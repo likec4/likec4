@@ -15,6 +15,7 @@ export default definePreset({
   // presets: [
   //   PandaPreset as any,
   // ],
+
   globalVars: {
     '--likec4-palette': {
       syntax: '*',
@@ -51,6 +52,7 @@ export default definePreset({
         `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
       ['--mantine-default-font-family']: 'var(--likec4-app-font)',
       ['--likec4-background-color']: 'var(--mantine-color-body)',
+      ['--colors-likec4-background']: 'var(--mantine-color-body)',
     },
     [`${root} .react-flow:is(.not-initialized)`]: {
       opacity: 0,

@@ -1,5 +1,5 @@
 import { createBrowserInspector } from '@statelyai/inspect'
 
 export const inspector = {
-  inspect: /* @PURE */ createBrowserInspector().inspect,
+  inspect: import.meta.env.DEV ? createBrowserInspector().inspect : () => {},
 }

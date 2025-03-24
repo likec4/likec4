@@ -6,9 +6,8 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import { useIsReducedGraphics } from '../hooks/useReducedGraphics'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
 import { stopPropagation } from '../utils/xyflow'
@@ -94,8 +93,6 @@ export const BaseXYFlow = <
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
-  const reduceGraphics = useIsReducedGraphics()
-
   const xystore = useXYStoreApi()
 
   return (
@@ -111,9 +108,6 @@ export const BaseXYFlow = <
       )}
       {...isZoomTooSmall && {
         ['data-likec4-zoom-small']: true,
-      }}
-      {...reduceGraphics && {
-        ['data-likec4-reduced-graphics']: true,
       }}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
@@ -166,39 +160,49 @@ export const BaseXYFlow = <
         onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
       })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, true),
-        }])
+        if (!node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, true),
+          }])
+        }
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, false),
-        }])
+        if (node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, false),
+          }])
+        }
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, true),
-        }])
+        if (!edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, true),
+          }])
+        }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, false),
-        }])
+        if (edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, false),
+          }])
+        }
       })}
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}
       {...props}
     >
-      {isBgWithPattern && <Background background={background} />}
-      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+      <Fragment key="_internals">
+        {isBgWithPattern && <Background background={background} />}
+        {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+      </Fragment>
       {children}
     </ReactFlow>
   )
