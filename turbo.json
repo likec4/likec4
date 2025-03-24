@@ -11,7 +11,6 @@
   "ui": "tui",
   "tasks": {
     "generate": {
-      "outputs": [],
       "outputLogs": "new-only"
     },
     "topo": {
@@ -43,10 +42,7 @@
       "dependsOn": [
         "build"
       ],
-      "outputs": [
-        "package.tgz"
-      ],
-      "outputLogs": "new-only"
+      "cache": false
     }
   }
 }
