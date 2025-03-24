@@ -1,34 +1,14 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "customConditions": [
-      "sources"
-    ],
     "noUnusedParameters": false,
     "lib": [
       "ES2022",
       "WebWorker"
     ],
-    "rootDir": "."
+    "rootDir": "src"
   },
   "include": [
-    "./src",
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    },
-    {
-      "path": "../language-server/"
-    },
-    {
-      "path": "../layouts/"
-    },
-    {
-      "path": "../log/"
-    },
-    {
-      "path": "../vscode-preview/tsconfig.protocol.json"
-    }
+    "src",
   ]
 }

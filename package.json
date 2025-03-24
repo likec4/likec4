@@ -13,6 +13,7 @@
     "node": ">=20.18.3"
   },
   "scripts": {
+    "prepare": "husky",
     "fmt": "dprint fmt",
     "build": "turbo run build --filter=!@likec4/docs-astro --filter=!@likec4/playground",
     "build:all": "turbo run build",
@@ -38,7 +39,7 @@
     "esbuild": "catalog:esbuild",
     "execa": "^9.5.2",
     "global": "^4.4.0",
-    "husky": "^8.0.3",
+    "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
     "npm-run-all2": "^7.0.1",
     "shipjs": "^0.27.0",

@@ -2,24 +2,18 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "lib": [
       "ES2022",
       "WebWorker"
     ],
-    "target": "ES2022"
+    "target": "ES2022",
+    "rootDir": "src",
+    "types": [
+      "node"
+    ]
   },
   "include": [
-    "./src"
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    },
-    {
-      "path": "../log/"
-    },
-    {
-      "path": "../layouts/"
-    }
+    "src"
   ]
 }

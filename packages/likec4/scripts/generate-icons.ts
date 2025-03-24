@@ -4,8 +4,6 @@ import { rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { emptyDir } from './_utils'
 
-await $`tsr generate`
-
 emptyDir(resolve('icons'))
 
 // Copy icons
@@ -37,5 +35,3 @@ const copyFiles = [
   '../icons/all.js',
 ]
 await $`cp ${copyFiles} icons/`
-
-await $`panda codegen`

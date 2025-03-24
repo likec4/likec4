@@ -93,7 +93,7 @@ const cli: BuildConfig = {
       }
       : {}),
   },
-  declaration: isProduction,
+  declaration: isProduction ? 'node16' : false,
   rollup: {
     emitCJS: false,
     inlineDependencies: true,
@@ -121,7 +121,10 @@ const cli: BuildConfig = {
     dts: {
       tsconfig: 'tsconfig.cli.json',
       compilerOptions: {
-        customConditions: [],
+        customConditions: [
+          'node',
+          // 'sources',
+        ],
         noCheck: true,
         strict: false,
         alwaysStrict: false,

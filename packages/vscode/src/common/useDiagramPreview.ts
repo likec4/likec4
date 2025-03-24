@@ -142,7 +142,7 @@ function createDiagramPreview(
   }
   const nonce = getNonce()
 
-  const stylesUri = getUri(panel.webview, ['dist', 'preview', 'style.css'])
+  const stylesUri = getUri(panel.webview, ['dist', 'preview', 'index.css'])
   const scriptUri = getUri(panel.webview, ['dist', 'preview', 'index.js'])
   const theme = useIsDarkTheme().value ? 'dark' : 'light'
   const cspSource = panel.webview.cspSource.replaceAll('"', '\'')

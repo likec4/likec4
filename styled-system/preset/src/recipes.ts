@@ -35,7 +35,7 @@ export const actionBtn = defineRecipe({
       color: 'var(--actionbtn-color-hovered-btn)',
       '--ai-bg': `var(--actionbtn-bg-hovered-btn)`,
     },
-    _reduceGraphicsOnPan: {
+    _whenPanning: {
       display: 'none',
     },
     _smallZoom: {
@@ -52,6 +52,7 @@ export const actionBtn = defineRecipe({
         boxShadow: {
           base: '1px 1px 3px 0px transparent',
           _whenHovered: '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
+          _reduceGraphics: 'none',
         },
       },
     },

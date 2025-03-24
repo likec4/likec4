@@ -14,20 +14,19 @@
     "rootDir": ".",
     "types": [
       "vite/client"
-    ]
+    ],
+    "paths": {
+      "likec4/react": [
+        "../react/index.ts"
+      ]
+    },
   },
   "include": [
-    "./src",
-    "./react",
-    "./webcomponent"
+    "src",
+    "react",
+    "webcomponent"
   ],
   "references": [
-    {
-      "path": "../tsconfig.cli.json"
-    },
-    {
-      "path": "../tsconfig.react.json"
-    },
     {
       "path": "../../core/"
     },
@@ -35,7 +34,7 @@
       "path": "../../diagram/tsconfig.src.json"
     },
     {
-      "path": "../../../styled-system/styles/"
+      "path": "../tsconfig.react.json"
     }
   ]
 }

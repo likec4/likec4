@@ -1,4 +1,4 @@
-import pandaCss from '@likec4/styles/vite'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
@@ -8,20 +8,25 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      alias: {
-        '@likec4/diagram': resolve(__dirname, '../diagram/src'),
-      },
+      conditions: ['sources'],
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
     },
     esbuild: {
+      jsx: 'automatic',
       jsxDev: false,
+    },
+    css: {
+      postcss: {
+        plugins: [
+          pandaCss(),
+        ],
+      },
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
-      cssCodeSplit: false,
       cssMinify: true,
       minify: !isDev,
       assetsInlineLimit: 1_000_000,
@@ -52,7 +57,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      pandaCss(),
       react(),
     ],
   }

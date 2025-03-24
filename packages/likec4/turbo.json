@@ -4,20 +4,39 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "generate:app": {
       "dependsOn": [
-        "@likec4/icons#generate",
         "@likec4/styles#generate"
       ],
       "inputs": [
-        "app/src/routes/**",
+        "app/**",
         "tsr.config.json"
       ],
       "outputs": [
-        "app/src/routeTree.gen.ts",
-        "icons/**"
+        "app/src/routeTree.gen.ts"
       ],
       "outputLogs": "new-only"
+    },
+    "generate:icons": {
+      "dependsOn": [
+        "@likec4/icons#generate"
+      ],
+      "outputs": [
+        "icons/**"
+      ],
+      "inputs": [
+        "scripts/generate-icons.ts"
+      ],
+      "outputLogs": "new-only"
+    },
+    "generate": {
+      "dependsOn": [
+        "generate:app",
+        "generate:icons"
+      ],
+      "cache": false,
+      "outputs": [],
+      "inputs": []
     },
     "typecheck": {
       "dependsOn": [
@@ -39,7 +58,7 @@
       ],
       "inputs": [
         "tsconfig.react*.json",
-        "react/",
+        "react",
         "scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
@@ -47,14 +66,15 @@
     "build-app": {
       "dependsOn": [
         "@likec4/diagram#build:dist",
-        "generate"
+        "generate:app"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
-        "app/",
-        "scripts/",
+        "app",
+        "scripts",
+        "panda.config.ts",
         "!scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
@@ -81,10 +101,12 @@
     },
     "build": {
       "dependsOn": [
+        "generate",
         "build-app",
         "build-cli",
         "build-react"
       ],
+      "cache": false,
       "outputs": [],
       "inputs": [],
       "outputLogs": "new-only"

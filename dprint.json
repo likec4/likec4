@@ -21,6 +21,7 @@
   "excludes": [
     "**/node_modules",
     "**/*-lock.json",
+    "**/pnpm-lock.yaml",
     ".turbo",
     ".astro",
     ".vscode",

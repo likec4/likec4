@@ -7,7 +7,12 @@
     "generate": {
       "dependsOn": [
         "@likec4/style-preset#generate",
-        "topo"
+        "^topo"
+      ],
+      "inputs": [
+        "dev.ts",
+        "preset.ts",
+        "panda.config.ts"
       ],
       "outputs": [
         "dist/**"

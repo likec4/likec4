@@ -6,14 +6,16 @@
   "tasks": {
     "generate": {
       "dependsOn": [
+        "@likec4/icons#generate",
         "@likec4/styles#generate"
       ],
+      "cache": false,
       "outputs": []
     },
     "build": {
       "dependsOn": [
         "generate",
-        "@likec4/core#build",
+        "topo",
         "@likec4/styles#build"
       ],
       "outputs": [

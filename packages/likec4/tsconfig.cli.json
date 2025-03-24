@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
     "outDir": "lib/cli",
     "types": [
@@ -14,24 +15,15 @@
     }
   },
   "include": [
-    "./src",
+    "src",
     "package.json"
   ],
   "exclude": [
-    "./src/vite-plugin/modules.d.ts"
+    "src/vite-plugin/modules.d.ts"
   ],
   "references": [
     {
       "path": "../core/"
-    },
-    {
-      "path": "../log/"
-    },
-    {
-      "path": "../generators/"
-    },
-    {
-      "path": "../layouts/"
     },
     {
       "path": "../language-server/"

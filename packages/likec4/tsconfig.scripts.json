@@ -13,8 +13,8 @@
     ]
   },
   "include": [
-    "./scripts",
-    "./*.config.ts",
-    "./package.json"
+    "scripts",
+    "*.config.ts",
+    "package.json"
   ]
 }
