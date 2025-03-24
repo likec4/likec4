@@ -35,12 +35,6 @@
   "references": [
     {
       "path": "./tsconfig.worker.json"
-    },
-    {
-      "path": "../../packages/core/"
-    },
-    {
-      "path": "../../packages/diagram/tsconfig.src.json"
     }
   ]
 }
