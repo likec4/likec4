@@ -53,20 +53,26 @@ export const elementIcon = css({
   height: varIconSize,
   width: varIconSize,
   display: 'flex',
+  alignSelf: 'flex-start',
   alignItems: 'center',
   justifyContent: 'center',
-  mixBlendMode: 'hard-light',
-  alignSelf: 'flex-start',
+  mixBlendMode: {
+    base: 'hard-light',
+    _reduceGraphicsOnPan: 'normal',
+  },
   [`& svg, & img`]: {
     width: '100%',
     height: 'auto',
     maxHeight: '100%',
     pointerEvents: 'none',
-    filter: `
-    drop-shadow(0 0 3px rgb(0 0 0 / 12%))
-    drop-shadow(0 1px 8px rgb(0 0 0 / 8%))
-    drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))
-  `,
+    filter: {
+      base: [
+        'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
+        'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
+        'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
+      ],
+      _reduceGraphicsOnPan: 'none',
+    },
   },
   [`& img`]: {
     objectFit: 'contain',

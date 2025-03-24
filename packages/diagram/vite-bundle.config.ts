@@ -1,4 +1,4 @@
-import pandabox from '@likec4/styles/vite'
+import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
@@ -46,8 +46,14 @@ export default defineConfig({
       ],
     },
   },
+  css: {
+    postcss: {
+      plugins: [
+        pandacss(),
+      ],
+    },
+  },
   plugins: [
-    pandabox({}),
     react(),
   ],
 })

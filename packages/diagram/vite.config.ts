@@ -1,4 +1,4 @@
-import pandabox from '@likec4/styles/vite'
+import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -12,6 +12,13 @@ export default defineConfig({
     conditions: ['sources'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [
+        pandacss(),
+      ],
     },
   },
   build: {
@@ -55,7 +62,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    pandabox({}),
     react(),
     dts({
       staticImport: true,

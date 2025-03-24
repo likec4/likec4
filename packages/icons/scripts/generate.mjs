@@ -9,7 +9,7 @@ consola.info('Generating all.js and all.d.ts')
 const {
   imports,
   icons,
-  types
+  types,
 } = globSync(`*/*.tsx`).toSorted().reduce(
   /**
    * @param {{
@@ -29,7 +29,7 @@ const {
       group[0].toUpperCase(),
       group.substring(1),
       icon[0].toUpperCase(),
-      icon.substring(1).replaceAll('-', '').replaceAll('_', '')
+      icon.substring(1).replaceAll('-', '').replaceAll('_', ''),
     ].join('')
 
     acc.imports.push(`import ${Component} from './${group}/${icon}'`)
@@ -40,8 +40,8 @@ const {
   {
     imports: [],
     icons: [],
-    types: []
-  }
+    types: [],
+  },
 )
 
 // Write the typescript file
@@ -58,7 +58,7 @@ export type IconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
   name: IconName;
 };
 export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
-`
+`,
 )
 
 // Write the javascript file
@@ -74,7 +74,7 @@ export default function BundledIcon({ name, ...props }) {
   const IconComponent = Icons[name];
   return IconComponent ? jsx(IconComponent, { ...props }) : null;
 }
-`
+`,
 )
 
 consola.info('Generate js for all icons')
@@ -82,14 +82,20 @@ consola.info('Generate js for all icons')
 await build({
   entryPoints: [
     '**/*.tsx',
-    '**/index.ts'
+    '**/index.ts',
   ],
   sourceRoot: '.',
   outdir: '.',
-  minifyWhitespace: false,
-  minifyIdentifiers: true,
-  minifySyntax: true,
+  minify: true,
+  tsconfigRaw: {
+    compilerOptions: {
+      verbatimModuleSyntax: true,
+      jsx: 'react-jsx',
+    },
+  },
+  jsxDev: false,
+  jsx: 'automatic',
   format: 'esm',
   target: 'esnext',
-  platform: 'browser'
+  platform: 'browser',
 })

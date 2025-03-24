@@ -107,8 +107,6 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "vscode-jsonrpc": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode",
-    "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-uri": "catalog:vscode"
   },
   "devDependencies": {
@@ -142,6 +140,8 @@
     "valibot": "catalog:utils",
     "vitest": "catalog:vitest",
     "vscode-languageserver": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-languageserver-protocol": "catalog:vscode",
     "which": "^5.0.0"
   },
   "packageManager": "pnpm@10.6.5"
