@@ -90,8 +90,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "turbo run build",
     "build": "unbuild",
+    "pack": "pnpm pack",
     "pregenerate": "rm -f src/generated/*",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",

@@ -79,7 +79,6 @@
     "bundle:webcomponent": "tsx scripts/bundle-webcomponent.ts",
     "generate:app": "tsr generate",
     "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
-    "prepack": "turbo run build --log-prefix=none --log-order=grouped",
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",

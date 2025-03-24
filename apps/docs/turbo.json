@@ -19,10 +19,6 @@
       "dependsOn": [
         "generate"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!**/*.c4"
-      ],
       "outputs": [
         ".astro/**",
         "dist/**"

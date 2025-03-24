@@ -45,6 +45,7 @@
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -c vite-bundle.config.ts",
+    "pack": "pnpm pack",
     "test": "vitest run --no-isolate"
   },
   "dependencies": {

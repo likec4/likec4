@@ -68,8 +68,9 @@
     },
     "build-cli": {
       "dependsOn": [
-        "@likec4/language-server#topo",
-        "@likec4/generators#topo"
+        "@likec4/core#build",
+        "@likec4/language-server#build",
+        "@likec4/generators#build"
       ],
       "outputs": [
         "dist/**",

@@ -41,6 +41,9 @@ jobs:
           git config user.name "${{ env.BOT_NAME }}[bot]"
           git config user.email "${{ env.BOT_NAME }}[bot]@users.noreply.github.com"
 
+      - name: ⚙️ build
+        run: pnpm ci:build
+
       - name: release
         run: pnpm shipjs trigger
         env:
