@@ -22,21 +22,21 @@
     "clean": "rm -r -f \"dist\" \".astro\" \"node_modules\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/react": "4.2.0",
-    "@astrojs/starlight": "0.31.1",
-    "@expressive-code/plugin-collapsible-sections": "^0.40.2",
-    "@expressive-code/plugin-line-numbers": "^0.40.2",
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/react": "catalog:astro",
+    "@astrojs/starlight": "catalog:astro",
+    "@expressive-code/plugin-collapsible-sections": "catalog:astro",
+    "@expressive-code/plugin-line-numbers": "catalog:astro",
     "@fontsource/ibm-plex-sans": "^5.2.5",
-    "astro": "5.2.5",
-    "astro-og-canvas": "^0.5.6",
+    "astro": "catalog:astro",
+    "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "^0.39.1",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "^0.33.5",
-    "starlight-heading-badges": "^0.4.0",
-    "starlight-links-validator": "^0.14.3",
-    "typescript": "catalog:"
+    "starlight-heading-badges": "catalog:astro",
+    "starlight-links-validator": "catalog:astro",
+    "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
@@ -45,7 +45,7 @@
     "@types/react-dom": "catalog:react",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
-    "starlight-package-managers": "^0.10.0",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }
