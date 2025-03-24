@@ -21,12 +21,6 @@
   "references": [
     {
       "path": "./tsconfig.cli.json"
-    },
-    {
-      "path": "../core/"
-    },
-    {
-      "path": "../diagram/tsconfig.src.json"
-    },
+    }
   ]
 }

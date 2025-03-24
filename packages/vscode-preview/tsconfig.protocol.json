@@ -15,10 +15,5 @@
   },
   "files": [
     "protocol.ts"
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    }
   ]
 }

@@ -20,13 +20,5 @@
   ],
   "exclude": [
     "src/vite-plugin/modules.d.ts"
-  ],
-  "references": [
-    {
-      "path": "../core/"
-    },
-    {
-      "path": "../language-server/"
-    }
   ]
 }
