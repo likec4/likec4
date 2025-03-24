@@ -29,7 +29,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --build --verbose",
+    "typecheck": "tsc --noEmit",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
