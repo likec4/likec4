@@ -21,7 +21,8 @@
       ],
       "dependsOn": [
         "generate",
-        "topo"
+        "topo",
+        "@likec4/core#build"
       ],
       "outputs": [
         "dist/**"
