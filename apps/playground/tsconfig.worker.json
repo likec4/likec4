@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "tsBuildInfoFile": "lib/worker.tsbuildinfo",
@@ -9,8 +10,8 @@
     "rootDir": "."
   },
   "include": [
-    "./worker-configuration.d.ts",
-    "./worker"
+    "worker-configuration.d.ts",
+    "worker"
   ],
   "references": [
     {

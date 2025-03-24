@@ -29,7 +29,7 @@
     "vscode:prepublish": "tsx --conditions=sources scripts/prepublish.mts",
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
-    "typecheck": "tsc --build --verbose",
+    "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsx --conditions=sources scripts/build.mts",
     "lint": "run -T eslint src/ --fix",

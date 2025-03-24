@@ -9,9 +9,9 @@
     "rootDir": "."
   },
   "include": [
-    "./*.config.ts",
-    "./package.json",
-    "./tsr.config.json"
+    "*.config.ts",
+    "package.json",
+    "tsr.config.json"
   ],
   "references": [
     {

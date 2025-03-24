@@ -31,7 +31,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --build --verbose",
+    "typecheck": "tsc --noEmit",
     "build": "unbuild"
   },
   "dependencies": {

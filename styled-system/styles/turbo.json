@@ -9,22 +9,15 @@
         "@likec4/style-preset#generate",
         "^topo"
       ],
-      "inputs": [
-        "dev.ts",
-        "preset.ts",
-        "panda.config.ts"
-      ],
       "outputs": [
         "dist/**"
       ]
     },
     "build": {
       "dependsOn": [
-        "@likec4/style-preset#build",
         "generate"
       ],
       "outputs": [
-        "dist/**",
         "preset.d.mts",
         "preset.mjs"
       ]

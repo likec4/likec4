@@ -30,6 +30,7 @@
     ".fleet",
     "dist",
     "packages/*/contrib",
+    "packages/*/lib",
     "**/routeTree.gen.ts",
     "packages/vscode/src/meta.ts",
     "packages/*/src/generated",

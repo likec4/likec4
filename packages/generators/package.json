@@ -25,11 +25,12 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --build --verbose",
+    "typecheck": "tsc --noEmit",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build": "tsc --build"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

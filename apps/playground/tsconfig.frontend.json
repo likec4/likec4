@@ -2,8 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
     "tsBuildInfoFile": "lib/frontend.tsbuildinfo",
-    "outDir": "lib/frontend",
     "target": "esnext",
     "useDefineForClassFields": true,
     "allowArbitraryExtensions": true,
@@ -29,7 +30,7 @@
     }
   },
   "include": [
-    "./src"
+    "src"
   ],
   "references": [
     {
@@ -40,12 +41,6 @@
     },
     {
       "path": "../../packages/diagram/tsconfig.src.json"
-    },
-    {
-      "path": "../../packages/language-server/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

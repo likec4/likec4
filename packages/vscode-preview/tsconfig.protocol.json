@@ -5,11 +5,20 @@
     "composite": true,
     "tsBuildInfoFile": "lib/protocol.tsbuildinfo",
     "rootDir": ".",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "types": [
       "vscode-webview"
-    ]
+    ],
   },
   "files": [
     "protocol.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/"
+    }
   ]
 }
