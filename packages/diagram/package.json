@@ -47,6 +47,7 @@
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -c vite-bundle.config.ts",
     "pack": "pnpm pack",
+    "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate"
   },
   "dependencies": {

@@ -10,7 +10,8 @@
       ],
       "outputs": [
         "styled-system/**"
-      ]
+      ],
+      "outputLogs": "new-only"
     },
     "build:dist": {
       "dependsOn": [
@@ -36,7 +37,8 @@
       "dependsOn": [
         "build:dist",
         "build:bundle"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }
