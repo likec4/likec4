@@ -115,7 +115,7 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@msgpack/msgpack": "^3.1.0",
+    "@msgpack/msgpack": "^3.1.1",
     "@smithy/util-base64": "^4.0.0",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
