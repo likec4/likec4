@@ -105,7 +105,7 @@
     "@tanstack/react-router": "catalog:router",
     "@tanstack/router-cli": "catalog:router",
     "@tanstack/router-vite-plugin": "catalog:router",
-    "@typefox/monaco-editor-react": "6.5.0",
+    "@typefox/monaco-editor-react": "6.6.0",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
