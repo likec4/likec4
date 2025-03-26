@@ -9,7 +9,6 @@
   },
   "sideEffects": false,
   "scripts": {
-    "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
