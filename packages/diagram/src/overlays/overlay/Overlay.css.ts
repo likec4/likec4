@@ -49,7 +49,7 @@ export const body = css({
   containerType: 'size',
   border: `0 solid transparent`,
   borderRadius: `calc(${borderRadius} - 2px)`,
-  background: 'likec4.background',
+  background: 'mantine.colors.body',
   overflow: 'hidden',
   width: '100%',
   height: '100%',

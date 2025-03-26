@@ -30,8 +30,9 @@ export const panel = css({
 })
 
 export const actionIconGroup = css({
-  _noReduceGraphics: {
-    shadow: 'md',
+  shadow: {
+    base: 'md',
+    _whenPanning: 'none',
   },
 })
 

@@ -66,7 +66,7 @@ export const edgePathBg = css(_hideOnReducedGraphics, {
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = css({
   fill: '[var(--xy-edge-stroke)]' as const,
-  stroke: 'var(--xy-edge-stroke)' as const,
+  stroke: '[var(--xy-edge-stroke)]' as const,
 })
 
 export const cssEdgePath = css({

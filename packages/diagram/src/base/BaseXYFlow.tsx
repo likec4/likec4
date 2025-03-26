@@ -58,8 +58,12 @@ const cssReactFlow = css({
   //     },
   //   },
   // },
-  ['--xy-background-color']: '{colors.likec4.background}',
-  ['--xy-background-pattern-color']: '{colors.likec4.background.pattern}',
+
+  ['--xy-background-color']: '{colors.mantine.colors.body}',
+  ['--xy-background-pattern-color']: {
+    _dark: '{colors.mantine.colors.dark[5]}',
+    _light: '{colors.mantine.colors.gray[4]}',
+  },
   '& .react-flow__pane': {
     WebkitUserSelect: 'none',
   },
@@ -103,7 +107,6 @@ export const BaseXYFlow = <
       className={cx(
         cssReactFlow,
         background === 'transparent' && cssTransparentBg,
-        cssTransparentBg,
         className,
       )}
       {...isZoomTooSmall && {

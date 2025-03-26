@@ -18,9 +18,10 @@ import {
   EdgeLabelContainer,
   EdgePath,
 } from '../../../base/primitives'
-import { useEnabledFeature } from '../../../context'
-import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
-import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useDiagram, useDiagramActorSnapshot } from '../../../hooks/useDiagram'
+import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
+import type { DiagramActorSnapshot } from '../../../state/types'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
@@ -34,17 +35,14 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
+const selectActiveStepId = (s: DiagramActorSnapshot) => s.context.activeWalkthrough?.stepId ?? null
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
-  const activeWalkthroughStep = useDiagramContext(s => s.activeWalkthrough?.stepId ?? null)
-  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeature(
-    'NavigateTo',
-    'EdgeEditing',
-    'RelationshipDetails',
-  )
+  const activeWalkthroughStep = useDiagramActorSnapshot(selectActiveStepId)
+  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeatures()
   const {
     id,
     source,

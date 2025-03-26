@@ -1,6 +1,6 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
-import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
+import { useCallbackRef, useTimeout } from '@mantine/hooks'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
@@ -92,23 +92,28 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     isPanning = useTimeout(() => {
       $isPanning.set(true)
     }, 160),
-    notPanning = useDebouncedCallback(() => {
+    notPanning = useTimeout(() => {
       isPanning.clear()
-      $isPanning.set(false)
-    }, 80),
-    onViewportResize = useCallbackRef(() => {
-      diagram.send({ type: 'xyflow.resized' })
-    }),
-    onMove: OnMove = useCallbackRef(() => {
+      if ($isPanning.get()) {
+        $isPanning.set(false)
+      }
+    }, 120),
+    onMove: OnMove = useCallbackRef((event) => {
+      if (!event) {
+        return
+      }
       if (!$isPanning.get()) {
         isPanning.start()
       }
-      notPanning()
+      notPanning.clear()
+      notPanning.start()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      notPanning()
-      // if event is present, the move was triggered by user
+      notPanning.start()
       diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
+    }),
+    onViewportResize = useCallbackRef(() => {
+      diagram.send({ type: 'xyflow.resized' })
     })
 
   return (

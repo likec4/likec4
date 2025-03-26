@@ -1,5 +1,5 @@
-import { Box } from '@mantine/core'
-import clsx from 'clsx'
+import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { type PropsWithChildren, createContext, createRef, useContext, useEffect, useRef } from 'react'
 import { usePanningAtom } from './ReduceGraphics'
 
@@ -28,7 +28,11 @@ export function RootContainer({
 
   return (
     <Box
-      className={clsx('likec4-diagram-root', className)}
+      className={cx('likec4-root', className)}
+      css={{
+        // '--likec4-background-color': 'mantine.colors.body',
+        // '--colors-likec4-background': 'var(--mantine-color-body)',
+      }}
       ref={ref}
       {...reduceGraphics && {
         ['data-likec4-reduced-graphics']: true,

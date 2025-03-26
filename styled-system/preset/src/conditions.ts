@@ -10,30 +10,30 @@ export const conditions = {
 
     // This is used to hide certain elements when the diagram is in reduced graphics mode (large)
     reduceGraphics: [
-      '.likec4-diagram-root:is([data-likec4-reduced-graphics="true"])',
+      '.likec4-root:is([data-likec4-reduced-graphics])',
       ' &',
     ].join(''),
 
     // This is used to improve performance when the diagram is in reduced graphics mode
     // and the user is panning around the diagram
     reduceGraphicsOnPan: [
-      '.likec4-diagram-root:is(',
-      '[data-likec4-reduced-graphics="true"]',
+      '.likec4-root:is(',
+      '[data-likec4-reduced-graphics]',
       '[data-likec4-diagram-panning]',
       ') &',
     ].join(''),
 
     noReduceGraphics: [
-      '.likec4-diagram-root:not(',
+      '.likec4-root:not(',
       '[data-likec4-reduced-graphics]',
       ') &',
     ].join(''),
 
-    whenPanning: ':is(.likec4-diagram-root[data-likec4-diagram-panning]) &',
+    whenPanning: ':is(.likec4-root[data-likec4-diagram-panning]) &',
 
-    smallZoom: ':where([data-likec4-zoom-small="true"]) &',
+    smallZoom: ':where([data-likec4-zoom-small]) &',
 
-    compoundTransparent: ':where([data-compound-transparent="true"]) &',
+    compoundTransparent: ':where([data-compound-transparent]) &',
 
     edgeActive: ':where([data-likec4-edge-active="true"]) &',
 

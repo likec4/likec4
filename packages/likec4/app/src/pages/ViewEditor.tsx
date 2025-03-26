@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
-import { notFound, useRouter } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { SidebarDrawerOps } from '../components/sidebar/state'
 import { isDevelopment, withOverviewGraph } from '../const'
@@ -43,7 +43,7 @@ export function ViewEditor() {
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}
       enableDynamicViewWalkthrough
-      enableFocusMode={false}
+      enableFocusMode
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser

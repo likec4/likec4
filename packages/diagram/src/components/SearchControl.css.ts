@@ -8,7 +8,7 @@ export const root = style({
   height: '30px',
   paddingLeft: 'sm',
   paddingRight: '4px',
-  borderRadius: '0px',
+  borderRadius: 'sm',
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
@@ -27,16 +27,18 @@ export const root = style({
   },
 
   width: '100%',
-  _noReduceGraphics: {
-    transition: 'fast',
-    borderRadius: 'sm',
-    shadow: 'xs',
-  },
-  _hover: {
-    shadow: 'sm',
-  },
   '& .tabler-icon': {
     color: 'mantine.colors.text',
+  },
+
+  transition: {
+    base: 'fast',
+    _whenPanning: 'none !important',
+  },
+  boxShadow: {
+    base: 'xs',
+    _hover: 'sm',
+    _whenPanning: 'none !important',
   },
 })
 

@@ -12,9 +12,7 @@ import { LikeC4Diagram } from '../LikeC4Diagram'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { Overlay } from '../overlays/overlay/Overlay'
 import type { LikeC4ViewProps } from './LikeC4View.props'
-import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
-import { useColorScheme, useShadowRootStyle } from './styles.css'
-import * as styles from './styles.css'
+import { cssInteractive, useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
 export function LikeC4View<
@@ -115,83 +113,83 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
       <ShadowRoot
         {...shadowRootProps}
         injectFontCss={injectFontCss}
-        className={cx('likec4-view', className)}
+        theme={mantineTheme}
+        colorScheme={colorScheme}
+        styleNonce={styleNonce}
+        className={cx(
+          'likec4-view',
+          className,
+        )}
         style={style}>
-        <ShadowRootMantineProvider
-          theme={mantineTheme}
-          colorScheme={colorScheme}
-          styleNonce={styleNonce}
-          className={cx(isBrowserEnabled && styles.cssInteractive)}
-        >
-          <FramerMotionConfig>
-            <LikeC4Diagram
-              view={view as any}
-              readonly
-              pannable={pannable}
-              zoomable={zoomable}
-              background={background}
-              fitView={fitView}
-              fitViewPadding={fitViewPadding}
-              showDiagramTitle={showDiagramTitle}
-              showNotations={showNotations && hasNotations}
-              enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-              showNavigationButtons={showNavigationButtons}
-              experimentalEdgeEditing={false}
-              enableFocusMode={enableFocusMode}
-              enableRelationshipDetails={enableRelationshipDetails}
-              enableElementDetails={enableElementDetails}
-              enableRelationshipBrowser={enableRelationshipBrowser}
-              controls={controls}
-              nodesSelectable
-              nodesDraggable={false}
-              reduceGraphics={reduceGraphics}
-              // We may have multiple embedded views on the same page
-              // so we don't want enable search and hotkeys
-              enableSearch={false}
-              {...isBrowserEnabled && {
-                onNavigateTo: onNavigateTo,
-                onCanvasClick: () => onNavigateTo(view.id),
-                onNodeClick: () => onNavigateTo(view.id),
-              }}
-              reactFlowProps={reactFlowProps}
-              {...props}
-            />
-            {browserView && (
-              <Overlay onClose={() => onNavigateTo(null)}>
-                <LikeC4Diagram
-                  view={browserView}
-                  background="dots"
-                  onNavigateTo={to => onNavigateTo(to as ViewId)}
-                  enableDynamicViewWalkthrough
-                  enableFocusMode
-                  enableRelationshipBrowser
-                  enableElementDetails
-                  enableRelationshipDetails
-                  enableSearch
-                  controls
-                  readonly
-                  fitView
-                  fitViewPadding={fitViewPadding}
-                  {...props}
-                  {...browserProps}
-                  showNotations={(browserProps.showNotations ?? true) &&
-                    (browserView.notation?.elements.length ?? 0) > 0}
-                />
-                <Box pos="absolute" top={'1rem'} right={'1rem'}>
-                  <ActionIcon
-                    variant="default"
-                    color="gray"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onNavigateTo(null)
-                    }}>
-                    <IconX />
-                  </ActionIcon>
-                </Box>
-              </Overlay>
-            )}
-          </FramerMotionConfig>
-        </ShadowRootMantineProvider>
+        <FramerMotionConfig>
+          <LikeC4Diagram
+            view={view as any}
+            readonly
+            pannable={pannable}
+            zoomable={zoomable}
+            background={background}
+            fitView={fitView}
+            fitViewPadding={fitViewPadding}
+            showDiagramTitle={showDiagramTitle}
+            showNotations={showNotations && hasNotations}
+            enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+            showNavigationButtons={showNavigationButtons}
+            experimentalEdgeEditing={false}
+            enableFocusMode={enableFocusMode}
+            enableRelationshipDetails={enableRelationshipDetails}
+            enableElementDetails={enableElementDetails}
+            enableRelationshipBrowser={enableRelationshipBrowser}
+            controls={controls}
+            nodesSelectable={false}
+            nodesDraggable={false}
+            reduceGraphics={reduceGraphics}
+            className={cx(isBrowserEnabled && cssInteractive)}
+            // We may have multiple embedded views on the same page
+            // so we don't want enable search and hotkeys
+            enableSearch={false}
+            {...isBrowserEnabled && {
+              onNavigateTo: onNavigateTo,
+              onCanvasClick: () => onNavigateTo(view.id),
+              onNodeClick: () => onNavigateTo(view.id),
+            }}
+            reactFlowProps={reactFlowProps}
+            {...props}
+          />
+          {browserView && (
+            <Overlay onClose={() => onNavigateTo(null)}>
+              <LikeC4Diagram
+                view={browserView}
+                background="dots"
+                onNavigateTo={to => onNavigateTo(to as ViewId)}
+                enableDynamicViewWalkthrough
+                enableFocusMode
+                enableRelationshipBrowser
+                enableElementDetails
+                enableRelationshipDetails
+                enableSearch
+                controls
+                readonly
+                fitView
+                fitViewPadding={fitViewPadding}
+                {...props}
+                {...browserProps}
+                showNotations={(browserProps.showNotations ?? true) &&
+                  (browserView.notation?.elements.length ?? 0) > 0}
+              />
+              <Box pos="absolute" top={'1rem'} right={'1rem'}>
+                <ActionIcon
+                  variant="default"
+                  color="gray"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onNavigateTo(null)
+                  }}>
+                  <IconX />
+                </ActionIcon>
+              </Box>
+            </Overlay>
+          )}
+        </FramerMotionConfig>
       </ShadowRoot>
     </>
   )

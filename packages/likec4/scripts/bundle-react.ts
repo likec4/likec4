@@ -25,7 +25,6 @@ try {
       'react/jsx-runtime',
       'react/jsx-dev-runtime',
       'react-dom/client',
-      'react-dom/server',
       '@likec4/core',
       'likec4/model',
     ],

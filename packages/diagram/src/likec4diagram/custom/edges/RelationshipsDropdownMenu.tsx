@@ -25,7 +25,7 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
-import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
+import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, memo, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../../components/Link'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
@@ -48,18 +48,20 @@ export const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
 })
 
-export function RelationshipsDropdownMenu({
-  edgeId,
-  source,
-  target,
-  disabled = false,
-  children,
-}: PropsWithChildren<{
-  edgeId: EdgeId
-  source: string
-  target: string
-  disabled?: boolean | undefined
-}>) {
+export const RelationshipsDropdownMenu = memo((
+  {
+    edgeId,
+    source,
+    target,
+    disabled = false,
+    children,
+  }: PropsWithChildren<{
+    edgeId: EdgeId
+    source: string
+    target: string
+    disabled?: boolean | undefined
+  }>,
+) => {
   const { diagramEdge, sourceNode, targetNode } = useDiagramContext(ctx => ({
     diagramEdge: findDiagramEdge(ctx, edgeId),
     sourceNode: findDiagramNode(ctx, source),
@@ -167,7 +169,7 @@ export function RelationshipsDropdownMenu({
       </MenuDropdown>
     </Menu>
   )
-}
+})
 
 const Relationship = forwardRef<
   HTMLDivElement,

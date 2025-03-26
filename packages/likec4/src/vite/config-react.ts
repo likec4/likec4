@@ -41,7 +41,7 @@ export async function viteReactConfig({
     clearScreen: false,
     mode: 'production',
     resolve: {
-      conditions: ['development', 'sources'],
+      conditions: ['sources'],
       alias: viteAliases(),
     },
     esbuild: {

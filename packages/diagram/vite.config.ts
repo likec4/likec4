@@ -1,8 +1,33 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
+import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import packageJson from './package.json' with { type: 'json' }
+
+export const rewriteRootSelector: PostcssPlugin = {
+  postcssPlugin: 'postcss-rewrite-root',
+  Once(css) {
+    css.walkRules((rule) => {
+      let updatedSelectors = []
+      for (let val of rule.selectors) {
+        if (val.trim() === ':root') {
+          // console.log('rewriting :root', rule.selectors)
+          updatedSelectors.push('.likec4-shadow-root')
+          continue
+        }
+        if (val.trim() === 'body') {
+          updatedSelectors.push('.likec4-shadow-root')
+          continue
+        }
+      }
+      if (updatedSelectors.length) {
+        rule.selectors = updatedSelectors
+      }
+    })
+  },
+}
 
 export default defineConfig({
   define: {
@@ -12,6 +37,7 @@ export default defineConfig({
     conditions: ['sources'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+      'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
     },
   },
   css: {
@@ -50,7 +76,6 @@ export default defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
-        'react-dom/server',
       ],
       treeshake: {
         preset: 'recommended',

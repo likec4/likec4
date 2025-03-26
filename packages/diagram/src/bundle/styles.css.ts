@@ -1,5 +1,5 @@
 import type { DiagramView } from '@likec4/core'
-import { css, cx } from '@likec4/styles/css'
+import { css } from '@likec4/styles/css'
 import { type MantineThemeOverride, createTheme, Portal } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
@@ -13,7 +13,7 @@ export const DefaultTheme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',
-  fontFamily: 'var(--likec4-default-font-family)',
+  fontFamily: 'var(--fonts-likec4)',
   headings: {
     fontWeight: '500',
     sizes: {
@@ -35,27 +35,6 @@ export const DefaultTheme = createTheme({
     }),
   },
 }) as MantineThemeOverride
-
-// Also used by MantineProvider as cssVariablesSelector
-const shadowRoot = 'likec4-shadow-root'
-export const ShadowRootCssSelector = `.${shadowRoot}`
-// const BundlesCss = inlinedCss
-//   .replaceAll('body {', `${ShadowRootCssSelector}{`)
-//   .replaceAll('body{', `${ShadowRootCssSelector}{`)
-
-export const root = cx(
-  shadowRoot,
-  css({
-    margin: 0,
-    padding: 0,
-    display: 'block',
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-    position: 'relative',
-  }),
-)
 
 export const cssInteractive = css({
   cursor: 'pointer',
@@ -86,7 +65,14 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
 
   useIsomorphicLayoutEffect(() => {
     const css = new CSSStyleSheet()
-    css.replaceSync(inlinedStyles)
+    css.replaceSync(
+      inlinedStyles
+        .replaceAll(':where(:root, :host)', `.likec4-shadow-root`)
+        .replaceAll(':where(:host, :root)', `.likec4-shadow-root`)
+        .replaceAll(':root', `.likec4-shadow-root`)
+        .replaceAll('body {', `.likec4-shadow-root{`)
+        .replaceAll('body{', `.likec4-shadow-root{`),
+    )
     setStyleSheets([css])
     return () => {
       css.replaceSync('')

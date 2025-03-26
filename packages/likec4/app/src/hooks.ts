@@ -1,8 +1,9 @@
 import type { DiagramView, ProjectId } from '@likec4/core'
+import { useStore } from '@nanostores/react'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
-import { nano } from 'likec4/react'
 import { projects } from 'likec4:projects'
+import { computed } from 'nanostores'
 import { useMemo } from 'react'
 import { values } from 'remeda'
 import { useLikeC4ModelDataContext } from './context/LikeC4ModelContext'
@@ -25,9 +26,9 @@ export function useTransparentBackground(enabled = true) {
 export function useLikeC4Views(): ReadonlyArray<DiagramView> {
   const $likec4data = useLikeC4ModelDataContext()
   const $viewsAtom = useMemo(() => {
-    return nano.computed($likec4data, (model) => values(model.views))
+    return computed($likec4data, (model) => values(model.views))
   }, [$likec4data])
-  return nano.useStore($viewsAtom)
+  return useStore($viewsAtom)
 }
 
 export function useCurrentDiagram(): DiagramView | null {
@@ -37,9 +38,9 @@ export function useCurrentDiagram(): DiagramView | null {
   })
   const $likec4data = useLikeC4ModelDataContext()
   const $viewAtom = useMemo(() => {
-    return nano.computed($likec4data, (model) => model.views[viewId] ?? null)
+    return computed($likec4data, (model) => model.views[viewId] ?? null)
   }, [viewId, $likec4data])
-  return nano.useStore($viewAtom)
+  return useStore($viewAtom)
 }
 
 export function useCurrentProjectd(): ProjectId {

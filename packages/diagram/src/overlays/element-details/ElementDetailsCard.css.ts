@@ -73,7 +73,7 @@ export const elementIcon = css({
   _dark: {
     mixBlendMode: 'hard-light',
   },
-  '& .svg, & .img': {
+  '& :where(svg, img)': {
     width: '100%',
     height: 'auto',
     maxHeight: '100%',

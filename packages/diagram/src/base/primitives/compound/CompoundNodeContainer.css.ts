@@ -54,7 +54,6 @@ const root = css.raw({
     transitionDelay: '.075ms',
   },
   _noReduceGraphics: {
-    boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
     _before: {
       transition: `all {durations.slow} {easings.inOut}`,
     },
@@ -65,24 +64,11 @@ const root = css.raw({
       },
     },
   },
-
-  _whenSelected: {
-    boxShadow: 'none',
-  },
-
-  [`:where(.react-flow__node.dragging) &`]: {
-    boxShadow: 'none',
-  },
-
-  '&:is([data-compound-transparent="true"])': {
+  '&:is([data-compound-transparent])': {
     _before: {
       opacity: compoundOpacity.ref,
       borderWidth: `calc(${borderWidth.ref} - 1px)`,
     },
-  },
-
-  _whenPanning: {
-    boxShadow: 'none !important',
   },
 })
 
@@ -136,5 +122,23 @@ export const compound = sva({
     compoundBorder,
     indicatorSvg,
     indicatorRect,
+  },
+  variants: {
+    isTransparent: {
+      false: {
+        root: {
+          _before: {
+            boxShadow: {
+              _noReduceGraphics: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
+              _whenSelected: 'none',
+              _whenPanning: 'none !important',
+            },
+          },
+        },
+      },
+      true: {
+        root: {},
+      },
+    },
   },
 })

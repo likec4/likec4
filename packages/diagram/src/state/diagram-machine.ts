@@ -621,6 +621,18 @@ export const diagramMachine = setup({
             params: prop('event'),
           },
         },
+        'saveManualLayout.*': {
+          guard: 'not readonly',
+          actions: sendTo((c) => c.context.syncLayoutActorRef, ({ event }) => {
+            if (event.type === 'saveManualLayout.schedule') {
+              return { type: 'sync' }
+            }
+            if (event.type === 'saveManualLayout.cancel') {
+              return { type: 'cancel' }
+            }
+            nonexhaustive(event)
+          }),
+        },
       },
       exit: [
         cancel('fitDiagram'),
@@ -668,18 +680,7 @@ export const diagramMachine = setup({
                 { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
               ],
             },
-            'saveManualLayout.*': {
-              guard: 'not readonly',
-              actions: sendTo((c) => c.context.syncLayoutActorRef, ({ event }) => {
-                if (event.type === 'saveManualLayout.schedule') {
-                  return { type: 'sync' }
-                }
-                if (event.type === 'saveManualLayout.cancel') {
-                  return { type: 'cancel' }
-                }
-                nonexhaustive(event)
-              }),
-            },
+
             'focus.node': {
               guard: 'enabled: FocusMode',
               actions: assign({
@@ -748,18 +749,6 @@ export const diagramMachine = setup({
                 lastClickedNode: null,
               }),
               target: 'idle',
-            },
-            'saveManualLayout.*': {
-              guard: 'not readonly',
-              actions: sendTo(c => c.context.syncLayoutActorRef, ({ event }) => {
-                if (event.type === 'saveManualLayout.schedule') {
-                  return { type: 'sync' }
-                }
-                if (event.type === 'saveManualLayout.cancel') {
-                  return { type: 'cancel' }
-                }
-                nonexhaustive(event)
-              }),
             },
           },
         },

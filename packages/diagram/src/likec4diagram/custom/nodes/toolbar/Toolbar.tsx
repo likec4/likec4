@@ -45,9 +45,13 @@ export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) 
   }
   // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, delay)
+  if (!isToolbarVisible) {
+    return null
+  }
+
   return (
     <NodeToolbar
-      isVisible={!dragging && isToolbarVisible}
+      isVisible={!dragging}
       offset={4}
       {...props}>
       <Paper

@@ -5,8 +5,8 @@ export const card = css({
   minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
   width: 'auto',
-  backgroundColor: 'mantine.colors.body',
-  borderRadius: '0px',
+  // backgroundColor: 'mantine.colors.body',
+  borderRadius: 'sm',
   sm: {
     minWidth: 250,
     maxWidth: '90vw',
@@ -16,18 +16,28 @@ export const card = css({
     maxWidth: '70vw',
   },
 
-  _dark: {
-    backgroundColor: 'mantine.colors.dark[6]',
+  shadow: {
+    base: 'xs',
+    _whenPanning: 'none',
   },
-  _noReduceGraphics: {
-    borderRadius: 'sm',
-    backgroundColor: `mantine.colors.body/80`,
-    // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-    // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-    _dark: {
-      backgroundColor: `mantine.colors.dark[6]/80`,
-    },
+
+  backgroundColor: {
+    base: 'mantine.colors.body/80',
+    _dark: 'mantine.colors.dark[6]/80',
+    _whenPanning: 'mantine.colors.body',
   },
+  // _dark: {
+  //   backgroundColor: 'mantine.colors.dark[6]',
+  // },
+  // _noReduceGraphics: {
+  //   borderRadius: 'sm',
+  //   backgroundColor: `mantine.colors.body/80`,
+  //   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  //   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  //   _dark: {
+  //     backgroundColor: `mantine.colors.dark[6]/80`,
+  //   },
+  // },
 })
 
 export const title = css({})

@@ -36,7 +36,7 @@ export function CompoundNodeContainer({
   ...rest
 }: CompoundNodeContainerProps) {
   const isReducedGraphics = useIsReducedGraphics()
-  const isTransparent = isNumber(data.style.opacity) && data.style.opacity < 100
+  const isTransparent = isNumber(data.style.opacity) && data.style.opacity < 99
   let opacity = clamp((data.style.opacity ?? 100) / 100, {
     min: 0,
     max: 1,
@@ -53,7 +53,9 @@ export function CompoundNodeContainer({
     max: 100 - MIN_OPACITY,
   })
 
-  const classes = styles.compound()
+  const classes = styles.compound({
+    isTransparent,
+  })
   const depth = clamp(data.depth ?? 1, {
     min: 1,
     max: 5,

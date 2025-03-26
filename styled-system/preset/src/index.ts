@@ -4,8 +4,8 @@ import { compoundColors, globalCss, themeColors } from './generated'
 import { theme } from './theme'
 import { likec4Palette, likec4RelationPalette } from './utilities'
 
-const root = '.likec4-diagram-root'
-const rootNotReduced = `${root}:not([data-likec4-reduced-graphics])`
+const root = '.likec4-root'
+const rootNotReduced = `${root}:not([data-likec4-reduced-graphics]):not([data-likec4-diagram-panning])`
 
 const nodeOrEdge = `:where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container)`
 
@@ -15,7 +15,6 @@ export default definePreset({
   // presets: [
   //   PandaPreset as any,
   // ],
-
   globalVars: {
     '--likec4-palette': {
       syntax: '*',
@@ -32,13 +31,22 @@ export default definePreset({
       inherits: false,
       initialValue: '1rem',
     },
-    '--xy-edge-stroke': {},
+    // '--xy-edge-stroke': {},
   },
   globalCss: {
     // '@supports ((hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none))': {
     //   // TODO: this workaround disables animations in Safari (to improve performance)
     //   ['--likec4-safari-animation-hook']: ' ',
     // },
+    ':where(:host, :root)': {
+      ['--likec4-app-font-default']:
+        `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
+    },
+    '.likec4-shadow-root': {
+      display: 'contents',
+      '--mantine-font-family': 'var(--likec4-app-font-default)',
+      '--mantine-font-family-headings': 'var(--likec4-app-font-default)',
+    },
     [`${root}`]: {
       overflow: 'hidden',
       position: 'relative',
@@ -48,11 +56,9 @@ export default definePreset({
       margin: 0,
       boxSizing: 'border-box',
       border: '0px solid transparent',
-      ['--likec4-app-font-default']:
-        `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
-      ['--mantine-default-font-family']: 'var(--likec4-app-font)',
-      ['--likec4-background-color']: 'var(--mantine-color-body)',
-      ['--colors-likec4-background']: 'var(--mantine-color-body)',
+      // ['--likec4-app-font-default']:
+      //   `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
+      // ['--mantine-font-family']: 'var(--likec4-app-font-default)',
     },
     [`${root} .react-flow:is(.not-initialized)`]: {
       opacity: 0,

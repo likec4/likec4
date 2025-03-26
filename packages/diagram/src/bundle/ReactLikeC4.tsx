@@ -7,7 +7,6 @@ import { isFunction, isString } from 'remeda'
 import { type LikeC4DiagramProps, LikeC4Diagram } from '../LikeC4Diagram'
 import type { OnNavigateTo } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
-import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
@@ -127,23 +126,21 @@ function ReactLikeC4Inner({
       <ShadowRoot
         {...shadowRootProps}
         injectFontCss={injectFontCss}
-        className={cx('likec4-view', className)}
-        style={style}
+        theme={mantineTheme}
+        colorScheme={colorScheme}
         styleNonce={styleNonce}
-      >
-        <ShadowRootMantineProvider
-          theme={mantineTheme}
-          colorScheme={colorScheme}
-          styleNonce={styleNonce}
-        >
-          <LikeC4Diagram
-            view={view as any}
-            showNotations={showNotations && hasNotations}
-            onNavigateTo={onNavigateTo as any}
-            background={background}
-            {...props}
-          />
-        </ShadowRootMantineProvider>
+        className={cx(
+          'likec4-view',
+          className,
+        )}
+        style={style}>
+        <LikeC4Diagram
+          view={view as any}
+          showNotations={showNotations && hasNotations}
+          onNavigateTo={onNavigateTo as any}
+          background={background}
+          {...props}
+        />
       </ShadowRoot>
     </>
   )

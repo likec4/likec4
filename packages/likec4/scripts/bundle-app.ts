@@ -28,15 +28,10 @@ export async function bundleApp() {
     configFile: false,
     clearScreen: false,
     resolve: {
-      conditions: ['production', 'sources'],
+      conditions: ['sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        // '@likec4/core/compute-view': resolve('../core/src/compute-view'),
-        // '@likec4/core/model': resolve('../core/src/model'),
-        // '@likec4/core/types': resolve('../core/src/types'),
-        // '@likec4/core': resolve('../core/src'),
-        // '@likec4/diagram': resolve('../diagram/src'),
-        'react-dom/server': resolve(cwd, 'app/react/react-dom-server-mock.ts'),
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
       },
     },
     mode: 'production',
@@ -129,6 +124,7 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
+    copyFile('app/src/webcomponent.tsx', '__app__/src/webcomponent.tsx'),
   ])
 }
 

@@ -1,8 +1,7 @@
-import { Box, Code } from '@mantine/core'
 import type { PropsWithChildren } from 'react'
 
 export const ErrorMessage = ({ children }: PropsWithChildren) => (
-  <Box
+  <div
     style={{
       margin: '1rem 0',
     }}>
@@ -16,11 +15,11 @@ export const ErrorMessage = ({ children }: PropsWithChildren) => (
       }}>
       {children}
     </div>
-  </Box>
+  </div>
 )
 
 export const ViewNotFound = ({ viewId }: { viewId: string }) => (
   <ErrorMessage>
-    View <Code>{viewId}</Code> not found
+    View <code>{viewId}</code> not found
   </ErrorMessage>
 )

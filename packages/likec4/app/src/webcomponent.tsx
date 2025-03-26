@@ -1,7 +1,6 @@
 import { LikeC4View as ReactLikeC4View } from 'likec4:react'
 import { type Root, createRoot } from 'react-dom/client'
-// import { Icons } from 'virtual:likec4/icons'
-// import { likeC4Model } from 'virtual:likec4/model'
+import { ComponentName } from './const'
 
 export class LikeC4View extends HTMLElement {
   static observedAttributes = ['view-id', 'browser']
@@ -100,3 +99,5 @@ export class LikeC4View extends HTMLElement {
     }
   }
 }
+
+customElements.define(ComponentName.View, LikeC4View)
