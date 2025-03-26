@@ -14,9 +14,8 @@ import { useTelemetry } from '../common/useTelemetry'
 import { languageId } from '../const'
 import { logger } from '../logger'
 
-export const { activate, deactivate } = defineExtension(async () => {
-  const { whenReady } = useExtensionLogger()
-  await whenReady
+export const { activate, deactivate } = defineExtension(() => {
+  useExtensionLogger()
   logger.debug('browser extension')
   activateLanguageClient(
     // Create a language client

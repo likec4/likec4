@@ -17,13 +17,13 @@ export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
 export { LikeC4FileSystem }
 
-export async function startLanguageServer(): Promise<{
+export function startLanguageServer(): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
-}> {
+} {
   const connection = createConnection(ProposedFeatures.all)
 
-  await configureLogger({
+  configureLogger({
     sinks: {
       console: getConsoleSink({
         formatter: getTextFormatter(),

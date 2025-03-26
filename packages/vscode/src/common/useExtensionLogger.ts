@@ -10,7 +10,7 @@ export const useExtensionLogger = createSingletonComposable(() => {
   })
   useDisposable(outputChannel)
   const telemetry = useTelemetry()
-  const whenReady = configureLogger({
+  configureLogger({
     sinks: {
       console: getConsoleSink(),
       vscode: getOutputChannelSink(outputChannel),
@@ -22,16 +22,11 @@ export const useExtensionLogger = createSingletonComposable(() => {
         sinks: ['console', 'vscode', 'telemetry'],
       },
     ],
-  }).then(
-    () => outputChannel.debug('configured logger'),
-    (err) => outputChannel.error(err),
-  )
+  })
+  outputChannel.debug('configured logger')
 
-  return {
-    ...useLogger('LikeC4 Extension', {
-      outputChannel,
-      getPrefix: () => '',
-    }),
-    whenReady,
-  }
+  return useLogger('LikeC4 Extension', {
+    outputChannel,
+    getPrefix: () => '',
+  })
 })

@@ -105,13 +105,13 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "@likec4/core": "workspace:~",
+    "@likec4/core": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "boxen": "^8.0.1",
     "playwright": "^1.51.1",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "rollup": "4.34.6",
+    "rollup": "catalog:vite",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite"
   },

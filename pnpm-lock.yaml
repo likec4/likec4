@@ -168,6 +168,9 @@ catalogs:
     '@vitejs/plugin-react':
       specifier: ^4.3.4
       version: 4.3.4
+    rollup:
+      specifier: ^4.36.0
+      version: 4.37.0
     vite:
       specifier: ^6.2.3
       version: 6.2.3
@@ -1026,7 +1029,7 @@ importers:
         specifier: catalog:utils
         version: 1.7.0
       '@likec4/core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../core
       '@vitejs/plugin-react':
         specifier: catalog:vite
@@ -1044,8 +1047,8 @@ importers:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
       rollup:
-        specifier: 4.34.6
-        version: 4.34.6
+        specifier: catalog:vite
+        version: 4.37.0
       type-fest:
         specifier: ^4.37.0
         version: 4.37.0
@@ -1268,13 +1271,13 @@ importers:
         version: 3.5.0(typescript@5.8.2)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 4.5.3(@types/node@20.17.23)(rollup@4.34.6)(typescript@5.8.2)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 4.5.3(@types/node@20.17.23)(rollup@4.37.0)(typescript@5.8.2)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-inspect:
         specifier: ^11.0.0
         version: 11.0.0(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-singlefile:
         specifier: ^2.2.0
-        version: 2.2.0(rollup@4.34.6)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 2.2.0(rollup@4.37.0)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vitest:
         specifier: catalog:vitest
         version: 3.0.9(@types/debug@4.1.12)(@types/node@20.17.23)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
@@ -1303,8 +1306,8 @@ importers:
   packages/log:
     dependencies:
       '@logtape/logtape':
-        specifier: ^0.8.2
-        version: 0.8.2
+        specifier: ^0.9.0
+        version: 0.9.0
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -2765,8 +2768,8 @@ packages:
   '@kamilkisiela/fast-url-parser@1.1.4':
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
 
-  '@logtape/logtape@0.8.2':
-    resolution: {integrity: sha512-KikaMHi64p0BHYrYOE2Lom4dOE3R8PGT+21QJ5Ql/SWy0CNOp69dkAlG9RXzENQ6PAMWtiU+4kelJYNvfUvHOQ==}
+  '@logtape/logtape@0.9.0':
+    resolution: {integrity: sha512-e4IlinGvjzp/+nSvsXB1OPSYNiuVEEJy8aMQqbveTcJoLVRsJK7nH0xVh/EdNTjRBoioJbUT/jzxaAifxf1VyA==}
 
   '@mantine/colors-generator@7.17.2':
     resolution: {integrity: sha512-wn4qmefWyQO9424nenN3k/zYcN4kPut1LVdv1ZyQ0Bz1giKc3PKTb96OOMzWlPCW08WjK/nwa2/VczC7YVKcQQ==}
@@ -10264,7 +10267,7 @@ snapshots:
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
 
-  '@logtape/logtape@0.8.2': {}
+  '@logtape/logtape@0.9.0': {}
 
   '@mantine/colors-generator@7.17.2(chroma-js@3.1.2)':
     dependencies:
@@ -10850,14 +10853,6 @@ snapshots:
       '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 4.0.2
-
-  '@rollup/pluginutils@5.1.4(rollup@4.34.6)':
-    dependencies:
-      '@types/estree': 1.0.6
-      estree-walker: 2.0.2
-      picomatch: 4.0.2
-    optionalDependencies:
-      rollup: 4.34.6
 
   '@rollup/pluginutils@5.1.4(rollup@4.34.8)':
     dependencies:
@@ -16773,25 +16768,6 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-dts@4.5.3(@types/node@20.17.23)(rollup@4.34.6)(typescript@5.8.2)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
-    dependencies:
-      '@microsoft/api-extractor': 7.51.0(@types/node@20.17.23)
-      '@rollup/pluginutils': 5.1.4(rollup@4.34.6)
-      '@volar/typescript': 2.4.11
-      '@vue/language-core': 2.2.0(typescript@5.8.2)
-      compare-versions: 6.1.1
-      debug: 4.4.0
-      kolorist: 1.8.0
-      local-pkg: 1.1.0
-      magic-string: 0.30.17
-      typescript: 5.8.2
-    optionalDependencies:
-      vite: 6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - rollup
-      - supports-color
-
   vite-plugin-dts@4.5.3(@types/node@20.17.23)(rollup@4.37.0)(typescript@5.8.2)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:
       '@microsoft/api-extractor': 7.51.0(@types/node@20.17.23)
@@ -16834,10 +16810,10 @@ snapshots:
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-singlefile@2.2.0(rollup@4.34.6)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
+  vite-plugin-singlefile@2.2.0(rollup@4.37.0)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:
       micromatch: 4.0.8
-      rollup: 4.34.6
+      rollup: 4.37.0
       vite: 6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   vite-tsconfig-paths@5.1.4(typescript@5.8.2)(vite@6.2.3(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
@@ -16855,7 +16831,7 @@ snapshots:
     dependencies:
       esbuild: 0.25.1
       postcss: 8.5.3
-      rollup: 4.34.6
+      rollup: 4.37.0
     optionalDependencies:
       '@types/node': 20.17.23
       fsevents: 2.3.3

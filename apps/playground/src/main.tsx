@@ -22,14 +22,12 @@ configureLogger({
       lowestLevel: 'debug',
     },
   ],
-}).then(() => {
-  ReactDOM.createRoot(document.getElementById('likec4-root')!).render(
-    <MantineProvider
-      defaultColorScheme="dark"
-      theme={theme}>
-      <ModalsProvider>
-        <Routes />
-      </ModalsProvider>
-    </MantineProvider>,
-  )
 })
+
+ReactDOM.createRoot(document.getElementById('likec4-root')!).render(
+  <MantineProvider defaultColorScheme="dark" theme={theme}>
+    <ModalsProvider>
+      <Routes />
+    </ModalsProvider>
+  </MantineProvider>,
+)
