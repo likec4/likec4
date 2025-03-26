@@ -59,7 +59,7 @@
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:utils",
     "@tabler/icons-react": "catalog:react",
-    "@xstate/react": "^5.0.2",
+    "@xstate/react": "^5.0.3",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
