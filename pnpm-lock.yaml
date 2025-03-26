@@ -1423,7 +1423,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
       valibot:
-        specifier: ^1.0.0-rc.3
+        specifier: ^1.0.0
         version: 1.0.0(typescript@5.8.2)
       vscode-ext-gen:
         specifier: ^1.0.2

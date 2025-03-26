@@ -256,7 +256,7 @@
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "tslib": "^2.8.1",
-    "valibot": "^1.0.0-rc.3",
+    "valibot": "^1.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",
