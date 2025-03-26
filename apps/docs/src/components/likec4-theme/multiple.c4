@@ -4,6 +4,7 @@ specification {
 
   element multipleService {
     style {
+      color secondary
       //icon aws:lambda
     }
   }

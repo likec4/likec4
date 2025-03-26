@@ -8,12 +8,6 @@
       "dependsOn": [
         "^generate",
         "likec4#build"
-      ],
-      "inputs": [
-        "src/**/*.c4"
-      ],
-      "outputs": [
-        "src/components/*/likec4-views.*"
       ]
     },
     "build": {
@@ -24,10 +18,6 @@
         ".astro/**",
         "dist/**"
       ]
-    },
-    // We override the default "test" task to exclude the "generate"
-    "test": {
-      "dependsOn": []
     }
   }
 }

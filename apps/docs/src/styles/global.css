@@ -1,8 +1,8 @@
 :root {
-  --sl-font:
+  /* --sl-font:
     "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-    "Noto Color Emoji";
-  --sl-text-2xs: 0.75rem;
+    "Noto Color Emoji"; */
+  /* --sl-text-2xs: 0.75rem;
   --sl-text-xs: 0.8125rem;
   --sl-text-sm: 0.875rem;
   --sl-text-base: 1rem;
@@ -12,12 +12,13 @@
   --sl-text-3xl: 1.8125rem;
   --sl-text-4xl: 2.1875rem;
   --sl-text-5xl: 2.625rem;
-  --sl-text-6xl: 4rem;
-  --sl-text-h1: var(--sl-text-3xl);
-  --sl-text-h2: var(--sl-text-2xl);
-  --sl-text-h3: var(--sl-text-xl);
-  --sl-text-h4: var(--sl-text-lg);
-  --sl-text-h5: var(--sl-text-lg);
+  --sl-text-6xl: 4rem; */
+  --sl-text-h1: 2.1875rem;
+  --sl-text-h2: 1.8125rem;
+  --sl-text-h3: 1.5rem;
+  --sl-text-h4: 1.35rem;
+  --sl-text-h5: 1.25rem;
+  --sl-text-h6: 1.1rem;
 }
 
 .title-wrapper {

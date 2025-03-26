@@ -11,7 +11,7 @@ import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
 import { projectsModule } from './virtuals/projects'
-import { reactModule } from './virtuals/react'
+import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { singleProjectModule } from './virtuals/single-project'
 
 export type LikeC4VitePluginOptions = {
@@ -58,19 +58,23 @@ export type LikeC4VitePluginOptions = {
   useOverviewGraph?: boolean
 }
 
-const projectVirtuals = [
+const hmrProjectVirtuals = [
   projectModelModule,
   projectIconsModule,
   projectD2Module,
   projectDotSourcesModule,
   projectMmdSourcesModule,
 ]
+const projectVirtuals = [
+  ...hmrProjectVirtuals,
+  projectReactModule,
+]
 
 const virtuals = [
   projectsModule,
   modelModule,
   singleProjectModule,
-  reactModule,
+  singleProjectReactModule,
   d2Module,
   dotModule,
   mmdModule,
@@ -198,7 +202,7 @@ export function LikeC4VitePlugin({
           return
         }
         for (const project of likec4.projects()) {
-          for (const projectModule of projectVirtuals) {
+          for (const projectModule of hmrProjectVirtuals) {
             const md = server.moduleGraph.getModuleById(projectModule.virtualId(project.id))
             if (md && md.importers.size > 0) {
               logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)

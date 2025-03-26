@@ -13,24 +13,38 @@ tableOfContents:
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
 </p>
 
+
+## Install
+
 Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
 
-```sh
-npm add likec4
-```
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
 
 ## Web Component
 
 Generate javascript bundle with web component:
 
-```sh
-npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
-```  
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<br />   
 
 Use it:
 
@@ -44,9 +58,13 @@ You can change the `likec4` prefix by `-w, --webcomponent-prefix`.
 
 For example:
 
-```sh
-npx likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
-```  
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
 
 And in HTML:
 

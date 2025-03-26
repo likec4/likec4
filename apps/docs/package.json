@@ -6,11 +6,7 @@
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
-    "generate:types": "astro sync",
-    "generate:dynamic": "likec4 gen react -o src/components/dynamic-view/likec4-views.jsx ./src/components/dynamic-view",
-    "generate:theme": "likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./src/components/likec4-theme",
-    "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./src/components/index-page",
-    "generate": "run-p \"generate:*\"",
+    "generate": "astro sync",
     "dev": "astro dev",
     "start": "astro dev",
     "typecheck": "astro check",
@@ -22,12 +18,13 @@
     "clean": "rm -r -f \"dist\" \".astro\" \"node_modules\""
   },
   "dependencies": {
+    "likec4": "workspace:*",
     "@astrojs/check": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/starlight": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
-    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "shiki": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "^0.39.1",
@@ -39,12 +36,9 @@
     "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@types/picomatch": "^2.3.4",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "likec4": "workspace:*",
-    "npm-run-all2": "^7.0.1",
     "tsx": "catalog:",
     "typescript": "catalog:"
   }
