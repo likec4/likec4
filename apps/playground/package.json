@@ -122,7 +122,7 @@
     "langium": "catalog:langium",
     "monaco-editor-wrapper": "6.5.0",
     "monaco-languageclient": "9.4.1",
-    "nanoid": "^5.1.4",
+    "nanoid": "^5.1.5",
     "nanostores": "catalog:react",
     "postcss": "catalog:css",
     "react": "catalog:react",
