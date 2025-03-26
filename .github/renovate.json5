@@ -33,6 +33,7 @@
         'type-fest',
         'remeda',
         'turbo',
+        'wrangler',
         'pnpm'
       ]
     },
