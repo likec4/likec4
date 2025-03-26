@@ -135,8 +135,8 @@ catalogs:
       specifier: ^25.1.0
       version: 25.1.0
     consola:
-      specifier: ^3.4.0
-      version: 3.4.0
+      specifier: ^3.4.2
+      version: 3.4.2
     esm-env:
       specifier: ^1.2.2
       version: 1.2.2
@@ -815,7 +815,7 @@ importers:
         version: 19.0.4(@types/react@19.0.12)
       consola:
         specifier: catalog:utils
-        version: 3.4.0
+        version: 3.4.2
       esbuild:
         specifier: ^0.25.1
         version: 0.25.1
@@ -1151,7 +1151,7 @@ importers:
         version: 13.1.0
       consola:
         specifier: catalog:utils
-        version: 3.4.0
+        version: 3.4.2
       defu:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1373,7 +1373,7 @@ importers:
         version: 0.9.8(tslib@2.8.1)
       consola:
         specifier: catalog:utils
-        version: 3.4.0
+        version: 3.4.2
       esbuild:
         specifier: ^0.25.1
         version: 0.25.1
@@ -4409,6 +4409,10 @@ packages:
 
   consola@3.4.0:
     resolution: {integrity: sha512-EiPU8G6dQG0GFHNR8ljnZFki/8a+cQwEQ+7wpxdChl02Q8HXlwEZWD5lqAF8vC2sEC3Tehr8hy7vErz88LHyUA==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+
+  consola@3.4.2:
+    resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
     engines: {node: ^14.18.0 || >=16.10.0}
 
   console-browserify@1.2.0:
@@ -12311,6 +12315,8 @@ snapshots:
 
   consola@3.4.0: {}
 
+  consola@3.4.2: {}
+
   console-browserify@1.2.0: {}
 
   constant-case@3.0.4:
@@ -13019,7 +13025,7 @@ snapshots:
     dependencies:
       magic-string: 0.30.17
       mlly: 1.7.4
-      rollup: 4.34.8
+      rollup: 4.37.0
 
   flatted@3.3.3: {}
 
