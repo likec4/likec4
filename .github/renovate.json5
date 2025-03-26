@@ -27,6 +27,16 @@
       pinDigests: false,
     },
     {
+      automerge: true,
+      matchPackageNames: [
+        'dprint',
+        'type-fest',
+        'remeda',
+        'turbo',
+        'pnpm'
+      ]
+    },
+    {
       groupName: 'linters',
       matchDepNames: [
         '@types/eslint',
@@ -69,15 +79,6 @@
       matchPackageNames: [
        // '@tabler{/,}**',
         '@fontsource{/,}**',
-      ]
-    },
-    {
-      automerge: true,
-      matchPackageNames: [
-        'dprint',
-        'dprint',
-        'turbo',
-        'pnpm'
       ]
     },
     {
