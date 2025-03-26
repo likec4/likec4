@@ -376,8 +376,8 @@ importers:
         specifier: 14.0.6
         version: 14.0.6
       '@hono/oauth-providers':
-        specifier: ^0.6.2
-        version: 0.6.2(hono@4.7.5)
+        specifier: ^0.7.0
+        version: 0.7.0(hono@4.7.5)
       '@hono/valibot-validator':
         specifier: ^0.5.2
         version: 0.5.2(hono@4.7.5)(valibot@1.0.0(typescript@5.8.2))
@@ -2607,8 +2607,8 @@ packages:
     resolution: {integrity: sha512-AgJgKLooZyQnzMfoFg5Mo/aHM+HGBC9ExpXIjNqGimYTRgNbL/K7X5EM1kR2JY90BNKk9lo6Usq1T/nWFdT7TQ==}
     hasBin: true
 
-  '@hono/oauth-providers@0.6.2':
-    resolution: {integrity: sha512-Uo2Lf+GnaPGebkC4GUQMRD9spIKonav/gWwSapEJhCKQjq1WVxTLIlCykNRhJtcizPCPc6OAV3A9RAYk0kX9XQ==}
+  '@hono/oauth-providers@0.7.0':
+    resolution: {integrity: sha512-TKaIKUCzkyM3VmpFKoakx81/83sl1DXcbAOLCKN/7sK5ODwDKKLo309KMJw+se42BL4VM6k/ysyqSZwgNonDTw==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
       hono: '>=3.*'
@@ -10136,7 +10136,7 @@ snapshots:
       cac: 6.7.14
       mime-types: 2.1.35
 
-  '@hono/oauth-providers@0.6.2(hono@4.7.5)':
+  '@hono/oauth-providers@0.7.0(hono@4.7.5)':
     dependencies:
       hono: 4.7.5
 
@@ -15847,7 +15847,6 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.37.0
       '@rollup/rollup-win32-x64-msvc': 4.37.0
       fsevents: 2.3.3
-    optional: true
 
   run-applescript@7.0.0: {}
 
