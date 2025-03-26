@@ -145,7 +145,7 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "dts-bundle-generator": "^9.5.1",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.21",
     "classnames": "^2.5.1",
     "clsx": "catalog:react",
     "conf": "^13.1.0",
