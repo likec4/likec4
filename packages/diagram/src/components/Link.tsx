@@ -1,8 +1,55 @@
 import type { Link as LinkData } from '@likec4/core'
+import { css, cva, cx } from '@likec4/styles/css'
 import { ActionIcon, Anchor, Box, CopyButton, Text } from '@mantine/core'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 import { stopPropagation } from '../utils'
-import * as css from './Link.css'
+
+const link = cva({
+  base: {
+    display: 'flex',
+    overflow: 'hidden',
+    alignItems: 'center',
+    gap: 'micro',
+    justifyContent: 'stretch',
+    transitionProperty: 'all',
+    transitionDuration: 'fast',
+    transitionTimingFunction: 'inOut',
+    border: `1px dashed {colors.mantine.colors.defaultBorder}`,
+    rounded: 'sm',
+    cursor: 'pointer',
+    color: 'mantine.colors.gray[7]',
+    _dark: {
+      color: 'mantine.colors.dark[1]',
+    },
+    _hover: {
+      transitionTimingFunction: 'out',
+      color: 'mantine.colors.defaultColor',
+      background: 'mantine.colors.defaultHover',
+    },
+  },
+  variants: {
+    size: {
+      sm: {
+        minHeight: '22px',
+        padding: '2px 8px 2px 2px',
+      },
+      md: {
+        minHeight: '30px',
+        padding: '3px 16px 3px 3px',
+      },
+    },
+  },
+})
+
+const titleBox = css({
+  flex: '1 1 100%',
+  transition: `transform 100ms {easings.inOut}`,
+  _groupHover: {
+    transitionTimingFunction: 'out',
+    transitionDelay: '50ms',
+    transform: 'translateX(1px)',
+  },
+})
 
 export function Link({
   value,
@@ -20,11 +67,15 @@ export function Link({
           href={url}
           target="_blank"
           underline="never"
-          className={css.elementLink}
-          data-size={size}
+          className={cx(
+            'group',
+            link({ size }),
+          )}
           onClick={stopPropagation}>
           <ActionIcon
-            className={css.linkIcon}
+            className={css({
+              flex: '0',
+            })}
             tabIndex={-1}
             size={isNormalSize ? 24 : 20}
             variant={copied ? 'light' : 'subtle'}
@@ -37,7 +88,7 @@ export function Link({
           >
             {copied ? <IconCheck /> : <IconCopy style={{ width: '65%', opacity: 0.65 }} />}
           </ActionIcon>
-          <Box className={css.linkTitleBox}>
+          <Box className={titleBox}>
             <Text
               component="div"
               fz={isNormalSize ? 'xs' : 11}

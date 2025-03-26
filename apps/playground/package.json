@@ -5,7 +5,7 @@
   "scripts": {
     "generate": "wireit",
     "dev": "wireit",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --build --verbose",
     "build": "vite build",
     "preview": "vite preview",
     "wrangler:deploy": "wireit",
@@ -13,28 +13,21 @@
     "deploy:prod": "wireit"
   },
   "wireit": {
-    "generate-panda": {
-      "command": "panda codegen",
-      "output": [
-        "styled-system/*"
-      ]
-    },
     "generate-tsr": {
-      "command": "tsr generate",
-      "output": [
-        "src/routeTree.gen.ts"
-      ]
+      "command": "tsr generate"
     },
     "generate-wrangler": {
-      "command": "wrangler types --experimental-include-runtime",
+      "command": "wrangler types",
+      "files": [
+        "wrangler.toml",
+        "package.json"
+      ],
       "output": [
-        ".wrangler/types",
         "worker-configuration.d.ts"
       ]
     },
     "generate": {
       "dependencies": [
-        "generate-panda",
         "generate-tsr",
         "generate-wrangler"
       ]
@@ -42,8 +35,7 @@
     "dev": {
       "command": "vite dev",
       "dependencies": [
-        "generate",
-        "../../packages/diagram:build:watch"
+        "generate"
       ]
     },
     "build-with-turbo": {
@@ -59,7 +51,7 @@
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler deploy -c dist/playground/wrangler.json",
+      "command": "wrangler deploy -e production -c dist/playground/wrangler.json",
       "env": {
         "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"
@@ -78,12 +70,9 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.6.5",
   "dependencies": {
-    "type-fest": "4.34.1"
-  },
-  "devDependencies": {
-    "@cloudflare/vite-plugin": "0.1.7",
+    "@cloudflare/vite-plugin": "0.1.13",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
     "@codingame/monaco-vscode-editor-api": "14.0.6",
     "@codingame/monaco-vscode-editor-service-override": "14.0.6",
@@ -96,73 +85,71 @@
     "@codingame/monaco-vscode-views-service-override": "14.0.6",
     "@hono/oauth-providers": "^0.6.2",
     "@hono/valibot-validator": "^0.5.2",
-    "@hpcc-js/wasm-graphviz": "1.7.0",
+    "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
-    "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/core": "catalog:",
-    "@mantine/hooks": "catalog:",
-    "@mantine/modals": "catalog:",
-    "@mantine/notifications": "catalog:",
-    "@mantine/vanilla-extract": "catalog:",
-    "@nanostores/react": "0.8.4",
-    "@pandacss/dev": "^0.53.1",
-    "@react-hookz/web": "^25.0.1",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
+    "@mantine/modals": "catalog:mantine",
+    "@mantine/notifications": "catalog:mantine",
+    "@nanostores/react": "catalog:react",
+    "@pandacss/dev": "catalog:css",
+    "@react-hookz/web": "catalog:utils",
     "@statelyai/inspect": "^0.4.0",
-    "@tabler/icons-react": "3.29.0",
-    "@tanstack/react-router": "1.105.0",
-    "@tanstack/router-cli": "1.105.0",
-    "@tanstack/router-vite-plugin": "1.105.0",
+    "@tabler/icons-react": "catalog:react",
+    "@tanstack/react-router": "catalog:router",
+    "@tanstack/router-cli": "catalog:router",
+    "@tanstack/router-vite-plugin": "catalog:router",
     "@typefox/monaco-editor-react": "6.5.0",
-    "@types/node": "^20.17.23",
-    "@types/react": "~19.0.10",
-    "@types/react-dom": "~19.0.4",
-    "@vanilla-extract/css": "^1.17.1",
-    "@vanilla-extract/esbuild-plugin": "^2.3.15",
-    "@vanilla-extract/vite-plugin": "^5.0.1",
-    "@vitejs/plugin-react": "4.3.4",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "@vitejs/plugin-react": "catalog:vite",
     "@xstate/react": "^5.0.2",
-    "@xyflow/react": "12.4.4",
-    "@xyflow/system": "0.0.52",
-    "clsx": "^2.1.1",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
+    "clsx": "catalog:react",
     "date-fns": "^4.1.0",
-    "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.10",
+    "fast-equals": "catalog:utils",
+    "framer-motion": "catalog:react",
     "hono": "^4.7.4",
     "hono-sessions": "^0.7.1",
-    "langium": "3.3.1",
+    "langium": "catalog:langium",
     "monaco-editor-wrapper": "6.5.0",
     "monaco-languageclient": "9.4.1",
     "nanoid": "^5.1.4",
-    "nanostores": "0.11.4",
-    "postcss": "^8.5.3",
-    "react": "~19.0.0",
-    "react-dom": "~19.0.0",
-    "react-error-boundary": "^5.0.0",
+    "nanostores": "catalog:react",
+    "postcss": "catalog:css",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "react-error-boundary": "catalog:react",
     "react-resizable-panels": "^2.1.7",
-    "remeda": "^2.21.0",
+    "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
-    "tsx": "~4.19.3",
-    "turbo": "^2.4.4",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "std-env": "catalog:utils",
+    "type-fest": "catalog:utils",
     "typescript": "catalog:",
     "ufo": "^1.5.4",
-    "valibot": "1.0.0-rc.3",
-    "vite": "6.2.0",
-    "vite-plugin-node-polyfills": "^0.23.0",
-    "vite-tsconfig-paths": "^5.1.4",
+    "valibot": "catalog:utils",
+    "vite": "catalog:vite",
+    "vite-plugin-node-polyfills": "catalog:vite",
+    "vite-tsconfig-paths": "catalog:vite",
     "vscode": "npm:@codingame/monaco-vscode-extension-api@14.0.6",
-    "vscode-jsonrpc": "8.2.0",
-    "vscode-languageclient": "9.0.1",
-    "vscode-languageserver": "9.0.1",
-    "vscode-languageserver-protocol": "3.17.5",
-    "vscode-languageserver-types": "3.17.5",
-    "vscode-oniguruma": "2.0.1",
-    "vscode-textmate": "9.2.0",
-    "vscode-uri": "3.1.0",
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-languageclient": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode",
+    "vscode-languageserver-protocol": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-oniguruma": "catalog:vscode",
+    "vscode-textmate": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
     "wrangler": "catalog:",
     "xstate": "^5.19.2"

@@ -1,5 +1,8 @@
 dist/**
 react/**
+!react/tsconfig.json
+!react/*.ts
+react/*.d.ts
 icons/**
 dev/export/**
 dev/dist/**

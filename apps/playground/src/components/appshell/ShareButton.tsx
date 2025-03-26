@@ -1,15 +1,13 @@
 import { usePlaygroundSnapshot, usePlaygroundWorkspace } from '$hooks/usePlayground'
 import { useWorkspaces } from '$hooks/useWorkspaces'
-import { css } from '$styled-system/css'
-import { VStack } from '$styled-system/jsx'
-import { vstack } from '$styled-system/patterns'
+import { css } from '@likec4/styles/css'
+import { VStack } from '@likec4/styles/jsx'
 import {
   Alert as MantineAlert,
   Button as MantineButton,
   Popover,
   Stack,
   Text,
-  useMatches,
 } from '@mantine/core'
 import { IconShare } from '@tabler/icons-react'
 import { useState } from 'react'

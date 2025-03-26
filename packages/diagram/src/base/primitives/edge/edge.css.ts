@@ -1,160 +1,133 @@
-import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import {
-  reactFlow,
-} from '../../../LikeC4Diagram.css'
-import {
-  vars,
-  whereDark,
-  whereLight,
-  whereNotReducedGraphics,
-  whereReducedGraphics,
-  whereSmallZoom,
-  xyvars,
-} from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const mixColor = createVar('mix-color')
-
-export const edgeVars = style({
-  vars: {
-    [mixColor]: `black`,
-    [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: vars.relation.labelBgColor,
-    [xyvars.edge.strokeWidth]: '3',
-  },
-  selectors: {
-    [`${whereDark} &`]: {
-      vars: {
-        [mixColor]: `white`,
-      },
-    },
-    [`${whereLight} ${whereNotReducedGraphics} &`]: {
-      vars: {
-        [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 40%)`,
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
-      },
-    },
-    [`${whereDark} ${whereNotReducedGraphics} &`]: {
-      vars: {
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
-      },
-    },
-  },
-})
-
-export const edgeContainer = style([edgeVars, {
-  selectors: {
-    [`&:is([data-edge-dimmed="true"])`]: {
-      opacity: 0.6,
-      transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-      transitionDelay: '200ms',
-      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-    },
-    [`&:is([data-edge-dimmed="immediate"])`]: {
-      opacity: 0.25,
-      transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
-      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-    },
-    [`${whereReducedGraphics} &`]: {
-      transition: 'none',
-    },
-  },
-}])
 const isSelected = '.react-flow__edge.selected'
 
-globalStyle(`:where(${isSelected}) ${edgeVars}`, {
-  vars: {
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3',
+const edgeStroke = '--xy-edge-stroke'
+const edgeStrokeSelected = '--xy-edge-stroke-selected'
+const labelColor = '--xy-edge-label-color'
+const labelBg = '--xy-edge-label-background-color'
+
+export const edgeVars = css({
+  [edgeStroke]: '{colors.likec4.relation.stroke}',
+  [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
+  [labelColor]: {
+    base: '{colors.likec4.relation.label}',
+    _light: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
   },
-})
-
-globalStyle(`${edgeVars}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
-  vars: {
-    // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3',
+  [labelBg]: {
+    _light: `{colors.likec4.relation.label.bg/60}`,
+    _dark: `{colors.likec4.relation.label.bg/50}`,
   },
-})
-
-globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
-  vars: {
-    [xyvars.edge.strokeWidth]: '4',
-  },
-})
-
-globalStyle(`${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
-  mixBlendMode: 'plus-lighter',
-})
-globalStyle(`${whereLight} ${reactFlow} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`, {
-  mixBlendMode: 'screen',
-})
-
-export const edgePathBg = style({
-  // strokeWidth: xyvars.edge.strokeWidth,
-  strokeOpacity: 0.08,
-  // transition: 'stroke-width 175ms ease-in-out',
-  // transition: 'stroke-width 175ms ease-in-out, stroke-opacity 150ms ease-out',
-  transitionProperty: 'stroke-width, stroke-opacity',
-  transitionDuration: '155ms',
-  transitionTimingFunction: 'ease-out',
-  selectors: {
-    [`:where([data-likec4-zoom-small="true"]) &`]: {
-      display: 'none',
+  ['--xy-edge-stroke-width']: '3',
+  '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
+    [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
+    _whenSelected: {
+      ['--xy-edge-stroke-width']: '4',
     },
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
-      strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
-      strokeOpacity: 0.15,
+  },
+})
+
+export const edgeContainer = css({
+  _reduceGraphics: {
+    transition: 'none',
+  },
+})
+
+const _hideOnReducedGraphics = css.raw({
+  _reduceGraphicsOnPan: {
+    display: 'none',
+  },
+  _smallZoom: {
+    display: 'none',
+  },
+})
+export const hideOnReducedGraphics = css(_hideOnReducedGraphics)
+
+export const edgePathBg = css(_hideOnReducedGraphics, {
+  strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
+  strokeOpacity: 0.08,
+  transitionProperty: 'stroke-width, stroke-opacity',
+  transitionDuration: 'fast',
+  transitionTimingFunction: 'inOut',
+  _whenHovered: {
+    transitionTimingFunction: 'out',
+    strokeWidth: 'calc(var(--xy-edge-stroke-width) + 4)',
+    strokeOpacity: 0.2,
+  },
+  _whenSelected: {
+    strokeWidth: 'calc(var(--xy-edge-stroke-width) + 6)',
+    strokeOpacity: 0.25,
+    _whenHovered: {
+      strokeOpacity: 0.4,
     },
   },
 })
 
 // To fix issue with marker not inheriting color from path - we need to create container
-export const markerContext = style({
-  fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke,
+export const markerContext = css({
+  fill: '[var(--xy-edge-stroke)]' as const,
+  stroke: '[var(--xy-edge-stroke)]' as const,
 })
 
-const strokeKeyframes = keyframes({
-  'from': {
-    strokeDashoffset: 18 * 2 + 10,
-  },
-  'to': {
-    strokeDashoffset: 10,
-  },
-})
-
-export const cssEdgePath = style({
-  animationDuration: '800ms',
-  animationIterationCount: 'infinite',
-  animationTimingFunction: 'linear',
-  animationFillMode: 'both',
+export const cssEdgePath = css({
   strokeDashoffset: 10,
-  selectors: {
-    [`${whereNotReducedGraphics} &`]: {
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
-    },
-    [`:where([data-edge-hovered='true']) &`]: {
-      animationName: strokeKeyframes,
-      animationDelay: '450ms',
-    },
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
-      animationName: strokeKeyframes,
-      animationDelay: '0ms',
-    },
-    [`:where([data-edge-dir='back']) &`]: {
-      animationDirection: 'reverse',
-    },
-    [`:where([data-edge-dimmed]) &`]: {
-      animationPlayState: 'paused',
-    },
-    [`${whereSmallZoom} &`]: {
-      animationName: 'none',
-    },
+  _noReduceGraphics: {
+    transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
+  },
+  _whenHovered: {
+    animationStyle: 'xyedgeAnimated',
+    animationDelay: '450ms',
+  },
+  [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
+    animationStyle: 'xyedgeAnimated',
+    animationDelay: '0ms',
+  },
+  [`:where([data-edge-dir='back']) &`]: {
+    animationDirection: 'reverse',
+  },
+  _whenDimmed: {
+    animationPlayState: 'paused',
+  },
+  _smallZoom: {
+    animationName: 'none',
+  },
+  _whenPanning: {
+    strokeDasharray: 'none !important',
+    animationName: 'none',
   },
 })
 
-export const looseReduce = style({
-  animationName: 'none',
+const aiBg = {
+  var: '--ai-bg',
+  ref: 'var(--ai-bg)',
+} as const
+
+export const actionBtn = css({
+  // zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  pointerEvents: 'all',
+  // color: `xyedge.label`,
+  cursor: 'pointer',
+  opacity: 0.75,
+  transition: 'fast',
+  // backgroundColor: aiBg.ref,
+  [aiBg.var]: 'var(--xy-edge-label-background-color)',
+  '--ai-hover': `color-mix(in srgb , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
+  '--ai-size': `var(--ai-size-sm)`,
+  '--ai-radius': `var(--mantine-radius-sm)`,
+  _hover: {
+    translateY: '1px',
+    scale: 1.15,
+  },
+  _active: {
+    translateY: '-1px',
+    scale: '0.9',
+  },
+  _whenHovered: {
+    opacity: 1,
+  },
+  '& .tabler-icon': {
+    width: '80%',
+    height: '80%',
+    strokeWidth: '2',
+  },
 })

@@ -1,9 +1,9 @@
+import { cx } from '@likec4/styles/css'
 import { ActionIcon } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { EdgeProps } from '../../types'
-import * as css from './EdgeLabel.css'
+import { actionBtn } from './edge.css'
 
 type EdgeActionBtnProps = EdgeProps & {
   icon?: React.ReactNode
@@ -13,9 +13,7 @@ type EdgeActionBtnProps = EdgeProps & {
 export function EdgeActionButton({ icon, onClick }: EdgeActionBtnProps) {
   return (
     <ActionIcon
-      className={clsx('nodrag nopan', css.actionBtn)}
-      size={'sm'}
-      radius="sm"
+      className={cx('nodrag nopan', actionBtn)}
       onPointerDownCapture={stopPropagation}
       onClick={onClick}
       role="button"

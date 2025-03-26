@@ -2,11 +2,16 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/vite.tsbuildinfo",
-    "module": "preserve"
+    "tsBuildInfoFile": "lib/vite.tsbuildinfo",
+    "outDir": "lib/vite",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "rootDir": "."
   },
   "include": [
-    "./*.config.ts",
+    "*.config.ts",
+    "package.json",
+    "tsr.config.json"
   ],
   "references": [
     {

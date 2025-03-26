@@ -4,41 +4,77 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "generate:app": {
+      "dependsOn": [
+        "@likec4/styles#generate"
+      ],
+      "inputs": [
+        "app/**",
+        "panda.config.ts",
+        "tsr.config.json"
+      ],
+      "outputs": [
+        "styled-system/**",
+        "app/src/routeTree.gen.ts"
+      ],
+      "outputLogs": "new-only"
+    },
+    "generate:icons": {
       "dependsOn": [
         "@likec4/icons#generate"
       ],
+      "inputs": [
+        "scripts/generate-icons.ts"
+      ],
       "outputs": [
-        "app/src/routeTree.gen.ts",
         "icons/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "generate": {
+      "dependsOn": [
+        "generate:app",
+        "generate:icons"
+      ]
+    },
+    "build-react": {
+      "dependsOn": [
+        "@likec4/diagram#build:dist",
+        "@likec4/diagram#build:bundle"
+      ],
+      "outputs": [
+        "react/*.d.mts",
+        "react/*.mjs"
+      ],
+      "inputs": [
+        "tsconfig.react*.json",
+        "react/*.ts",
+        "scripts/bundle-react.ts"
       ],
       "outputLogs": "new-only"
     },
     "build-app": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/diagram#build",
-        "generate"
+        "generate:app",
+        "@likec4/diagram#topo"
       ],
       "outputs": [
-        "__app__/**",
-        "react/**"
+        "__app__/**"
       ],
       "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/**",
-        "!test/**",
-        "!build.config.ts"
+        "app/**",
+        "panda.config.ts",
+        "scripts/bundle-app.ts"
       ],
       "outputLogs": "new-only"
     },
     "build-cli": {
       "dependsOn": [
-        "generate",
+        "@likec4/core#build",
         "@likec4/log#build",
-        "@likec4/generators#build",
-        "@likec4/layouts#build",
-        "@likec4/language-server#build"
+        "@likec4/language-server#build",
+        "@likec4/generators#topo",
+        "@likec4/layouts#topo"
       ],
       "outputs": [
         "dist/**",
@@ -46,35 +82,21 @@
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "!react/**",
         "!app/**",
         "!scripts/**",
         "!dev/**",
-        "!test/**"
+        "!test/**",
+        "!tsconfig.react*.json"
       ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
+        "generate",
         "build-app",
-        "build-cli"
-      ],
-      "outputs": [],
-      "inputs": [],
-      "outputLogs": "new-only"
-    },
-    "pack": {
-      "dependsOn": [
-        "build",
-        "@likec4/core#pack"
-      ],
-      "outputs": [
-        "package.tgz"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!dev/**",
-        "!scripts/**",
-        "!test/**"
+        "build-cli",
+        "build-react"
       ],
       "outputLogs": "new-only"
     }

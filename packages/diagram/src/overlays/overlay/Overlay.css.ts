@@ -1,13 +1,11 @@
-import { createVar, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
-import { mantine, whereLight } from '../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const backdropBlur = createVar('backdrop-blur')
-export const backdropOpacity = createVar('backdrop-opacity')
-const backdropColor = createVar('backdrop-color')
+export const backdropBlur = '--_blur'
+export const backdropOpacity = '--_opacity'
+const backdropColor = '--backdrop-color'
 
-const borderRadius = createVar('border-radius')
-export const dialog = style({
+const borderRadius = '8px'
+export const dialog = css({
   boxSizing: 'border-box',
   margin: 0,
   position: 'fixed',
@@ -16,54 +14,42 @@ export const dialog = style({
   height: 'auto',
   maxWidth: '100vw',
   maxHeight: '100vh',
-  background: `color-mix(in srgb, ${mantine.colors.defaultBorder}, transparent 50%)`,
-  boxShadow: mantine.shadows.xl,
-  border: `0 solid transparent`,
+  background: `mantine.colors.defaultBorder/50`,
+  shadow: 'xl',
+  border: 'transparent',
   outline: 'none',
   borderRadius: borderRadius,
-  padding: 6,
-  vars: {
-    [borderRadius]: '8px',
-    [backdropColor]: '34 34 34',
-    [backdropOpacity]: '0%',
-    [backdropBlur]: '0px',
+  padding: '6px',
+  _backdrop: {
+    cursor: 'zoom-out',
+    backdropFilter: 'auto',
+    backdropBlur: `var(${backdropBlur}, 0px)`,
+    backgroundColor: `[rgb(34 34 34 / var(${backdropOpacity}, 0%))]`,
   },
-  selectors: {
-    [`&::backdrop`]: {
-      cursor: 'zoom-out',
-      WebkitBackdropFilter: `blur(${backdropBlur})`,
-      backdropFilter: `blur(${backdropBlur})`,
-      backgroundColor: `rgb(${backdropColor} / ${backdropOpacity})`,
-    },
-    [`${whereLight} &`]: {
-      vars: {
-        [backdropBlur]: '15 15 15',
-      },
-    },
+  _light: {
+    backgroundColor: `[rgb(15 15 15/ var(${backdropOpacity}, 0%))]`,
   },
-  '@media': {
-    [mantine.smallerThan('md')]: {
-      borderRadius: mantine.radius.sm,
-      inset: '2rem',
-      width: 'calc(100vw - 4rem)',
-      height: 'calc(100vh - 4rem)',
-    },
-    [mantine.smallerThan('sm')]: {
-      border: 'none',
-      inset: 0,
-      width: '100vw',
-      height: '100vh',
-    },
+  mdDown: {
+    borderRadius: 'sm',
+    inset: '2rem',
+    width: 'calc(100vw - 4rem)',
+    height: 'calc(100vh - 4rem)',
+  },
+  smDown: {
+    border: 'none',
+    inset: 0,
+    width: '100vw',
+    height: '100vh',
   },
 })
 
-export const body = style({
+export const body = css({
   position: 'relative',
   containerName: 'overlay-dialog',
   containerType: 'size',
   border: `0 solid transparent`,
-  borderRadius: calc(borderRadius).subtract('2px').toString(),
-  backgroundColor: mantine.colors.body,
+  borderRadius: `calc(${borderRadius} - 2px)`,
+  background: 'mantine.colors.body',
   overflow: 'hidden',
   width: '100%',
   height: '100%',

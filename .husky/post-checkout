@@ -1,9 +1,6 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 set -e
 
-rm -rf *.tsbuildinfo */*.tsbuildinfo */*/*.tsbuildinfo */*/*/*.tsbuildinfo */*/*/*/*.tsbuildinfo
+rm -f `find . -type f -name '*.tsbuildinfo'`
 
 # This notifies the user if the yarn.lock file has changed.
 CHANGED=$(git diff "$1" "$2" --stat -- ./pnpm-lock.yaml | wc -l)

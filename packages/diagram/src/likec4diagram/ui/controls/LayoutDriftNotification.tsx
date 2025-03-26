@@ -12,7 +12,7 @@ import {
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
-import { mantine } from '../../../theme-vars'
+// import { mantine } from '../../../theme-vars'
 import { ActionIcon } from './_shared'
 
 export const LayoutDriftNotification = (props: PopoverProps) => (
@@ -23,7 +23,7 @@ export const LayoutDriftNotification = (props: PopoverProps) => (
     {...props}>
     <HoverCardTarget>
       <ActionIcon c="orange">
-        <Overlay color={mantine.colors.orange.lightHover} backgroundOpacity={1} />
+        <Overlay color={'orange.lightHover'} backgroundOpacity={1} />
         <IconAlertTriangle />
       </ActionIcon>
     </HoverCardTarget>

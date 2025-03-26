@@ -1,12 +1,10 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 
 import { amIExecuted } from './_utils'
@@ -16,6 +14,7 @@ export async function bundleApp() {
 
   consola.info(`Run tanstack-router generate`)
   await $`tsr generate`
+  await $`panda codegen`
 
   const root = resolve(cwd, 'app')
   const outDir = resolve(cwd, '__app__/src')
@@ -30,15 +29,10 @@ export async function bundleApp() {
     configFile: false,
     clearScreen: false,
     resolve: {
-      conditions: ['production', 'sources'],
+      conditions: ['sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        // '@likec4/core/compute-view': resolve('../core/src/compute-view'),
-        // '@likec4/core/model': resolve('../core/src/model'),
-        // '@likec4/core/types': resolve('../core/src/types'),
-        // '@likec4/core': resolve('../core/src'),
-        // '@likec4/diagram': resolve('../diagram/src'),
-        'react-dom/server': resolve(cwd, 'app/react/react-dom-server-mock.ts'),
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
       },
     },
     mode: 'production',
@@ -61,12 +55,12 @@ export async function bundleApp() {
       emptyOutDir: true,
       outDir,
       chunkSizeWarningLimit: 2000,
-      cssCodeSplit: false,
-      cssMinify: 'esbuild',
+      cssCodeSplit: true,
+      cssMinify: true,
       minify: true,
       target: 'esnext',
       sourcemap: false,
-      assetsInlineLimit: 1_000_000,
+      assetsInlineLimit: 2_000_000,
       lib: {
         entry: {
           'main': 'src/main.tsx',
@@ -81,6 +75,11 @@ export async function bundleApp() {
         ignoreTryCatch: 'remove',
       },
       rollupOptions: {
+        input: [
+          './app/src/main.tsx',
+          './app/src/fonts.css',
+          './app/src/style.css',
+        ],
         treeshake: {
           preset: 'safest',
         },
@@ -106,15 +105,11 @@ export async function bundleApp() {
       modules: false,
       postcss: {
         plugins: [
-          postcssPresetMantine(),
-          autoprefixer(),
+          pandaCss(),
         ],
       },
     },
     plugins: [
-      vanillaExtractPlugin({
-        identifiers: 'short',
-      }),
       react(),
     ],
   })
@@ -130,7 +125,7 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
-    rename('__app__/src/likec4.css', '__app__/src/style.css'),
+    copyFile('app/src/webcomponent.tsx', '__app__/src/webcomponent.tsx'),
   ])
 }
 

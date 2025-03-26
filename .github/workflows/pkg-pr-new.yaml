@@ -20,7 +20,7 @@ jobs:
 
       - name: ⚙️ build
         run: |
-          pnpm turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
 
       - name: publish
         run: |

@@ -96,5 +96,5 @@ export namespace RelationshipsBrowserTypes {
     line: RelationshipLineType
   }>
 
-  export type Edge = ReactFlowEdge<EdgeData, 'relationships'>
+  export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
 }

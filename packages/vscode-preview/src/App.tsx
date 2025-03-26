@@ -2,14 +2,13 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
-import * as css from './App.css'
-import { likec4Container, likec4ParsingScreen } from './App.css'
+import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
 import { IconRenderer } from './Icons'
 import { changeViewId, refetchCurrentDiagram, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <Box className={css.stateAlert}>
+  <Box className={stateAlert}>
     <Notification
       icon={<IconX style={{ width: 20, height: 20 }} />}
       styles={{

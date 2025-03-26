@@ -34,9 +34,9 @@
     "@types/prompts": "^2.4.8",
     "execa": "^9.5.2",
     "prompts": "^2.4.2",
-    "tsx": "~4.19.3",
+    "tsx": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.5.0"
+    "unbuild": "catalog:"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }

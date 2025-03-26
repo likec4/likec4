@@ -19,9 +19,6 @@ export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 
       mapToObj(({ source, target, ...edge }) => [`${source}:${target}`, edge]),
     ),
   }
-  view.hash = objectHash(tohash, {
-    ignoreUnknown: true,
-    respectType: false,
-  })
+  view.hash = objectHash(tohash)
   return view as unknown as V
 }

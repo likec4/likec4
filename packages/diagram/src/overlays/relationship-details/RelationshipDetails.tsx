@@ -7,10 +7,9 @@ import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import type { RelationshipDetailsTypes as Types } from './_types'
+import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
-import { edgeTypes } from './custom/edgeTypes'
-import { nodeTypes } from './custom/nodeTypes'
+import { CompoundNode, ElementNode, RelationshipEdge } from './custom'
 import {
   RelationshipDetailsActorContext,
   useRelationshipDetails,
@@ -18,6 +17,19 @@ import {
 } from './hooks'
 import { SelectEdge } from './SelectEdge'
 import { useLayoutedDetails } from './useLayoutedDetails'
+
+const nodeTypes = {
+  element: ElementNode,
+  compound: CompoundNode,
+} satisfies {
+  [key in RelationshipDetailsTypes.Node['type']]: any
+}
+
+export const edgeTypes = {
+  relationship: RelationshipEdge,
+} satisfies {
+  [key in RelationshipDetailsTypes.Edge['type']]: any
+}
 
 export type RelationshipDetailsProps = {
   actorRef: RelationshipDetailsActorRef

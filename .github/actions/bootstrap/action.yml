@@ -27,4 +27,5 @@ runs:
     - run: pnpm install --frozen-lockfile
       shell: sh
       env:
+        HUSKY: "0"
         NODE_ENV: development

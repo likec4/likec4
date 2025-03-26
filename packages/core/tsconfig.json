@@ -1,17 +1,9 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
-    "noErrorTruncation": true,
-    "target": "es2022",
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "rootDir": "src"
   },
   "include": [
-    "./src"
+    "src"
   ],
 }

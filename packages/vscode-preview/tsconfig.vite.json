@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "lib/vite.tsbuildinfo",
+    "rootDir": "."
+  },
+  "include": [
+    "*.config.ts",
+    "package.json"
+  ]
+}

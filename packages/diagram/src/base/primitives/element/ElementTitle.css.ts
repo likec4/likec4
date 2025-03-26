@@ -1,155 +1,199 @@
-import { rem } from '@mantine/core'
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
-import { vars } from '../../../theme-vars'
-import { iconSize, paddingSize, textSize } from './vars.css'
+import { css, sva } from '@likec4/styles/css'
 
-export const hasIcon = style({})
+export const iconSize = '--icon-size'
 
-const textAlign = createVar('text-align')
-
-export { iconSize, paddingSize, textSize }
-
-export const title = style({
+const title = css.raw({
+  textStyle: 'likec4.node.primary',
   flex: '0 0 auto',
-  fontFamily: vars.element.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
-  textAlign: textAlign,
-  fontWeight: 500,
-  fontSize: textSize,
-  lineHeight: 1.15,
-  textWrap: 'balance',
-  color: vars.element.hiContrast,
-  whiteSpaceCollapse: 'preserve-breaks',
+  textAlign: 'center',
+  color: 'likec4.palette.hiContrast',
 })
 
-export const description = style({
+const description = css.raw({
   flex: '0 1 auto',
-  fontFamily: vars.element.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
-  fontWeight: 400,
-  fontSize: calc(textSize).multiply(0.74).toString(),
-  lineHeight: 1.2,
-  textAlign: textAlign,
-  textWrap: 'pretty',
-  color: vars.element.loContrast,
-  whiteSpaceCollapse: 'preserve-breaks',
+  textStyle: 'likec4.node.secondary',
+  color: 'likec4.palette.loContrast',
+  textAlign: 'center',
   textOverflow: 'ellipsis',
   overflow: 'hidden',
-  selectors: {
-    [`:where([data-likec4-shape-size="xs"]) &`]: {
-      display: 'none',
-    },
+  _shapeSizeXs: {
+    display: 'none',
+  },
+  _smallZoom: {
+    visibility: 'hidden',
   },
 })
 
-export const technology = style({
+const technology = css.raw({
   flex: '0 0 auto',
-  fontFamily: vars.element.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
-  fontWeight: 400,
-  fontSize: calc(textSize).multiply(0.635).toString(),
+  textStyle: 'likec4.node.secondary',
+  color: 'likec4.palette.loContrast',
+  fontSize: `calc(var(--likec4-text-size) * 0.635)`,
   lineHeight: 1.125,
-  textAlign: textAlign,
+  textAlign: 'center',
   textWrap: 'balance',
   opacity: 0.92,
-  color: vars.element.loContrast,
-  selectors: {
-    [`:where([data-hovered='true']) &`]: {
-      opacity: 1,
-    },
-    [`:where([data-likec4-shape-size="xs"], [data-likec4-shape-size="sm"]) &`]: {
-      display: 'none',
-    },
+  _whenHovered: {
+    opacity: 1,
+  },
+  _shapeSizeXs: {
+    display: 'none',
+  },
+  _shapeSizeSm: {
+    display: 'none',
+  },
+  _smallZoom: {
+    visibility: 'hidden',
   },
 })
 
-export const elementDataContainer = style({
-  position: 'relative',
-  flex: '1',
-  height: 'fit-content',
-  width: 'fit-content',
-  margin: '0 auto',
+const varIconSize = `var(${iconSize})`
+export const elementIcon = css({
+  flex: `0 0 ${varIconSize}`,
+  height: varIconSize,
+  width: varIconSize,
   display: 'flex',
+  alignSelf: 'flex-start',
   alignItems: 'center',
   justifyContent: 'center',
-  flexDirection: 'row',
-  paddingTop: paddingSize,
-  paddingBottom: paddingSize,
-  paddingLeft: calc(paddingSize).add('8px').toString(),
-  paddingRight: calc(paddingSize).add('8px').toString(),
-  overflow: 'hidden',
-  gap: rem(12),
-  selectors: {
-    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
-      paddingLeft: 46,
-      paddingRight: 16,
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      paddingTop: 30,
-    },
-    ':where([data-likec4-shape="browser"]) &': {
-      paddingTop: 32,
-      paddingBottom: 28,
+  mixBlendMode: {
+    base: 'hard-light',
+    _reduceGraphicsOnPan: 'normal',
+  },
+  [`& svg, & img`]: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: '100%',
+    pointerEvents: 'none',
+    filter: {
+      base: [
+        'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
+        'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
+        'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
+      ],
+      _reduceGraphicsOnPan: 'none',
     },
   },
-})
-globalStyle(`:where([data-likec4-shape-size="lg"], [data-likec4-shape-size="xl"]) ${elementDataContainer}`, {
-  gap: rem(16),
+  [`& img`]: {
+    objectFit: 'contain',
+  },
 })
 
-export const elementTextData = style({
-  height: 'fit-content',
-  width: 'fit-content',
-  flex: '0 1 auto',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  justifyContent: 'center',
-  flexWrap: 'nowrap',
-  overflow: 'hidden',
-  gap: rem(8),
-  'vars': {
-    [textAlign]: 'center',
-  },
-  selectors: {
-    [`&:has(${description}):has(${technology})`]: {
-      gap: rem(6),
-    },
-    [`:where(${hasIcon}) &`]: {
-      minWidth: `calc(50% + ${iconSize})`,
-      alignItems: 'flex-start',
-      'vars': {
-        [textAlign]: 'left',
+export const elementTitle = sva({
+  slots: ['root', 'textContainer', 'title', 'description', 'technology'],
+  base: {
+    root: {
+      position: 'relative',
+      flex: '1',
+      height: 'fit-content',
+      width: 'fit-content',
+      margin: '0 auto',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      paddingTop: 'var(--likec4-spacing)',
+      paddingBottom: 'var(--likec4-spacing)',
+      paddingLeft: 'calc(var(--likec4-spacing) + 8px)',
+      paddingRight: 'calc(var(--likec4-spacing) + 8px)',
+      overflow: 'hidden',
+      gap: '12px',
+      _shapeQueue: {
+        paddingLeft: '46px',
+        paddingRight: '16px',
+      },
+      _shapeMobile: {
+        paddingLeft: '46px',
+        paddingRight: '16px',
+      },
+      _shapeCylinder: {
+        paddingTop: '30px',
+      },
+      _shapeStorage: {
+        paddingTop: '30px',
+      },
+      _shapeBrowser: {
+        paddingTop: '32px',
+        paddingBottom: '28px',
+      },
+
+      _shapeSizeXs: {
+        [iconSize]: '24px',
+      },
+      _shapeSizeSm: {
+        [iconSize]: '36px',
+      },
+      _shapeSizeMd: {
+        [iconSize]: '60px',
+      },
+      _shapeSizeLg: {
+        [iconSize]: '82px',
+        gap: '16px',
+      },
+      _shapeSizeXl: {
+        [iconSize]: '90px',
+        gap: '16px',
       },
     },
+    textContainer: {
+      height: 'fit-content',
+      width: 'fit-content',
+      flex: '0 1 auto',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      justifyContent: 'center',
+      flexWrap: 'nowrap',
+      overflow: 'hidden',
+      gap: '8px',
+    },
+    title,
+    description,
+    technology,
   },
-})
-
-export const elementIcon = style({
-  flex: `0 0 ${iconSize}`,
-  height: iconSize,
-  width: iconSize,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  mixBlendMode: 'hard-light',
-  alignSelf: 'flex-start',
-})
-globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
-  width: '100%',
-  height: 'auto',
-  maxHeight: '100%',
-  pointerEvents: 'none',
-  filter: `
-    drop-shadow(0 0 3px rgb(0 0 0 / 12%))
-    drop-shadow(0 1px 8px rgb(0 0 0 / 8%))
-    drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))
-  `,
-})
-globalStyle(`${elementIcon} img`, {
-  objectFit: 'contain',
+  variants: {
+    hasIcon: {
+      false: {},
+      true: {
+        root: {
+          gap: '16px',
+        },
+        textContainer: {
+          minWidth: `calc(50% + ${varIconSize})`,
+          alignItems: 'flex-start',
+        },
+        title: {
+          textAlign: 'left',
+        },
+        description: {
+          textAlign: 'left',
+        },
+        technology: {
+          textAlign: 'left',
+        },
+      },
+    },
+    hasDescription: {
+      false: {},
+      true: {},
+    },
+    hasTechnology: {
+      false: {},
+      true: {},
+    },
+  },
+  compoundVariants: [
+    {
+      hasDescription: true,
+      hasTechnology: true,
+      css: {
+        textContainer: {
+          gap: '6px',
+        },
+      },
+    },
+  ],
+  defaultVariants: {
+    hasIcon: false,
+  },
 })

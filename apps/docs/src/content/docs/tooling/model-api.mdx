@@ -13,6 +13,7 @@ tableOfContents:
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
 
 You can access and traverse your architecture model programmatically using the LikeC4 Model API.
 
@@ -22,9 +23,11 @@ API allows to query and traverse the model from DSL, but not modify or create a 
 
 Ensure you have `likec4` in your dependencies:
 
-```sh
-npm add likec4
-```
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
 
 ## Usage
 

@@ -4,11 +4,6 @@
   "tasks": {
     "generate": {
       "dependsOn": [],
-      "inputs": [
-        "*/*.tsx",
-        "scripts/generate.mjs",
-        "svgo.config.json"
-      ],
       "outputs": [
         "*/*.js",
         "all.js",

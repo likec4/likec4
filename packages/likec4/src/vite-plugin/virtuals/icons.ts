@@ -28,7 +28,7 @@ function code(views: ComputedView[]) {
     cases: [] as string[],
   })
   return `
-import { jsxs, jsx } from 'react/jsx-runtime'
+import { jsx } from 'react/jsx-runtime'
 ${imports.join('\n')}
 
 export const Icons = {

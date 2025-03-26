@@ -1,47 +1,51 @@
-import { fallbackVar, style } from '@vanilla-extract/css'
-import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const card = style({
+export const card = css({
   cursor: 'default',
   minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
   width: 'auto',
-  backgroundColor: mantine.colors.body,
-  borderRadius: '0px',
-  '@media': {
-    [mantine.largerThan('sm')]: {
-      minWidth: 250,
-      maxWidth: '90vw',
-    },
-    [mantine.largerThan('md')]: {
-      minWidth: 350,
-      maxWidth: '70vw',
-    },
+  // backgroundColor: 'mantine.colors.body',
+  borderRadius: 'sm',
+  sm: {
+    minWidth: 250,
+    maxWidth: '90vw',
   },
-  selectors: {
-    [`${whereDark} &`]: {
-      backgroundColor: mantine.colors.dark[6],
-    },
-    [`${whereNotReducedGraphics} &`]: {
-      borderRadius: mantine.radius.sm,
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-      WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-      backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-    },
-    [`${whereDark} ${whereNotReducedGraphics} &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
-    },
+  md: {
+    minWidth: 350,
+    maxWidth: '70vw',
   },
+
+  shadow: {
+    base: 'xs',
+    _whenPanning: 'none',
+  },
+
+  backgroundColor: {
+    base: 'mantine.colors.body/80',
+    _dark: 'mantine.colors.dark[6]/80',
+    _whenPanning: 'mantine.colors.body',
+  },
+  // _dark: {
+  //   backgroundColor: 'mantine.colors.dark[6]',
+  // },
+  // _noReduceGraphics: {
+  //   borderRadius: 'sm',
+  //   backgroundColor: `mantine.colors.body/80`,
+  //   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  //   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  //   _dark: {
+  //     backgroundColor: `mantine.colors.dark[6]/80`,
+  //   },
+  // },
 })
 
-export const title = style({})
+export const title = css({})
 
-export const description = style({
+export const description = css({
   whiteSpaceCollapse: 'preserve-breaks',
-  color: mantine.colors.gray[7],
-  selectors: {
-    [`${whereDark} &`]: {
-      color: mantine.colors.gray[5],
-    },
+  color: 'mantine.colors.gray[7]',
+  _dark: {
+    color: 'mantine.colors.gray[5]',
   },
 })

@@ -40,18 +40,26 @@
     "yarn.lock": true,
     "node_modules/**": true,
     "packages/*/dist/**": true,
+    "packages/*/bundle/**": true,
     "**/routeTree.gen.ts": true
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
-    "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "**/.wireit": true,
     "**/.wrangler": true,
     ".pnpm-store/**": true,
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,
-    "packages/*/node_modules/**": true
+    "packages/*/node_modules": true,
+    "packages/*/styled-system": true,
+    "packages/*/lib": true,
+    "apps/*/node_modules": true,
+    "apps/*/lib": true,
+    "apps/*/styled-system": true,
+    "styled-system/*/node_modules": true,
+    "styled-system/*/lib": true,
+    "e2e/node_modules/**": true
   },
   "json.schemas": [
     {

@@ -1,13 +1,11 @@
 import { type DiagramNode } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
 import { Box, Text } from '@mantine/core'
-import clsx from 'clsx'
-import { isNumber, isTruthy } from 'remeda'
+import { isEmpty, isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
-import { getVarName } from '../../../utils/css'
 import type { NodeProps } from '../../types'
 import { nodeSizes } from './ElementNodeContainer'
-import * as css from './ElementTitle.css'
+import * as styles from './ElementTitle.css'
 
 type Data =
   & Pick<
@@ -26,8 +24,6 @@ type ElementTitleProps = NodeProps<Data> & {
   iconSize?: number
 }
 
-const varIconSize = getVarName(css.iconSize)
-
 export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
   const elementIcon = IconRenderer({
     element: {
@@ -35,29 +31,33 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
       title: data.title,
       icon: data.icon,
     },
-    className: css.elementIcon,
+    className: styles.elementIcon,
+  })
+  const classes = styles.elementTitle({
+    hasIcon: isTruthy(elementIcon),
+    hasDescription: !isEmpty(data.description ?? ''),
+    hasTechnology: !isEmpty(data.technology ?? ''),
   })
   const size = nodeSizes(data.style).size
   const isSm = size === 'sm'
   const isSmOrXs = isSm || size === 'xs'
   return (
     <Box
-      className={clsx(
-        css.elementDataContainer,
-        isTruthy(elementIcon) && css.hasIcon,
+      className={cx(
+        classes.root,
         'likec4-element',
       )}
       style={{
         ...isNumber(iconSize) && {
-          [varIconSize]: `${iconSize}px`,
+          [styles.iconSize]: `${iconSize}px`,
         },
       }}
     >
       {elementIcon}
-      <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>
+      <Box className={cx(classes.textContainer, 'likec4-element-main-props')}>
         <Text
           component="h3"
-          className={clsx(css.title, 'likec4-element-title')}
+          className={cx(classes.title, 'likec4-element-title')}
           lineClamp={isSmOrXs ? 2 : 3}>
           {data.title}
         </Text>
@@ -65,7 +65,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         {data.technology && (
           <Text
             component="div"
-            className={clsx(css.technology, hiddenIfZoomTooSmall, 'likec4-element-technology')}>
+            className={cx(classes.technology, 'likec4-element-technology')}>
             {data.technology}
           </Text>
         )}
@@ -73,7 +73,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         {data.description && (
           <Text
             component="div"
-            className={clsx(css.description, 'likec4-element-description')}
+            className={cx(classes.description, 'likec4-element-description')}
             lineClamp={isSmOrXs ? 3 : 5}>
             {data.description}
           </Text>

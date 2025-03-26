@@ -1,62 +1,53 @@
-import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, transitions, vars, whereDark, whereLight, whereNotReducedGraphics } from '../theme-vars'
+import { css as style } from '@likec4/styles/css'
+// import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+// import { mantine, transitions, vars, whereDark, whereLight, whereNotReducedGraphics } from '../theme-vars'
 
-const transparent = createVar('transparent')
-const bgColor = createVar('bgcolor')
+// const transparent = createVar('transparent')
+// const bgColor = createVar('bgcolor')
 export const root = style({
   height: '30px',
-  paddingLeft: mantine.spacing.sm,
+  paddingLeft: 'sm',
   paddingRight: '4px',
-  borderRadius: '0px',
-  color: fallbackVar('var(--search-color)', mantine.colors.placeholder),
+  borderRadius: 'sm',
+  // TODO
+  // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
+  borderColor: {
+    base: 'mantine.colors.defaultBorder',
+    _light: 'mantine.colors.gray[4]',
+    _dark: 'mantine.colors.dark[4]',
+    _hover: 'mantine.colors.defaultBorder',
+  },
   cursor: 'pointer',
-  backgroundColor: bgColor,
+  background: {
+    base: 'mantine.colors.default',
+    _light: 'mantine.colors.white',
+    _dark: 'mantine.colors.dark[6]',
+    _hover: 'mantine.colors.defaultHover',
+  },
+
   width: '100%',
-  vars: {
-    [transparent]: '20%',
-    [bgColor]: mantine.colors.default,
+  '& .tabler-icon': {
+    color: 'mantine.colors.text',
   },
-  selectors: {
-    [`${whereLight} &`]: {
-      borderColor: mantine.colors.gray[4],
-      vars: {
-        [bgColor]: mantine.colors.white,
-      },
-    },
-    [`${whereDark} &`]: {
-      borderColor: mantine.colors.dark[4],
-      vars: {
-        [bgColor]: mantine.colors.dark[6],
-      },
-    },
-    [`${whereNotReducedGraphics} &`]: {
-      transition: transitions.fast,
-      borderRadius: fallbackVar('var(--search-border-radius)', mantine.radius.sm),
-      backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
-      boxShadow: mantine.shadows.xs,
-      WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-      backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-    },
+
+  transition: {
+    base: 'fast',
+    _whenPanning: 'none !important',
   },
-  ':hover': {
-    borderColor: mantine.colors.defaultBorder,
-    boxShadow: mantine.shadows.sm,
-    vars: {
-      [transparent]: '10%',
-      [bgColor]: mantine.colors.defaultHover,
-    },
+  boxShadow: {
+    base: 'xs',
+    _hover: 'sm',
+    _whenPanning: 'none !important',
   },
-})
-globalStyle(`${root} .tabler-icon`, {
-  color: mantine.colors.text,
 })
 
 export const placeholder = style({
-  fontSize: mantine.fontSizes.sm,
+  fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
-  paddingRight: 50,
-  flex: 1,
+  paddingRight: '50px',
+  color: 'mantine.colors.placeholder',
+  flex: '1',
 })
 
 export const shortcut = style({
@@ -64,21 +55,23 @@ export const shortcut = style({
   fontWeight: 600,
   lineHeight: 1,
   padding: '4px 7px',
-  borderRadius: mantine.radius.sm,
+  borderRadius: 'sm',
   border: '1px solid',
-  selectors: {
-    [`${whereLight} &`]: {
-      color: mantine.colors.gray[7],
-      borderColor: mantine.colors.gray[2],
-      backgroundColor: mantine.colors.gray[2],
-    },
-    [`${whereLight} ${whereNotReducedGraphics} &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.gray[2]}, transparent 20%)`,
-    },
-    [`${whereDark} &`]: {
-      color: mantine.colors.dark[0],
-      borderColor: mantine.colors.dark[7],
-      backgroundColor: mantine.colors.dark[8],
+  transition: 'fast',
+  _light: {
+    color: 'mantine.colors.gray[7]',
+    borderColor: 'mantine.colors.gray[2]',
+  },
+  _dark: {
+    color: 'mantine.colors.dark[0]',
+    borderColor: 'mantine.colors.dark[7]',
+  },
+  backgroundColor: {
+    _light: 'mantine.colors.gray[2]/70',
+    _dark: 'mantine.colors.dark[8]/70',
+    _groupHover: {
+      _light: 'mantine.colors.gray[2]',
+      _dark: 'mantine.colors.dark[8]',
     },
   },
 })

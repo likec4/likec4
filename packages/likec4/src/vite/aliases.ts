@@ -6,7 +6,7 @@ export function viteAliases() {
   return {
     '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
     'likec4/icons': resolve(pkg, '../icons'),
-    'likec4/react': resolve(pkg, 'app/react/components'),
+    // 'likec4/react': resolve(pkg, 'app/react/components'),
     'likec4/model': resolve(pkg, 'src/model'),
     '@likec4/log/browser': resolve(pkg, '../log/src/browser.ts'),
     '@likec4/log': resolve(pkg, '../log/src/browser.ts'),

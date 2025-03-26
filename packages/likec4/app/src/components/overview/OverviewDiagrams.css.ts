@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createGlobalThemeContract, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, whereLight } from '../../mantine'
 

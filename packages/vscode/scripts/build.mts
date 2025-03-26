@@ -75,7 +75,7 @@ configs.push({
   ],
   target: 'node20',
   platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['sources', 'development'],
+  conditions: ['sources', 'node'],
 }, {
   ...base,
   entryPoints: [
@@ -83,7 +83,7 @@ configs.push({
   ],
   target: 'node20',
   platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['sources', 'node', 'development'],
+  conditions: ['sources', 'node'],
 })
 
 // ----------- Browser
@@ -97,7 +97,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources', 'browser', 'development'],
+  conditions: ['sources', 'browser'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -107,7 +107,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
+  conditions: ['sources', 'browser'],
 })
 
 let hasErrors = false

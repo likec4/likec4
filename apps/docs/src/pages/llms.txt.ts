@@ -8,7 +8,7 @@ export const skip = [
   'examples/bigbank',
 ]
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async () => {
   return new Response(
     `# LikeC4 Documentation\n\n${
       docs

@@ -5,9 +5,11 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "^generate"
+      ],
       "outputs": [
         "src/routeTree.gen.ts",
-        ".wrangler/types",
         "styled-system",
         "worker-configuration.d.ts"
       ]
@@ -18,13 +20,10 @@
         "CLOUDFLARE_ENV"
       ],
       "dependsOn": [
+        "^generate",
         "generate",
-        "^build"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/routeTree.gen.ts",
-        "!tsr.config.json"
+        "topo",
+        "@likec4/core#build"
       ],
       "outputs": [
         "dist/**"

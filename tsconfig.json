@@ -3,31 +3,40 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/playground/tsconfig.json"
+      "path": "./apps/playground/"
     },
     {
-      "path": "./packages/core/tsconfig.json",
+      "path": "./packages/core/",
     },
     {
-      "path": "./packages/diagram/tsconfig.json"
+      "path": "./packages/diagram/"
     },
     {
-      "path": "./packages/generators/tsconfig.json"
+      "path": "./packages/generators/"
     },
     {
-      "path": "./packages/language-server/tsconfig.json"
+      "path": "./packages/language-server/"
     },
     {
-      "path": "./packages/layouts/tsconfig.json"
+      "path": "./packages/layouts/"
     },
     {
-      "path": "./packages/likec4/tsconfig.json"
+      "path": "./packages/likec4/"
     },
     {
-      "path": "./packages/vscode/tsconfig.json"
+      "path": "./packages/log/"
     },
     {
-      "path": "./packages/vscode-preview/tsconfig.json"
+      "path": "./packages/vscode/"
+    },
+    {
+      "path": "./packages/vscode-preview/"
+    },
+    {
+      "path": "./styled-system/preset/"
+    },
+    {
+      "path": "./styled-system/styles/"
     }
   ]
 }

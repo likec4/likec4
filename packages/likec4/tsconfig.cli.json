@@ -2,32 +2,23 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "noUnusedParameters": false,
-    "module": "esnext",
-    "customConditions": [
-      "sources"
-    ],
-    "noEmit": false,
     "composite": true,
-    "tsBuildInfoFile": "cli.tsbuildinfo",
-    // "baseUrl": ".",
+    "tsBuildInfoFile": "lib/cli/.tsbuildinfo",
+    "outDir": "lib/cli",
     "types": [
       "node"
     ],
     "paths": {
       "@/vite/*": [
         "./src/vite/*"
-      ],
-      "likec4/react": [
-        "./app/react/components/*"
       ]
     }
   },
   "include": [
-    "./src",
+    "src",
     "package.json"
   ],
   "exclude": [
-    "./src/vite-plugin/modules.d.ts"
+    "src/vite-plugin/modules.d.ts"
   ]
 }

@@ -18,13 +18,7 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      }
-    }
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -32,7 +26,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "unbuild",
+    "build": "tsc --outDir dist",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
@@ -40,16 +34,16 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "json5": "^2.2.3",
-    "langium": "3.3.1",
-    "remeda": "^2.21.0"
+    "json5": "catalog:utils",
+    "langium": "catalog:langium",
+    "remeda": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.23",
+    "@types/node": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.5.0",
-    "vitest": "^3.0.8"
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.5"
 }

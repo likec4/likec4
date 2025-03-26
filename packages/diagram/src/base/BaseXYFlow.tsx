@@ -1,3 +1,4 @@
+import { css, cx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
@@ -5,13 +6,10 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import clsx from 'clsx'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import { useIsReducedGraphics } from '../hooks/useReducedGraphics'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
-import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -33,13 +31,6 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
       // Omited props
       | 'defaultNodes'
       | 'defaultEdges'
-      | 'panOnScroll'
-      | 'panOnDrag'
-      | 'preventScrolling'
-      | 'zoomOnPinch'
-      | 'zoomActivationKeyCode'
-      | 'zoomOnScroll'
-      | 'elementsSelectable'
       | 'onNodeDoubleClick'
       | 'onEdgeDoubleClick'
       | 'fitViewOptions'
@@ -51,6 +42,35 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     | 'onEdgesChange'
   >
 >
+
+const cssTransparentBg = css({
+  background: 'transparent !important',
+  ['--xy-background-color']: 'transparent !important',
+})
+
+const cssReactFlow = css({
+  // '@supports': {
+  //   // https://wojtek.im/journal/targeting-safari-with-css-media-query
+  //   '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
+  //     // TODO: this workaround disables animations in Safari (to improve performance)
+  //     vars: {
+  //       [vars.safariAnimationHook]: '',
+  //     },
+  //   },
+  // },
+
+  ['--xy-background-color']: '{colors.mantine.colors.body}',
+  ['--xy-background-pattern-color']: {
+    _dark: '{colors.mantine.colors.dark[5]}',
+    _light: '{colors.mantine.colors.gray[4]}',
+  },
+  '& .react-flow__pane': {
+    WebkitUserSelect: 'none',
+  },
+  '& .react-flow__attribution': {
+    display: 'none',
+  },
+})
 
 export const BaseXYFlow = <
   NodeType extends Base.Node,
@@ -77,8 +97,6 @@ export const BaseXYFlow = <
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
-  const reduceGraphics = useIsReducedGraphics()
-
   const xystore = useXYStoreApi()
 
   return (
@@ -86,17 +104,13 @@ export const BaseXYFlow = <
       colorMode={colorMode}
       nodes={nodes}
       edges={edges}
-      className={clsx(
-        css.cssReactFlow,
-        pannable !== true && css.cssDisablePan,
-        background === 'transparent' && css.cssTransparentBg,
+      className={cx(
+        cssReactFlow,
+        background === 'transparent' && cssTransparentBg,
         className,
       )}
       {...isZoomTooSmall && {
         ['data-likec4-zoom-small']: true,
-      }}
-      {...reduceGraphics && {
-        ['data-likec4-reduced-graphics']: true,
       }}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
@@ -119,8 +133,8 @@ export const BaseXYFlow = <
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
-      panActivationKeyCode={null}
       {...(!pannable && {
+        panActivationKeyCode: null,
         selectionKeyCode: null,
       })}
       elementsSelectable={nodesSelectable}
@@ -149,39 +163,49 @@ export const BaseXYFlow = <
         onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
       })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, true),
-        }])
+        if (!node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, true),
+          }])
+        }
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, false),
-        }])
+        if (node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, false),
+          }])
+        }
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, true),
-        }])
+        if (!edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, true),
+          }])
+        }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, false),
-        }])
+        if (edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, false),
+          }])
+        }
       })}
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}
       {...props}
     >
-      {isBgWithPattern && <Background background={background} />}
-      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+      <Fragment key="_internals">
+        {isBgWithPattern && <Background background={background} />}
+        {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+      </Fragment>
       {children}
     </ReactFlow>
   )

@@ -1,26 +1,24 @@
 import type { ViewId } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
+import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorSafeContext } from '../hooks/safeContext'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import type { Types } from '../likec4diagram/types'
 import { type Input, diagramMachine } from './diagram-machine'
-// import { inspector } from './inspector'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import type { DiagramActorRef } from './types'
+import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
 export function DiagramActorProvider({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
   const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const actorRef = useActorRef(
-    diagramMachine.provide({
+  const logic = useMemo(() => {
+    return diagramMachine.provide({
       actions: {
         'trigger:NavigateTo': ((_, { viewId }) => {
           handlersRef.current.onNavigateTo?.(viewId as ViewId)
@@ -43,7 +41,11 @@ export function DiagramActorProvider({ input, children }: PropsWithChildren<{ in
           },
         }),
       },
-    }),
+    })
+  }, [handlersRef])
+
+  const actorRef = useActorRef(
+    logic,
     {
       id: `diagram:${input.view.id}`,
       systemId: 'diagram',
@@ -56,14 +58,12 @@ export function DiagramActorProvider({ input, children }: PropsWithChildren<{ in
   )
 
   return (
-    (
-      <DiagramActorSafeContext value={actorRef}>
-        <SyncStore input={input} actorRef={actorRef} />
-        <DiagramActorToggledFeatures actorRef={actorRef}>
-          {children}
-        </DiagramActorToggledFeatures>
-      </DiagramActorSafeContext>
-    )
+    <DiagramActorSafeContext value={actorRef}>
+      <SyncStore input={input} actorRef={actorRef} />
+      <DiagramActorToggledFeatures actorRef={actorRef}>
+        {children}
+      </DiagramActorToggledFeatures>
+    </DiagramActorSafeContext>
   )
 }
 
@@ -97,8 +97,9 @@ const SyncStore = (
   return null
 }
 
+const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
 function DiagramActorToggledFeatures({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
-  const toggledFeatures = useSelector(actorRef, useCallbackRef(s => s.context.toggledFeatures), shallowEqual)
+  const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
   return (
     <DiagramFeatures overrides={toggledFeatures}>
       {children}

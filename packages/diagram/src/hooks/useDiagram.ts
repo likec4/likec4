@@ -155,8 +155,8 @@ export function useDiagramSyncLayoutState<T = unknown>(
 }
 
 export function useDiagramContext<T = unknown>(
-  selector: (state: DiagramContext) => T,
+  selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-) {
+): T {
   return useDiagramActorSnapshot(useCallbackRef(s => selector(s.context)), compare)
 }

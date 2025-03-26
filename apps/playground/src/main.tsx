@@ -1,7 +1,3 @@
-// dprint-ignore
-import '@likec4/diagram/diagram.css'
-import '@mantine/core/styles.layer.css'
-
 import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
 import { MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'

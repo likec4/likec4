@@ -1,18 +1,14 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "customConditions": [
-      "sources"
-    ],
     "noUnusedParameters": false,
     "lib": [
       "ES2022",
       "WebWorker"
     ],
-    "rootDir": "."
+    "rootDir": "src"
   },
   "include": [
-    "src"
-  ],
-  "exclude": []
+    "src",
+  ]
 }

@@ -1,5 +1,5 @@
 import { usePlaygroundWorkspace } from '$hooks/usePlayground'
-import { css } from '$styled-system/css'
+import { css } from '@likec4/styles/css'
 import {
   Box,
   UnstyledButton,
@@ -23,7 +23,7 @@ function PlaygroundEditableTitle({ workspaceTitle }: { workspaceTitle: string })
   return <UnstyledButton
     className={css({
       fontSize: 'sm',
-      color: 'defaultText',
+      color: 'mantine.colors.text',
     })}
   >
     {workspaceTitle}

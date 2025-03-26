@@ -6,6 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
+        "^generate",
         "likec4#build"
       ],
       "inputs": [
@@ -19,11 +20,8 @@
       "dependsOn": [
         "generate"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!**/*.c4"
-      ],
       "outputs": [
+        ".astro/**",
         "dist/**"
       ]
     },

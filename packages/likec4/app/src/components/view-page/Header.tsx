@@ -24,7 +24,7 @@ import {
 } from '@tanstack/react-router'
 // import { usePreviewUrl } from 'likec4:previews'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
-import * as css from './Header.css'
+import * as styles from './Header.css'
 import { SelectProject } from './SelectProject'
 import { ShareModal } from './ShareModal'
 
@@ -47,7 +47,7 @@ export function Header({ diagram }: HeaderProps) {
   const [opened, { open, close }] = useDisclosure(false)
   return (
     <Paper
-      className={css.cssHeader}
+      className={styles.cssHeader}
       top={'0.5rem'}
       right={'0.5rem'}
       p={4}

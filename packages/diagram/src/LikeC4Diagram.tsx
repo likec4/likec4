@@ -59,6 +59,7 @@ export function LikeC4Diagram({
   renderControls,
   where,
   showNavigationButtons = !!onNavigateTo,
+  reactFlowProps = {},
   children,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
@@ -154,6 +155,7 @@ export function LikeC4Diagram({
                           nodesDraggable={nodesDraggable}
                           nodesSelectable={nodesSelectable}
                           background={background}
+                          reactFlowProps={reactFlowProps}
                         >
                           {children}
                         </LikeC4DiagramXYFlow>

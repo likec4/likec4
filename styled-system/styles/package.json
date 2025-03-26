@@ -1,0 +1,86 @@
+{
+  "name": "@likec4/styles",
+  "license": "MIT",
+  "version": "1.26.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "files": [
+    "dist",
+    "*.mts",
+    "*.mjs",
+    "*.ts"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "unbuild",
+    "generate": "panda codegen && panda cssgen",
+    "emit-pkg": "panda emit-pkg --base dist"
+  },
+  "exports": {
+    "./css": {
+      "types": "./dist/css/index.d.ts",
+      "default": "./dist/css/index.mjs"
+    },
+    "./tokens": {
+      "types": "./dist/tokens/index.d.ts",
+      "default": "./dist/tokens/index.mjs"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts"
+    },
+    "./patterns": {
+      "types": "./dist/patterns/index.d.ts",
+      "default": "./dist/patterns/index.mjs"
+    },
+    "./jsx": {
+      "types": "./dist/jsx/index.d.ts",
+      "default": "./dist/jsx/index.mjs"
+    },
+    "./postcss": {
+      "types": "./postcss.d.mts",
+      "default": "./postcss.mjs"
+    },
+    "./recipes": {
+      "types": "./dist/recipes/index.d.ts",
+      "default": "./dist/recipes/index.mjs"
+    },
+    "./preset": {
+      "sources": "./preset.ts",
+      "default": {
+        "types": "./preset.d.mts",
+        "import": "./preset.mjs",
+        "default": "./preset.mjs"
+      }
+    },
+    "./vite": {
+      "types": "./vite.d.mts",
+      "default": "./vite.mjs"
+    },
+    "./dev": "./dev.ts"
+  },
+  "dependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@pandabox/unplugin": "^0.2.1"
+  },
+  "devDependencies": {
+    "@pandabox/utils": "^0.0.5",
+    "@likec4/style-preset": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@pandabox/panda-plugins": "^0.0.8",
+    "std-env": "catalog:utils",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "postcss": "catalog:css",
+    "remeda": "catalog:utils",
+    "nano-spawn": "^0.2.0",
+    "unbuild": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.6.5"
+}

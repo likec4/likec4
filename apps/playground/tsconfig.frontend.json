@@ -2,10 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/frontend.tsbuildinfo",
     "composite": true,
-    "noEmit": false,
-    "jsx": "react-jsx",
+    "rootDir": "src",
+    "tsBuildInfoFile": "lib/frontend.tsbuildinfo",
     "target": "esnext",
     "useDefineForClassFields": true,
     "allowArbitraryExtensions": true,
@@ -25,17 +24,13 @@
       "$hooks/*": [
         "./src/hooks/*"
       ],
-      "$styled-system/*": [
-        "./styled-system/*"
-      ],
       "$/*": [
         "./src/*"
       ]
     }
   },
   "include": [
-    "./src",
-    "./styled-system"
+    "src"
   ],
   "references": [
     {
