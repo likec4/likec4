@@ -56,13 +56,14 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/diagram#topo"
+        "@likec4/diagram#generate"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
         "app/**",
+        "!app/src/routeTree.gen.ts",
         "panda.config.ts",
         "scripts/bundle-app.ts"
       ],
