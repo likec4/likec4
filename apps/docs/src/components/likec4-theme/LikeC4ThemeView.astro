@@ -1,5 +1,5 @@
 ---
-import { type LikeC4ViewId, LikeC4View } from './likec4-views'
+import { type LikeC4ViewId, LikeC4View } from 'likec4:react/likec4-theme'
 interface Props {
   viewId: LikeC4ViewId
   fitViewPadding?: number
@@ -16,8 +16,15 @@ const {
   className="likec4-theme-view"
   viewId={viewId}
   fitViewPadding={fitViewPadding}
-  browser={interactive}
-  injectFontCss={false}
+  enableElementDetails={false}
+  browser={interactive ? {
+    enableFocusMode: false,
+    enableElementDetails: false,
+    enableRelationshipDetails: false,
+    enableRelationshipBrowser: false,
+    enableSearch: false,
+    showDiagramTitle: false,
+  } : false}
   client:only="react"
 >
 </LikeC4View>

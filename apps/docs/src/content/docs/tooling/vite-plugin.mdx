@@ -63,7 +63,7 @@ This is useful for building documentation, tutorials, or any other application w
     export default defineConfig({
       plugins: [
         react(),
-        LikeC4VitePlugin({}),
+        LikeC4VitePlugin(),
       ],
     })
     ```
@@ -72,7 +72,8 @@ This is useful for building documentation, tutorials, or any other application w
 
 4. ### Add types referencer
 
-    Add types reference to the `vite-env.d.ts` file (or create new one, like `src/likec4.d.ts`):
+    Add types reference to the `vite-env.d.ts` file  
+    (or create new one, like `src/likec4.d.ts`)
 
     ```ts
     // src/vite-env.d.ts
@@ -195,15 +196,36 @@ This is useful for building documentation, tutorials, or any other application w
 
 </Steps>
 
-## Options
+## Plugin options
 
-The plugin accepts the following options:
-| Property         | Description                                                                                         |
+| Option         | Description                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
-| `workspace`      | directory with source files (defaults vite root) |
+| `workspace`      | directory with source files (defaults to vite root) |
 | `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
-| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | return rejected promise if model is invalid  (default `false`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | fails with rejected promise if model is invalid  (default `false`) |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
+
+## Multi-project workspaces
+
+If you have [multiple projects](/dsl/projects/) in your workspace:
+
+```tsx "project-a" "project-b"
+// src/main.tsx
+
+// where `project-a` and `project-b` are the names of your projects
+import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
+import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
+
+const example = () => (
+  <>
+    <ProjectA_LikeC4View viewId='index' />
+    <ProjectB_LikeC4View viewId='index' />
+  </>
+)
+```
+<br />
+
+## Usage with API
 
 It is also possible to initiate using [LikeC4 API](/tooling/model-api):
 
@@ -239,26 +261,34 @@ export default defineConfig({
   ],
 })
 ```
+<br />
 
 ## Available modules
 
-Use can use other modules to get access to your model:
+Other modules are available to get access to the model:
 
 ```tsx
 // For multi-project workspaces
 import { projects } from 'likec4:projects'
 
-// Pick first one
+// Pick first one (default)
 import { useLikeC4Views, useLikeC4View } from 'likec4:single-project'
 
+// Project by name
+import { useLikeC4Views, useLikeC4View } from 'likec4:model/project-a'
+
+// Other modules
 import { loadDotSources } from 'likec4:dot'
+import { mmdSource } from 'likec4:mmd/project-a'
 ```
 
-Check sources for complete list - <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/src/vite-plugin/modules.d.ts">vite-plugin/modules.d.ts</a>
+Complete list - <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/src/vite-plugin/modules.d.ts">vite-plugin/modules.d.ts</a>
 
-## Use with Astro
 
-You can use LikeC4 Vite Plugin with <a href="https://astro.build/" target='_blank'>Astro</a> and <a href="https://starlight.astro.build/" target='_blank'>Starlight</a> documentation tool as well.
+## Usage with Astro
+
+You can use LikeC4VitePlugin with <a href="https://astro.build/" target='_blank'>Astro</a> and <a href="https://starlight.astro.build/" target='_blank'>Starlight</a> documentation tool as well.  
+Configure Astro:
 
 ```js
 // astro.config.mjs
@@ -280,7 +310,7 @@ export default defineConfig({
 });
 ```
 
-To use React components in your documentation, you need to wrap them in astro components:
+To use React components, first you need to wrap them in astro components:
 
 ```astro
 // src/components/LikeC4View.astro
@@ -291,14 +321,30 @@ interface Props {
 }
 const { viewId } = Astro.props
 ---
-<ReactLikeC4View
-  viewId={viewId}
-  client:only="react">
+
+<ReactLikeC4View viewId={viewId} client:only="react">
 </ReactLikeC4View>
 ```
 
-Then you can import this component in astro components or markdown files.
+Then you can use in markdown:
 
+```mdx
+// src/content/docs/example.mdx
+---
+title: Welcome to my docs
+---
+
+import LikeC4View from '../../components/LikeC4View.astro';
+
+## Introduction
+
+This is an example of using LikeC4 in your documentation
+
+<LikeC4View viewId="index" />
+
+```
+<br />
+<br />
 :::tip
 You can use LikeC4 with other frameworks as well:
 - With Nextjs see [React code generation](/tooling/code-generation/react/)  

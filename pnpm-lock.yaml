@@ -27,6 +27,9 @@ catalogs:
     astro-og-canvas:
       specifier: ^0.7.0
       version: 0.7.0
+    shiki:
+      specifier: ^3.2.1
+      version: 3.2.1
     starlight-heading-badges:
       specifier: ^0.5.0
       version: 0.5.0
@@ -162,6 +165,9 @@ catalogs:
     '@vitejs/plugin-react':
       specifier: ^4.3.4
       version: 4.3.4
+    vite:
+      specifier: ^6.2.3
+      version: 6.2.3
     vite-plugin-dts:
       specifier: ^4.5.3
       version: 4.5.3
@@ -281,9 +287,6 @@ importers:
       '@expressive-code/plugin-line-numbers':
         specifier: catalog:astro
         version: 0.40.2
-      '@fontsource/ibm-plex-sans':
-        specifier: ^5.2.5
-        version: 5.2.5
       astro:
         specifier: catalog:astro
         version: 5.5.4(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.37.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
@@ -293,6 +296,9 @@ importers:
       canvaskit-wasm:
         specifier: ^0.39.1
         version: 0.39.1
+      likec4:
+        specifier: workspace:*
+        version: link:../../packages/likec4
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -302,6 +308,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      shiki:
+        specifier: catalog:astro
+        version: 3.2.1
       starlight-heading-badges:
         specifier: catalog:astro
         version: 0.5.0(@astrojs/starlight@0.32.4(astro@5.5.4(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.37.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
@@ -312,9 +321,6 @@ importers:
         specifier: catalog:astro
         version: 0.10.0(@astrojs/starlight@0.32.4(astro@5.5.4(@types/node@20.17.23)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.37.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
     devDependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@types/picomatch':
         specifier: ^2.3.4
         version: 2.3.4
@@ -324,12 +330,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.4
         version: 19.0.4(@types/react@19.0.12)
-      likec4:
-        specifier: workspace:*
-        version: link:../../packages/likec4
-      npm-run-all2:
-        specifier: ^7.0.1
-        version: 7.0.2
       tsx:
         specifier: 'catalog:'
         version: 4.19.3
@@ -15753,6 +15753,7 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.37.0
       '@rollup/rollup-win32-x64-msvc': 4.37.0
       fsevents: 2.3.3
+    optional: true
 
   run-applescript@7.0.0: {}
 
@@ -16776,7 +16777,7 @@ snapshots:
     dependencies:
       esbuild: 0.25.1
       postcss: 8.5.3
-      rollup: 4.37.0
+      rollup: 4.34.6
     optionalDependencies:
       '@types/node': 20.17.23
       fsevents: 2.3.3

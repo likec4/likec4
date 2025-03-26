@@ -97,7 +97,7 @@ likec4 start
 likec4 dev
 ```
 
-This recursively searches for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.  
+This recursively searches for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams via local web server.  
 Any change in the sources triggers hot update in the browser immediately.
 
 :::tip
@@ -105,13 +105,13 @@ You can start the process in a separate terminal window and keep it running whil
 :::
 
 <Aside type="caution">
-By default the web server listening localhost (127.0.0.1). If you want it to listen on all network interfaces add '--listen 0.0.0.0' to the serve command.
+By default the web server listening localhost (127.0.0.1). If you want it to listen on all network interfaces add `--listen 0.0.0.0` to the serve command.
 </Aside>
 
 ### Build static website
 
 Build a single HTML with diagrams, ready to be deployed or embedded into your website.
-When you deployed the website, you can use "Share" button to get a link to a specific diagram.
+When you deployed the website, you can use "Share" button and get a link to a specific diagram.
 
 The resulting website is strictly bound to the given base path (`/` by default).
 A relocatable app can be built with `--base "./"`.
@@ -157,7 +157,7 @@ or consider [LikeC4 GitHub Actions](/tooling/github)
 
 :::note
 Export to PNG requires Playwright.  
-You will be prompted with a command to install it if it's not found.
+You will be prompted with a command to install if it's not found.
 :::
 
 ### Export to JSON

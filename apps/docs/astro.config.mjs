@@ -31,10 +31,6 @@ export default defineConfig({
         baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/',
       },
       customCss: [
-        // Fontsource files for to regular and semi-bold font weights.
-        '@fontsource/ibm-plex-sans/400.css',
-        '@fontsource/ibm-plex-sans/500.css',
-        '@fontsource/ibm-plex-sans/600.css',
         './src/styles/global.css',
       ],
       sidebar: [
@@ -123,7 +119,7 @@ export default defineConfig({
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
         'likec4/model': new URL('../../packages/likec4/src/model', import.meta.url).pathname,
         // Alias to bundled React components, can't use 'development' condition
-        'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,
+        'likec4/react': new URL('../../packages/likec4/react/index.mjs', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname,
       },
     },
@@ -135,7 +131,7 @@ export default defineConfig({
     },
     plugins: [
       LikeC4VitePlugin({
-        workspace: 'src/components/bigbank/',
+        workspace: 'src/components',
       }),
     ],
   },

@@ -1,5 +1,5 @@
 ---
-import { LikeC4View, type LikeC4ViewId } from './likec4-views'
+import { LikeC4View, type LikeC4ViewId } from 'likec4:react/dynamic-view';
 interface Props {
   viewId: LikeC4ViewId;
 }
@@ -9,7 +9,6 @@ const { viewId } = Astro.props
 <LikeC4View
   className="likec4-dynamic-view"
   viewId={viewId}
-  injectFontCss={false}
   client:only="react">
 </LikeC4View>
 

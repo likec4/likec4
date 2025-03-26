@@ -140,7 +140,6 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
             enableElementDetails={enableElementDetails}
             enableRelationshipBrowser={enableRelationshipBrowser}
             controls={controls}
-            nodesSelectable={false}
             nodesDraggable={false}
             reduceGraphics={reduceGraphics}
             className={cx(isBrowserEnabled && cssInteractive)}

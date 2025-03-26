@@ -1,5 +1,5 @@
 ---
-import { LikeC4View as C4View, type LikeC4ViewId } from './likec4-views'
+import { LikeC4View as C4View, type LikeC4ViewId } from 'likec4:react/index-page';
 interface Props {
   viewId: LikeC4ViewId;
 }
@@ -10,7 +10,6 @@ const { viewId } = Astro.props
   viewId={viewId}
   className="likec4-index-view"
   client:only="react"
-  injectFontCss={false}
 />
 
 <style>

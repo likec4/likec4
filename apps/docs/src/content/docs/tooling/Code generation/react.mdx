@@ -1,6 +1,6 @@
 ---
 title: Generate React
-description: How to generate React components, Web Components, and TypeScript models from the LikeC4 DSL.
+description: How to generate React components with views from your architecture model
 head:
   - tag: title
     content: React components | LikeC4
@@ -13,27 +13,40 @@ tableOfContents:
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
 </p>
 
-Generate source code artifacts from architecture model.
+Generate React Components from architecture model.
+
+## Install
 
 Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
 
-```sh
-npm add likec4 react react-dom
-```
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
 
 ## React
 
-The following generates a JavaScript bundle with React Component (and `.d.ts`):
+The following command generates a JavaScript bundle with React Component (and `.d.ts`):
 
-```sh
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen react --outfile ./src/likec4.generated.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
 
-npx likec4 codegen react --outfile ./src/likec4.generated.js
+<br />   
 
+```sh frame="none"
 # Aliases
 npx likec4 generate react -o ./src/likec4.generated.js
 npx likec4 gen react -o ./src/likec4.generated.js
@@ -62,9 +75,11 @@ const App = () => {
 | -----------------   | --------------------------------------------------------------------------------------------------- |
 | `viewId`            | Typed enumeration of your views                                                                     |
 | `where`             | Optional, see [filter](#filter) |
-| `injectFontCss`     | Injects CSS that loads <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> from CDN.<br/>Default is `true` |
+| `injectFontCss`     | Injects CSS with <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> font from CDN.<br/>Default is `true` |
 
-Check <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts#L5#L18" target="_blank">source code</a> for other properties.
+:::tip
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts#L5-L156" target="_blank">source code</a> for all properties.
+:::
 
 :::caution
 `LikeC4View` does not rehydrate correctly if rendered on the server, prefer client-side.
@@ -107,8 +122,7 @@ Be aware, `where` applies both to elements and relationships.
 
 ## ReactLikeC4
 
-`LikeC4View` renders views from your model, and allows to explore your model.  
-All examples on this site use [this component in MDX](https://github.com/likec4/likec4/blob/9e638f37d74b2a0133660dcc213143b1172304a1/apps/docs/src/components/dynamic-view/DynamicLikeC4View.astro#L9-L14).  
+`LikeC4View` renders views from your model, and allows exploring in the popup browser.  
 Component works in most usecases, but if you need more - use `ReactLikeC4`:
 
 ```tsx
@@ -135,7 +149,7 @@ const App = () => {
 ```
 
 `ReactLikeC4` is a low-level component, giving you more control and allowing react to the events. 
-Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4Diagram.props.ts#L61" target="_blank">source code</a> for available options.
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4Diagram.props.ts" target="_blank">source code</a> for available options.
 
 Feel free to share your ideas or ask questions in <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>GitHub discussions</a>.
 
@@ -160,4 +174,10 @@ const App = () => {
 }
 ```
 
+</Aside>
+
+## Styling
+
+<Aside type='caution' title="In progress" >
+  TODO: Document styling and theming with PandaCSS
 </Aside>
