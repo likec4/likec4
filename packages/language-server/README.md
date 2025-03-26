@@ -2,7 +2,7 @@
 
 [docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/index/)
 
-Language Server Protocol (LSP) based on [languim](https://github.com/languim/languim) library.
+Language Server Protocol (LSP) based on [langium](https://github.com/langium/langium) library.
 
 ## Usage
 
