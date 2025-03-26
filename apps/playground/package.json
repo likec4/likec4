@@ -110,7 +110,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "@xstate/react": "^5.0.2",
+    "@xstate/react": "^5.0.3",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "clsx": "catalog:react",
