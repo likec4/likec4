@@ -6,7 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "topo"
+        "^generate"
       ],
       "outputs": [
         "src/generated.ts"

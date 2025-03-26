@@ -4,10 +4,18 @@
     "//"
   ],
   "tasks": {
+    "generate": {
+      "dependsOn": [
+        "^generate"
+      ],
+      "outputs": [
+        "styled-system/**"
+      ]
+    },
     "build:dist": {
       "dependsOn": [
-        "^generate",
-        "topo"
+        "generate",
+        "@likec4/core#build"
       ],
       "outputs": [
         "dist/**"
@@ -16,7 +24,7 @@
     },
     "build:bundle": {
       "dependsOn": [
-        "^generate",
+        "generate",
         "topo"
       ],
       "outputs": [

@@ -14,6 +14,7 @@ export async function bundleApp() {
 
   consola.info(`Run tanstack-router generate`)
   await $`tsr generate`
+  await $`panda codegen`
 
   const root = resolve(cwd, 'app')
   const outDir = resolve(cwd, '__app__/src')

@@ -1,3 +1,4 @@
+import spawn from 'nano-spawn'
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
@@ -16,6 +17,11 @@ export default defineBuildConfig({
     inlineDependencies: true,
     resolve: {
       exportConditions: ['sources'],
+    },
+  },
+  hooks: {
+    async 'build:before'(ctx) {
+      await spawn('pnpm', ['generate'])
     },
   },
 })

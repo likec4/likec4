@@ -26,6 +26,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "build": "tsc --outDir dist",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",

@@ -1,9 +1,6 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "composite": true,
-    "incremental": true,
-    "tsBuildInfoFile": "lib/core.tsbuildinfo",
     "rootDir": "src"
   },
   "include": [

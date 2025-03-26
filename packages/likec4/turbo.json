@@ -5,11 +5,16 @@
   ],
   "tasks": {
     "generate:app": {
+      "dependsOn": [
+        "@likec4/styles#generate"
+      ],
       "inputs": [
         "app/**",
+        "panda.config.ts",
         "tsr.config.json"
       ],
       "outputs": [
+        "styled-system/**",
         "app/src/routeTree.gen.ts"
       ],
       "outputLogs": "new-only"
@@ -18,11 +23,11 @@
       "dependsOn": [
         "@likec4/icons#generate"
       ],
-      "outputs": [
-        "icons/**"
-      ],
       "inputs": [
         "scripts/generate-icons.ts"
+      ],
+      "outputs": [
+        "icons/**"
       ],
       "outputLogs": "new-only"
     },
@@ -51,24 +56,25 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/diagram#topo"
+        "@likec4/diagram#generate"
       ],
       "outputs": [
         "__app__/**"
       ],
       "inputs": [
         "app/**",
-        "scripts/**",
         "panda.config.ts",
-        "!scripts/bundle-react.ts"
+        "scripts/bundle-app.ts"
       ],
       "outputLogs": "new-only"
     },
     "build-cli": {
       "dependsOn": [
         "@likec4/core#build",
+        "@likec4/log#build",
         "@likec4/language-server#build",
-        "@likec4/generators#build"
+        "@likec4/generators#build",
+        "@likec4/layouts#build"
       ],
       "outputs": [
         "dist/**",

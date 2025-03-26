@@ -5,6 +5,9 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "^generate"
+      ],
       "outputs": [
         "src/routeTree.gen.ts",
         "styled-system",

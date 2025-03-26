@@ -42,6 +42,7 @@
   },
   "packageManager": "pnpm@10.6.5",
   "scripts": {
+    "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -c vite-bundle.config.ts",

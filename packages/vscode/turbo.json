@@ -25,7 +25,8 @@
         "data/config.schema.json",
         "!dist/src/**",
         "!dist/**/*.metafile.json"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }
