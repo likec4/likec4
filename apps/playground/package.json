@@ -117,7 +117,7 @@
     "date-fns": "^4.1.0",
     "fast-equals": "catalog:utils",
     "framer-motion": "catalog:react",
-    "hono": "^4.7.4",
+    "hono": "^4.7.5",
     "hono-sessions": "^0.7.1",
     "langium": "catalog:langium",
     "monaco-editor-wrapper": "6.5.0",
