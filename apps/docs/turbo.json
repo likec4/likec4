@@ -4,10 +4,15 @@
     "//"
   ],
   "tasks": {
+    "generate": {
+      "dependsOn": [
+        "^generate",
+        "likec4#build"
+      ]
+    },
     "build": {
       "dependsOn": [
-        "generate",
-        "likec4#build"
+        "generate"
       ],
       "outputs": [
         ".astro/**",
