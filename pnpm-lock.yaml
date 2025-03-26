@@ -1303,8 +1303,8 @@ importers:
   packages/log:
     dependencies:
       '@logtape/logtape':
-        specifier: ^0.8.2
-        version: 0.8.2
+        specifier: ^0.9.0
+        version: 0.9.0
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -2735,8 +2735,8 @@ packages:
   '@kamilkisiela/fast-url-parser@1.1.4':
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
 
-  '@logtape/logtape@0.8.2':
-    resolution: {integrity: sha512-KikaMHi64p0BHYrYOE2Lom4dOE3R8PGT+21QJ5Ql/SWy0CNOp69dkAlG9RXzENQ6PAMWtiU+4kelJYNvfUvHOQ==}
+  '@logtape/logtape@0.9.0':
+    resolution: {integrity: sha512-e4IlinGvjzp/+nSvsXB1OPSYNiuVEEJy8aMQqbveTcJoLVRsJK7nH0xVh/EdNTjRBoioJbUT/jzxaAifxf1VyA==}
 
   '@mantine/colors-generator@7.17.2':
     resolution: {integrity: sha512-wn4qmefWyQO9424nenN3k/zYcN4kPut1LVdv1ZyQ0Bz1giKc3PKTb96OOMzWlPCW08WjK/nwa2/VczC7YVKcQQ==}
@@ -10209,7 +10209,7 @@ snapshots:
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
 
-  '@logtape/logtape@0.8.2': {}
+  '@logtape/logtape@0.9.0': {}
 
   '@mantine/colors-generator@7.17.2(chroma-js@3.1.2)':
     dependencies:
@@ -15771,7 +15771,6 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.37.0
       '@rollup/rollup-win32-x64-msvc': 4.37.0
       fsevents: 2.3.3
-    optional: true
 
   run-applescript@7.0.0: {}
 
