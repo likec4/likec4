@@ -4,6 +4,7 @@ import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
+import type { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
 
 export const RelationshipsBrowserActorContext = createContext<RelationshipsBrowserActorRef | null>(null)
@@ -25,8 +26,23 @@ export function useRelationshipsBrowser() {
   const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
+    get rootElementId(): string {
+      return `relationships-browser-${actor.sessionId}`
+    },
     getState: () => actor.getSnapshot().context,
     send: actor.send,
+    updateView: (layouted: LayoutRelationshipsViewResult) => {
+      actor.send({
+        type: 'update.view',
+        layouted,
+      })
+    },
+    changeScope: (scope: 'global' | 'view') => {
+      actor.send({
+        type: 'change.scope',
+        scope,
+      })
+    },
     navigateTo: (subject: Fqn, fromNode?: string) => {
       startTransition(() => {
         actor.send({
@@ -37,9 +53,7 @@ export function useRelationshipsBrowser() {
       })
     },
     fitDiagram: () => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram' })
-      })
+      actor.send({ type: 'fitDiagram' })
     },
     close: () => {
       if (actor._parent) {

@@ -158,5 +158,6 @@ export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
 ): T {
-  return useDiagramActorSnapshot(useCallbackRef(s => selector(s.context)), compare)
+  const actorRef = useDiagramActorRef()
+  return useXstateSelector(actorRef, useCallbackRef(s => selector(s.context)), compare)
 }

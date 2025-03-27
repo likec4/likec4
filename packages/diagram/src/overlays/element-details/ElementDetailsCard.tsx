@@ -277,7 +277,7 @@ export function ElementDetailsCard({
             opacity: 0,
             originX,
             originY,
-            scale: Math.max(fromScale, 0.7),
+            scale: Math.max(fromScale, 0.65),
           }}
           animate={{
             opacity: 1,

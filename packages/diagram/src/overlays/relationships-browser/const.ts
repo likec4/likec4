@@ -1,1 +1,1 @@
-export const ViewPadding = 0.08
+export const ViewPadding = 0.1

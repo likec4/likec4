@@ -99,8 +99,14 @@ const indicatorSvg = css.raw({
   pointerEvents: 'none',
   overflow: 'visible',
   visibility: 'hidden',
-  ':where(.react-flow__node.selected:not(:focus-visible)) &': {
+  _whenFocused: {
     visibility: 'visible',
+  },
+  _whenSelected: {
+    visibility: 'visible',
+  },
+  _whenPanning: {
+    display: 'none',
   },
 })
 

@@ -1,9 +1,10 @@
 import { type LikeC4Model, nameFromFqn } from '@likec4/core'
-import { Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
-import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
+import { ActionIcon, Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
+import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { useState } from 'react'
 import { unique } from 'remeda'
+import { useOverlaysActorRef } from '../../hooks/useOverlaysActor'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import { useElementDetailsActorRef } from './actorContext'
 import * as css from './TabPanelRelationships.css'
@@ -28,6 +29,7 @@ export function TabPanelRelationships({
   node,
   element,
 }: RelationshipsTabPanelProps) {
+  const overlaysActor = useOverlaysActorRef()
   const delailsActor = useElementDetailsActorRef()
   const relationshipsBrowserActor = useSelector(delailsActor, s => s.children[`${delailsActor.id}-relationships`])
   const [scope, setScope] = useState<'global' | 'view'>('view')
@@ -85,7 +87,34 @@ export function TabPanelRelationships({
       )}
 
       <Box className={css.xyflow}>
-        {relationshipsBrowserActor && <RelationshipsBrowser actorRef={relationshipsBrowserActor} />}
+        {relationshipsBrowserActor && (
+          <>
+            <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
+            <Box pos={'absolute'} top={12} right={12}>
+              <ActionIcon
+                size="md"
+                variant="default"
+                radius="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  const {
+                    subject,
+                    scope,
+                    viewId,
+                  } = relationshipsBrowserActor.getSnapshot().context
+                  overlaysActor.send({
+                    type: 'open.relationshipsBrowser',
+                    subject: subject,
+                    scope,
+                    viewId,
+                  })
+                }}
+              >
+                <IconExternalLink stroke={1.6} style={{ width: '70%' }} />
+              </ActionIcon>
+            </Box>
+          </>
+        )}
       </Box>
     </Stack>
   )

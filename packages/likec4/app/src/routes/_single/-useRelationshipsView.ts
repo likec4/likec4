@@ -1,5 +1,5 @@
 import type { DiagramNode, DiagramView, EdgeId, Fqn, NodeId, Point, ViewId } from '@likec4/core'
-import { computeRelationshipsView } from '@likec4/core'
+import { computeRelationshipsView } from '@likec4/core/compute-view/relationships'
 import { useMemo } from 'react'
 // import { useLikeC4Model } from 'likec4:model'
 
@@ -443,7 +443,7 @@ export function useRelationshipsView(fqn: Fqn) {
       links: null,
       hash: 'empty',
       customColorDefinitions: {},
-      ...layoutRelationshipsView(computeRelationshipsView(fqn, model)),
+      ...layoutRelationshipsView(computeRelationshipsView(fqn, model, null)),
     }
   }, [model, fqn, computeRelationshipsView])
 }

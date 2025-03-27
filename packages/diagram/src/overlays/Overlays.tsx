@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { AnimatePresence, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, useReducedMotion } from 'framer-motion'
 import { animate } from 'framer-motion/dom'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
@@ -135,9 +135,11 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
   return (
     <DiagramFeatures.Overlays>
       <ErrorBoundary FallbackComponent={Fallback} onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
-        <AnimatePresence>
-          {overlaysReact}
-        </AnimatePresence>
+        <LayoutGroup>
+          <AnimatePresence>
+            {overlaysReact}
+          </AnimatePresence>
+        </LayoutGroup>
       </ErrorBoundary>
     </DiagramFeatures.Overlays>
   )

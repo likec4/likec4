@@ -1,5 +1,6 @@
 import { type ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
+import type { AnyAux } from '../../model/types'
 
 // type Pair = {
 //   left: ReadonlySet<ElementModel>
@@ -7,10 +8,10 @@ import type { RelationshipModel } from '../../model/RelationModel'
 //   right: ReadonlySet<ElementModel>
 // }
 
-export type RelationshipsViewData = {
-  incomers: ReadonlySet<ElementModel>
-  incoming: ReadonlySet<RelationshipModel>
-  subjects: ReadonlySet<ElementModel>
-  outgoing: ReadonlySet<RelationshipModel>
-  outgoers: ReadonlySet<ElementModel>
+export type RelationshipsViewData<M extends AnyAux = AnyAux> = {
+  incomers: ReadonlySet<ElementModel<M>>
+  incoming: ReadonlySet<RelationshipModel<M>>
+  subjects: ReadonlySet<ElementModel<M>>
+  outgoing: ReadonlySet<RelationshipModel<M>>
+  outgoers: ReadonlySet<ElementModel<M>>
 }

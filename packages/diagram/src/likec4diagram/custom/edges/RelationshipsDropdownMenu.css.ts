@@ -12,19 +12,29 @@ export const menuItemRelationship = css({
 
 export const endpoint = css({
   display: 'block',
-  fontSize: 10,
+  fontSize: 'xxs',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '2px 5px',
+  padding: '2px 4px',
   borderRadius: 2,
-  background: `likec4.palette.fill/55`,
-  lineHeight: 1.1,
-  _dark: {
-    color: 'likec4.palette.loContrast',
+  background: `likec4.palette.fill/30`,
+  lineHeight: '[1.11]',
+  mixBlendMode: 'hard-light',
+  color: {
+    _light: `[color-mix(in srgb, {colors.likec4.palette.stroke}, {colors.likec4.mixColor} 60%)]`,
+    _dark: 'likec4.palette.loContrast',
   },
+  // _dark: {
+  //   background: `likec4.palette.fill/60`,
+  // },
 })
 
 export const title = css({
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: 'sm',
+  fontSize: 'xs',
+})
+
+export const arrowFromTo = css({
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: 'xs',
 })

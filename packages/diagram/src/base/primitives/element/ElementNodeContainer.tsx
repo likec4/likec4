@@ -89,6 +89,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
             likec4Palette: data.color,
           }),
           styles.container,
+          'group',
           'likec4-element-node',
         )}
         initial={false}

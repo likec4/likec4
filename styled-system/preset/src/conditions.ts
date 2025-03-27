@@ -40,7 +40,7 @@ export const conditions = {
     whenHovered: ':where([data-likec4-hovered="true"]) &',
     whenSelected: ':where(.react-flow__node.selected, .react-flow__edge.selected) &',
     whenDimmed: ':where([data-likec4-dimmed]) &',
-    whenFocused: ':is(.react-flow__node, .react-flow__edge):focus-visible &',
+    whenFocused: ':where(.react-flow__node, .react-flow__edge):is(:focus-visible, :focus, :focus-within) &',
 
     // likec4Color: ':where([data-likec4-color]) &',
     ...generated,

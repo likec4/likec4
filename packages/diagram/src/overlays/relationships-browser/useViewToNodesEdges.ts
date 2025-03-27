@@ -121,6 +121,7 @@ export function viewToNodesEdge(
               depth: node.depth ?? 0,
               icon: node.icon ?? 'none',
               ports: node.ports,
+              existsInCurrentView: node.existsInCurrentView,
               fqn,
               ...navigateTo,
             },
@@ -147,6 +148,7 @@ export function viewToNodesEdge(
               icon: node.icon ?? 'none',
               ports: node.ports,
               style: node.style,
+              existsInCurrentView: node.existsInCurrentView,
               ...navigateTo,
             },
           },
@@ -186,6 +188,7 @@ export function viewToNodesEdge(
         label: edge.label,
         navigateTo: edge.navigateTo ?? null,
         line: edge.line ?? 'dashed',
+        existsInCurrentView: edge.existsInCurrentView,
       },
       interactionWidth: 20,
     })

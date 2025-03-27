@@ -47,6 +47,14 @@
         "default": "./dist/builder/index.mjs"
       }
     },
+    "./compute-view/relationships": {
+      "sources": "./src/compute-view/relationships-view/index.ts",
+      "default": {
+        "types": "./dist/compute-view/relationships-view/index.d.mts",
+        "import": "./dist/compute-view/relationships-view/index.mjs",
+        "default": "./dist/compute-view/relationships-view/index.mjs"
+      }
+    },
     "./compute-view": {
       "sources": "./src/compute-view/index.ts",
       "default": {

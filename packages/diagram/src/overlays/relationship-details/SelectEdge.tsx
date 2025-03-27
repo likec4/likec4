@@ -73,8 +73,7 @@ export const SelectEdge = ({
       <PopoverTarget>
         <Button
           size="xs"
-          variant="light"
-          color={theme === 'light' ? 'dark' : 'gray'}
+          variant="default"
           fw={'500'}
           style={{ padding: '0.25rem 0.75rem' }}
           rightSection={<IconSelector size={16} />}

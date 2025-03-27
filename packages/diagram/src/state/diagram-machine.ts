@@ -364,16 +364,19 @@ export const diagramMachine = setup({
         return
       }
       if (!enableOverlays && hasRunning) {
+        enqueue.sendTo(hasRunning, {
+          type: 'close.all',
+        })
         enqueue.stopChild('overlays')
       }
     }),
 
-    'closeAllOverlays': enqueueActions(({ system, enqueue }) => {
-      const overlays = typedSystem(system).overlaysActorRef
-      if (overlays) {
-        enqueue.sendTo(overlays, { type: 'close.all' })
-      }
-    }),
+    'closeAllOverlays': sendTo(
+      ({ system }) => typedSystem(system).overlaysActorRef!,
+      {
+        type: 'close.all',
+      },
+    ),
 
     'stopSyncLayout': enqueueActions(({ context, enqueue }) => {
       enqueue.sendTo(context.syncLayoutActorRef, { type: 'stop' })
@@ -566,7 +569,11 @@ export const diagramMachine = setup({
           actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
             type: 'open.relationshipsBrowser',
             subject: event.fqn,
-            scope: context.view,
+            viewId: context.view.id,
+            scope: 'view' as const,
+            closeable: true,
+            enableChangeScope: true,
+            enableSelectSubject: true,
           })),
         },
         'open.relationshipDetails': {
@@ -680,7 +687,6 @@ export const diagramMachine = setup({
                 { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
               ],
             },
-
             'focus.node': {
               guard: 'enabled: FocusMode',
               actions: assign({

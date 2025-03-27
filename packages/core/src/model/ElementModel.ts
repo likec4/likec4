@@ -25,6 +25,7 @@ export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
 export class ElementModel<M extends AnyAux = AnyAux> {
   readonly id: M['Fqn']
+  readonly _literalId: M['Element']
   readonly hierarchyLevel: number
 
   constructor(
@@ -32,6 +33,7 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     public readonly $element: C4Element,
   ) {
     this.id = this.$element.id
+    this._literalId = this.$element.id
     this.hierarchyLevel = hierarchyLevel(this.id)
   }
 

@@ -6,7 +6,7 @@ export const indicator = css({
   },
   stroke: 'likec4.palette.loContrast',
   fill: '[none]',
-  animationStyle: 'indicator',
+
   strokeWidth: 6,
   strokeOpacity: 0.8,
   visibility: 'hidden',
@@ -14,11 +14,16 @@ export const indicator = css({
   _light: {
     stroke: `[color-mix(in srgb, {colors.likec4.palette.fill} 50%,rgb(121, 121, 121))]`,
   },
-  _whenSelected: {
+  _whenFocused: {
+    strokeWidth: 12,
     visibility: 'visible',
   },
-  _whenFocused: {
-    strokeWidth: 10,
+  _groupFocusVisible: {
+    strokeWidth: 12,
+    visibility: 'visible',
+  },
+  _whenSelected: {
+    animationStyle: 'indicator',
     visibility: 'visible',
   },
   _shapeQueue: {

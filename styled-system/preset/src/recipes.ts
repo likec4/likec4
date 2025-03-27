@@ -4,14 +4,10 @@ export const actionBtn = defineRecipe({
   className: 'action-btn',
   description: 'The styles for the Action Buttons',
   base: {
-    // colorPalette: 'var(--likec4-palette)',
     pointerEvents: 'all',
     cursor: 'pointer',
     color: 'var(--actionbtn-color)',
     opacity: 0.75,
-    // transition: 'fast',
-    // transitionDelay: '.15s',
-    // transitionTimingFunction: 'ease-in',
 
     '--actionbtn-color': '{colors.likec4.palette.loContrast}',
     '--actionbtn-color-hovered': '{colors.likec4.palette.loContrast}',

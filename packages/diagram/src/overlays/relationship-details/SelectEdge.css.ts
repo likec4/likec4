@@ -5,9 +5,10 @@ const edgeEnpoint = css.raw({
   alignItems: 'center',
   padding: '6px 2px 0 2px',
   '& .mantine-Text-root': {
+    color: 'mantine.colors.text/90',
     fontSize: 'xs',
     fontWeight: 500,
-    lineHeight: '1.1',
+    lineHeight: '1.2',
   },
 })
 
@@ -38,9 +39,9 @@ export const edgeLabel = cx(
     padding: '0 4px 5px 4px',
     width: '100%',
     '& .mantine-Text-root': {
-      fontSize: 'sm',
+      fontSize: 'xxs',
       fontWeight: 400,
-      lineHeight: 1,
+      lineHeight: 'xs',
       color: 'mantine.colors.dimmed',
     },
   }),

@@ -1,4 +1,5 @@
 import { createOptionalContext, createSafeContext } from '@mantine/core'
+import { useStore } from '@nanostores/react'
 import { type WritableAtom, atom } from 'nanostores'
 import { type PropsWithChildren, useRef } from 'react'
 
@@ -34,4 +35,8 @@ export function ReduceGraphicsContext({ reduceGraphics, children }: PropsWithChi
       </ReduceGraphicsModeCtx>
     </PanningAtomSafeCtx>
   )
+}
+
+export function useIsPanning() {
+  return useStore(usePanningAtom())
 }
