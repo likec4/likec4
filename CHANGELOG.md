@@ -1,3 +1,35 @@
+# [1.27.0](https://github.com/likec4/likec4/compare/v1.26.2...v1.27.0) (2025-03-27)
+
+### Features
+
+* Global/View scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732))
+  ![image](https://github.com/user-attachments/assets/c5595c1f-8087-4375-a0b3-93f2a0a4c498)
+
+
+* multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749))
+  ```jsx
+  // where `project-a` and `project-b` are the names of your projects
+  import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
+  import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
+  
+  const example = () => (
+    <>
+      <ProjectA_LikeC4View viewId='index' />
+      <ProjectB_LikeC4View viewId='index' />
+    </>
+  )
+  ```
+
+
+* Styled-system based on [pandacss](https://panda-css.com/) ([#1726](https://github.com/likec4/likec4/issues/1726))  
+  Step closer to Diagram customizations, documentation comes soon
+  
+
+### Bug Fixes
+
+* typo and link, thanks @husa [#1765](https://github.com/likec4/likec4/issues/1765)
+
+
 ## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
 
 ### Bug Fixes
