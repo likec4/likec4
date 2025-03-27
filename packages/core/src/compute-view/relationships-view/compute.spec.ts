@@ -163,29 +163,12 @@ describe('computeRelationshipsView', () => {
 
     const result1 = computeRelationships('cloud', m, null)
     expect(result1).toEqual({
-      subjectExistsInScope: true,
       incomers: new Set(),
       incoming: new Set(),
       subjects: new Set([m.element('cloud')]),
       outgoers: new Set(),
       outgoing: new Set(),
     })
-
-    // // const result = computeRelationships(
-    // //   'cloud',
-    // //   builder
-
-    // // )
-
-    // expect(result.subjects.size).toBe(3)
-    // expect([...result.subjects].map(s => s.id)).toContain('cloud')
-    // expect([...result.subjects].map(s => s.id)).toContain('cloud.frontend.ui')
-    // expect([...result.subjects].map(s => s.id)).toContain('cloud.backend.api')
-
-    // expect(result.incoming.size).toBe(0)
-    // expect(result.incomers.size).toBe(0)
-    // expect(result.outgoing.size).toBe(0)
-    // expect(result.outgoers.size).toBe(0)
   })
 
   it('correctly flattens subjects', ({ expect }) => {
