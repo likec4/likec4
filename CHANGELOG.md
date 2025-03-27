@@ -1,22 +1,33 @@
 # [1.27.0](https://github.com/likec4/likec4/compare/v1.26.2...v1.27.0) (2025-03-27)
 
+### Features
+
+* Global/View scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732))
+  ![image](https://github.com/user-attachments/assets/c5595c1f-8087-4375-a0b3-93f2a0a4c498)
+
+
+* multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749))
+  ```jsx
+  // where `project-a` and `project-b` are the names of your projects
+  import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
+  import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
+  
+  const example = () => (
+    <>
+      <ProjectA_LikeC4View viewId='index' />
+      <ProjectB_LikeC4View viewId='index' />
+    </>
+  )
+  ```
+
+
+* Styled-system based on [pandacss](https://panda-css.com/) ([#1726](https://github.com/likec4/likec4/issues/1726))  
+  Step closer to Diagram customizations, documentation comes soon
+  
 
 ### Bug Fixes
 
-* **deps:** update dependency @xstate/react to ^5.0.3 ([#1752](https://github.com/likec4/likec4/issues/1752)) ([fe3ee31](https://github.com/likec4/likec4/commit/fe3ee3165556aa67d5ed25d6c5e6d2ec4b36aa8c))
-* **deps:** update dependency hono to ^4.7.5 ([#1753](https://github.com/likec4/likec4/issues/1753)) ([de424e7](https://github.com/likec4/likec4/commit/de424e7dbfdd3ac29ba900694354bb44d3e1159c))
-* **deps:** update dependency hono-sessions to ^0.7.2 ([#1754](https://github.com/likec4/likec4/issues/1754)) ([c4a4cae](https://github.com/likec4/likec4/commit/c4a4cae1f10562fce33defe4d5b9c4ce3a5aa506))
-* **deps:** update dependency nanoid to ^5.1.5 ([#1755](https://github.com/likec4/likec4/issues/1755)) ([b17b6fd](https://github.com/likec4/likec4/commit/b17b6fdacda724e1e28a1fee28d7aab395698a35))
-* **deps:** update dependency vite to v6.2.3 [security] ([#1744](https://github.com/likec4/likec4/issues/1744)) ([204d444](https://github.com/likec4/likec4/commit/204d444539b718b68191c062bf3cfdf7670f089a)), closes [#8203](https://github.com/likec4/likec4/issues/8203) [#8203](https://github.com/likec4/likec4/issues/8203)
-* typo and link ([#1765](https://github.com/likec4/likec4/issues/1765)) ([7a5f269](https://github.com/likec4/likec4/commit/7a5f269859be823902cad37f515eeb4d19d10576))
-
-
-### Features
-
-* introduce styled-system based on pandacss ([#1726](https://github.com/likec4/likec4/issues/1726)) ([8a224a8](https://github.com/likec4/likec4/commit/8a224a886aa6f6cb17648c907d3f64027026ce43))
-* multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749)) ([5a792a0](https://github.com/likec4/likec4/commit/5a792a00e8c69168f420f74b90ecec86318b62ce))
-* switch between global/local scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769)) ([f050408](https://github.com/likec4/likec4/commit/f0504086b4d8b43dae65be83789a0d75ed934a5b)), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732)
-
+* typo and link, thanks @husa [#1765](https://github.com/likec4/likec4/issues/1765)
 
 
 ## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
