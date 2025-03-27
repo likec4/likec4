@@ -1363,7 +1363,7 @@ importers:
         specifier: 'catalog:'
         version: 20.17.27
       '@types/vscode':
-        specifier: catalog:vscode
+        specifier: ^1.84.0
         version: 1.97.0
       '@types/which':
         specifier: ^3.0.4
