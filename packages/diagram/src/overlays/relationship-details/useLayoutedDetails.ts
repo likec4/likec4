@@ -102,7 +102,7 @@ function nodeData(
   // Ansector separetely, because we want to inherit
   // color from it if there is no diagram node
   const ancestor = diagramNode ?? pipe(
-    element.ancestors().toArray(),
+    [...element.ancestors()],
     map(ancestor => ctx.diagramNodes.get(ancestor.id)),
     filter(isTruthy),
     first(),

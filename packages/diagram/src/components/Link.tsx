@@ -59,7 +59,9 @@ export function Link({
   value: LinkData
 }) {
   const isNormalSize = size === 'md'
-  const url = new URL(value.url, window.location.href).toString()
+  // If the url is already a full url, use it as is.
+  // Otherwise, it's a relative url and we need to make it absolute.
+  const url = value.url.includes('://') ? value.url : new window.URL(value.url, window.location.href).toString()
   return (
     <CopyButton value={url}>
       {({ copied, copy }) => (
