@@ -161,6 +161,7 @@ export const overlaysActorLogic = setup({
         enqueue.sendTo(currentOverlay.id, {
           type: 'navigate.to',
           subject: event.subject,
+          viewId: event.viewId,
         })
         return
       }

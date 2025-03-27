@@ -1,3 +1,5 @@
+import { css } from '@likec4/styles/css'
+import { Tooltip } from '@mantine/core'
 import { getBezierPath } from '@xyflow/system'
 import {
   customEdge,
@@ -10,19 +12,25 @@ import {
 import { useEnabledFeature } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
+import { useRelationshipsBrowser } from '../hooks'
 
 export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
+  const browser = useRelationshipsBrowser()
   const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const {
+    id,
     data: {
       navigateTo,
       relations,
+      existsInCurrentView,
     },
   } = props
   const [svgPath, labelX, labelY] = getBezierPath(props)
   const diagram = useDiagram()
 
-  const edgeProps = relations.length > 1
+  const markOrange = relations.length > 1 || !existsInCurrentView
+
+  const edgeProps = markOrange
     ? {
       ...props,
       data: {
@@ -33,12 +41,48 @@ export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((
     }
     : props
 
+  let label = (
+    <EdgeLabel
+      edgeProps={edgeProps}
+      className={css({
+        transition: 'fast',
+      })}
+    >
+      {enableNavigateTo && navigateTo && (
+        <EdgeActionButton
+          {...props}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.navigateTo(navigateTo)
+          }} />
+      )}
+    </EdgeLabel>
+  )
+
+  if (!existsInCurrentView) {
+    label = (
+      <Tooltip
+        color="orange"
+        c={'black'}
+        label="This relationship is not included in the current view"
+        // withinPortal={false}
+        portalProps={{
+          target: `#${browser.rootElementId.replaceAll(':', '\\:')}`,
+        }}
+        openDelay={800}
+      >
+        {label}
+      </Tooltip>
+    )
+  }
+
   return (
-    <EdgeContainer {...edgeProps}>
+    <EdgeContainer key={id} {...edgeProps}>
       <EdgePath
+        key={id}
         {...edgeProps}
         svgPath={svgPath}
-        {...relations.length > 1 && {
+        {...markOrange && {
           strokeWidth: 5,
         }}
       />
@@ -53,16 +97,7 @@ export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((
           maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
         }}
       >
-        <EdgeLabel edgeProps={edgeProps}>
-          {enableNavigateTo && navigateTo && (
-            <EdgeActionButton
-              {...props}
-              onClick={e => {
-                e.stopPropagation()
-                diagram.navigateTo(navigateTo)
-              }} />
-          )}
-        </EdgeLabel>
+        {label}
       </EdgeLabelContainer>
     </EdgeContainer>
   )

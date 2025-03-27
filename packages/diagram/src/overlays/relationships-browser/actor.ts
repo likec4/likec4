@@ -1,4 +1,4 @@
-import { type BBox, type DiagramView, type Fqn, delay, invariant, nonNullable } from '@likec4/core'
+import { type BBox, type Fqn, type ViewId, delay, invariant, nonNullable } from '@likec4/core'
 import {
   type EdgeChange,
   type NodeChange,
@@ -43,54 +43,6 @@ const findRootSubject = (nodes: RelationshipsBrowserTypes.Node[]) =>
   )
 
 export type XYStoreApi = ReturnType<typeof useStoreApi<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>>
-
-export type Input = {
-  subject: Fqn
-  scope?: DiagramView | null
-  closeable?: boolean
-  enableNavigationMenu?: boolean
-  // parentRef?: AnyActorRef| null
-}
-
-export type Context = Readonly<
-  Input & {
-    closeable: boolean
-    enableNavigationMenu: boolean
-    // parentRef: AnyActorRef | null
-    xyflow: XYFLowInstance | null
-    xystore: XYStoreApi | null
-    layouted: LayoutRelationshipsViewResult | null
-    navigateFromNode: string | null
-    xynodes: RelationshipsBrowserTypes.Node[]
-    xyedges: RelationshipsBrowserTypes.Edge[]
-  }
->
-
-export type Events =
-  | { type: 'xyflow.init'; instance: XYFLowInstance; store: XYStoreApi }
-  | { type: 'xyflow.nodeClick'; node: RelationshipsBrowserTypes.Node }
-  | { type: 'xyflow.edgeClick'; edge: RelationshipsBrowserTypes.Edge }
-  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<RelationshipsBrowserTypes.Node>[] }
-  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<RelationshipsBrowserTypes.Edge>[] }
-  | { type: 'xyflow.paneClick' }
-  | { type: 'xyflow.paneDblClick' }
-  | { type: 'xyflow.resized' }
-  | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
-  | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
-  | { type: 'xyflow.selectionChange'; nodes: RelationshipsBrowserTypes.Node[]; edges: RelationshipsBrowserTypes.Edge[] }
-  | { type: 'dim.nonhovered.edges' }
-  | { type: 'undim.edges' }
-  | { type: 'xyflow.updateNodeInternals' }
-  | { type: 'xyflow.unmount' }
-  | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
-  | { type: 'navigate.to'; subject: Fqn; fromNode?: string | undefined }
-  | {
-    type: 'update.xydata'
-    xynodes: RelationshipsBrowserTypes.Node[]
-    xyedges: RelationshipsBrowserTypes.Edge[]
-  }
-  | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
-  | { type: 'close' }
 
 export const layouter = fromPromise<{
   xyedges: RelationshipsBrowserTypes.Edge[]
@@ -228,6 +180,59 @@ export const layouter = fromPromise<{
   return updateXYData()
 })
 
+export type Input = {
+  subject: Fqn
+  viewId: ViewId | null
+  scope: 'global' | 'view'
+  closeable?: boolean
+  enableSelectSubject?: boolean
+  enableChangeScope?: boolean
+  // parentRef?: AnyActorRef| null
+}
+
+export type Context = Readonly<{
+  subject: Fqn
+  viewId: ViewId | null
+  scope: 'global' | 'view'
+  closeable: boolean
+  enableSelectSubject: boolean
+  enableChangeScope: boolean
+  // parentRef: AnyActorRef | null
+  xyflow: XYFLowInstance | null
+  xystore: XYStoreApi | null
+  layouted: LayoutRelationshipsViewResult | null
+  navigateFromNode: string | null
+  xynodes: RelationshipsBrowserTypes.Node[]
+  xyedges: RelationshipsBrowserTypes.Edge[]
+}>
+
+export type Events =
+  | { type: 'xyflow.init'; instance: XYFLowInstance; store: XYStoreApi }
+  | { type: 'xyflow.nodeClick'; node: RelationshipsBrowserTypes.Node }
+  | { type: 'xyflow.edgeClick'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<RelationshipsBrowserTypes.Node>[] }
+  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<RelationshipsBrowserTypes.Edge>[] }
+  | { type: 'xyflow.paneClick' }
+  | { type: 'xyflow.paneDblClick' }
+  | { type: 'xyflow.resized' }
+  | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.selectionChange'; nodes: RelationshipsBrowserTypes.Node[]; edges: RelationshipsBrowserTypes.Edge[] }
+  | { type: 'dim.nonhovered.edges' }
+  | { type: 'undim.edges' }
+  | { type: 'xyflow.updateNodeInternals' }
+  | { type: 'xyflow.unmount' }
+  | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
+  | { type: 'navigate.to'; subject: Fqn; fromNode?: string | undefined; viewId?: ViewId | undefined }
+  | {
+    type: 'update.xydata'
+    xynodes: RelationshipsBrowserTypes.Node[]
+    xyedges: RelationshipsBrowserTypes.Edge[]
+  }
+  | { type: 'change.scope'; scope: 'global' | 'view' }
+  | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
+  | { type: 'close' }
+
 export const relationshipsBrowserLogic = setup({
   types: {
     context: {} as Context,
@@ -243,6 +248,13 @@ export const relationshipsBrowserLogic = setup({
   },
   guards: {
     isReady: ({ context }) => context.xyflow !== null && context.xystore !== null && context.layouted !== null,
+    anotherSubject: ({ context, event }) => {
+      if (event.type === 'update.view') {
+        const subject = context.layouted?.subject
+        return subject !== event.layouted.subject
+      }
+      return false
+    },
   },
   actions: {
     'xyflow.init': assign(({ event }) => {
@@ -280,10 +292,8 @@ export const relationshipsBrowserLogic = setup({
       updateNodeInternals(updates, { triggerFitView: false })
     },
     'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
-      let {
-        duration = 450,
-        bounds,
-      } = params ?? {}
+      let { duration, bounds } = params ?? {}
+      duration ??= 450
       const { xyflow, xystore } = context
       invariant(xyflow, 'xyflow is not initialized')
       invariant(xystore, 'xystore is not initialized')
@@ -302,13 +312,28 @@ export const relationshipsBrowserLogic = setup({
         })
       }
     },
+    'xyflow.applyNodeChanges': assign(({ context, event }) => {
+      assertEvent(event, 'xyflow.applyNodeChanges')
+      return {
+        xynodes: applyNodeChanges(event.changes, context.xynodes),
+      }
+    }),
+    'xyflow.applyEdgeChanges': assign(({ context, event }) => {
+      assertEvent(event, 'xyflow.applyEdgeChanges')
+      return {
+        xyedges: applyEdgeChanges(event.changes, context.xyedges),
+      }
+    }),
   },
 }).createMachine({
   id: 'relationships-browser',
   context: ({ input }) => ({
-    ...input,
+    subject: input.subject,
+    viewId: input.viewId,
+    scope: input.viewId ? input.scope : 'global',
     closeable: input.closeable ?? true,
-    enableNavigationMenu: input.enableNavigationMenu ?? true,
+    enableSelectSubject: input.enableSelectSubject ?? true,
+    enableChangeScope: input.enableChangeScope ?? true,
     xyflow: null,
     xystore: null,
     layouted: null,
@@ -319,18 +344,10 @@ export const relationshipsBrowserLogic = setup({
   initial: 'initializing',
   on: {
     'xyflow.applyNodeChanges': {
-      actions: assign({
-        xynodes: ({ context, event }) => {
-          return applyNodeChanges(event.changes, context.xynodes)
-        },
-      }),
+      actions: 'xyflow.applyNodeChanges',
     },
     'xyflow.applyEdgeChanges': {
-      actions: assign({
-        xyedges: ({ context, event }) => {
-          return applyEdgeChanges(event.changes, context.xyedges)
-        },
-      }),
+      actions: 'xyflow.applyEdgeChanges',
     },
   },
   states: {
@@ -352,8 +369,8 @@ export const relationshipsBrowserLogic = setup({
       always: [{
         guard: 'isReady',
         actions: [
-          raise({ type: 'fitDiagram', duration: 0 }),
-          raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
+          { type: 'xyflow:fitDiagram', params: { duration: 0 } },
+          raise({ type: 'xyflow.updateNodeInternals' }, { delay: 150 }),
         ],
         target: 'active',
       }, {
@@ -363,6 +380,62 @@ export const relationshipsBrowserLogic = setup({
     'active': {
       initial: 'idle',
       tags: ['active'],
+      on: {
+        'xyflow.nodeClick': {
+          actions: enqueueActions(({ event, enqueue }) => {
+            if ('fqn' in event.node.data) {
+              const fqn = event.node.data.fqn
+              enqueue.raise({
+                type: 'navigate.to',
+                subject: fqn,
+                fromNode: event.node.id,
+              })
+            }
+          }),
+        },
+        'navigate.to': {
+          actions: [
+            assign({
+              subject: ({ event }) => event.subject,
+              navigateFromNode: ({ event }) => event.fromNode ?? null,
+            }),
+          ],
+        },
+        'xyflow.paneDblClick': {
+          actions: 'xyflow:fitDiagram',
+        },
+        'update.view': {
+          actions: 'update.view',
+          target: '.layouting',
+        },
+        'change.scope': {
+          actions: assign({
+            scope: ({ event }) => event.scope,
+          }),
+        },
+        'xyflow.updateNodeInternals': {
+          actions: 'xyflow:updateNodeInternals',
+        },
+        'fitDiagram': {
+          actions: {
+            type: 'xyflow:fitDiagram',
+            params: prop('event'),
+          },
+        },
+        'xyflow.resized': {
+          actions: [
+            cancel('fitDiagram'),
+            raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 300 }),
+          ],
+        },
+        'xyflow.init': {
+          actions: 'xyflow.init',
+        },
+        'xyflow.unmount': {
+          target: 'initializing',
+        },
+        'close': 'closed',
+      },
       states: {
         'idle': {
           on: {
@@ -452,9 +525,10 @@ export const relationshipsBrowserLogic = setup({
                   xynodes: event.output.xynodes,
                   xyedges: event.output.xyedges,
                   navigateFromNode: null,
-                }), enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
-                for (let i = 0; i <= 10; i++) {
-                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 50 })
+                })
+                enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+                for (let i = 0; i < 6; i++) {
+                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 100 })
                 }
               }),
             },
@@ -474,59 +548,6 @@ export const relationshipsBrowserLogic = setup({
             },
           },
         },
-      },
-      on: {
-        'xyflow.nodeClick': {
-          actions: enqueueActions(({ event, enqueue }) => {
-            if ('fqn' in event.node.data) {
-              const fqn = event.node.data.fqn
-              enqueue.raise({
-                type: 'navigate.to',
-                subject: fqn,
-                fromNode: event.node.id,
-              })
-            }
-          }),
-        },
-        'navigate.to': {
-          actions: [
-            assign({
-              subject: ({ event }) => event.subject,
-              navigateFromNode: ({ event }) => event.fromNode ?? null,
-            }),
-          ],
-        },
-        'xyflow.paneDblClick': {
-          actions: 'xyflow:fitDiagram',
-        },
-        'update.view': {
-          actions: assign({
-            layouted: ({ event }) => event.layouted,
-          }),
-          target: '.layouting',
-        },
-        'xyflow.updateNodeInternals': {
-          actions: 'xyflow:updateNodeInternals',
-        },
-        'fitDiagram': {
-          actions: {
-            type: 'xyflow:fitDiagram',
-            params: prop('event'),
-          },
-        },
-        'xyflow.resized': {
-          actions: [
-            cancel('fitDiagram'),
-            raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 300 }),
-          ],
-        },
-        'xyflow.init': {
-          actions: 'xyflow.init',
-        },
-        'xyflow.unmount': {
-          target: 'initializing',
-        },
-        'close': 'closed',
       },
     },
     closed: {

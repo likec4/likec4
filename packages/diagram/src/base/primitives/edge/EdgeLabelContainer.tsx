@@ -37,6 +37,7 @@ const toCssVarValue = (value: number | string | undefined) => {
 
 export function EdgeLabelContainer({
   edgeProps: {
+    id,
     data: {
       hovered: isHovered = false,
       active: isActive = false,
@@ -66,8 +67,9 @@ export function EdgeLabelContainer({
   const translate = labelXY?.translate
 
   return (
-    <EdgeLabelRenderer>
+    <EdgeLabelRenderer key={id}>
       <div
+        key={id}
         className={cx(
           css({
             likec4RelationPalette: color,

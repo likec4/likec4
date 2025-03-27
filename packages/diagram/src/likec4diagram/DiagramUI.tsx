@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useEnabledFeatures } from '../context'
-import { useDiagramActorSnapshot } from '../hooks/useDiagram'
+import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { Overlays } from '../overlays/Overlays'
 import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
@@ -11,7 +11,7 @@ export const DiagramUI = memo(() => {
     enableDynamicViewWalkthrough,
   } = useEnabledFeatures()
 
-  const overlaysActorRef = useDiagramActorSnapshot(s => s.children.overlays, Object.is)
+  const overlaysActorRef = useOverlaysActorRef()
 
   return (
     <>

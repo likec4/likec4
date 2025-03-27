@@ -81,13 +81,13 @@ const generateCompoundColors = (color: ThemeColor, depth: number) => {
     loContrast: { value: `{colors.likec4.${color}.element.loContrast}` },
     fill: {
       value: {
-        base: compoundLightColor(defaultTheme.elements[color].fill),
+        _light: compoundLightColor(defaultTheme.elements[color].fill),
         _dark: compoundDarkColor(defaultTheme.elements[color].fill),
       },
     },
     stroke: {
       value: {
-        base: compoundLightColor(defaultTheme.elements[color].stroke),
+        _light: compoundLightColor(defaultTheme.elements[color].stroke),
         _dark: compoundDarkColor(defaultTheme.elements[color].stroke),
       },
     },
@@ -100,7 +100,7 @@ const generateRelationColors = (color: ThemeColor) => ({
       DEFAULT: { value: defaultTheme.relationships[color].lineColor },
       selected: {
         value: {
-          base: toHex(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
+          _light: toHex(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
           _dark: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
         },
       },

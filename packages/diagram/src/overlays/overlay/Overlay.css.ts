@@ -9,7 +9,7 @@ export const dialog = css({
   boxSizing: 'border-box',
   margin: 0,
   position: 'fixed',
-  inset: '5rem 4rem 4rem 4rem',
+  inset: '3rem',
   width: 'auto',
   height: 'auto',
   maxWidth: '100vw',
@@ -20,14 +20,15 @@ export const dialog = css({
   outline: 'none',
   borderRadius: borderRadius,
   padding: '6px',
+  [backdropBlur]: '0px',
+  [backdropOpacity]: '0%',
   _backdrop: {
     cursor: 'zoom-out',
-    backdropFilter: 'auto',
-    backdropBlur: `var(${backdropBlur}, 0px)`,
-    backgroundColor: `[rgb(34 34 34 / var(${backdropOpacity}, 0%))]`,
-  },
-  _light: {
-    backgroundColor: `[rgb(15 15 15/ var(${backdropOpacity}, 0%))]`,
+    backdropFilter: `blur(var(${backdropBlur}))`,
+    backgroundColor: {
+      _dark: `[rgb(34 34 34 / var(${backdropOpacity}))]`,
+      _light: `[rgb(15 15 15/ var(${backdropOpacity}))]`,
+    },
   },
   mdDown: {
     borderRadius: 'sm',
@@ -38,6 +39,7 @@ export const dialog = css({
   smDown: {
     border: 'none',
     inset: 0,
+    padding: 0,
     width: '100vw',
     height: '100vh',
   },

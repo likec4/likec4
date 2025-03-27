@@ -22,6 +22,9 @@ export const container = style({
     background: '[transparent]',
     pointerEvents: 'all',
   },
+  _focusVisible: {
+    outline: 'none',
+  },
 
   // _whenDimmed: {
   //   opacity: 0.25,

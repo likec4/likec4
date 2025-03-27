@@ -20,6 +20,7 @@ import {
 } from '../../../base/primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram, useDiagramActorSnapshot } from '../../../hooks/useDiagram'
+import { useIsPanning } from '../../../hooks/useReducedGraphics'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
 import type { DiagramActorSnapshot } from '../../../state/types'
 import { vector, VectorImpl } from '../../../utils/vector'
@@ -37,6 +38,7 @@ const curve = d3line<XYPosition>()
 
 const selectActiveStepId = (s: DiagramActorSnapshot) => s.context.activeWalkthrough?.stepId ?? null
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+  const isPanning = useIsPanning()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
@@ -318,7 +320,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     </EdgeLabel>
   )
 
-  if (!isControlPointDragging) {
+  if (!isControlPointDragging && !isPanning) {
     const notes = props.data.notes
     if (notes && activeWalkthroughStep === props.id) {
       edgeLabel = (
@@ -326,7 +328,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           {edgeLabel}
         </NotePopover>
       )
-    } else if (enableRelationshipDetails && (hovered || selected || active)) {
+    } else if (enableRelationshipDetails) {
       edgeLabel = (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}

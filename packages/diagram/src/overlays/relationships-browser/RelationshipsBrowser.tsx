@@ -1,9 +1,8 @@
-import type { Fqn } from '@likec4/core'
-import { ActionIcon, Box, Group } from '@mantine/core'
+import { cx } from '@likec4/styles/css'
+import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
-import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
@@ -92,28 +91,27 @@ const RelationshipsBrowserXYFlow = memo(() => {
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
-      id={`relationships-browser-${browser.actor.sessionId}`}
+      id={browser.rootElementId}
       nodes={nodes}
       edges={edges}
-      className={clsx(isActive ? 'initialized' : 'not-initialized')}
+      className={cx(
+        isActive ? 'initialized' : 'not-initialized',
+        'relationships-browser',
+      )}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView={false}
       fitViewPadding={ViewPadding}
       onNodeClick={useCallbackRef((e, node) => {
-        e.stopPropagation()
         browser.send({ type: 'xyflow.nodeClick', node })
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
-        e.stopPropagation()
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
       onPaneClick={useCallbackRef((e) => {
-        e.stopPropagation()
         browser.send({ type: 'xyflow.paneClick' })
       })}
       onDoubleClick={useCallbackRef(e => {
-        e.stopPropagation()
         browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {
@@ -126,10 +124,14 @@ const RelationshipsBrowserXYFlow = memo(() => {
         browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        browser.send({ type: 'xyflow.edgeMouseEnter', edge })
+        if (!edge.data.hovered) {
+          browser.send({ type: 'xyflow.edgeMouseEnter', edge })
+        }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        browser.send({ type: 'xyflow.edgeMouseLeave', edge })
+        if (edge.data.hovered) {
+          browser.send({ type: 'xyflow.edgeMouseLeave', edge })
+        }
       })}
       onSelectionChange={useCallbackRef((params) => {
         browser.send({ type: 'xyflow.selectionChange', ...params })
@@ -145,26 +147,30 @@ const RelationshipsBrowserXYFlow = memo(() => {
 
 const selector2 = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
   subjectId: state.context.subject,
+  viewId: state.context.viewId,
+  scope: state.context.scope,
   closeable: state.context.closeable,
-  enableNavigationMenu: state.context.enableNavigationMenu,
 })
 
 const RelationshipsBrowserInner = memo(() => {
   const browser = useRelationshipsBrowser()
   const {
     subjectId,
+    viewId,
+    scope,
     closeable,
-    enableNavigationMenu,
   } = useRelationshipsBrowserState(selector2)
 
   const store = useStoreApi<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>()
   const instance = useReactFlow<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>()
 
   useEffect(() => {
-    browser.send({ type: 'xyflow.init', instance, store })
+    if (instance.viewportInitialized) {
+      browser.send({ type: 'xyflow.init', instance, store })
+    }
   }, [store, instance, browser])
 
-  const layouted = useRelationshipsView(subjectId)
+  const layouted = useRelationshipsView(subjectId, viewId, scope)
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)
 
   useEffect(() => {
@@ -180,7 +186,7 @@ const RelationshipsBrowserInner = memo(() => {
   }, [historySubjectId, browser])
 
   useEffect(() => {
-    browser.send({ type: 'update.view', layouted })
+    browser.updateView(layouted)
   }, [layouted, browser])
 
   const hasStepBack = current > 0
@@ -189,8 +195,6 @@ const RelationshipsBrowserInner = memo(() => {
   return (
     <>
       <TopLeftPanel
-        enableNavigationMenu={enableNavigationMenu}
-        subjectId={subjectId}
         hasStepBack={hasStepBack}
         hasStepForward={hasStepForward}
         onStepBack={() => historyOps.back()}
@@ -214,22 +218,17 @@ const RelationshipsBrowserInner = memo(() => {
 })
 
 type TopLeftPanelProps = {
-  enableNavigationMenu: boolean
-  subjectId: Fqn
   hasStepBack: boolean
   hasStepForward: boolean
   onStepBack: () => void
   onStepForward: () => void
 }
 const TopLeftPanel = ({
-  enableNavigationMenu,
-  subjectId,
   hasStepBack,
   hasStepForward,
   onStepBack,
   onStepForward,
 }: TopLeftPanelProps) => {
-  const browser = useRelationshipsBrowser()
   return (
     <Panel position="top-left">
       <Group gap={4} wrap={'nowrap'}>
@@ -276,18 +275,8 @@ const TopLeftPanel = ({
               </ActionIcon>
             </m.div>
           )}
-          {enableNavigationMenu && (
-            <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
-              <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
-              <SelectElement
-                subjectId={subjectId}
-                onSelect={(id) => browser.navigateTo(id)}
-                viewId={browser.getState().scope?.id ?? '' as any}
-                scope={'global'}
-              />
-            </Group>
-          )}
         </AnimatePresence>
+        <SelectElement />
       </Group>
     </Panel>
   )

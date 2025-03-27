@@ -203,7 +203,7 @@ const Relationship = forwardRef<
         <Text component="div" className={cx(css({ likec4Palette: sourceNode.color }), styles.endpoint)}>
           {sourceId}
         </Text>
-        <IconArrowRight stroke={2.5} size={'11px'} />
+        <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
         <Text component="div" className={cx(css({ likec4Palette: targetNode.color }), styles.endpoint)}>
           {targetId}
         </Text>

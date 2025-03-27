@@ -1,8 +1,7 @@
 import type { DiagramNode } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
-import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import { type HTMLMotionProps, m } from 'framer-motion'
-import { type PropsWithChildren, forwardRef } from 'react'
+import { type PropsWithChildren } from 'react'
 import { clamp, isNumber } from 'remeda'
 import { useIsReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { NodeProps } from '../../types'
@@ -100,18 +99,16 @@ export function CompoundNodeContainer({
           }}
         />
       )}
-      {isSelected && (
-        <svg className={classes.indicatorSvg}>
-          <rect
-            className={classes.indicatorRect}
-            x={0}
-            y={0}
-            width={'100%'}
-            height={'100%'}
-            rx={6}
-          />
-        </svg>
-      )}
+      <svg className={classes.indicatorSvg}>
+        <rect
+          className={classes.indicatorRect}
+          x={0}
+          y={0}
+          width={'100%'}
+          height={'100%'}
+          rx={6}
+        />
+      </svg>
       {children}
     </m.div>
   )

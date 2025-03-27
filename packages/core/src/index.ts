@@ -36,9 +36,9 @@ export * from './utils'
 export * as Expr from './types/expression'
 
 export {
-  computeRelationshipsView,
   computeView,
   computeViews,
   unsafeComputeView,
 } from './compute-view'
+
 export type { ComputeViewResult } from './compute-view'

@@ -1,4 +1,8 @@
-import { computeRelationshipsView } from '@likec4/core'
+import {
+  type RelationshipsViewData,
+  computeRelationshipsView,
+  treeFromElements,
+} from '@likec4/core/compute-view/relationships'
 import type {
   DiagramEdge,
   DiagramNode,
@@ -8,29 +12,26 @@ import type {
   Fqn,
   IconUrl,
   NodeId,
+  NonEmptyArray,
   Point,
   ViewId,
 } from '@likec4/core/types'
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import type { ElementModel, RelationshipModel } from '@likec4/core'
 import {
   DefaultMap,
+  ifind,
   invariant,
-  isAncestor,
-  isDescendantOf,
-  nonNullable,
-  sortParentsFirst,
   toArray,
 } from '@likec4/core'
+import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   concat,
   filter,
   find,
   forEachObj,
   groupBy,
-  hasAtLeast,
   map,
   mapToObj,
   only,
@@ -39,6 +40,7 @@ import {
   reduce,
   sortBy,
   tap,
+  unique,
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import type { RelationshipsBrowserTypes } from './_types'
@@ -113,41 +115,6 @@ function createGraph() {
 type G = ReturnType<typeof createGraph>
 
 const PortSuffix = '-port'
-
-function treeFromElements(elements: Iterable<ElementModel>) {
-  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel>
-  const root = new Set(sorted)
-  const map = new Map(sorted.map(e => [e.id, e]))
-  const parents = new DefaultMap<ElementModel, ElementModel | null>(() => null)
-  const children = sorted.reduce((acc, parent, index, all) => {
-    acc.set(
-      parent,
-      all
-        .slice(index + 1)
-        .filter(isDescendantOf(parent))
-        .map(e => {
-          root.delete(e)
-          return e
-        })
-        .reduce((acc, el) => {
-          if (!acc.some(isAncestor(el))) {
-            acc.push(el)
-            parents.set(el, parent)
-          }
-          return acc
-        }, [] as ElementModel[]),
-    )
-    return acc
-  }, new DefaultMap<ElementModel, ElementModel[]>(() => []))
-
-  return {
-    sorted,
-    byId: (id: string) => nonNullable(map.get(id as Fqn), `Element not found by id: ${id}`),
-    root: root as ReadonlySet<ElementModel>,
-    parent: (el: ElementModel) => parents.get(el),
-    children: (el: ElementModel): ReadonlyArray<ElementModel> => children.get(el),
-  }
-}
 
 function createNodes(
   column: RelationshipsBrowserTypes.Column,
@@ -234,15 +201,9 @@ function applyDagreLayout(g: G) {
   }
 }
 
-export type RelationshipsViewData = {
-  incomers: ReadonlySet<ElementModel>
-  incoming: ReadonlySet<RelationshipModel>
-  subjects: ReadonlySet<ElementModel>
-  outgoing: ReadonlySet<RelationshipModel>
-  outgoers: ReadonlySet<ElementModel>
-}
-
 export type LayoutRelationshipsViewResult = {
+  subject: Fqn
+  subjectExistsInScope: boolean
   nodes: LayoutRelationshipsViewResult.Node[]
   edges: LayoutRelationshipsViewResult.Edge[]
   bounds: DiagramView['bounds']
@@ -254,15 +215,20 @@ export namespace LayoutRelationshipsViewResult {
   export type Node = DiagramNode & {
     column: RelationshipsBrowserTypes.Column
     ports: RelationshipsBrowserTypes.Ports
+    existsInCurrentView: boolean
   }
   export type Edge = DiagramEdge & {
     sourceHandle: string
     targetHandle: string
+    existsInCurrentView: boolean
     // column: RelationshipsBrowserTypes.Column
   }
 }
 
-export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRelationshipsViewResult {
+export function layoutRelationshipsView(
+  data: RelationshipsViewData,
+  scope: LikeC4ViewModel<AnyAux> | null,
+): Omit<LayoutRelationshipsViewResult, 'subject'> {
   const g = createGraph()
 
   const incomers = createNodes('incomers', data.incomers, g),
@@ -288,8 +254,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
           target: subjects.byId(r.target.id).graph,
           relation: r,
         })),
-        // Sort by source
-        sortParentsFirst,
       ),
       pipe(
         toArray(data.outgoing),
@@ -299,8 +263,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
           target: outgoers.byId(r.target.id).graph,
           relation: r,
         })),
-        // Sort by target
-        sortParentsFirst,
       ),
     ),
     map(r => ({
@@ -541,6 +503,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
           in: [],
           out: [],
         },
+        existsInCurrentView: false,
       }
     }
     const parentId = g.parent(id)
@@ -552,6 +515,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
 
     const navigateTo = element.defaultView?.id ?? null
 
+    const inheritFromNode = scope?.findNodeWithElement(element.id)
+    const scopedAncestor = scope && !inheritFromNode
+      ? ifind(element.ancestors(), a => !!scope.findNodeWithElement(a.id))?.id
+      : null
+    const inheritFromNodeOrAncestor = inheritFromNode ?? (scopedAncestor && scope?.findNodeWithElement(scopedAncestor))
+
     return {
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
@@ -561,9 +530,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       technology: element.technology,
       tags: null,
       links: null,
-      color: element.color,
-      shape: element.shape,
-      icon: element.icon ?? 'none' as IconUrl,
+      color: inheritFromNodeOrAncestor?.color ?? element.color,
+      shape: inheritFromNode?.shape ?? element.shape,
+      icon: inheritFromNode?.icon ?? element.icon ?? 'none' as IconUrl,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -574,6 +543,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
         height: height,
       },
       style: {
+        ...(inheritFromNode ?? inheritFromNodeOrAncestor)?.style,
         ...element.$element.style,
       },
       navigateTo,
@@ -588,10 +558,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
         in: sortedPorts(id, 'in', inPorts),
         out: sortedPorts(id, 'out', outPorts),
       },
+      existsInCurrentView: !!inheritFromNode,
     }
   })
 
   return {
+    subjectExistsInScope: !scope || scope.includesElement(subject.id),
     bounds: {
       x: Math.min(minX, 0),
       y: Math.min(minY, 0),
@@ -609,11 +581,8 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       const onlyRelation = only(relations)
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1
-      const points = edge.points.map(p => [p.x, p.y] as Point)
-      if (!hasAtLeast(points, 1)) {
-        return acc
-      }
-      const navigateTo = onlyRelation?.navigateTo?.id ?? null
+      // const points = edge.points.map(p => [p.x, p.y] as Point)
+      const navigateTo = only(unique(relations.flatMap(r => r.navigateTo?.id ? r.navigateTo.id : [])))
       // edge.points
       // const edge = g.edge(name)
       acc.push({
@@ -623,34 +592,38 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
         target: target as NodeId,
         targetHandle,
         label: isMultiple ? `${relations.length} relationships` : label,
+        ...(navigateTo && { navigateTo }),
+        existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
+        points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
+        line: onlyRelation?.$relationship.line ?? 'dashed',
         relations: relations.map(r => r.id),
         parent: null,
-        points,
-        ...(navigateTo && { navigateTo }),
-        head: 'normal',
-        tail: 'none',
-        line: onlyRelation?.$relationship.line ?? 'dashed',
       })
       return acc
     }, [] as LayoutRelationshipsViewResult.Edge[]),
   }
 }
 
-export function useRelationshipsView(fqn: Fqn) {
+export function useRelationshipsView(
+  subject: Fqn,
+  viewId: ViewId | null,
+  scope: 'global' | 'view',
+): LayoutRelationshipsViewResult {
   const model = useLikeC4Model(true)
   return useMemo(() => {
-    return {
-      id: `relationships-${fqn}` as ViewId,
-      title: `Relationships of ${fqn}`,
-      description: null,
-      autoLayout: {
-        direction: 'LR',
-      },
-      tags: null,
-      links: null,
-      hash: 'empty',
-      customColorDefinitions: {},
-      ...layoutRelationshipsView(computeRelationshipsView(fqn, model)),
+    const view = viewId ? model.findView(viewId) : null
+    const data = layoutRelationshipsView(
+      computeRelationshipsView(subject, model, viewId, scope),
+      scope === 'view' ? view : null,
+    )
+
+    if (view && (scope === 'global' || !data.subjectExistsInScope)) {
+      data.edges = data.edges.map(edge => {
+        edge.existsInCurrentView = edge.relations.every(r => view.includesRelation(r))
+        return edge
+      })
     }
-  }, [model, fqn, computeRelationshipsView])
+
+    return Object.assign(data, { subject })
+  }, [model, subject, viewId, scope, computeRelationshipsView])
 }
