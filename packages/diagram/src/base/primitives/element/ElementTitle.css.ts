@@ -20,7 +20,7 @@ const description = css.raw({
     display: 'none',
   },
   _smallZoom: {
-    visibility: 'hidden',
+    display: 'none',
   },
 })
 
@@ -43,7 +43,7 @@ const technology = css.raw({
     display: 'none',
   },
   _smallZoom: {
-    visibility: 'hidden',
+    display: 'none',
   },
 })
 
@@ -97,6 +97,7 @@ export const elementTitle = sva({
       paddingLeft: 'calc(var(--likec4-spacing) + 8px)',
       paddingRight: 'calc(var(--likec4-spacing) + 8px)',
       overflow: 'hidden',
+      pointerEvents: 'none',
       gap: '12px',
       _shapeQueue: {
         paddingLeft: '46px',

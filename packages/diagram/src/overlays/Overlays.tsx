@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { AnimatePresence, LayoutGroup, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, useReducedMotion, useReducedMotionConfig } from 'framer-motion'
 import { animate } from 'framer-motion/dom'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
@@ -83,7 +83,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
     xyflowDomNode,
   ])
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
-  const isMotionReduced = useReducedMotion() ?? false
+  const isMotionReduced = useReducedMotionConfig() ?? false
 
   const isActiveOverlay = overlays.length > 0
 

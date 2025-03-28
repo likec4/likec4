@@ -1,6 +1,6 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
-import { useCallbackRef, useTimeout } from '@mantine/hooks'
+import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
@@ -16,7 +16,7 @@ import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
 
 const selectXYProps = (ctx: DiagramContext) => ({
-  initialized: ctx.initialized,
+  initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
   nodes: ctx.xynodes,
   edges: ctx.xyedges,
   pannable: ctx.pannable,
@@ -90,26 +90,25 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     layoutConstraints = useLayoutConstraints(),
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
-      $isPanning.set(true)
-    }, 160),
-    notPanning = useTimeout(() => {
+      if (!$isPanning.get()) {
+        $isPanning.set(true)
+      }
+    }, 120),
+    notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       if ($isPanning.get()) {
         $isPanning.set(false)
       }
-    }, 120),
+    }, 100),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
         return
       }
-      if (!$isPanning.get()) {
-        isPanning.start()
-      }
-      notPanning.clear()
-      notPanning.start()
+      isPanning.start()
+      notPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      notPanning.start()
+      notPanning.flush()
       diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
     }),
     onViewportResize = useCallbackRef(() => {

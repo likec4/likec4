@@ -5,7 +5,7 @@ import {
 } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
-import { type HTMLMotionProps, m } from 'framer-motion'
+import { type HTMLMotionProps, m, useReducedMotionConfig } from 'framer-motion'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
 import * as styles from './Overlay.css'
@@ -26,6 +26,8 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
     const [opened, setOpened] = useState(false)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const isClosingRef = useRef(false)
+
+    const motionNotReduced = useReducedMotionConfig() !== true
 
     const onCloseRef = useSyncedRef(onClose)
     const close = useDebouncedCallback(
@@ -64,34 +66,38 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
       <m.dialog
         ref={useMergedRef(dialogRef, ref)}
         className={cx(RemoveScroll.classNames.fullWidth, styles.dialog, classes?.dialog, className)}
-        initial={{
-          [styles.backdropBlur]: '0px',
-          [styles.backdropOpacity]: '0%',
-          scale: 1.075,
-          opacity: 0.2,
-          // originY: 0.45,
-          // translateY: '-10px',
-        }}
-        animate={{
-          [styles.backdropBlur]: '8px',
-          [styles.backdropOpacity]: '60%',
-          scale: 1,
-          opacity: 1,
-          // translateY: '0px',
-          transition: {
-            delay: 0.06,
-            // duration: 0.2,
-          },
-        }}
-        exit={{
-          scale: 1.3,
-          opacity: 0,
-          [styles.backdropBlur]: '0px',
-          [styles.backdropOpacity]: '0%',
-          // transition: {
-          //   duration: 0.2,
-          // },
-        }}
+        layout
+        {...motionNotReduced
+          ? ({
+            initial: {
+              [styles.backdropBlur]: '0px',
+              [styles.backdropOpacity]: '0%',
+              scale: 1.075,
+              opacity: 0,
+            },
+            animate: {
+              [styles.backdropBlur]: '8px',
+              [styles.backdropOpacity]: '60%',
+              scale: 1,
+              opacity: 1,
+              transition: {
+                delay: 0.075,
+              },
+            },
+            exit: {
+              scale: 1.3,
+              opacity: 0,
+              translateY: -10,
+              [styles.backdropBlur]: '0px',
+              [styles.backdropOpacity]: '0%',
+            },
+          })
+          : {
+            initial: {
+              [styles.backdropBlur]: '8px',
+              [styles.backdropOpacity]: '60%',
+            },
+          }}
         onClick={e => {
           e.stopPropagation()
           if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {

@@ -5,7 +5,7 @@ import { theme } from './theme'
 import { likec4Palette, likec4RelationPalette } from './utilities'
 
 const root = '.likec4-root'
-const rootNotReduced = `${root}:not([data-likec4-reduced-graphics]):not([data-likec4-diagram-panning])`
+const rootNotReduced = `${root}:not([data-likec4-reduced-graphics])`
 
 const nodeOrEdge = `:where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container)`
 
@@ -81,9 +81,10 @@ export default definePreset({
       transitionDuration: '800ms',
       transitionDelay: '200ms',
     },
-    [`[data-mantine-color-scheme="dark"] ${rootNotReduced} .react-flow__edges > svg`]: {
-      mixBlendMode: 'plus-lighter',
-    },
+    [`[data-mantine-color-scheme="dark"] ${rootNotReduced}:not([data-likec4-diagram-panning]) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
+      {
+        mixBlendMode: 'plus-lighter',
+      },
     ...globalCss,
   },
   staticCss: {

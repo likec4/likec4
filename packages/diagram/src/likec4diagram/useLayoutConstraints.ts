@@ -58,11 +58,11 @@ abstract class Rect {
       y: positionAbsolute.y - parentPosition.y,
     }
   }
-  protected abstract parent: Compound | null
+  protected abstract parent: CompoundRect | null
 
   constructor(
     xynode: InternalNode,
-    parent: Compound | null = null,
+    parent: CompoundRect | null = null,
   ) {
     this.id = xynode.id
 
@@ -82,12 +82,12 @@ abstract class Rect {
   }
 }
 
-class Compound extends Rect {
+class CompoundRect extends Rect {
   public readonly children = [] as Rect[]
 
   constructor(
     xynode: InternalNode,
-    public readonly parent: Compound | null = null,
+    public readonly parent: CompoundRect | null = null,
   ) {
     super(xynode, parent)
   }
@@ -96,22 +96,18 @@ class Compound extends Rect {
 class Leaf extends Rect {
   constructor(
     xynode: InternalNode,
-    public readonly parent: Compound | null = null,
+    public readonly parent: CompoundRect | null = null,
   ) {
     super(xynode, parent)
   }
 }
-
-type NodePositionUpdater = (
-  nodes: Array<{ rect: Rect | Compound; node: InternalNode }>,
-) => void
 
 export function createLayoutConstraints(
   xyflowApi: XYStoreApi,
   editingNodeIds: NonEmptyArray<string>,
 ) {
   const { parentLookup, nodeLookup } = xyflowApi.getState()
-  const rects = new Map<string, Leaf | Compound>()
+  const rects = new Map<string, Leaf | CompoundRect>()
 
   const ancestorsOf = (nodeId: string) => {
     const ancestors = [] as string[]
@@ -129,36 +125,31 @@ export function createLayoutConstraints(
     editingNodeIds.flatMap(ancestorsOf),
   )
 
-  const traverse = new Array<{ xynode: InternalNode; parent: Compound | null }>()
-
-  for (const [, xynode] of nodeLookup) {
-    if (isNullish(xynode.parentId)) {
-      traverse.push({
-        xynode,
-        parent: null,
-      })
-    }
-  }
+  const traverse: Array<{ xynode: InternalNode; parent: CompoundRect | null }> = [...nodeLookup.values()].flatMap(x =>
+    !x.parentId ? { xynode: x, parent: null } : []
+  )
 
   while (traverse.length > 0) {
     const { xynode, parent } = traverse.shift()!
     const isEditing = editingNodeIds.includes(xynode.id)
 
     // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
-    const shouldTraverse = !isEditing &&
-      (xynode.type === 'compound-element' || xynode.type === 'compound-deployment' || xynode.type === 'view-group')
+    const shouldTraverse = !isEditing
+      && xynode.type !== 'element'
+      && xynode.type !== 'deployment'
       && ancestorsOfDraggingNodes.has(xynode.id)
 
-    const rect = shouldTraverse ? new Compound(xynode, parent) : new Leaf(xynode, parent)
-    rects.set(xynode.id, rect)
-
     if (shouldTraverse) {
+      const rect = new CompoundRect(xynode, parent)
+      rects.set(xynode.id, rect)
       parentLookup.get(xynode.id)?.forEach(child => {
         traverse.push({
           xynode: child,
-          parent: rect as Compound,
+          parent: rect as CompoundRect,
         })
       })
+    } else {
+      rects.set(xynode.id, new Leaf(xynode, parent))
     }
   }
 
@@ -166,28 +157,32 @@ export function createLayoutConstraints(
   applyConstraints(rectsToUpdate)
 
   function applyConstraints(targets: Rect[]) {
-    targets
-      .filter(x => x instanceof Compound)
-      .forEach((r) => {
-        applyConstraints(r.children)
+    for (const r of targets) {
+      if (!(r instanceof CompoundRect)) {
+        continue
+      }
 
-        const childrenBB = r.children.reduce((acc, r) => ({
-          minX: Math.min(acc.minX, r.minX),
-          minY: Math.min(acc.minY, r.minY),
-          maxX: Math.max(acc.maxX, r.maxX),
-          maxY: Math.max(acc.maxY, r.maxY),
-        }), {
-          minX: Infinity,
-          minY: Infinity,
-          maxX: -Infinity,
-          maxY: -Infinity,
-        })
+      applyConstraints(r.children)
 
-        r.minX = childrenBB.minX - Rect.LeftPadding
-        r.minY = childrenBB.minY - Rect.TopPadding
-        r.maxX = childrenBB.maxX + Rect.RightPadding
-        r.maxY = childrenBB.maxY + Rect.BottomPadding
-      })
+      const childrenBB = {
+        minX: Infinity,
+        minY: Infinity,
+        maxX: -Infinity,
+        maxY: -Infinity,
+      }
+
+      for (const child of r.children) {
+        childrenBB.minX = Math.min(childrenBB.minX, child.minX)
+        childrenBB.minY = Math.min(childrenBB.minY, child.minY)
+        childrenBB.maxX = Math.max(childrenBB.maxX, child.maxX)
+        childrenBB.maxY = Math.max(childrenBB.maxY, child.maxY)
+      }
+
+      r.minX = childrenBB.minX - Rect.LeftPadding
+      r.minY = childrenBB.minY - Rect.TopPadding
+      r.maxX = childrenBB.maxX + Rect.RightPadding
+      r.maxY = childrenBB.maxY + Rect.BottomPadding
+    }
   }
 
   function updateXYFlowNodes() {
@@ -201,7 +196,7 @@ export function createLayoutConstraints(
           position: r.position,
           positionAbsolute: r.positionAbsolute,
         })
-        if (r instanceof Compound) {
+        if (r instanceof CompoundRect) {
           acc.push({
             id: r.id,
             type: 'dimensions',
@@ -216,24 +211,18 @@ export function createLayoutConstraints(
 
   let animationFrameId: number | null = null
 
-  function onMove(
-    updater: NodePositionUpdater,
-  ) {
+  function onMove() {
     if (rectsToUpdate.length === 0) {
       return
     }
     animationFrameId ??= requestAnimationFrame(() => {
       animationFrameId = null
-      updater(
-        pipe(
-          editingNodeIds,
-          filter(id => rects.has(id) && nodeLookup.has(id)),
-          map(id => ({
-            rect: nonNullable(rects.get(id)),
-            node: nonNullable(nodeLookup.get(id)),
-          })),
-        ),
-      )
+      const { nodeLookup } = xyflowApi.getState()
+      for (const id of editingNodeIds) {
+        const rect = nonNullable(rects.get(id))
+        const node = nonNullable(nodeLookup.get(id))
+        rect.positionAbsolute = node.internals.positionAbsolute
+      }
       updateXYFlowNodes()
     })
   }
@@ -256,32 +245,37 @@ export function useLayoutConstraints(): LayoutConstraints {
   const xystore = useXYStoreApi()
   const diagram = useDiagram()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>(undefined)
-  return useMemo((): LayoutConstraints => ({
-    onNodeDragStart: (_event, xynode) => {
-      diagram.cancelSaveManualLayout()
-      const { nodeLookup } = xystore.getState()
-      const draggingNodes = pipe(
-        Array.from(nodeLookup.values()),
-        filter(n => n.dragging === true || n.id === xynode.id || n.selected === true),
-        filter(n => n.draggable !== false),
-        map(x => x.id),
-      )
-      if (hasAtLeast(draggingNodes, 1)) {
-        solverRef.current = createLayoutConstraints(xystore, draggingNodes)
-      }
-    },
-    onNodeDrag: () => {
-      solverRef.current?.onMove((nodes) => {
-        nodes.forEach(({ rect, node }) => {
-          rect.positionAbsolute = node.internals.positionAbsolute
-        })
-      })
-    },
-    onNodeDragStop: () => {
-      solverRef.current?.updateXYFlowNodes()
-      diagram.scheduleSaveManualLayout()
-      // diagramApi.getState().scheduleSaveManualLayout()
-      solverRef.current = undefined
-    },
-  }), [xystore, diagram])
+  return useMemo((): LayoutConstraints => {
+    let wasPending = false
+    const initial = { x: 0, y: 0 }
+    let moved = false
+    return ({
+      onNodeDragStart: (_event, xynode) => {
+        wasPending = diagram.cancelSaveManualLayout()
+        const { nodeLookup } = xystore.getState()
+        const draggingNodes = pipe(
+          Array.from(nodeLookup.values()),
+          filter(n => n.draggable !== false && (n.dragging === true || n.id === xynode.id || n.selected === true)),
+        )
+        if (hasAtLeast(draggingNodes, 1)) {
+          solverRef.current = createLayoutConstraints(xystore, map(draggingNodes, x => x.id))
+        }
+        initial.x = _event.clientX
+        initial.y = _event.clientY
+        moved = false
+      },
+      onNodeDrag: (_event) => {
+        moved = Math.abs(_event.clientX - initial.x) > 4 || Math.abs(_event.clientY - initial.y) > 4
+        solverRef.current?.onMove()
+      },
+      onNodeDragStop: (_event) => {
+        moved = Math.abs(_event.clientX - initial.x) > 4 || Math.abs(_event.clientY - initial.y) > 4
+        console.log('moved', moved)
+        if (wasPending || moved) {
+          diagram.scheduleSaveManualLayout()
+        }
+        solverRef.current = undefined
+      },
+    })
+  }, [xystore, diagram])
 }

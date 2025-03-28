@@ -132,7 +132,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         return
       }
       // This update stays only in internal xystate, not in diagram xstate
-      xyflow.updateEdgeData(id, {
+      diagram.updateEdgeData(id as EdgeId, {
         labelXY: {
           x: labelPos.x,
           y: labelPos.y,
@@ -169,15 +169,13 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         hasMoved = true
         pointer = clientPoint
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
-        xyflow.updateEdgeData(id, xyedge => {
-          const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
-          cp[index] = {
-            x: Math.round(x),
-            y: Math.round(y),
-          }
-          return {
-            controlPoints: cp,
-          }
+        const cp = controlPoints.slice()
+        cp[index] = {
+          x: Math.round(x),
+          y: Math.round(y),
+        }
+        diagram.updateEdgeData(id as EdgeId, {
+          controlPoints: cp,
         })
       }
       e.stopPropagation()
@@ -216,14 +214,9 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       e.stopPropagation()
       // Defer the update to avoid conflict with the pointerup event
       setTimeout(() => {
-        xyflow.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
+        diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
         diagram.scheduleSaveManualLayout()
       }, 10)
-
-      domNode.removeEventListener('pointerup', onPointerUp, {
-        capture: true,
-      })
-      e.stopPropagation()
     }
 
     domNode.addEventListener('pointerup', onPointerUp, {
@@ -259,42 +252,40 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     if (e.button !== 2) {
       return
     }
+    const points: VectorImpl[] = [
+      new VectorImpl(sourceX, sourceY),
+      ...controlPoints.map(vector) || [],
+      new VectorImpl(targetX, targetY),
+    ]
 
-    xyflow.updateEdgeData(id, edge => {
-      const points: VectorImpl[] = [
-        new VectorImpl(sourceX, sourceY),
-        ...controlPoints.map(vector) || [],
-        new VectorImpl(targetX, targetY),
-      ]
+    let pointer = { x: e.clientX, y: e.clientY }
+    const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
 
-      let pointer = { x: e.clientX, y: e.clientY }
-      const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
+    let insertionIndex = 0
+    let minDistance = Infinity
+    for (let i = 0; i < points.length - 1; i++) {
+      const a = points[i]!,
+        b = points[i + 1]!,
+        fromCurrentToNext = b.sub(a),
+        fromCurrentToNew = newPoint.sub(a),
+        fromNextToNew = newPoint.sub(b)
 
-      let insertionIndex = 0
-      let minDistance = Infinity
-      for (let i = 0; i < points.length - 1; i++) {
-        const a = points[i]!, b = points[i + 1]!
-        const fromCurrentToNext = b.sub(a)
-        const fromCurrentToNew = newPoint.sub(a)
-        const fromNextToNew = newPoint.sub(b)
+      // Is pointer above the current segment?
+      if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
+        // Calculate distance by approximating edge segment with a staight line
+        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
 
-        // Is pointer above the current segment?
-        if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
-          // Calculate distance by approximating edge segment with a staight line
-          const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
-
-          if (distanceToEdge < minDistance) {
-            minDistance = distanceToEdge
-            insertionIndex = i
-          }
+        if (distanceToEdge < minDistance) {
+          minDistance = distanceToEdge
+          insertionIndex = i
         }
       }
+    }
 
-      const newControlPoints = edge.data.controlPoints?.slice() || []
-      newControlPoints.splice(insertionIndex, 0, newPoint)
+    const newControlPoints = controlPoints.slice() || []
+    newControlPoints.splice(insertionIndex, 0, newPoint)
 
-      return { controlPoints: newControlPoints }
-    })
+    diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
 
     diagram.scheduleSaveManualLayout()
 
@@ -357,7 +348,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         </EdgeLabelContainer>
       </EdgeContainer>
       {/* Render control points above edge label  */}
-      {enableEdgeEditing && controlPoints.length > 0 && (
+      {enableEdgeEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (
         <EdgeLabelRenderer>
           <EdgeContainer
             component="svg"

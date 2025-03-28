@@ -1,4 +1,5 @@
-import type { ViewId } from '@likec4/core'
+import type { ViewId, WhereOperator } from '@likec4/core'
+import { useDeepCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -8,17 +9,30 @@ import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorSafeContext } from '../hooks/safeContext'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import type { Types } from '../likec4diagram/types'
+import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
 import { type Input, diagramMachine } from './diagram-machine'
+import { inspector } from './inspector'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
-type ActorContextInput = Omit<Input, 'xystore' | 'features'>
-export function DiagramActorProvider({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
+const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
+type ActorContextInput = Omit<Input, 'xystore' | 'xynodes' | 'xyedges'>
+export function DiagramActorProvider({
+  input: {
+    view,
+    ...inputs
+  },
+  where,
+  children,
+}: PropsWithChildren<{
+  input: ActorContextInput
+  where?: WhereOperator<string, string> | undefined
+}>) {
   const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const logic = useMemo(() => {
-    return diagramMachine.provide({
+  const actorRef = useActorRef(
+    diagramMachine.provide({
       actions: {
         'trigger:NavigateTo': ((_, { viewId }) => {
           handlersRef.current.onNavigateTo?.(viewId as ViewId)
@@ -36,73 +50,51 @@ export function DiagramActorProvider({ input, children }: PropsWithChildren<{ in
         syncManualLayoutActorLogic: syncManualLayoutActorLogic.provide({
           actions: {
             'trigger:OnChange': ((_, params) => {
+              console.log('trigger:OnChange', params)
               handlersRef.current.onChange?.(params)
             }),
           },
         }),
       },
-    })
-  }, [handlersRef])
-
-  const actorRef = useActorRef(
-    logic,
+    }),
     {
-      id: `diagram:${input.view.id}`,
+      id: `diagram:${view.id}`,
       systemId: 'diagram',
-      // ...inspector,
+      ...inspector,
       input: {
         xystore,
-        ...input,
+        view,
+        ...inputs,
       },
     },
   )
 
-  return (
-    <DiagramActorSafeContext value={actorRef}>
-      <SyncStore input={input} actorRef={actorRef} />
-      <DiagramActorToggledFeatures actorRef={actorRef}>
-        {children}
-      </DiagramActorToggledFeatures>
-    </DiagramActorSafeContext>
-  )
-}
-
-const SyncStore = (
-  { input: { view, xyedges, xynodes, ...inputs }, actorRef }: { input: ActorContextInput; actorRef: DiagramActorRef },
-) => {
   const features = useEnabledFeatures()
   useUpdateEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs })
-  }, [actorRef, inputs])
+  }, [inputs])
 
   useEffect(() => {
     actorRef.send({ type: 'update.features', features })
-  }, [actorRef, features])
+  }, [features])
 
-  const frameReq = useRef<number>(null)
+  const { xyedges, xynodes } = useViewToNodesEdges({
+    view,
+    where,
+    nodesSelectable: inputs.nodesSelectable,
+  })
 
-  useUpdateEffect(() => {
-    frameReq.current = requestAnimationFrame(() => {
-      frameReq.current = null
-      actorRef.send({ type: 'update.view', view, xyedges, xynodes })
-    })
-    return () => {
-      if (frameReq.current != null) {
-        cancelAnimationFrame(frameReq.current)
-      }
-      frameReq.current = null
-    }
-  }, [actorRef, view, xyedges, xynodes])
+  useDeepCompareEffect(() => {
+    actorRef.send({ type: 'update.view', view, xyedges, xynodes })
+  }, [view, xyedges, xynodes])
 
-  return null
-}
-
-const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
-function DiagramActorToggledFeatures({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
   const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
+
   return (
-    <DiagramFeatures overrides={toggledFeatures}>
-      {children}
-    </DiagramFeatures>
+    <DiagramActorSafeContext value={actorRef}>
+      <DiagramFeatures overrides={toggledFeatures}>
+        {children}
+      </DiagramFeatures>
+    </DiagramActorSafeContext>
   )
 }

@@ -147,8 +147,8 @@ export function LikeC4Diagram({
                         view,
                         pannable,
                         zoomable,
+                        nodesSelectable,
                         fitViewPadding,
-                        ...xyNodesEdges,
                       }}>
                       <ControlsCustomLayoutProvider value={renderControls ?? null}>
                         <LikeC4DiagramXYFlow

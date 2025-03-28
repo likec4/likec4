@@ -79,7 +79,7 @@ export function CompoundNodeContainer({
         'data-compound-title-inverse': opacity < 0.5,
       }}
       {...isDimmed !== false && {
-        'likec4-dimmed': isDimmed,
+        'data-likec4-dimmed': isDimmed,
       }}
       style={{
         ...style,

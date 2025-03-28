@@ -12,6 +12,7 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  pointerEvents: 'none',
   _after: {
     content: '" "',
     position: 'absolute',

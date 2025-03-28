@@ -61,9 +61,9 @@ export const SelectElement = memo(() => {
   }, [subjectId])
 
   return (
-    <Group ref={root} gap={'xs'} wrap={'nowrap'} pos={'relative'}>
+    <Group ref={root} gap={'xs'} pos={'relative'}>
       {enableSelectSubject && (
-        <>
+        <Group gap={4} wrap="nowrap">
           <Box
             fz={'xs'}
             fw={'500'}
@@ -159,10 +159,10 @@ export const SelectElement = memo(() => {
               </PopoverDropdown>
             </Popover>
           </Box>
-        </>
+        </Group>
       )}
       {enableChangeScope && (
-        <>
+        <Group gap={4} wrap="nowrap">
           {/* Show if only "select" is enabled  */}
           {enableSelectSubject && (
             <Box
@@ -220,7 +220,7 @@ export const SelectElement = memo(() => {
               />
             </Tooltip>
           </div>
-        </>
+        </Group>
       )}
     </Group>
   )

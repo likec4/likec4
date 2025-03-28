@@ -80,21 +80,25 @@ export interface NavigationHistory {
 
 export interface Input {
   view: DiagramView
-  xynodes: Types.Node[]
-  xyedges: Types.Edge[]
   xystore: XYStoreApi
   zoomable: boolean
   pannable: boolean
   fitViewPadding: number
+  nodesSelectable: boolean
 }
 
 type ToggledFeatures = Partial<EnabledFeatures>
 
 export interface Context extends Input {
+  xynodes: Types.Node[]
+  xyedges: Types.Edge[]
   features: EnabledFeatures
   // This is used to override features from props
   toggledFeatures: ToggledFeatures
-  initialized: boolean
+  initialized: {
+    xydata: boolean
+    xyflow: boolean
+  }
   viewport: Viewport
   viewportChangedManually: boolean
   lastOnNavigate: null | {
@@ -120,7 +124,7 @@ export interface Context extends Input {
   viewportBeforeFocus: null | Viewport
   xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
 
-  syncLayoutActorRef: ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
+  syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
   // If Dynamic View
   activeWalkthrough: null | {
@@ -147,7 +151,7 @@ export type Events =
   | { type: 'update.nodeData'; nodeId: NodeId; data: Partial<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: Partial<Types.Edge['data']> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view'>> }
+  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | ({ type: 'open.source' } & OpenSourceParams)
@@ -188,6 +192,7 @@ export const diagramMachine = setup({
     overlaysActorLogic,
   },
   guards: {
+    'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
@@ -378,9 +383,16 @@ export const diagramMachine = setup({
       },
     ),
 
+    'startSyncLayout': assign(({ context, spawn, self }) => ({
+      syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
+        id: 'syncLayout',
+        input: { parent: self, viewId: context.view.id },
+      }),
+    })),
+
     'stopSyncLayout': enqueueActions(({ context, enqueue }) => {
-      enqueue.sendTo(context.syncLayoutActorRef, { type: 'stop' })
-      enqueue.stopChild(context.syncLayoutActorRef)
+      enqueue.sendTo(context.syncLayoutActorRef!, { type: 'stop' })
+      enqueue.stopChild(context.syncLayoutActorRef!)
       enqueue.assign({
         syncLayoutActorRef: null as any,
       })
@@ -431,11 +443,16 @@ export const diagramMachine = setup({
   initial: 'initializing',
   context: ({ input, self, spawn }) => ({
     ...input,
+    xyedges: [],
+    xynodes: [],
     features: { ...AllDisabled },
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
     },
-    initialized: false,
+    initialized: {
+      xydata: false,
+      xyflow: false,
+    },
     viewportChangedManually: false,
     lastOnNavigate: null,
     lastClickedNode: null,
@@ -448,10 +465,7 @@ export const diagramMachine = setup({
     },
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
-    syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
-      id: 'syncLayout',
-      input: { parent: self, viewId: input.view.id },
-    }),
+    syncLayoutActorRef: null,
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
@@ -459,31 +473,53 @@ export const diagramMachine = setup({
     initializing: {
       on: {
         'xyflow.init': {
-          actions: [
-            assign(({ context, event }) => ({
-              initialized: true,
-              xyflow: event.instance,
-              navigationHistory: {
-                currentIndex: 0,
-                history: [{
-                  viewId: context.view.id,
-                  fromNode: null,
-                  viewport: { ...event.instance.getViewport() },
-                }],
-              },
-            })),
-            enqueueActions(({ enqueue, check }) => {
-              if (check('enabled: FitView')) {
-                enqueue({
-                  type: 'xyflow:fitDiagram',
-                  params: { duration: 0 },
-                })
-              }
-            }),
-          ],
-          target: 'ready',
+          actions: assign(({ context, event }) => ({
+            initialized: {
+              ...context.initialized,
+              xyflow: true,
+            },
+            xyflow: event.instance,
+          })),
+          target: 'isReady',
+        },
+        'update.view': {
+          actions: assign(({ context, event, spawn, self }) => ({
+            initialized: {
+              ...context.initialized,
+              xydata: true,
+            },
+            view: event.view,
+            xynodes: event.xynodes,
+            xyedges: event.xyedges,
+          })),
+          target: 'isReady',
         },
       },
+    },
+    'isReady': {
+      always: [{
+        guard: 'isReady',
+        actions: [
+          {
+            type: 'xyflow:fitDiagram',
+            params: { duration: 0 },
+          },
+          'startSyncLayout',
+          assign(({ context }) => ({
+            navigationHistory: {
+              currentIndex: 0,
+              history: [{
+                viewId: context.view.id,
+                fromNode: null,
+                viewport: { ...context.xyflow!.getViewport() },
+              }],
+            },
+          })),
+        ],
+        target: 'ready',
+      }, {
+        target: 'initializing',
+      }],
     },
     ready: {
       initial: 'idle',
@@ -630,7 +666,7 @@ export const diagramMachine = setup({
         },
         'saveManualLayout.*': {
           guard: 'not readonly',
-          actions: sendTo((c) => c.context.syncLayoutActorRef, ({ event }) => {
+          actions: sendTo((c) => c.context.syncLayoutActorRef!, ({ event }) => {
             if (event.type === 'saveManualLayout.schedule') {
               return { type: 'sync' }
             }
@@ -849,15 +885,6 @@ export const diagramMachine = setup({
           }),
         },
       ],
-      exit: assign({
-        syncLayoutActorRef: ({ self, context, spawn }) =>
-          spawn('syncManualLayoutActorLogic', {
-            id: 'syncLayout',
-            systemId: 'syncLayout',
-            input: { parent: self, viewId: context.view.id },
-          }),
-        // lastOnNavigate: null,
-      }),
       on: {
         'update.view': {
           actions: enqueueActions(({ enqueue, context, event }) => {
@@ -882,10 +909,11 @@ export const diagramMachine = setup({
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
             enqueue.assign(updateNavigationHistory)
-            enqueue.assign(mergeXYNodesEdges)
             enqueue.assign({
+              ...mergeXYNodesEdges({ context, event }),
               lastOnNavigate: null,
             })
+            enqueue('startSyncLayout')
           }),
           target: '#idle',
         },
@@ -928,17 +956,10 @@ export const diagramMachine = setup({
         enqueueActions(({ enqueue, event, check, context }) => {
           const isAnotherView = check('is another view')
           if (isAnotherView) {
-            const viewId = event.view.id
-
             enqueue('closeAllOverlays')
             enqueue('stopSyncLayout')
             enqueue.assign({
               focusedNode: null,
-              syncLayoutActorRef: ({ self, spawn }) =>
-                spawn('syncManualLayoutActorLogic', {
-                  id: 'syncLayout',
-                  input: { parent: self, viewId },
-                }),
             })
             const { fromNode, toNode } = findCorrespondingNode(context, event)
             if (fromNode && toNode) {
@@ -960,16 +981,19 @@ export const diagramMachine = setup({
               })
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
+          }
+          enqueue.assign({
+            ...mergeXYNodesEdges({ context, event }),
+            lastOnNavigate: null,
+          })
+          if (isAnotherView) {
+            enqueue('startSyncLayout')
           } else {
-            enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'synced' })
+            enqueue.sendTo(c => c.context.syncLayoutActorRef!, { type: 'synced' })
             if (!context.viewportChangedManually) {
               enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
             }
           }
-          enqueue.assign(mergeXYNodesEdges)
-          enqueue.assign({
-            lastOnNavigate: null,
-          })
         }),
       ],
     },
@@ -987,7 +1011,12 @@ export const diagramMachine = setup({
     assign({
       xyflow: null,
       xystore: null as any,
-      initialized: false,
+      xyedges: [],
+      xynodes: [],
+      initialized: {
+        xydata: false,
+        xyflow: false,
+      },
       syncLayoutActorRef: null as any,
     }),
   ],
