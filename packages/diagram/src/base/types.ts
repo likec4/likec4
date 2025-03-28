@@ -167,8 +167,3 @@ export namespace Base {
     return (edge: E) => _setData(edge, arg1 as Partial<EdgeData>)
   }
 }
-
-// import type { ThemeColor } from '@likec4/core'
-// import type { ColorPalette as AllColorPalette } from '@likec4/styles/tokens'
-
-// export type ColorPalette = Extract<AllColorPalette, `likec4.${ThemeColor}` | `likec4.compound${number}.${ThemeColor}`>
