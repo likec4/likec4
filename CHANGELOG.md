@@ -1,3 +1,12 @@
+## [1.27.1](https://github.com/likec4/likec4/compare/v1.27.0...v1.27.1) (2025-03-28)
+
+### Bug Fixes
+
+* react component links error ([#1771](https://github.com/likec4/likec4/issues/1771)), closes [#1728](https://github.com/likec4/likec4/issues/1728)
+* relationships not rendered correctly when exporting to PNG ([477cf99](https://github.com/likec4/likec4/commit/477cf992783c99d906ed182d7a3f6a6e88b12907))
+* layout editor fails on edge changes ([949fd4c](https://github.com/likec4/likec4/commit/949fd4cd8904cf25f3e11e8cf49f2ef7ec9d151a))
+
+
 # [1.27.0](https://github.com/likec4/likec4/compare/v1.26.2...v1.27.0) (2025-03-27)
 
 ### Features
