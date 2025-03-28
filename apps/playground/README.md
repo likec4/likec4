@@ -7,12 +7,11 @@ For local development, you just use `pnpm dev`.
 
 ## Local Development
 
-Playground uses pandacss for styling, while [packages/diagram](../../packages/diagram) uses vanilla-extract (will be replaced with pandacss in the future).  
-When you run `pnpm dev` in the playground, it will also run `pnpm build:watch` in the diagram package.
-This means - if you change something in the diagram package, it will be rebuilt and the playground will pick up the changes and hot reload.
+Playground uses pandacss for styling. You need to pregenerate:  
 
-> [!NOTE]
-> vanilla-extract did not work well with bundling monaco-editor, so we switched to pandacss in the playground. 
+```sh
+pnpx turbo run generate
+```
 
 The rest of the packages are not needed to be built upfront, as `sources` condition is used.
 

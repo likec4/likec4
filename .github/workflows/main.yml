@@ -35,7 +35,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ generate
-        run: pnpm ci:generate
+        run: pnpm generate
 
       - name: ʦ typecheck
         run: pnpm ci:typecheck

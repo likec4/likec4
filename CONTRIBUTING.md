@@ -15,7 +15,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 - Decide on what you want to contribute.
 - If you would like to implement a new feature, discuss it with the maintainers ([GitHub Discussions](https://github.com/likec4/likec4/discussions/new) or [Discord](https://discord.gg/86ZSpjKAdA)) before jumping into coding.
 - After finalizing issue details, you can begin working on the code.
-- Run tests with `yarn test` and submit a PR once all tests have passed.
+- Run tests with `pnpm test` and submit a PR once all tests have passed.
 - Get a code review and fix all issues noticed by the maintainer.
 - If you cannot finish your task or if you change your mind – that's totally fine! Just let us know in the GitHub issue that you created during the first step of this process. Our community is friendly – we won't judge or ask any questions if you decide to cancel your submission.
 - Your PR is merged. You are awesome ❤️!
@@ -24,7 +24,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 
 1. Fork the [repository](https://github.com/likec4/likec4), then clone or download your fork.
 
-2. Ensure you have all required [tools](./.tool-versions)  
+2. Ensure you have all required [tools](./.tool-versions)\
    Install manually or use [asdf](https://asdf-vm.com/):
    ```sh
    asdf install
@@ -32,7 +32,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 
 3. Install dependencies with pnpm – `pnpm install`
 
-4. Generate sources by running build in root:
+4. Pre-generate sources by running `build` (or `generate`) in root:
    ```sh
    pnpm build
    ```
@@ -49,6 +49,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 ### E2E
 
 `/e2e` contains isolated workspace. Test steps are:
+
 - pack `likec4` to tarball
 - install this tarball in isolated wokspace
 - generate spec files from model (using LikeC4Model)
@@ -73,36 +74,41 @@ This repository's contents are:
 ### Packages
 
 #### CLI (`/packages/likec4`)
+
 - **Purpose**: Command-line interface and integration point, main entry point for the tool.
 - **Technology**: Uses [yargs](https://yargs.js.org/)
 
 #### Core (`/packages/core`)
+
 - **Technology**: Pure TypeScript, no frameworks. Heavy use of [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) and [remeda](https://remedajs.com/)
 - **Purpose**: Core type definitions and domain model. `compute-view` contains logic for computing diagram views
 - **Suggestions**: A great way to start contributing is by adding more tests for compute-view. This will help you understand how it works while also benefiting the project. There are also open questions from @pavelpykhtin, who has made significant contributions.
 
 #### Diagrams (`/packages/diagram`)
+
 - **Purpose**: Renders the actual diagrams
 - **Technology**: Uses [React](https://react.dev/), [ReactFlow](https://reactflow.dev/), [XState](https://xstate.js.org/)
 
 #### Language Server (`/packages/language-server`)
+
 - **Purpose**: Parses DSL, builds models, and computes views
 - **Technology**: Built with [Langium](https://langium.org/)
 
 #### Layouts (`/packages/layouts`)
+
 - **Purpose**: Transforms computed views into visual graph layouts
 - **Technology**: Uses [Graphviz](https://graphviz.org/) for layout algorithms
 
 #### VSCode Extension (`/packages/vscode`)
+
 - **Purpose**: Integrates LikeC4 into Visual Studio Code.
 - **Technology**: Uses [reactive-vscode](https://github.com/KermanX/reactive-vscode) and follows [VS Code extension patterns](https://vscode-docs.readthedocs.io/en/stable/extensions/patterns-and-principles/).
 
-
 #### Additional Packages
+
 - `create-likec4`: Scaffolding tool for new projects
 - `generators`: Converts LikeC4 to other formats
 - `icons`: Pre-bundled icon sets
 - `log`: Common logger implementation
 - `tsconfig`: TypeScript configuration
 - `vscode-preview`: Preview panel component for VS Code extension
-

@@ -20,10 +20,8 @@
         "CLOUDFLARE_ENV"
       ],
       "dependsOn": [
-        "^generate",
         "generate",
-        "topo",
-        "@likec4/core#build"
+        "^build"
       ],
       "outputs": [
         "dist/**"
