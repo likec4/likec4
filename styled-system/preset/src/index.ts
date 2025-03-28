@@ -81,9 +81,13 @@ export default definePreset({
       transitionDuration: '800ms',
       transitionDelay: '200ms',
     },
-    [`[data-mantine-color-scheme="dark"] ${rootNotReduced}:not([data-likec4-diagram-panning]) :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
+    [`[data-mantine-color-scheme="dark"] ${rootNotReduced} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
       {
         mixBlendMode: 'plus-lighter',
+      },
+    [`[data-mantine-color-scheme="light"] ${rootNotReduced} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
+      {
+        mixBlendMode: 'screen',
       },
     ...globalCss,
   },

@@ -228,6 +228,7 @@ export function createLayoutConstraints(
   }
 
   return {
+    rects: rects as ReadonlyMap<string, Leaf | CompoundRect>,
     updateXYFlowNodes,
     onMove,
   }

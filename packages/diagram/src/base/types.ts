@@ -111,7 +111,7 @@ export namespace Base {
   type WithHovered = { data: { hovered?: boolean } }
 
   const _setDimmed = <T extends WithDimmed>(v: T, dimmed: Dimmed): T =>
-    v.data.dimmed === dimmed ? v : ({
+    (v.data.dimmed ?? false) === dimmed ? v : ({
       ...v,
       data: {
         ...v.data,
@@ -129,7 +129,7 @@ export namespace Base {
   }
 
   const _setHovered = <T extends WithHovered>(v: T, hovered: boolean): T =>
-    v.data.hovered === hovered ? v : ({
+    (v.data.hovered ?? false) === hovered ? v : ({
       ...v,
       data: {
         ...v.data,

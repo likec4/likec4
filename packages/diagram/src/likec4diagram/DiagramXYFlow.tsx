@@ -6,7 +6,7 @@ import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { usePanningAtom } from '../context/ReduceGraphics'
+import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
@@ -87,24 +87,27 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   } = useDiagramEventHandlers()
 
   const notReadOnly = !enableReadOnly,
+    isReducedGraphics = useIsReducedGraphics(),
     layoutConstraints = useLayoutConstraints(),
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
       if (!$isPanning.get()) {
         $isPanning.set(true)
       }
-    }, 120),
+    }, isReducedGraphics ? 150 : 350),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       if ($isPanning.get()) {
         $isPanning.set(false)
       }
-    }, 100),
+    }, 120),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
         return
       }
-      isPanning.start()
+      if (!$isPanning.get()) {
+        isPanning.start()
+      }
       notPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {

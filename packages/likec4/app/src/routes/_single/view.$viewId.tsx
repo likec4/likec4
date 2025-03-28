@@ -10,6 +10,9 @@ import { useCurrentDiagram } from '../../hooks'
 
 export const Route = createFileRoute('/_single/view/$viewId')({
   component: ViewLayout,
+  errorComponent: ({ error, reset }) => {
+    return <Fallback error={error} resetErrorBoundary={reset} />
+  },
 })
 
 function Fallback({ error, resetErrorBoundary }: FallbackProps) {

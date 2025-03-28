@@ -3,7 +3,7 @@ import { useDeepCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import { type PropsWithChildren, useEffect } from 'react'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorSafeContext } from '../hooks/safeContext'
@@ -11,9 +11,8 @@ import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
 import { type Input, diagramMachine } from './diagram-machine'
-import { inspector } from './inspector'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import type { DiagramActorRef, DiagramActorSnapshot } from './types'
+import type { DiagramActorSnapshot } from './types'
 
 const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
 type ActorContextInput = Omit<Input, 'xystore' | 'xynodes' | 'xyedges'>
@@ -50,7 +49,6 @@ export function DiagramActorProvider({
         syncManualLayoutActorLogic: syncManualLayoutActorLogic.provide({
           actions: {
             'trigger:OnChange': ((_, params) => {
-              console.log('trigger:OnChange', params)
               handlersRef.current.onChange?.(params)
             }),
           },
@@ -60,7 +58,7 @@ export function DiagramActorProvider({
     {
       id: `diagram:${view.id}`,
       systemId: 'diagram',
-      ...inspector,
+      // ...inspector,
       input: {
         xystore,
         view,

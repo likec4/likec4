@@ -23,14 +23,14 @@ function RouteComponent() {
   const { $likec4data, IconRenderer } = Route.useLoaderData()
 
   return (
-    <LikeC4ModelContext likec4data={$likec4data}>
-      <Box className={css.cssViewOutlet}>
-        <ErrorBoundary FallbackComponent={Fallback}>
+    <Box className={css.cssViewOutlet}>
+      <ErrorBoundary FallbackComponent={Fallback}>
+        <LikeC4ModelContext likec4data={$likec4data}>
           <IconRendererProvider value={IconRenderer}>
             <Outlet />
           </IconRendererProvider>
-        </ErrorBoundary>
-      </Box>
-    </LikeC4ModelContext>
+        </LikeC4ModelContext>
+      </ErrorBoundary>
+    </Box>
   )
 }

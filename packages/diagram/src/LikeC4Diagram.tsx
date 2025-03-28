@@ -70,12 +70,6 @@ export function LikeC4Diagram({
     initialHeight: number
   }>(null)
 
-  const xyNodesEdges = useViewToNodesEdges({
-    view,
-    where,
-    nodesSelectable,
-  })
-
   const isDynamicView = view.__ === 'dynamic'
 
   if (initialRef.current == null) {

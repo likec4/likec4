@@ -50,7 +50,7 @@ export const edgeLabelContainer = css({
 
   _noReduceGraphics: {
     mixBlendMode: {
-      base: 'plus-lighter',
+      _dark: 'plus-lighter',
       _light: 'screen',
     },
   },
@@ -60,9 +60,6 @@ export const edgeLabelContainer = css({
   },
   _reduceGraphicsOnPan: {
     display: 'none',
-  },
-  _whenPanning: {
-    mixBlendMode: 'normal',
   },
 })
 

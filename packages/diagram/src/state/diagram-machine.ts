@@ -339,19 +339,21 @@ export const diagramMachine = setup({
         return
       }
       const constraints = createLayoutConstraints(xystore, nodesToAlign)
-
       const aligner = getAligner(mode)
 
-      constraints.onMove(nodes => {
-        aligner.computeLayout(nodes.map(({ node }) => toNodeRect(node)))
+      const nodes = nodesToAlign.map(id => ({
+        node: nonNullable(nodeLookup.get(id)),
+        rect: nonNullable(constraints.rects.get(id)),
+      }))
+      aligner.computeLayout(nodes.map(({ node }) => toNodeRect(node)))
 
-        nodes.forEach(({ rect, node }) => {
-          rect.positionAbsolute = {
-            ...rect.positionAbsolute,
-            ...aligner.applyPosition(toNodeRect(node)),
-          }
-        })
-      })
+      for (const { rect, node } of nodes) {
+        rect.positionAbsolute = {
+          ...rect.positionAbsolute,
+          ...aligner.applyPosition(toNodeRect(node)),
+        }
+      }
+      constraints.updateXYFlowNodes()
     },
 
     'updateFeatures': enqueueActions(({ enqueue, system, event }) => {

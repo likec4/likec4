@@ -92,9 +92,6 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
             'react-flow__edge-path',
             'react-flow__edge-interaction',
             cssEdgePath,
-            // css({
-            //   strokeDasharray: strokeDasharray,
-            // }),
           )}
           d={svgPath}
           style={style}

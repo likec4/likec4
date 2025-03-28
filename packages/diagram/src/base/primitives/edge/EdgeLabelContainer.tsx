@@ -32,7 +32,7 @@ type EdgeLabelContainerProps = HTMLAttributes<HTMLDivElement> & {
 
 const toCssVarValue = (value: number | string | undefined) => {
   if (value === undefined) return undefined
-  return isNumber(value) ? `${value}px` : value
+  return isNumber(value) ? `${Math.round(value)}px` : value
 }
 
 export function EdgeLabelContainer({
