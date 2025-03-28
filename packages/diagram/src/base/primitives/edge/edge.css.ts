@@ -44,6 +44,7 @@ const _hideOnReducedGraphics = css.raw({
 export const hideOnReducedGraphics = css(_hideOnReducedGraphics)
 
 export const edgePathBg = css(_hideOnReducedGraphics, {
+  fill: '[none]',
   strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
   strokeOpacity: 0.08,
   transitionProperty: 'stroke-width, stroke-opacity',
@@ -70,6 +71,7 @@ export const markerContext = css({
 })
 
 export const cssEdgePath = css({
+  fill: '[none]',
   strokeDashoffset: 10,
   _noReduceGraphics: {
     transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
