@@ -41,7 +41,7 @@ catalogs:
     clsx: "^2.1.1"
     nanostores: "0.11.4"
     "@nanostores/react": "0.8.4"
-    framer-motion: "^12.5.0"
+    framer-motion: "^12.6.2"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
