@@ -140,7 +140,7 @@
     "@types/prop-types": "^15.7.14",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.0",
     "@types/yargs": "^17.0.33",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
