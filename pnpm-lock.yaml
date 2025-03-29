@@ -1402,8 +1402,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       reactive-vscode:
-        specifier: ^0.2.13
-        version: 0.2.13(@types/vscode@1.97.0)
+        specifier: ^0.2.14
+        version: 0.2.14(@types/vscode@1.97.0)
       remeda:
         specifier: catalog:utils
         version: 2.21.2
@@ -3078,8 +3078,8 @@ packages:
       js-cookie:
         optional: true
 
-  '@reactive-vscode/reactivity@0.2.13':
-    resolution: {integrity: sha512-2GZlDFYS2dNqAuDiArXEMszcwOUPoybChH7ltGQldqCyeskqtWTYJ54mW477Qc/Rl6NG4N+IeQ1d22nO7uhRAw==}
+  '@reactive-vscode/reactivity@0.2.14':
+    resolution: {integrity: sha512-Rb3+kBX9A55C+4OKqVe4XGWtG7eGWo+E/8n0eSmbpmOEdZq3r5+SNEfEe3U0OdaCMT2r59R6kkK2QVfZpdBKhA==}
 
   '@rollup/plugin-alias@5.1.1':
     resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
@@ -6879,8 +6879,8 @@ packages:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-vscode@0.2.13:
-    resolution: {integrity: sha512-c/7cAUKAmIqUJJHIVY6DAOpwTX18uDx3WgVLA9+iF8JUxCqvbivbH18LSnYxSeBiit9yIyvzdGHnXK7lG8W9yA==}
+  reactive-vscode@0.2.14:
+    resolution: {integrity: sha512-F4HgF9gDwGZJPTglGjxspJNWrYeOMLDyeFSccOMjfB6CWXoQWpw7WrcPb61wuMuNDbHi+5Txn9DIY1GfmV3pGw==}
     peerDependencies:
       '@types/vscode': ^1.89.0
 
@@ -10547,7 +10547,7 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@reactive-vscode/reactivity@0.2.13': {}
+  '@reactive-vscode/reactivity@0.2.14': {}
 
   '@rollup/plugin-alias@5.1.1(rollup@4.37.0)':
     optionalDependencies:
@@ -15080,9 +15080,9 @@ snapshots:
 
   react@19.0.0: {}
 
-  reactive-vscode@0.2.13(@types/vscode@1.97.0):
+  reactive-vscode@0.2.14(@types/vscode@1.97.0):
     dependencies:
-      '@reactive-vscode/reactivity': 0.2.13
+      '@reactive-vscode/reactivity': 0.2.14
       '@types/vscode': 1.97.0
 
   read-package-json-fast@4.0.0:
