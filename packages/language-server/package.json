@@ -144,5 +144,5 @@
     "vscode-languageserver-protocol": "catalog:vscode",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.6.5"
+  "packageManager": "pnpm@10.7.0"
 }
