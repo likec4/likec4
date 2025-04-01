@@ -7,7 +7,7 @@ packages:
 catalog:
   typescript: "^5.8.2"
   wireit: "^0.14.11"
-  wrangler: "4.5.0"
+  wrangler: "4.6.0"
   "@types/node": "^20.17.28"
   unbuild: "^3.5.0"
   turbo: "^2.4.4"
