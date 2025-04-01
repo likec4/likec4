@@ -40,9 +40,7 @@ export function useDiagram() {
       })
     },
     openRelationshipsBrowser: (fqn: Fqn) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipsBrowser', fqn })
-      })
+      actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
     openSource: (params: OpenSourceParams) => {
       actor.send({ type: 'open.source', ...params })
