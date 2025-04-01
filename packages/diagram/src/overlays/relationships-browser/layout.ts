@@ -55,7 +55,7 @@ const Sizes = {
     edgesep: 25,
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 120,
+    width: 140,
     height: 10,
     minlen: 1,
     weight: 1,
@@ -96,19 +96,6 @@ function createGraph() {
   })
   g.setDefaultEdgeLabel(() => ({ ...Sizes.edgeLabel }))
   g.setDefaultNodeLabel(() => ({}))
-
-  // columns.reduce((prev, column) => {
-  //   const c = graphColumn(column)
-  //   g.setNode(c.id, {})
-  //   g.setNode(c.anchor, { width: 40, height: 2 })
-  //   g.setParent(c.anchor, c.id)
-  //   if (prev) {
-  //     g.setEdge(prev, c.anchor, {
-  //       width: 0
-  //     })
-  //   }
-  //   return c.anchor
-  // }, null as string | null)
 
   return g
 }
@@ -212,7 +199,7 @@ export type LayoutRelationshipsViewResult = {
 export namespace LayoutRelationshipsViewResult {
   export const Empty = '@empty' as ElementKind
 
-  export type Node = DiagramNode & {
+  export type Node = Omit<DiagramNode, 'deploymentRef' | 'inEdges' | 'outEdges'> & {
     column: RelationshipsBrowserTypes.Column
     ports: RelationshipsBrowserTypes.Ports
     existsInCurrentView: boolean
@@ -368,7 +355,7 @@ export function layoutRelationshipsView(
     for (const edge of g.edges()) {
       g.setEdge(edge, {
         ...Sizes.edgeLabel,
-        width: edgeCount > 30 ? 800 : 400,
+        width: edgeCount > 25 ? 800 : 400,
       })
     }
   }
@@ -492,8 +479,6 @@ export function layoutRelationshipsView(
           width: width,
           height: height,
         },
-        inEdges: [],
-        outEdges: [],
         children: [],
         width,
         height,
@@ -546,8 +531,6 @@ export function layoutRelationshipsView(
         ...element.$element.style,
       },
       navigateTo,
-      inEdges: [],
-      outEdges: [],
       ...(children.length > 0 && { depth: nodeDepth(id) }),
       children,
       width,

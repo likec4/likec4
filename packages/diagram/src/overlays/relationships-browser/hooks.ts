@@ -2,7 +2,7 @@ import { type Fqn, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { createContext, useContext, useMemo, useTransition } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
 import type { LayoutRelationshipsViewResult } from './layout'
@@ -23,7 +23,6 @@ export function useRelationshipsBrowserState<T>(
 
 export function useRelationshipsBrowser() {
   const actor = useRelationshipsBrowserActor()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
     get rootElementId(): string {
@@ -44,12 +43,10 @@ export function useRelationshipsBrowser() {
       })
     },
     navigateTo: (subject: Fqn, fromNode?: string) => {
-      startTransition(() => {
-        actor.send({
-          type: 'navigate.to',
-          subject,
-          fromNode,
-        })
+      actor.send({
+        type: 'navigate.to',
+        subject,
+        fromNode,
       })
     },
     fitDiagram: () => {

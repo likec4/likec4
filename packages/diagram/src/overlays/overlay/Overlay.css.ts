@@ -24,7 +24,7 @@ const dialog = css.raw({
   [backdropBlur]: '0px',
   [level]: '0',
   [offset]: '0px',
-  [inset]: 'calc((1 + var(--_level) * 0.5) * var(--_offset))',
+  [inset]: 'calc((1 + var(--_level) * 0.75) * var(--_offset))',
   [backdropOpacity]: '0%',
   _backdrop: {
     cursor: 'zoom-out',
@@ -45,8 +45,8 @@ const dialog = css.raw({
     height: '100vh',
   },
   sm: {
-    inset: '[var(--_inset) var(--_offset) var(--_offset) var(--_inset)]',
-    width: 'calc(100vw - var(--_offset) - var(--_inset))',
+    inset: '[var(--_inset) var(--_inset) var(--_offset) var(--_inset)]',
+    width: 'calc(100vw - 2 * var(--_inset))',
     height: 'calc(100vh - var(--_offset) - var(--_inset))',
     [borderRadius]: '6px',
     padding: '6px',

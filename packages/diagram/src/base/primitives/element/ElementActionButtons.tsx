@@ -63,22 +63,22 @@ export function ElementActionButtons({
         className={cx('nodrag nopan', actionButtons)}
       >
         {buttons.map((button, index) => (
-          <m.div
+          <ActionIcon
+            component={m.button}
+            layout
+            className={actionBtn({})}
             key={`action-button-${id}-${button.key ?? index}`}
             initial={false}
             whileTap={{ scale: 1 }}
             whileHover={{
               scale: 1.3,
             }}
-            onTap={e => button.onClick(e as unknown as React.MouseEvent)}
             // Otherwise node receives click event and is selected
-            onClick={stopPropagation}
+            onClick={button.onClick}
             onDoubleClick={stopPropagation}
           >
-            <ActionIcon className={actionBtn({})}>
-              {button.icon}
-            </ActionIcon>
-          </m.div>
+            {button.icon}
+          </ActionIcon>
         ))}
       </Box>
     </Box>

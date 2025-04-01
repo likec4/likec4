@@ -26,7 +26,7 @@
     "build:bundle": {
       "dependsOn": [
         "generate",
-        "topo"
+        "@likec4/core#build"
       ],
       "outputs": [
         "bundle/**"

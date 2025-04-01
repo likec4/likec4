@@ -2,7 +2,7 @@ import { type EdgeId, type Fqn, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { createContext, useContext, useMemo, useTransition } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 
@@ -23,7 +23,6 @@ export function useRelationshipDetailsState<T = unknown>(
 
 export function useRelationshipDetails() {
   const actor = useRelationshipDetailsActor()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
     get rootElementId(): string {
@@ -39,9 +38,7 @@ export function useRelationshipDetails() {
       }
     },
     fitDiagram: () => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram' })
-      })
+      actor.send({ type: 'fitDiagram' })
     },
     close: () => {
       if (actor._parent) {

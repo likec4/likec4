@@ -39,8 +39,7 @@
     },
     "build-react": {
       "dependsOn": [
-        "@likec4/diagram#build:dist",
-        "@likec4/diagram#build:bundle"
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "react/*.d.mts",

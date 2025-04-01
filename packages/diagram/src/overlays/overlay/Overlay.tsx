@@ -5,7 +5,7 @@ import {
 } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
-import { type HTMLMotionProps, m, useReducedMotionConfig } from 'framer-motion'
+import { m, useReducedMotionConfig } from 'framer-motion'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
 import { backdropBlur, backdropOpacity, overlay as overlayCVA } from './Overlay.css'
@@ -84,15 +84,13 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
               [backdropOpacity]: overlayLevel > 0 ? '50%' : '60%',
               scale: 1,
               opacity: 1,
-              translateY: 0,
               transition: {
                 delay: 0.075,
               },
             },
             exit: {
-              scale: 1.3,
+              scale: 1.2,
               opacity: 0,
-              translateY: -10,
               [backdropBlur]: '0px',
               [backdropOpacity]: '0%',
             },

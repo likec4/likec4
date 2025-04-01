@@ -492,16 +492,16 @@ export interface DiagramNode extends ComputedNode {
 }
 
 export namespace DiagramNode {
-  export function modelRef(node: DiagramNode): Fqn | null {
+  export function modelRef(node: Pick<DiagramNode, 'id' | 'modelRef'>): Fqn | null {
     return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
   }
-  export function deploymentRef(node: DiagramNode): Fqn | null {
+  export function deploymentRef(node: Pick<DiagramNode, 'id' | 'deploymentRef'>): Fqn | null {
     return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
   }
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */
-  export function isNodesGroup(node: DiagramNode): boolean {
+  export function isNodesGroup(node: Pick<DiagramNode, 'kind'>): boolean {
     return node.kind === ElementKind.Group
   }
 }
