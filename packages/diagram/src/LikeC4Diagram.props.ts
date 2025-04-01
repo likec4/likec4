@@ -83,6 +83,9 @@ export type OverrideReactFlowProps = Pick<
   | 'nodeDragThreshold'
 >
 
+export type PaddingUnit = 'px' | '%'
+export type PaddingWithUnit = `${number}${PaddingUnit}` | number
+
 export interface LikeC4DiagramProperties {
   view: DiagramView
 
@@ -114,11 +117,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   fitView?: boolean | undefined
+
   /**
-   * Seems like this is percentage of the view size
-   * @default 0
+   * Padding around the diagram
+   * @default '8px'
    */
-  fitViewPadding?: number | undefined
+  fitViewPadding?: PaddingWithUnit | undefined
 
   /**
    * @default false if readonly

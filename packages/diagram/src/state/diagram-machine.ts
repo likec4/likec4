@@ -45,7 +45,7 @@ import {
 import { MinZoom } from '../base/const'
 import { Base } from '../base/types'
 import { type EnabledFeatures, type FeatureName, AllDisabled } from '../context/DiagramFeatures'
-import type { OpenSourceParams } from '../LikeC4Diagram.props'
+import type { OpenSourceParams, PaddingWithUnit } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
 import { overlaysActorLogic } from '../overlays/overlaysActor'
@@ -84,7 +84,7 @@ export interface Input {
   xystore: XYStoreApi
   zoomable: boolean
   pannable: boolean
-  fitViewPadding: number
+  fitViewPadding: PaddingWithUnit
   nodesSelectable: boolean
 }
 

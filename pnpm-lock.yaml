@@ -10,8 +10,8 @@ catalogs:
       specifier: ^0.9.4
       version: 0.9.4
     '@astrojs/react':
-      specifier: 4.2.2
-      version: 4.2.2
+      specifier: 4.2.3
+      version: 4.2.3
     '@astrojs/starlight':
       specifier: 0.32.5
       version: 0.32.5
@@ -22,8 +22,8 @@ catalogs:
       specifier: ^0.40.2
       version: 0.40.2
     astro:
-      specifier: 5.5.5
-      version: 5.5.5
+      specifier: 5.5.6
+      version: 5.5.6
     astro-og-canvas:
       specifier: ^0.7.0
       version: 0.7.0
@@ -199,11 +199,11 @@ catalogs:
       version: 9.2.0
   xyflow:
     '@xyflow/react':
-      specifier: ^12.4.4
-      version: 12.4.4
+      specifier: ^12.5.2
+      version: 12.5.2
     '@xyflow/system':
-      specifier: ^0.0.52
-      version: 0.0.52
+      specifier: ^0.0.53
+      version: 0.0.53
 
 overrides:
   esbuild: ^0.25.1
@@ -283,10 +283,10 @@ importers:
         version: 0.9.4(prettier@3.5.2)(typescript@5.8.2)
       '@astrojs/react':
         specifier: catalog:astro
-        version: 4.2.2(@types/node@20.17.28)(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+        version: 4.2.3(@types/node@20.17.28)(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+        version: 0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.40.2
@@ -295,10 +295,10 @@ importers:
         version: 0.40.2
       astro:
         specifier: catalog:astro
-        version: 5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+        version: 5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.7.0(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+        version: 0.7.0(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       canvaskit-wasm:
         specifier: ^0.39.1
         version: 0.39.1
@@ -319,13 +319,13 @@ importers:
         version: 3.2.1
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.5.0(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
+        version: 0.5.0(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.14.3(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
+        version: 0.14.3(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.10.0(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
+        version: 0.10.0(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
     devDependencies:
       '@types/picomatch':
         specifier: ^2.3.4
@@ -464,10 +464,10 @@ importers:
         version: 5.0.3(@types/react@19.0.12)(react@19.0.0)(xstate@5.19.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.4.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.5.2(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.52
+        version: 0.0.53
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -687,10 +687,10 @@ importers:
         version: 5.0.3(@types/react@19.0.12)(react@19.0.0)(xstate@5.19.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.4.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.5.2(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.52
+        version: 0.0.53
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1136,10 +1136,10 @@ importers:
         version: 17.0.33
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.4.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.5.2(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.52
+        version: 0.0.53
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.3)
@@ -1514,10 +1514,10 @@ importers:
         version: 4.3.4(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.4.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.5.2(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.52
+        version: 0.0.53
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -1690,8 +1690,8 @@ packages:
     resolution: {integrity: sha512-GilTHKGCW6HMq7y3BUv9Ac7GMe/MO9gi9GW62GzKtth0SwukCu/qp2wLiGpEujhY+VVhaG9v7kv/5vFzvf4NYw==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0}
 
-  '@astrojs/react@4.2.2':
-    resolution: {integrity: sha512-js5tP5/zKAcbzo5FBa5ykhiicBy3JMtzK1FP+vbu52AJA1us41OZnyjiujICC7TI/c8Ood0kNDJcgNRqrLQrnw==}
+  '@astrojs/react@4.2.3':
+    resolution: {integrity: sha512-icL1hCnW1v+w+NCAz8REfsh9R1aGMW75fYBoeLjyhrVDxXQHiFbTfyBIHkgH79qqID7SM81+hPxHlqcgCuBP8w==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0}
     peerDependencies:
       '@types/react': ^19.0.12
@@ -3816,14 +3816,14 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.4.4':
-    resolution: {integrity: sha512-9RZ9dgKZNJOlbrXXST5HPb5TcXPOIDGondjwcjDro44OQRPl1E0ZRPTeWPGaQtVjbg4WpR4BUYwOeshNI2TuVg==}
+  '@xyflow/react@12.5.2':
+    resolution: {integrity: sha512-J5LvWedPVNT+gtSOfP88NgyP+IpR5SvluFJt820K9a5GsG8oCpTzTd0k7k3hWkgqtQWxYyVfwkAAZ0dBeyFtFA==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
 
-  '@xyflow/system@0.0.52':
-    resolution: {integrity: sha512-pJBMaoh/GEebIABWEIxAai0yf57dm+kH7J/Br+LnLFPuJL87Fhcmm4KFWd/bCUy/kCWUg+2/yFAGY0AUHRPOnQ==}
+  '@xyflow/system@0.0.53':
+    resolution: {integrity: sha512-QTWieiTtvNYyQAz1fxpzgtUGXNpnhfh6vvZa7dFWpWS2KOz6bEHODo/DTK3s07lDu0Bq0Db5lx/5M5mNjb9VDQ==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -3976,8 +3976,8 @@ packages:
     peerDependencies:
       astro: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  astro@5.5.5:
-    resolution: {integrity: sha512-fdnnK5dhWNIQT/cXzvaGs9il4T5noi4jafobdntbuNOrRxI1JnOxDfrtBadUo6cknCRCFhYrXh4VndCqj1a4Sg==}
+  astro@5.5.6:
+    resolution: {integrity: sha512-SjU6zAlRe/gQrZ558Qhm211Yl8XOZBfjMpZig3XtQpG6zlyHJkElbWQIWXAVPzMg17cFVdv/qZPVHfcP2YOGGw==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -8477,8 +8477,8 @@ packages:
   youch@3.2.3:
     resolution: {integrity: sha512-ZBcWz/uzZaQVdCvfV4uk616Bbpf2ee+F/AvuKDR5EwX/Y4v06xWdtMluqTD7+KlZdM93lLm9gMZYo0sKBS0pgw==}
 
-  zod-to-json-schema@3.24.3:
-    resolution: {integrity: sha512-HIAfWdYIt1sssHfYZFCXp4rU1w2r8hVVXYIlmoa0r0gABLs5di3RCqPU5DDROogVz1pAdYBaz7HK5n9pSUNs3A==}
+  zod-to-json-schema@3.24.5:
+    resolution: {integrity: sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g==}
     peerDependencies:
       zod: ^3.24.1
 
@@ -8613,12 +8613,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@4.1.0(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
+  '@astrojs/mdx@4.1.0(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.2.0
       '@mdx-js/mdx': 3.1.0(acorn@8.14.1)
       acorn: 8.14.1
-      astro: 5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro: 5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       es-module-lexer: 1.6.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -8636,7 +8636,7 @@ snapshots:
     dependencies:
       prismjs: 1.29.0
 
-  '@astrojs/react@4.2.2(@types/node@20.17.28)(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)':
+  '@astrojs/react@4.2.3(@types/node@20.17.28)(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)':
     dependencies:
       '@types/react': 19.0.12
       '@types/react-dom': 19.0.4(@types/react@19.0.12)
@@ -8665,16 +8665,16 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.24.2
 
-  '@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
+  '@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
     dependencies:
-      '@astrojs/mdx': 4.1.0(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/mdx': 4.1.0(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       '@astrojs/sitemap': 3.2.1
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
-      astro-expressive-code: 0.40.2(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      astro: 5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro-expressive-code: 0.40.2(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -11461,9 +11461,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.4.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@xyflow/react@12.5.2(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@xyflow/system': 0.0.52
+      '@xyflow/system': 0.0.53
       classcat: 5.0.5
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -11472,7 +11472,7 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.52':
+  '@xyflow/system@0.0.53':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-selection': 3.0.11
@@ -11605,19 +11605,19 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.40.2(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
+  astro-expressive-code@0.40.2(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
     dependencies:
-      astro: 5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro: 5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       rehype-expressive-code: 0.40.2
 
-  astro-og-canvas@0.7.0(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
+  astro-og-canvas@0.7.0(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
     dependencies:
-      astro: 5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro: 5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       canvaskit-wasm: 0.39.1
       deterministic-object-hash: 2.0.2
       entities: 4.5.0
 
-  astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0):
+  astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0):
     dependencies:
       '@astrojs/compiler': 2.11.0
       '@astrojs/internal-helpers': 0.6.1
@@ -11674,7 +11674,7 @@ snapshots:
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.1
       zod: 3.24.2
-      zod-to-json-schema: 3.24.3(zod@3.24.2)
+      zod-to-json-schema: 3.24.5(zod@3.24.2)
       zod-to-ts: 1.2.0(typescript@5.8.2)(zod@3.24.2)
     optionalDependencies:
       sharp: 0.33.5
@@ -15886,19 +15886,19 @@ snapshots:
       as-table: 1.0.55
       get-source: 2.0.12
 
-  starlight-heading-badges@0.5.0(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
+  starlight-heading-badges@0.5.0(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
     dependencies:
       '@astrojs/markdown-remark': 6.3.1
-      '@astrojs/starlight': 0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       unist-util-visit: 5.0.0
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.14.3(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
+  starlight-links-validator@0.14.3(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       '@types/picomatch': 3.0.2
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
@@ -15912,9 +15912,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.10.0(@astrojs/starlight@0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
+  starlight-package-managers@0.10.0(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.32.5(astro@5.5.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
 
   std-env@3.8.1: {}
 
@@ -16950,7 +16950,7 @@ snapshots:
       mustache: 4.2.0
       stacktracey: 2.1.8
 
-  zod-to-json-schema@3.24.3(zod@3.24.2):
+  zod-to-json-schema@3.24.5(zod@3.24.2):
     dependencies:
       zod: 3.24.2
 

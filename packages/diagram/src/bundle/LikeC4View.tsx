@@ -61,7 +61,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   injectFontCss = true,
   controls = false,
   fitView = true,
-  fitViewPadding = 0.1,
+  fitViewPadding = '8px',
   background = 'transparent',
   browser = true,
   showDiagramTitle = false,
@@ -169,7 +169,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                 controls
                 readonly
                 fitView
-                fitViewPadding={fitViewPadding}
+                fitViewPadding={'16px'}
                 {...props}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&

@@ -10,6 +10,7 @@ import { Fragment, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
+import type { PaddingWithUnit } from '../LikeC4Diagram.props'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -22,7 +23,7 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     nodesSelectable?: boolean
     nodesDraggable?: boolean
     background?: 'transparent' | 'solid' | XYBackground
-    fitViewPadding?: number
+    fitViewPadding?: PaddingWithUnit | undefined
     onViewportResize?: undefined | (() => void)
   }
   & SetRequired<

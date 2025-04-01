@@ -21,7 +21,7 @@ export type StaticLikeC4DiagramProps = Pick<
 export function StaticLikeC4Diagram({
   view,
   fitView = true,
-  fitViewPadding = 0,
+  fitViewPadding = '8px',
   enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = enableRelationshipDetails,

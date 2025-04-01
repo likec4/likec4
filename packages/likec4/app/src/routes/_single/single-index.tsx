@@ -75,7 +75,7 @@ function DiagramPreview({ diagram }: { diagram: DiagramView }) {
           background={'transparent'}
           view={diagram}
           fitView
-          fitViewPadding={0.1}
+          fitViewPadding={'4px'}
           reduceGraphics
         />
       )}

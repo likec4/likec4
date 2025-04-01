@@ -38,7 +38,7 @@ export function ViewEditor() {
       pannable
       nodesDraggable
       experimentalEdgeEditing
-      fitViewPadding={0.08}
+      fitViewPadding={'48px'}
       showDiagramTitle
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}

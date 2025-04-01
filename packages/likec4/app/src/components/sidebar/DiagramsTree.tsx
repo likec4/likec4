@@ -186,7 +186,7 @@ function DiagramPreview({
         <StaticLikeC4Diagram
           view={diagram}
           fitView
-          fitViewPadding={0}
+          fitViewPadding={'4px'}
           enableElementDetails={false}
           reduceGraphics
           initialWidth={width}

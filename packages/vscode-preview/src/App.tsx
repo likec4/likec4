@@ -75,7 +75,7 @@ export default function App() {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
-          fitViewPadding={0.09}
+          fitViewPadding={'32px'}
           readonly={false}
           controls
           nodesDraggable={nodesDraggable}
