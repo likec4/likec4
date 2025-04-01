@@ -93,7 +93,7 @@ catalogs:
   astro:
     "@astrojs/check": "^0.9.4"
     "@astrojs/react": "4.2.1"
-    "@astrojs/starlight": "0.32.4"
+    "@astrojs/starlight": "0.32.5"
     "@expressive-code/plugin-collapsible-sections": "^0.40.2"
     "@expressive-code/plugin-line-numbers": "^0.40.2"
     astro: "5.5.4"
