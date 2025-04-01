@@ -163,7 +163,7 @@
     "json5": "catalog:utils",
     "ky": "^1.7.5",
     "langium": "catalog:langium",
-    "merge-error-cause": "^5.0.1",
+    "merge-error-cause": "^5.0.2",
     "mkdirp": "^3.0.1",
     "nano-spawn": "^0.2.0",
     "nanostores": "catalog:react",

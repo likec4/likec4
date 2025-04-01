@@ -40,7 +40,7 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "merge-error-cause": "^5.0.1",
+    "merge-error-cause": "^5.0.2",
     "safe-stringify": "^1.1.1",
     "std-env": "catalog:utils",
     "typescript": "catalog:",
