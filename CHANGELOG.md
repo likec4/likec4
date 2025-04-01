@@ -1,3 +1,17 @@
+## [1.27.2](https://github.com/likec4/likec4/compare/v1.27.1...v1.27.2) (2025-04-01)
+
+
+### Bug Fixes
+
+* hovering notation did not highlight elements anymore, closes [#1681](https://github.com/likec4/likec4/issues/1681)
+* color style definition not respected in 1.27.1, closes [#1785](https://github.com/likec4/likec4/issues/1785)
+
+
+### Improvements
+
+* Navigate to relationship details from RelationshipsBrowser
+
+
 ## [1.27.1](https://github.com/likec4/likec4/compare/v1.27.0...v1.27.1) (2025-03-28)
 
 ### Bug Fixes
