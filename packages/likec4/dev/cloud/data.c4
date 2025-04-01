@@ -7,6 +7,7 @@ model {
         Process page hits.
         Search for anomalies.
       '
+      icon file://../images/hits-anomalies.svg
 
       -> amazon.sqs.hits 'pull and process hits data'
       -> cloud.backend.graphql 'read tenants'

@@ -989,7 +989,7 @@ packages:
     hasBin: true
 
   likec4@file:../packages/likec4/package.tgz:
-    resolution: {integrity: sha512-+CG39t5peCYAn1DgLC0kFuett4jT7b0FGZdXHYOCerI6TTjXzYaakkrFESVmQ5i1UAVUsQdl4NPrlicTzXuCtQ==, tarball: file:../packages/likec4/package.tgz}
+    resolution: {integrity: sha512-FLjODJ7qiCBoNS+TneRHRmWNfsC8mO/q9pqAbSjByujBPEDpKsxOs+goMClET70FsnDw0tQ96mr5WzYxranKQg==, tarball: file:../packages/likec4/package.tgz}
     version: 1.27.2
     engines: {node: '>=20.19.0'}
     hasBin: true
