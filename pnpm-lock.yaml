@@ -1331,8 +1331,8 @@ importers:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.8.2)
       wrap-error-message:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.1
+        version: 3.0.1
 
   packages/tsconfig: {}
 
@@ -5410,10 +5410,6 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     hasBin: true
 
-  is-error-instance@2.0.0:
-    resolution: {integrity: sha512-5RuM+oFY0P5MRa1nXJo6IcTx9m2VyXYhRtb4h0olsi2GHci4bqZ6akHk+GmCYvDrAR9yInbiYdr2pnoqiOMw/Q==}
-    engines: {node: '>=16.17.0'}
-
   is-error-instance@3.0.1:
     resolution: {integrity: sha512-nEw1ptjtbmXRkHOFrLvpHywsv+jMUZdtqI2BAC/XxMd24vUY5gXhvOprH0Bh4xA2gqQCQsEkr7aaxsgvxYRjnQ==}
     engines: {node: '>=18.18.0'}
@@ -6236,10 +6232,6 @@ packages:
   node-stdlib-browser@1.3.1:
     resolution: {integrity: sha512-X75ZN8DCLftGM5iKwoYLA3rjnrAEs97MkzvSd4q2746Tgpg8b8XWiBGiBG4ZpgcAqBgtgPHTiAc8ZMCvZuikDw==}
     engines: {node: '>=10'}
-
-  normalize-exception@3.0.0:
-    resolution: {integrity: sha512-SMZtWSLjls45KBgwvS2jWyXLtOI9j90JyQ6tJstl91Gti4W7QwZyF/nWwlFRz/Cx4Gy70DAtLT0EzXYXcPJJUw==}
-    engines: {node: '>=16.17.0'}
 
   normalize-exception@4.0.1:
     resolution: {integrity: sha512-2fUwKMZLYvHIHZN4a6Bt2FYEea6mDwQcTVCffRvQ1bJHndQRRrNhq8+WQiLolOzJ7bJl59SCURGSwCLvQv/X7w==}
@@ -7252,10 +7244,6 @@ packages:
 
   set-error-class@3.0.1:
     resolution: {integrity: sha512-VEsI0yEUMEnXmSkhfj+EwzNC1om7zGy2IdymNyi4FfGzmoxvXXIB1Nv09+DfRgsd7fS+u+FwTqCTSRhhNMcx8w==}
-    engines: {node: '>=18.18.0'}
-
-  set-error-message@3.0.0:
-    resolution: {integrity: sha512-CaNAe+/oXwT2XqGtK1plJOZYBi+cpwliSiL8yqO00c3Hvp3w4Tjo95ndv/bEJUM/7sWSw+ctF6J5GbiqF98lFQ==}
     engines: {node: '>=18.18.0'}
 
   set-error-message@3.0.1:
@@ -8389,10 +8377,6 @@ packages:
   wrap-ansi@9.0.0:
     resolution: {integrity: sha512-G8ura3S+3Z2G+mkgNRq8dqaFZAuxfsxpBB8OCTGRTCtp+l/v9nbFNmCUP1BZMts3G1142MsZfn6eeUKrr4PD1Q==}
     engines: {node: '>=18'}
-
-  wrap-error-message@3.0.0:
-    resolution: {integrity: sha512-QoePG1A6p9t6kY6RjOucIJvItmJfViuDs9C84TifNr8zN2oFmeky8SQ3OkUAY7vfefPPB7TUtKbiXjsV29EhLw==}
-    engines: {node: '>=18.18.0'}
 
   wrap-error-message@3.0.1:
     resolution: {integrity: sha512-TjLYwoDEMdPs0h6LfPukMZn2R7tmywbWyRETDosqsE1Gs0mayuSiDQm1MzeDPc8VMTvS4yhLPgICkSXvTeo9ng==}
@@ -13436,8 +13420,6 @@ snapshots:
 
   is-docker@3.0.0: {}
 
-  is-error-instance@2.0.0: {}
-
   is-error-instance@3.0.1: {}
 
   is-extglob@2.1.1: {}
@@ -14528,11 +14510,6 @@ snapshots:
       url: 0.11.4
       util: 0.12.5
       vm-browserify: 1.1.2
-
-  normalize-exception@3.0.0:
-    dependencies:
-      is-error-instance: 2.0.0
-      is-plain-obj: 4.1.0
 
   normalize-exception@4.0.1:
     dependencies:
@@ -15666,10 +15643,6 @@ snapshots:
   set-error-class@3.0.1:
     dependencies:
       normalize-exception: 4.0.1
-
-  set-error-message@3.0.0:
-    dependencies:
-      normalize-exception: 3.0.0
 
   set-error-message@3.0.1:
     dependencies:
@@ -16894,11 +16867,6 @@ snapshots:
       ansi-styles: 6.2.1
       string-width: 7.2.0
       strip-ansi: 7.1.0
-
-  wrap-error-message@3.0.0:
-    dependencies:
-      normalize-exception: 3.0.0
-      set-error-message: 3.0.0
 
   wrap-error-message@3.0.1:
     dependencies:

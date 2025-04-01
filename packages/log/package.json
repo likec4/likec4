@@ -45,7 +45,7 @@
     "std-env": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:",
-    "wrap-error-message": "^3.0.0"
+    "wrap-error-message": "^3.0.1"
   },
   "packageManager": "pnpm@10.7.0"
 }
