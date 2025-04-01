@@ -35,7 +35,7 @@ export function LikeC4Diagram({
   view,
   className,
   fitView = true,
-  fitViewPadding = 0,
+  fitViewPadding = '8px',
   readonly = true,
   pannable = true,
   zoomable = true,

@@ -28,6 +28,7 @@ export const actionBtn = defineRecipe({
       '--ai-bg': `var(--actionbtn-bg-hovered)`,
     },
     _hover: {
+      opacity: 1,
       color: 'var(--actionbtn-color-hovered-btn)',
       '--ai-bg': `var(--actionbtn-bg-hovered-btn)`,
     },

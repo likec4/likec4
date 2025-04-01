@@ -35,6 +35,7 @@ export function EmbedPage() {
         view={diagram}
         fitView={true}
         background={'transparent'}
+        fitViewPadding={0}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />
     </Box>

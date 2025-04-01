@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
-import { Navigate, notFound, useRouter } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { SidebarDrawerOps } from '../components/sidebar/state'
 import { useCurrentDiagram } from '../hooks'
@@ -36,7 +36,7 @@ export function ViewReact() {
       zoomable
       pannable
       controls
-      fitViewPadding={0.12}
+      fitViewPadding={'48px'}
       showDiagramTitle
       showNavigationButtons
       enableFocusMode

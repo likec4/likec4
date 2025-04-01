@@ -84,19 +84,19 @@ catalogs:
     vscode-textmate: "9.2.0"
     "@types/vscode": "^1.84.0"
   xyflow:
-    "@xyflow/react": "^12.4.4"
-    "@xyflow/system": "^0.0.52"
+    "@xyflow/react": "^12.5.2"
+    "@xyflow/system": "^0.0.53"
   langium:
     langium: "3.4.0"
     langium-cli: "3.4.0"
 
   astro:
     "@astrojs/check": "^0.9.4"
-    "@astrojs/react": "4.2.2"
+    "@astrojs/react": "4.2.3"
     "@astrojs/starlight": "0.32.5"
     "@expressive-code/plugin-collapsible-sections": "^0.40.2"
     "@expressive-code/plugin-line-numbers": "^0.40.2"
-    astro: "5.5.5"
+    astro: "5.5.6"
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
     starlight-links-validator: "^0.14.3"

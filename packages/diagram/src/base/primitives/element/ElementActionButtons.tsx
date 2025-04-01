@@ -68,15 +68,14 @@ export function ElementActionButtons({
             initial={false}
             whileTap={{ scale: 1 }}
             whileHover={{
-              scale: 1.35,
+              scale: 1.3,
             }}
+            onTap={e => button.onClick(e as unknown as React.MouseEvent)}
+            // Otherwise node receives click event and is selected
+            onClick={stopPropagation}
+            onDoubleClick={stopPropagation}
           >
-            <ActionIcon
-              className={actionBtn({})}
-              onClick={button.onClick}
-              // Otherwise node receives click event and is selected
-              onDoubleClick={stopPropagation}
-            >
+            <ActionIcon className={actionBtn({})}>
               {button.icon}
             </ActionIcon>
           </m.div>

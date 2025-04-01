@@ -13,12 +13,12 @@ export const container = style({
   alignItems: 'center',
   justifyContent: 'center',
   pointerEvents: 'none',
-  _after: {
+  _before: {
     content: '" "',
     position: 'absolute',
-    top: '100%',
+    top: 'calc(100% - 4px)',
     left: 0,
-    right: 0,
+    width: '100%',
     height: '24px',
     background: '[transparent]',
     pointerEvents: 'all',
@@ -43,7 +43,7 @@ export const container = style({
   //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   // },
   _reduceGraphicsOnPan: {
-    _after: {
+    _before: {
       display: 'none',
     },
   },

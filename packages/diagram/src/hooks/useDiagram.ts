@@ -40,10 +40,14 @@ export function useDiagram() {
       })
     },
     openRelationshipsBrowser: (fqn: Fqn) => {
-      actor.send({ type: 'open.relationshipsBrowser', fqn })
+      startTransition(() => {
+        actor.send({ type: 'open.relationshipsBrowser', fqn })
+      })
     },
     openSource: (params: OpenSourceParams) => {
-      actor.send({ type: 'open.source', ...params })
+      startTransition(() => {
+        actor.send({ type: 'open.source', ...params })
+      })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
       actor.send({ type: 'open.elementDetails', fqn, fromNode })

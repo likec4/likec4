@@ -1,6 +1,6 @@
 import type { WhereOperator } from '@likec4/core'
 import type { CSSProperties } from 'react'
-import type { ElementIconRenderer, OverrideReactFlowProps } from '../LikeC4Diagram.props'
+import type { ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
 
 export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   /**
@@ -66,10 +66,10 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   fitView?: boolean | undefined
 
   /**
-   * Seems like this is percentage of the view size
-   * @default 0.1
+   * Padding around the diagram
+   * @default '8px'
    */
-  fitViewPadding?: number | undefined
+  fitViewPadding?: PaddingWithUnit | undefined
 
   /**
    * Display diagram title / description
@@ -163,10 +163,10 @@ export interface LikeC4BrowserProps {
   background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
   /**
-   * Seems like this is percentage of the view size
-   * @default 0.1
+   * Padding around the diagram
+   * @default '16px'
    */
-  fitViewPadding?: number | undefined
+  fitViewPadding?: PaddingWithUnit | undefined
 
   /**
    * Show/hide panel with top left controls,
