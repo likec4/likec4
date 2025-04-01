@@ -8,7 +8,11 @@ function code(views: ComputedView[]) {
   const icons = pipe(
     views.flatMap(v => v.nodes.map(n => n.icon)),
     filter(isString),
-    filter(s => isTruthy(s) && !s.toLowerCase().startsWith('http')),
+    filter(s =>
+      isTruthy(s) &&
+      !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:') ||
+        s.toLowerCase().startsWith('file:') || s.toLowerCase().startsWith('.'))
+    ),
     unique(),
   ).sort()
 
