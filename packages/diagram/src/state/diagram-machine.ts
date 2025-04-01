@@ -156,7 +156,7 @@ export type Events =
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
-  | { type: 'open.relationshipDetails'; edgeId: EdgeId }
+  | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
@@ -617,8 +617,8 @@ export const diagramMachine = setup({
         'open.relationshipDetails': {
           actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
             type: 'open.relationshipDetails',
-            view: context.view,
-            edgeId: event.edgeId,
+            viewId: context.view.id,
+            ...event.params,
           })),
         },
         'open.source': {

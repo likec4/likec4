@@ -48,14 +48,14 @@ export function useDiagram() {
       actor.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.elementDetails', fqn, fromNode })
-      })
+      actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (edgeId: EdgeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipDetails', edgeId })
-      })
+    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+      if (params.length === 1) {
+        actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
+      } else {
+        actor.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
+      }
     },
 
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {

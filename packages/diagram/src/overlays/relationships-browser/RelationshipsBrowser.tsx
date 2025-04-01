@@ -8,7 +8,6 @@ import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
 import { ViewPadding } from './const'
@@ -18,6 +17,7 @@ import {
   useRelationshipsBrowser,
   useRelationshipsBrowserState,
 } from './hooks'
+import { useRelationshipsView } from './layout'
 import { SelectElement } from './SelectElement'
 
 const nodeTypes = {
@@ -168,7 +168,7 @@ const RelationshipsBrowserInner = memo(() => {
     if (instance.viewportInitialized) {
       browser.send({ type: 'xyflow.init', instance, store })
     }
-  }, [store, instance, browser])
+  }, [store, instance.viewportInitialized, browser])
 
   const layouted = useRelationshipsView(subjectId, viewId, scope)
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)

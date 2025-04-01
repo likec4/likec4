@@ -4,8 +4,8 @@ import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
-import type { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
+import type { LayoutRelationshipsViewResult } from './layout'
 
 export const RelationshipsBrowserActorContext = createContext<RelationshipsBrowserActorRef | null>(null)
 
@@ -27,7 +27,7 @@ export function useRelationshipsBrowser() {
   return useMemo(() => ({
     actor,
     get rootElementId(): string {
-      return `relationships-browser-${actor.sessionId}`
+      return `relationships-browser-${actor.sessionId.replaceAll(':', '_')}`
     },
     getState: () => actor.getSnapshot().context,
     send: actor.send,
