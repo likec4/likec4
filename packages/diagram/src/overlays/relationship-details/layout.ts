@@ -1,6 +1,4 @@
 import {
-  type RelationshipsViewData,
-  computeRelationshipsView,
   treeFromElements,
 } from '@likec4/core/compute-view/relationships'
 import type {
@@ -8,43 +6,32 @@ import type {
   DiagramNode,
   DiagramView,
   EdgeId,
-  ElementKind,
   Fqn,
   IconUrl,
   NodeId,
   NonEmptyArray,
   Point,
   RelationId,
-  ViewId,
 } from '@likec4/core/types'
-import { useMemo } from 'react'
 
-import dagre, { type EdgeConfig, type GraphLabel, type Label } from '@dagrejs/dagre'
+import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import { invariant } from '@likec4/core'
 import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
   ifind,
-  toArray,
 } from '@likec4/core/utils'
 import {
-  concat,
   filter,
   find,
-  first,
-  forEachObj,
-  groupBy,
   map,
   mapToObj,
-  only,
   pipe,
   prop,
   reduce,
   sortBy,
   tap,
-  unique,
 } from 'remeda'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import type { RelationshipDetailsTypes } from './_types'
 import type { RelationshipDetailsViewData } from './compute'
 
@@ -396,7 +383,7 @@ export function layoutRelationshipDetails(
     minX = Math.min(minX, position.x)
     minY = Math.min(minY, position.y)
 
-    const navigateTo = element.defaultView?.id ?? null
+    const navigateTo = scope ? ifind(element.scopedViews(), v => v.id !== scope.id)?.id ?? null : null
 
     const inheritFromNode = scope?.findNodeWithElement(element.id)
     const scopedAncestor = scope && !inheritFromNode

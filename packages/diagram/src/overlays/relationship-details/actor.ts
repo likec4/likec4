@@ -321,7 +321,12 @@ export const relationshipDetailsLogic = setup({
           actions: [
             'updateLayoutData',
             cancel('fitDiagram'),
-            raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 100 }),
+            {
+              type: 'xyflow:fitDiagram',
+              params: {
+                duration: 0,
+              },
+            },
             raise({ type: 'xyflow.updateNodeInternals' }, { delay: 75 }),
           ],
         },

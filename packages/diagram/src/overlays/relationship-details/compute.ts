@@ -151,30 +151,13 @@ export function computeRelationshipDetailsViewData({
   }
 
   for (const relationship of connection.relations) {
-    // const relationship = model.findRelationship(relationId)
-    // if (!relationship) {
-    //   continue
-    // }
-    // let relationSource: ElementModel
-    // let relationTarget: ElementModel
-    // if (relationship.isDeploymentRelation()) {
-    //   if ((relationship.source.isDeploymentNode() || relationship.target.isDeploymentNode())) {
-    //     console.warn(`Deployment relation ${relationId} between nodes not supported`)
-    //     continue
-    //   }
-    //   relationSource = relationship.source.element
-    //   relationTarget = relationship.target.element
-    // } else {
-    //   relationSource = relationship.source
-    //   relationTarget = relationship.target
-    // }
     const relationSource = relationship.source
     const relationTarget = relationship.target
     addExplicit(relationSource, 'source')
     addExplicit(relationTarget, 'target')
     relationships.add(relationship)
 
-    if (source && source !== relationSource) {
+    if (source !== relationSource) {
       invariant(isAncestor(source, relationSource), `${source.id} is not an ancestor of ${relationSource.id}`)
       for (const parent of relationSource.ancestors()) {
         if (parent === source) {
@@ -184,7 +167,7 @@ export function computeRelationshipDetailsViewData({
       }
     }
 
-    if (target && target !== relationTarget) {
+    if (target !== relationTarget) {
       invariant(isAncestor(target, relationTarget), `${target.id} is not an ancestor of ${relationTarget.id}`)
       for (const parent of relationTarget.ancestors()) {
         if (parent === target) {

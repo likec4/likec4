@@ -885,6 +885,11 @@ export const diagramMachine = setup({
                 enqueue('xyflow:fitFocusedBounds')
               }),
             },
+            'notations.unhighlight': {
+              actions: assign(s => ({
+                ...updateActiveWalkthrough(s),
+              })),
+            },
             'walkthrough.end': {
               target: 'idle',
             },

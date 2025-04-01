@@ -223,7 +223,6 @@ export type Events =
   | { type: 'undim.edges' }
   | { type: 'xyflow.updateNodeInternals' }
   | { type: 'xyflow.unmount' }
-  | { type: 'xyflow.long.hover' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; subject: Fqn; fromNode?: string | undefined; viewId?: ViewId | undefined }
   | {
@@ -416,6 +415,7 @@ export const relationshipsBrowserLogic = setup({
           actions: [
             assign({
               subject: ({ event }) => event.subject,
+              viewId: ({ event, context }) => event.viewId ?? context.viewId ?? null,
               navigateFromNode: ({ event }) => event.fromNode ?? null,
             }),
           ],
