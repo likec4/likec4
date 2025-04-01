@@ -1198,8 +1198,8 @@ importers:
         specifier: catalog:langium
         version: 3.4.0
       merge-error-cause:
-        specifier: ^5.0.1
-        version: 5.0.1
+        specifier: ^5.0.2
+        version: 5.0.2
       mkdirp:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1316,8 +1316,8 @@ importers:
         specifier: 'catalog:'
         version: 20.17.28
       merge-error-cause:
-        specifier: ^5.0.1
-        version: 5.0.1
+        specifier: ^5.0.2
+        version: 5.0.2
       safe-stringify:
         specifier: ^1.1.1
         version: 1.1.1
@@ -5314,8 +5314,8 @@ packages:
     resolution: {integrity: sha512-5RuM+oFY0P5MRa1nXJo6IcTx9m2VyXYhRtb4h0olsi2GHci4bqZ6akHk+GmCYvDrAR9yInbiYdr2pnoqiOMw/Q==}
     engines: {node: '>=16.17.0'}
 
-  is-error-instance@3.0.0:
-    resolution: {integrity: sha512-K0NeIwAWZGE4KoH1b6xw2+feyE80RqUq0OvZgr8z4gKb1BrF78B9Bo4HWRIe3xMHXbLKkxqhhT6oSNwXFqauJw==}
+  is-error-instance@3.0.1:
+    resolution: {integrity: sha512-nEw1ptjtbmXRkHOFrLvpHywsv+jMUZdtqI2BAC/XxMd24vUY5gXhvOprH0Bh4xA2gqQCQsEkr7aaxsgvxYRjnQ==}
     engines: {node: '>=18.18.0'}
 
   is-extglob@2.1.1:
@@ -5800,8 +5800,8 @@ packages:
     resolution: {integrity: sha512-eRtbOb1N5iyH0tkQDAoQ4Ipsp/5qSR79Dzrz8hEPxRX10RWWR/iQXdoKmBSRCThY1Fh5EhISDtpSc93fpxUniQ==}
     engines: {node: '>=12.13'}
 
-  merge-error-cause@5.0.1:
-    resolution: {integrity: sha512-nQnh3OffEfrnXdsOafwgOFlrNeAnZu0vOztojETYKRVSsahOFbdd1f4y828QRSQewwHFEjcz6fzv0A3POwJ0uQ==}
+  merge-error-cause@5.0.2:
+    resolution: {integrity: sha512-pToOGIivcb/Vz4lJ3faWGbS92+41YW9QOESpuValOci1xP5hT6bQMiw/Pse7PHYsKSPusNT7zMFwDgqzt2lHXw==}
     engines: {node: '>=18.18.0'}
 
   merge2@1.4.1:
@@ -6141,8 +6141,8 @@ packages:
     resolution: {integrity: sha512-SMZtWSLjls45KBgwvS2jWyXLtOI9j90JyQ6tJstl91Gti4W7QwZyF/nWwlFRz/Cx4Gy70DAtLT0EzXYXcPJJUw==}
     engines: {node: '>=16.17.0'}
 
-  normalize-exception@4.0.0:
-    resolution: {integrity: sha512-erQpqvzCnDY2uL/kmByc3B4NUK/d545h+bKJpgZD7Z8WNQnxLH/SVeXcDL/+mpLQkknva+C6nPwT0h/hBDQZ1g==}
+  normalize-exception@4.0.1:
+    resolution: {integrity: sha512-2fUwKMZLYvHIHZN4a6Bt2FYEea6mDwQcTVCffRvQ1bJHndQRRrNhq8+WQiLolOzJ7bJl59SCURGSwCLvQv/X7w==}
     engines: {node: '>=18.18.0'}
 
   normalize-package-data@2.5.0:
@@ -6935,8 +6935,8 @@ packages:
   recma-stringify@1.0.0:
     resolution: {integrity: sha512-cjwII1MdIIVloKvC9ErQ+OgAtwHBmcZ0Bg4ciz78FtbT8In39aAYbaA7zvxQ61xVMSPE8WxhLwLbhif4Js2C+g==}
 
-  redefine-property@3.0.0:
-    resolution: {integrity: sha512-ccnADJaJkclGGzRuc8kaNBHmoyOwW+Da2DyPQdiccMdlMyvPvCtIa6kN0sKz+JiW43dQEGFiCSNjyObi372ptA==}
+  redefine-property@3.0.1:
+    resolution: {integrity: sha512-/YYmIi0V+vlg2B/QwwOr/SAirVKYdI9iF+KFRPMK5y2QqGq7Ky6PgxNBVXcuVq9E2o0clC4j2EyC1eigpbW8bA==}
     engines: {node: '>=18.18.0'}
 
   redent@3.0.0:
@@ -7145,16 +7145,20 @@ packages:
   serialize-javascript@3.1.0:
     resolution: {integrity: sha512-JIJT1DGiWmIKhzRsG91aS6Ze4sFUrYbltlkg2onR5OrnNM02Kl/hnY/T4FN2omvyeBbQmMJv+K4cPOpGzOTFBg==}
 
-  set-error-class@3.0.0:
-    resolution: {integrity: sha512-a2Ham0lVgvzp14cm2Z2LM2Ae1HzxI8G+LX6Rv+eTVzM5+pfPU7UtJBSOXktxoBlqlmaPsZmZRR84qY+CoHt6bg==}
+  set-error-class@3.0.1:
+    resolution: {integrity: sha512-VEsI0yEUMEnXmSkhfj+EwzNC1om7zGy2IdymNyi4FfGzmoxvXXIB1Nv09+DfRgsd7fS+u+FwTqCTSRhhNMcx8w==}
     engines: {node: '>=18.18.0'}
 
   set-error-message@3.0.0:
     resolution: {integrity: sha512-CaNAe+/oXwT2XqGtK1plJOZYBi+cpwliSiL8yqO00c3Hvp3w4Tjo95ndv/bEJUM/7sWSw+ctF6J5GbiqF98lFQ==}
     engines: {node: '>=18.18.0'}
 
-  set-error-props@6.0.0:
-    resolution: {integrity: sha512-vJ7lRuvcn5NTbuT7QS8k+dh6AN5y1R/V2xZmlwvB48bJ2b8v46z+dgx5k1VGrB9xt7ZnC98jWcikHb6gyIJgAg==}
+  set-error-message@3.0.1:
+    resolution: {integrity: sha512-5+TX4opc5Hus1nu5UDQq0y5SuOCvDqQFh+yGcKgzJDKvohVcU51iE2XtTxw/V7VsZ7xA142tei+KSq3ZIB/dNw==}
+    engines: {node: '>=18.18.0'}
+
+  set-error-props@6.0.1:
+    resolution: {integrity: sha512-P27Piv/xn8Iy+F+xLdY3Qk3Ne63bHFeXgFYc6HAxsKqbzZD3RXrqlLZ+97ObdCn1+o8Pc0qlw6qFbHVnOmKjtA==}
     engines: {node: '>=18.18.0'}
 
   set-function-length@1.2.2:
@@ -8283,6 +8287,10 @@ packages:
 
   wrap-error-message@3.0.0:
     resolution: {integrity: sha512-QoePG1A6p9t6kY6RjOucIJvItmJfViuDs9C84TifNr8zN2oFmeky8SQ3OkUAY7vfefPPB7TUtKbiXjsV29EhLw==}
+    engines: {node: '>=18.18.0'}
+
+  wrap-error-message@3.0.1:
+    resolution: {integrity: sha512-TjLYwoDEMdPs0h6LfPukMZn2R7tmywbWyRETDosqsE1Gs0mayuSiDQm1MzeDPc8VMTvS4yhLPgICkSXvTeo9ng==}
     engines: {node: '>=18.18.0'}
 
   wrappy@1.0.2:
@@ -13251,7 +13259,7 @@ snapshots:
 
   is-error-instance@2.0.0: {}
 
-  is-error-instance@3.0.0: {}
+  is-error-instance@3.0.1: {}
 
   is-extglob@2.1.1: {}
 
@@ -13788,12 +13796,12 @@ snapshots:
     dependencies:
       is-what: 4.1.16
 
-  merge-error-cause@5.0.1:
+  merge-error-cause@5.0.2:
     dependencies:
-      normalize-exception: 4.0.0
-      set-error-class: 3.0.0
-      set-error-props: 6.0.0
-      wrap-error-message: 3.0.0
+      normalize-exception: 4.0.1
+      set-error-class: 3.0.1
+      set-error-props: 6.0.1
+      wrap-error-message: 3.0.1
 
   merge2@1.4.1: {}
 
@@ -14347,9 +14355,9 @@ snapshots:
       is-error-instance: 2.0.0
       is-plain-obj: 4.1.0
 
-  normalize-exception@4.0.0:
+  normalize-exception@4.0.1:
     dependencies:
-      is-error-instance: 3.0.0
+      is-error-instance: 3.0.1
       is-plain-obj: 4.1.0
 
   normalize-package-data@2.5.0:
@@ -15170,7 +15178,7 @@ snapshots:
       unified: 11.0.5
       vfile: 6.0.3
 
-  redefine-property@3.0.0:
+  redefine-property@3.0.1:
     dependencies:
       is-plain-obj: 4.1.0
 
@@ -15450,19 +15458,23 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
-  set-error-class@3.0.0:
+  set-error-class@3.0.1:
     dependencies:
-      normalize-exception: 3.0.0
+      normalize-exception: 4.0.1
 
   set-error-message@3.0.0:
     dependencies:
       normalize-exception: 3.0.0
 
-  set-error-props@6.0.0:
+  set-error-message@3.0.1:
     dependencies:
-      is-error-instance: 3.0.0
+      normalize-exception: 4.0.1
+
+  set-error-props@6.0.1:
+    dependencies:
+      is-error-instance: 3.0.1
       is-plain-obj: 4.1.0
-      redefine-property: 3.0.0
+      redefine-property: 3.0.1
 
   set-function-length@1.2.2:
     dependencies:
@@ -16682,6 +16694,11 @@ snapshots:
     dependencies:
       normalize-exception: 3.0.0
       set-error-message: 3.0.0
+
+  wrap-error-message@3.0.1:
+    dependencies:
+      normalize-exception: 4.0.1
+      set-error-message: 3.0.1
 
   wrappy@1.0.2: {}
 
