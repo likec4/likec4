@@ -3,13 +3,13 @@
 
 ### Bug Fixes
 
-* **ElementActionButtons:** refine onClick event handling ([9f54905](https://github.com/likec4/likec4/commit/9f549056f45bed0be34846d47700b58b143620b1))
+* hovering notation did not highlight elements anymore, closes [#1681](https://github.com/likec4/likec4/issues/1681)
+* color style definition not respected in 1.27.1, closes [#1785](https://github.com/likec4/likec4/issues/1785)
 
 
-### Features
+### Improvements
 
-* navigate to relationship details from RelationshipsBrowser ([#1787](https://github.com/likec4/likec4/issues/1787)) ([8bd8e44](https://github.com/likec4/likec4/commit/8bd8e44beb1bb7ee313e9f552c65bd052eec550f)), closes [#1785](https://github.com/likec4/likec4/issues/1785)
-
+* Navigate to relationship details from RelationshipsBrowser
 
 
 ## [1.27.1](https://github.com/likec4/likec4/compare/v1.27.0...v1.27.1) (2025-03-28)
