@@ -77,7 +77,6 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
               [backdropBlur]: '0px',
               [backdropOpacity]: '0%',
               scale: overlayLevel > 0 ? 0.9 : 1.075,
-              // translateX: overlayLevel > 0 ? 48 : 0,
               opacity: 0,
             },
             animate: {
@@ -85,7 +84,6 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
               [backdropOpacity]: overlayLevel > 0 ? '50%' : '60%',
               scale: 1,
               opacity: 1,
-              translateX: 0,
               translateY: 0,
               transition: {
                 delay: 0.075,
@@ -94,7 +92,6 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
             exit: {
               scale: 1.3,
               opacity: 0,
-              translateX: overlayLevel > 0 ? 32 : 0,
               translateY: -10,
               [backdropBlur]: '0px',
               [backdropOpacity]: '0%',
