@@ -2,6 +2,7 @@ import {
   type BBox,
   type DiagramView,
   type EdgeId,
+  type ElementNotation,
   type Fqn,
   type NodeId,
   type StepEdgeId,
@@ -23,7 +24,7 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { clamp, first, hasAtLeast, prop } from 'remeda'
+import { clamp, first, hasAtLeast, prop, reduce } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -170,6 +171,8 @@ export type Events =
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
+  | { type: 'notations.highlight'; notation: ElementNotation; kind?: string }
+  | { type: 'notations.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
 export type ActionArg = { context: Context; event: Events }
@@ -440,6 +443,26 @@ export const diagramMachine = setup({
         }),
       }
     }),
+    'notations.highlight': assign(({ context }, params: { notation: ElementNotation; kind?: string }) => {
+      const kinds = params.kind ? [params.kind] : params.notation.kinds
+      const xynodes = context.xynodes.map((n) => {
+        const node = findDiagramNode(context, n.id)
+        if (
+          node &&
+          node.notation === params.notation.title &&
+          node.shape === params.notation.shape &&
+          node.color === params.notation.color &&
+          kinds.includes(node.kind)
+        ) {
+          return Base.setDimmed(n, false)
+        }
+        return Base.setDimmed(n, 'immediate')
+      })
+      return {
+        xynodes,
+        xyedges: context.xyedges.map(Base.setDimmed('immediate')),
+      }
+    }),
   },
 }).createMachine({
   initial: 'initializing',
@@ -666,6 +689,18 @@ export const diagramMachine = setup({
             params: prop('event'),
           },
         },
+        'notations.highlight': {
+          actions: {
+            type: 'notations.highlight',
+            params: prop('event'),
+          },
+        },
+        'notations.unhighlight': {
+          actions: assign(({ context }) => ({
+            xynodes: context.xynodes.map(Base.setDimmed(false)),
+            xyedges: context.xyedges.map(Base.setDimmed(false)),
+          })),
+        },
         'saveManualLayout.*': {
           guard: 'not readonly',
           actions: sendTo((c) => c.context.syncLayoutActorRef!, ({ event }) => {
@@ -793,6 +828,11 @@ export const diagramMachine = setup({
                 lastClickedNode: null,
               }),
               target: 'idle',
+            },
+            'notations.unhighlight': {
+              actions: assign(s => ({
+                ...focusNodesEdges(s),
+              })),
             },
           },
         },

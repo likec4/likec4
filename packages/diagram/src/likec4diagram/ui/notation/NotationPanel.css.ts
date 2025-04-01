@@ -98,6 +98,6 @@ export const shapeBadge = css({
   ['--badge-padding-x']: '3px',
   ['--badge-height']: '13.5px',
   ['--badge-lh']: '1',
-  // ['--badge-bg']: vars.element.fill,
-  // ['--badge-color']: vars.element.hiContrast
+  ['--badge-bg']: '{colors.likec4.palette.fill}',
+  ['--badge-color']: '{colors.likec4.palette.hiContrast}',
 })

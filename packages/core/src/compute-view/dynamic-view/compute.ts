@@ -214,8 +214,6 @@ class DynamicViewCompute {
         ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
       },
       nodes: map(nodes, n => {
-        // omit notation
-        delete n.notation
         if (n.icon === 'none') {
           delete n.icon
         }

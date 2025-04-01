@@ -54,13 +54,14 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
           likec4Palette: color,
         }),
       )}
+      data-likec4-color={color}
       onMouseEnter={() => {
         setOnlyKind(null)
-        // diagramStore.getState().highlightByElementNotation(value)
+        diagram.highlightNotation(value)
       }}
       onMouseLeave={() => {
         setOnlyKind(null)
-        // diagramStore.setState({ dimmed: new Set() })
+        diagram.unhighlightNotation()
       }}
     >
       <Group
@@ -88,17 +89,18 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
             {value.kinds.map((kind) => (
               <Badge
                 key={kind}
-                className={styles.shapeBadge}
+                className={cx(
+                  styles.shapeBadge,
+                )}
                 onMouseEnter={() => {
                   setOnlyKind(kind)
-                  // diagramStore.getState().highlightByElementNotation(value, kind)
+                  diagram.highlightNotation(value, kind)
                 }}
                 onMouseLeave={() => {
                   setOnlyKind(null)
-                  // diagramStore.getState().highlightByElementNotation(value)
+                  diagram.highlightNotation(value)
                 }}
                 opacity={isNonNullish(onlyKind) && onlyKind !== kind ? 0.25 : 1}
-                color={isNonNullish(onlyKind) && onlyKind !== kind ? 'gray' : token('colors.likec4.palette.fill')}
               >
                 {kind}
               </Badge>

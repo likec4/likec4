@@ -1,4 +1,4 @@
-import { type DiagramView, type EdgeId, type Fqn, type NodeId, type ViewId } from '@likec4/core'
+import { type DiagramView, type EdgeId, type ElementNotation, type Fqn, type NodeId, type ViewId } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
@@ -132,6 +132,13 @@ export function useDiagram() {
 
     toggleFeature: (feature: FeatureName, forceValue?: boolean) => {
       actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
+    },
+
+    highlightNotation: (notation: ElementNotation, kind?: string) => {
+      actor.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
+    },
+    unhighlightNotation: () => {
+      actor.send({ type: 'notations.unhighlight' })
     },
   }), [actor])
 }
