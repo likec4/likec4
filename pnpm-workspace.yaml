@@ -7,8 +7,8 @@ packages:
 catalog:
   typescript: "^5.8.2"
   wireit: "^0.14.11"
-  wrangler: "4.5.0"
-  "@types/node": "^20.17.27"
+  wrangler: "4.6.0"
+  "@types/node": "^20.17.28"
   unbuild: "^3.5.0"
   turbo: "^2.4.4"
   tsx: "~4.19.3"
@@ -41,25 +41,25 @@ catalogs:
     clsx: "^2.1.1"
     nanostores: "0.11.4"
     "@nanostores/react": "0.8.4"
-    framer-motion: "^12.5.0"
+    framer-motion: "^12.6.2"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": "7.17.2"
-    "@mantine/hooks": "7.17.2"
-    "@mantine/vanilla-extract": "7.17.2"
-    "@mantine/modals": "7.17.2"
-    "@mantine/notifications": "7.17.2"
-    "@mantine/colors-generator": "7.17.2"
+    "@mantine/core": "7.17.3"
+    "@mantine/hooks": "7.17.3"
+    "@mantine/vanilla-extract": "7.17.3"
+    "@mantine/modals": "7.17.3"
+    "@mantine/notifications": "7.17.3"
+    "@mantine/colors-generator": "7.17.3"
   vite:
     "@vitejs/plugin-react": "^4.3.4"
-    vite: "^6.2.3"
+    vite: "^6.2.4"
     vite-plugin-dts: "^4.5.3"
     vite-plugin-node-polyfills: "^0.23.0"
     vite-tsconfig-paths: "^5.1.4"
-    rollup: "^4.37.0"
+    rollup: "^4.38.0"
   vitest:
     vitest: "^3.0.9"
     "@vitest/coverage-c8": "^3.0.9"
@@ -92,11 +92,11 @@ catalogs:
 
   astro:
     "@astrojs/check": "^0.9.4"
-    "@astrojs/react": "4.2.1"
-    "@astrojs/starlight": "0.32.4"
+    "@astrojs/react": "4.2.2"
+    "@astrojs/starlight": "0.32.5"
     "@expressive-code/plugin-collapsible-sections": "^0.40.2"
     "@expressive-code/plugin-line-numbers": "^0.40.2"
-    astro: "5.5.4"
+    astro: "5.5.5"
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
     starlight-links-validator: "^0.14.3"

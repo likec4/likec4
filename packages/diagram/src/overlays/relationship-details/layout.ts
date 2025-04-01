@@ -1,6 +1,4 @@
 import {
-  type RelationshipsViewData,
-  computeRelationshipsView,
   treeFromElements,
 } from '@likec4/core/compute-view/relationships'
 import type {
@@ -8,42 +6,34 @@ import type {
   DiagramNode,
   DiagramView,
   EdgeId,
-  ElementKind,
   Fqn,
   IconUrl,
   NodeId,
   NonEmptyArray,
   Point,
-  ViewId,
+  RelationId,
 } from '@likec4/core/types'
-import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import { invariant } from '@likec4/core'
+import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
   ifind,
-  invariant,
-  toArray,
-} from '@likec4/core'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+} from '@likec4/core/utils'
 import {
-  concat,
   filter,
   find,
-  forEachObj,
-  groupBy,
   map,
   mapToObj,
-  only,
   pipe,
   prop,
   reduce,
   sortBy,
   tap,
-  unique,
 } from 'remeda'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
-import type { RelationshipsBrowserTypes } from './_types'
+import type { RelationshipDetailsTypes } from './_types'
+import type { RelationshipDetailsViewData } from './compute'
 
 /**
  * All constants related to the layout
@@ -55,13 +45,10 @@ const Sizes = {
     edgesep: 25,
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 120,
-    height: 10,
-    minlen: 1,
-    weight: 1,
+    width: 220,
+    height: 14,
+    // minlen: 1,
   } satisfies EdgeConfig,
-
-  emptyNodeOffset: 120,
 
   nodeWidth: 330,
   nodeHeight: 180,
@@ -76,10 +63,42 @@ const Sizes = {
     paddingBottom: 32,
   },
 }
+
+// /**
+//  * All constants related to the layout
+//  */
+// const Sizes = {
+//   dagre: {
+//     ranksep: 60,
+//     nodesep: 35,
+//     edgesep: 25,
+//   } satisfies GraphLabel,
+//   edgeLabel: {
+//     width: 120,
+//     height: 10,
+//     minlen: 1,
+//     weight: 1,
+//   } satisfies EdgeConfig,
+
+//   emptyNodeOffset: 120,
+
+//   nodeWidth: 330,
+//   nodeHeight: 180,
+
+//   // Spacer between elements in a compound node
+//   // 0 means no spacer
+//   spacerHeight: 0,
+
+//   compound: {
+//     labelHeight: 2,
+//     paddingTop: 50,
+//     paddingBottom: 32,
+//   },
+// }
 type NodeData = {
-  column: RelationshipsBrowserTypes.Column
+  column: RelationshipDetailsTypes.Column
   portId: string
-  element: ElementModel | null
+  element: ElementModel
   isCompound: boolean
   inPorts: string[]
   outPorts: string[]
@@ -97,19 +116,6 @@ function createGraph() {
   g.setDefaultEdgeLabel(() => ({ ...Sizes.edgeLabel }))
   g.setDefaultNodeLabel(() => ({}))
 
-  // columns.reduce((prev, column) => {
-  //   const c = graphColumn(column)
-  //   g.setNode(c.id, {})
-  //   g.setNode(c.anchor, { width: 40, height: 2 })
-  //   g.setParent(c.anchor, c.id)
-  //   if (prev) {
-  //     g.setEdge(prev, c.anchor, {
-  //       width: 0
-  //     })
-  //   }
-  //   return c.anchor
-  // }, null as string | null)
-
   return g
 }
 type G = ReturnType<typeof createGraph>
@@ -117,7 +123,7 @@ type G = ReturnType<typeof createGraph>
 const PortSuffix = '-port'
 
 function createNodes(
-  column: RelationshipsBrowserTypes.Column,
+  column: RelationshipDetailsTypes.Column,
   elements: ReadonlySet<ElementModel>,
   g: G,
 ) {
@@ -201,164 +207,89 @@ function applyDagreLayout(g: G) {
   }
 }
 
-export type LayoutRelationshipsViewResult = {
-  subject: Fqn
-  subjectExistsInScope: boolean
-  nodes: LayoutRelationshipsViewResult.Node[]
-  edges: LayoutRelationshipsViewResult.Edge[]
+export type LayoutResult = {
+  // subject: Fqn
+  // subjectExistsInScope: boolean
+  nodes: LayoutResult.Node[]
+  edges: LayoutResult.Edge[]
   bounds: DiagramView['bounds']
 }
 
-export namespace LayoutRelationshipsViewResult {
-  export const Empty = '@empty' as ElementKind
-
-  export type Node = DiagramNode & {
-    column: RelationshipsBrowserTypes.Column
-    ports: RelationshipsBrowserTypes.Ports
-    existsInCurrentView: boolean
+export namespace LayoutResult {
+  export type Node = Omit<DiagramNode, 'modelRef' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
+    modelRef: Fqn
+    column: RelationshipDetailsTypes.Column
+    ports: RelationshipDetailsTypes.Ports
+    // existsInCurrentView: boolean
   }
-  export type Edge = DiagramEdge & {
+  export type Edge = Omit<DiagramEdge, 'relations'> & {
+    relationId: RelationId
     sourceHandle: string
     targetHandle: string
-    existsInCurrentView: boolean
+    // existsInCurrentView: boolean
     // column: RelationshipsBrowserTypes.Column
   }
 }
 
-export function layoutRelationshipsView(
-  data: RelationshipsViewData,
+export function layoutRelationshipDetails(
+  data: RelationshipDetailsViewData,
   scope: LikeC4ViewModel<AnyAux> | null,
-): Omit<LayoutRelationshipsViewResult, 'subject'> {
+): LayoutResult {
   const g = createGraph()
 
-  const incomers = createNodes('incomers', data.incomers, g),
-    subjects = createNodes('subjects', data.subjects, g),
-    outgoers = createNodes('outgoers', data.outgoers, g)
+  const sources = createNodes('sources', data.sources, g),
+    targets = createNodes('targets', data.targets, g)
 
-  const edges = [] as Array<{
+  const edges: Array<{
     name: string
     source: string // node id
     target: string // node id
     sourceHandle: string
     targetHandle: string
-    relations: RelationshipModel[]
-  }>
+    relationship: RelationshipModel
+  }> = Array.from(data.relationships).map(r => {
+    const source = sources.byId(r.source.id).graph
+    const target = targets.byId(r.target.id).graph
+    const name = r.id
 
-  pipe(
-    concat(
-      pipe(
-        toArray(data.incoming),
-        map(r => ({
-          id: r.source.id,
-          source: incomers.byId(r.source.id).graph,
-          target: subjects.byId(r.target.id).graph,
-          relation: r,
-        })),
-      ),
-      pipe(
-        toArray(data.outgoing),
-        map(r => ({
-          id: r.target.id,
-          source: subjects.byId(r.source.id).graph,
-          target: outgoers.byId(r.target.id).graph,
-          relation: r,
-        })),
-      ),
-    ),
-    map(r => ({
-      ...r,
-      expr: `${r.source.id}->${r.target.id}`,
-    })),
-    // Group if same source and target
-    groupBy(prop('expr')),
-    forEachObj((grouped) => {
-      const source = grouped[0].source
-      const target = grouped[0].target
-      const name = grouped[0].expr
+    g.node(source.id).outPorts.push(target.id)
+    g.node(target.id).inPorts.push(source.id)
 
-      g.node(source.id).outPorts.push(target.id)
-      g.node(target.id).inPorts.push(source.id)
-
-      g.setEdge(source.portId, target.portId, {
-        ...Sizes.edgeLabel,
-      }, name)
-      edges.push({
-        name,
-        source: source.id,
-        sourceHandle: source.id + '_out' + (g.node(source.id).outPorts.length - 1),
-        target: target.id,
-        targetHandle: target.id + '_in' + (g.node(target.id).inPorts.length - 1),
-        relations: map(grouped, prop('relation')),
-      })
-    }),
-  )
+    g.setEdge(source.portId, target.portId, {
+      ...Sizes.edgeLabel,
+    }, name)
+    return {
+      name,
+      source: source.id,
+      sourceHandle: source.id + '_out' + (g.node(source.id).outPorts.length - 1),
+      target: target.id,
+      targetHandle: target.id + '_in' + (g.node(target.id).inPorts.length - 1),
+      relationship: r,
+    }
+  })
 
   // Grow nodes with more than 2 ports
-  for (const subjectNode of subjects.graphNodes.values()) {
-    const nodeId = subjectNode.id
+  const nodeIds = [
+    ...sources.graphNodes.values(),
+    ...targets.graphNodes.values(),
+  ]
+  for (const { id: nodeId } of nodeIds) {
     const node = g.node(nodeId)
     if (node.isCompound) {
       continue
     }
     const edgeCount = Math.max(g.inEdges(nodeId)?.length ?? 0, g.outEdges(nodeId)?.length ?? 0)
-    if (edgeCount > 2) {
-      node.height = node.height + (edgeCount - 3) * 14
+    if (edgeCount > 3) {
+      node.height = node.height + (edgeCount - 4) * 14
     }
-  }
-
-  const nodeIds = [
-    ...incomers.graphNodes.values(),
-    ...subjects.graphNodes.values(),
-    ...outgoers.graphNodes.values(),
-  ]
-
-  if (incomers.graphNodes.size == 0) {
-    const id = 'incomers-empty'
-    g.setNode(id, {
-      column: 'incomers',
-      element: null,
-      isCompound: false,
-      portId: id,
-      inPorts: [],
-      outPorts: [],
-      width: Sizes.nodeWidth,
-      height: Sizes.nodeHeight,
-    })
-    for (const subjectNode of subjects.graphNodes.values()) {
-      g.setEdge(id, subjectNode.portId)
-    }
-    nodeIds.push({
-      id,
-      portId: id,
-    })
-  }
-  if (outgoers.graphNodes.size == 0) {
-    const id = 'outgoers-empty'
-    g.setNode(id, {
-      column: 'outgoers',
-      element: null,
-      isCompound: false,
-      portId: id,
-      inPorts: [],
-      outPorts: [],
-      width: Sizes.nodeWidth,
-      height: Sizes.nodeHeight,
-    })
-    for (const subjectNode of subjects.graphNodes.values()) {
-      g.setEdge(subjectNode.portId, id)
-    }
-    nodeIds.push({
-      id,
-      portId: id,
-    })
   }
 
   const edgeCount = g.edgeCount()
-  if (edgeCount > 10) {
+  if (edgeCount > 5) {
     for (const edge of g.edges()) {
       g.setEdge(edge, {
         ...Sizes.edgeLabel,
-        width: edgeCount > 30 ? 800 : 400,
+        width: edgeCount > 10 ? 800 : 400,
       })
     }
   }
@@ -441,71 +372,10 @@ export function layoutRelationshipsView(
   let minX = 0
   let minY = 0
 
-  const [subject] = [...subjects.root]
-  invariant(subject, 'Subjects should not be empty')
-  let subjectBounds = nodeBounds(subjects.graphNodes.get(subject.id).id)
-  // let subjectBounds = rest.reduce((bounds, el) => {
-  //   const elBounds = nodeBounds(subjects.graphNodes.get(el.id).id)
-  //   return {
-  //     position: {
-  //       x: Math.min(bounds.position.x, elBounds.position.x),
-  //       y: Math.min(bounds.position.y, elBounds.position.y),
-  //     },
-  //     width: Math.max(bounds.width, elBounds.width),
-  //     height: Math.max(bounds.height, elBounds.height),
-  //   }
-  // }, nodeBounds(subjects.graphNodes.get(subject.id).id))
-
-  const nodes = nodeIds.map(({ id }): LayoutRelationshipsViewResult.Node => {
+  const nodes = nodeIds.map(({ id }): LayoutResult.Node => {
     const { element, inPorts, outPorts, column } = g.node(id)
     let { position, width, height } = nodeBounds(id)
 
-    if (!element) {
-      height = Math.min(subjectBounds.height, 300)
-      position.y = subjectBounds.position.y + subjectBounds.height / 2 - height / 2
-      if (column === 'incomers') {
-        width = subjectBounds.position.x - Sizes.emptyNodeOffset - position.x
-      } else {
-        const rightX = position.x + width!
-        position.x = subjectBounds.position.x + subjectBounds.width + Sizes.emptyNodeOffset
-        width = rightX - position.x
-      }
-      return {
-        id: id as NodeId,
-        parent: null,
-        position: [position.x, position.y],
-        title: 'empty node',
-        description: null,
-        technology: null,
-        tags: null,
-        links: null,
-        color: 'muted',
-        shape: 'rectangle',
-        style: {
-          border: 'dashed',
-          opacity: 50,
-        },
-        kind: LayoutRelationshipsViewResult.Empty,
-        level: 0,
-        labelBBox: {
-          x: position.x,
-          y: position.y,
-          width: width,
-          height: height,
-        },
-        inEdges: [],
-        outEdges: [],
-        children: [],
-        width,
-        height,
-        column,
-        ports: {
-          in: [],
-          out: [],
-        },
-        existsInCurrentView: false,
-      }
-    }
     const parentId = g.parent(id)
 
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
@@ -513,7 +383,7 @@ export function layoutRelationshipsView(
     minX = Math.min(minX, position.x)
     minY = Math.min(minY, position.y)
 
-    const navigateTo = element.defaultView?.id ?? null
+    const navigateTo = scope ? ifind(element.scopedViews(), v => v.id !== scope.id)?.id ?? null : null
 
     const inheritFromNode = scope?.findNodeWithElement(element.id)
     const scopedAncestor = scope && !inheritFromNode
@@ -547,8 +417,6 @@ export function layoutRelationshipsView(
         ...element.$element.style,
       },
       navigateTo,
-      inEdges: [],
-      outEdges: [],
       ...(children.length > 0 && { depth: nodeDepth(id) }),
       children,
       width,
@@ -558,12 +426,10 @@ export function layoutRelationshipsView(
         in: sortedPorts(id, 'in', inPorts),
         out: sortedPorts(id, 'out', outPorts),
       },
-      existsInCurrentView: !!inheritFromNode,
     }
   })
 
   return {
-    subjectExistsInScope: !scope || scope.includesElement(subject.id),
     bounds: {
       x: Math.min(minX, 0),
       y: Math.min(minY, 0),
@@ -577,53 +443,28 @@ export function layoutRelationshipsView(
       if (!ename) {
         return acc
       }
-      const { name, source, target, relations, sourceHandle, targetHandle } = find(edges, e => e.name === ename)!
-      const onlyRelation = only(relations)
-      const label = onlyRelation?.title ?? 'untitled'
-      const isMultiple = relations.length > 1
-      // const points = edge.points.map(p => [p.x, p.y] as Point)
-      const navigateTo = only(unique(relations.flatMap(r => r.navigateTo?.id ? r.navigateTo.id : [])))
-      // edge.points
-      // const edge = g.edge(name)
+      const { name, source, target, relationship, sourceHandle, targetHandle } = find(edges, e => e.name === ename)!
+      const label = relationship.title ?? 'untitled'
+      const navigateTo = relationship.navigateTo?.id ?? null
+      const description = relationship.description ?? null
+      const technology = relationship.technology ?? null
       acc.push({
         id: name as EdgeId,
         source: source as NodeId,
         sourceHandle,
         target: target as NodeId,
         targetHandle,
-        label: isMultiple ? `${relations.length} relationships` : label,
+        label,
+        color: relationship.color,
         ...(navigateTo && { navigateTo }),
-        existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
+        ...(description && { description }),
+        ...(technology && { technology }),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
-        line: onlyRelation?.$relationship.line ?? 'dashed',
-        relations: relations.map(r => r.id),
+        line: relationship.line,
+        relationId: relationship.id,
         parent: null,
       })
       return acc
-    }, [] as LayoutRelationshipsViewResult.Edge[]),
+    }, [] as LayoutResult.Edge[]),
   }
-}
-
-export function useRelationshipsView(
-  subject: Fqn,
-  viewId: ViewId | null,
-  scope: 'global' | 'view',
-): LayoutRelationshipsViewResult {
-  const model = useLikeC4Model(true)
-  return useMemo(() => {
-    const view = viewId ? model.findView(viewId) : null
-    const data = layoutRelationshipsView(
-      computeRelationshipsView(subject, model, viewId, scope),
-      scope === 'view' ? view : null,
-    )
-
-    if (view && (scope === 'global' || !data.subjectExistsInScope)) {
-      data.edges = data.edges.map(edge => {
-        edge.existsInCurrentView = edge.relations.every(r => view.includesRelation(r))
-        return edge
-      })
-    }
-
-    return Object.assign(data, { subject })
-  }, [model, subject, viewId, scope, computeRelationshipsView])
 }

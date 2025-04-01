@@ -133,8 +133,8 @@ export const overlaysActorLogic = setup({
       const currentOverlay = last(context.overlays)
       if (currentOverlay?.type === 'relationshipDetails') {
         enqueue.sendTo(currentOverlay.id, {
+          ...event,
           type: 'navigate.to',
-          edgeId: event.edgeId,
         })
         return
       }

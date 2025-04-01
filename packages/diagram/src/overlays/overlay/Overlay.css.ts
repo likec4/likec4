@@ -1,10 +1,14 @@
-import { css } from '@likec4/styles/css'
+import { css, sva } from '@likec4/styles/css'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
 
+export const level = '--_level'
+const offset = '--_offset'
+const inset = '--_inset'
+
 const borderRadius = '--_border-radius'
-export const dialog = css({
+const dialog = css.raw({
   boxSizing: 'border-box',
   margin: 0,
   position: 'fixed',
@@ -18,6 +22,9 @@ export const dialog = css({
   outline: 'none',
   borderRadius: `var(${borderRadius})`,
   [backdropBlur]: '0px',
+  [level]: '0',
+  [offset]: '0px',
+  [inset]: 'calc((1 + var(--_level) * 0.5) * var(--_offset))',
   [backdropOpacity]: '0%',
   _backdrop: {
     cursor: 'zoom-out',
@@ -32,36 +39,47 @@ export const dialog = css({
     border: 'none',
     inset: 0,
     padding: 0,
+    // [offset]: '0px',
+    // [inset]: '0px',
     width: '100vw',
     height: '100vh',
   },
   sm: {
+    inset: '[var(--_inset) var(--_offset) var(--_offset) var(--_inset)]',
+    width: 'calc(100vw - var(--_offset) - var(--_inset))',
+    height: 'calc(100vh - var(--_offset) - var(--_inset))',
     [borderRadius]: '6px',
     padding: '6px',
-    inset: '1rem',
-    width: 'calc(100vw - 2rem)',
-    height: 'calc(100vh - 2rem)',
+    [offset]: '1rem',
   },
   md: {
-    inset: '2rem',
-    width: 'calc(100vw - 4rem)',
-    height: 'calc(100vh - 4rem)',
+    [offset]: '1rem',
   },
   lg: {
-    inset: '4rem',
-    width: 'calc(100vw - 8rem)',
-    height: 'calc(100vh - 8rem)',
+    [offset]: '2rem',
   },
   xl: {
-    [borderRadius]: '8px',
-    padding: '8px',
-    inset: '5rem',
-    width: 'calc(100vw - 10rem)',
-    height: 'calc(100vh - 10rem)',
+    [offset]: '4rem',
   },
+  //     inset: '[calc(2rem + var(--_level, 0) * 1rem), 2rem, 2rem, 2rem]',
+  //     width: 'calc(100vw - 4rem)',
+  //     height: 'calc(100vh - 4rem - var(--_level, 0) * 1rem)',
+  //   },
+  //   lg: {
+  //     inset: '[calc(4rem + var(--_level, 0) * 1rem), 4rem, 4rem, 4rem]',
+  //     width: 'calc(100vw - 8rem)',
+  //     height: 'calc(100vh - 8rem)',
+  //   },
+  //   xl: {
+  //     [borderRadius]: '8px',
+  //     padding: '8px',
+  //     inset: '[calc(5rem + var(--_level, 0) * 1rem), 5rem, 5rem, 5rem]',
+  //     width: 'calc(100vw - 10rem)',
+  //     height: 'calc(100vh - 10rem - var(--_level, 0) * 1rem)',
+  //   },
 })
 
-export const body = css({
+const body = css.raw({
   position: 'relative',
   containerName: 'overlay-dialog',
   containerType: 'size',
@@ -72,5 +90,37 @@ export const body = css({
   height: '100%',
   sm: {
     borderRadius: `calc(var(${borderRadius}) - 2px)`,
+  },
+})
+
+export const overlay = sva({
+  slots: ['dialog', 'body'],
+  base: {
+    dialog: dialog,
+    body: body,
+  },
+  variants: {
+    level: {
+      0: {
+        dialog: {
+          [level]: '0',
+        },
+      },
+      1: {
+        dialog: {
+          [level]: '1',
+        },
+      },
+      2: {
+        dialog: {
+          [level]: '2',
+        },
+      },
+      3: {
+        dialog: {
+          [level]: '3',
+        },
+      },
+    },
   },
 })

@@ -8,21 +8,21 @@ import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hoo
 import { type HTMLMotionProps, m, useReducedMotionConfig } from 'framer-motion'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
-import * as styles from './Overlay.css'
+import { backdropBlur, backdropOpacity, overlay as overlayCVA } from './Overlay.css'
 
-type OverlayProps = PropsWithChildren<
-  HTMLMotionProps<'dialog'> & {
-    classes?: {
-      dialog?: string
-      body?: string
-    }
-    onClose: () => void
-    onClick?: never
+type OverlayProps = PropsWithChildren<{
+  overlayLevel?: 0 | 1 | 2 | 3
+  className?: string
+  classes?: {
+    dialog?: string
+    body?: string
   }
->
+  onClose: () => void
+  onClick?: never
+}>
 
 export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
-  ({ children, onClose, className, classes, ...rest }, ref) => {
+  ({ children, onClose, className, classes, overlayLevel = 0, ...rest }, ref) => {
     const [opened, setOpened] = useState(false)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const isClosingRef = useRef(false)
@@ -56,11 +56,15 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
         // Move dialog to the top of the DOM
         dialogRef.current?.showModal()
       }
-    }, 10)
+    }, 20)
 
     useTimeoutEffect(() => {
       setOpened(true)
     }, 120)
+
+    const styles = overlayCVA({
+      level: overlayLevel as 0 | 1 | 2 | 3,
+    })
 
     return (
       <m.dialog
@@ -70,16 +74,17 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
         {...motionNotReduced
           ? ({
             initial: {
-              [styles.backdropBlur]: '0px',
-              [styles.backdropOpacity]: '0%',
-              scale: 1.075,
+              [backdropBlur]: '0px',
+              [backdropOpacity]: '0%',
+              scale: overlayLevel > 0 ? 0.9 : 1.075,
               opacity: 0,
             },
             animate: {
-              [styles.backdropBlur]: '8px',
-              [styles.backdropOpacity]: '60%',
+              [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
+              [backdropOpacity]: overlayLevel > 0 ? '50%' : '60%',
               scale: 1,
               opacity: 1,
+              translateY: 0,
               transition: {
                 delay: 0.075,
               },
@@ -88,14 +93,14 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(
               scale: 1.3,
               opacity: 0,
               translateY: -10,
-              [styles.backdropBlur]: '0px',
-              [styles.backdropOpacity]: '0%',
+              [backdropBlur]: '0px',
+              [backdropOpacity]: '0%',
             },
           })
           : {
             initial: {
-              [styles.backdropBlur]: '8px',
-              [styles.backdropOpacity]: '60%',
+              [backdropBlur]: '8px',
+              [backdropOpacity]: '60%',
             },
           }}
         onClick={e => {

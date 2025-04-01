@@ -40,12 +40,12 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "merge-error-cause": "^5.0.1",
+    "merge-error-cause": "^5.0.2",
     "safe-stringify": "^1.1.1",
     "std-env": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:",
-    "wrap-error-message": "^3.0.0"
+    "wrap-error-message": "^3.0.1"
   },
   "packageManager": "pnpm@10.7.0"
 }

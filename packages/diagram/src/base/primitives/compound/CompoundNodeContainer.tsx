@@ -11,7 +11,6 @@ type RequiredData = Pick<
   DiagramNode,
   | 'color'
   | 'depth'
-  | 'shape'
   | 'style'
 >
 
@@ -73,7 +72,6 @@ export function CompoundNodeContainer({
       data-likec4-hovered={isHovered}
       data-likec4-color={data.color}
       data-compound-depth={depth}
-      data-likec4-shape={data.shape}
       {...isTransparent && {
         'data-compound-transparent': true,
         'data-compound-title-inverse': opacity < 0.5,

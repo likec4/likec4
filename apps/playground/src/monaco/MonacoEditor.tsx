@@ -53,15 +53,6 @@ const LazyMonacoEditor = memo(() => {
         style={{ width: '100%', height: '100%' }}
         wrapperConfig={wrapperConfig}
         onLoad={onLoad}
-        onTextChanged={useCallbackRef((textChanges: TextContents) => {
-          console.debug('onTextChanged', { textChanges })
-          // const { filename, text } = playground.getActiveFile()
-          // playground.send({
-          //   type: 'monaco.onTextChanged',
-          //   filename,
-          //   modified: textChanges.modified ?? text,
-          // })
-        })}
         onError={useCallbackRef(err => {
           logger.error(loggable(err))
         })}

@@ -1,4 +1,4 @@
-import { type DiagramView, type EdgeId, type Fqn, type NodeId, type ViewId } from '@likec4/core'
+import { type DiagramView, type EdgeId, type ElementNotation, type Fqn, type NodeId, type ViewId } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
@@ -40,22 +40,20 @@ export function useDiagram() {
       })
     },
     openRelationshipsBrowser: (fqn: Fqn) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipsBrowser', fqn })
-      })
+      actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
     openSource: (params: OpenSourceParams) => {
       actor.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.elementDetails', fqn, fromNode })
-      })
+      actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (edgeId: EdgeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipDetails', edgeId })
-      })
+    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+      if (params.length === 1) {
+        actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
+      } else {
+        actor.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
+      }
     },
 
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
@@ -134,6 +132,13 @@ export function useDiagram() {
 
     toggleFeature: (feature: FeatureName, forceValue?: boolean) => {
       actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
+    },
+
+    highlightNotation: (notation: ElementNotation, kind?: string) => {
+      actor.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
+    },
+    unhighlightNotation: () => {
+      actor.send({ type: 'notations.unhighlight' })
     },
   }), [actor])
 }

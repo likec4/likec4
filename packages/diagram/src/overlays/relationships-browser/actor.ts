@@ -26,10 +26,11 @@ import { Base } from '../../base'
 import { MinZoom, ZIndexes } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
+import { typedSystem } from '../../state/utils'
 import { centerXYInternalNode } from '../../utils'
-import type { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
+import type { LayoutRelationshipsViewResult } from './layout'
 import { viewToNodesEdge } from './useViewToNodesEdges'
 
 type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>
@@ -247,6 +248,7 @@ export const relationshipsBrowserLogic = setup({
     layouter,
   },
   guards: {
+    hasViewId: ({ context }) => context.viewId !== null,
     isReady: ({ context }) => context.xyflow !== null && context.xystore !== null && context.layouted !== null,
     anotherSubject: ({ context, event }) => {
       if (event.type === 'update.view') {
@@ -393,10 +395,27 @@ export const relationshipsBrowserLogic = setup({
             }
           }),
         },
+        'xyflow.edgeClick': {
+          guard: 'hasViewId',
+          actions: enqueueActions(({ event, context, system, enqueue }) => {
+            if (
+              event.edge.selected || event.edge.data.relations.length > 1
+              // (context.xyedges.some(e => e.data.dimmed === true || e.data.dimmed === 'immediate') && !event.edge.data.dimmed)
+            ) {
+              enqueue.sendTo(typedSystem(system).overlaysActorRef!, {
+                type: 'open.relationshipDetails',
+                viewId: context.viewId!,
+                source: event.edge.data.sourceFqn,
+                target: event.edge.data.targetFqn,
+              })
+            }
+          }),
+        },
         'navigate.to': {
           actions: [
             assign({
               subject: ({ event }) => event.subject,
+              viewId: ({ event, context }) => event.viewId ?? context.viewId ?? null,
               navigateFromNode: ({ event }) => event.fromNode ?? null,
             }),
           ],
@@ -443,7 +462,7 @@ export const relationshipsBrowserLogic = setup({
               actions: [
                 assign({
                   xyedges: ({ context, event }) => {
-                    const hasDimmed = context.xyedges.some(edge => edge.data.dimmed === true)
+                    const hasDimmed = context.xyedges.some(edge => edge.data.dimmed !== false || edge.selected)
                     return context.xyedges.map(edge => {
                       if (edge.id === event.edge.id) {
                         return Base.setData(edge, {
@@ -451,25 +470,26 @@ export const relationshipsBrowserLogic = setup({
                           dimmed: false,
                         })
                       }
-                      return hasDimmed && !edge.data.dimmed && !edge.selected ? Base.setDimmed(edge, 'immediate') : edge
+                      return hasDimmed && !edge.selected ? Base.setDimmed(edge, 'immediate') : edge
                     })
                   },
                 }),
                 cancel('undim.edges'),
                 cancel('dim.nonhovered.edges'),
-                raise({ type: 'dim.nonhovered.edges' }, { id: 'dim.nonhovered.edges', delay: 100 }),
+                raise({ type: 'dim.nonhovered.edges' }, { id: 'dim.nonhovered.edges', delay: 200 }),
               ],
             },
             'xyflow.edgeMouseLeave': {
               actions: [
                 assign({
-                  xyedges: ({ context, event }) =>
-                    context.xyedges.map(edge => {
+                  xyedges: ({ context, event }) => {
+                    return context.xyedges.map(edge => {
                       if (edge.id === event.edge.id) {
                         return Base.setHovered(edge, false)
                       }
                       return edge
-                    }),
+                    })
+                  },
                 }),
                 cancel('dim.nonhovered.edges'),
                 raise({ type: 'undim.edges' }, { id: 'undim.edges', delay: 400 }),
@@ -477,18 +497,23 @@ export const relationshipsBrowserLogic = setup({
             },
             'dim.nonhovered.edges': {
               actions: assign({
-                xyedges: ({ context }) => context.xyedges.map(edge => Base.setDimmed(edge, edge.data.hovered !== true)),
+                xyedges: ({ context }) =>
+                  context.xyedges.map(edge =>
+                    edge.data.hovered
+                      ? edge
+                      : Base.setDimmed(edge, edge.data.dimmed === 'immediate' ? 'immediate' : true)
+                  ),
               }),
             },
             'undim.edges': {
               actions: assign({
                 xyedges: ({ context }) => {
-                  const hasSelected = context.xyedges.some(edge => edge.selected === true)
-                  if (hasSelected) {
-                    return context.xyedges.map(edge =>
-                      Base.setDimmed(edge, edge.selected !== true ? edge.data.dimmed || 'immediate' : false)
-                    )
-                  }
+                  // const hasSelected = context.xyedges.some(edge => edge.selected === true)
+                  // if (hasSelected) {
+                  //   return context.xyedges.map(edge =>
+                  //     Base.setDimmed(edge, edge.selected !== true ? 'immediate' : false)
+                  //   )
+                  // }
                   return context.xyedges.map(Base.setDimmed(false))
                 },
               }),
