@@ -2,6 +2,7 @@ import { isEmpty, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
+  type Color,
   type ComputedDeploymentView,
   type DeployedInstance,
   type DeploymentElementStyle,
@@ -13,10 +14,13 @@ import {
   type IteratorLike,
   type Link,
   type RelationshipKind,
+  type RelationshipLineType,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor,
   DefaultElementShape,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
   DefaultThemeColor,
 } from '../types'
 import { DefaultShapeSize } from '../types/element'
@@ -534,6 +538,14 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
 
   get links(): ReadonlyArray<Link> {
     return this.$relationship.links ?? []
+  }
+
+  get color(): Color {
+    return this.$relationship.color ?? DefaultRelationshipColor
+  }
+
+  get line(): RelationshipLineType {
+    return this.$relationship.line ?? DefaultLineStyle
   }
 
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {

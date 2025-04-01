@@ -17,14 +17,14 @@ function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
       ) {
         return existing
       }
-      return {
-        ...omit(existing, ['hidden', 'zIndex']),
-        ...next,
-        data: {
-          ...existing.data,
-          ...next.data,
-        },
-      }
+      // return {
+      //   ...omit(existing, ['hidden', 'zIndex']),
+      //   ...next,
+      //   data: {
+      //     ...existing.data,
+      //     ...next.data,
+      //   },
+      // }
     }
     return next
   })

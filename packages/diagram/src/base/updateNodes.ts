@@ -20,17 +20,17 @@ function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
       ) {
         return existing
       }
-      return {
-        ...omit(existing, ['measured', 'parentId', 'hidden', 'zIndex']),
-        ...update,
-        // Force dimensions from update
-        width: update.initialWidth,
-        height: update.initialHeight,
-        data: {
-          ...existing.data,
-          ...update.data,
-        },
-      } as N
+      // return {
+      //   ...omit(existing, ['measured', 'parentId', 'hidden', 'zIndex']),
+      //   ...update,
+      //   // Force dimensions from update
+      //   width: update.initialWidth,
+      //   height: update.initialHeight,
+      //   data: {
+      //     ...existing.data,
+      //     ...update.data,
+      //   },
+      // } as N
     }
     return update
   })

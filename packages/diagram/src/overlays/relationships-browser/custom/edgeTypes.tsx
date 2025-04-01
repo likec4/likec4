@@ -67,7 +67,7 @@ export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((
         label="This relationship is not included in the current view"
         // withinPortal={false}
         portalProps={{
-          target: `#${browser.rootElementId.replaceAll(':', '\\:')}`,
+          target: `#${browser.rootElementId}`,
         }}
         openDelay={800}
       >

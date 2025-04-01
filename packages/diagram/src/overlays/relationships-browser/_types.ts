@@ -83,6 +83,8 @@ export namespace RelationshipsBrowserTypes {
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
   export type EdgeData = Base.EdgeData<{
+    sourceFqn: Fqn
+    targetFqn: Fqn
     relations: NonEmptyArray<RelationId>
     color: Color | undefined
     label: string | null

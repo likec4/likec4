@@ -1,33 +1,53 @@
+import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
 import {
+  type AbstractRelation,
+  type DiagramEdge,
+  type DiagramView,
+  type EdgeId,
   type Fqn,
+  type LikeC4Model,
+  type XYPoint,
+  compareFqnHierarchically,
+  compareRelations,
   DiagramNode,
-  ElementKind,
   invariant,
+  isAncestor,
   nonNullable,
   Queue,
 } from '@likec4/core'
-import { useDeepCompareMemo } from '@react-hookz/web'
-import { hasAtLeast } from 'remeda'
+import { useSelector } from '@xstate/react'
+import { deepEqual } from 'fast-equals'
+import { useMemo } from 'react'
+import { filter, first, forEach, hasAtLeast, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import type { RelationshipsBrowserTypes } from './_types'
-import { LayoutRelationshipsViewResult } from './layout'
+import { useLikeC4Model } from '../../likec4model'
+import type { RelationshipDetailsTypes } from './_types'
+import type { RelationshipDetailsSnapshot } from './actor'
+import {
+  type RelationshipDetailsViewData,
+  computeEdgeDetailsViewData,
+  computeRelationshipDetailsViewData,
+} from './compute'
+import { useRelationshipDetailsActor, useRelationshipDetailsState } from './hooks'
+import { type LayoutResult, layoutRelationshipDetails } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
-export function viewToNodesEdge(
-  view: Pick<LayoutRelationshipsViewResult, 'nodes' | 'edges'>,
+export function layoutResultToXYFlow(
+  layout: LayoutResult,
 ): {
-  xynodes: RelationshipsBrowserTypes.Node[]
-  xyedges: RelationshipsBrowserTypes.Edge[]
+  xynodes: RelationshipDetailsTypes.Node[]
+  xyedges: RelationshipDetailsTypes.Edge[]
+  bounds: { x: number; y: number; width: number; height: number }
 } {
-  const xynodes = [] as RelationshipsBrowserTypes.Node[],
-    xyedges = [] as RelationshipsBrowserTypes.Edge[],
-    nodeLookup = new Map<Fqn, LayoutRelationshipsViewResult.Node>()
+  const xynodes = [] as RelationshipDetailsTypes.Node[],
+    xyedges = [] as RelationshipDetailsTypes.Edge[],
+    nodeLookup = new Map<Fqn, LayoutResult.Node>()
 
   type TraverseItem = {
-    node: LayoutRelationshipsViewResult.Node
-    parent: LayoutRelationshipsViewResult.Node | null
+    node: LayoutResult.Node
+    parent: LayoutResult.Node | null
   }
-  const queue = Queue.from(view.nodes.reduce(
+  const queue = Queue.from(layout.nodes.reduce(
     (acc, node) => {
       nodeLookup.set(node.id, node)
       if (!node.parent) {
@@ -37,17 +57,13 @@ export function viewToNodesEdge(
     },
     [] as TraverseItem[],
   ))
-
-  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
-
-  // namespace to force unique ids
   const ns = ''
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
 
   let next: TraverseItem | undefined
   while ((next = queue.dequeue())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
+    const isCompound = hasAtLeast(node.children, 1)
     if (isCompound) {
       for (const child of node.children) {
         queue.enqueue({ node: nodeById(child), parent: node })
@@ -82,32 +98,13 @@ export function viewToNodesEdge(
       ...(parent && {
         parentId: ns + parent.id,
       }),
-    } satisfies Omit<RelationshipsBrowserTypes.Node, 'data' | 'type'>
+    } satisfies Omit<RelationshipDetailsTypes.Node, 'data' | 'type'>
 
-    const fqn = DiagramNode.modelRef(node)
-    // const deploymentRef = DiagramNode.deploymentRef(node)
-    // if (!fqn) {
-    //   console.error('Invalid node', node)
-    //   throw new Error('Element should have either modelRef or deploymentRef')
-    // }
-
+    const fqn = node.modelRef
     const navigateTo = { navigateTo: node.navigateTo ?? null }
 
     switch (true) {
-      case node.kind === LayoutRelationshipsViewResult.Empty: {
-        xynodes.push(
-          {
-            ...base,
-            type: 'empty',
-            data: {
-              column: node.column,
-            },
-          },
-        )
-        break
-      }
-
-      case isCompound && !!fqn: {
+      case isCompound: {
         xynodes.push(
           {
             ...base,
@@ -116,12 +113,10 @@ export function viewToNodesEdge(
               column: node.column,
               title: node.title,
               color: node.color,
-              shape: node.shape,
               style: node.style,
               depth: node.depth ?? 0,
               icon: node.icon ?? 'none',
               ports: node.ports,
-              existsInCurrentView: node.existsInCurrentView,
               fqn,
               ...navigateTo,
             },
@@ -130,7 +125,6 @@ export function viewToNodesEdge(
         break
       }
       default: {
-        invariant(fqn, 'Element should have either modelRef or deploymentRef')
         xynodes.push(
           {
             ...base,
@@ -148,7 +142,6 @@ export function viewToNodesEdge(
               icon: node.icon ?? 'none',
               ports: node.ports,
               style: node.style,
-              existsInCurrentView: node.existsInCurrentView,
               ...navigateTo,
             },
           },
@@ -156,21 +149,21 @@ export function viewToNodesEdge(
       }
     }
   }
-  for (const edge of view.edges) {
-    const source = edge.source
-    const target = edge.target
+  for (
+    const {
+      source,
+      target,
+      relationId,
+      label,
+      technology,
+      description,
+      navigateTo = null,
+      color = 'gray',
+      line = 'dashed',
+      ...edge
+    } of layout.edges
+  ) {
     const id = ns + edge.id
-
-    if (!hasAtLeast(edge.points, 2)) {
-      console.error('edge should have at least 2 points', edge)
-      continue
-    }
-
-    if (!hasAtLeast(edge.relations, 1)) {
-      console.error('edge should have at least 1 relation', edge)
-      continue
-    }
-
     xyedges.push({
       id,
       type: 'relationship',
@@ -183,30 +176,20 @@ export function viewToNodesEdge(
       // hidden: !visiblePredicate(edge),
       deletable: false,
       data: {
-        sourceFqn: edge.sourceFqn,
-        targetFqn: edge.targetFqn,
-        relations: edge.relations,
-        color: edge.color ?? 'gray',
-        label: edge.label,
-        navigateTo: edge.navigateTo ?? null,
-        line: edge.line ?? 'dashed',
-        existsInCurrentView: edge.existsInCurrentView,
+        relationId,
+        label,
+        color,
+        navigateTo,
+        line,
+        ...(technology && { technology }),
+        ...(description && { description }),
       },
-      interactionWidth: 20,
     })
   }
 
   return {
     xynodes,
     xyedges,
+    bounds: layout.bounds,
   }
-}
-
-export function useViewToNodesEdges({ edges, nodes }: LayoutRelationshipsViewResult) {
-  return useDeepCompareMemo(() => {
-    return viewToNodesEdge({
-      nodes,
-      edges,
-    })
-  }, [nodes, edges])
 }

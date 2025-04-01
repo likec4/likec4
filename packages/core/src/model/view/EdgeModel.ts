@@ -1,11 +1,13 @@
 import { isNonNullish } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import {
+  type Color,
   type ComputedDynamicView,
   type ComputedView,
   type DiagramView,
   type IteratorLike,
   type RelationId as C4RelationID,
+  type RelationshipLineType,
   type StepEdgeId,
   type Tag as C4Tag,
   extractStep,
@@ -63,6 +65,14 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   get navigateTo(): LikeC4ViewModel<M> | null {
     return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
+  }
+
+  get color(): Color {
+    return this.$edge.color ?? 'gray'
+  }
+
+  get line(): RelationshipLineType {
+    return this.$edge.line ?? 'dashed'
   }
 
   public isStep(): this is EdgeModel.StepEdge<M, ComputedDynamicView> {

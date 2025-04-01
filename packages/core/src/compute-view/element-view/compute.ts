@@ -224,8 +224,6 @@ export function computeElementView<M extends AnyAux>(
     },
     edges: applyCustomRelationProperties(rules, nodes, sorted.edges),
     nodes: map(nodes, n => {
-      // omit notation
-      delete n.notation
       if (n.icon === 'none') {
         delete n.icon
       }

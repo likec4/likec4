@@ -31,7 +31,7 @@ export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeData>((p
           translate: 'translate(-50%, 0)',
         }}
         style={{
-          maxWidth: Math.abs(props.targetX - props.sourceX - 70),
+          maxWidth: Math.abs(props.targetX - props.sourceX - 100),
         }}>
         <EdgeLabel edgeProps={props}>
           {enableNavigateTo && navigateTo && (
