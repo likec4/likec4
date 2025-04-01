@@ -70,7 +70,7 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.3,
             }}
-            onTap={button.onClick}
+            onTap={e => button.onClick(e as unknown as React.MouseEvent)}
             // Otherwise node receives click event and is selected
             onClick={stopPropagation}
             onDoubleClick={stopPropagation}
@@ -89,6 +89,6 @@ export namespace ElementActionButtons {
   export type Item = {
     key?: string
     icon: React.ReactNode
-    onClick: (e: React.MouseEvent | React.TouchEvent | React.PointerEvent) => void
+    onClick: (e: React.MouseEvent) => void
   }
 }
