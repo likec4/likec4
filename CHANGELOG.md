@@ -1,3 +1,17 @@
+## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
+
+
+### Bug Fixes
+
+* buttons on elements do not work anymore when clicked ([bb466df](https://github.com/likec4/likec4/commit/bb466dffa01b9b4351c6b522edb55b0cec7475e4)), closes [#1797](https://github.com/likec4/likec4/issues/1797)
+
+
+### Features
+
+* build embed url with respect to the current history mode ([#1795](https://github.com/likec4/likec4/issues/1795)) ([a6ab3d4](https://github.com/likec4/likec4/commit/a6ab3d422bfea68d427f703d5343b84128b9e8b6)), closes [#1678](https://github.com/likec4/likec4/issues/1678)
+
+
+
 ## [1.27.2](https://github.com/likec4/likec4/compare/v1.27.1...v1.27.2) (2025-04-01)
 
 
