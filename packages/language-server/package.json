@@ -130,6 +130,8 @@
     "p-debounce": "^4.0.0",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
+    "@types/picomatch": "catalog:utils",
+    "picomatch": "catalog:utils",
     "strip-indent": "^4.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",

@@ -4,27 +4,22 @@ import { groupBy, prop } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
 import { isLikeC4Builtin } from '../likec4lib'
 import type { LikeC4SharedServices } from '../module'
-import type { ProjectsManager } from './ProjectsManager'
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
-  private projects: ProjectsManager
-
-  constructor(services: LikeC4SharedServices) {
+  constructor(protected services: LikeC4SharedServices) {
     super(services)
-    this.projects = services.workspace.ProjectsManager
   }
 
   /**
    * Returns all user documents, excluding built-in documents.
    */
   get allExcludingBuiltin(): Stream<LikeC4LangiumDocument> {
+    const projects = this.services.workspace.ProjectsManager
     return super.all.filter((doc): doc is LikeC4LangiumDocument => {
       if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri)) {
         return false
       }
-      if (!doc.likec4ProjectId) {
-        doc.likec4ProjectId = this.projects.belongsTo(doc.uri)
-      }
+      doc.likec4ProjectId ??= projects.belongsTo(doc.uri)
       return true
     })
   }

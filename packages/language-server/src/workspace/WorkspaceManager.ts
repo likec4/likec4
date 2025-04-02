@@ -1,20 +1,18 @@
 import { hasAtLeast, invariant } from '@likec4/core'
-import type { LangiumDocument, LangiumDocumentFactory } from 'langium'
+import type { FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import * as BuiltIn from '../likec4lib'
+import { logError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import type { ProjectsManager } from '../workspace/ProjectsManager'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   private documentFactory: LangiumDocumentFactory
-  private projects: ProjectsManager
 
-  constructor(services: LikeC4SharedServices) {
+  constructor(private services: LikeC4SharedServices) {
     super(services)
     this.documentFactory = services.workspace.LangiumDocumentFactory
-    this.projects = services.workspace.ProjectsManager
   }
 
   /**
@@ -40,20 +38,50 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     fileExtensions: string[],
     collector: (document: LangiumDocument) => void,
   ): Promise<void> {
+    const projects = this.services.workspace.ProjectsManager
     const content = await this.fileSystemProvider.readDirectory(folderPath)
-    await Promise.all(content.map(async entry => {
-      if (await this.projects.loadConfigFile(entry)) {
-        return // skip processing further for project config
-      }
-      if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {
-        if (entry.isDirectory) {
-          await this.traverseFolder(workspaceFolder, entry.uri, fileExtensions, collector)
-        } else if (entry.isFile) {
-          const document = await this.langiumDocuments.getOrCreateDocument(entry.uri)
-          collector(document)
+
+    const nonConfigFiles = [] as FileSystemNode[]
+    // First load project config files
+    for (const entry of content) {
+      try {
+        if (!(await projects.loadConfigFile(entry))) {
+          nonConfigFiles.push(entry)
         }
+      } catch (error) {
+        logError(error)
       }
-    }))
+    }
+
+    // Then load other files
+    for (const entry of nonConfigFiles) {
+      try {
+        if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {
+          if (entry.isDirectory) {
+            await this.traverseFolder(workspaceFolder, entry.uri, fileExtensions, collector)
+          } else if (entry.isFile) {
+            const document = await this.langiumDocuments.getOrCreateDocument(entry.uri)
+            collector(document)
+          }
+        }
+      } catch (error) {
+        logError(error)
+      }
+    }
+  }
+
+  /**
+   * Determine whether the given folder entry shall be included while indexing the workspace.
+   */
+  protected override includeEntry(
+    _workspaceFolder: WorkspaceFolder,
+    entry: FileSystemNode,
+    fileExtensions: string[],
+  ): boolean {
+    if (entry.isFile) {
+      return !this.services.workspace.ProjectsManager.isExclude(entry.uri)
+    }
+    return super.includeEntry(_workspaceFolder, entry, fileExtensions)
   }
 
   public workspace() {

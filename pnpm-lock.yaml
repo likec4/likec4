@@ -137,6 +137,9 @@ catalogs:
     '@react-hookz/web':
       specifier: ^25.1.0
       version: 25.1.0
+    '@types/picomatch':
+      specifier: ^4.0.0
+      version: 4.0.0
     '@valibot/to-json-schema':
       specifier: ^1.0.0
       version: 1.0.0
@@ -155,6 +158,9 @@ catalogs:
     object-hash:
       specifier: ^3.0.0
       version: 3.0.0
+    picomatch:
+      specifier: ^4.0.2
+      version: 4.0.2
     remeda:
       specifier: ^2.21.2
       version: 2.21.2
@@ -874,6 +880,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.28
+      '@types/picomatch':
+        specifier: catalog:utils
+        version: 4.0.0
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
@@ -904,6 +913,9 @@ importers:
       p-debounce:
         specifier: ^4.0.0
         version: 4.0.0
+      picomatch:
+        specifier: catalog:utils
+        version: 4.0.2
       pretty-ms:
         specifier: ^9.2.0
         version: 9.2.0
@@ -3599,6 +3611,9 @@ packages:
 
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
+
+  '@types/picomatch@4.0.0':
+    resolution: {integrity: sha512-J1Bng+wlyEERWSgJQU1Pi0HObCLVcr994xT/M+1wcl/yNRTGBupsCxthgkdYG+GCOMaQH7iSVUY3LJVBBqG7MQ==}
 
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
@@ -11134,6 +11149,8 @@ snapshots:
   '@types/picomatch@2.3.4': {}
 
   '@types/picomatch@3.0.2': {}
+
+  '@types/picomatch@4.0.0': {}
 
   '@types/prop-types@15.7.14': {}
 
