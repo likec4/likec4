@@ -108,7 +108,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
         return (
           <Overlay
             key={overlay.actorRef.sessionId}
-            overlayLevel={Math.min(index, 3) as 0 | 1 | 2 | 3}
+            overlayLevel={index}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipsBrowser actorRef={overlay.actorRef} />
           </Overlay>
@@ -116,7 +116,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
       case 'relationshipDetails':
         return (
           <Overlay
-            overlayLevel={Math.min(index, 3) as 0 | 1 | 2 | 3}
+            overlayLevel={index}
             key={overlay.actorRef.sessionId}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipDetails actorRef={overlay.actorRef} />

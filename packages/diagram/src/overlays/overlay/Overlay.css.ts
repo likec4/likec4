@@ -61,22 +61,6 @@ const dialog = css.raw({
   xl: {
     [offset]: '4rem',
   },
-  //     inset: '[calc(2rem + var(--_level, 0) * 1rem), 2rem, 2rem, 2rem]',
-  //     width: 'calc(100vw - 4rem)',
-  //     height: 'calc(100vh - 4rem - var(--_level, 0) * 1rem)',
-  //   },
-  //   lg: {
-  //     inset: '[calc(4rem + var(--_level, 0) * 1rem), 4rem, 4rem, 4rem]',
-  //     width: 'calc(100vw - 8rem)',
-  //     height: 'calc(100vh - 8rem)',
-  //   },
-  //   xl: {
-  //     [borderRadius]: '8px',
-  //     padding: '8px',
-  //     inset: '[calc(5rem + var(--_level, 0) * 1rem), 5rem, 5rem, 5rem]',
-  //     width: 'calc(100vw - 10rem)',
-  //     height: 'calc(100vh - 10rem - var(--_level, 0) * 1rem)',
-  //   },
 })
 
 const body = css.raw({
@@ -98,29 +82,5 @@ export const overlay = sva({
   base: {
     dialog: dialog,
     body: body,
-  },
-  variants: {
-    level: {
-      0: {
-        dialog: {
-          [level]: '0',
-        },
-      },
-      1: {
-        dialog: {
-          [level]: '1',
-        },
-      },
-      2: {
-        dialog: {
-          [level]: '2',
-        },
-      },
-      3: {
-        dialog: {
-          [level]: '3',
-        },
-      },
-    },
   },
 })

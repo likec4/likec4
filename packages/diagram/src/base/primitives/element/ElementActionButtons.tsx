@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useId } from '@mantine/hooks'
 import { m } from 'framer-motion'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { stopPropagation } from '../../../utils/xyflow'
@@ -33,13 +34,13 @@ const actionButtons = css({
 })
 
 export function ElementActionButtons({
-  id,
   selected = false,
   data: {
     hovered: isHovered = false,
   },
   buttons,
 }: ElementActionButtonsProps) {
+  const id = useId()
   const zoomTooSmall = useIsZoomTooSmall()
   if (!buttons.length || zoomTooSmall) {
     return null
@@ -49,6 +50,7 @@ export function ElementActionButtons({
       <Box
         component={m.div}
         layoutRoot
+        key={`${id}-action-buttons`}
         initial={false}
         style={{
           originY: 0,
@@ -67,14 +69,14 @@ export function ElementActionButtons({
             component={m.button}
             layout
             className={actionBtn({})}
-            key={`action-button-${id}-${button.key ?? index}`}
+            key={`${id}-${button.key ?? index}`}
             initial={false}
             whileTap={{ scale: 1 }}
             whileHover={{
               scale: 1.3,
             }}
-            // Otherwise node receives click event and is selected
             onClick={button.onClick}
+            // Otherwise node receives click event and is selected
             onDoubleClick={stopPropagation}
           >
             {button.icon}

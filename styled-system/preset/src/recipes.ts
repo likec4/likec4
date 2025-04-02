@@ -38,6 +38,9 @@ export const actionBtn = defineRecipe({
     _smallZoom: {
       display: 'none',
     },
+    '& *': {
+      pointerEvents: 'none',
+    },
   },
 
   variants: {

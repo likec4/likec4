@@ -1,9 +1,14 @@
 import type { DiagramView } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { type MantineThemeOverride, createTheme, Portal } from '@mantine/core'
-import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
+import {
+  useColorScheme as usePreferredColorScheme,
+  useDebouncedCallback,
+  useId,
+  useMutationObserver,
+} from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
 import inlinedStyles from '../styles.css?inline'
 import fontsCss from './font.css?inline'
