@@ -71,7 +71,7 @@ describe.concurrent('ProjectsManager', () => {
       })
 
       expect(projectsManager.all).toContain('test-project')
-      const project = projectsManager.getProject('test-project')
+      const project = projectsManager.getProject('test-project' as ProjectId)
       expect(project.config).toEqual(config)
       expect(project.folder.toString()).toBe(folderUri.toString())
     })
