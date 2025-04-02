@@ -91,16 +91,14 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     layoutConstraints = useLayoutConstraints(),
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
-      if (!$isPanning.get()) {
-        $isPanning.set(true)
-      }
-    }, isReducedGraphics ? 150 : 350),
+      $isPanning.set(true)
+    }, isReducedGraphics ? 100 : 200),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       if ($isPanning.get()) {
         $isPanning.set(false)
       }
-    }, 120),
+    }, 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
         return
@@ -111,7 +109,9 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       notPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      notPanning.flush()
+      if (!!event) {
+        notPanning.flush()
+      }
       diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
     }),
     onViewportResize = useCallbackRef(() => {
