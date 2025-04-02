@@ -1,6 +1,7 @@
 {
   // This file is used by VSCode task runner
   "files": [],
+  "include": [],
   "references": [
     {
       "path": "./apps/playground/"

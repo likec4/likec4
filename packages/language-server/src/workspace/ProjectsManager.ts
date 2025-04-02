@@ -1,13 +1,27 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
 import { BiMap, invariant, nonNullable } from '@likec4/core'
 import { type FileSystemNode, type LangiumDocument, URI, WorkspaceCache } from 'langium'
-import { hasAtLeast, map, pipe, prop, sortBy } from 'remeda'
-import { hasProtocol, joinRelativeURL, parseFilename, withoutProtocol, withProtocol } from 'ufo'
+import picomatch from 'picomatch'
+import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
+import {
+  hasProtocol,
+  joinRelativeURL,
+  parseFilename,
+  withoutProtocol,
+  withProtocol,
+} from 'ufo'
 import { parseConfigJson, ProjectConfig } from '../config'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
 const logger = mainLogger.getChild('ProjectsManager')
+
+interface Project {
+  id: ProjectId
+  config: ProjectConfig
+  folder: string // URI.toString()
+  exclude?: picomatch.Matcher
+}
 
 export class ProjectsManager {
   /**
@@ -27,25 +41,32 @@ export class ProjectsManager {
    */
   private projectIdToFolder = new BiMap<ProjectId, string>()
 
-  // The mapping between document URIs and their corresponding project IDs.
-  private _mappingsToProject: WorkspaceCache<string, ProjectId> | undefined
-
   /**
    * Registered projects.
    * Sorted descending by the number of segments in the folder path.
    * This ensures that the most specific project is used for a document.
    */
-  private _projects = [] as Array<{
-    id: ProjectId
-    folder: string // URI.toString()
-    config: ProjectConfig
-    // configFile: URI | undefined
-  }>
+  private _projects = [] as Array<Project>
+
+  private defaultGlobalProject = {
+    id: ProjectsManager.DefaultProjectId,
+    config: {
+      name: ProjectsManager.DefaultProjectId,
+      exclude: ['node_modules'],
+    },
+    exclude: picomatch('node_modules'),
+  }
 
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
   }
 
+  /**
+   * Returns:
+   *  - the default project ID if there are no projects.
+   *  - the ID of the only project
+   *  - undefined if there are multiple projects.
+   */
   get defaultProjectId(): ProjectId | undefined {
     if (this._projects.length > 1) {
       return undefined
@@ -71,15 +92,16 @@ export class ProjectsManager {
       const folder = this.services.workspace.WorkspaceManager.workspaceUri
       return {
         folder,
-        config: {
-          name: ProjectsManager.DefaultProjectId,
-        },
+        config: this.defaultGlobalProject.config,
       }
     }
-    const project = nonNullable(this._projects.find(({ id }) => id === projectId), `Project "${projectId}" not found`)
+    const {
+      config,
+      folder,
+    } = nonNullable(this._projects.find(({ id }) => id === projectId), `Project "${projectId}" not found`)
     return {
-      folder: URI.parse(project.folder),
-      config: project.config,
+      folder: URI.parse(folder),
+      config,
     }
   }
 
@@ -101,6 +123,12 @@ export class ProjectsManager {
     return this._projects.length > 1
   }
 
+  checkIfExcluded(documentUri: URI): boolean {
+    let docUriAsString = documentUri.toString()
+    const { exclude } = this.findProjectForDocument(docUriAsString)
+    return exclude ? exclude(docUriAsString) : false
+  }
+
   /**
    * Checks if the provided file system entry is a valid project config file.
    *
@@ -111,7 +139,7 @@ export class ProjectsManager {
     if (entry.isDirectory) {
       return false
     }
-    const filename = parseFilename(entry.uri.fsPath, { strict: false })
+    const filename = parseFilename(entry.uri.fsPath, { strict: false })?.toLowerCase()
     if (!filename) {
       return false
     }
@@ -134,9 +162,10 @@ export class ProjectsManager {
       return this.registerProject({ config, folderUri })
     }
     const { config, folderUri } = opts
-    const id = config.name as ProjectId
-    if (this._projects.some(({ id: existingId }) => existingId === id)) {
-      throw new Error(`Project ID ${id} already registered`)
+    let id = config.name as ProjectId
+    let i = 1
+    while (this.projectIdToFolder.has(id)) {
+      id = `${config.name}-${i++}` as ProjectId
     }
     let folder
     if (URI.isUri(folderUri)) {
@@ -144,14 +173,24 @@ export class ProjectsManager {
     } else {
       folder = hasProtocol(folderUri) ? folderUri : withProtocol(folderUri, 'file://')
     }
+    const project: Project = {
+      id,
+      config,
+      folder,
+    }
+    if (isNullish(config.exclude)) {
+      project.exclude = this.defaultGlobalProject.exclude
+    } else if (hasAtLeast(config.exclude, 1)) {
+      project.exclude = picomatch(config.exclude)
+    }
     this._projects = pipe(
-      [...this._projects, { folder, config, id }],
+      [...this._projects, project],
       sortBy(
         [({ folder }) => withoutProtocol(folder).split('/').length, 'desc'],
       ),
     )
     this.projectIdToFolder.set(id, folder)
-    logger.debug`registered project ${id} folder: ${folder})`
+    logger.info`register project ${id} folder: ${folder})`
   }
 
   belongsTo(document: LangiumDocument | URI | string): ProjectId {
@@ -163,16 +202,21 @@ export class ProjectsManager {
     } else {
       documentUri = document.uri.toString()
     }
-    return this.mappingsToProject.get(documentUri, () => this.getProjectId(documentUri))
+    return this.findProjectForDocument(documentUri).id
   }
 
-  private getProjectId(documentUri: string): ProjectId {
-    const project = this._projects.find(({ folder }) => documentUri.toString().startsWith(folder))
-    // If the document is not part of any project, assign it to the global project ID
-    return project?.id ?? ProjectsManager.DefaultProjectId
+  protected findProjectForDocument(documentUri: string): Omit<Project, 'folder'> {
+    return this.mappingsToProject.get(documentUri, () => {
+      const project = this._projects.find(({ folder }) => documentUri.startsWith(folder))
+      // If the document is not part of any project, assign it to the global project ID
+      return project ?? this.defaultGlobalProject
+    })
   }
 
-  protected get mappingsToProject(): WorkspaceCache<string, ProjectId> {
+  // The mapping between document URIs and their corresponding project ID
+  // Lazy-created due to initialization order of the LanguageServer
+  private _mappingsToProject: WorkspaceCache<string, Omit<Project, 'folder'>> | undefined
+  protected get mappingsToProject(): WorkspaceCache<string, Omit<Project, 'folder'>> {
     this._mappingsToProject ??= new WorkspaceCache(this.services)
     return this._mappingsToProject
   }

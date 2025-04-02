@@ -27,6 +27,8 @@ catalogs:
     esm-env: "^1.2.2"
     json5: "^2.2.3"
     object-hash: "^3.0.0"
+    picomatch: "^4.0.2"
+    "@types/picomatch": "^4.0.0"
   esbuild:
     esbuild: "^0.25.1"
     esbuild-node-externals: "^1.18.0"
