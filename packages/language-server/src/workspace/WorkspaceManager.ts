@@ -79,7 +79,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     fileExtensions: string[],
   ): boolean {
     if (entry.isFile) {
-      return !this.services.workspace.ProjectsManager.isExclude(entry.uri)
+      return !this.services.workspace.ProjectsManager.checkIfExcluded(entry.uri)
     }
     return super.includeEntry(_workspaceFolder, entry, fileExtensions)
   }

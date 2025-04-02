@@ -2,7 +2,7 @@ import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
 import { BiMap, invariant, nonNullable } from '@likec4/core'
 import { type FileSystemNode, type LangiumDocument, URI, WorkspaceCache } from 'langium'
 import picomatch from 'picomatch'
-import { hasAtLeast, map, pipe, prop, sortBy } from 'remeda'
+import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
 import {
   hasProtocol,
   joinRelativeURL,
@@ -20,7 +20,7 @@ interface Project {
   id: ProjectId
   config: ProjectConfig
   folder: string // URI.toString()
-  exclude: picomatch.Matcher
+  exclude?: picomatch.Matcher
 }
 
 export class ProjectsManager {
@@ -41,9 +41,6 @@ export class ProjectsManager {
    */
   private projectIdToFolder = new BiMap<ProjectId, string>()
 
-  // The mapping between document URIs and their corresponding project IDs.
-  private _mappingsToProject: WorkspaceCache<string, Project> | undefined
-
   /**
    * Registered projects.
    * Sorted descending by the number of segments in the folder path.
@@ -51,32 +48,30 @@ export class ProjectsManager {
    */
   private _projects = [] as Array<Project>
 
+  private defaultGlobalProject = {
+    id: ProjectsManager.DefaultProjectId,
+    config: {
+      name: ProjectsManager.DefaultProjectId,
+      exclude: ['node_modules'],
+    },
+    exclude: picomatch('node_modules'),
+  }
+
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
   }
 
+  /**
+   * Returns:
+   *  - the default project ID if there are no projects.
+   *  - the ID of the only project
+   *  - undefined if there are multiple projects.
+   */
   get defaultProjectId(): ProjectId | undefined {
     if (this._projects.length > 1) {
       return undefined
     }
     return this._projects[0]?.id ?? ProjectsManager.DefaultProjectId
-  }
-
-  private _defaultProject: Project | undefined
-  get defaultGlobalProject(): Project {
-    if (!this._defaultProject) {
-      const folder = this.services.workspace.WorkspaceManager.workspaceUri
-      this._defaultProject = {
-        id: ProjectsManager.DefaultProjectId,
-        folder: folder.toString(),
-        config: {
-          name: ProjectsManager.DefaultProjectId,
-          exclude: ['node_modules'],
-        },
-        exclude: picomatch('node_modules'),
-      }
-    }
-    return this._defaultProject
   }
 
   get all(): NonEmptyReadonlyArray<ProjectId> {
@@ -128,6 +123,12 @@ export class ProjectsManager {
     return this._projects.length > 1
   }
 
+  checkIfExcluded(documentUri: URI): boolean {
+    let docUriAsString = documentUri.toString()
+    const { exclude } = this.findProjectForDocument(docUriAsString)
+    return exclude ? exclude(docUriAsString) : false
+  }
+
   /**
    * Checks if the provided file system entry is a valid project config file.
    *
@@ -163,7 +164,7 @@ export class ProjectsManager {
     const { config, folderUri } = opts
     let id = config.name as ProjectId
     let i = 1
-    while (this._projects.some(({ id: existingId }) => existingId === id)) {
+    while (this.projectIdToFolder.has(id)) {
       id = `${config.name}-${i++}` as ProjectId
     }
     let folder
@@ -172,9 +173,18 @@ export class ProjectsManager {
     } else {
       folder = hasProtocol(folderUri) ? folderUri : withProtocol(folderUri, 'file://')
     }
-    const exclude = picomatch(config.exclude)
+    const project: Project = {
+      id,
+      config,
+      folder,
+    }
+    if (isNullish(config.exclude)) {
+      project.exclude = this.defaultGlobalProject.exclude
+    } else if (hasAtLeast(config.exclude, 1)) {
+      project.exclude = picomatch(config.exclude)
+    }
     this._projects = pipe(
-      [...this._projects, { folder, config, id, exclude }],
+      [...this._projects, project],
       sortBy(
         [({ folder }) => withoutProtocol(folder).split('/').length, 'desc'],
       ),
@@ -192,23 +202,22 @@ export class ProjectsManager {
     } else {
       documentUri = document.uri.toString()
     }
-    return this.mappingsToProject.get(documentUri, () => this.belongsToProject(documentUri)).id
+    return this.findProjectForDocument(documentUri).id
   }
 
-  private belongsToProject(documentUri: string): Project {
-    const project = this._projects.find(({ folder }) => documentUri.startsWith(folder))
-    // If the document is not part of any project, assign it to the global project ID
-    return project ?? this.defaultGlobalProject
+  protected findProjectForDocument(documentUri: string): Omit<Project, 'folder'> {
+    return this.mappingsToProject.get(documentUri, () => {
+      const project = this._projects.find(({ folder }) => documentUri.startsWith(folder))
+      // If the document is not part of any project, assign it to the global project ID
+      return project ?? this.defaultGlobalProject
+    })
   }
 
-  protected get mappingsToProject(): WorkspaceCache<string, Project> {
+  // The mapping between document URIs and their corresponding project ID
+  // Lazy-created due to initialization order of the LanguageServer
+  private _mappingsToProject: WorkspaceCache<string, Omit<Project, 'folder'>> | undefined
+  protected get mappingsToProject(): WorkspaceCache<string, Omit<Project, 'folder'>> {
     this._mappingsToProject ??= new WorkspaceCache(this.services)
     return this._mappingsToProject
-  }
-
-  isExclude(documentUri: URI): boolean {
-    let doc = documentUri.toString()
-    const { exclude } = this.mappingsToProject.get(doc, () => this.belongsToProject(doc))
-    return exclude(doc)
   }
 }

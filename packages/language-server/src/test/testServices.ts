@@ -7,6 +7,7 @@ import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { createLanguageServices } from '../module'
+import { ProjectsManager } from '../workspace'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
   const services = createLanguageServices(EmptyFileSystem).likec4
@@ -206,6 +207,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
   return {
     services,
     projects,
+    projectsManager: services.shared.workspace.ProjectsManager,
     /**
      * Add document outside of projects
      */

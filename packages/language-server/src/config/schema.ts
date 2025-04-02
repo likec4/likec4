@@ -1,5 +1,4 @@
 import JSON5 from 'json5'
-import type { Simplify } from 'type-fest'
 import * as v from 'valibot'
 
 export const ProjectConfig = v.object({
@@ -23,20 +22,12 @@ export const ProjectConfig = v.object({
   ),
 })
 
-export type ProjectConfig = Simplify<
-  v.InferOutput<typeof ProjectConfig> & {
-    exclude: string[]
-  }
->
+export type ProjectConfig = v.InferOutput<typeof ProjectConfig>
 
 export function parseConfigJson(config: string): ProjectConfig {
   return validateConfig(JSON5.parse(config))
 }
 
 export function validateConfig(config: unknown): ProjectConfig {
-  const parsed = v.parse(ProjectConfig, config)
-  return {
-    ...parsed,
-    exclude: parsed.exclude ?? ['node_modules'],
-  }
+  return v.parse(ProjectConfig, config)
 }
