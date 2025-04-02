@@ -30,7 +30,7 @@ catalogs:
     picomatch: "^4.0.2"
     "@types/picomatch": "^4.0.0"
   esbuild:
-    esbuild: "^0.25.1"
+    esbuild: "^0.25.2"
     esbuild-node-externals: "^1.18.0"
     esbuild-plugins-node-modules-polyfill: "^1.7.0"
   react:
