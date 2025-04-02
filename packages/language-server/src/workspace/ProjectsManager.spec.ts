@@ -61,7 +61,7 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['/node_modules/'],
+        exclude: ['node_modules'],
       }
       const folderUri = URI.parse('file:///test/workspace/src/test-project')
 
@@ -82,7 +82,7 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['/node_modules/'],
+        exclude: ['node_modules'],
       }
       ;(parseConfigJson as any).mockReturnValue(config)
       const fs = services.shared.workspace.FileSystemProvider
@@ -106,7 +106,7 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['/node_modules/'],
+        exclude: ['node_modules'],
       }
       const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
       const folderUri2 = URI.parse('file:///test/workspace/src/test-project-2')
@@ -133,7 +133,7 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['/node_modules/'],
+        exclude: ['node_modules'],
       }
       const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
       const folderUri2 = '/test/workspace/src/test-project-2'

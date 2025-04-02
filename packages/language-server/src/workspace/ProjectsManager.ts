@@ -71,9 +71,9 @@ export class ProjectsManager {
         folder: folder.toString(),
         config: {
           name: ProjectsManager.DefaultProjectId,
-          exclude: ['/node_modules/'],
+          exclude: ['node_modules'],
         },
-        exclude: picomatch('/node_modules/'),
+        exclude: picomatch('node_modules'),
       }
     }
     return this._defaultProject

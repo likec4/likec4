@@ -175,7 +175,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     services.shared.workspace.ProjectsManager.registerProject({
       config: {
         name,
-        exclude: ['/node_modules/'],
+        exclude: ['node_modules'],
       },
       folderUri,
     })
