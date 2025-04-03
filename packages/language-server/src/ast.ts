@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
@@ -12,8 +12,6 @@ import type { IsValidFn } from './validation'
 
 export { ast }
 
-const idattr = Symbol.for('idattr')
-
 declare module 'langium' {
   export interface LangiumDocument {
     likec4ProjectId?: c4.ProjectId
@@ -24,6 +22,7 @@ declare module 'langium' {
   }
 }
 
+const idattr = Symbol.for('idattr')
 declare module './generated/ast' {
   export interface Element {
     [idattr]?: c4.Fqn | undefined
@@ -201,6 +200,7 @@ export const ElementOps = {
 }
 
 export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
+  likec4ProjectId: c4.ProjectId
   id: c4.Fqn
 }
 
@@ -219,6 +219,7 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
+  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
@@ -248,6 +249,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Views
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
+    && !!doc.c4Imports
   )
 }
 

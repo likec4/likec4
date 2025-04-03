@@ -82,7 +82,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
   }
 
   public byFqn(projectId: ProjectId, fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    return stream(this.workspaceCache.get(`${this.cachePrefix}:${projectId}:${fqn}`, () => {
+    return stream(this.workspaceCache.get(`${this.cachePrefix}:${projectId}:fqn:${fqn}`, () => {
       return this
         .documents(projectId)
         .toArray()
@@ -164,6 +164,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
+    const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
@@ -239,7 +240,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
       }
     }
 
-    return new DocumentFqnIndex(root, children, descendants, byfqn, this.projects.belongsTo(document))
+    return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)
   }
 }
 

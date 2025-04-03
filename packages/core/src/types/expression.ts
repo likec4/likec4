@@ -1,7 +1,8 @@
 import type { IconUrl } from './_common'
-import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
+import type { Fqn, Tag } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 

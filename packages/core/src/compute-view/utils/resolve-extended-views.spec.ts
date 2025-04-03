@@ -1,6 +1,6 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn } from '../../types/element'
+import type { Fqn } from '../../types/scalars'
 import type { ElementView, ViewId, ViewRule } from '../../types/view'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 

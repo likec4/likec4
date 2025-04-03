@@ -4,9 +4,10 @@ import type {
   DeploymentNodeKindSpecification,
   DeploymentRelation,
 } from './deployments'
-import type { ElementKindSpecification, Tag, TypedElement } from './element'
+import type { ElementKindSpecification, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
+import type { Tag } from './scalars'
 import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**

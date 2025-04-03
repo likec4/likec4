@@ -19,7 +19,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       if (ast.isImported(refValue)) {
         return {
           project: refValue.$container.project as ProjectId,
-          model: refValue.element.$refText as c4.Fqn,
+          model: this.resolveFqn(
+            nonNullable(refValue.element.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
+          ),
         }
       }
       if (ast.isElement(refValue)) {

@@ -9,9 +9,21 @@ export type {
   NTuple,
   Point,
   Predicate,
-  ProjectId,
   XYPoint,
 } from './_common'
+
+export {
+  AsFqn,
+  GlobalFqn,
+  isGlobalFqn,
+  splitGlobalFqn,
+} from './scalars'
+
+export type {
+  Fqn,
+  ProjectId,
+  Tag,
+} from './scalars'
 
 export { DeploymentElement } from './deployments'
 export type {
@@ -26,7 +38,6 @@ export type {
 } from './deployments'
 
 export {
-  AsFqn,
   BorderStyles,
   DefaultElementShape,
   DefaultPaddingSize,
@@ -43,9 +54,7 @@ export type {
   ElementKindSpecificationStyle,
   ElementShape,
   ElementStyle,
-  Fqn,
   Link,
-  Tag,
   TagSpec,
   TypedElement,
 } from './element'

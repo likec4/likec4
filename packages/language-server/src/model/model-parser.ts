@@ -1,7 +1,7 @@
 import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import { type LangiumDocument, type Stream, DocumentState } from 'langium'
+import { type LangiumDocument, type Stream, DocumentState, MultiMap } from 'langium'
 import { pipe } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
@@ -111,6 +111,7 @@ export class LikeC4ModelParser {
         styles: {},
       },
       c4Views: [],
+      c4Imports: new MultiMap(),
     }
     doc = Object.assign(doc, props)
     const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)

@@ -5,15 +5,14 @@ import {
   type BorderStyle,
   type ElementShape,
   type ElementStyle,
-  type Fqn,
   type Link,
-  type Tag,
   ElementKind,
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { ExpressionV2, FqnExpr } from './expression-v2'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type { Fqn, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 

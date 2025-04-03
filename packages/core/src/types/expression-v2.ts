@@ -1,8 +1,8 @@
 import { invariant } from '../errors'
 import type { ExclusiveUnion, ProjectId } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
-import type { Fqn } from './element'
 import type { WhereOperator } from './operators'
+import type { Fqn } from './scalars'
 
 export namespace FqnRef {
   /**
