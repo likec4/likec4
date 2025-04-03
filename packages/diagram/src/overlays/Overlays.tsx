@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { AnimatePresence, LayoutGroup, useReducedMotion, useReducedMotionConfig } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'framer-motion'
 import { animate } from 'framer-motion/dom'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
@@ -108,7 +108,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
         return (
           <Overlay
             key={overlay.actorRef.sessionId}
-            overlayLevel={Math.min(index, 3) as 0 | 1 | 2 | 3}
+            overlayLevel={index}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipsBrowser actorRef={overlay.actorRef} />
           </Overlay>
@@ -116,7 +116,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
       case 'relationshipDetails':
         return (
           <Overlay
-            overlayLevel={Math.min(index, 3) as 0 | 1 | 2 | 3}
+            overlayLevel={index}
             key={overlay.actorRef.sessionId}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipDetails actorRef={overlay.actorRef} />

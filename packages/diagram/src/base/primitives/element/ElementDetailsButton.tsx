@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useId } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import { m } from 'framer-motion'
 import { stopPropagation } from '../../../utils/xyflow'
@@ -41,11 +42,14 @@ export function ElementDetailsButton({
   icon,
   onClick,
 }: ElementDetailsButtonProps) {
+  const id = useId()
   return (
     <Box className={cx(container, 'details-button')}>
       <ActionIcon
+        key={id}
         className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
         component={m.button}
+        layout
         initial={false}
         style={{
           originX: 0.45,

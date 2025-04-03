@@ -1,35 +1,12 @@
-import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
 import {
-  type AbstractRelation,
-  type DiagramEdge,
-  type DiagramView,
-  type EdgeId,
   type Fqn,
-  type LikeC4Model,
-  type XYPoint,
-  compareFqnHierarchically,
-  compareRelations,
-  DiagramNode,
-  invariant,
-  isAncestor,
   nonNullable,
   Queue,
 } from '@likec4/core'
-import { useSelector } from '@xstate/react'
-import { deepEqual } from 'fast-equals'
-import { useMemo } from 'react'
-import { filter, first, forEach, hasAtLeast, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import { useLikeC4Model } from '../../likec4model'
 import type { RelationshipDetailsTypes } from './_types'
-import type { RelationshipDetailsSnapshot } from './actor'
-import {
-  type RelationshipDetailsViewData,
-  computeEdgeDetailsViewData,
-  computeRelationshipDetailsViewData,
-} from './compute'
-import { useRelationshipDetailsActor, useRelationshipDetailsState } from './hooks'
-import { type LayoutResult, layoutRelationshipDetails } from './layout'
+import { type LayoutResult } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 export function layoutResultToXYFlow(

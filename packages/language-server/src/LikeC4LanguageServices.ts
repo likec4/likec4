@@ -77,12 +77,11 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (hasAtLeast(projectsWithDocs, 1)) {
       return projectsWithDocs
     }
+    const { folder, config } = projectsManager.getProject(ProjectsManager.DefaultProjectId)
     return [{
       id: ProjectsManager.DefaultProjectId,
-      folder: this.services.shared.workspace.WorkspaceManager.workspaceUri,
-      config: {
-        name: 'default',
-      },
+      folder,
+      config,
       documents: null,
     }]
   }

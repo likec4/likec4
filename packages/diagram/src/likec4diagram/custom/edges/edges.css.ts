@@ -1,6 +1,4 @@
 import { css } from '@likec4/styles/css'
-// import { globalStyle, style } from '@vanilla-extract/css'
-// import { mantine, xyvars } from '../../../theme-vars'
 
 const isSelected = '.react-flow__edge.selected'
 

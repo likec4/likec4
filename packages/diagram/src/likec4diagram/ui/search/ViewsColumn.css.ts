@@ -1,9 +1,5 @@
 import { css, cx } from '@likec4/styles/css'
 
-// import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-// import { mantine } from '../../../theme-vars'
-// import { button, description, descriptionColor, iconColor, title } from './_shared.css'
-
 export { emptyBoX, focusable } from './_shared.css'
 
 const _viewBtn = 'likec4-view-btn'

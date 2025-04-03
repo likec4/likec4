@@ -27,8 +27,10 @@ catalogs:
     esm-env: "^1.2.2"
     json5: "^2.2.3"
     object-hash: "^3.0.0"
+    picomatch: "^4.0.2"
+    "@types/picomatch": "^4.0.0"
   esbuild:
-    esbuild: "^0.25.1"
+    esbuild: "^0.25.2"
     esbuild-node-externals: "^1.18.0"
     esbuild-plugins-node-modules-polyfill: "^1.7.0"
   react:
@@ -41,7 +43,7 @@ catalogs:
     clsx: "^2.1.1"
     nanostores: "0.11.4"
     "@nanostores/react": "0.8.4"
-    framer-motion: "^12.6.2"
+    framer-motion: "^12.6.3"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
@@ -61,16 +63,10 @@ catalogs:
     vite-tsconfig-paths: "^5.1.4"
     rollup: "^4.38.0"
   vitest:
-    vitest: "^3.0.9"
-    "@vitest/coverage-c8": "^3.0.9"
-    "@vitest/ui": "^3.0.9"
+    vitest: "^3.1.1"
+    "@vitest/ui": "^3.1.1"
   css:
     postcss: "^8.5.3"
-    "@vanilla-extract/css": "^1.17.1"
-    "@vanilla-extract/dynamic": "^2.1.2"
-    "@vanilla-extract/vite-plugin": "^5.0.1"
-    "@vanilla-extract/css-utils": "^0.1.4"
-    "@vanilla-extract/esbuild-plugin": "^2.3.15"
     "@pandacss/dev": "^0.53.3"
     "@pandacss/preset-panda": "^0.53.3"
   vscode:
@@ -84,7 +80,7 @@ catalogs:
     vscode-textmate: "9.2.0"
     "@types/vscode": "^1.84.0"
   xyflow:
-    "@xyflow/react": "^12.5.2"
+    "@xyflow/react": "^12.5.3"
     "@xyflow/system": "^0.0.53"
   langium:
     langium: "3.4.0"

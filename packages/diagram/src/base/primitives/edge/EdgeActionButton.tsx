@@ -2,10 +2,9 @@ import { cx } from '@likec4/styles/css'
 import { ActionIcon } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import { stopPropagation } from '../../../utils/xyflow'
-import type { EdgeProps } from '../../types'
 import { actionBtn } from './edge.css'
 
-type EdgeActionBtnProps = EdgeProps & {
+type EdgeActionBtnProps = {
   icon?: React.ReactNode
   onClick: (e: React.MouseEvent) => void
 }

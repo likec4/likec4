@@ -1,4 +1,3 @@
-// import { createVar, globalStyle } from '@vanilla-extract/css'
 import { css } from '@likec4/styles/css'
 
 // const bg = createVar()

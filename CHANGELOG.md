@@ -1,3 +1,17 @@
+## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
+
+
+### Bug Fixes
+
+* regression: buttons on elements do not work anymore when clicked, closes [#1797](https://github.com/likec4/likec4/issues/1797)
+
+
+### Improvements
+
+* build embed url with respect to the current history mode, thanks @pavelpykhtin, closes [#1678](https://github.com/likec4/likec4/issues/1678) ([#1795](https://github.com/likec4/likec4/issues/1795))
+
+
+
 ## [1.27.2](https://github.com/likec4/likec4/compare/v1.27.1...v1.27.2) (2025-04-01)
 
 

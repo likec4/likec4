@@ -335,7 +335,13 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   return (
     <>
       <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
-        <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
+        <EdgePath
+          {...props}
+          svgPath={edgePath}
+          ref={svgPathRef}
+          {...enableEdgeEditing && {
+            onEdgePointerDown,
+          }} />
         <EdgeLabelContainer
           edgeProps={props}
           labelPosition={{

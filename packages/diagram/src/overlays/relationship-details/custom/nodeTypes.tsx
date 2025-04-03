@@ -33,7 +33,7 @@ export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>(
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} iconSize={40} />
+      <ElementTitle {...props} />
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
       <ElementPorts {...props} />

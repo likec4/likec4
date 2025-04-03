@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "1.27.2",
+  "version": "1.27.3",
   "license": "MIT",
   "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -45,5 +45,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.7.0"
+  "packageManager": "pnpm@10.7.1"
 }

@@ -16,38 +16,27 @@ export { useDiagramActorRef }
 
 export function useDiagram() {
   const actor = useDiagramActorRef()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
     send: actor.send,
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
-      startTransition(() => {
-        actor.send({
-          type: 'navigate.to',
-          viewId,
-          ...(fromNode && { fromNode }),
-        })
+      actor.send({
+        type: 'navigate.to',
+        viewId,
+        ...(fromNode && { fromNode }),
       })
     },
     navigate: (direction: 'back' | 'forward') => {
-      startTransition(() => {
-        actor.send({ type: `navigate.${direction}` })
-      })
+      actor.send({ type: `navigate.${direction}` })
     },
     fitDiagram: (duration = 350) => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram', duration })
-      })
+      actor.send({ type: 'fitDiagram', duration })
     },
     openRelationshipsBrowser: (fqn: Fqn) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipsBrowser', fqn })
-      })
+      actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
     openSource: (params: OpenSourceParams) => {
-      startTransition(() => {
-        actor.send({ type: 'open.source', ...params })
-      })
+      actor.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
       actor.send({ type: 'open.elementDetails', fqn, fromNode })

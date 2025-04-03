@@ -17,7 +17,7 @@ export const ProjectConfig = v.object({
   exclude: v.optional(
     v.pipe(
       v.array(v.string()),
-      v.description('List of file patterns to exclude from the project, default is ["node_modules"]'),
+      v.description('List of file patterns to exclude from the project, default is ["**/node_modules/**/*"]'),
     ),
   ),
 })

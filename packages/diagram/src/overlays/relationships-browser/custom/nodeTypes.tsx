@@ -36,7 +36,7 @@ export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>
   return (
     <ElementNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} iconSize={40} />
+      <ElementTitle {...props} />
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
       <ElementPorts {...props} />

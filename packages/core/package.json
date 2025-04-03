@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.27.2",
+  "version": "1.27.3",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -118,5 +118,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.7.0"
+  "packageManager": "pnpm@10.7.1"
 }
