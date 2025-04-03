@@ -54,7 +54,6 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['node_modules'],
       }
       const folderUri = URI.parse('file:///test/workspace/src/test-project')
 
@@ -92,7 +91,6 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['node_modules'],
       }
       const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
       const folderUri2 = URI.parse('file:///test/workspace/src/test-project-2')
@@ -115,7 +113,6 @@ describe.concurrent('ProjectsManager', () => {
 
       const config = {
         name: 'test-project',
-        exclude: ['node_modules'],
       }
       const folderUri1 = URI.parse('file:///test/workspace/src/test-project-1')
       const folderUri2 = '/test/workspace/src/test-project-2'
@@ -136,5 +133,19 @@ describe.concurrent('ProjectsManager', () => {
         withProtocol(folderUri2, 'file://'),
       )
     })
+  })
+
+  it('should exclude node_modules', async ({ expect }) => {
+    const { projectsManager } = await createMultiProjectTestServices({})
+
+    expect(projectsManager.belongsTo('file:///test/workspace/doc.likec4')).toEqual('default')
+    expect(projectsManager.checkIfExcluded(URI.parse('file:///test/workspace/doc.likec4'))).toEqual(false)
+    expect(projectsManager.checkIfExcluded(
+      URI.parse('file:///test/workspace/node_modules/doc.likec4'),
+    )).toEqual(true)
+
+    expect(projectsManager.checkIfExcluded(
+      URI.parse('file:///test/workspace/node_modules/deep/doc.likec4'),
+    )).toEqual(true)
   })
 })

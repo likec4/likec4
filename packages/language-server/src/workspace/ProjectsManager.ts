@@ -1,7 +1,7 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
 import { BiMap, invariant, nonNullable } from '@likec4/core'
 import { type FileSystemNode, type LangiumDocument, URI, WorkspaceCache } from 'langium'
-import picomatch from 'picomatch'
+import picomatch from 'picomatch/posix'
 import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
 import {
   hasProtocol,
@@ -52,9 +52,9 @@ export class ProjectsManager {
     id: ProjectsManager.DefaultProjectId,
     config: {
       name: ProjectsManager.DefaultProjectId,
-      exclude: ['node_modules'],
+      exclude: ['**/node_modules/**/*'],
     },
-    exclude: picomatch('node_modules'),
+    exclude: picomatch('**/node_modules/**/*'),
   }
 
   constructor(protected services: LikeC4SharedServices) {
@@ -125,8 +125,8 @@ export class ProjectsManager {
 
   checkIfExcluded(documentUri: URI): boolean {
     let docUriAsString = documentUri.toString()
-    const { exclude } = this.findProjectForDocument(docUriAsString)
-    return exclude ? exclude(docUriAsString) : false
+    const project = this.findProjectForDocument(docUriAsString)
+    return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
   }
 
   /**
@@ -139,11 +139,8 @@ export class ProjectsManager {
     if (entry.isDirectory) {
       return false
     }
-    const filename = parseFilename(entry.uri.fsPath, { strict: false })?.toLowerCase()
-    if (!filename) {
-      return false
-    }
-    if (ProjectsManager.ConfigFileNames.includes(filename)) {
+    const filename = parseFilename(entry.uri.toString(), { strict: false })?.toLowerCase()
+    if (filename && ProjectsManager.ConfigFileNames.includes(filename)) {
       await this.registerProject(entry.uri)
       return true
     }
