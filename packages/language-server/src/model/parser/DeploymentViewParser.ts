@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isNonNullish } from 'remeda'
-import { type ParsedAstDeploymentView, ast, toAutoLayout, toElementStyle, ViewOps } from '../../ast'
+import { type ParsedAstDeploymentView, ast, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -106,16 +106,13 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
     }
 
     parseDeploymentViewRuleStyle(astRule: ast.DeploymentViewRuleStyle): c4.DeploymentViewRuleStyle {
-      const styleProps = astRule.props.filter(ast.isStyleProperty)
-      const notationProperty = astRule.props.find(ast.isNotationProperty)
-      const notation = removeIndent(notationProperty?.value)
+      const style = this.parseStyleProps(astRule.props.filter(ast.isStyleProperty))
+      const notation = removeIndent(astRule.props.find(ast.isNotationProperty)?.value)
       const targets = this.parseFqnExpressions(astRule.targets)
       return {
         targets,
+        style,
         ...(notation && { notation }),
-        style: {
-          ...toElementStyle(styleProps, this.isValid),
-        },
       }
     }
   }

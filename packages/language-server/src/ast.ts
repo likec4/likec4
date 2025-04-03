@@ -45,7 +45,7 @@ declare module './generated/ast' {
   }
 }
 
-type ParsedElementStyle = {
+export type ParsedElementStyle = {
   shape?: c4.ElementShape
   icon?: c4.IconUrl
   color?: c4.Color
@@ -277,75 +277,6 @@ export function parseAstSizeValue({ value }: { value: ast.SizeValue }): 'xs' | '
     default:
       nonexhaustive(value)
   }
-}
-
-export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isValid: IsValidFn) {
-  const result = {} as ParsedElementStyle
-  if (!props || props.length === 0) {
-    return result
-  }
-  for (const prop of props) {
-    if (!isValid(prop)) {
-      continue
-    }
-    switch (true) {
-      case ast.isBorderProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.border = prop.value
-        }
-        break
-      }
-      case ast.isColorProperty(prop): {
-        const color = toColor(prop)
-        if (isTruthy(color)) {
-          result.color = color
-        }
-        break
-      }
-      case ast.isShapeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.shape = prop.value
-        }
-        break
-      }
-      case ast.isIconProperty(prop): {
-        const icon = prop.libicon?.ref?.name ?? prop.value
-        if (isTruthy(icon)) {
-          result.icon = icon as c4.IconUrl
-        }
-        break
-      }
-      case ast.isOpacityProperty(prop): {
-        result.opacity = parseAstOpacityProperty(prop)
-        break
-      }
-      case ast.isMultipleProperty(prop): {
-        result.multiple = isBoolean(prop.value) ? prop.value : false
-        break
-      }
-      case ast.isShapeSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.size = parseAstSizeValue(prop)
-        }
-        break
-      }
-      case ast.isPaddingSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.padding = parseAstSizeValue(prop)
-        }
-        break
-      }
-      case ast.isTextSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.textSize = parseAstSizeValue(prop)
-        }
-        break
-      }
-      default:
-        nonexhaustive(prop)
-    }
-  }
-  return result
 }
 
 export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | undefined, isValid: IsValidFn) {

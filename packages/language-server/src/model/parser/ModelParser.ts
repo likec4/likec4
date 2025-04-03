@@ -8,7 +8,6 @@ import {
   type ParsedAstExtend,
   type ParsedAstRelation,
   ast,
-  toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
@@ -109,8 +108,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       const id = this.resolveFqn(astNode)
       const kind = nonNullable(astNode.kind.ref, 'Element kind is not resolved').name as c4.ElementKind
       const tags = this.parseTags(astNode.body)
-      const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-      const style = toElementStyle(stylePropsAst, isValid)
+      const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
@@ -128,15 +126,6 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       technology = toSingleLine(bodyProps.technology ?? technology)
 
       const links = this.parseLinks(astNode.body)
-
-      // Property has higher priority than from style
-      const iconProp = astNode.body?.props.find(ast.isIconProperty)
-      if (iconProp && isValid(iconProp)) {
-        const value = iconProp.libicon?.ref?.name ?? iconProp.value
-        if (isTruthy(value)) {
-          style.icon = value as c4.IconUrl
-        }
-      }
 
       return {
         id,

@@ -84,13 +84,16 @@ export class ProjectsManager {
     return [ProjectsManager.DefaultProjectId]
   }
 
-  getProject(projectId: ProjectId): {
+  getProject(arg: ProjectId | LangiumDocument): {
+    id: ProjectId
     folder: URI
     config: Readonly<ProjectConfig>
   } {
-    if (projectId === ProjectsManager.DefaultProjectId) {
+    const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId || this.belongsTo(arg))
+    if (id === ProjectsManager.DefaultProjectId) {
       const folder = this.services.workspace.WorkspaceManager.workspaceUri
       return {
+        id,
         folder,
         config: this.defaultGlobalProject.config,
       }
@@ -98,8 +101,9 @@ export class ProjectsManager {
     const {
       config,
       folder,
-    } = nonNullable(this._projects.find(({ id }) => id === projectId), `Project "${projectId}" not found`)
+    } = nonNullable(this._projects.find(p => p.id === id), `Project "${id}" not found`)
     return {
+      id,
       folder: URI.parse(folder),
       config,
     }

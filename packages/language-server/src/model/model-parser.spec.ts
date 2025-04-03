@@ -75,6 +75,51 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
       ])
     })
+
+    it('parses relative icons', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      // vscode-vfs://host/virtual/src/somefolder/index.c4
+      const { document } = await validate(
+        `
+          specification {
+            element component
+          }
+          model {
+            component c1 {
+              style {
+                icon ./icon1.png
+              }
+            }
+            component c2 {
+              style {
+                icon ../icon1.png
+              }
+              icon ../icon2.png // override
+            }
+          }
+        `,
+        'somefolder/index.c4',
+      )
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Elements).toMatchObject([
+        {
+          'id': 'c1',
+          'kind': 'component',
+          'style': {
+            'icon': 'file:///test/workspace/src/somefolder/icon1.png',
+          },
+          'title': 'c1',
+        },
+        {
+          'id': 'c2',
+          'kind': 'component',
+          'style': {
+            'icon': 'file:///test/workspace/src/icon2.png',
+          },
+          'title': 'c2',
+        },
+      ])
+    })
   })
 
   describe('parses relation predicate', () => {
