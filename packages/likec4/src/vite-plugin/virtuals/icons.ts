@@ -1,7 +1,7 @@
 import { filter, isString, isTruthy, pipe, unique } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
-import type { ComputedView } from '../../model'
+import { ComputedView } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 
 function code(views: ComputedView[]) {
@@ -10,8 +10,7 @@ function code(views: ComputedView[]) {
     filter(isString),
     filter(s =>
       isTruthy(s) &&
-      !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:') ||
-        s.toLowerCase().startsWith('file:') || s.toLowerCase().startsWith('.'))
+      !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:'))
     ),
     unique(),
   ).sort()
@@ -20,9 +19,21 @@ function code(views: ComputedView[]) {
     imports,
     cases,
   } = icons.reduce((acc, s, i) => {
-    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
-
+    const isLocalImage = s.toLowerCase().startsWith('.')
     const Component = 'Icon' + i.toString().padStart(2, '0')
+
+    if (isLocalImage) {
+      // Here the path can't be found, presumably because the file
+      // is not in the same directory as the code that's running.
+      // We need to find the path of the original file that contained
+      // the model, and then make the path (s) relative to that.
+      acc.imports.push(`import ${Component} from '${s}?inline'`)
+      acc.cases.push(`  '[${s}]': () => <img src={${Component}} />`)
+
+      return acc
+    }
+
+    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
 
     acc.imports.push(`import ${Component} from 'likec4/icons/${group}/${icon}'`)
     acc.cases.push(`  '${group}:${icon}': ${Component}`)
