@@ -13,6 +13,7 @@ import {
 import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
+import { importedChecks, importsFromPojectChecks } from './imports'
 import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
 import { relationBodyChecks, relationChecks } from './relation'
 import {
@@ -46,6 +47,8 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
+  ast.isImportsFromPoject,
+  ast.isImported,
   ast.isGlobals,
   ast.isGlobalPredicateGroup,
   ast.isGlobalDynamicPredicateGroup,
@@ -161,6 +164,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     RelationshipKind: relationshipChecks(services),
     IncomingRelationExpression: incomingExpressionChecks(services),
     OutgoingRelationExpression: outgoingExpressionChecks(services),
+    ImportsFromPoject: importsFromPojectChecks(services),
+    Imported: importedChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

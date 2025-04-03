@@ -1,12 +1,29 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
-import type { IconUrl, NonEmptyArray } from './_common'
+import type { IconUrl, NonEmptyArray, ProjectId } from './_common'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
 
 // Full-qualified-name
 export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
 
-export function AsFqn(name: string, parent?: Fqn | null) {
+export function AsFqn(name: string, parent?: Fqn | null): Fqn {
   return (parent ? parent + '.' + name : name) as Fqn
+}
+
+export function GlobalFqn(projectId: ProjectId, name: string): Fqn {
+  return '@' + projectId + '.' + name as Fqn
+}
+
+export function fromGlobalFqn(fqn: Fqn): [ProjectId | null, Fqn] {
+  if (!fqn.startsWith('@')) {
+    return [null, fqn]
+  }
+  const firstDot = fqn.indexOf('.')
+  if (firstDot === -1) {
+    throw new Error('Invalid global FQN')
+  }
+  const projectId = fqn.slice(1, firstDot) as ProjectId
+  const name = fqn.slice(firstDot + 1) as Fqn
+  return [projectId, name]
 }
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const

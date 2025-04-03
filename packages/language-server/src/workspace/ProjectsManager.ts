@@ -133,27 +133,30 @@ export class ProjectsManager {
     return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
   }
 
+  isConfigFile(entry: FileSystemNode): boolean {
+    const filename = parseFilename(entry.uri.toString(), { strict: false })?.toLowerCase()
+    return !!filename && ProjectsManager.ConfigFileNames.includes(filename)
+  }
+
   /**
    * Checks if the provided file system entry is a valid project config file.
    *
    * @param entry The file system entry to check
    * @returns {boolean} Returns true if the entry is a valid config file, false otherwise.
    */
-  async loadConfigFile(entry: FileSystemNode): Promise<boolean> {
+  async loadConfigFile(entry: FileSystemNode): Promise<Project | undefined> {
     if (entry.isDirectory) {
-      return false
+      return undefined
     }
-    const filename = parseFilename(entry.uri.toString(), { strict: false })?.toLowerCase()
-    if (filename && ProjectsManager.ConfigFileNames.includes(filename)) {
-      await this.registerProject(entry.uri)
-      return true
+    if (this.isConfigFile(entry)) {
+      return await this.registerProject(entry.uri)
     }
-    return false
+    return undefined
   }
 
-  async registerProject(configFile: URI): Promise<void>
-  async registerProject(opts: { config: ProjectConfig; folderUri: URI | string }): Promise<void>
-  async registerProject(opts: URI | { config: ProjectConfig; folderUri: URI | string }): Promise<void> {
+  async registerProject(configFile: URI): Promise<Project>
+  async registerProject(opts: { config: ProjectConfig; folderUri: URI | string }): Promise<Project>
+  async registerProject(opts: URI | { config: ProjectConfig; folderUri: URI | string }): Promise<Project> {
     if (URI.isUri(opts)) {
       const configFile = opts as URI
       const cfg = await this.services.workspace.FileSystemProvider.readFile(configFile)
@@ -192,6 +195,7 @@ export class ProjectsManager {
     )
     this.projectIdToFolder.set(id, folder)
     logger.info`register project ${id} folder: ${folder})`
+    return project
   }
 
   belongsTo(document: LangiumDocument | URI | string): ProjectId {

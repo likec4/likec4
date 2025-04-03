@@ -2,6 +2,7 @@ grammar LikeC4
 
 entry LikeC4Grammar:
   (
+    imports+=ImportsFromPoject |
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
@@ -204,6 +205,23 @@ MetadataBody: '{'
 
 MetadataAttribute:
   key=IdTerminal ':'? value=String ';'?
+;
+
+// Imports -------------------------------------
+
+ImportsFromPoject:
+  'import'
+  (
+    imports+=Imported |
+    '{'
+      imports+=Imported (',' imports+=Imported)*
+    '}'
+  )
+  'from' project=String
+;
+
+Imported:
+  name=Id
 ;
 
 // Views -------------------------------------
@@ -587,7 +605,7 @@ ExtendDeploymentBody:  '{'
 '}'
 ;
 
-type Referenceable = DeploymentNode | DeployedInstance | Element;
+type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
 //  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances

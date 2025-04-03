@@ -27,6 +27,7 @@ import {
 import type { ProjectConfig } from '../../config'
 import type { LikeC4Services } from '../../module'
 import { readStrictFqn } from '../../utils/elementRef'
+import { asGlobalFqn } from '../../utils/fqnRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
 // the class which this mixin is applied to
@@ -62,6 +63,9 @@ export class BaseParser {
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isImported(node)) {
+      return asGlobalFqn(node)
+    }
     if (ast.isExtendElement(node)) {
       return readStrictFqn(node.element)
     }

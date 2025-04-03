@@ -1,6 +1,12 @@
+import type { Fqn, ProjectId } from '@likec4/core'
 import { AstUtils } from 'langium'
 import { isNullish } from 'remeda'
+import { GlobalFqn } from '../../../core/src/types/element'
 import { ast } from '../ast'
+
+export function asGlobalFqn(imported: ast.Imported): Fqn {
+  return GlobalFqn(imported.$container.project as ProjectId, imported.name)
+}
 
 export function instanceRef(deploymentRef: ast.FqnRef): ast.DeployedInstance | null {
   let referenceable

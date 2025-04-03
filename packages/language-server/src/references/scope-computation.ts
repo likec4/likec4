@@ -37,10 +37,21 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views, globals, likec4lib, deployments } = document.parseResult.value
+      const {
+        specifications,
+        models,
+        views,
+        globals,
+        likec4lib,
+        deployments,
+        imports,
+      } = document.parseResult.value
 
       // Process library
       this.exportLibrary(likec4lib, docExports, document)
+
+      // Process imports
+      this.exportImports(imports, docExports, document)
 
       // Process specification
       this.exportSpecification(specifications, docExports, document)
@@ -141,6 +152,23 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     try {
       for (const iconAst of likec4lib.flatMap(l => l.icons)) {
         docExports.push(this.descriptions.createDescription(iconAst, iconAst.name, document))
+      }
+    } catch (e) {
+      logWarnError(e)
+    }
+  }
+
+  private exportImports(
+    imports: ast.ImportsFromPoject[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument,
+  ) {
+    if (isNullish(imports) || imports.length === 0) {
+      return
+    }
+    try {
+      for (const _import of imports.flatMap(l => l.imports)) {
+        docExports.push(this.descriptions.createDescription(_import, _import.name, document))
       }
     } catch (e) {
       logWarnError(e)

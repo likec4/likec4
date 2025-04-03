@@ -3,7 +3,7 @@ import { nonexhaustive, nonNullable } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { ast } from '../../ast'
 import { logWarnError } from '../../logger'
-import { instanceRef } from '../../utils/fqnRef'
+import { asGlobalFqn, instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
 import type { Base } from './Base'
 
@@ -16,6 +16,11 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         astNode.value.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
+      if (ast.isImported(refValue)) {
+        return {
+          model: asGlobalFqn(refValue),
+        }
+      }
       if (ast.isElement(refValue)) {
         const deployedInstanceAst = instanceRef(astNode)
         if (!deployedInstanceAst) {
