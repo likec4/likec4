@@ -18,7 +18,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.Element,
         ast.ExtendElement,
         ast.DeploymentNode,
-        ast.DeployedInstance
+        ast.DeployedInstance,
+        ast.Imported,
       ):
         return SymbolKind.Constructor
 
@@ -27,7 +28,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.ModelViews,
         ast.ModelDeployments,
         ast.Globals,
-        ast.SpecificationRule
+        ast.SpecificationRule,
       ):
         return SymbolKind.Namespace
 
@@ -38,13 +39,13 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.Tag,
         ast.LibIcon,
         ast.CustomColor,
-        ast.SpecificationTag
+        ast.SpecificationTag,
       ):
         return SymbolKind.EnumMember
 
       case hasType(
         ast.RelationshipKind,
-        ast.SpecificationRelationshipKind
+        ast.SpecificationRelationshipKind,
       ):
         return SymbolKind.Event
 
@@ -52,7 +53,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.ElementKind,
         ast.DeploymentNodeKind,
         ast.SpecificationElementKind,
-        ast.SpecificationDeploymentNodeKind
+        ast.SpecificationDeploymentNodeKind,
       ):
         return SymbolKind.TypeParameter
     }
@@ -66,7 +67,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
     const hasType = (...types: string[]) => types.some(t => this.services.AstReflection.isSubtype(nodeType, t))
     switch (true) {
       case hasType(
-        ast.CustomColor
+        ast.CustomColor,
       ):
         return CompletionItemKind.Color
 
@@ -74,7 +75,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.Element,
         ast.DeploymentNode,
         ast.DeployedInstance,
-        ast.ExtendElement
+        ast.ExtendElement,
+        ast.Imported,
       ):
         return CompletionItemKind.Constructor
 
@@ -83,12 +85,12 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.ModelViews,
         ast.ModelDeployments,
         ast.Globals,
-        ast.SpecificationRule
+        ast.SpecificationRule,
       ):
         return CompletionItemKind.Module
 
       case hasType(
-        ast.LikeC4View
+        ast.LikeC4View,
       ):
         return CompletionItemKind.Class
 
@@ -96,13 +98,13 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.Tag,
         ast.LibIcon,
         ast.CustomColor,
-        ast.SpecificationTag
+        ast.SpecificationTag,
       ):
         return CompletionItemKind.EnumMember
 
       case hasType(
         ast.RelationshipKind,
-        ast.SpecificationRelationshipKind
+        ast.SpecificationRelationshipKind,
       ):
         return CompletionItemKind.Event
 
@@ -110,7 +112,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         ast.ElementKind,
         ast.SpecificationElementKind,
         ast.DeploymentNodeKind,
-        ast.SpecificationDeploymentNodeKind
+        ast.SpecificationDeploymentNodeKind,
       ):
         return CompletionItemKind.TypeParameter
 

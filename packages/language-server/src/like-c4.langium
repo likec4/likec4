@@ -221,7 +221,7 @@ ImportsFromPoject:
 ;
 
 Imported:
-  name=Id
+  element=[Element:Id]
 ;
 
 // Views -------------------------------------

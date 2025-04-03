@@ -207,7 +207,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'value',
-        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
+        type: SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
           SemanticTokenModifiers.readonly,
@@ -219,13 +219,25 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'el',
-        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
+        type: SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
           SemanticTokenModifiers.readonly,
         ],
       })
       return !node.parent ? 'prune' : undefined
+    }
+    if (ast.isImported(node)) {
+      acceptor({
+        node,
+        property: 'element',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly,
+        ],
+      })
+      return 'prune'
     }
     if (ast.isSpecificationColor(node)) {
       acceptor({

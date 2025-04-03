@@ -1,5 +1,5 @@
 import { invariant } from '../errors'
-import type { ExclusiveUnion } from './_common'
+import type { ExclusiveUnion, ProjectId } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
 import type { Fqn } from './element'
 import type { WhereOperator } from './operators'
@@ -37,7 +37,7 @@ export namespace FqnRef {
 
   export type DeploymentRef<D = Fqn, M = Fqn> = DeploymentElementRef<D> | InsideInstanceRef<D, M>
   export const isDeploymentRef = (ref: FqnRef): ref is DeploymentRef => {
-    return !isModelRef(ref)
+    return !isModelRef(ref) && !isImportRef(ref)
   }
 
   /**
@@ -47,7 +47,18 @@ export namespace FqnRef {
     model: F
   }
   export const isModelRef = (ref: FqnRef): ref is ModelRef => {
-    return 'model' in ref
+    return 'model' in ref && !('project' in ref)
+  }
+
+  /**
+   * Reference to imported logical model element
+   */
+  export type ImportRef<F = Fqn> = {
+    project: ProjectId
+    model: F
+  }
+  export const isImportRef = (ref: FqnRef): ref is ImportRef => {
+    return 'project' in ref && 'model' in ref
   }
 
   export const toDeploymentRef = (ref: FqnRef): DeploymentModelRef => {
@@ -67,6 +78,7 @@ export type FqnRef<D = Fqn, M = Fqn> = ExclusiveUnion<{
   InsideInstanceRef: FqnRef.InsideInstanceRef<D, M>
   DeploymentRef: FqnRef.DeploymentRef<D>
   ModelRef: FqnRef.ModelRef<M>
+  ImportRef: FqnRef.ImportRef<M>
 }>
 
 export namespace FqnExpr {

@@ -92,6 +92,22 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     }))
   }
 
+  public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return stream(
+      this.workspaceCache.get(`${this.cachePrefix}:${projectId}:rootElements`, () => {
+        const allchildren = this.documents(projectId)
+          .reduce((map, doc) => {
+            this.get(doc).rootElements().forEach(desc => {
+              map.set(desc.name, desc)
+            })
+            return map
+          }, new MultiMap<string, AstNodeDescriptionWithFqn>())
+        return uniqueByName(allchildren)
+          .sort((a, b) => compareNatural(a.name, b.name))
+      }),
+    )
+  }
+
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(`${this.cachePrefix}:${projectId}:directChildrenOf:${parent}`, () => {

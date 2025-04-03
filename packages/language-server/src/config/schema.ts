@@ -6,7 +6,8 @@ const nonEmptyString = v.pipe(v.string(), v.nonEmpty())
 export const ProjectConfig = v.object({
   name: v.pipe(
     nonEmptyString,
-    v.excludes('.', 'Project name cannot contain "."'),
+    // TODO: check if this is needed
+    // v.excludes('.', 'Project name cannot contain "."'),
     v.description('Project name, must be unique in the workspace'),
   ),
   contactPerson: v.optional(

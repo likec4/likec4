@@ -36,19 +36,19 @@ export const importedChecks = (services: LikeC4Services): ValidationCheck<ast.Im
     const doc = getDocument(el)
     const projectId = projectIdFrom(doc)
 
-    const importFromProject = el.$container.project as ProjectId
-    if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
-      accept('error', 'Invalid import', {
-        node: el,
-      })
-      return
-    }
-    const fqn = fqnIndex.byFqn(importFromProject, el.name as Fqn).head()
-    if (!fqn) {
-      accept('error', 'Imported element not found', {
-        node: el,
-      })
-      return
-    }
+    // const importFromProject = el.$container.project as ProjectId
+    // if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
+    //   accept('error', 'Invalid import', {
+    //     node: el,
+    //   })
+    //   return
+    // }
+    // const fqn = fqnIndex.byFqn(importFromProject, el.name as Fqn).head()
+    // if (!fqn) {
+    //   accept('error', `Imported element not found in project "${importFromProject}"`, {
+    //     node: el,
+    //   })
+    //   return
+    // }
   })
 }

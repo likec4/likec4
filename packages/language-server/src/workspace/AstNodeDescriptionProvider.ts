@@ -16,7 +16,7 @@ export class AstNodeDescriptionProvider extends DefaultAstNodeDescriptionProvide
     const doc = document ?? AstUtils.getDocument(node)
     const description = super.createDescription(node, name, document)
     const projects = this.services.shared.workspace.ProjectsManager
-    doc.likec4ProjectId = projects.belongsTo(doc.uri)
+    doc.likec4ProjectId ??= projects.belongsTo(doc.uri)
     description.likec4ProjectId = doc.likec4ProjectId
     return description
   }

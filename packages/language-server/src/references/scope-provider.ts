@@ -1,4 +1,4 @@
-import { type ProjectId, nonexhaustive } from '@likec4/core'
+import { type Fqn, type ProjectId, AsFqn, nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -52,6 +52,11 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
         if (referenceType !== ast.Element) {
           return this.getProjectScope(projectId, referenceType, context)
+        }
+
+        if (ast.isImported(container)) {
+          const projectId = container.$container.project as ProjectId
+          return new StreamScope(this.fqnIndex.rootElements(projectId))
         }
 
         if (ast.isStrictFqnElementRef(container) && context.property === 'el') {
@@ -192,6 +197,9 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     if (!parentRef) {
       return EMPTY_STREAM
     }
+    if (ast.isImported(parentRef)) {
+      return stream(this.genScopeForImportedRef(parentRef))
+    }
     if (ast.isDeploymentNode(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
     }
@@ -216,6 +224,19 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     ) {
       yield* this.computeScope(projectId, context, ast.Element)
     }
+
+    const doc = getDocument(context.container)
+    const precomputed = doc.precomputedScopes
+    // Fourth preference for imported models
+    if (precomputed) {
+      yield* precomputed.values().filter(nd => this.reflection.isSubtype(nd.type, ast.Imported))
+    }
+  }
+
+  protected *genScopeForImportedRef(container: ast.Imported) {
+    const projectId = container.$container.project as ProjectId
+    const parent = container.element.$refText as Fqn
+    yield* this.fqnIndex.uniqueDescedants(projectId, parent)
   }
 
   /**

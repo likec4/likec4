@@ -1,9 +1,9 @@
 import type * as c4 from '@likec4/core'
-import { nonexhaustive, nonNullable } from '@likec4/core'
+import { type ProjectId, nonexhaustive, nonNullable } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { ast } from '../../ast'
 import { logWarnError } from '../../logger'
-import { asGlobalFqn, instanceRef } from '../../utils/fqnRef'
+import { instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
 import type { Base } from './Base'
 
@@ -18,7 +18,8 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       )
       if (ast.isImported(refValue)) {
         return {
-          model: asGlobalFqn(refValue),
+          project: refValue.$container.project as ProjectId,
+          model: refValue.element.$refText as c4.Fqn,
         }
       }
       if (ast.isElement(refValue)) {

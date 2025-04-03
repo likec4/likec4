@@ -107,6 +107,14 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     const parser = ModelParser.forDocument(doc)
 
     const sourceFqnRef = parser.parseFqnRef(el.source)
+    if (FqnRef.isImportRef(sourceFqnRef)) {
+      accept('error', 'DeploymentRelation cannot refer imported model (not implemented yet)', {
+        node: el,
+        property: 'source',
+      })
+      return
+    }
+
     if (FqnRef.isModelRef(sourceFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
@@ -116,6 +124,9 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     }
 
     const targetFqnRef = parser.parseFqnRef(el.target)
+    if (FqnRef.isImportRef(targetFqnRef)) {
+      return
+    }
     if (FqnRef.isModelRef(targetFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
