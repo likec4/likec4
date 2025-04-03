@@ -1,7 +1,7 @@
 import { filter, isString, isTruthy, pipe, unique } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
-import { ComputedView } from '../../model'
+import type { ComputedView } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 
 function code(views: ComputedView[]) {
