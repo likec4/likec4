@@ -1,7 +1,4 @@
 import { css, sva } from '@likec4/styles/css'
-// import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-// import { calc } from '@vanilla-extract/css-utils'
-// import { easings, vars, whereLight, whereNotReducedGraphics } from '../../../theme-vars'
 
 // export const _compoundOpacity = '--_compound-opacity'
 // const compoundOpacity = `var(${_compoundOpacity})`

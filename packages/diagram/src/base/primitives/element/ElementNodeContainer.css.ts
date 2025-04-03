@@ -1,7 +1,4 @@
 import { css as style } from '@likec4/styles/css'
-// import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-// import { easings, vars, whereReducedGraphics } from '../../../theme-vars'
-// import { iconSize, paddingSize, textSize } from './vars.css'
 
 export const container = style({
   position: 'relative',
@@ -52,18 +49,3 @@ export const container = style({
     cursor: 'pointer',
   },
 })
-
-// const sizes = ['xs', 'sm', 'lg', 'xl'] as const
-// sizes.forEach((size) => {
-//   globalStyle(`${container}[data-likec4-text-size="${size}"]`, {
-//     vars: {
-//       [textSize]: rem(defaultTheme.textSizes[size]),
-//     },
-//   })
-
-//   globalStyle(`${container}[data-likec4-padding="${size}"]`, {
-//     vars: {
-//       [paddingSize]: rem(defaultTheme.spacing[size]),
-//     },
-//   })
-// })

@@ -1,8 +1,4 @@
 import { css } from '@likec4/styles/css'
-// import { fallbackVar, style } from '@vanilla-extract/css'
-// import { calc } from '@vanilla-extract/css-utils'
-// import { mantine, vars, whereDark, whereNotReducedGraphics } from '../../../theme-vars'
-// import { stokeFillMix } from '../../xyflow/nodes/element/element.css'
 
 export const container = css({
   bottom: 0,

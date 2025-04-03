@@ -1,10 +1,6 @@
-import { css as style } from '@likec4/styles/css'
-// import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-// import { mantine, transitions, vars, whereDark, whereLight, whereNotReducedGraphics } from '../theme-vars'
+import { css } from '@likec4/styles/css'
 
-// const transparent = createVar('transparent')
-// const bgColor = createVar('bgcolor')
-export const root = style({
+export const root = css({
   height: '30px',
   paddingLeft: 'sm',
   paddingRight: '4px',
@@ -42,7 +38,7 @@ export const root = style({
   },
 })
 
-export const placeholder = style({
+export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
   paddingRight: '50px',
@@ -50,7 +46,7 @@ export const placeholder = style({
   flex: '1',
 })
 
-export const shortcut = style({
+export const shortcut = css({
   fontSize: '11px',
   fontWeight: 600,
   lineHeight: 1,

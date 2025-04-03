@@ -1,4 +1,3 @@
-// import { style } from '@vanilla-extract/css'
 import { css } from '@likec4/styles/css'
 
 export const navsidebar = css({
