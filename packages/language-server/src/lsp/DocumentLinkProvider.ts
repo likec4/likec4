@@ -1,7 +1,7 @@
 import type { LangiumDocument } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
-import { hasLeadingSlash, hasProtocol, isRelative, withoutBase, withoutLeadingSlash } from 'ufo'
+import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, withoutBase, withoutLeadingSlash } from 'ufo'
 import type { CancellationToken, DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
 import { ast, isLikeC4LangiumDocument } from '../ast'
 import { logWarnError } from '../logger'
@@ -45,10 +45,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (hasProtocol(link) || hasLeadingSlash(link)) {
       return link
     }
-    const base = isRelative(link)
-      ? new URL(doc.uri.toString(true))
-      : this.services.shared.workspace.WorkspaceManager.workspaceURL
-    return new URL(link, base).toString()
+    if (isRelative(link)) {
+      return joinRelativeURL(doc.uri.toString(), '../', link)
+    }
+    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folder
+    return joinRelativeURL(base.toString(), link)
   }
 
   relativeLink(doc: LangiumDocument, link: string): string | null {

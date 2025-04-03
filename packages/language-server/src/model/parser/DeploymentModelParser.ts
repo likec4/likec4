@@ -7,7 +7,6 @@ import {
   type ParsedAstDeploymentRelation,
   type ParsedAstExtend,
   ast,
-  toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -85,8 +84,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const id = this.resolveFqn(astNode)
       const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
       const tags = this.convertTags(astNode.body)
-      const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-      const style = toElementStyle(stylePropsAst, isValid)
+      const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = pipe(
@@ -101,15 +99,6 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const technology = toSingleLine(bodyProps.technology)
 
       const links = this.convertLinks(astNode.body)
-
-      // Property has higher priority than from style
-      const iconProp = astNode.body?.props.find(ast.isIconProperty)
-      if (iconProp && isValid(iconProp)) {
-        const value = iconProp.libicon?.ref?.name ?? iconProp.value
-        if (isTruthy(value)) {
-          style.icon = value as c4.IconUrl
-        }
-      }
 
       return {
         id,
@@ -130,8 +119,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const element = this.resolveFqn(nonNullable(elementRef(astNode.element), 'DeployedInstance element not found'))
 
       const tags = this.convertTags(astNode.body)
-      const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-      const style = toElementStyle(stylePropsAst, isValid)
+      const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = pipe(
@@ -146,15 +134,6 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const technology = toSingleLine(bodyProps.technology)
 
       const links = this.convertLinks(astNode.body)
-
-      // Property has higher priority than from style
-      const iconProp = astNode.body?.props.find(ast.isIconProperty)
-      if (iconProp && isValid(iconProp)) {
-        const value = iconProp.libicon?.ref?.name ?? iconProp.value
-        if (isTruthy(value)) {
-          style.icon = value as c4.IconUrl
-        }
-      }
 
       return {
         id,
