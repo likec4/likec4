@@ -10,7 +10,7 @@ catalog:
   wrangler: "4.6.0"
   "@types/node": "^20.17.28"
   unbuild: "^3.5.0"
-  turbo: "^2.4.4"
+  turbo: "^2.5.0"
   tsx: "~4.19.3"
 
 catalogs:
