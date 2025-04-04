@@ -21,20 +21,6 @@ export type WithModel = ReturnType<typeof ModelParser>
 
 const logger = mainLogger.getChild('ModelParser')
 
-function resolveRelationSource(node: ast.Relation): ast.Element {
-  if (isDefined(node.source)) {
-    const source = elementRef(node.source)
-    if (!source) {
-      throw new Error('RelationRefError: Invalid reference to source')
-    }
-    return source
-  }
-  if (!ast.isElementBody(node.$container)) {
-    throw new Error('RelationRefError: Invalid container for sourceless relation')
-  }
-  return node.$container.$container
-}
-
 function* streamModel(doc: LikeC4LangiumDocument) {
   const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
   const relations = [] as ast.Relation[]
@@ -150,11 +136,23 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       }
     }
 
+    _resolveRelationSource(node: ast.Relation): FqnRef.ModelRef | FqnRef.ImportRef {
+      if (isDefined(node.source)) {
+        const source = this.parseFqnRef(node.source)
+        invariant(FqnRef.isModelRef(source) || FqnRef.isImportRef(source), 'Relation source must be a model reference')
+        return source
+      }
+      if (!ast.isElementBody(node.$container)) {
+        throw new Error('RelationRefError: Invalid container for sourceless relation')
+      }
+      return {
+        model: this.resolveFqn(node.$container.$container),
+      }
+    }
+
     parseRelation(astNode: ast.Relation): ParsedAstRelation {
       const isValid = this.isValid
-      const source: FqnRef.ModelRef = {
-        model: this.resolveFqn(resolveRelationSource(astNode)),
-      }
+      const source = this._resolveRelationSource(astNode)
       const target = this.parseFqnRef(astNode.target)
       invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
 

@@ -130,7 +130,7 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath,
-    source: { model: source },
+    source: sourceFqnRef,
     target: targetFqnRef,
     kind,
     links,
@@ -138,6 +138,7 @@ export class MergedSpecification {
     ...model
   }: ParsedAstRelation): c4.ModelRelation | null => {
     const target = FqnRef.toModelFqn(targetFqnRef)
+    const source = FqnRef.toModelFqn(sourceFqnRef)
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],

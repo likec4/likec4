@@ -171,7 +171,7 @@ Tags:
 ;
 
 Relation<isExplicit>:
-  (<isExplicit> source=ElementRef | <!isExplicit> source=ElementRef?)
+  (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   (
     kind=[RelationshipKind:DotId] |
     '-[' kind=[RelationshipKind] ']->' |
@@ -564,7 +564,7 @@ ModelDeployments:
   name='deployment' '{'
     elements+=(
       DeploymentNode |
-      DeploymentRelation |
+      DeploymentRelation<true> |
       ExtendDeployment
     )*
   '}';
@@ -585,7 +585,7 @@ DeploymentNodeBody: '{'
   props+=ElementProperty*
   elements+=(
     DeployedInstance |
-    DeploymentRelation |
+    DeploymentRelation<false> |
     DeploymentNode
   )*
 '}';
@@ -602,6 +602,9 @@ DeployedInstance:
 DeployedInstanceBody: '{'
   tags=Tags?
   props+=ElementProperty*
+  elements+=(
+    DeploymentRelation<false>
+  )*
 '}';
 
 ExtendDeployment:
@@ -614,15 +617,15 @@ ExtendDeploymentBody:  '{'
 
   elements+=(
     DeployedInstance |
-    DeploymentRelation |
+    DeploymentRelation<true> |
     DeploymentNode
   )*
 '}'
 ;
 
 
-DeploymentRelation:
-  source=FqnRef
+DeploymentRelation<isExplicit>:
+  (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
   target=FqnRef
   (

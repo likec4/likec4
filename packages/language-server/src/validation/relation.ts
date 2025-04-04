@@ -19,9 +19,11 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
         property: 'target',
       })
     }
+
     let sourceEl
     if (isDefined(el.source)) {
-      sourceEl = elementRef(el.source)
+      const sourceRef = el.source.value.ref
+      sourceEl = ast.isElement(sourceRef) ? sourceRef : undefined
       if (!sourceEl) {
         return accept('error', 'Source not resolved', {
           node: el,

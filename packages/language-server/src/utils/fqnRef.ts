@@ -1,5 +1,5 @@
 import { AstUtils } from 'langium'
-import { isNullish } from 'remeda'
+import { isNullish, isTruthy } from 'remeda'
 import { ast } from '../ast'
 
 export function instanceRef(deploymentRef: ast.FqnRef): ast.DeployedInstance | null {
@@ -36,6 +36,10 @@ export function importsRef(node: ast.FqnRef): ast.Imported | null {
     node = node.parent
   }
   return ast.isImported(node.value.ref) ? node.value.ref : null
+}
+
+export function isImportsRef(node: ast.FqnRef): boolean {
+  return !!importsRef(node)
 }
 
 export function isReferenceToLogicalModel(node: ast.FqnRef): boolean {

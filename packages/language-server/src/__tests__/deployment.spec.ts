@@ -2,7 +2,7 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test/testServices'
 import { test } from './asserts'
 
-describe('Deployment model:', () => {
+describe.concurrent('Deployment model:', () => {
   test('deployment node with properties').valid`
      specification {
       deploymentNode environment
@@ -49,6 +49,24 @@ describe('Deployment model:', () => {
       }
     }
   `
+
+  test('allow nested relations').valid`
+    specification {
+      deploymentNode environment
+      deploymentNode node
+    }
+    deployment {
+      environment dev {
+        node n1 {
+          node n2 {
+            -> n3
+          }
+          node n3
+        }
+      }
+    }
+  `
+
   describe('deployment ref', () => {
     test('resolve deployment ref').valid`
       specification {
@@ -90,7 +108,7 @@ describe('Deployment model:', () => {
       }
     `
 
-    it.concurrent('resolve global deployment ref', async ({ expect }) => {
+    it('resolve global deployment ref', async ({ expect }) => {
       const { parse, validateAll } = createTestServices()
       await parse(`
         specification {
@@ -137,7 +155,7 @@ describe('Deployment model:', () => {
       const validation2 = await validateAll()
       expect(validation2.errors).toEqual([
         `Could not resolve reference to Referenceable named 'sys1'.`,
-        `DeploymentRelation source 'sys1' not resolved`
+        `DeploymentRelation source not resolved`,
       ])
     })
   })

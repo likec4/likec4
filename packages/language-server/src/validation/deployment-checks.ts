@@ -84,15 +84,6 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
   const ModelParser = services.likec4.ModelParser
   return tryOrLog((el, accept) => {
-    const source = el.source?.value?.ref
-    if (!source) {
-      let sourceCstText = el.source?.$cstNode?.text ?? ''
-      accept('error', `DeploymentRelation source '${sourceCstText}' not resolved`, {
-        node: el,
-        property: 'source',
-      })
-      return
-    }
     const target = el.target?.value?.ref
     if (!target) {
       let targetCstText = el.target?.$cstNode?.text ?? ''
@@ -102,11 +93,19 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       })
       return
     }
-
     const doc = getDocument(el)
     const parser = ModelParser.forDocument(doc)
 
-    const sourceFqnRef = parser.parseFqnRef(el.source)
+    let sourceFqnRef
+    try {
+      sourceFqnRef = parser._resolveDeploymentRelationSource(el)
+    } catch (e) {
+      accept('error', 'DeploymentRelation source not resolved', {
+        node: el,
+        property: 'source',
+      })
+      return
+    }
     if (FqnRef.isImportRef(sourceFqnRef)) {
       accept('error', 'DeploymentRelation cannot refer imported model (not implemented yet)', {
         node: el,
@@ -125,6 +124,10 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
 
     const targetFqnRef = parser.parseFqnRef(el.target)
     if (FqnRef.isImportRef(targetFqnRef)) {
+      accept('error', 'DeploymentRelation cannot refer imported model (not implemented yet)', {
+        node: el,
+        property: 'target',
+      })
       return
     }
     if (FqnRef.isModelRef(targetFqnRef)) {

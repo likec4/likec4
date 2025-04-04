@@ -13,7 +13,11 @@ import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
-type DeploymentsContainer = ast.ModelDeployments | ast.DeploymentNodeBody | ast.ExtendDeploymentBody
+type DeploymentsContainer =
+  | ast.ModelDeployments
+  | ast.DeploymentNodeBody
+  | ast.ExtendDeploymentBody
+  | ast.DeployedInstanceBody
 
 function uniqueDescriptions(
   descs: AstNodeDescription[],
@@ -303,8 +307,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
         }
         subcontainer = el.body
-        scopes.add(el, this.descriptions.createDescription(el, 'this', document))
-        scopes.add(el, this.descriptions.createDescription(el, 'it', document))
+        if (subcontainer) {
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'this', document))
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'it', document))
+        }
       } else if (ast.isExtendElement(el)) {
         subcontainer = el.body
       }
@@ -350,18 +356,23 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         continue
       }
 
+      let subcontainer = el.body
       if (!ast.isExtendDeployment(el)) {
         let name = this.nameProvider.getName(el)
         if (isTruthy(name)) {
           const desc = this.descriptions.createDescription(el, name, document)
           localScope.add(name, desc)
         }
+        if (subcontainer) {
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'this', document))
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'it', document))
+        }
       }
 
-      if (!ast.isDeployedInstance(el) && el.body) {
+      if (subcontainer) {
         try {
           descedants.push(
-            ...this.processDeployments(el.body, scopes, document),
+            ...this.processDeployments(subcontainer, scopes, document),
           )
         } catch (e) {
           logWarnError(e)

@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { FqnRef, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstDeployment,
@@ -171,10 +171,22 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       }
     }
 
+    _resolveDeploymentRelationSource(node: ast.DeploymentRelation): FqnRef {
+      if (isDefined(node.source)) {
+        return this.parseFqnRef(node.source)
+      }
+      if (node.$container.$type === 'DeploymentNodeBody' || node.$container.$type === 'DeployedInstanceBody') {
+        return {
+          deployment: this.resolveFqn(node.$container.$container),
+        }
+      }
+      throw new Error('RelationRefError: Invalid container for sourceless relation')
+    }
+
     parseDeploymentRelation(astNode: ast.DeploymentRelation): ParsedAstDeploymentRelation {
       const isValid = this.isValid
       const astPath = this.getAstNodePath(astNode)
-      const source = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.source))
+      const source = FqnRef.toDeploymentRef(this._resolveDeploymentRelationSource(astNode))
       const target = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.target))
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
