@@ -303,6 +303,8 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
         }
         subcontainer = el.body
+        scopes.add(el, this.descriptions.createDescription(el, 'this', document))
+        scopes.add(el, this.descriptions.createDescription(el, 'it', document))
       } else if (ast.isExtendElement(el)) {
         subcontainer = el.body
       }

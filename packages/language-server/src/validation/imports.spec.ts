@@ -13,10 +13,9 @@ describe('import checks', () => {
         component c1
       }
     `)
-    expect(diagnostics).toHaveLength(2)
+    expect.soft(diagnostics).toHaveLength(1)
     expect(diagnostics).toMatchObject([
       { severity: 1, message: 'Imported project cannot be the same as the current project' },
-      { severity: 1, message: 'Invalid import' },
     ])
   })
 
@@ -38,10 +37,9 @@ describe('import checks', () => {
     })
 
     const { diagnostics } = await validateAll()
-    expect(diagnostics).toHaveLength(2)
+    expect.soft(diagnostics).toHaveLength(1)
     expect(diagnostics).toMatchObject([
       { severity: 1, message: 'Imported project cannot be the same as the current project' },
-      { severity: 1, message: 'Invalid import' },
     ])
   })
 
@@ -50,10 +48,10 @@ describe('import checks', () => {
     const { diagnostics } = await validate(`
       import c1 from 'project1'
     `)
-    expect(diagnostics).toHaveLength(2)
+    expect.soft(diagnostics).toHaveLength(2)
     expect(diagnostics).toMatchObject([
+      { severity: 1, message: `Could not resolve reference to Element named 'c1'.` },
       { severity: 1, message: 'Imported project not found' },
-      { severity: 1, message: 'Invalid import' },
     ])
   })
 
@@ -84,7 +82,7 @@ describe('import checks', () => {
     })
 
     const { diagnostics } = await validateAll()
-    expect(diagnostics).toHaveLength(0)
+    expect.soft(diagnostics).toHaveLength(0)
   })
   it('should report invalid imports from another project', async ({ expect }) => {
     const { validateAll } = await createMultiProjectTestServices({
@@ -106,9 +104,9 @@ describe('import checks', () => {
     })
 
     const { diagnostics } = await validateAll()
-    expect(diagnostics).toHaveLength(1)
+    expect.soft(diagnostics).toHaveLength(1)
     expect(diagnostics).toMatchObject([
-      { severity: 1, message: 'Imported element not found in project "project1"' },
+      { severity: 1, message: `Could not resolve reference to Element named 'c2'.` },
     ])
   })
 })

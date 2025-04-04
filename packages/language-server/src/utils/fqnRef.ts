@@ -30,7 +30,15 @@ export function deploymentNodeRef(deploymentRef: ast.FqnRef): ast.DeploymentNode
   return artifact ? AstUtils.getContainerOfType(artifact, ast.isDeploymentNode) ?? null : null
 }
 
-export function isReferenceToLogicalModel(node: ast.FqnRef) {
+export function importsRef(node: ast.FqnRef): ast.Imported | null {
+  // iterate up the root parent
+  while (node.parent) {
+    node = node.parent
+  }
+  return ast.isImported(node.value.ref) ? node.value.ref : null
+}
+
+export function isReferenceToLogicalModel(node: ast.FqnRef): boolean {
   // iterate up the root parent
   while (node.parent) {
     node = node.parent
@@ -41,7 +49,7 @@ export function isReferenceToLogicalModel(node: ast.FqnRef) {
 /**
  * Returns true if node references deployment model
  */
-export function isReferenceToDeploymentModel(node: ast.FqnRef) {
+export function isReferenceToDeploymentModel(node: ast.FqnRef): boolean {
   let referenceable
   while ((referenceable = node.value?.ref)) {
     if (ast.isDeploymentElement(referenceable)) {

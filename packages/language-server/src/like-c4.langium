@@ -151,6 +151,21 @@ StrictFqnElementRef:
 ElementRef:
   el=[Element:Id] ({infer ElementRef.parent=current} StickyDot el=[Element:Id])*;
 
+
+type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
+// Reference to Elements in logical or deployment model
+// Scope computation is based on the parent element:
+//  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
+//  - If parent is DeployedInstance, then it can reference  nested  Element
+//  - If parent is Element, then it can reference  nested  Element
+//  Mix of DeploymentRef and ElementRef
+FqnRef:
+  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
+// Strict reference allows only direct children of parent
+StrictFqnRef:
+  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
 Tags:
   (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
 ;
@@ -162,7 +177,7 @@ Relation<isExplicit>:
     '-[' kind=[RelationshipKind] ']->' |
     '->'
   )
-  target=ElementRef
+  target=FqnRef
   (
     title=String
     technology=String?
@@ -605,19 +620,6 @@ ExtendDeploymentBody:  '{'
 '}'
 ;
 
-type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
-// Reference to Elements in logical or deployment model
-// Scope computation is based on the parent element:
-//  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
-//  - If parent is DeployedInstance, then it can reference  nested  Element
-//  - If parent is Element, then it can reference  nested  Element
-//  Mix of DeploymentRef and ElementRef
-FqnRef:
-  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
-
-// Strict reference allows only direct children of parent
-StrictFqnRef:
-  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 DeploymentRelation:
   source=FqnRef

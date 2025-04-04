@@ -107,8 +107,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  source: c4.Fqn
-  target: c4.Fqn
+  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
@@ -413,4 +413,20 @@ export function elementExpressionFromPredicate(predicate: ast.ElementPredicate):
     return elementExpressionFromPredicate(predicate.subject)
   }
   nonexhaustive(predicate)
+}
+
+export function isInsideModel(astNode: AstNode): boolean {
+  while (true) {
+    if (ast.isModelDeployments(astNode) || ast.isDeploymentNodeBody(astNode) || ast.isDeployedInstanceBody(astNode)) {
+      return false
+    }
+    if (ast.isModel(astNode) || ast.isElementBody(astNode) || ast.isExtendElementBody(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
+  }
 }

@@ -3,7 +3,7 @@ import { type ValidationCheck, AstUtils } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
-import { RESERVED_WORDS, tryOrLog } from './_shared'
+import { tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
@@ -31,11 +31,9 @@ export const importsFromPojectChecks = (services: LikeC4Services): ValidationChe
 
 export const importedChecks = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
   const fqnIndex = services.likec4.FqnIndex
-  const projects = services.shared.workspace.ProjectsManager
+  // const projects = services.shared.workspace.ProjectsManager
   return tryOrLog((el, accept) => {
-    const doc = getDocument(el)
-    const projectId = projectIdFrom(doc)
-
+    // const doc = getDocument(el)
     // const importFromProject = el.$container.project as ProjectId
     // if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
     //   accept('error', 'Invalid import', {
@@ -43,7 +41,7 @@ export const importedChecks = (services: LikeC4Services): ValidationCheck<ast.Im
     //   })
     //   return
     // }
-    // const fqn = fqnIndex.byFqn(importFromProject, el.name as Fqn).head()
+    // const fqn = fqnIndex.byFqn(importFromProject, el.element.$refText as Fqn).head()
     // if (!fqn) {
     //   accept('error', `Imported element not found in project "${importFromProject}"`, {
     //     node: el,

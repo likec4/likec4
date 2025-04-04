@@ -31,6 +31,7 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 0,
       expectedItems: [
+        'import',
         'specification',
         'model',
         'views',
@@ -142,6 +143,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: [
         'title',
         'technology',
+        'this',
         // target is reserved keyword and suggested as id new element
         'target',
       ],
@@ -161,7 +163,12 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 6,
-      expectedItems: ['customer', 'sys'],
+      expectedItems: [
+        'this',
+        'it',
+        'customer',
+        'sys',
+      ],
     })
   })
 
@@ -287,7 +294,16 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'unique'],
+      expectedItems: [
+        'this',
+        'it',
+        'root',
+        'cloud',
+        'cloud2',
+        'c1',
+        'c2',
+        'unique',
+      ],
       disposeAfterCheck: true,
     })
     await completion({

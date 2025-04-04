@@ -1,6 +1,5 @@
-import { type Filterable, whereOperatorAsPredicate } from '@likec4/core'
-import { fail } from 'assert'
 import { describe, expect, it } from 'vitest'
+import { type Filterable, whereOperatorAsPredicate } from './operators'
 
 type FTag = 'old' | 'new'
 type FKind = 'a' | 'b'

@@ -3,7 +3,7 @@ import { type ProjectId, nonexhaustive, nonNullable } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { ast } from '../../ast'
 import { logWarnError } from '../../logger'
-import { instanceRef } from '../../utils/fqnRef'
+import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
 import type { Base } from './Base'
 
@@ -11,20 +11,33 @@ export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
 
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
+    _parseImportFqnRef(node: ast.Imported): c4.FqnRef.ImportRef {
+      return {
+        project: node.$container.project as ProjectId,
+        model: this.resolveFqn(
+          nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
+        ),
+      }
+    }
+
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
       if (ast.isImported(refValue)) {
-        return {
-          project: refValue.$container.project as ProjectId,
-          model: this.resolveFqn(
-            nonNullable(refValue.element.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
-          ),
-        }
+        return this._parseImportFqnRef(refValue)
       }
       if (ast.isElement(refValue)) {
+        const imported = importsRef(astNode)
+        if (imported) {
+          const fqnRef = {
+            project: imported.$container.project as c4.ProjectId,
+            model: this.resolveFqn(refValue),
+          }
+          this.doc.c4Imports.add(fqnRef.project, fqnRef.model)
+          return fqnRef
+        }
         const deployedInstanceAst = instanceRef(astNode)
         if (!deployedInstanceAst) {
           return {

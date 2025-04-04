@@ -1,7 +1,8 @@
 import type * as c4 from '@likec4/core'
 import {
   DeploymentElement,
-} from '@likec4/core'
+  FqnRef,
+} from '@likec4/core/types'
 import {
   isBoolean,
   isEmpty,
@@ -129,13 +130,14 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath,
-    source,
-    target,
+    source: { model: source },
+    target: targetFqnRef,
     kind,
     links,
     id,
     ...model
   }: ParsedAstRelation): c4.ModelRelation | null => {
+    const target = FqnRef.toModelFqn(targetFqnRef)
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],

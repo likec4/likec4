@@ -3,18 +3,20 @@ import type { ValidationCheck } from 'langium'
 import { isDefined } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { importsRef } from '../utils'
 import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
   const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((el, accept) => {
-    const targetEl: ast.Element | undefined = elementRef(el.target)
-    const target = targetEl && fqnIndex.getFqn(targetEl)
+    const targetRef = el.target.value.ref
+    const isTargetImported = !!importsRef(el.target)
+    const target = ast.isElement(targetRef) ? fqnIndex.getFqn(targetRef) : undefined
     if (!target) {
       accept('error', 'Target not resolved', {
         node: el,
-        property: 'target'
+        property: 'target',
       })
     }
     let sourceEl
@@ -23,13 +25,13 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       if (!sourceEl) {
         return accept('error', 'Source not resolved', {
           node: el,
-          property: 'source'
+          property: 'source',
         })
       }
     } else {
       if (!ast.isElementBody(el.$container)) {
         return accept('error', 'Sourceless relation must be nested', {
-          node: el
+          node: el,
         })
       }
       sourceEl = el.$container.$container
@@ -39,13 +41,13 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
 
     if (!source) {
       accept('error', 'Source not resolved', {
-        node: el
+        node: el,
       })
     }
 
-    if (source && target && isSameHierarchy(source, target)) {
+    if (source && target && !isTargetImported && isSameHierarchy(source, target)) {
       accept('error', 'Invalid parent-child relationship', {
-        node: el
+        node: el,
       })
     }
   })
@@ -56,7 +58,7 @@ export const relationBodyChecks = (_services: LikeC4Services): ValidationCheck<a
     const relation = body.$container
     if (relation.tags?.values && body.tags?.values) {
       accept('error', 'Relation cannot have tags in both header and body', {
-        node: body.tags
+        node: body.tags,
       })
     }
   })

@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
-import { isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
+import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
+import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
@@ -14,36 +15,24 @@ import { logger as mainLogger } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
 import { type Base, removeIndent, toSingleLine } from './Base'
+import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
 
 const logger = mainLogger.getChild('ModelParser')
 
-function resolveRelationPoints(node: ast.Relation): {
-  source: ast.Element
-  target: ast.Element
-} {
-  const target = elementRef(node.target)
-  if (!target) {
-    throw new Error('RelationRefError: Invalid reference to target')
-  }
+function resolveRelationSource(node: ast.Relation): ast.Element {
   if (isDefined(node.source)) {
     const source = elementRef(node.source)
     if (!source) {
       throw new Error('RelationRefError: Invalid reference to source')
     }
-    return {
-      source,
-      target,
-    }
+    return source
   }
   if (!ast.isElementBody(node.$container)) {
     throw new Error('RelationRefError: Invalid container for sourceless relation')
   }
-  return {
-    source: node.$container.$container,
-    target,
-  }
+  return node.$container.$container
 }
 
 function* streamModel(doc: LikeC4LangiumDocument) {
@@ -66,7 +55,7 @@ function* streamModel(doc: LikeC4LangiumDocument) {
   return
 }
 
-export function ModelParser<TBase extends Base>(B: TBase) {
+export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
   return class ModelParser extends B {
     parseModel() {
       const doc = this.doc
@@ -142,7 +131,6 @@ export function ModelParser<TBase extends Base>(B: TBase) {
     }
 
     parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtend | null {
-      const isValid = this.isValid
       const id = this.resolveFqn(astNode)
       const tags = this.parseTags(astNode.body)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
@@ -164,9 +152,12 @@ export function ModelParser<TBase extends Base>(B: TBase) {
 
     parseRelation(astNode: ast.Relation): ParsedAstRelation {
       const isValid = this.isValid
-      const coupling = resolveRelationPoints(astNode)
-      const target = this.resolveFqn(coupling.target)
-      const source = this.resolveFqn(coupling.source)
+      const source: FqnRef.ModelRef = {
+        model: this.resolveFqn(resolveRelationSource(astNode)),
+      }
+      const target = this.parseFqnRef(astNode.target)
+      invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
+
       const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body)
       const links = this.parseLinks(astNode.body)
       const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
@@ -193,8 +184,8 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
         astPath,
-        source,
-        target,
+        source.model,
+        target.model,
       ) as c4.RelationId
       return {
         id,

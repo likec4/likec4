@@ -2,7 +2,7 @@ import { invariant } from '../errors'
 import type { ExclusiveUnion, ProjectId } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
 import type { WhereOperator } from './operators'
-import type { Fqn } from './scalars'
+import { type Fqn, GlobalFqn } from './scalars'
 
 export namespace FqnRef {
   /**
@@ -71,6 +71,16 @@ export namespace FqnRef {
       : {
         id: ref.deployment,
       }
+  }
+
+  export const toModelFqn = (ref: FqnRef): Fqn => {
+    if (isImportRef(ref)) {
+      return GlobalFqn(ref.project, ref.model)
+    }
+    if (isModelRef(ref)) {
+      return ref.model
+    }
+    throw new Error('Expected FqnRef.ModelRef or FqnRef.ImportRef')
   }
 }
 

@@ -175,6 +175,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
       const desc = {
         ...Descriptions.createDescription(node, name, document),
         id: fqn,
+        likec4ProjectId: projectId,
       }
       ElementOps.writeId(node, fqn)
       byfqn.set(fqn, desc)
