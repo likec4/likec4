@@ -6,7 +6,9 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "^generate"
+        "^generate",
+        "likec4#build-cli",
+        "likec4#build-react"
       ],
       "outputs": [
         ".astro/**"
@@ -14,9 +16,7 @@
     },
     "build": {
       "dependsOn": [
-        "generate",
-        "likec4#build-cli",
-        "likec4#build-react"
+        "generate"
       ],
       "outputs": [
         ".astro/**",
