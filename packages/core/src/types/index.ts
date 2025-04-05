@@ -1,7 +1,6 @@
 export type {
   CustomColor,
   ExclusiveUnion,
-  IconUrl,
   IteratorLike,
   KeysOf,
   NonEmptyArray,
@@ -21,6 +20,7 @@ export {
 
 export type {
   Fqn,
+  IconUrl,
   ProjectId,
   Tag,
 } from './scalars'

@@ -1,10 +1,10 @@
 import { invariant } from '../errors'
-import type { ExclusiveUnion, ProjectId } from './_common'
+import type { ExclusiveUnion } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
 import type { BorderStyle, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type ProjectId, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 

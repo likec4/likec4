@@ -4,7 +4,6 @@ import { isDefined } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { importsRef } from '../utils'
-import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
@@ -29,6 +28,22 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
           node: el,
           property: 'source',
         })
+      }
+
+      const isSourceImported = !!importsRef(el.source)
+      if (isSourceImported && isTargetImported) {
+        accept('warning', 'Relationship between imported elements is not visible in the other projects', {
+          node: el,
+        })
+      }
+      if (isSourceImported && !isTargetImported) {
+        accept(
+          'warning',
+          'Relationship from imported element to local element is not visible in the other project',
+          {
+            node: el,
+          },
+        )
       }
     } else {
       if (!ast.isElementBody(el.$container)) {

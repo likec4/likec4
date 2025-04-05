@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { Tagged, TupleToUnion } from 'type-fest'
+import type { Tagged } from 'type-fest'
 import { invariant } from '../errors'
 
 export type ProjectId = Tagged<string, 'ProjectID'>

@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
 import {
+  type MultiMap,
   type ViewId,
   computeColorValues,
   DeploymentElement,
@@ -30,6 +31,11 @@ import { resolveRelativePaths } from '../../view-utils'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
+export type BuildModelData = {
+  data: c4.ParsedLikeC4ModelData
+  imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
+}
+
 /**
  * Each document was parsed into a ParsedLikeC4LangiumDocument, where elements
  * do not inherit styles from specification.
@@ -37,7 +43,7 @@ import { MergedSpecification } from './MergedSpecification'
  * This function builds a model from all documents, merging the specifications
  * and globals, and applying the extends to the elements.
  */
-export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4ModelData {
+export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
   const customColorDefinitions: c4.CustomColorDefinitions = mapValues(
@@ -205,19 +211,23 @@ export function buildModel(docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4
   )
 
   return {
-    specification: {
-      tags: Array.from(c4Specification.specs.tags),
-      elements: c4Specification.specs.elements,
-      relationships: c4Specification.specs.relationships,
-      deployments: c4Specification.specs.deployments,
+    data: {
+      specification: {
+        tags: Array.from(c4Specification.specs.tags),
+        elements: c4Specification.specs.elements,
+        relationships: c4Specification.specs.relationships,
+        deployments: c4Specification.specs.deployments,
+      },
+      elements,
+      relations,
+      globals: c4Specification.globals,
+      views,
+      deployments: {
+        elements: deploymentElements,
+        relations: deploymentRelations,
+      },
+      imports: {},
     },
-    elements,
-    relations,
-    globals: c4Specification.globals,
-    views,
-    deployments: {
-      elements: deploymentElements,
-      relations: deploymentRelations,
-    },
+    imports: c4Specification.imports,
   }
 }

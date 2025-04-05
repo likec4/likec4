@@ -1,9 +1,9 @@
-import type { ExclusiveUnion, ProjectId } from './_common'
+import type { ExclusiveUnion } from './_common'
 import type { PredicateSelector } from './deployments'
 import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, type Tag, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type ProjectId, type Tag, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 

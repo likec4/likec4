@@ -67,7 +67,7 @@ export class BaseParser {
       const fqn = this.resolveFqn(
         nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
       )
-      this.doc.c4Imports.add(project, fqn)
+      this.doc.c4Imports.set(project, fqn)
       return GlobalFqn(project, fqn)
     }
     if (ast.isExtendElement(node)) {

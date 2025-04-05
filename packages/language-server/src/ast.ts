@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap, nonexhaustive } from '@likec4/core'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
@@ -219,7 +219,7 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
-  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn>
+  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>

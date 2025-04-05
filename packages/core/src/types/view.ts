@@ -1,6 +1,6 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
-import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
+import type { NonEmptyArray, Point, XYPoint } from './_common'
 import {
   type BorderStyle,
   type ElementShape,
@@ -12,7 +12,7 @@ import type { ExpressionV2, FqnExpr } from './expression-v2'
 import type { ModelLayer } from './expression-v2-model'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
-import type { Fqn, Tag } from './scalars'
+import type { Fqn, IconUrl, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 

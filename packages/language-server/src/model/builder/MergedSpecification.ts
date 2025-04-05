@@ -1,4 +1,5 @@
 import type * as c4 from '@likec4/core'
+import { MultiMap } from '@likec4/core'
 import {
   DeploymentElement,
   FqnRef,
@@ -39,11 +40,14 @@ export class MergedSpecification {
     styles: {},
   }
 
+  public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
+
   constructor(docs: ParsedLikeC4LangiumDocument[]) {
     for (const doc of docs) {
       const {
         c4Specification: spec,
         c4Globals,
+        c4Imports,
       } = doc
 
       spec.tags.forEach(t => this.specs.tags.add(t))
@@ -54,6 +58,10 @@ export class MergedSpecification {
       Object.assign(this.globals.predicates, c4Globals.predicates)
       Object.assign(this.globals.dynamicPredicates, c4Globals.dynamicPredicates)
       Object.assign(this.globals.styles, c4Globals.styles)
+
+      for (const [projectId, fqn] of c4Imports) {
+        this.imports.set(projectId, fqn)
+      }
     }
   }
 

@@ -23,7 +23,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             nonNullable(refValue.element.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
           ),
         }
-        this.doc.c4Imports.add(fqnRef.project, fqnRef.model)
+        this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
         return fqnRef
       }
       if (ast.isElement(refValue)) {
@@ -33,7 +33,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             project: imported.$container.project as c4.ProjectId,
             model: this.resolveFqn(refValue),
           }
-          this.doc.c4Imports.add(fqnRef.project, fqnRef.model)
+          this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
           return fqnRef
         }
         const deployedInstanceAst = instanceRef(astNode)

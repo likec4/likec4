@@ -1,6 +1,6 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
-import type { IconUrl, NonEmptyArray } from './_common'
-import type { Fqn, ProjectId, Tag } from './scalars'
+import type { NonEmptyArray } from './_common'
+import type { Fqn, IconUrl, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const

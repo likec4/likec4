@@ -8,7 +8,7 @@ import type { Element } from '../types/element'
 import type { ModelGlobals } from '../types/global'
 import type { AnyParsedLikeC4ModelData, GenericLikeC4ModelData, LikeC4ModelDump } from '../types/model-data'
 import type { ModelRelation } from '../types/relation'
-import { type Tag as C4Tag } from '../types/scalars'
+import { type ProjectId, type Tag as C4Tag } from '../types/scalars'
 import type { ComputedView, DiagramView, LikeC4View } from '../types/view'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
@@ -420,6 +420,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
 export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create({
+    projectId: 'default' as ProjectId,
     specification: {
       elements: {},
       relationships: {},
@@ -438,6 +439,7 @@ export namespace LikeC4Model {
     elements: {},
     relations: {},
     views: {},
+    imports: {},
   }) as LikeC4Model<AnyAux>
 
   export type Any = Aux<

@@ -8,7 +8,7 @@ export function ImportsParser<TBase extends Base>(B: TBase) {
       const imports = this.doc.parseResult.value.imports ?? []
       for (const imported of imports.flatMap(i => i.imports)) {
         try {
-          this.doc.c4Imports.add(
+          this.doc.c4Imports.set(
             imported.$container.project as ProjectId,
             this.resolveFqn(
               nonNullable(imported.element.ref, `ElementRef is empty of imported: ${imported.$cstNode?.text}`),
