@@ -31,18 +31,19 @@ export function predicateToPatch(
   { expr, where, ...ctx }: PredicateCtx,
 ): StageExclude | StageInclude | undefined {
   switch (true) {
+    case RelationExpr.isCustom(expr):
+    case FqnExpr.isCustom(expr):
+    case FqnExpr.isModelRef(expr):
+      // Ignore model refs in deployment view
+      return undefined
     case FqnExpr.isWhere(expr):
       return WhereDeploymentRefPredicate[op]({ ...ctx, expr, where } as any)
     case RelationExpr.isWhere(expr):
       return WhereRelationPredicate[op]({ ...ctx, expr, where } as any)
-    case FqnExpr.isModelRef(expr):
-      // Ignore model refs in deployment view
-      return undefined
     case FqnExpr.isDeploymentRef(expr):
       return DeploymentRefPredicate[op]({ ...ctx, expr, where } as any)
     case FqnExpr.isWildcard(expr):
       return WildcardPredicate[op]({ ...ctx, expr, where } as any)
-
     case RelationExpr.isDirect(expr):
       return DirectRelationPredicate[op]({ ...ctx, expr, where } as any)
     case RelationExpr.isInOut(expr):

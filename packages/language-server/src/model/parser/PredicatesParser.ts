@@ -217,7 +217,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
           custom: {
             expr,
           },
-        } as c4.CustomElementExpr,
+        } as c4.ModelLayer.FqnExpr.Custom,
       )
     }
 

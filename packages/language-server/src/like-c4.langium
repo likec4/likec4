@@ -677,12 +677,20 @@ DeploymentViewRulePredicateExpression:
 ;
 
 ExpressionV2:
-  RelationExprOrWhere |
-  FqnExprOrWhere
+  RelationExprOrWith |
+  FqnExprOrWith
+;
+
+FqnExprOrWith:
+  FqnExprOrWhere ({infer FqnExprWith.subject=current} 'with' custom=CustomElementProperties?)?
 ;
 
 FqnExprOrWhere:
   FqnExpr ({infer FqnExprWhere.subject=current} 'where' where=WhereElementExpression?)?
+;
+
+RelationExprOrWith:
+  RelationExprOrWhere ({infer RelationExprWith.subject=current} 'with' where=CustomRelationProperties?)?
 ;
 
 RelationExprOrWhere:
