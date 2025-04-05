@@ -1,9 +1,5 @@
 import {
-  type CustomRelationExpr,
-  type RelationWhereExpr,
   type ViewRulePredicate,
-  isCustomRelationExpr,
-  isRelationWhere,
   isViewRulePredicate,
   ModelLayer,
 } from '@likec4/core'
@@ -188,10 +184,10 @@ describe.concurrent('LikeC4ModelParser', () => {
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
-      const wherePredicate = includeRule.include?.[0] as RelationWhereExpr
+      const wherePredicate = includeRule.include?.[0] as ModelLayer.RelationExpr.Where
 
       expect(isViewRulePredicate(includeRule)).toBe(true)
-      expect(isRelationWhere(wherePredicate)).toBe(true)
+      expect(ModelLayer.RelationExpr.isWhere(wherePredicate)).toBe(true)
       expect(wherePredicate).toStrictEqual({
         where: {
           condition: {
