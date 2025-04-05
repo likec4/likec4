@@ -1,6 +1,5 @@
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
-import { token } from '@likec4/styles/tokens'
 import {
   ActionIcon,
   Badge,
