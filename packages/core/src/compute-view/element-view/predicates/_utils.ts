@@ -1,6 +1,6 @@
 import { anyPass } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import type { LikeC4Model } from '../../../model'
+import type { LikeC4Model } from '../../../model/LikeC4Model'
 import { ModelLayer } from '../../../types/expression-v2-model'
 import { isDescendantOf } from '../../../utils/fqn'
 import { ifilter, toArray } from '../../../utils/iterable'

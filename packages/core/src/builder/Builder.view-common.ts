@@ -2,16 +2,10 @@ import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
   type AutoLayoutDirection,
-  type CustomElementExpr,
-  type CustomRelationExpr,
-  type ElementExpression as C4ElementExpression,
-  type Expression as C4Expression,
   type ExpressionV2,
-  type FqnExpr,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
-  isElementPredicateExpr,
 } from '../types'
 import { ModelLayer } from '../types/expression-v2-model'
 import type { KindEqual, Participant, TagEqual } from '../types/operators'

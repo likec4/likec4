@@ -1,6 +1,4 @@
 import { findConnectionsWithin } from '../../../model/connection/model'
-import type { ElementRefExpr } from '../../../types/expression'
-import * as Expr from '../../../types/expression'
 import { ModelLayer } from '../../../types/expression-v2-model'
 import type { Elem, PredicateExecutor } from '../_types'
 import { resolveElements } from './_utils'

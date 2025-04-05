@@ -1,7 +1,4 @@
-import { fail } from 'assert'
 import { describe, expect, it } from 'vitest'
-import type { Element } from '../../types/element'
-import type { RelationWhereExpr } from '../../types/expression'
 import type { ComputedNode } from '../../types/view'
 import { $incoming, $inout, $outgoing, $participant, $relation, $where } from '../element-view/__test__/fixture'
 import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'

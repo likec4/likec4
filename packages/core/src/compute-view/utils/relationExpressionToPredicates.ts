@@ -1,16 +1,5 @@
-import { pick } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import { ModelLayer } from '../../types'
-import type { Element } from '../../types/element'
-import {
-  type RelationExpression,
-  type RelationWhereExpr,
-  isIncoming,
-  isInOut,
-  isOutgoing,
-  isRelation,
-  isRelationWhere,
-} from '../../types/expression'
 import { whereOperatorAsPredicate } from '../../types/operators'
 import type { ModelRelation } from '../../types/relation'
 import type { ComputedNode } from '../../types/view'

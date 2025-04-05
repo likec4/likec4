@@ -2,12 +2,10 @@ import { isEmpty, isNullish, omitBy } from 'remeda'
 import {
   type ViewRule,
   ComputedNode,
-  isCustomElement,
   isViewRuleGroup,
   isViewRulePredicate,
   ModelLayer,
 } from '../../types'
-import type { Expression } from '../../types/expression'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 export function flattenGroupRules<T extends ModelLayer.Expression>(guard: (expr: ModelLayer.Expression) => expr is T) {

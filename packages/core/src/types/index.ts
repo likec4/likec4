@@ -59,47 +59,6 @@ export type {
   TypedElement,
 } from './element'
 
-export {
-  isCustomElement,
-  isCustomRelationExpr,
-  isElement,
-  isElementKindExpr,
-  isElementPredicateExpr,
-  isElementRef,
-  isElementTagExpr,
-  isElementWhere,
-  isExpandedElementExpr,
-  isIncoming,
-  isInOut,
-  isOutgoing,
-  isRelation,
-  isRelationExpression,
-  isRelationPredicateExpr,
-  isRelationWhere,
-  isWildcard,
-} from './expression'
-export type {
-  CustomElementExpr,
-  CustomRelationExpr,
-  DirectRelationExpr,
-  ElementExpression,
-  ElementKindExpr,
-  ElementPredicateExpression,
-  ElementRefExpr,
-  ElementTagExpr,
-  ElementWhereExpr,
-  ExpandedElementExpr,
-  Expression,
-  IncomingExpr,
-  InOutExpr,
-  NonWilcard,
-  OutgoingExpr,
-  RelationExpression,
-  RelationPredicateExpression,
-  RelationWhereExpr,
-  WildcardExpr,
-} from './expression'
-
 export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
 export { ModelLayer } from './expression-v2-model'
 

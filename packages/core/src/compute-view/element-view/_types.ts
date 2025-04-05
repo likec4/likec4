@@ -2,8 +2,7 @@ import { type LikeC4Model } from '../../model'
 import type { ConnectionModel } from '../../model/connection/model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
-import type { ModelLayer } from '../../types'
-import type { ElementExpression, Expression, RelationExpression } from '../../types/expression'
+import type { ModelLayer } from '../../types/expression-v2-model'
 
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
 

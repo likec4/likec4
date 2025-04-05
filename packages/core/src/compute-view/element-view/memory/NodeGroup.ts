@@ -1,4 +1,5 @@
-import { ElementKind, type NodeId, type ViewRuleGroup } from '../../../types'
+import { ElementKind } from '../../../types/element'
+import { type NodeId, type ViewRuleGroup } from '../../../types/view'
 import type { Elem } from '../_types'
 
 export class NodesGroup {
@@ -8,7 +9,7 @@ export class NodesGroup {
     public readonly id: NodeId,
     public readonly viewRule: ViewRuleGroup,
     public readonly parent: NodeId | null = null,
-    public readonly elements: ReadonlySet<Elem> = new Set<Elem>()
+    public readonly elements: ReadonlySet<Elem> = new Set<Elem>(),
   ) {
   }
 
@@ -21,7 +22,7 @@ export class NodesGroup {
       this.id,
       this.viewRule,
       this.parent,
-      elements
+      elements,
     )
   }
 
