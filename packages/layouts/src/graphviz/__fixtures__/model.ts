@@ -270,15 +270,21 @@ export const cloud3levels = {
         // include *
         { wildcard: true },
         // include cloud.frontend.*
-        { element: fakeElements['cloud.frontend'].id, isChildren: true },
+        {
+          ref: { model: 'cloud.frontend' as Fqn },
+          selector: 'children',
+        },
         // include cloud.backend.*
-        { element: fakeElements['cloud.backend'].id, isChildren: true },
+        {
+          ref: { model: 'cloud.backend' as Fqn },
+          selector: 'children',
+        },
       ],
     },
     {
       exclude: [
         // exclude cloud.frontend
-        { element: 'cloud.frontend' as Fqn, isChildren: false },
+        { ref: { model: 'cloud.frontend' as Fqn } },
       ],
     },
   ],
@@ -299,11 +305,11 @@ export const amazonView = {
         // include *
         { wildcard: true },
         // include cloud
-        { element: 'cloud' as Fqn, isChildren: false },
+        { ref: { model: 'cloud' as Fqn } },
         // include cloud.* -> amazon
         {
-          source: { element: 'cloud' as Fqn, isChildren: true },
-          target: { element: 'amazon' as Fqn, isChildren: false },
+          source: { ref: { model: 'cloud' as Fqn }, selector: 'children' },
+          target: { ref: { model: 'amazon' as Fqn } },
         },
       ],
     },
