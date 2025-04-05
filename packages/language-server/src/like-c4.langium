@@ -690,7 +690,7 @@ FqnExprOrWhere:
 ;
 
 RelationExprOrWith:
-  RelationExprOrWhere ({infer RelationExprWith.subject=current} 'with' where=CustomRelationProperties?)?
+  RelationExprOrWhere ({infer RelationExprWith.subject=current} 'with' custom=CustomRelationProperties?)?
 ;
 
 RelationExprOrWhere:

@@ -65,6 +65,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       if (ast.isFqnExprOrWhere(astNode)) {
         return this.parseFqnExprOrWhere(astNode)
       }
+      if (ast.isRelationExprWith(astNode)) {
+        return this.parseRelationExprWith(astNode)
+      }
       if (ast.isRelationExprOrWhere(astNode)) {
         return this.parseRelationExprOrWhere(astNode)
       }
@@ -238,9 +241,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     }
 
     parseRelationExprWith(
-      astNode: ast.RelationPredicateWith,
-      expr: c4.RelationExpr.OrWhere,
+      astNode: ast.RelationExprWith,
     ): c4.RelationExpr.Custom {
+      const expr = this.parseRelationExprOrWhere(astNode.subject)
       const props = astNode.custom?.props ?? []
       return props.reduce(
         (acc, prop) => {
