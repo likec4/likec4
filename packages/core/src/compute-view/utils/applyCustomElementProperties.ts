@@ -1,9 +1,16 @@
 import { isEmpty, isNullish, omitBy } from 'remeda'
-import { type ViewRule, ComputedNode, isCustomElement, isViewRuleGroup, isViewRulePredicate } from '../../types'
+import {
+  type ViewRule,
+  ComputedNode,
+  isCustomElement,
+  isViewRuleGroup,
+  isViewRulePredicate,
+  ModelLayer,
+} from '../../types'
 import type { Expression } from '../../types/expression'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-export function flattenGroupRules<T extends Expression>(guard: (expr: Expression) => expr is T) {
+export function flattenGroupRules<T extends ModelLayer.Expression>(guard: (expr: ModelLayer.Expression) => expr is T) {
   return (rule: ViewRule): Array<T> => {
     if (isViewRuleGroup(rule)) {
       return rule.groupRules.flatMap(flattenGroupRules(guard))
@@ -17,7 +24,7 @@ export function flattenGroupRules<T extends Expression>(guard: (expr: Expression
 }
 
 export function applyCustomElementProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
-  const rules = _rules.flatMap(flattenGroupRules(isCustomElement))
+  const rules = _rules.flatMap(flattenGroupRules(ModelLayer.FqnExpr.isCustom))
   if (rules.length === 0) {
     return _nodes
   }

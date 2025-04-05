@@ -2,6 +2,7 @@ import { anyPass } from 'remeda'
 import { nonexhaustive } from '../../../errors'
 import type { LikeC4Model } from '../../../model'
 import * as Expr from '../../../types/expression'
+import { ModelLayer } from '../../../types/expression-v2-model'
 import { isDescendantOf } from '../../../utils/fqn'
 import { ifilter, toArray } from '../../../utils/iterable'
 import type { Elem, Memory, PredicateCtx } from '../_types'
@@ -10,33 +11,42 @@ import type { Elem, Memory, PredicateCtx } from '../_types'
  * Resolve elements from the model based on the given expression
  */
 
-export function resolveElements(model: LikeC4Model, expr: Exclude<Expr.ElementExpression, Expr.WildcardExpr>): Elem[] {
+export function resolveElements(model: LikeC4Model, expr: ModelLayer.FqnExpr.NonWildcard): Elem[] {
   switch (true) {
-    case Expr.isExpandedElementExpr(expr): {
-      const element = model.element(expr.expanded)
+    case ModelLayer.FqnExpr.isElementKindExpr(expr): {
+      return [...ifilter(model.elements(), el => {
+        return expr.isEqual === (el.kind === expr.elementKind)
+      })]
+    }
+    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+      return [...ifilter(model.elements(), el => {
+        return expr.isEqual === el.tags.includes(expr.elementTag)
+      })]
+    }
+    case expr.selector === 'expanded': {
+      const element = model.element(ModelLayer.FqnRef.toFqn(expr.ref))
       return [
         element,
         ...element.children(),
       ]
     }
-    case Expr.isElementRef(expr): {
-      const element = model.element(expr.element)
-      let children
-      if (expr.isChildren) {
-        children = toArray(element.children())
-      } else if (expr.isDescendants) {
-        children = toArray(element.descendants())
-      }
+    case expr.selector === 'children':
+    case expr.selector === 'descendants': {
+      const element = model.element(ModelLayer.FqnRef.toFqn(expr.ref))
+      let children = expr.selector === 'children' ? toArray(element.children()) : toArray(element.descendants())
       return children && children.length > 0 ? children : [element]
     }
-    case Expr.isElementKindExpr(expr):
-      return [...ifilter(model.elements(), el => {
-        return expr.isEqual === (el.kind === expr.elementKind)
-      })]
-    case Expr.isElementTagExpr(expr):
-      return [...ifilter(model.elements(), el => {
-        return expr.isEqual === el.tags.includes(expr.elementTag)
-      })]
+    case ModelLayer.FqnExpr.isModelRef(expr): {
+      return [model.element(ModelLayer.FqnRef.toFqn(expr.ref))]
+    }
+    // case Expr.isElementKindExpr(expr):
+    //   return [...ifilter(model.elements(), el => {
+    //     return expr.isEqual === (el.kind === expr.elementKind)
+    //   })]
+    // case Expr.isElementTagExpr(expr):
+    //   return [...ifilter(model.elements(), el => {
+    //     return expr.isEqual === el.tags.includes(expr.elementTag)
+    //   })]
     default:
       nonexhaustive(expr)
   }

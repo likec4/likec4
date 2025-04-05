@@ -1,50 +1,48 @@
-import { isNullish } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import {
-  type ElementPredicateExpression,
-  isCustomElement,
-  isElementKindExpr,
-  isElementRef,
-  isElementTagExpr,
-  isElementWhere,
-  isExpandedElementExpr,
-  isWildcard,
-  whereOperatorAsPredicate
+  ModelLayer,
+  whereOperatorAsPredicate,
 } from '../../types'
 import { parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
 export function elementExprToPredicate<T extends { id: string; tags?: readonly string[] | null; kind: string }>(
-  target: ElementPredicateExpression
+  target: ModelLayer.AnyFqnExpr,
 ): Predicate<T> {
-  if (isElementWhere(target)) {
+  if (ModelLayer.FqnExpr.isCustom(target)) {
+    return elementExprToPredicate(target.custom.expr)
+  }
+  if (ModelLayer.FqnExpr.isWhere(target)) {
     const predicate = elementExprToPredicate(target.where.expr)
     const where = whereOperatorAsPredicate(target.where.condition)
     return n => predicate(n) && where(n)
   }
-  if (isWildcard(target)) {
+  if (ModelLayer.FqnExpr.isWildcard(target)) {
     return () => true
   }
-  if (isElementKindExpr(target)) {
-    return target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
-  }
-  if (isElementTagExpr(target)) {
-    return target.isEqual
-      ? ({ tags }) => !!tags && tags.includes(target.elementTag)
-      : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
-  }
-  if (isExpandedElementExpr(target)) {
-    return n => n.id === target.expanded || parentFqn(n.id) === target.expanded
-  }
-  if (isElementRef(target)) {
-    const { element, isChildren, isDescendants } = target
-    return isChildren || isDescendants
-      ? n => n.id.startsWith(element + '.')
-      : n => (n.id as string) === element
-  }
-  if (isCustomElement(target)) {
-    return elementExprToPredicate(target.custom.expr)
+  if (ModelLayer.FqnExpr.isModelRef(target)) {
+    const fqn = ModelLayer.FqnRef.toFqn(target.ref)
+    if (target.selector === 'expanded') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        return n.id === fqn || n.id.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'descendants') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        return n.id.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'children') {
+      return (n) => {
+        return parentFqn(n.id) === fqn
+      }
+    }
+    return (n) => {
+      return n.id === fqn
+    }
   }
   nonexhaustive(target)
 }

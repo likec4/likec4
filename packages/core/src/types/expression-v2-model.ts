@@ -62,12 +62,35 @@ export namespace ModelLayer {
       return 'ref' in ref && (FqnRef.isModelRef(ref.ref) || FqnRef.isImportRef(ref.ref))
     }
 
-    export type NonWildcard<M = Fqn> = ModelRef<M>
+    export type ElementKindExpr = {
+      elementKind: ElementKind
+      isEqual: boolean
+    }
+    export function isElementKindExpr(expr: Expression): expr is ElementKindExpr {
+      return 'elementKind' in expr && 'isEqual' in expr
+    }
+
+    export type ElementTagExpr = {
+      elementTag: Tag
+      isEqual: boolean
+    }
+    export function isElementTagExpr(expr: Expression): expr is ElementTagExpr {
+      return 'elementTag' in expr && 'isEqual' in expr
+    }
+
+    export type NonWildcard<M = Fqn> = ExclusiveUnion<{
+      ModelRef: ModelRef<M>
+      ElementKind: ElementKindExpr
+      ElementTag: ElementTagExpr
+    }>
+
     export type Where<M = Fqn> = {
       where: {
         expr: ExclusiveUnion<{
           Wildcard: Wildcard
           ModelRef: ModelRef<M>
+          ElementKind: ElementKindExpr
+          ElementTag: ElementTagExpr
         }>
         condition: WhereOperator<string, string>
       }
@@ -75,7 +98,8 @@ export namespace ModelLayer {
 
     export const isWhere = (expr: Expression): expr is FqnExpr.Where => {
       return 'where' in expr &&
-        (isWildcard(expr.where.expr) || isModelRef(expr.where.expr))
+        (isWildcard(expr.where.expr) || isModelRef(expr.where.expr) || isElementKindExpr(expr.where.expr) ||
+          isElementTagExpr(expr.where.expr))
     }
 
     export type Custom<M = Fqn> = {
@@ -105,18 +129,33 @@ export namespace ModelLayer {
     export const is = (expr: Expression): expr is FqnExpr => {
       return isWildcard(expr)
         || isModelRef(expr)
+        || isElementKindExpr(expr)
+        || isElementTagExpr(expr)
     }
   }
 
   export type FqnExpr<M = Fqn> = ExclusiveUnion<{
     Wildcard: FqnExpr.Wildcard
     ModelRef: FqnExpr.ModelRef<M>
+    ElementKind: FqnExpr.ElementKindExpr
+    ElementTag: FqnExpr.ElementTagExpr
   }>
 
   export type FqnExprOrWhere<M = Fqn> = ExclusiveUnion<{
     Wildcard: FqnExpr.Wildcard
     ModelRef: FqnExpr.ModelRef<M>
+    ElementKind: FqnExpr.ElementKindExpr
+    ElementTag: FqnExpr.ElementTagExpr
     Where: FqnExpr.Where<M>
+  }>
+
+  export type AnyFqnExpr<M = Fqn> = ExclusiveUnion<{
+    Wildcard: FqnExpr.Wildcard
+    ModelRef: FqnExpr.ModelRef<M>
+    ElementKind: FqnExpr.ElementKindExpr
+    ElementTag: FqnExpr.ElementTagExpr
+    Where: FqnExpr.Where<M>
+    Custom: FqnExpr.Custom<M>
   }>
 
   export namespace RelationExpr {
@@ -208,6 +247,15 @@ export namespace ModelLayer {
     Where: RelationExpr.Where<M>
   }>
 
+  export type AnyRelationExpr<M = Fqn> = ExclusiveUnion<{
+    Direct: RelationExpr.Direct<M>
+    Incoming: RelationExpr.Incoming<M>
+    Outgoing: RelationExpr.Outgoing<M>
+    InOut: RelationExpr.InOut<M>
+    Where: RelationExpr.Where<M>
+    CustomRelation: RelationExpr.Custom<M>
+  }>
+
   /**
    * Represents a version 2 expression which can be one of several types.
    *
@@ -216,6 +264,8 @@ export namespace ModelLayer {
   export type Expression<M = Fqn> = ExclusiveUnion<{
     Wildcard: FqnExpr.Wildcard
     ModelRef: FqnExpr.ModelRef<M>
+    ElementKind: FqnExpr.ElementKindExpr
+    ElementTag: FqnExpr.ElementTagExpr
     Custom: FqnExpr.Custom<M>
     Direct: RelationExpr.Direct<M>
     Incoming: RelationExpr.Incoming<M>
@@ -249,11 +299,11 @@ export namespace ModelLayer {
     }
 
     export const isFqnExpr = (expr: Expression): expr is FqnExpr => {
-      return FqnExpr.is(expr as any)
+      return FqnExpr.is(expr)
     }
 
     export const isRelation = (expr: Expression): expr is RelationExpr => {
-      return RelationExpr.is(expr as any)
+      return RelationExpr.is(expr)
     }
   }
 }

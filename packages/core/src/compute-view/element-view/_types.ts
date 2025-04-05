@@ -2,6 +2,7 @@ import { type LikeC4Model } from '../../model'
 import type { ConnectionModel } from '../../model/connection/model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
+import type { ModelLayer } from '../../types'
 import type { ElementExpression, Expression, RelationExpression } from '../../types/expression'
 
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
@@ -21,28 +22,32 @@ export { Memory } from './memory'
 
 export type Connections = ReadonlyArray<ConnectionModel<AnyAux>>
 
-export interface PredicateCtx<Expr extends Expression = Expression> {
+export interface PredicateCtx<Expr extends ModelLayer.Expression = ModelLayer.Expression> {
   expr: Expr
   stage: Stage
   // View scope
   scope: Elem | null
   model: LikeC4Model<AnyAux>
   memory: Memory
-  where: Expr extends RelationExpression ? RelationshipWhere
-    : Expr extends ElementExpression ? ElementWhere
+  where: Expr extends ModelLayer.RelationExpr ? RelationshipWhere
+    : Expr extends ModelLayer.FqnExpr.NonWildcard ? ElementWhere
     : never
-  filterWhere: Expr extends RelationExpression ? ConnectionWhereFilter
-    : Expr extends ElementExpression ? ElementWhereFilter
+  filterWhere: Expr extends ModelLayer.RelationExpr ? ConnectionWhereFilter
+    : Expr extends ModelLayer.FqnExpr.NonWildcard ? ElementWhereFilter
     : never
 }
-export interface IncludePredicateCtx<Expr extends Expression = Expression> extends PredicateCtx<Expr> {
+export interface IncludePredicateCtx<Expr extends ModelLayer.Expression = ModelLayer.Expression>
+  extends PredicateCtx<Expr>
+{
   stage: StageInclude
 }
-export interface ExcludePredicateCtx<Expr extends Expression = Expression> extends PredicateCtx<Expr> {
+export interface ExcludePredicateCtx<Expr extends ModelLayer.Expression = ModelLayer.Expression>
+  extends PredicateCtx<Expr>
+{
   stage: StageExclude
 }
 
-export interface PredicateExecutor<Expr extends Expression> {
+export interface PredicateExecutor<Expr extends ModelLayer.Expression = ModelLayer.Expression> {
   include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
   exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

@@ -197,7 +197,7 @@ export interface DynamicViewParallelSteps {
 export type DynamicViewStepOrParallel = DynamicViewStep | DynamicViewParallelSteps
 
 export type DynamicViewIncludeRule = {
-  include: Array<ModelLayer.FqnExprOrWhere | ModelLayer.FqnExpr.Custom>
+  include: ElementPredicateExpression[]
 }
 
 export type DynamicViewRule =

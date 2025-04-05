@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { type Filterable, whereOperatorAsPredicate } from './operators'
 
 type FTag = 'old' | 'new'
@@ -8,8 +8,8 @@ function item(props: Filterable<FTag, FKind>): Filterable<FTag, FKind> {
   return props
 }
 
-describe('operators', () => {
-  it('tag eq', () => {
+describe.concurrent('expression operators', () => {
+  it('tag eq', ({ expect }) => {
     const matchingItem1 = item({ tags: ['old'] })
     const matchingItem2 = item({ tags: ['old', 'new'] })
     const nonMatchingItem1 = item({ tags: ['new'] })
@@ -23,7 +23,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
-  it('tag neq', () => {
+  it('tag neq', ({ expect }) => {
     const matchingItem1 = item({ tags: ['old'] })
     const matchingItem2 = item({})
     const nonMatchingItem1 = item({ tags: ['new'] })
@@ -37,7 +37,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
-  it('kind eq', () => {
+  it('kind eq', ({ expect }) => {
     const matchingItem = item({ kind: 'a' })
     const nonMatchingItem1 = item({ kind: 'b' })
     const nonMatchingItem2 = item({})
@@ -49,7 +49,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
-  it('kind neq', () => {
+  it('kind neq', ({ expect }) => {
     const matchingItem1 = item({ kind: 'a' })
     const matchingItem2 = item({})
     const nonMatchingItem = item({ kind: 'b' })
@@ -61,7 +61,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem)).toBe(false)
   })
 
-  it('not', () => {
+  it('not', ({ expect }) => {
     const matchingItem1 = item({ kind: 'a' })
     const nonMatchingItem = item({ kind: 'b' })
 
@@ -71,7 +71,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem)).toBe(false)
   })
 
-  it('and', () => {
+  it('and', ({ expect }) => {
     const matchingItem = item({ kind: 'a', tags: ['old'] })
     const nonMatchingItem1 = item({ kind: 'a', tags: ['new'] })
     const nonMatchingItem2 = item({ kind: 'b', tags: ['new'] })
@@ -88,7 +88,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
-  it('or', () => {
+  it('or', ({ expect }) => {
     const matchingItem1 = item({ kind: 'a', tags: ['old'] })
     const matchingItem2 = item({ kind: 'a', tags: ['new'] })
     const matchingItem3 = item({ kind: 'b', tags: ['old'] })
@@ -107,7 +107,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem)).toBe(false)
   })
 
-  it('participant source', () => {
+  it('participant source', ({ expect }) => {
     const matchingItem1 = item({ source: { kind: 'a', tags: ['old'] }, target: {} })
     const matchingItem2 = item({ source: { kind: 'a', tags: ['new'] }, target: {} })
     const matchingItem3 = item({ source: { kind: 'b', tags: ['old'] }, target: {} })
@@ -128,7 +128,7 @@ describe('operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
-  it('participant target', () => {
+  it('participant target', ({ expect }) => {
     const matchingItem1 = item({ source: {}, target: { kind: 'a', tags: ['old'] } })
     const matchingItem2 = item({ source: {}, target: { kind: 'a', tags: ['new'] } })
     const matchingItem3 = item({ source: {}, target: { kind: 'b', tags: ['old'] } })

@@ -7,7 +7,6 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
 import type {
   ComputedElementView,
-  ElementPredicateExpression,
   ElementView,
   NodeId,
   RelationPredicateExpression,
@@ -15,6 +14,7 @@ import type {
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import * as Expr from '../../types/expression'
+import { ModelLayer } from '../../types/expression-v2-model'
 import { sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -41,52 +41,54 @@ import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
 function processElementPredicate(
   // ...args:
-  //   | [expr: ElementPredicateExpression, op: 'include', IncludePredicateCtx<ElementPredicateExpression>]
-  //   | [expr: ElementPredicateExpression, op: 'exclude', ExcludePredicateCtx<ElementPredicateExpression>]
-  expr: ElementPredicateExpression,
+  //   | [expr: ModelLayer.AnyFqnExpr, op: 'include', IncludePredicateCtx<ModelLayer.AnyFqnExpr>]
+  //   | [expr: ModelLayer.AnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelLayer.AnyFqnExpr>]
+  expr: ModelLayer.AnyFqnExpr,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
+  ctx: PredicateCtx<ModelLayer.AnyFqnExpr>,
 ): Stage {
   switch (true) {
-    case Expr.isCustomElement(expr): {
+    case ModelLayer.FqnExpr.isCustom(expr): {
       if (op === 'include') {
         return processElementPredicate(expr.custom.expr, op, ctx)
       }
       return ctx.stage
     }
-    case Expr.isElementWhere(expr): {
+    case ModelLayer.FqnExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterWhere = filter<Elem>(where)
       return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
-    case Expr.isExpandedElementExpr(expr): {
-      return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    case ModelLayer.FqnExpr.isWildcard(expr): {
+      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isElementRef(expr): {
+    // case Expr.isExpandedElementExpr(expr): {
+    //   return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    // }
+    case ModelLayer.FqnExpr.isModelRef(expr): {
       return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isWildcard(expr):
-      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
-    case Expr.isElementKindExpr(expr):
-    case Expr.isElementTagExpr(expr):
-      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+
+    // case Expr.isElementKindExpr(expr):
+    // case Expr.isElementTagExpr(expr):
+    //   return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     default:
       nonexhaustive(expr)
   }
 }
 function processRelationtPredicate(
-  expr: RelationPredicateExpression,
+  expr: ModelLayer.AnyRelationExpr,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
+  ctx: PredicateCtx<ModelLayer.AnyRelationExpr>,
 ): Stage {
   switch (true) {
-    case Expr.isCustomRelationExpr(expr): {
+    case ModelLayer.RelationExpr.isCustom(expr): {
       if (op === 'include') {
         return processRelationtPredicate(expr.customRelation.relation, op, ctx)
       }
       return ctx.stage
     }
-    case Expr.isRelationWhere(expr): {
+    case ModelLayer.RelationExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterRelations = (relations: ReadonlySet<RelationshipModel>) => {
         return new Set(filter([...relations], where))
@@ -104,16 +106,16 @@ function processRelationtPredicate(
         filterWhere,
       })
     }
-    case Expr.isInOut(expr): {
+    case ModelLayer.RelationExpr.isInOut(expr): {
       return InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isRelation(expr): {
+    case ModelLayer.RelationExpr.isDirect(expr): {
       return DirectRelationExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isOutgoing(expr): {
+    case ModelLayer.RelationExpr.isOutgoing(expr): {
       return OutgoingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isIncoming(expr): {
+    case ModelLayer.RelationExpr.isIncoming(expr): {
       return IncomingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     default:

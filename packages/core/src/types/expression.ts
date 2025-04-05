@@ -1,5 +1,6 @@
 import type { IconUrl } from './_common'
 import type { BorderStyle, ElementKind, ElementShape } from './element'
+import type { ModelLayer } from './expression-v2-model'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
 import type { Fqn, Tag } from './scalars'
@@ -115,7 +116,9 @@ export function isElementWhere(expr: Expression): expr is ElementWhereExpr {
   return 'where' in expr && isElement(expr.where.expr)
 }
 
-export type ElementPredicateExpression = ElementExpression | ElementWhereExpr | CustomElementExpr
+// export type ElementPredicateExpression = ElementExpression | ElementWhereExpr | CustomElementExpr
+export type ElementPredicateExpression = ModelLayer.AnyFqnExpr
+
 export function isElementPredicateExpr(expr: Expression): expr is ElementPredicateExpression {
   return isElement(expr) || isElementWhere(expr) || isCustomElement(expr)
 }
