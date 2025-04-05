@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   type ComputedNode,
-  type ElementExpression,
   type IconUrl,
   type ModelLayer,
   type NonEmptyArray,

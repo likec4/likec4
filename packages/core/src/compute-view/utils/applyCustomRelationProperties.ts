@@ -1,6 +1,5 @@
 import { isNullish, omitBy, pick } from 'remeda'
 import { type ComputedEdge, type ComputedNode, type ViewRule, ModelLayer } from '../../types'
-import * as Expr from '../../types/expression'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
 
