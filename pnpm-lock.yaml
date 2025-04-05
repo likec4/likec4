@@ -175,8 +175,8 @@ catalogs:
       specifier: ^4.3.4
       version: 4.3.4
     rollup:
-      specifier: ^4.38.0
-      version: 4.38.0
+      specifier: ^4.39.0
+      version: 4.39.0
     vite:
       specifier: ^6.2.4
       version: 6.2.4
@@ -1060,7 +1060,7 @@ importers:
         version: 19.0.0(react@19.0.0)
       rollup:
         specifier: catalog:vite
-        version: 4.38.0
+        version: 4.39.0
       type-fest:
         specifier: ^4.39.0
         version: 4.39.1
@@ -1283,13 +1283,13 @@ importers:
         version: 3.5.0(typescript@5.8.2)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 4.5.3(@types/node@20.17.28)(rollup@4.38.0)(typescript@5.8.2)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 4.5.3(@types/node@20.17.28)(rollup@4.39.0)(typescript@5.8.2)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-inspect:
         specifier: ^11.0.0
         version: 11.0.0(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-singlefile:
         specifier: ^2.2.0
-        version: 2.2.0(rollup@4.38.0)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 2.2.0(rollup@4.39.0)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vitest:
         specifier: catalog:vitest
         version: 3.1.1(@types/debug@4.1.12)(@types/node@20.17.28)(@vitest/ui@3.1.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
@@ -10796,13 +10796,13 @@ snapshots:
     optionalDependencies:
       rollup: 4.37.0
 
-  '@rollup/pluginutils@5.1.4(rollup@4.38.0)':
+  '@rollup/pluginutils@5.1.4(rollup@4.39.0)':
     dependencies:
       '@types/estree': 1.0.7
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
-      rollup: 4.38.0
+      rollup: 4.39.0
 
   '@rollup/pluginutils@5.1.4(rollup@4.39.0)':
     dependencies:
@@ -13030,7 +13030,7 @@ snapshots:
     dependencies:
       magic-string: 0.30.17
       mlly: 1.7.4
-      rollup: 4.37.0
+      rollup: 4.38.0
 
   flatted@3.3.3: {}
 
@@ -16690,10 +16690,10 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-dts@4.5.3(@types/node@20.17.28)(rollup@4.38.0)(typescript@5.8.2)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
+  vite-plugin-dts@4.5.3(@types/node@20.17.28)(rollup@4.39.0)(typescript@5.8.2)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:
       '@microsoft/api-extractor': 7.51.0(@types/node@20.17.28)
-      '@rollup/pluginutils': 5.1.4(rollup@4.38.0)
+      '@rollup/pluginutils': 5.1.4(rollup@4.39.0)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.8.2)
       compare-versions: 6.1.1
@@ -16751,10 +16751,10 @@ snapshots:
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-singlefile@2.2.0(rollup@4.38.0)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
+  vite-plugin-singlefile@2.2.0(rollup@4.39.0)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:
       micromatch: 4.0.8
-      rollup: 4.38.0
+      rollup: 4.39.0
       vite: 6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   vite-tsconfig-paths@5.1.4(typescript@5.8.2)(vite@6.2.4(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
