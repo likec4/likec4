@@ -1,7 +1,7 @@
 import { FqnExpr, FqnRef } from '@likec4/core'
-import { AstUtils, type ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { isNonNullish, isNullish } from 'remeda'
-import { ast } from '../../ast'
+import { ast, isFqnRefInsideDeployment } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
@@ -28,14 +28,14 @@ export const relationExprChecks = (services: LikeC4Services): ValidationCheck<as
       if (FqnExpr.isModelRef(parser.parseFqnExpr(node.source.from))) {
         accept('error', ModelRefOnlyExclude, {
           node: node.source,
-          property: 'from'
+          property: 'from',
         })
       }
 
       if (FqnExpr.isModelRef(parser.parseFqnExpr(node.target))) {
         accept('error', ModelRefOnlyExclude, {
           node,
-          property: 'target'
+          property: 'target',
         })
       }
       return
@@ -51,7 +51,7 @@ export const relationExprChecks = (services: LikeC4Services): ValidationCheck<as
     }
     if (FqnExpr.isModelRef(parser.parseFqnExpr(expr))) {
       accept('error', ModelRefOnlyExclude, {
-        node
+        node,
       })
       return
     }
@@ -68,7 +68,7 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
     const referenceTo = node.ref.value.ref
     if (isNullish(referenceTo)) {
       accept('error', 'Invalid empty reference', {
-        node
+        node,
       })
       return
     }
@@ -79,22 +79,26 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
     if (node.$container.$type === 'DeploymentViewRulePredicateExpression') {
       if (FqnExpr.isModelRef(expr)) {
         accept('error', 'Deployment view predicate must reference deployment model', {
-          node
+          node,
         })
         return
       }
       if (FqnExpr.isDeploymentRef(expr) && FqnRef.isInsideInstanceRef(expr.ref)) {
         accept('error', 'Must reference deployment nodes or instances, but not internals', {
-          node
+          node,
         })
         return
       }
     }
 
+    if (!isFqnRefInsideDeployment(node)) {
+      return
+    }
+
     if (!ast.isDeploymentNode(referenceTo) && isNonNullish(node.selector)) {
       accept('warning', `Selector '${node.selector}' applies to deployment nodes only, ignored here`, {
         node,
-        property: 'selector'
+        property: 'selector',
       })
     }
   })

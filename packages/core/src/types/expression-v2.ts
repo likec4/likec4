@@ -1,10 +1,10 @@
 import { invariant } from '../errors'
 import type { ExclusiveUnion } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
-import type { BorderStyle, ElementShape } from './element'
+import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, type ProjectId, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type ProjectId, type Tag, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
@@ -119,9 +119,27 @@ export namespace FqnExpr {
     return 'ref' in ref && FqnRef.isDeploymentRef(ref.ref)
   }
 
+  export type ElementKindExpr = {
+    elementKind: ElementKind
+    isEqual: boolean
+  }
+  export function isElementKindExpr(expr: ExpressionV2): expr is ElementKindExpr {
+    return 'elementKind' in expr && 'isEqual' in expr
+  }
+
+  export type ElementTagExpr = {
+    elementTag: Tag
+    isEqual: boolean
+  }
+  export function isElementTagExpr(expr: ExpressionV2): expr is ElementTagExpr {
+    return 'elementTag' in expr && 'isEqual' in expr
+  }
+
   export type NonWildcard<D = Fqn, M = Fqn> = ExclusiveUnion<{
     ModelRef: ModelRef<M>
     DeploymentRef: DeploymentRef<D, M>
+    ElementKind: ElementKindExpr
+    ElementTag: ElementTagExpr
   }>
 
   export type Where<D = Fqn, M = Fqn> = {
@@ -130,6 +148,8 @@ export namespace FqnExpr {
         Wildcard: Wildcard
         ModelRef: ModelRef<M>
         DeploymentRef: DeploymentRef<D, M>
+        ElementKind: ElementKindExpr
+        ElementTag: ElementTagExpr
       }>
       condition: WhereOperator<string, string>
     }
@@ -167,12 +187,16 @@ export namespace FqnExpr {
     return isWildcard(expr)
       || isModelRef(expr)
       || isDeploymentRef(expr)
+      || isElementKindExpr(expr)
+      || isElementTagExpr(expr)
   }
 
   export type OrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
     Wildcard: FqnExpr.Wildcard
     ModelRef: FqnExpr.ModelRef<M>
     DeploymentRef: FqnExpr.DeploymentRef<D, M>
+    ElementKind: ElementKindExpr
+    ElementTag: ElementTagExpr
     Where: FqnExpr.Where<D, M>
   }>
 
@@ -180,6 +204,8 @@ export namespace FqnExpr {
     Wildcard: Wildcard
     ModelRef: ModelRef<M>
     DeploymentRef: DeploymentRef<D, M>
+    ElementKind: ElementKindExpr
+    ElementTag: ElementTagExpr
     Where: Where<D, M>
     Custom: Custom<D, M>
   }>
@@ -189,6 +215,8 @@ export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<M>
   DeploymentRef: FqnExpr.DeploymentRef<D, M>
+  ElementKind: FqnExpr.ElementKindExpr
+  ElementTag: FqnExpr.ElementTagExpr
 }>
 
 export namespace RelationExpr {
@@ -301,6 +329,8 @@ export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<M>
   DeploymentRef: FqnExpr.DeploymentRef<D, M>
+  ElementKind: FqnExpr.ElementKindExpr
+  ElementTag: FqnExpr.ElementTagExpr
   Custom: FqnExpr.Custom<D, M>
   Direct: RelationExpr.Direct<D, M>
   Incoming: RelationExpr.Incoming<D, M>

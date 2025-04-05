@@ -164,7 +164,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         }
         predicate = prev
       }
-      return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
+      return astNode.isInclude ? { include: exprs } : { exclude: exprs }
     }
 
     parseViewRuleGlobalPredicateRef(

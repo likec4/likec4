@@ -7,18 +7,18 @@ import type { AnyAux } from '../../model/types'
 import {
   type ComputedEdge,
   type ComputedNode,
-  DefaultArrowType,
   type DeploymentNodeKind,
   type DeploymentViewRule,
   type Fqn,
-  FqnExpr,
-  isViewRuleStyle,
   type NonEmptyArray,
   type Tag,
+  DefaultArrowType,
+  FqnExpr,
+  isViewRuleStyle,
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
-import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
+import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import { uniqueTags } from '../utils/uniqueTags'
 import type { Elem, Memory } from './_types'
@@ -66,6 +66,9 @@ export function deploymentExpressionToPredicate<T extends { id: string; modelRef
 ): Predicate<T> {
   if (FqnExpr.isWildcard(target)) {
     return () => true
+  }
+  if (FqnExpr.isElementTagExpr(target) || FqnExpr.isElementKindExpr(target)) {
+    throw new Error('element kind and tag expressions are not supported in deployment view rules')
   }
   if (FqnExpr.isDeploymentRef(target)) {
     const fqn = target.ref.deployment

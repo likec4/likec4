@@ -452,11 +452,6 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isDeploymentViewRuleStyle)
       ?.keyword('style').append(FormattingOptions.oneSpace)
 
-    this.on(node, ast.isElementExpressionsIterator)
-      ?.keyword(',')
-      .prepend(FormattingOptions.noSpace)
-      .append(FormattingOptions.oneSpace)
-
     this.on(node, ast.isFqnExpressions)
       ?.keyword(',')
       .prepend(FormattingOptions.noSpace)
@@ -514,8 +509,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatIncludeExcludeExpressions(node: AstNode) {
     if (
       ast.isDynamicViewRule(node)
-      || ast.isIncludePredicate(node)
-      || ast.isExcludePredicate(node)
+      || ast.isViewRulePredicate(node)
       || ast.isDeploymentViewRulePredicate(node)
     ) {
       const formatter = this.getNodeFormatter(node)
@@ -571,8 +565,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatDeploymentViewRulePredicateExpressions(node: AstNode) {
     if (
       ast.isDynamicViewRule(node)
-      || ast.isIncludePredicate(node)
-      || ast.isExcludePredicate(node)
+      || ast.isViewRulePredicate(node)
       || ast.isDeploymentViewRulePredicate(node)
     ) {
       const formatter = this.getNodeFormatter(node)
@@ -605,8 +598,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       if (
         !parent
         || ast.isDynamicViewRule(parent)
-        || ast.isIncludePredicate(parent)
-        || ast.isExcludePredicate(parent)
+        || ast.isViewRulePredicate(parent)
         || ast.isDeploymentViewRulePredicate(parent)
       ) {
         return parent

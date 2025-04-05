@@ -31,6 +31,9 @@ export function predicateToPatch(
   { expr, where, ...ctx }: PredicateCtx,
 ): StageExclude | StageInclude | undefined {
   switch (true) {
+    case FqnExpr.isElementTagExpr(expr):
+    case FqnExpr.isElementKindExpr(expr):
+      throw new Error('element kind and tag expressions are not supported in deployment view rules')
     case RelationExpr.isCustom(expr):
     case FqnExpr.isCustom(expr):
     case FqnExpr.isModelRef(expr):

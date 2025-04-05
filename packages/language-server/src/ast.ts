@@ -2,7 +2,7 @@ import type * as c4 from '@likec4/core'
 import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
-import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
+import { clamp, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
@@ -415,18 +415,59 @@ export function elementExpressionFromPredicate(predicate: ast.ElementPredicate):
   nonexhaustive(predicate)
 }
 
-export function isFqnRefForModel(astNode: AstNode): boolean {
+const _isModel = (astNode: AstNode) => {
+  return ast.isModel(astNode) ||
+    ast.isElementBody(astNode) ||
+    ast.isExtendElementBody(astNode) ||
+    ast.isElementViewBody(astNode) ||
+    ast.isDynamicViewBody(astNode)
+}
+
+const _isDeployment = (astNode: AstNode) => {
+  return ast.isModelDeployments(astNode) ||
+    ast.isDeploymentViewBody(astNode) ||
+    ast.isDeploymentNodeBody(astNode) ||
+    ast.isDeployedInstanceBody(astNode)
+}
+
+export function isFqnRefInsideGlobals(astNode: AstNode): boolean {
   while (true) {
-    if (
-      ast.isModelDeployments(astNode) || ast.isDeploymentViewBody(astNode) || ast.isDeploymentNodeBody(astNode) ||
-      ast.isDeployedInstanceBody(astNode)
-    ) {
+    if (_isDeployment(astNode) || _isModel(astNode)) {
       return false
     }
-    if (
-      ast.isModel(astNode) || ast.isElementBody(astNode) || ast.isExtendElementBody(astNode) ||
-      ast.isElementViewBody(astNode) || ast.isDynamicViewBody(astNode)
-    ) {
+    if (ast.isGlobals(astNode) || ast.isModelViews(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
+  }
+}
+
+export function isFqnRefInsideModel(astNode: AstNode): boolean {
+  while (true) {
+    if (_isDeployment(astNode)) {
+      return false
+    }
+    if (_isModel(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
+  }
+}
+
+export function isFqnRefInsideDeployment(astNode: AstNode): boolean {
+  while (true) {
+    if (_isModel(astNode)) {
+      return false
+    }
+    if (_isDeployment(astNode)) {
       return true
     }
     if (astNode.$container) {

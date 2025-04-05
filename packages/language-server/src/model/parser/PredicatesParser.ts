@@ -41,22 +41,6 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ModelLayer.FqnExpr[] {
-      const exprs = [] as c4.ModelLayer.FqnExpr[]
-      let iter: ast.ElementExpressionsIterator['prev'] = astNode
-      while (iter) {
-        try {
-          if (iter.value) {
-            exprs.unshift(this.parseElementExpression(iter.value))
-          }
-        } catch (e) {
-          logWarnError(e)
-        }
-        iter = iter.prev
-      }
-      return exprs
-    }
-
     parseElementExpression(astNode: ast.ElementExpression): c4.ModelLayer.FqnExpr {
       if (ast.isWildcardExpression(astNode)) {
         return {

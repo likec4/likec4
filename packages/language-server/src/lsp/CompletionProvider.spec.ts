@@ -803,6 +803,9 @@ describe('LikeC4CompletionProvider', () => {
         'i1',
         'c1',
         'c2',
+        // Because of ElementTagExpression and ElementKindExpression
+        'element.tag',
+        'element.kind',
       ],
       disposeAfterCheck: true,
     })

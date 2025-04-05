@@ -195,6 +195,24 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           wildcard: true,
         }
       }
+      if (ast.isElementKindExpression(astNode)) {
+        invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+        return {
+          elementKind: astNode.kind.ref.name as c4.ElementKind,
+          isEqual: astNode.isEqual,
+        }
+      }
+      if (ast.isElementTagExpression(astNode)) {
+        invariant(astNode.tag?.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+        let elementTag = astNode.tag.$refText
+        if (elementTag.startsWith('#')) {
+          elementTag = elementTag.slice(1)
+        }
+        return {
+          elementTag: elementTag as c4.Tag,
+          isEqual: astNode.isEqual,
+        }
+      }
       if (ast.isFqnRefExpr(astNode)) {
         return this.parseFqnRefExpr(astNode)
       }

@@ -10,7 +10,7 @@ export const elementPredicateWithChecks = (
 ): ValidationCheck<ast.ElementPredicateWith> => {
   return tryOrLog((el, accept) => {
     const container = AstUtils.getContainerOfType(el, ast.isViewRulePredicate)
-    if (ast.isExcludePredicate(container)) {
+    if (!container?.isInclude) {
       accept('error', 'Invalid usage inside "exclude"', {
         node: el,
       })

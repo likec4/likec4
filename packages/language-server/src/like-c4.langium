@@ -355,8 +355,8 @@ DynamicViewStep:
 ;
 
 ViewRulePredicate:
-  {infer IncludePredicate} 'include' predicates=Predicates |
-  {infer ExcludePredicate} 'exclude' predicates=Predicates
+  (isInclude?='include' | 'exclude')
+  predicates=Predicates
 ;
 Predicates:
   value=Predicate ({infer Predicates.prev=current} ',' value=Predicate?)*
@@ -486,11 +486,6 @@ DirectedRelationExpressions infers RelationExpression:
 OutgoingRelationExpression:
   from=ElementExpression
   (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
-;
-
-// Comma-separated list of ElementExpressions
-ElementExpressionsIterator:
-  value=ElementExpression ({infer ElementExpressionsIterator.prev=current} ',' (value=ElementExpression)?)*
 ;
 
 DynamicViewIncludePredicate:
@@ -699,6 +694,8 @@ RelationExprOrWhere:
 
 FqnExpr:
   {infer WildcardExpression} isWildcard?='*' |
+  {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]? |
   FqnRefExpr
 ;
 
