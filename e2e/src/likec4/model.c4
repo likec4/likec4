@@ -28,11 +28,13 @@ model {
         The legacy version of our SaaS
         MVP as was presented to the first customers
       '
+      icon ./images/cloud.svg
       link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
     }
 
     next = container 'Cloud Next' {
       description 'Cloud Next is the next version of our cloud systems'
+      icon file://images/cloud-next.svg
     }
 
     supportUser = actor 'Support User' {
@@ -40,6 +42,8 @@ model {
         A emploere from the support team
         Has limited access to the system
       '
+      icon ../root-level-images/user.svg
+
       -> customer 'helps with questions' {
         metadata {
           rps '1000'

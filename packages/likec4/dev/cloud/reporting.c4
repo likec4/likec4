@@ -3,6 +3,8 @@ model {
   extend cloud.reporting {
 
     report_subscriptions = component 'Subscriptions Report' {
+      icon ../images/subscription-report.svg
+
       -> cloud.billing.subscriptions 'sync daily'
       -> amazon.rds.pg 'read data'
       -> cloud.backend.graphql 'read tenants'

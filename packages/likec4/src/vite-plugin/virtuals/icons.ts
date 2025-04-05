@@ -8,7 +8,10 @@ function code(views: ComputedView[]) {
   const icons = pipe(
     views.flatMap(v => v.nodes.map(n => n.icon)),
     filter(isString),
-    filter(s => isTruthy(s) && !s.toLowerCase().startsWith('http')),
+    filter(s =>
+      isTruthy(s) &&
+      !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:'))
+    ),
     unique(),
   ).sort()
 
@@ -16,9 +19,21 @@ function code(views: ComputedView[]) {
     imports,
     cases,
   } = icons.reduce((acc, s, i) => {
-    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
-
+    const isLocalImage = s.toLowerCase().startsWith('.')
     const Component = 'Icon' + i.toString().padStart(2, '0')
+
+    if (isLocalImage) {
+      // Here the path can't be found, presumably because the file
+      // is not in the same directory as the code that's running.
+      // We need to find the path of the original file that contained
+      // the model, and then make the path (s) relative to that.
+      acc.imports.push(`import ${Component} from '${s}?inline'`)
+      acc.cases.push(`  '[${s}]': () => <img src={${Component}} />`)
+
+      return acc
+    }
+
+    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
 
     acc.imports.push(`import ${Component} from 'likec4/icons/${group}/${icon}'`)
     acc.cases.push(`  '${group}:${icon}': ${Component}`)
