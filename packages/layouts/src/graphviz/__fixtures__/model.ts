@@ -363,4 +363,5 @@ export const FakeModel: ParsedLikeC4ModelData = {
     predicates: {},
     styles: {},
   },
+  imports: {},
 }
