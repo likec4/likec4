@@ -101,6 +101,8 @@ export type {
 } from './expression'
 
 export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
+export type { FqnExprOrWhere, RelationExprOrWhere } from './expression-v2'
+export { ModelLayer } from './expression-v2-model'
 
 export type {
   GlobalDynamicPredicates,

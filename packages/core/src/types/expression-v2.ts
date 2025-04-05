@@ -95,16 +95,16 @@ export namespace FqnExpr {
   export type Wildcard = {
     wildcard: true
   }
-  export const isWildcard = (expr: ExpressionV2): expr is Wildcard => {
+  export const isWildcard = (expr: ExpressionV2): expr is FqnExpr.Wildcard => {
     return 'wildcard' in expr && expr.wildcard === true
   }
 
   export type ModelRef<M = Fqn> = {
-    ref: FqnRef.ModelRef<M>
+    ref: FqnRef.ModelRef<M> | FqnRef.ImportRef<M>
     selector?: PredicateSelector
   }
-  export const isModelRef = (ref: ExpressionV2): ref is ModelRef => {
-    return 'ref' in ref && FqnRef.isModelRef(ref.ref)
+  export const isModelRef = (ref: ExpressionV2): ref is FqnExpr.ModelRef => {
+    return 'ref' in ref && (FqnRef.isModelRef(ref.ref) || FqnRef.isImportRef(ref.ref))
   }
 
   export type DeploymentRef<D = Fqn, M = Fqn> = {
@@ -119,6 +119,29 @@ export namespace FqnExpr {
     ModelRef: ModelRef<M>
     DeploymentRef: DeploymentRef<D, M>
   }>
+
+  export type Where<D = Fqn, M = Fqn> = {
+    where: {
+      expr: ExclusiveUnion<{
+        Wildcard: Wildcard
+        ModelRef: ModelRef<M>
+        DeploymentRef: DeploymentRef<D, M>
+      }>
+      condition: WhereOperator<string, string>
+    }
+  }
+
+  export const isWhere = (expr: ExpressionV2): expr is FqnExpr.Where => {
+    return 'where' in expr &&
+      (isWildcard(expr.where.expr) || isModelRef(expr.where.expr) ||
+        isDeploymentRef(expr.where.expr))
+  }
+
+  export const is = (expr: ExpressionV2): expr is FqnExpr => {
+    return isWildcard(expr)
+      || isModelRef(expr)
+      || isDeploymentRef(expr)
+  }
 }
 
 export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
@@ -127,45 +150,75 @@ export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   DeploymentRef: FqnExpr.DeploymentRef<D, M>
 }>
 
+export type FqnExprOrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
+  Wildcard: FqnExpr.Wildcard
+  ModelRef: FqnExpr.ModelRef<M>
+  DeploymentRef: FqnExpr.DeploymentRef<D, M>
+  Where: FqnExpr.Where<D, M>
+}>
+
 export namespace RelationExpr {
+  export type Endpoint<D = Fqn, M = Fqn> = FqnExpr.Where<D, M>['where']['expr']
+
   export type Direct<D = Fqn, M = Fqn> = {
-    source: FqnExpr<D, M>
-    target: FqnExpr<D, M>
+    source: Endpoint<D, M>
+    target: Endpoint<D, M>
     isBidirectional?: boolean
   }
-  export const isDirect = (expr: ExpressionV2): expr is Direct => {
+  export const isDirect = (expr: ExpressionV2): expr is RelationExpr.Direct => {
     return 'source' in expr && 'target' in expr
   }
   export type Incoming<D = Fqn, M = Fqn> = {
-    incoming: FqnExpr<D, M>
+    incoming: Endpoint<D, M>
   }
-  export const isIncoming = (expr: ExpressionV2): expr is Incoming => {
+  export const isIncoming = (expr: ExpressionV2): expr is RelationExpr.Incoming => {
     return 'incoming' in expr
   }
   export type Outgoing<D = Fqn, M = Fqn> = {
-    outgoing: FqnExpr<D, M>
+    outgoing: Endpoint<D, M>
   }
-  export const isOutgoing = (expr: ExpressionV2): expr is Outgoing => {
+  export const isOutgoing = (expr: ExpressionV2): expr is RelationExpr.Outgoing => {
     return 'outgoing' in expr
   }
   export type InOut<D = Fqn, M = Fqn> = {
-    inout: FqnExpr<D, M>
+    inout: Endpoint<D, M>
   }
-  export const isInOut = (expr: ExpressionV2): expr is InOut => {
+  export const isInOut = (expr: ExpressionV2): expr is RelationExpr.InOut => {
     return 'inout' in expr
   }
   export type Where<D = Fqn, M = Fqn> = {
     where: {
-      expr: ExpressionV2<D, M>
+      expr: ExclusiveUnion<{
+        Direct: RelationExpr.Direct<D, M>
+        Incoming: RelationExpr.Incoming<D, M>
+        Outgoing: RelationExpr.Outgoing<D, M>
+        InOut: RelationExpr.InOut<D, M>
+      }>
       condition: WhereOperator<string, string>
     }
   }
-  export const isWhere = (expr: ExpressionV2): expr is Where => {
-    return 'where' in expr
+  export const isWhere = (expr: ExpressionV2): expr is RelationExpr.Where => {
+    return 'where' in expr &&
+      (isDirect(expr.where.expr) || isIncoming(expr.where.expr) || isOutgoing(expr.where.expr) ||
+        isInOut(expr.where.expr))
+  }
+
+  export const is = (expr: ExpressionV2): expr is RelationExpr => {
+    return isDirect(expr)
+      || isIncoming(expr)
+      || isOutgoing(expr)
+      || isInOut(expr)
   }
 }
 
 export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
+  Direct: RelationExpr.Direct<D, M>
+  Incoming: RelationExpr.Incoming<D, M>
+  Outgoing: RelationExpr.Outgoing<D, M>
+  InOut: RelationExpr.InOut<D, M>
+}>
+
+export type RelationExprOrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<D, M>
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
@@ -187,20 +240,36 @@ export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
   InOut: RelationExpr.InOut<D, M>
-  RelationPredicateOrWhere: RelationExpr.Where<D, M>
+  Where: ExpressionV2.Where<D, M>
 }>
 
 export namespace ExpressionV2 {
+  export type Where<D = Fqn, M = Fqn> = FqnExpr.Where<D, M> | RelationExpr.Where<D, M>
+  // export type Where<D = Fqn, M = Fqn> = {
+  //   where: ExclusiveUnion<{
+  //     Fqn: FqnExpr.Where<D, M>['where']['expr']
+  //     Relation: RelationExpr.Where<D, M>['where']['expr']
+  //   }>
+  //   condition: WhereOperator<string, string>
+  // }
+
+  export const isWhere = (expr: ExpressionV2): expr is ExpressionV2.Where => {
+    return 'where' in expr
+  }
+
+  export const isRelationWhere = (expr: ExpressionV2): expr is RelationExpr.Where => {
+    return RelationExpr.isWhere(expr)
+  }
+
+  export const isFqnExprWhere = (expr: ExpressionV2): expr is FqnExpr.Where => {
+    return FqnExpr.isWhere(expr)
+  }
+
   export const isFqnExpr = (expr: ExpressionV2): expr is FqnExpr => {
-    return FqnExpr.isWildcard(expr)
-      || FqnExpr.isModelRef(expr)
-      || FqnExpr.isDeploymentRef(expr)
+    return FqnExpr.is(expr as any)
   }
 
   export const isRelation = (expr: ExpressionV2): expr is RelationExpr => {
-    return RelationExpr.isDirect(expr)
-      || RelationExpr.isIncoming(expr)
-      || RelationExpr.isOutgoing(expr)
-      || RelationExpr.isInOut(expr)
+    return RelationExpr.is(expr as any)
   }
 }

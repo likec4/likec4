@@ -63,12 +63,12 @@ export class BaseParser {
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
     if (ast.isImported(node)) {
-      return GlobalFqn(
-        node.$container.project as c4.ProjectId,
-        this.resolveFqn(
-          nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
-        ),
+      const project = node.$container.project as c4.ProjectId
+      const fqn = this.resolveFqn(
+        nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
       )
+      this.doc.c4Imports.add(project, fqn)
+      return GlobalFqn(project, fqn)
     }
     if (ast.isExtendElement(node)) {
       return readStrictFqn(node.element)

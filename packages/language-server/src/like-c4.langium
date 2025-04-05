@@ -677,16 +677,16 @@ DeploymentViewRulePredicateExpression:
 ;
 
 ExpressionV2:
-  RelationPredicateOrWhereV2 |
-  ElementPredicateOrWhereV2
+  RelationExprOrWhere |
+  FqnExprOrWhere
 ;
 
-ElementPredicateOrWhereV2:
-  FqnExpr ({infer ElementPredicateWhereV2.subject=current} 'where' where=WhereElementExpression?)?
+FqnExprOrWhere:
+  FqnExpr ({infer FqnExprWhere.subject=current} 'where' where=WhereElementExpression?)?
 ;
 
-RelationPredicateOrWhereV2:
-  RelationExpr ({infer RelationPredicateWhereV2.subject=current} 'where' where=WhereRelationExpression?)?
+RelationExprOrWhere:
+  RelationExpr ({infer RelationExprWhere.subject=current} 'where' where=WhereRelationExpression?)?
 ;
 
 FqnExpr:

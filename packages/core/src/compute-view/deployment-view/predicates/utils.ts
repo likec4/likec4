@@ -15,6 +15,7 @@ import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
 import type { StageExclude, StageInclude } from '../memory'
 import { DeploymentRefPredicate } from './deploymentRefs'
+import { WhereDeploymentRefPredicate } from './deploymentRefs-where'
 import { DirectRelationPredicate } from './relation-direct'
 import { InOutRelationPredicate } from './relation-in-out'
 import { IncomingRelationPredicate } from './relation-incoming'
@@ -30,6 +31,10 @@ export function predicateToPatch(
   { expr, where, ...ctx }: PredicateCtx,
 ): StageExclude | StageInclude | undefined {
   switch (true) {
+    case FqnExpr.isWhere(expr):
+      return WhereDeploymentRefPredicate[op]({ ...ctx, expr, where } as any)
+    case RelationExpr.isWhere(expr):
+      return WhereRelationPredicate[op]({ ...ctx, expr, where } as any)
     case FqnExpr.isModelRef(expr):
       // Ignore model refs in deployment view
       return undefined
@@ -46,8 +51,6 @@ export function predicateToPatch(
       return OutgoingRelationPredicate[op]({ ...ctx, expr, where } as any)
     case RelationExpr.isIncoming(expr):
       return IncomingRelationPredicate[op]({ ...ctx, expr, where } as any)
-    case RelationExpr.isWhere(expr):
-      return WhereRelationPredicate[op]({ ...ctx, expr, where } as any)
     default:
       nonexhaustive(expr)
   }

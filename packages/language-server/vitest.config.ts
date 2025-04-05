@@ -12,5 +12,9 @@ export default defineProject({
   test: {
     name: 'language-server',
     testTimeout: 10_000,
+    chaiConfig: {
+      includeStack: true,
+      truncateThreshold: 100,
+    },
   },
 })

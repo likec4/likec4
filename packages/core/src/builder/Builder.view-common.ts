@@ -6,11 +6,15 @@ import {
   type CustomRelationExpr,
   type ElementExpression as C4ElementExpression,
   type Expression as C4Expression,
+  type ExpressionV2,
+  type FqnExpr,
+  type ModelLayer,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
   isElementPredicateExpr,
 } from '../types'
+import type { ModelLayer } from '../types/expression-v2-model'
 import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
@@ -87,7 +91,7 @@ export namespace ViewPredicate {
   export type Custom<Types extends AnyTypes> = {
     where?: ViewPredicate.WhereOperator<Types>
     with?: Simplify<
-      Omit<CustomElementExpr['custom'] & CustomRelationExpr['customRelation'], 'expr' | 'relation' | 'navigateTo'> & {
+      Omit<ModelLayer['custom'] & CustomRelationExpr['customRelation'], 'expr' | 'relation' | 'navigateTo'> & {
         navigateTo?: Types['ViewId']
       }
     >
@@ -212,7 +216,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
-    let expr = b.$expr(args[0]) as C4Expression
+    let expr = b.$expr(args[0]) as ExpressionV2
     if (args.length === 2 && args[1].where) {
       const condition = parseWhere(args[1].where)
       expr = {
@@ -233,7 +237,7 @@ function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 ): (b: B) => B {
   return (b) =>
     b.style({
-      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as C4ElementExpression),
+      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as FqnExpr),
       ...(notation ? { notation } : {}),
       style: {
         ...style,

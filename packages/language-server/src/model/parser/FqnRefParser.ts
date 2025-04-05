@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { type ProjectId, nonexhaustive, nonNullable } from '@likec4/core'
+import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { ast } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -11,22 +11,20 @@ export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
 
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
-    _parseImportFqnRef(node: ast.Imported): c4.FqnRef.ImportRef {
-      return {
-        project: node.$container.project as ProjectId,
-        model: this.resolveFqn(
-          nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
-        ),
-      }
-    }
-
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
       if (ast.isImported(refValue)) {
-        return this._parseImportFqnRef(refValue)
+        const fqnRef = {
+          project: refValue.$container.project as ProjectId,
+          model: this.resolveFqn(
+            nonNullable(refValue.element.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
+          ),
+        }
+        this.doc.c4Imports.add(fqnRef.project, fqnRef.model)
+        return fqnRef
       }
       if (ast.isElement(refValue)) {
         const imported = importsRef(astNode)
@@ -58,6 +56,38 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         }
       }
       nonexhaustive(refValue)
+    }
+
+    parseExpressionV2(astNode: ast.ExpressionV2): c4.ExpressionV2 {
+      if (ast.isFqnExprOrWhere(astNode)) {
+        return this.parseFqnExprOrWhere(astNode)
+      }
+      if (ast.isRelationExprOrWhere(astNode)) {
+        return this.parseRelationExprOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprOrWhere(astNode: ast.FqnExprOrWhere): c4.FqnExprOrWhere {
+      if (ast.isFqnExprWhere(astNode)) {
+        return this.parseFqnExprWhere(astNode)
+      }
+      if (ast.isFqnExpr(astNode)) {
+        return this.parseFqnExpr(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprWhere(astNode: ast.FqnExprWhere): c4.FqnExpr.Where {
+      invariant(!ast.isFqnExprWhere(astNode.subject), 'FqnExprWhere is not allowed as subject of FqnExprWhere')
+      return {
+        where: {
+          expr: this.parseFqnExpr(astNode.subject),
+          condition: astNode.where ? parseWhereClause(astNode.where) : {
+            kind: { neq: '--always-true--' },
+          },
+        },
+      }
     }
 
     parseFqnExpr(astNode: ast.FqnExpr): c4.FqnExpr {
@@ -95,17 +125,6 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseElementWhereExpr(astNode: ast.ElementPredicateWhereV2): c4.RelationExpr {
-      return {
-        where: {
-          expr: this.parseFqnExpr(astNode.subject as ast.FqnExpr),
-          condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' },
-          },
-        },
-      }
-    }
-
     parseFqnExpressions(astNode: ast.FqnExpressions): c4.FqnExpr[] {
       const exprs = [] as c4.FqnExpr[]
       let iter: ast.FqnExpressions['prev'] = astNode
@@ -122,10 +141,24 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return exprs.reverse()
     }
 
-    parseRelationWhereExpr(astNode: ast.RelationPredicateWhereV2): c4.RelationExpr {
+    parseRelationExprOrWhere(astNode: ast.RelationExprOrWhere): c4.RelationExprOrWhere {
+      if (ast.isRelationExprWhere(astNode)) {
+        return this.parseRelationExprWhere(astNode)
+      }
+      if (ast.isRelationExpr(astNode)) {
+        return this.parseRelationExpr(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseRelationExprWhere(astNode: ast.RelationExprWhere): c4.RelationExpr.Where {
+      invariant(
+        !ast.isRelationExprWhere(astNode.subject),
+        'RelationExprWhere is not allowed as subject of RelationExprWhere',
+      )
       return {
         where: {
-          expr: this.parseRelationExpr(astNode.subject as ast.RelationExpr),
+          expr: this.parseRelationExpr(astNode.subject),
           condition: astNode.where ? parseWhereClause(astNode.where) : {
             kind: { neq: '--always-true--' },
           },
@@ -134,31 +167,28 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     }
 
     parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
-      if (ast.isRelationPredicateWhere(astNode)) {
+      switch (astNode.$type) {
+        case 'DirectedRelationExpr':
+          return {
+            source: this.parseFqnExpr(astNode.source.from),
+            target: this.parseFqnExpr(astNode.target),
+            isBidirectional: astNode.source.isBidirectional,
+          }
+        case 'InOutRelationExpr':
+          return {
+            inout: this.parseFqnExpr(astNode.inout.to),
+          }
+        case 'OutgoingRelationExpr':
+          return {
+            outgoing: this.parseFqnExpr(astNode.from),
+          }
+        case 'IncomingRelationExpr':
+          return {
+            incoming: this.parseFqnExpr(astNode.to),
+          }
+        default:
+          nonexhaustive(astNode)
       }
-      if (ast.isDirectedRelationExpr(astNode)) {
-        return {
-          source: this.parseFqnExpr(astNode.source.from),
-          target: this.parseFqnExpr(astNode.target),
-          isBidirectional: astNode.source.isBidirectional,
-        }
-      }
-      if (ast.isInOutRelationExpr(astNode)) {
-        return {
-          inout: this.parseFqnExpr(astNode.inout.to),
-        }
-      }
-      if (ast.isOutgoingRelationExpr(astNode)) {
-        return {
-          outgoing: this.parseFqnExpr(astNode.from),
-        }
-      }
-      if (ast.isIncomingRelationExpr(astNode)) {
-        return {
-          incoming: this.parseFqnExpr(astNode.to),
-        }
-      }
-      nonexhaustive(astNode)
     }
   }
 }
