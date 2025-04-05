@@ -104,6 +104,7 @@
     },
     "build": {
       "dependsOn": [
+        "generate",
         "build-app",
         "build-cli",
         "build-react"
