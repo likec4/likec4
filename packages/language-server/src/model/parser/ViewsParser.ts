@@ -148,7 +148,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ViewRulePredicate {
-      const exprs = [] as c4.Expression[]
+      const exprs = [] as c4.ModelLayer.Expression[]
       let predicate = astNode.predicates
       while (predicate) {
         const { value, prev } = predicate
@@ -325,7 +325,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate): c4.DynamicViewIncludeRule {
-      const include = [] as c4.ElementPredicateExpression[]
+      const include = [] as c4.ModelLayer.AnyFqnExpr[]
       let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
       while (iter) {
         try {

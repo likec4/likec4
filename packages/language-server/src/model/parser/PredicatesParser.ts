@@ -11,7 +11,7 @@ export type WithPredicates = ReturnType<typeof PredicatesParser>
 
 export function PredicatesParser<TBase extends Base>(B: TBase) {
   return class PredicatesParser extends B {
-    parsePredicate(astNode: ast.Predicate): c4.Expression {
+    parsePredicate(astNode: ast.Predicate): c4.ModelLayer.Expression {
       if (ast.isElementPredicate(astNode)) {
         return this.parseElementPredicate(astNode)
       }
@@ -21,10 +21,17 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseElementPredicate(astNode: ast.ElementPredicate): c4.ElementPredicateExpression {
+    parseElementPredicate(astNode: ast.ElementPredicate): c4.ModelLayer.AnyFqnExpr {
       if (ast.isElementPredicateWith(astNode)) {
         return this.parseElementPredicateWith(astNode)
       }
+      if (ast.isElementPredicateOrWhere(astNode)) {
+        return this.parseElementPredicateOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseElementPredicateOrWhere(astNode: ast.ElementPredicateOrWhere): c4.ModelLayer.FqnExprOrWhere {
       if (ast.isElementPredicateWhere(astNode)) {
         return this.parseElementPredicateWhere(astNode)
       }
@@ -34,8 +41,8 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ElementExpression[] {
-      const exprs = [] as c4.ElementExpression[]
+    parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ModelLayer.FqnExpr[] {
+      const exprs = [] as c4.ModelLayer.FqnExpr[]
       let iter: ast.ElementExpressionsIterator['prev'] = astNode
       while (iter) {
         try {
@@ -50,7 +57,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       return exprs
     }
 
-    parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
+    parseElementExpression(astNode: ast.ElementExpression): c4.ModelLayer.FqnExpr {
       if (ast.isWildcardExpression(astNode)) {
         return {
           wildcard: true,
@@ -79,7 +86,10 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         invariant(elementNode, 'Element not found ' + astNode.expand.$cstNode?.text)
         const expanded = this.resolveFqn(elementNode)
         return {
-          expanded,
+          ref: {
+            model: expanded,
+          },
+          selector: 'expanded',
         }
       }
       if (ast.isElementDescedantsExpression(astNode)) {
@@ -87,9 +97,10 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
         const element = this.resolveFqn(elementNode)
         return {
-          element,
-          isChildren: astNode.suffix === '.*',
-          isDescendants: astNode.suffix === '.**',
+          ref: {
+            model: element,
+          },
+          selector: astNode.suffix === '.*' ? 'children' : 'descendants',
         }
       }
       if (ast.isElementRef(astNode)) {
@@ -97,13 +108,15 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         invariant(elementNode, 'Element not found ' + astNode.$cstNode?.text)
         const element = this.resolveFqn(elementNode)
         return {
-          element,
+          ref: {
+            model: element,
+          },
         }
       }
       nonexhaustive(astNode)
     }
 
-    parseElementPredicateWhere(astNode: ast.ElementPredicateWhere): c4.ElementWhereExpr {
+    parseElementPredicateWhere(astNode: ast.ElementPredicateWhere): c4.ModelLayer.FqnExpr.Where {
       const expr = this.parseElementExpression(astNode.subject)
       return {
         where: {
@@ -115,8 +128,8 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseElementPredicateWith(astNode: ast.ElementPredicateWith): c4.CustomElementExpr {
-      const expr = this.parseElementPredicate(astNode.subject)
+    parseElementPredicateWith(astNode: ast.ElementPredicateWith): c4.ModelLayer.FqnExpr.Custom {
+      const expr = this.parseElementPredicateOrWhere(astNode.subject)
       const props = astNode.custom?.props ?? []
       return props.reduce(
         (acc, prop) => {
@@ -137,9 +150,9 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
             return acc
           }
           if (ast.isIconProperty(prop)) {
-            const value = prop.libicon?.ref?.name ?? prop.value
+            const value = this.parseIconProperty(prop)
             if (isDefined(value)) {
-              acc.custom[prop.key] = value as c4.IconUrl
+              acc.custom[prop.key] = value
             }
             return acc
           }
@@ -208,14 +221,17 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       )
     }
 
-    parseRelationPredicate(astNode: ast.RelationPredicate): c4.RelationPredicateExpression {
+    parseRelationPredicate(astNode: ast.RelationPredicate): c4.ModelLayer.AnyRelationExpr {
       if (ast.isRelationPredicateWith(astNode)) {
-        let relation = ast.isRelationPredicateWhere(astNode.subject)
-          ? this.parseRelationPredicateWhere(astNode.subject)
-          : this.parseRelationExpression(astNode.subject)
-
-        return this.parseRelationPredicateWith(astNode, relation)
+        return this.parseRelationPredicateWith(astNode, this.parseRelationPredicateOrWhere(astNode.subject))
       }
+      if (ast.isRelationPredicateOrWhere(astNode)) {
+        return this.parseRelationPredicateOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseRelationPredicateOrWhere(astNode: ast.RelationPredicateOrWhere): c4.ModelLayer.RelationExprOrWhere {
       if (ast.isRelationPredicateWhere(astNode)) {
         return this.parseRelationPredicateWhere(astNode)
       }
@@ -225,7 +241,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseRelationPredicateWhere(astNode: ast.RelationPredicateWhere): c4.RelationWhereExpr {
+    parseRelationPredicateWhere(astNode: ast.RelationPredicateWhere): c4.ModelLayer.RelationExpr.Where {
       const expr = this.parseRelationExpression(astNode.subject)
       return {
         where: {
@@ -239,8 +255,8 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
 
     parseRelationPredicateWith(
       astNode: ast.RelationPredicateWith,
-      relation: c4.RelationExpression | c4.RelationWhereExpr,
-    ): c4.CustomRelationExpr {
+      expr: c4.ModelLayer.RelationExprOrWhere,
+    ): c4.ModelLayer.RelationExpr.Custom {
       const props = astNode.custom?.props ?? []
       return props.reduce(
         (acc, prop) => {
@@ -280,13 +296,13 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         },
         {
           customRelation: {
-            relation,
+            expr,
           },
-        } as c4.CustomRelationExpr,
+        } as c4.ModelLayer.RelationExpr.Custom,
       )
     }
 
-    parseRelationExpression(astNode: ast.RelationExpression): c4.RelationExpression {
+    parseRelationExpression(astNode: ast.RelationExpression): c4.ModelLayer.RelationExpr {
       if (ast.isDirectedRelationExpression(astNode)) {
         return {
           source: this.parseElementExpression(astNode.source.from),

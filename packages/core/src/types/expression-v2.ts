@@ -1,8 +1,12 @@
 import { invariant } from '../errors'
 import type { ExclusiveUnion, ProjectId } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
+import type { BorderStyle, ElementShape } from './element'
 import type { WhereOperator } from './operators'
-import { type Fqn, GlobalFqn } from './scalars'
+import type { RelationshipArrowType, RelationshipLineType } from './relation'
+import { type Fqn, type IconUrl, GlobalFqn } from './scalars'
+import type { Color, ShapeSize } from './theme'
+import type { ViewId } from './view'
 
 export namespace FqnRef {
   /**
@@ -132,9 +136,31 @@ export namespace FqnExpr {
   }
 
   export const isWhere = (expr: ExpressionV2): expr is FqnExpr.Where => {
-    return 'where' in expr &&
-      (isWildcard(expr.where.expr) || isModelRef(expr.where.expr) ||
-        isDeploymentRef(expr.where.expr))
+    return 'where' in expr && is(expr.where.expr)
+  }
+
+  export type Custom<D = Fqn, M = Fqn> = {
+    custom: {
+      expr: OrWhere<D, M>
+      title?: string
+      description?: string
+      technology?: string
+      notation?: string
+      shape?: ElementShape
+      color?: Color
+      icon?: IconUrl
+      border?: BorderStyle
+      opacity?: number
+      navigateTo?: ViewId
+      multiple?: boolean
+      size?: ShapeSize
+      padding?: ShapeSize
+      textSize?: ShapeSize
+    }
+  }
+
+  export const isCustom = (expr: ExpressionV2): expr is Custom => {
+    return 'custom' in expr && (is(expr.custom.expr) || isWhere(expr.custom.expr))
   }
 
   export const is = (expr: ExpressionV2): expr is FqnExpr => {
@@ -142,19 +168,27 @@ export namespace FqnExpr {
       || isModelRef(expr)
       || isDeploymentRef(expr)
   }
+
+  export type OrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
+    Wildcard: FqnExpr.Wildcard
+    ModelRef: FqnExpr.ModelRef<M>
+    DeploymentRef: FqnExpr.DeploymentRef<D, M>
+    Where: FqnExpr.Where<D, M>
+  }>
+
+  export type Any<D = Fqn, M = Fqn> = ExclusiveUnion<{
+    Wildcard: Wildcard
+    ModelRef: ModelRef<M>
+    DeploymentRef: DeploymentRef<D, M>
+    Where: Where<D, M>
+    Custom: Custom<D, M>
+  }>
 }
 
 export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<M>
   DeploymentRef: FqnExpr.DeploymentRef<D, M>
-}>
-
-export type FqnExprOrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
-  Wildcard: FqnExpr.Wildcard
-  ModelRef: FqnExpr.ModelRef<M>
-  DeploymentRef: FqnExpr.DeploymentRef<D, M>
-  Where: FqnExpr.Where<D, M>
 }>
 
 export namespace RelationExpr {
@@ -203,12 +237,51 @@ export namespace RelationExpr {
         isInOut(expr.where.expr))
   }
 
+  export type Custom<D = Fqn, M = Fqn> = {
+    customRelation: {
+      expr: OrWhere<D, M>
+      title?: string
+      description?: string
+      technology?: string
+      notation?: string
+      // Link to dynamic view
+      navigateTo?: ViewId
+      // Notes for walkthrough
+      notes?: string
+      color?: Color
+      line?: RelationshipLineType
+      head?: RelationshipArrowType
+      tail?: RelationshipArrowType
+    }
+  }
+
+  export const isCustom = (expr: ExpressionV2): expr is Custom => {
+    return 'customRelation' in expr
+  }
+
   export const is = (expr: ExpressionV2): expr is RelationExpr => {
     return isDirect(expr)
       || isIncoming(expr)
       || isOutgoing(expr)
       || isInOut(expr)
   }
+
+  export type OrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
+    Direct: Direct<D, M>
+    Incoming: Incoming<D, M>
+    Outgoing: Outgoing<D, M>
+    InOut: InOut<D, M>
+    Where: Where<D, M>
+  }>
+
+  export type Any<D = Fqn, M = Fqn> = ExclusiveUnion<{
+    Direct: Direct<D, M>
+    Incoming: Incoming<D, M>
+    Outgoing: Outgoing<D, M>
+    InOut: InOut<D, M>
+    Where: Where<D, M>
+    Custom: Custom<D, M>
+  }>
 }
 
 export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
@@ -216,14 +289,6 @@ export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
   InOut: RelationExpr.InOut<D, M>
-}>
-
-export type RelationExprOrWhere<D = Fqn, M = Fqn> = ExclusiveUnion<{
-  Direct: RelationExpr.Direct<D, M>
-  Incoming: RelationExpr.Incoming<D, M>
-  Outgoing: RelationExpr.Outgoing<D, M>
-  InOut: RelationExpr.InOut<D, M>
-  Where: RelationExpr.Where<D, M>
 }>
 
 /**
@@ -236,11 +301,13 @@ export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<M>
   DeploymentRef: FqnExpr.DeploymentRef<D, M>
+  Custom: FqnExpr.Custom<D, M>
   Direct: RelationExpr.Direct<D, M>
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
   InOut: RelationExpr.InOut<D, M>
   Where: ExpressionV2.Where<D, M>
+  CustomRelation: RelationExpr.Custom<D, M>
 }>
 
 export namespace ExpressionV2 {
@@ -265,11 +332,11 @@ export namespace ExpressionV2 {
     return FqnExpr.isWhere(expr)
   }
 
-  export const isFqnExpr = (expr: ExpressionV2): expr is FqnExpr => {
-    return FqnExpr.is(expr as any)
+  export const isFqnExpr = (expr: ExpressionV2): expr is FqnExpr.Any => {
+    return FqnExpr.is(expr) || FqnExpr.isWhere(expr) || FqnExpr.isCustom(expr)
   }
 
-  export const isRelation = (expr: ExpressionV2): expr is RelationExpr => {
-    return RelationExpr.is(expr as any)
+  export const isRelation = (expr: ExpressionV2): expr is RelationExpr.Any => {
+    return RelationExpr.is(expr) || RelationExpr.isWhere(expr) || RelationExpr.isCustom(expr)
   }
 }
