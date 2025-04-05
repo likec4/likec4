@@ -451,6 +451,18 @@ export function $customRelation(
 }
 
 export function $where(
+  expr: Expression,
+  operator: WhereOperator<TestTag, string>,
+): ModelLayer.Expression.Where
+export function $where(
+  expr: ModelLayer.RelationExpr,
+  operator: WhereOperator<TestTag, string>,
+): ModelLayer.RelationExpr.Where
+export function $where(
+  expr: ModelLayer.FqnExpr,
+  operator: WhereOperator<TestTag, string>,
+): ModelLayer.FqnExpr.Where
+export function $where(
   expr: Expression | ModelLayer.Expression,
   operator: WhereOperator<TestTag, string>,
 ): ModelLayer.Expression {

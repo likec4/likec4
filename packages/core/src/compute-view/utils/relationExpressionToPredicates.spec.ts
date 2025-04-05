@@ -115,7 +115,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(matchingRelation)).toBe(true)
@@ -128,7 +128,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
@@ -141,7 +141,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
@@ -154,7 +154,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           $participant('source', { tag: { eq: 'aws' } }),
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(matchingRelation)).toBe(true)
@@ -167,7 +167,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           $participant('source', { tag: { eq: 'aws' } }),
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
