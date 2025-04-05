@@ -42,7 +42,6 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatIncludeExcludeExpressions(node)
     this.formatDeploymentViewRulePredicateExpressions(node)
     this.formatWhereExpression(node)
-    this.formatWhereExpressionV2(node)
     this.formatWhereRelationExpression(node)
     this.formatWhereElementExpression(node)
     this.formatRelationExpression(node)
@@ -466,17 +465,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereExpression(node: AstNode) {
     if (
-      ast.isRelationExprOrWhere(node)
-      || ast.isFqnExprOrWhere(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.keyword('where').append(FormattingOptions.oneSpace)
-    }
-  }
-
-  protected formatWhereExpressionV2(node: AstNode) {
-    if (
-      ast.isRelationExprOrWhere(node)
+      ast.isElementPredicateOrWhere(node)
+      || ast.isRelationPredicateOrWhere(node)
+      || ast.isRelationExprOrWhere(node)
       || ast.isFqnExprOrWhere(node)
     ) {
       const formatter = this.getNodeFormatter(node)

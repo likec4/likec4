@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe('formating', () => {
+describe.concurrent('formating', () => {
   describe('formats specification', () => {
     it(
       'formats specification rules',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -40,7 +40,7 @@ specification{
   describe('formats globals', () => {
     it(
       'formats syles and styleGroups',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -76,7 +76,7 @@ specification{
 
     it(
       'formats predicate groups',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -108,7 +108,7 @@ specification{
   describe('formats model', () => {
     it(
       'formats element',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -134,7 +134,7 @@ model {
 
     it(
       'formats metadata',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -180,7 +180,7 @@ model {
 
     it(
       'separates element kind and name with space',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -208,7 +208,7 @@ model {
   describe('formats deployments', () => {
     it(
       'formats node declarations',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -238,7 +238,7 @@ model {
 
     it(
       'formats instance declarations',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -268,7 +268,7 @@ model {
 
     it(
       'surrounds arrows with space',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -336,7 +336,7 @@ model {
   describe('formats views', () => {
     it(
       'formats include/exclude expressions',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -361,15 +361,15 @@ model {
   views {
     view index {
       include      test , test.*
-      include      test1 
+      include      test1
       , test2.*, test3
       include *   ,    * -> *  ,  * ->
       exclude * ,   * -> *, * ->
     }
     deployment   view    prod  {
       include     test  , test.*
-      include      test1 
-      , test2.*, test3      
+      include      test1
+      , test2.*, test3
       include *   ,    * -> *  ,  * ->
       exclude * ,   * -> *, * ->
     }
@@ -418,8 +418,9 @@ model {
         `),
     )
 
-    it('formats relation predicates', async () => {
-      expect(await format(`
+    it('formats relation predicates', async ({ expect }) => {
+      expect(
+        await format(`
 views {
   deployment view index {
     include    ->   test
@@ -430,8 +431,9 @@ views {
     include test   ->
     include test   ->  test2
   }
-}        
-`)).toMatchInlineSnapshot(`
+}
+`),
+      ).toMatchInlineSnapshot(`
   "
   views {
     deployment view index {
@@ -443,23 +445,23 @@ views {
       include test ->
       include test -> test2
     }
-  }        
+  }
   "
 `)
     })
 
     it(
       'formats where expression',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
 views {
   view index {
-    include * where    tag==#tag1 
+    include * where    tag==#tag1
        or(tag!=#tag1   and   kind    is   not    kind1)
     and   not  tag   is   #tag1
-    include *->* where    tag==#tag2 
+    include *->* where    tag==#tag2
        or(tag!=#tag2   and   kind    is   not    kind2)
     and   not  tag is   #tag2
   }
@@ -480,20 +482,18 @@ views {
         ),
     )
 
-    
-
     it(
       'formats where expression v2',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
 views {
   deployment view index {
-    include * where    tag==#tag1 
+    include * where    tag==#tag1
        or(tag!=#tag1   and   kind    is   not    kind1)
     and   not  tag   is   #tag1
-    include *->* where    tag==#tag2 
+    include *->* where    tag==#tag2
        or(tag!=#tag2   and   kind    is   not    kind2)
     and   not  tag is   #tag2
   }
@@ -516,7 +516,7 @@ views {
 
     it(
       'formats global style references',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -546,7 +546,7 @@ views {
 
     it(
       'formats global predicate references',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -576,14 +576,14 @@ views {
 
     it(
       'formats styles',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
   views {
     view {
       style   *  ,sys1   ,   sys2 {
-      } 
+      }
     }
     deployment view prod {
       style   *  ,sys1   ,   sys2 {
@@ -610,7 +610,7 @@ views {
 
     it(
       'formats view declarations',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -652,7 +652,7 @@ views {
 
     it(
       'formats with predicates',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -686,7 +686,7 @@ views {
 
     it(
       'formats autolayout property',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -716,7 +716,7 @@ views {
 
     it(
       'formats groups',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -727,7 +727,7 @@ views {
   border    solid
   opacity   10%
   include    *  with{ }
-  include * where tag = #test    with    {}    
+  include * where tag = #test    with    {}
   group   "nested-group"{
   }
   }
@@ -774,7 +774,7 @@ views {
   describe('common formatting', () => {
     it(
       'indents',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -792,7 +792,7 @@ sys1 -> sys2
 par {
 sys2 -> sys3
 }
-} 
+}
 }`,
           ),
         ).toMatchInlineSnapshot(
@@ -820,7 +820,7 @@ sys2 -> sys3
 
     it(
       'prepends open braces with space',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -844,7 +844,7 @@ views{
 
     it(
       'handles comments',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -886,7 +886,7 @@ views{
 
     it(
       'formats tags',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -910,7 +910,7 @@ model {
 
     it(
       'puts tags on a new line',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -943,7 +943,7 @@ model {
 
     it(
       'formats link property',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -971,13 +971,13 @@ model {
 
     it(
       'formats navigateTo property',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
   views {
     view {
-      include 
+      include
         * with {
           navigateTo    viewB
         }
@@ -1001,7 +1001,7 @@ model {
 
     it(
       'formats style leaf properties',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1047,7 +1047,7 @@ model {
   }
   views {
     view {
-      include * with {  
+      include * with {
         color       primary
         opacity   30%
         icon    aws:person
@@ -1145,7 +1145,7 @@ model {
 
     it(
       'formats leaf properties with colon',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1182,7 +1182,7 @@ model {
         notation  :   'test'   ;
         title  :     'test'   ;
         description  :    'test'   ;
-        technology  :'test'   ;   
+        technology  :'test'   ;
       }
       include * -> * with {
         notation  :'test'   ;
@@ -1247,7 +1247,7 @@ model {
 
     it(
       'formats style leaf properties with colon',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1289,7 +1289,7 @@ model {
   }
   views {
     view {
-      include * with {  
+      include * with {
         color  :       primary   ;
         opacity  :   30%   ;
         icon  :    aws:person   ;
@@ -1383,7 +1383,7 @@ model {
 
     it(
       'formats leaf properties',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1417,7 +1417,7 @@ model {
         notation   'test'
         title     'test'
         description    'test'
-        technology'test'   
+        technology'test'
       }
       include * -> * with {
         notation'test'
@@ -1479,7 +1479,7 @@ model {
 
     it(
       'prepends props with space',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1509,7 +1509,7 @@ model {
 
     it(
       'prepends properties with new line',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1539,7 +1539,7 @@ model {
 
     it(
       'surrounds arrows with space',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
@@ -1549,26 +1549,26 @@ model {
     tag tag1
   }
   model {
-    component system1 {    
+    component system1 {
       component module1 {
           component lib1
       }
-  
+
       ->   system2
       .http    system2
     }
-    component system2 {   
+    component system2 {
       component module1 {
           component lib1
       }
     }
     system2   ->   system1
     system2   -[   http   ]->   system1
-  
+
     system2.module1   ->     system1.module1
     system2.module1.lib1   ->system1.module1.lib1
     system2.module1   -[   http   ]->   system1.module1
-    system2.module1  .http   system1.module1   'title'  'http'    #tag1  
+    system2.module1  .http   system1.module1   'title'  'http'    #tag1
   }
   views {
     view index {
@@ -1577,15 +1577,15 @@ model {
       include system1.module1<->*
       include ->    system1.module1   ->
     }
-  
+
     dynamic view some {
       system2   ->   system1
       system2   -[   http   ]->   system1
-  
+
       system2.module1   ->     system1.module1
       system2.module1.lib1   ->system1.module1.lib1
       system2.module1   -[   http   ]->   system1.module1
-      system2.module1  .http   system1.module1   'title' 
+      system2.module1  .http   system1.module1   'title'
     }
   }`,
           ),
@@ -1643,21 +1643,21 @@ model {
 
     it(
       'preserves empty lines',
-      async () =>
+      async ({ expect }) =>
         expect(
           await format(
             `
   model {
-  
+
     system sys1
-  
+
     system sys2 {
-  
+
       description 'some'
-  
+
       metadata
     }
-  
+
   }`,
           ),
         ).toMatchInlineSnapshot(
@@ -1679,11 +1679,11 @@ model {
         ),
     )
 
-    it('is idempotent', async () => {
+    it('is idempotent', async ({ expect }) => {
       const source = `
   specification {
     color custom #6BD731
-  
+
     element actor {
       notation "Person"
       style {
@@ -1698,7 +1698,7 @@ model {
         opacity 10%
       }
     }
-  
+
     element containe
     element app {
       notation "Application"
@@ -1712,7 +1712,7 @@ model {
         //icon https://icon.icepanel.io/Technology/svg/Swift.svg
       }
     }
-  
+
     relationship uses
     relationship requests
   }
@@ -1733,14 +1733,14 @@ model {
         The regular customer of the system
       '
     }
-  
+
     cloud = system 'Cloud System' {
       description '
         Our SaaS platfrom that allows
         customers to interact with
         the latest technologies
       '
-  
+
       ui = container 'Frontends' {
         description '
           All the frontend applications
@@ -1750,7 +1750,7 @@ model {
           version '2.1.1'
         }
       }
-  
+
       legacy = container 'Cloud Legacy' {
         description '
           The legacy version of our SaaS
@@ -1758,11 +1758,11 @@ model {
         '
         link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
       }
-  
+
       next = container 'Cloud Next' {
         description 'Cloud Next is the next version of our cloud systems'
       }
-  
+
       supportUser = actor 'Support User' {
         description '
           A emploere from the support team
@@ -1778,9 +1778,9 @@ model {
     customer .uses cloud 'uses and pays' {
       navigateTo dynamic-view-1
     }
-  
+
   }
-  
+
   views {
     view index {
       title "Landscape"
@@ -1788,7 +1788,7 @@ model {
         customer, // include first
         *
     }
-  
+
     view customer of customer {
       include
         *,
@@ -1796,38 +1796,38 @@ model {
           color red
         },
         supportUser
-  
+
       global style global-style
-  
+
       style supportUser {
         color: indigo;
       }
     }
-  
+
     view groupped {
       group "group1" {
         include customer, cloud
-  
+
         group "group2" {
           color green
         }
       }
     }
-  
+
     dynamic view dynamic-view-1 {
       title 'Dynamic View Example'
-  
+
       link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
-  
+
       customer -> ui.dashboard 'opens'
       ui.dashboard -> cloud.graphql 'requests'
       ui.dashboard <- cloud.graphql 'returns'
-  
+
       ui.mobile -> cloud.graphql 'requests'
       ui.mobile <- cloud.graphql
-  
+
       include cloud
-  
+
       autoLayout TopBottom
       style * {
         color secondary
