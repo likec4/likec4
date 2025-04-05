@@ -4,6 +4,7 @@ import {
   type ViewId,
   computeColorValues,
   DeploymentElement,
+  isGlobalFqn,
   parentFqn,
   sortByFqnHierarchically,
 } from '@likec4/core'
@@ -83,7 +84,10 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
     flatMap(d => map(d.c4Relations, c4Specification.toModelRelation)),
     filter((rel): rel is c4.ModelRelation => {
       if (!rel) return false
-      if (isNullish(elements[rel.source]) || isNullish(elements[rel.target])) {
+      if (
+        (isNullish(elements[rel.source]) && !isGlobalFqn(rel.source)) ||
+        (isNullish(elements[rel.target]) && !isGlobalFqn(rel.target))
+      ) {
         logger.debug`Invalid relation ${rel.id}
   source: ${rel.source} resolved: ${!!elements[rel.source]}
   target: ${rel.target} resolved: ${!!elements[rel.target]}\n`

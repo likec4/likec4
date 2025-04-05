@@ -133,7 +133,6 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           const imported = pipe(
             [...fqns],
             flatMap(fqn => anotherProject.data.elements[fqn] ?? []),
-            sortParentsFirst,
           )
           if (hasAtLeast(imported, 1)) {
             acc[projectId] = imported

@@ -13,7 +13,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
-        astNode.value.ref,
+        astNode.value?.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
       if (ast.isImported(refValue)) {

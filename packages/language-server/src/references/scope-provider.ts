@@ -16,7 +16,7 @@ import {
   StreamScope,
 } from 'langium'
 import { isFunction } from 'remeda'
-import { type AstNodeDescriptionWithFqn, ast, isInsideModel } from '../ast'
+import { type AstNodeDescriptionWithFqn, ast, isFqnRefForModel } from '../ast'
 import { logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
@@ -185,7 +185,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     container: ast.FqnRef,
     context: ReferenceInfo,
   ): Generator<AstNodeDescription> {
-    if (isInsideModel(container)) {
+    if (isFqnRefForModel(container)) {
       // Inside model scope we only need to resolve elements
       yield* this.computeScope(projectId, context, ast.Element)
     } else {
@@ -196,7 +196,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
       // Third preference for elements if we are in deployment view
       if (
-        AstUtils.hasContainerOfType(container, ast.isDeploymentView)
+        AstUtils.hasContainerOfType(container, ast.isDeploymentViewBody)
       ) {
         yield* this.computeScope(projectId, context, ast.Element)
       }

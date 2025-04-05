@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, ModelLayer, nonexhaustive } from '@likec4/core'
 import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
@@ -221,12 +221,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseRuleStyle(
       styleProperties: ast.StyleProperty[],
-      elementExpressionsIterator: ast.ElementExpressionsIterator,
+      elementExpressionsIterator: ast.FqnExpressions,
       notationProperty?: NotationProperty,
     ): c4.ViewRuleStyle {
       const styleProps = this.parseStyleProps(styleProperties)
       const notation = removeIndent(notationProperty?.value)
-      const targets = this.parseElementExpressionsIterator(elementExpressionsIterator)
+      const targets = this.parseFqnExpressions(elementExpressionsIterator).filter((e): e is ModelLayer.FqnExpr =>
+        ModelLayer.Expression.isFqnExpr(e as any)
+      )
       return {
         targets,
         ...(notation && { notation }),

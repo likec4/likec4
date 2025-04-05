@@ -415,12 +415,18 @@ export function elementExpressionFromPredicate(predicate: ast.ElementPredicate):
   nonexhaustive(predicate)
 }
 
-export function isInsideModel(astNode: AstNode): boolean {
+export function isFqnRefForModel(astNode: AstNode): boolean {
   while (true) {
-    if (ast.isModelDeployments(astNode) || ast.isDeploymentNodeBody(astNode) || ast.isDeployedInstanceBody(astNode)) {
+    if (
+      ast.isModelDeployments(astNode) || ast.isDeploymentViewBody(astNode) || ast.isDeploymentNodeBody(astNode) ||
+      ast.isDeployedInstanceBody(astNode)
+    ) {
       return false
     }
-    if (ast.isModel(astNode) || ast.isElementBody(astNode) || ast.isExtendElementBody(astNode)) {
+    if (
+      ast.isModel(astNode) || ast.isElementBody(astNode) || ast.isExtendElementBody(astNode) ||
+      ast.isElementViewBody(astNode) || ast.isDynamicViewBody(astNode)
+    ) {
       return true
     }
     if (astNode.$container) {

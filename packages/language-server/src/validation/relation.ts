@@ -1,5 +1,5 @@
 import { isSameHierarchy } from '@likec4/core'
-import type { ValidationCheck } from 'langium'
+import type { Reference, ValidationCheck } from 'langium'
 import { isDefined } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -8,10 +8,19 @@ import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
   const fqnIndex = services.likec4.FqnIndex
+
+  const resolve = (target: Reference<ast.Referenceable> | undefined) => {
+    if (target?.ref?.$type === 'Imported' && target.ref.element?.ref) {
+      return fqnIndex.getFqn(target.ref.element.ref)
+    }
+    if (target?.ref?.$type === 'Element') {
+      return fqnIndex.getFqn(target.ref)
+    }
+    return undefined
+  }
   return tryOrLog((el, accept) => {
-    const targetRef = el.target.value.ref
     const isTargetImported = !!importsRef(el.target)
-    const target = ast.isElement(targetRef) ? fqnIndex.getFqn(targetRef) : undefined
+    const target = resolve(el.target.value)
     if (!target) {
       accept('error', 'Target not resolved', {
         node: el,
@@ -19,11 +28,10 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       })
     }
 
-    let sourceEl
+    let source
     if (isDefined(el.source)) {
-      const sourceRef = el.source.value.ref
-      sourceEl = ast.isElement(sourceRef) ? sourceRef : undefined
-      if (!sourceEl) {
+      source = resolve(el.source.value)
+      if (!source) {
         return accept('error', 'Source not resolved', {
           node: el,
           property: 'source',
@@ -51,17 +59,8 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
           node: el,
         })
       }
-      sourceEl = el.$container.$container
+      source = fqnIndex.getFqn(el.$container.$container)
     }
-
-    const source = fqnIndex.getFqn(sourceEl)
-
-    if (!source) {
-      accept('error', 'Source not resolved', {
-        node: el,
-      })
-    }
-
     if (source && target && !isTargetImported && isSameHierarchy(source, target)) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,

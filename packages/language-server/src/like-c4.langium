@@ -505,7 +505,7 @@ DynamicViewPredicateIterator:
 ;
 
 ViewRuleStyle:
-  'style' target=ElementExpressionsIterator '{'
+  'style' target=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -754,7 +754,7 @@ GlobalStyleId:
   name=IdTerminal;
 
 GlobalStyle:
-  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
+  'style' id=GlobalStyleId target=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
