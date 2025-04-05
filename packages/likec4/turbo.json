@@ -46,9 +46,9 @@
         "react/*.mjs"
       ],
       "inputs": [
-        "tsconfig.react*.json",
-        "react/*.ts",
-        "scripts/bundle-react.ts"
+        "$TURBO_DEFAULT$",
+        "!app/**",
+        "!src/**"
       ],
       "outputLogs": "new-only"
     },
@@ -61,10 +61,9 @@
         "__app__/**"
       ],
       "inputs": [
-        "app/**",
-        "!app/src/routeTree.gen.ts",
-        "panda.config.ts",
-        "scripts/bundle-app.ts"
+        "$TURBO_DEFAULT$",
+        "!react/**",
+        "!src/**"
       ],
       "outputLogs": "new-only"
     },
@@ -73,8 +72,8 @@
         "@likec4/core#build",
         "@likec4/log#build",
         "@likec4/language-server#build",
-        "@likec4/generators#topo",
-        "@likec4/layouts#topo"
+        "@likec4/generators#build",
+        "@likec4/layouts#build"
       ],
       "outputs": [
         "dist/**",
@@ -91,9 +90,19 @@
       ],
       "outputLogs": "new-only"
     },
+    "typecheck": {
+      "dependsOn": [
+        "^generate",
+        "generate",
+        "topo"
+      ],
+      "outputs": [
+        "lib/**"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
-        "generate",
         "build-app",
         "build-cli",
         "build-react"

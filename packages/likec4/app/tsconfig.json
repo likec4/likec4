@@ -24,5 +24,10 @@
   "include": [
     "src",
     "react"
+  ],
+  "references": [
+    {
+      "path": "../tsconfig.react.json"
+    }
   ]
 }
