@@ -306,8 +306,8 @@ importers:
         specifier: catalog:astro
         version: 0.7.0(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       canvaskit-wasm:
-        specifier: ^0.39.1
-        version: 0.39.1
+        specifier: ^0.40.0
+        version: 0.40.0
       likec4:
         specifier: workspace:*
         version: link:../../packages/likec4
@@ -4148,6 +4148,9 @@ packages:
 
   canvaskit-wasm@0.39.1:
     resolution: {integrity: sha512-Gy3lCmhUdKq+8bvDrs9t8+qf7RvcjuQn+we7vTVVyqgOVO1UVfHpsnBxkTZw+R4ApEJ3D5fKySl9TU11hmjl/A==}
+
+  canvaskit-wasm@0.40.0:
+    resolution: {integrity: sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==}
 
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
@@ -11896,6 +11899,10 @@ snapshots:
   caniuse-lite@1.0.30001707: {}
 
   canvaskit-wasm@0.39.1:
+    dependencies:
+      '@webgpu/types': 0.1.21
+
+  canvaskit-wasm@0.40.0:
     dependencies:
       '@webgpu/types': 0.1.21
 

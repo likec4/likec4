@@ -27,7 +27,7 @@
     "shiki": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
-    "canvaskit-wasm": "^0.39.1",
+    "canvaskit-wasm": "^0.40.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "^0.33.5",
