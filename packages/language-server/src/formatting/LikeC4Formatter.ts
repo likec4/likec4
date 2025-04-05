@@ -577,7 +577,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
 
     if (
-      ast.isDeploymentViewRulePredicateExpression(node)
+      ast.isExpressionV2Iterator(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const parent = this.findPredicateExpressionRoot(node)

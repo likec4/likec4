@@ -283,6 +283,11 @@ export namespace ModelLayer {
     Where: Expression.Where<M>
   }>
 
+  export function isExpression(expr: any): expr is Expression {
+    return isAnyFqnExpr(expr)
+      || isAnyRelationExpr(expr)
+  }
+
   export namespace Expression {
     export type Where<M = Fqn> = FqnExpr.Where<M> | RelationExpr.Where<M>
 

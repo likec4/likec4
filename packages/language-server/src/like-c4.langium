@@ -356,7 +356,7 @@ DynamicViewStep:
 
 ViewRulePredicate:
   (isInclude?='include' | 'exclude')
-  predicates=Predicates
+  predicates=ExpressionV2Iterator
 ;
 Predicates:
   value=Predicate ({infer Predicates.prev=current} ',' value=Predicate?)*
@@ -664,11 +664,11 @@ DeploymentViewRuleStyle:
 
 DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
-  expr=DeploymentViewRulePredicateExpression
+  expr=ExpressionV2Iterator
 ;
 
-DeploymentViewRulePredicateExpression:
-  value=ExpressionV2 ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=ExpressionV2)?)*
+ExpressionV2Iterator:
+  value=ExpressionV2 ({infer ExpressionV2Iterator.prev=current} ',' (value=ExpressionV2)?)*
 ;
 
 ExpressionV2:

@@ -154,7 +154,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         const { value, prev } = predicate
         try {
           if (isTruthy(value) && this.isValid(value as any)) {
-            exprs.unshift(this.parsePredicate(value))
+            const expr = this.parseExpressionV2(value) as any
+            if (ModelLayer.isExpression(expr)) {
+              exprs.unshift(expr)
+            }
           }
         } catch (e) {
           logWarnError(e)

@@ -8,10 +8,10 @@ import { tryOrLog } from '../_shared'
 export const relationExprChecks = (services: LikeC4Services): ValidationCheck<ast.RelationExpr> => {
   const ModelParser = services.likec4.ModelParser
   return tryOrLog((node, accept) => {
-    if (node.$container.$type !== 'DeploymentViewRulePredicateExpression') {
-      // skip validation for this node, validated by container
-      return
-    }
+    // if (node.$container.$type !== 'DeploymentViewRulePredicateExpression') {
+    //   // skip validation for this node, validated by container
+    //   return
+    // }
 
     const predicate = AstUtils.getContainerOfType(node, ast.isDeploymentViewRulePredicate)
     if (!predicate || predicate.isInclude !== true) {
@@ -72,11 +72,16 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
       })
       return
     }
+
+    if (!isFqnRefInsideDeployment(node)) {
+      return
+    }
+
     const doc = AstUtils.getDocument(node)
     const expr = ModelParser.forDocument(doc).parseFqnRefExpr(node)
 
     // This expression is part of element predicate
-    if (node.$container.$type === 'DeploymentViewRulePredicateExpression') {
+    if (node.$container.$type === 'ExpressionV2Iterator') {
       if (FqnExpr.isModelRef(expr)) {
         accept('error', 'Deployment view predicate must reference deployment model', {
           node,
@@ -89,10 +94,6 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
         })
         return
       }
-    }
-
-    if (!isFqnRefInsideDeployment(node)) {
-      return
     }
 
     if (!ast.isDeploymentNode(referenceTo) && isNonNullish(node.selector)) {
