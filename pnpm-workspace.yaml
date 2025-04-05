@@ -10,13 +10,13 @@ catalog:
   wrangler: "4.6.0"
   "@types/node": "^20.17.28"
   unbuild: "^3.5.0"
-  turbo: "^2.4.4"
+  turbo: "^2.5.0"
   tsx: "~4.19.3"
 
 catalogs:
   utils:
     remeda: ^2.21.2
-    type-fest: "^4.38.0"
+    type-fest: "^4.39.0"
     fast-equals: "^5.2.2"
     "@react-hookz/web": "^25.1.0"
     std-env: "^3.8.1"

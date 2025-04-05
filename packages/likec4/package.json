@@ -161,7 +161,7 @@
     "glob": "^11.0.1",
     "html-to-image": "^1.11.13",
     "json5": "catalog:utils",
-    "ky": "^1.7.5",
+    "ky": "^1.8.0",
     "langium": "catalog:langium",
     "merge-error-cause": "^5.0.2",
     "mkdirp": "^3.0.1",

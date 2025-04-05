@@ -27,7 +27,7 @@
     "shiki": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
-    "canvaskit-wasm": "^0.39.1",
+    "canvaskit-wasm": "^0.40.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "^0.33.5",
@@ -36,7 +36,7 @@
     "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
-    "@types/picomatch": "^2.3.4",
+    "@types/picomatch": "^4.0.0",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tsx": "catalog:",
