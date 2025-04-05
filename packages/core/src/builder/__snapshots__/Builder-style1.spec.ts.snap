@@ -237,8 +237,10 @@ exports[`Builder (style1) > should build view  1`] = `
         {
           "include": [
             {
-              "element": "c2",
-              "isChildren": true,
+              "ref": {
+                "model": "c2",
+              },
+              "selector": "children",
             },
           ],
         },
@@ -256,7 +258,10 @@ exports[`Builder (style1) > should build view  1`] = `
         {
           "include": [
             {
-              "expanded": "c3",
+              "ref": {
+                "model": "c3",
+              },
+              "selector": "expanded",
             },
           ],
         },
@@ -357,8 +362,10 @@ exports[`Builder (style1) > should build viewOf  1`] = `
           "include": [
             {
               "inout": {
-                "element": "c2.c3",
-                "isChildren": true,
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
               },
             },
           ],
@@ -367,11 +374,16 @@ exports[`Builder (style1) > should build viewOf  1`] = `
           "exclude": [
             {
               "source": {
-                "expanded": "c1",
+                "ref": {
+                  "model": "c1",
+                },
+                "selector": "expanded",
               },
               "target": {
-                "element": "c2.c3",
-                "isChildren": true,
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
               },
             },
           ],

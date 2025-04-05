@@ -1,5 +1,6 @@
 import { pick } from 'remeda'
 import { nonexhaustive } from '../../errors'
+import { ModelLayer } from '../../types'
 import type { Element } from '../../types/element'
 import {
   type RelationExpression,
@@ -22,10 +23,13 @@ export type FilterableEdge = Pick<ModelRelation, 'kind' | 'tags'> & {
 }
 
 export function relationExpressionToPredicates<T extends FilterableEdge>(
-  expr: RelationExpression | RelationWhereExpr,
+  expr: ModelLayer.AnyRelationExpr,
 ): Predicate<T> {
   switch (true) {
-    case isRelationWhere(expr): {
+    case ModelLayer.RelationExpr.isCustom(expr): {
+      return relationExpressionToPredicates(expr.customRelation.expr)
+    }
+    case ModelLayer.RelationExpr.isWhere(expr): {
       const predicate = relationExpressionToPredicates(expr.where.expr)
       const where = whereOperatorAsPredicate(expr.where.condition)
       return e =>
@@ -36,7 +40,7 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
           ...(e.kind && { kind: e.kind }),
         })
     }
-    case isRelation(expr): {
+    case ModelLayer.RelationExpr.isDirect(expr): {
       const isSource = elementExprToPredicate(expr.source)
       const isTarget = elementExprToPredicate(expr.target)
       return edge => {
@@ -44,15 +48,15 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
           || (!!expr.isBidirectional && isSource(edge.target) && isTarget(edge.source))
       }
     }
-    case isInOut(expr): {
+    case ModelLayer.RelationExpr.isInOut(expr): {
       const isInOut = elementExprToPredicate(expr.inout)
       return edge => isInOut(edge.source) || isInOut(edge.target)
     }
-    case isIncoming(expr): {
+    case ModelLayer.RelationExpr.isIncoming(expr): {
       const isTarget = elementExprToPredicate(expr.incoming)
       return edge => isTarget(edge.target)
     }
-    case isOutgoing(expr): {
+    case ModelLayer.RelationExpr.isOutgoing(expr): {
       const isSource = elementExprToPredicate(expr.outgoing)
       return edge => isSource(edge.source)
     }

@@ -9,11 +9,9 @@ import type {
   ComputedElementView,
   ElementView,
   NodeId,
-  RelationPredicateExpression,
   ViewRule,
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
-import * as Expr from '../../types/expression'
 import { ModelLayer } from '../../types/expression-v2-model'
 import { sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
@@ -45,7 +43,7 @@ function processElementPredicate(
   //   | [expr: ModelLayer.AnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelLayer.AnyFqnExpr>]
   expr: ModelLayer.AnyFqnExpr,
   op: 'include' | 'exclude',
-  ctx: PredicateCtx<ModelLayer.AnyFqnExpr>,
+  ctx: Omit<PredicateCtx<ModelLayer.AnyFqnExpr>, 'expr'>,
 ): Stage {
   switch (true) {
     case ModelLayer.FqnExpr.isCustom(expr): {
@@ -59,19 +57,19 @@ function processElementPredicate(
       const filterWhere = filter<Elem>(where)
       return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
+    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
+      return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
     case ModelLayer.FqnExpr.isWildcard(expr): {
       return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    // case Expr.isExpandedElementExpr(expr): {
-    //   return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
-    // }
+    case ModelLayer.FqnExpr.isElementKindExpr(expr):
+    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
     case ModelLayer.FqnExpr.isModelRef(expr): {
       return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-
-    // case Expr.isElementKindExpr(expr):
-    // case Expr.isElementTagExpr(expr):
-    //   return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     default:
       nonexhaustive(expr)
   }
@@ -79,12 +77,12 @@ function processElementPredicate(
 function processRelationtPredicate(
   expr: ModelLayer.AnyRelationExpr,
   op: 'include' | 'exclude',
-  ctx: PredicateCtx<ModelLayer.AnyRelationExpr>,
+  ctx: Omit<PredicateCtx<ModelLayer.AnyRelationExpr>, 'expr'>,
 ): Stage {
   switch (true) {
     case ModelLayer.RelationExpr.isCustom(expr): {
       if (op === 'include') {
-        return processRelationtPredicate(expr.customRelation.relation, op, ctx)
+        return processRelationtPredicate(expr.customRelation.expr, op, ctx)
       }
       return ctx.stage
     }
@@ -148,14 +146,14 @@ export function processPredicates<M extends AnyAux>(
       for (const expr of exprs) {
         let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
         switch (true) {
-          case Expr.isElementPredicateExpr(expr):
+          case ModelLayer.isAnyFqnExpr(expr):
             stage = processElementPredicate(expr, op, {
               ...ctx,
               stage,
               memory,
             } as any) ?? stage
             break
-          case Expr.isRelationPredicateExpr(expr):
+          case ModelLayer.isAnyRelationExpr(expr):
             stage = processRelationtPredicate(expr, op, {
               ...ctx,
               stage,

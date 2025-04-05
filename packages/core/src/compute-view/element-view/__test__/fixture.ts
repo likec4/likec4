@@ -4,28 +4,19 @@ import {
   type BorderStyle,
   type Color,
   type ComputedView,
-  type CustomElementExpr as C4CustomElementExpr,
-  type CustomRelationExpr as C4CustomRelationExpr,
   type Element,
-  type ElementExpression as C4ElementExpression,
   type ElementKind,
   type ElementShape,
-  type ElementWhereExpr,
-  type Expression as C4Expression,
   type Fqn,
   type GlobalPredicateId,
   type GlobalStyleID,
   type IconUrl,
-  type IncomingExpr as C4IncomingExpr,
-  type InOutExpr as C4InOutExpr,
   type KindEqual,
   type ModelRelation,
   type NonEmptyArray,
-  type OutgoingExpr as C4OutgoingExpr,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
-  type RelationWhereExpr,
   type Tag,
   type TagEqual,
   type ViewId,
@@ -36,12 +27,8 @@ import {
   type ViewRulePredicate,
   type ViewRuleStyle,
   type WhereOperator,
-  isElementRef,
-  isElementWhere,
-  isRelationExpression,
-  isRelationWhere,
+  ModelLayer,
 } from '../../../types'
-import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
 import type { Participant } from '../../../types/operators'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeElementView } from '../compute'
@@ -441,19 +428,8 @@ export type Expression =
 
 export function $custom(
   expr: ElementRefExpr,
-  props: {
-    title?: string
-    description?: string
-    technology?: string
-    shape?: ElementShape
-    color?: Color
-    border?: BorderStyle
-    icon?: string
-    opacity?: number
-    navigateTo?: string
-    multiple?: boolean
-  },
-): C4CustomElementExpr {
+  props: Omit<ModelLayer.FqnExpr.Custom['custom'], 'expr'>,
+): ModelLayer.FqnExpr.Custom {
   return {
     custom: {
       expr: $expr(expr) as any,
@@ -463,21 +439,21 @@ export function $custom(
 }
 
 export function $customRelation(
-  relation: RelationExpr,
-  props: Omit<C4CustomRelationExpr['customRelation'], 'relation'>,
-): C4CustomRelationExpr {
+  relation: ModelLayer.RelationExprOrWhere,
+  props: Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr'>,
+): ModelLayer.RelationExpr.Custom {
   return {
     customRelation: {
-      relation: $expr(relation) as any,
+      expr: $expr(relation) as any,
       ...props,
     },
   }
 }
 
 export function $where(
-  expr: Expression | C4Expression,
+  expr: Expression | ModelLayer.Expression,
   operator: WhereOperator<TestTag, string>,
-): ElementWhereExpr | RelationWhereExpr {
+): ModelLayer.Expression {
   return {
     where: {
       expr: $expr(expr) as any,
@@ -497,38 +473,38 @@ export function $participant(
 }
 
 export function $inout(
-  expr: InOutExpr | C4ElementExpression,
-): C4InOutExpr {
+  expr: InOutExpr | ModelLayer.FqnExpr,
+): ModelLayer.RelationExpr.InOut {
   const innerExpression = !isString(expr)
-    ? expr as C4Expression
-    : $expr(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
+    ? expr as ModelLayer.FqnExpr
+    : $expr(expr.replace(/->/g, '').trim() as any)
 
   return { inout: innerExpression }
 }
 
 export function $incoming(
-  expr: IncomingExpr | C4ElementExpression,
-): C4IncomingExpr {
+  expr: IncomingExpr | ModelLayer.FqnExpr,
+): ModelLayer.RelationExpr.Incoming {
   const innerExpression = !isString(expr)
-    ? expr as C4Expression
-    : $expr(expr.replace('-> ', '') as ElementRefExpr) as any
+    ? expr as ModelLayer.FqnExpr
+    : $expr(expr.replace('-> ', '') as any)
 
   return { incoming: innerExpression }
 }
 
 export function $outgoing(
-  expr: OutgoingExpr | C4ElementExpression,
-): C4OutgoingExpr {
+  expr: OutgoingExpr | ModelLayer.FqnExpr,
+): ModelLayer.RelationExpr.Outgoing {
   const innerExpression = !isString(expr)
-    ? expr as C4Expression
-    : $expr(expr.replace(' ->', '') as ElementRefExpr) as any
+    ? expr as ModelLayer.FqnExpr
+    : $expr(expr.replace(' ->', '') as any)
 
   return { outgoing: innerExpression }
 }
 
 export function $relation(
   expr: RelationExpr,
-): C4RelationExpr {
+): ModelLayer.RelationExpr {
   const [source, target] = expr.split(/ -> | <-> /)
   const isBidirectional = expr.includes(' <-> ')
 
@@ -539,9 +515,9 @@ export function $relation(
   }
 }
 
-export function $expr(expr: Expression | C4Expression): C4Expression {
+export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expression {
   if (!isString(expr)) {
-    return expr as C4Expression
+    return expr as ModelLayer.Expression
   }
   if (expr === '*') {
     return { wildcard: true }
@@ -557,23 +533,32 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   }
   if (expr.endsWith('._')) {
     return {
-      expanded: expr.replace('._', '') as Fqn,
+      ref: {
+        model: expr.replace('._', '') as Fqn,
+      },
+      selector: 'expanded',
     }
   }
   if (expr.endsWith('.*')) {
     return {
-      element: expr.replace('.*', '') as Fqn,
-      isChildren: true,
+      ref: {
+        model: expr.replace('.*', '') as Fqn,
+      },
+      selector: 'children',
     }
   }
   if (expr.endsWith('.**')) {
     return {
-      element: expr.replace('.**', '') as Fqn,
-      isDescendants: true,
+      ref: {
+        model: expr.replace('.**', '') as Fqn,
+      },
+      selector: 'descendants',
     }
   }
   return {
-    element: expr as Fqn,
+    ref: {
+      model: expr as Fqn,
+    },
   }
 }
 
@@ -590,27 +575,33 @@ type CustomProps = {
     opacity?: number
     navigateTo?: string
     multiple?: boolean
-  } & Omit<C4CustomRelationExpr['customRelation'], 'relation' | 'navigateTo'>
+  } & Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr' | 'navigateTo'>
 }
-export function $include(expr: Expression | C4Expression, props?: CustomProps): ViewRulePredicate {
-  let _expr = props?.where ? $where(expr, props.where) : $expr(expr)
+export function $include(
+  expr: Expression | ModelLayer.Expression,
+  props?: CustomProps,
+): ViewRulePredicate {
+  let _expr = props?.where ? $where(expr as any, props.where) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
     include: [_expr],
   }
 }
-export function $with(expr: C4Expression, props?: CustomProps['with']): C4CustomRelationExpr | C4CustomElementExpr {
-  if (isRelationExpression(expr) || isRelationWhere(expr)) {
+export function $with(
+  expr: ModelLayer.Expression,
+  props?: CustomProps['with'],
+): ModelLayer.RelationExpr.Custom | ModelLayer.FqnExpr.Custom {
+  if (ModelLayer.RelationExpr.is(expr) || ModelLayer.RelationExpr.isWhere(expr)) {
     return {
       customRelation: {
-        relation: expr,
+        expr,
         ...props as any,
       },
     }
-  } else if (isElementRef(expr) || isElementWhere(expr)) {
+  } else if (ModelLayer.FqnExpr.is(expr) || ModelLayer.FqnExpr.isWhere(expr)) {
     return {
       custom: {
-        expr: expr,
+        expr,
         ...props as any,
       },
     }
@@ -618,8 +609,11 @@ export function $with(expr: C4Expression, props?: CustomProps['with']): C4Custom
 
   throw 'Unsupported type of internal expression'
 }
-export function $exclude(expr: Expression | C4Expression, where?: WhereOperator<TestTag, string>): ViewRulePredicate {
-  let _expr = where ? $where(expr, where) : $expr(expr)
+export function $exclude(
+  expr: Expression | ModelLayer.Expression,
+  where?: WhereOperator<TestTag, string>,
+): ViewRulePredicate {
+  let _expr = where ? $where(expr as any, where) : $expr(expr)
   return {
     exclude: [_expr],
   }
@@ -633,7 +627,7 @@ export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
 
 export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
   return {
-    targets: [$expr(element) as C4ElementExpression],
+    targets: [$expr(element) as ModelLayer.FqnExpr],
     style: Object.assign({}, style),
   }
 }

@@ -27,8 +27,10 @@ describe('resolveRulesExtendedViews', () => {
   const viewRule2: ViewRule = {
     exclude: [
       {
-        element: 'cloud' as Fqn,
-        isChildren: true,
+        ref: {
+          model: 'cloud' as Fqn,
+        },
+        selector: 'children',
       },
     ],
   }

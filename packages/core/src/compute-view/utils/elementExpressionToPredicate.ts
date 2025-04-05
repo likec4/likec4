@@ -1,3 +1,4 @@
+import { isNullish } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import {
   ModelLayer,
@@ -18,26 +19,28 @@ export function elementExprToPredicate<T extends { id: string; tags?: readonly s
     const where = whereOperatorAsPredicate(target.where.condition)
     return n => predicate(n) && where(n)
   }
+  if (ModelLayer.FqnExpr.isElementKindExpr(target)) {
+    return target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
+  }
+  if (ModelLayer.FqnExpr.isElementTagExpr(target)) {
+    return target.isEqual
+      ? ({ tags }) => !!tags && tags.includes(target.elementTag)
+      : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
+  }
   if (ModelLayer.FqnExpr.isWildcard(target)) {
     return () => true
   }
   if (ModelLayer.FqnExpr.isModelRef(target)) {
     const fqn = ModelLayer.FqnRef.toFqn(target.ref)
     if (target.selector === 'expanded') {
-      const fqnWithDot = fqn + '.'
       return (n) => {
-        return n.id === fqn || n.id.startsWith(fqnWithDot)
+        return n.id === fqn || parentFqn(n.id) === fqn
       }
     }
-    if (target.selector === 'descendants') {
+    if (target.selector === 'descendants' || target.selector === 'children') {
       const fqnWithDot = fqn + '.'
       return (n) => {
         return n.id.startsWith(fqnWithDot)
-      }
-    }
-    if (target.selector === 'children') {
-      return (n) => {
-        return parentFqn(n.id) === fqn
       }
     }
     return (n) => {

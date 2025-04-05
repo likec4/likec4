@@ -3,12 +3,12 @@ import { nonexhaustive } from '../../../errors'
 import type { LikeC4Model } from '../../../model'
 import {
   type ConnectionModel,
+  Connection,
   findConnection,
   findConnectionsBetween,
 } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import * as Expr from '../../../types/expression'
 import { ModelLayer } from '../../../types/expression-v2-model'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
@@ -61,7 +61,7 @@ export const IncomingExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.In
   },
   exclude: ({ expr: { incoming }, model, scope, stage, where }) => {
     const excluded = [] as RelationshipModel[]
-    if (Expr.isWildcard(incoming)) {
+    if (ModelLayer.FqnExpr.isWildcard(incoming)) {
       if (!scope) {
         return
       }
@@ -83,34 +83,38 @@ export function incomingConnectionPredicate(
   expr: ModelLayer.FqnExpr.NonWildcard,
 ): ConnectionWhere {
   switch (true) {
-    // case Expr.isElementKindExpr(expr):
-    // case Expr.isElementTagExpr(expr): {
-    //   const isElement = elementExprToPredicate(expr)
-    //   return (connection) => isElement(connection.target)
-    // }
+    case ModelLayer.FqnExpr.isElementKindExpr(expr):
+    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+      const isElement = elementExprToPredicate(expr)
+      return (connection) => isElement(connection.target)
+    }
     case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'children': {
+      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
       return anyPass(
-        [...model.children(expr.ref.model)].map(
+        [...model.children(fqn)].map(
           el => Connection.isIncoming(el.id),
         ),
       )
     }
     case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'descendants': {
+      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
       return anyPass([
-        Connection.isInside(expr.ref.model),
-        ...[...model.children(expr.ref.model)].map(
+        Connection.isInside(fqn),
+        ...[...model.children(fqn)].map(
           el => Connection.isIncoming(el.id),
         ),
       ])
     }
     case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
+      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
       return anyPass([
-        Connection.isIncoming(expr.ref.model),
-        Connection.isInside(expr.ref.model),
+        Connection.isIncoming(fqn),
+        Connection.isInside(fqn),
       ])
     }
     case ModelLayer.FqnExpr.isModelRef(expr): {
-      return Connection.isIncoming(expr.ref.model)
+      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
+      return Connection.isIncoming(fqn)
     }
     default:
       nonexhaustive(expr)

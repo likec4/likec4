@@ -1,5 +1,5 @@
 import { isNullish, omitBy, pick } from 'remeda'
-import type { ComputedEdge, ComputedNode, ViewRule } from '../../types'
+import { type ComputedEdge, type ComputedNode, type ViewRule, ModelLayer } from '../../types'
 import * as Expr from '../../types/expression'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
@@ -7,20 +7,24 @@ import { relationExpressionToPredicates } from './relationExpressionToPredicates
 export function applyCustomRelationProperties(
   _rules: ViewRule[],
   nodes: ComputedNode[],
-  _edges: Iterable<ComputedEdge>
+  _edges: Iterable<ComputedEdge>,
 ): ComputedEdge[] {
-  const rules = _rules.flatMap(flattenGroupRules(Expr.isCustomRelationExpr))
+  const rules = _rules.flatMap(flattenGroupRules(ModelLayer.RelationExpr.isCustom))
   const edges = Array.from(_edges)
   if (rules.length === 0 || edges.length === 0) {
     return edges
   }
   for (
     const {
-      customRelation: { relation, title, ...customprops }
+      customRelation: {
+        expr,
+        title,
+        ...customprops
+      },
     } of rules
   ) {
     const props = omitBy(customprops, isNullish)
-    const satisfies = relationExpressionToPredicates(relation)
+    const satisfies = relationExpressionToPredicates(expr)
     edges.forEach((edge, i) => {
       const source = nodes.find(n => n.id === edge.source)
       const target = nodes.find(n => n.id === edge.target)
@@ -32,7 +36,7 @@ export function applyCustomRelationProperties(
           ...edge,
           ...props,
           label: title ?? edge.label,
-          isCustomized: true
+          isCustomized: true,
         }
       }
     })

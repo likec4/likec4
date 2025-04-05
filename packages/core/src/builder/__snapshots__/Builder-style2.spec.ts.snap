@@ -143,8 +143,10 @@ exports[`Builder (style 2) > should build  1`] = `
                 "wildcard": true,
               },
               "target": {
-                "element": "cloud",
-                "isDescendants": true,
+                "ref": {
+                  "model": "cloud",
+                },
+                "selector": "descendants",
               },
             },
           ],
@@ -185,8 +187,10 @@ exports[`Builder (style 2) > should build  1`] = `
         {
           "include": [
             {
-              "element": "cloud",
-              "isChildren": true,
+              "ref": {
+                "model": "cloud",
+              },
+              "selector": "children",
             },
           ],
         },

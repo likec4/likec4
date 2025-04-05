@@ -1,9 +1,9 @@
 import type { ExclusiveUnion, ProjectId } from './_common'
 import type { PredicateSelector } from './deployments'
-import type { BorderStyle, ElementShape } from './element'
+import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type Tag, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
@@ -59,7 +59,7 @@ export namespace ModelLayer {
       selector?: PredicateSelector
     }
     export const isModelRef = (ref: Expression): ref is FqnExpr.ModelRef => {
-      return 'ref' in ref && (FqnRef.isModelRef(ref.ref) || FqnRef.isImportRef(ref.ref))
+      return 'ref' in ref
     }
 
     export type ElementKindExpr = {
@@ -97,9 +97,7 @@ export namespace ModelLayer {
     }
 
     export const isWhere = (expr: Expression): expr is FqnExpr.Where => {
-      return 'where' in expr &&
-        (isWildcard(expr.where.expr) || isModelRef(expr.where.expr) || isElementKindExpr(expr.where.expr) ||
-          isElementTagExpr(expr.where.expr))
+      return 'where' in expr && is(expr.where.expr)
     }
 
     export type Custom<M = Fqn> = {
@@ -123,7 +121,7 @@ export namespace ModelLayer {
     }
 
     export const isCustom = (expr: Expression): expr is FqnExpr.Custom => {
-      return 'custom' in expr
+      return 'custom' in expr && (is(expr.custom.expr) || isWhere(expr.custom.expr))
     }
 
     export const is = (expr: Expression): expr is FqnExpr => {
@@ -157,6 +155,12 @@ export namespace ModelLayer {
     Where: FqnExpr.Where<M>
     Custom: FqnExpr.Custom<M>
   }>
+
+  export function isAnyFqnExpr(expr: Expression): expr is AnyFqnExpr {
+    return FqnExpr.is(expr)
+      || FqnExpr.isWhere(expr)
+      || FqnExpr.isCustom(expr)
+  }
 
   export namespace RelationExpr {
     export type Direct<M = Fqn> = {
@@ -197,9 +201,7 @@ export namespace ModelLayer {
       }
     }
     export const isWhere = (expr: Expression): expr is RelationExpr.Where => {
-      return 'where' in expr &&
-        (isDirect(expr.where.expr) || isIncoming(expr.where.expr) || isOutgoing(expr.where.expr) ||
-          isInOut(expr.where.expr))
+      return 'where' in expr && is(expr.where.expr)
     }
 
     export type Custom<M = Fqn> = {
@@ -256,6 +258,12 @@ export namespace ModelLayer {
     CustomRelation: RelationExpr.Custom<M>
   }>
 
+  export function isAnyRelationExpr(expr: Expression): expr is AnyRelationExpr {
+    return RelationExpr.is(expr)
+      || RelationExpr.isWhere(expr)
+      || RelationExpr.isCustom(expr)
+  }
+
   /**
    * Represents a version 2 expression which can be one of several types.
    *
@@ -288,14 +296,6 @@ export namespace ModelLayer {
 
     export const isCustomRelationExpr = (expr: Expression): expr is RelationExpr.Custom => {
       return RelationExpr.isCustom(expr)
-    }
-
-    export const isRelationWhere = (expr: Expression): expr is RelationExpr.Where => {
-      return RelationExpr.isWhere(expr)
-    }
-
-    export const isFqnExprWhere = (expr: Expression): expr is FqnExpr.Where => {
-      return FqnExpr.isWhere(expr)
     }
 
     export const isFqnExpr = (expr: Expression): expr is FqnExpr => {

@@ -30,10 +30,10 @@ export interface PredicateCtx<Expr extends ModelLayer.Expression = ModelLayer.Ex
   model: LikeC4Model<AnyAux>
   memory: Memory
   where: Expr extends ModelLayer.RelationExpr ? RelationshipWhere
-    : Expr extends ModelLayer.FqnExpr.NonWildcard ? ElementWhere
+    : Expr extends ModelLayer.FqnExpr ? ElementWhere
     : never
   filterWhere: Expr extends ModelLayer.RelationExpr ? ConnectionWhereFilter
-    : Expr extends ModelLayer.FqnExpr.NonWildcard ? ElementWhereFilter
+    : Expr extends ModelLayer.FqnExpr ? ElementWhereFilter
     : never
 }
 export interface IncludePredicateCtx<Expr extends ModelLayer.Expression = ModelLayer.Expression>

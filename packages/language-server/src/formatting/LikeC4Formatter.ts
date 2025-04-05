@@ -69,7 +69,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatDeploymentRelation(node: AstNode) {
-    this.on(node, ast.isDeploymentRelation, (n, f) => {      
+    this.on(node, ast.isDeploymentRelation, (n, f) => {
       const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
 
       f.cst(sourceNodes).append(FormattingOptions.oneSpace)
@@ -389,7 +389,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       formatter.keyword('with').prepend(FormattingOptions.oneSpace)
     }
-  }  
+  }
 
   protected formatDeploymentNodeDeclaration(node: AstNode) {
     this.on(node, ast.isDeploymentNode, (n, f) => {
@@ -414,7 +414,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatDeployedInstance(node: AstNode) {
     this.on(node, ast.isDeployedInstance, (n, f) => {
-      const eqNode = (<CompositeCstNode>n.$cstNode)?.content.find(c => c.text === '=')
+      const eqNode = (<CompositeCstNode> n.$cstNode)?.content.find(c => c.text === '=')
       if (eqNode) {
         f.cst([eqNode]).surround(FormattingOptions.oneSpace)
       }
@@ -452,7 +452,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     this.on(node, ast.isDeploymentViewRuleStyle)
       ?.keyword('style').append(FormattingOptions.oneSpace)
-  
+
     this.on(node, ast.isElementExpressionsIterator)
       ?.keyword(',')
       .prepend(FormattingOptions.noSpace)
@@ -466,8 +466,8 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereExpression(node: AstNode) {
     if (
-      ast.isRelationPredicateOrWhere(node)
-      || ast.isElementPredicateOrWhere(node)
+      ast.isRelationExprOrWhere(node)
+      || ast.isFqnExprOrWhere(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       formatter.keyword('where').append(FormattingOptions.oneSpace)
@@ -476,8 +476,8 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereExpressionV2(node: AstNode) {
     if (
-      ast.isRelationPredicateOrWhereV2(node)
-      || ast.isElementPredicateOrWhereV2(node)
+      ast.isRelationExprOrWhere(node)
+      || ast.isFqnExprOrWhere(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       formatter.keyword('where').append(FormattingOptions.oneSpace)
@@ -486,9 +486,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereRelationExpression(node: AstNode) {
     this.on(node, ast.isWhereRelationExpression, (n, f) => {
-      f.property('operator').surround(FormattingOptions.oneSpace)      
+      f.property('operator').surround(FormattingOptions.oneSpace)
     })
-    this.on(node, ast.isWhereRelationNegation, (n, f) => {      
+    this.on(node, ast.isWhereRelationNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
     if (
@@ -504,9 +504,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereElementExpression(node: AstNode) {
     this.on(node, ast.isWhereElementExpression, (n, f) => {
-      f.property('operator').surround(FormattingOptions.oneSpace)      
+      f.property('operator').surround(FormattingOptions.oneSpace)
     })
-    this.on(node, ast.isWhereElementNegation, (n, f) => {      
+    this.on(node, ast.isWhereElementNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
     if (
@@ -559,7 +559,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
     this.on(node, ast.isInOutRelationExpr, (n, f) => {
       f.keyword('->').prepend(FormattingOptions.oneSpace)
-    })    
+    })
     this.on(node, ast.isOutgoingRelationExpr, (n, f) => {
       f.keywords('->', '<->').prepend(FormattingOptions.oneSpace)
       f.keywords('-[')

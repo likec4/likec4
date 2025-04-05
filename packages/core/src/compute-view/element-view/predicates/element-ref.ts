@@ -1,22 +1,23 @@
 import { findConnectionsWithin } from '../../../model/connection/model'
 import type { ElementRefExpr } from '../../../types/expression'
 import * as Expr from '../../../types/expression'
+import { ModelLayer } from '../../../types/expression-v2-model'
 import type { Elem, PredicateExecutor } from '../_types'
+import { resolveElements } from './_utils'
 
-function applyElementSelector(elem: Elem, expr: Expr.ElementRefExpr) {
+function applyElementSelector(elem: Elem, expr: ModelLayer.FqnExpr.ModelRef) {
   let children
-  if (expr.isChildren) {
+  if (expr.selector === 'children') {
     children = [...elem.children()]
-  } else if (expr.isDescendants) {
+  } else if (expr.selector === 'descendants') {
     children = [...elem.descendants()]
   }
   return children && children.length > 0 ? children : [elem]
 }
 
-export const ElementRefPredicate: PredicateExecutor<ElementRefExpr> = {
-  include: ({ expr, model, stage, where }) => {
-    const element = model.element(expr.element)
-    const elements = applyElementSelector(element, expr).filter(where)
+export const ElementRefPredicate: PredicateExecutor<ModelLayer.FqnExpr.ModelRef> = {
+  include: ({ expr, model, stage, filterWhere }) => {
+    const elements = filterWhere(resolveElements(model, expr))
     if (elements.length === 0) {
       return
     }
@@ -28,10 +29,9 @@ export const ElementRefPredicate: PredicateExecutor<ElementRefExpr> = {
     return stage
   },
   exclude: ({ expr, model, stage, filterWhere }) => {
-    const element = model.element(expr.element)
-    const elements = filterWhere(applyElementSelector(element, expr))
+    const elements = filterWhere(resolveElements(model, expr))
     stage.exclude(elements)
 
     return stage
-  }
+  },
 }

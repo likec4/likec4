@@ -116,8 +116,7 @@ export function isElementWhere(expr: Expression): expr is ElementWhereExpr {
   return 'where' in expr && isElement(expr.where.expr)
 }
 
-// export type ElementPredicateExpression = ElementExpression | ElementWhereExpr | CustomElementExpr
-export type ElementPredicateExpression = ModelLayer.AnyFqnExpr
+export type ElementPredicateExpression = ElementExpression | ElementWhereExpr | CustomElementExpr
 
 export function isElementPredicateExpr(expr: Expression): expr is ElementPredicateExpression {
   return isElement(expr) || isElementWhere(expr) || isCustomElement(expr)
