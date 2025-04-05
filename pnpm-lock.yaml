@@ -334,8 +334,8 @@ importers:
         version: 0.10.0(@astrojs/starlight@0.32.5(astro@5.5.6(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.38.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
     devDependencies:
       '@types/picomatch':
-        specifier: ^2.3.4
-        version: 2.3.4
+        specifier: ^4.0.0
+        version: 4.0.0
       '@types/react':
         specifier: ^19.0.12
         version: 19.0.12
@@ -3039,6 +3039,7 @@ packages:
   '@react-hookz/deep-equal@3.0.3':
     resolution: {integrity: sha512-SLy+NmiDpncqc2d9TR4Y4R7f8lUFOQK9WbnIq02A6wDxy+dTHfA2Np0dPvj0SFp6i1nqERLmEUe9MxPLuO/IqA==}
     engines: {node: '>=18.0.0'}
+    deprecated: Package is deprecated and will be deleted soon. Use @ver0/deep-equal instead.
 
   '@react-hookz/web@25.1.0':
     resolution: {integrity: sha512-+ra/hRG5vPXbwzvQp+YQRn+YlnFNd3eM/lieYW7M/YY2kUjM3ODmD3sZksFQ4P0eVUlqLXe+kSipw8fvLX4mww==}
@@ -3605,9 +3606,6 @@ packages:
 
   '@types/object-hash@3.0.6':
     resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
-
-  '@types/picomatch@2.3.4':
-    resolution: {integrity: sha512-0so8lU8O5zatZS/2Fi4zrwks+vZv7e0dygrgEZXljODXBig97l4cPQD+9LabXfGJOWwoRkTVz6Q4edZvD12UOA==}
 
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
@@ -11148,8 +11146,6 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/object-hash@3.0.6': {}
-
-  '@types/picomatch@2.3.4': {}
 
   '@types/picomatch@3.0.2': {}
 

@@ -36,7 +36,7 @@
     "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
-    "@types/picomatch": "^2.3.4",
+    "@types/picomatch": "^4.0.0",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tsx": "catalog:",
