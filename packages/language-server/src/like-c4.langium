@@ -148,11 +148,8 @@ ExtendElementProperty:
 StrictFqnElementRef:
   el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
-// Hack, to strictly enforce resolution of model elements
-ElementRef:
-  element=FqnRef;
 
-
+type ModelReferenceable = Element | Imported;
 type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
@@ -160,8 +157,11 @@ type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
 //  - If parent is DeployedInstance, then it can reference  nested  Element
 //  - If parent is Element, then it can reference  nested  Element
 //  Mix of DeploymentRef and ElementRef
-FqnRef:
-  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
+// Hack, to strictly enforce resolution of model elements
+ElementRef:
+  element=FqnRef;
 
 // Strict reference allows only direct children of parent
 StrictFqnRef:

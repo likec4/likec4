@@ -67,12 +67,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           }
           return new StreamScope(this.fqnIndex.directChildrenOf(projectId, readStrictFqn(parent)))
         }
-        if (ast.isElementRef(container) && context.property === 'el') {
-          const parent = container.parent
-          if (parent) {
-            return new StreamScope(stream(this.genUniqueDescedants(parent)))
-          }
-        }
         return new StreamScope(stream(this.computeScope(projectId, context)))
       } catch (e) {
         logWarnError(e)
@@ -85,8 +79,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   // we need lazy resolving here
-  protected *genUniqueDescedants(of: ast.ElementRef | (() => ast.Element | ast.DeploymentNode | undefined)) {
-    const element = isFunction(of) ? of() : of.el.ref
+  protected *genUniqueDescedants(of: () => ast.Element | ast.DeploymentNode | undefined) {
+    const element = of()
     if (!element) {
       return
     }
@@ -114,9 +108,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
+
       // we make "target" resolvable inside ElementView
-      if (viewOf.el.$nodeDescription) {
-        yield viewOf.el.$nodeDescription
+      if (viewOf.element.value.$nodeDescription) {
+        yield viewOf.element.value.$nodeDescription
       }
       yield* this.genUniqueDescedants(() => elementRef(viewOf))
       return
@@ -172,7 +167,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(() => parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      return stream(this.genUniqueDescedants(() => parentRef.element.element.))
+      return stream(this.genUniqueDescedants(() => elementRef(parentRef.element)))
     }
     if (ast.isElement(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
@@ -185,11 +180,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     container: ast.FqnRef,
     context: ReferenceInfo,
   ): Generator<AstNodeDescription> {
-     if (isFqnRefInsideModel(container)) {
+    if (isFqnRefInsideModel(container) || container.$container.$type === 'ElementRef') {
       // Inside model scope we only need to resolve elements
       yield* this.computeScope(projectId, context, ast.Element)
-    } else {
-     if (isFqnRefInsideGlobals(container)) {
+    } else if (isFqnRefInsideGlobals(container)) {
       yield* this.computeScope(projectId, context, ast.Element)
       yield* this.computeScope(projectId, context, ast.DeploymentNode)
       yield* this.computeScope(projectId, context, ast.DeployedInstance)
@@ -200,13 +194,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       yield* this.computeScope(projectId, context, ast.DeployedInstance)
 
       // Third preference for elements if we are in deployment view
-      if (
-        AstUtils.hasContainerOfType(container, ast.isDeploymentViewBody)
-      ) {
+      if (AstUtils.hasContainerOfType(container, ast.isDeploymentViewBody)) {
         yield* this.computeScope(projectId, context, ast.Element)
       }
     }
-  }
 
     const doc = getDocument(container)
     const precomputed = doc.precomputedScopes

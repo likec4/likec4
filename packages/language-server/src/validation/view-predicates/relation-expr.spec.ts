@@ -1,4 +1,4 @@
-import { describe, type ExpectStatic, it } from 'vitest'
+import { type ExpectStatic, describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
 const model = `
@@ -50,7 +50,7 @@ function mkTestServices(expect: ExpectStatic) {
       invalid: async (view: string) => {
         const { errors } = await validateView(view)
         expect(errors).not.toEqual([])
-      }
+      },
     },
     valid: async (rules: string) => {
       const { errors, warnings } = await validateRules(rules)
@@ -63,7 +63,7 @@ function mkTestServices(expect: ExpectStatic) {
       expect.soft(warnings.join('\n'), 'warnings').not.to.be.empty
       return {
         errors,
-        warnings
+        warnings,
       }
     },
     invalid: async (rules: string) => {
@@ -72,14 +72,13 @@ function mkTestServices(expect: ExpectStatic) {
       expect.soft(warnings.join('\n'), 'warnings').to.be.empty
       return {
         errors,
-        warnings
+        warnings,
       }
-    }
+    },
   }
 }
 
 describe.concurrent('ExpressionV2', () => {
-  
   describe('DirectedRelationExpr', () => {
     it('should not warn', async ({ expect }) => {
       const { valid } = mkTestServices(expect)

@@ -5,6 +5,7 @@ import { type Range, TextEdit } from 'vscode-languageserver-types'
 import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
+import { isReferenceToLogicalModel } from '../utils'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 
@@ -38,7 +39,9 @@ const isMatchingViewRule =
       return false
     }
     const target = rule.target.value
-    if (!target || isTruthy(rule.target.prev) || !ast.isElementRef(target)) {
+    if (
+      !target || isTruthy(rule.target.prev) || target.$type !== 'FqnRefExpr' || !isReferenceToLogicalModel(target.ref)
+    ) {
       return false
     }
     // TODO: fix this

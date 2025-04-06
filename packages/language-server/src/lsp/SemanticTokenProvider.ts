@@ -88,8 +88,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           SemanticTokenModifiers.readonly,
         ],
       })
-      if (ast.isFqnRefExpr(node) && node.selector ) {
-       acceptor({
+      if (ast.isFqnRefExpr(node) && node.selector) {
+        acceptor({
           node,
           property: 'selector',
           type: SemanticTokenTypes.variable,
@@ -212,7 +212,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return !node.parent ? 'prune' : undefined
     }
-    if (ast.isElementRef(node) || ast.isStrictFqnElementRef(node)) {
+    if (ast.isStrictFqnElementRef(node)) {
       acceptor({
         node,
         property: 'el',

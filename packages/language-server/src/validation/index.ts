@@ -12,6 +12,7 @@ import {
 } from './deployment-checks'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
+import { checkElementRef } from './element-ref'
 import { importedChecks, importsFromPojectChecks } from './imports'
 import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
 import { checkRelationBody, relationChecks } from './relation'
@@ -35,7 +36,6 @@ import {
   checkRelationExpr,
   checkRelationExprWith,
 } from './view-predicates'
-import { checkElementRef } from './element-ref'
 
 type Guard<N extends AstNode> = (n: AstNode) => n is N
 type Guarded<G> = G extends Guard<infer N> ? N : never
@@ -81,7 +81,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isStringProperty,
   ast.isNavigateToProperty,
   ast.isElement,
-  ast.isElementRef,
+  // ast.isElementRef,
   ast.isExtendElement,
   ast.isExtendDeployment,
   ast.isSpecificationElementKind,

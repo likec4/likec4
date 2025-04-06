@@ -1,7 +1,7 @@
-import { FqnExpr, FqnRef, nonexhaustive } from '@likec4/core'
+import { FqnExpr, FqnRef } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import { AstUtils } from 'langium'
-import { isNonNullish } from 'remeda'
+import { isTruthy } from 'remeda'
 import { ast, getViewRulePredicateContainer, isFqnRefInsideDeployment } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
@@ -33,8 +33,8 @@ export const checkFqnRefExpr = (
         }
       }
 
-      if (FqnExpr.isDeploymentRef(expr) && FqnRef.isInsideInstanceRef(expr.ref) && isNonNullish(expr.selector)) {
-        accept('warning', `Selector '${expr.selector}' applies to deployment nodes only, ignored here`, {
+      if (isTruthy(node.selector) && !ast.isDeploymentNode(node.ref.value?.ref)) {
+        accept('warning', `Selector '${node.selector}' applies to deployment nodes only, ignored here`, {
           node,
           property: 'selector',
         })

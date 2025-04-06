@@ -442,6 +442,7 @@ const _isDeployment = (astNode: AstNode) => {
   return ast.isModelDeployments(astNode) ||
     ast.isDeploymentViewBody(astNode) ||
     ast.isDeploymentNodeBody(astNode) ||
+    ast.isExtendDeploymentBody(astNode) ||
     ast.isDeployedInstanceBody(astNode)
 }
 
