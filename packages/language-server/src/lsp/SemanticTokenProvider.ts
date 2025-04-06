@@ -47,7 +47,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return 'prune'
     }
 
-    if (ast.isOutgoingRelationExpression(node) && 'kind' in node) {
+    if (ast.isOutgoingRelationExpr(node) && 'kind' in node) {
       acceptor({
         node,
         property: 'kind',
@@ -79,7 +79,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if ((ast.isElementDescedantsExpression(node) || ast.isWildcardExpression(node)) && node.$cstNode) {
+    if ((ast.isFqnRefExpr(node) || ast.isWildcardExpression(node)) && node.$cstNode) {
       acceptor({
         cst: node.$cstNode,
         type: SemanticTokenTypes.variable,
@@ -88,11 +88,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           SemanticTokenModifiers.readonly,
         ],
       })
-      return 'prune'
-    }
-    if (ast.isFqnRefExpr(node)) {
-      if (node.selector) {
-        acceptor({
+      if (ast.isFqnRefExpr(node) && node.selector ) {
+       acceptor({
           node,
           property: 'selector',
           type: SemanticTokenTypes.variable,
@@ -102,7 +99,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           ],
         })
       }
-      return
+      return 'prune'
     }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
       acceptor({

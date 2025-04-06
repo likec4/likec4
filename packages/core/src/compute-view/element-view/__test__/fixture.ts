@@ -352,6 +352,7 @@ const fakeParsedModel = {
     relations: {},
   },
   views: {},
+  imports: {},
   globals: {
     predicates: {
       'remove_tag_old': [

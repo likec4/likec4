@@ -10,12 +10,11 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
 import { importedChecks, importsFromPojectChecks } from './imports'
 import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
-import { relationBodyChecks, relationChecks } from './relation'
+import { checkRelationBody, relationChecks } from './relation'
 import {
   deploymentNodeKindChecks,
   elementKindChecks,
@@ -29,14 +28,14 @@ import {
 } from './specification'
 import { viewChecks } from './view'
 import {
-  elementPredicateWithChecks,
-  expandElementExprChecks,
-  fqnRefExprChecks,
-  incomingExpressionChecks,
-  outgoingExpressionChecks,
-  relationExprChecks,
-  relationPredicateWithChecks,
+  checkFqnExprWith,
+  checkFqnRefExpr,
+  checkIncomingRelationExpr,
+  checkOutgoingRelationExpr,
+  checkRelationExpr,
+  checkRelationExprWith,
 } from './view-predicates'
+import { checkElementRef } from './element-ref'
 
 type Guard<N extends AstNode> = (n: AstNode) => n is N
 type Guarded<G> = G extends Guard<infer N> ? N : never
@@ -54,11 +53,10 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isGlobalDynamicPredicateGroup,
   ast.isGlobalStyle,
   ast.isGlobalStyleGroup,
-  ast.isDynamicViewPredicateIterator,
-  ast.isElementPredicateWith,
-  ast.isRelationPredicateWith,
-  ast.isElementExpression,
-  ast.isRelationExpression,
+  ast.isFqnExprWith,
+  ast.isRelationExprWith,
+  ast.isFqnExpr,
+  ast.isRelationExpr,
   ast.isDynamicViewParallelSteps,
   ast.isDynamicViewStep,
   ast.isDeploymentViewRule,
@@ -68,7 +66,6 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isFqnRefExpr,
   ast.isViewProperty,
   ast.isStyleProperty,
-  ast.isPredicate,
   ast.isTags,
   ast.isViewRule,
   ast.isDynamicViewRule,
@@ -84,6 +81,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isStringProperty,
   ast.isNavigateToProperty,
   ast.isElement,
+  ast.isElementRef,
   ast.isExtendElement,
   ast.isExtendDeployment,
   ast.isSpecificationElementKind,
@@ -139,8 +137,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
     ExtendDeployment: extendDeploymentChecks(services),
-    FqnRefExpr: fqnRefExprChecks(services),
-    RelationExpr: relationExprChecks(services),
+    FqnRefExpr: checkFqnRefExpr(services),
+    RelationExpr: checkRelationExpr(services),
     NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
@@ -153,17 +151,16 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
     Element: elementChecks(services),
+    ElementRef: checkElementRef(services),
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
-    RelationBody: relationBodyChecks(services),
+    RelationBody: checkRelationBody(services),
     Tag: tagChecks(services),
-    DynamicViewPredicateIterator: dynamicViewRulePredicate(services),
-    ElementPredicateWith: elementPredicateWithChecks(services),
-    RelationPredicateWith: relationPredicateWithChecks(services),
-    ExpandElementExpression: expandElementExprChecks(services),
+    FqnExprWith: checkFqnExprWith(services),
+    RelationExprWith: checkRelationExprWith(services),
     RelationshipKind: relationshipChecks(services),
-    IncomingRelationExpression: incomingExpressionChecks(services),
-    OutgoingRelationExpression: outgoingExpressionChecks(services),
+    IncomingRelationExpr: checkIncomingRelationExpr(services),
+    OutgoingRelationExpr: checkOutgoingRelationExpr(services),
     ImportsFromPoject: importsFromPojectChecks(services),
     Imported: importedChecks(services),
   })

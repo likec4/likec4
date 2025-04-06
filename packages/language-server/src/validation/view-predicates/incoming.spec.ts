@@ -1,7 +1,7 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('incomingExpressionChecks', () => {
+describe.concurrent('checkIncomingRelationExpr', () => {
   it('should not warn if view of', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
@@ -33,7 +33,7 @@ describe.concurrent('incomingExpressionChecks', () => {
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(2)
       expect(diagnostic.message, 'diagnostic message').toBe(
-        'Predicate is ignored as it concerns all relationships'
+        'Predicate is ignored as it concerns all relationships',
       )
     }
   })

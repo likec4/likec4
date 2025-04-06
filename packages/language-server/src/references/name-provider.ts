@@ -20,7 +20,7 @@ export class LikeC4NameProvider extends DefaultNameProvider {
       return node.name
     }
     if (ast.isDeployedInstance(node)) {
-      return node.element.el.$refText
+      return node.element.$cstNode?.text
     }
     return undefined
   }
@@ -30,7 +30,7 @@ export class LikeC4NameProvider extends DefaultNameProvider {
       return super.getNameNode(node)
     }
     if (ast.isDeployedInstance(node)) {
-      return node.element.el.$refNode
+      return node.element.$cstNode
     }
     return undefined
   }

@@ -172,7 +172,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(() => parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      return stream(this.genUniqueDescedants(() => parentRef.element.el.ref))
+      return stream(this.genUniqueDescedants(() => parentRef.element.element.))
     }
     if (ast.isElement(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
@@ -185,13 +185,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     container: ast.FqnRef,
     context: ReferenceInfo,
   ): Generator<AstNodeDescription> {
-    if (isFqnRefInsideGlobals(container)) {
+     if (isFqnRefInsideModel(container)) {
+      // Inside model scope we only need to resolve elements
+      yield* this.computeScope(projectId, context, ast.Element)
+    } else {
+     if (isFqnRefInsideGlobals(container)) {
       yield* this.computeScope(projectId, context, ast.Element)
       yield* this.computeScope(projectId, context, ast.DeploymentNode)
       yield* this.computeScope(projectId, context, ast.DeployedInstance)
-    } else if (isFqnRefInsideModel(container)) {
-      // Inside model scope we only need to resolve elements
-      yield* this.computeScope(projectId, context, ast.Element)
     } else {
       // First preference for deployment nodes
       yield* this.computeScope(projectId, context, ast.DeploymentNode)
@@ -205,6 +206,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         yield* this.computeScope(projectId, context, ast.Element)
       }
     }
+  }
 
     const doc = getDocument(container)
     const precomputed = doc.precomputedScopes

@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
-import { DocumentState } from 'langium'
+import { AstUtils, DocumentState } from 'langium'
 import { clamp, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
@@ -402,17 +402,31 @@ export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction'])
   }
 }
 
-export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
-  if (ast.isElementExpression(predicate)) {
-    return predicate
-  }
-  if (ast.isElementPredicateWhere(predicate)) {
-    return predicate.subject
-  }
-  if (ast.isElementPredicateWith(predicate)) {
-    return elementExpressionFromPredicate(predicate.subject)
-  }
-  nonexhaustive(predicate)
+// export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
+//   if (ast.isElementExpression(predicate)) {
+//     return predicate
+//   }
+//   if (ast.isElementPredicateWhere(predicate)) {
+//     return predicate.subject
+//   }
+//   if (ast.isElementPredicateWith(predicate)) {
+//     return elementExpressionFromPredicate(predicate.subject)
+//   }
+//   nonexhaustive(predicate)
+// }
+
+export function getViewRulePredicateContainer<T extends AstNode>(el: T):
+  | ast.ViewRulePredicate
+  | ast.DeploymentViewRulePredicate
+  | ast.DynamicViewIncludePredicate
+  | undefined
+{
+  return AstUtils.getContainerOfType(
+    el,
+    (n): n is ast.ViewRulePredicate | ast.DeploymentViewRulePredicate | ast.DynamicViewIncludePredicate => {
+      return ast.isViewRulePredicate(n) || ast.isDeploymentViewRulePredicate(n) || ast.isDynamicViewIncludePredicate(n)
+    },
+  )
 }
 
 const _isModel = (astNode: AstNode) => {
@@ -420,7 +434,8 @@ const _isModel = (astNode: AstNode) => {
     ast.isElementBody(astNode) ||
     ast.isExtendElementBody(astNode) ||
     ast.isElementViewBody(astNode) ||
-    ast.isDynamicViewBody(astNode)
+    ast.isDynamicViewBody(astNode) ||
+    ast.isElementRef(astNode)
 }
 
 const _isDeployment = (astNode: AstNode) => {

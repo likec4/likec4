@@ -340,6 +340,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           Array.from(_views.entries()),
         ),
       ),
+      imports: {},
     } as any),
     toLikeC4Model: () => {
       const parsed = self.build()

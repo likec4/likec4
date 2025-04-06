@@ -149,15 +149,13 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ViewRulePredicate {
       const exprs = [] as c4.ModelLayer.Expression[]
-      let predicate = astNode.predicates
+      let predicate = astNode.exprs
       while (predicate) {
         const { value, prev } = predicate
         try {
           if (isTruthy(value) && this.isValid(value as any)) {
-            const expr = this.parseExpressionV2(value) as any
-            if (ModelLayer.isExpression(expr)) {
-              exprs.unshift(expr)
-            }
+            const expr = this.parsePredicate(value)
+            exprs.unshift(expr)
           }
         } catch (e) {
           logWarnError(e)
@@ -331,12 +329,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate): c4.DynamicViewIncludeRule {
       const include = [] as c4.ModelLayer.AnyFqnExpr[]
-      let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
+      let iter: ast.Expressions | undefined = astRule.exprs
       while (iter) {
         try {
           if (isNonNullish(iter.value) && this.isValid(iter.value as any)) {
-            const c4expr = this.parseElementPredicate(iter.value)
-            include.unshift(c4expr)
+            if (ast.isFqnExprOrWith(iter.value)) {
+              const c4expr = this.parseElementPredicate(iter.value)
+              include.unshift(c4expr)
+            }
           }
         } catch (e) {
           logWarnError(e)

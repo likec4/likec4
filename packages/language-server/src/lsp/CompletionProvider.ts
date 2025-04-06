@@ -9,6 +9,7 @@ import {
 import { anyPass } from 'remeda'
 import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-types'
 import { ast } from '../ast'
+import type { LikeC4Services } from '../module'
 
 const STYLE_FIELDS = [
   'color',
@@ -22,6 +23,11 @@ const STYLE_FIELDS = [
 ].join(',')
 
 export class LikeC4CompletionProvider extends DefaultCompletionProvider {
+
+  constructor(protected services: LikeC4Services) {
+    super(services)
+  }
+
   override readonly completionOptions = {
     triggerCharacters: ['.'],
   } satisfies CompletionProviderOptions
@@ -33,6 +39,15 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
   ): MaybePromise<void> {
     if (!this.filterKeyword(context, keyword)) {
       return
+    }
+    if (keyword.value === 'import') {
+      const projects = this.services.shared.workspace.ProjectsManager.all.join(',')
+      return acceptor(context, {
+        label: keyword.value,
+        kind: CompletionItemKind.Snippet,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: `${keyword.value} { \$0 } from '\${1|${projects}|}'`,
+      })
     }
     if (keyword.value === 'deployment' && AstUtils.hasContainerOfType(context.node, ast.isModelViews)) {
       return acceptor(context, {

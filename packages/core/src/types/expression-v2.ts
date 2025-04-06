@@ -209,6 +209,16 @@ export namespace FqnExpr {
     Where: Where<D, M>
     Custom: Custom<D, M>
   }>
+
+  export const unwrap = (expr: FqnExpr): Wildcard | ModelRef | DeploymentRef | ElementKindExpr | ElementTagExpr  => {
+    if (isCustom(expr)) {
+      expr = expr.custom.expr
+    }
+    if (isWhere(expr)) {
+      expr = expr.where.expr
+    }
+    return expr
+  }
 }
 
 export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
@@ -310,6 +320,16 @@ export namespace RelationExpr {
     Where: Where<D, M>
     Custom: Custom<D, M>
   }>
+
+  export const unwrap = (expr: RelationExpr): Direct | Incoming | Outgoing | InOut => {
+    if (isCustom(expr)) {
+      expr = expr.customRelation.expr
+    }
+    if (isWhere(expr)) {
+      expr = expr.where.expr
+    }
+    return expr
+  }
 }
 
 export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{

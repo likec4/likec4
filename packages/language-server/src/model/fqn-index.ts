@@ -23,7 +23,7 @@ import { ADisposable } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'
 
-export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
+export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   protected projects: ProjectsManager
   protected langiumDocuments: LangiumDocuments
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
@@ -42,11 +42,10 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.IndexedContent,
-        async (doc, _cancelToken) => {
+        (doc) => {
           if (isLikeC4LangiumDocument(doc)) {
             this.documentCache.set(doc, this.createDocumentIndex(doc))
           }
-          return await Promise.resolve()
         },
       ),
     )
@@ -64,6 +63,16 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
       logWarnError(`Document ${document.uri.path} is not indexed`)
     }
     return this.documentCache.get(document)
+  }
+
+  public resolve(reference: ast.Referenceable): Fqn {
+    if (reference.$type === 'Imported') {
+      return this.getFqn(reference.element.ref as AstNd)
+    }
+    if (reference.$type === 'Element') {
+      return this.getFqn(reference as AstNd)
+    }
+    return this.services.likec4.DeploymentsIndex.getFqn(reference)
   }
 
   public getFqn(el: AstNd): Fqn {

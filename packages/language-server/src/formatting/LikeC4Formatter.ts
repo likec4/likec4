@@ -114,19 +114,19 @@ export class LikeC4Formatter extends AbstractFormatter {
       f.properties('title').prepend(FormattingOptions.oneSpace)
     })
 
-    this.on(node, ast.isDirectedRelationExpression)
+    this.on(node, ast.isDirectedRelationExpr)
       ?.property('target').prepend(FormattingOptions.oneSpace)
 
-    this.on(node, ast.isOutgoingRelationExpression, (n, f) => {
+    this.on(node, ast.isOutgoingRelationExpr, (n, f) => {
       f.property('from').append(FormattingOptions.oneSpace)
       f.keywords(']->').prepend(FormattingOptions.noSpace)
       f.keywords('-[').append(FormattingOptions.noSpace)
     })
 
-    this.on(node, ast.isIncomingRelationExpression)
+    this.on(node, ast.isIncomingRelationExpr)
       ?.keywords('->').append(FormattingOptions.oneSpace)
 
-    this.on(node, ast.isInOutRelationExpression)
+    this.on(node, ast.isInOutRelationExpr)
       ?.keyword('->').prepend(FormattingOptions.oneSpace)
   }
 
@@ -383,8 +383,8 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatWithPredicate(node: AstNode) {
     const formatter = this.getNodeFormatter(node)
     if (
-      ast.isElementPredicateWith(node)
-      || ast.isRelationPredicateWith(node)
+      ast.isFqnExprWith(node)
+      || ast.isRelationExprWith(node)
     ) {
       formatter.keyword('with').prepend(FormattingOptions.oneSpace)
     }
@@ -460,9 +460,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereExpression(node: AstNode) {
     if (
-      ast.isElementPredicateOrWhere(node)
-      || ast.isRelationPredicateOrWhere(node)
-      || ast.isRelationExprOrWhere(node)
+      ast.isRelationExprOrWhere(node)
       || ast.isFqnExprOrWhere(node)
     ) {
       const formatter = this.getNodeFormatter(node)
@@ -520,11 +518,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       }
     }
 
-    if (
-      ast.isDynamicViewPredicateIterator(node)
-      || ast.isPredicates(node)
-      || ast.isPredicates(node)
-    ) {
+    if (ast.isExpressions(node)) {
       const formatter = this.getNodeFormatter(node)
       const parent = this.findPredicateExpressionRoot(node)
       const isMultiline = parent?.$cstNode && utils.isMultiline(parent?.$cstNode)
@@ -577,7 +571,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
 
     if (
-      ast.isExpressionV2Iterator(node)
+      ast.isExpressions(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const parent = this.findPredicateExpressionRoot(node)

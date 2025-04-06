@@ -6,310 +6,60 @@ import { logWarnError } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
 import { parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
+import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithPredicates = ReturnType<typeof PredicatesParser>
 
-export function PredicatesParser<TBase extends Base>(B: TBase) {
+export function PredicatesParser<TBase extends WithExpressionV2>(B: TBase) {
   return class PredicatesParser extends B {
-    parsePredicate(astNode: ast.Predicate): c4.ModelLayer.Expression {
-      if (ast.isElementPredicate(astNode)) {
-        return this.parseElementPredicate(astNode)
+    parsePredicate(astNode: ast.ExpressionV2): c4.ModelLayer.Expression {
+      return this.parseExpressionV2(astNode) as c4.ModelLayer.Expression
+    }
+
+    parseElementPredicate(astNode: ast.FqnExprOrWith): c4.ModelLayer.AnyFqnExpr {
+      if (ast.isFqnExprWith(astNode)) {
+        return this.parseFqnExprWith(astNode) as c4.ModelLayer.AnyFqnExpr
       }
-      if (ast.isRelationPredicate(astNode)) {
-        return this.parseRelationPredicate(astNode)
+      if (ast.isFqnExprOrWhere(astNode)) {
+        return this.parseFqnExprOrWhere(astNode) as c4.ModelLayer.AnyFqnExpr
       }
       nonexhaustive(astNode)
     }
 
-    parseElementPredicate(astNode: ast.ElementPredicate): c4.ModelLayer.AnyFqnExpr {
-      if (ast.isElementPredicateWith(astNode)) {
-        return this.parseElementPredicateWith(astNode)
-      }
-      if (ast.isElementPredicateOrWhere(astNode)) {
-        return this.parseElementPredicateOrWhere(astNode)
-      }
-      nonexhaustive(astNode)
+    parseElementPredicateOrWhere(astNode: ast.FqnExprOrWhere): c4.ModelLayer.FqnExprOrWhere {
+      return this.parseFqnExprOrWhere(astNode) as c4.ModelLayer.AnyFqnExpr
     }
 
-    parseElementPredicateOrWhere(astNode: ast.ElementPredicateOrWhere): c4.ModelLayer.FqnExprOrWhere {
-      if (ast.isElementPredicateWhere(astNode)) {
-        return this.parseElementPredicateWhere(astNode)
-      }
-      if (ast.isElementExpression(astNode)) {
-        return this.parseElementExpression(astNode)
-      }
-      nonexhaustive(astNode)
+    parseElementExpression(astNode: ast.FqnExpr): c4.ModelLayer.FqnExpr {
+      return this.parseFqnExpr(astNode) as c4.ModelLayer.FqnExpr
     }
 
-    parseElementExpression(astNode: ast.ElementExpression): c4.ModelLayer.FqnExpr {
-      if (ast.isWildcardExpression(astNode)) {
-        return {
-          wildcard: true,
-        }
-      }
-      if (ast.isElementKindExpression(astNode)) {
-        invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
-        return {
-          elementKind: astNode.kind.ref.name as c4.ElementKind,
-          isEqual: astNode.isEqual,
-        }
-      }
-      if (ast.isElementTagExpression(astNode)) {
-        invariant(astNode.tag?.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
-        let elementTag = astNode.tag.$refText
-        if (elementTag.startsWith('#')) {
-          elementTag = elementTag.slice(1)
-        }
-        return {
-          elementTag: elementTag as c4.Tag,
-          isEqual: astNode.isEqual,
-        }
-      }
-      if (ast.isExpandElementExpression(astNode)) {
-        const elementNode = elementRef(astNode.expand)
-        invariant(elementNode, 'Element not found ' + astNode.expand.$cstNode?.text)
-        const expanded = this.resolveFqn(elementNode)
-        return {
-          ref: {
-            model: expanded,
-          },
-          selector: 'expanded',
-        }
-      }
-      if (ast.isElementDescedantsExpression(astNode)) {
-        const elementNode = elementRef(astNode.parent)
-        invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
-        const element = this.resolveFqn(elementNode)
-        return {
-          ref: {
-            model: element,
-          },
-          selector: astNode.suffix === '.*' ? 'children' : 'descendants',
-        }
-      }
-      if (ast.isElementRef(astNode)) {
-        const elementNode = elementRef(astNode)
-        invariant(elementNode, 'Element not found ' + astNode.$cstNode?.text)
-        const element = this.resolveFqn(elementNode)
-        return {
-          ref: {
-            model: element,
-          },
-        }
-      }
-      nonexhaustive(astNode)
+    parseElementPredicateWhere(astNode: ast.FqnExprWhere): c4.ModelLayer.FqnExpr.Where {
+      return this.parseFqnExprWhere(astNode) as c4.ModelLayer.FqnExpr.Where
     }
 
-    parseElementPredicateWhere(astNode: ast.ElementPredicateWhere): c4.ModelLayer.FqnExpr.Where {
-      const expr = this.parseElementExpression(astNode.subject)
-      return {
-        where: {
-          expr,
-          condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' },
-          },
-        },
-      }
+    parseElementPredicateWith(astNode: ast.FqnExprWith): c4.ModelLayer.FqnExpr.Custom {
+      return this.parseFqnExprWith(astNode) as c4.ModelLayer.FqnExpr.Custom
     }
 
-    parseElementPredicateWith(astNode: ast.ElementPredicateWith): c4.ModelLayer.FqnExpr.Custom {
-      const expr = this.parseElementPredicateOrWhere(astNode.subject)
-      const props = astNode.custom?.props ?? []
-      return props.reduce(
-        (acc, prop) => {
-          if (!this.isValid(prop)) {
-            return acc
-          }
-          if (ast.isNavigateToProperty(prop)) {
-            const viewId = prop.value.view.$refText
-            if (isTruthy(viewId)) {
-              acc.custom.navigateTo = viewId as c4.ViewId
-            }
-            return acc
-          }
-          if (ast.isElementStringProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value) || ''
-            }
-            return acc
-          }
-          if (ast.isIconProperty(prop)) {
-            const value = this.parseIconProperty(prop)
-            if (isDefined(value)) {
-              acc.custom[prop.key] = value
-            }
-            return acc
-          }
-          if (ast.isColorProperty(prop)) {
-            const value = toColor(prop)
-            if (isDefined(value)) {
-              acc.custom[prop.key] = value
-            }
-            return acc
-          }
-          if (ast.isShapeProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.custom[prop.key] = prop.value
-            }
-            return acc
-          }
-          if (ast.isBorderProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.custom[prop.key] = prop.value
-            }
-            return acc
-          }
-          if (ast.isOpacityProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.custom[prop.key] = parseAstOpacityProperty(prop)
-            }
-            return acc
-          }
-          if (ast.isNotationProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value)
-            }
-            return acc
-          }
-          if (ast.isMultipleProperty(prop)) {
-            if (isBoolean(prop.value)) {
-              acc.custom[prop.key] = prop.value
-            }
-            return acc
-          }
-          if (ast.isShapeSizeProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = parseAstSizeValue(prop)
-            }
-            return acc
-          }
-          if (ast.isTextSizeProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = parseAstSizeValue(prop)
-            }
-            return acc
-          }
-          if (ast.isPaddingSizeProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = parseAstSizeValue(prop)
-            }
-            return acc
-          }
-          nonexhaustive(prop)
-        },
-        {
-          custom: {
-            expr,
-          },
-        } as c4.ModelLayer.FqnExpr.Custom,
-      )
+    parseRelationPredicate(astNode: ast.RelationExprOrWith): c4.ModelLayer.AnyRelationExpr {
+      return this.parseRelationExprOrWith(astNode) as c4.ModelLayer.AnyRelationExpr
     }
 
-    parseRelationPredicate(astNode: ast.RelationPredicate): c4.ModelLayer.AnyRelationExpr {
-      if (ast.isRelationPredicateWith(astNode)) {
-        return this.parseRelationPredicateWith(astNode, this.parseRelationPredicateOrWhere(astNode.subject))
-      }
-      if (ast.isRelationPredicateOrWhere(astNode)) {
-        return this.parseRelationPredicateOrWhere(astNode)
-      }
-      nonexhaustive(astNode)
+    parseRelationPredicateOrWhere(astNode: ast.RelationExprOrWhere): c4.ModelLayer.RelationExprOrWhere {
+      return this.parseRelationExprOrWhere(astNode) as c4.ModelLayer.RelationExprOrWhere
     }
 
-    parseRelationPredicateOrWhere(astNode: ast.RelationPredicateOrWhere): c4.ModelLayer.RelationExprOrWhere {
-      if (ast.isRelationPredicateWhere(astNode)) {
-        return this.parseRelationPredicateWhere(astNode)
-      }
-      if (ast.isRelationExpression(astNode)) {
-        return this.parseRelationExpression(astNode)
-      }
-      nonexhaustive(astNode)
+    parseRelationPredicateWhere(astNode: ast.RelationExprWhere): c4.ModelLayer.RelationExpr.Where {
+      return this.parseRelationExprWhere(astNode) as c4.ModelLayer.RelationExpr.Where
     }
 
-    parseRelationPredicateWhere(astNode: ast.RelationPredicateWhere): c4.ModelLayer.RelationExpr.Where {
-      const expr = this.parseRelationExpression(astNode.subject)
-      return {
-        where: {
-          expr,
-          condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' },
-          },
-        },
-      }
+    parseRelationPredicateWith(astNode: ast.RelationExprWith): c4.ModelLayer.RelationExpr.Custom {
+      return this.parseRelationExprWith(astNode) as c4.ModelLayer.RelationExpr.Custom
     }
 
-    parseRelationPredicateWith(
-      astNode: ast.RelationPredicateWith,
-      expr: c4.ModelLayer.RelationExprOrWhere,
-    ): c4.ModelLayer.RelationExpr.Custom {
-      const props = astNode.custom?.props ?? []
-      return props.reduce(
-        (acc, prop) => {
-          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
-            }
-            return acc
-          }
-          if (ast.isArrowProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.customRelation[prop.key] = prop.value
-            }
-            return acc
-          }
-          if (ast.isColorProperty(prop)) {
-            const value = toColor(prop)
-            if (isTruthy(value)) {
-              acc.customRelation[prop.key] = value
-            }
-            return acc
-          }
-          if (ast.isLineProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.customRelation[prop.key] = prop.value
-            }
-            return acc
-          }
-          if (ast.isRelationNavigateToProperty(prop)) {
-            const viewId = prop.value.view.ref?.name
-            if (isTruthy(viewId)) {
-              acc.customRelation.navigateTo = viewId as c4.ViewId
-            }
-            return acc
-          }
-          nonexhaustive(prop)
-        },
-        {
-          customRelation: {
-            expr,
-          },
-        } as c4.ModelLayer.RelationExpr.Custom,
-      )
-    }
-
-    parseRelationExpression(astNode: ast.RelationExpression): c4.ModelLayer.RelationExpr {
-      if (ast.isDirectedRelationExpression(astNode)) {
-        return {
-          source: this.parseElementExpression(astNode.source.from),
-          target: this.parseElementExpression(astNode.target),
-          isBidirectional: astNode.source.isBidirectional,
-        }
-      }
-      if (ast.isInOutRelationExpression(astNode)) {
-        return {
-          inout: this.parseElementExpression(astNode.inout.to),
-        }
-      }
-      if (ast.isOutgoingRelationExpression(astNode)) {
-        return {
-          outgoing: this.parseElementExpression(astNode.from),
-        }
-      }
-      if (ast.isIncomingRelationExpression(astNode)) {
-        return {
-          incoming: this.parseElementExpression(astNode.to),
-        }
-      }
-      nonexhaustive(astNode)
+    parseRelationExpression(astNode: ast.RelationExpr): c4.ModelLayer.RelationExpr {
+      return this.parseRelationExpr(astNode) as c4.ModelLayer.RelationExpr
     }
   }
 }

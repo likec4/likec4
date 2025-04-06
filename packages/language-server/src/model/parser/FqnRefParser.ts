@@ -59,17 +59,21 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     }
 
     parseExpressionV2(astNode: ast.ExpressionV2): c4.ExpressionV2 {
+      if (ast.isFqnExprOrWith(astNode)) {
+        return this.parseFqnExprOrWith(astNode)
+      }
+      if (ast.isRelationExprOrWith(astNode)) {
+        return this.parseRelationExprOrWith(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprOrWith(astNode: ast.FqnExprOrWith): c4.FqnExpr.Any {
       if (ast.isFqnExprWith(astNode)) {
         return this.parseFqnExprWith(astNode)
       }
       if (ast.isFqnExprOrWhere(astNode)) {
         return this.parseFqnExprOrWhere(astNode)
-      }
-      if (ast.isRelationExprWith(astNode)) {
-        return this.parseRelationExprWith(astNode)
-      }
-      if (ast.isRelationExprOrWhere(astNode)) {
-        return this.parseRelationExprOrWhere(astNode)
       }
       nonexhaustive(astNode)
     }
@@ -256,6 +260,16 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         iter = iter.prev
       }
       return exprs.reverse()
+    }
+
+    parseRelationExprOrWith(astNode: ast.RelationExprOrWith): c4.RelationExpr.Any {
+      if (ast.isRelationExprWith(astNode)) {
+        return this.parseRelationExprWith(astNode)
+      }
+      if (ast.isRelationExprOrWhere(astNode)) {
+        return this.parseRelationExprOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
     }
 
     parseRelationExprWith(
