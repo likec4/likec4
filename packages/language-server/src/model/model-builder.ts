@@ -39,6 +39,7 @@ import type { LangiumDocuments, ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
 
+const parsedWithoutImportsCacheKey = (projectId: c4.ProjectId) => `parsed-without-imports-${projectId}`
 const parsedModelCacheKey = (projectId: c4.ProjectId) => `parsed-model-${projectId}`
 const computedModelCacheKey = (projectId: c4.ProjectId) => `computed-model-${projectId}`
 
@@ -103,49 +104,59 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  private unsafeSyncBuildModelData(projectId: c4.ProjectId): BuildModelData | null {
+  private unsafeSyncParseModelData(projectId: c4.ProjectId): BuildModelData | null {
     const cache = this.cache as WorkspaceCache<string, BuildModelData | null>
     const log = logger.getChild(['project', projectId])
-    if (cache.has(parsedModelCacheKey(projectId))) {
-      log.debug`unsafeSyncBuildModelData from cache`
+    const key = parsedWithoutImportsCacheKey(projectId)
+    if (cache.has(key)) {
+      log.debug`unsafeSyncBuildModelData from cache, project ${projectId}`
     }
-    return cache.get(parsedModelCacheKey(projectId), () => {
-      const docs = this.documents(projectId)
-      if (docs.length === 0) {
-        logger.debug`no documents to build model`
+    return cache.get(key, () => {
+      try {
+        const docs = this.documents(projectId)
+        if (docs.length === 0) {
+          logger.debug`no documents to build model, project ${projectId}`
+          return null
+        }
+        log.debug`unsafeSyncBuildModelData, project ${projectId}`
+        return buildModelData(docs)
+      } catch (e) {
+        logWarnError(e)
         return null
       }
-      log.debug`unsafeSyncBuildModelData`
-      return buildModelData(docs)
     })
   }
 
-  private unsafeSyncBuildJoinedModelData(projectId: c4.ProjectId): c4.ParsedLikeC4ModelData | null {
-    const result = this.unsafeSyncBuildModelData(projectId)
-    if (!result) {
-      return null
-    }
-    if (result.imports.size > 0) {
-      logger.debug`processing imports of ${projectId}`
-      const imports = [...result.imports.associations()].reduce((acc, [projectId, fqns]) => {
-        const anotherProject = this.unsafeSyncBuildModelData(projectId)
-        if (anotherProject) {
-          const imported = pipe(
-            [...fqns],
-            flatMap(fqn => anotherProject.data.elements[fqn] ?? []),
-          )
-          if (hasAtLeast(imported, 1)) {
-            acc[projectId] = imported
-          }
-        }
-        return acc
-      }, {} as c4.ParsedLikeC4ModelData['imports'])
-      return {
-        ...result.data,
-        imports,
+  private unsafeSyncJoinedModelData(projectId: c4.ProjectId): c4.ParsedLikeC4ModelData | null {
+    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData | null>
+    const key = parsedModelCacheKey(projectId)
+    return cache.get(key, () => {
+      const result = this.unsafeSyncParseModelData(projectId)
+      if (!result) {
+        return null
       }
-    }
-    return result.data
+      if (result.imports.size > 0) {
+        logger.debug`processing imports of ${projectId}`
+        const imports = [...result.imports.associations()].reduce((acc, [projectId, fqns]) => {
+          const anotherProject = this.unsafeSyncParseModelData(projectId)
+          if (anotherProject) {
+            const imported = pipe(
+              [...fqns],
+              flatMap(fqn => anotherProject.data.elements[fqn] ?? []),
+            )
+            if (hasAtLeast(imported, 1)) {
+              acc[projectId] = imported
+            }
+          }
+          return acc
+        }, {} as c4.ParsedLikeC4ModelData['imports'])
+        return {
+          ...result.data,
+          imports,
+        }
+      }
+      return result.data
+    })
   }
 
   public async parseModel(
@@ -154,17 +165,17 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   ): Promise<c4.ParsedLikeC4ModelData | null> {
     const project = this.projects.ensureProjectId(projectId)
     const log = logger.getChild(['project', project])
-    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData>
+    const cache = this.cache as WorkspaceCache<string, c4.ParsedLikeC4ModelData | null>
     const cached = cache.get(parsedModelCacheKey(project))
     if (cached) {
-      log.debug('parseModel from cache')
+      log.debug`parseModel from cache, project ${project}`
       return cached
     }
     const t0 = performance.now()
     return await this.mutex.read(async () => {
       await interruptAndCheck(cancelToken)
-      const result = this.unsafeSyncBuildJoinedModelData(project)
-      log.debug(`parseModel in ${prettyMs(performance.now() - t0)}`)
+      const result = this.unsafeSyncJoinedModelData(project)
+      log.debug(`parseModel, project ${project} in ${prettyMs(performance.now() - t0)}`)
       return result
     })
   }
@@ -180,7 +191,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedModelCacheKey(projectId), () => {
-      const parsed = this.unsafeSyncBuildJoinedModelData(projectId)
+      const parsed = this.unsafeSyncJoinedModelData(projectId)
       if (!parsed) {
         return LikeC4Model.EMPTY
       }
