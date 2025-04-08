@@ -15,7 +15,12 @@ export const checkFqnRefExpr = (
     const expr = parser.parseFqnRefExpr(node)
     const viewRulePredicate = getViewRulePredicateContainer(node)
 
-    if (viewRulePredicate?.$type === 'DeploymentViewRulePredicate' || isFqnRefInsideDeployment(node)) {
+    const isInsideDeploymentButNotStyle = isFqnRefInsideDeployment(node) && !AstUtils.hasContainerOfType(
+      node,
+      n => ast.isDeploymentViewRuleStyle(n) || ast.isViewRuleStyle(n),
+    )
+
+    if (viewRulePredicate?.$type === 'DeploymentViewRulePredicate' || isInsideDeploymentButNotStyle) {
       const isPartOfRelationExpr = AstUtils.hasContainerOfType(node, ast.isRelationExpr)
       // This expression is part of element predicate
       if (!isPartOfRelationExpr) {

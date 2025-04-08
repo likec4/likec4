@@ -131,4 +131,22 @@ describe.concurrent('checkFqnRefExpr', () => {
         include n1._
       `)
   })
+
+  it('should not warn inside style', async ({ expect }) => {
+    const { valid } = mkTestServices(expect)
+    await valid(`
+      style e1 {
+        color red
+      }
+    `)
+  })
+
+  it('should not warn inside style (instanceOf)', async ({ expect }) => {
+    const { valid } = mkTestServices(expect)
+    await valid(`
+      style i1.e2 {
+        color red
+      }
+    `)
+  })
 })

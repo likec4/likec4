@@ -77,6 +77,33 @@ describe.concurrent('Deployment model:', () => {
       }
     `
 
+  test('resolve internals of instanceOf').valid`
+      specification {
+        element component
+        deploymentNode node
+      }
+      model {
+        component sys1 {
+          component cmp1 {
+            component cmp2
+          }
+        }
+      }
+      deployment {
+        node n1 {
+          instanceOf sys1.cmp1
+        }
+      }
+      views {
+        deployment view dep1 {
+          include n1
+          style n1.cmp1.cmp2 {
+            color red
+          }
+        }
+      }
+    `
+
   test('allow nested relations').valid`
     specification {
       deploymentNode environment
