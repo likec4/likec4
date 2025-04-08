@@ -3,6 +3,7 @@ import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/c
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
+import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
@@ -18,9 +19,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       )
       if (ast.isImported(refValue)) {
         const fqnRef = {
-          project: refValue.$container.project as ProjectId,
+          project: projectIdFrom(refValue),
           model: this.resolveFqn(
-            nonNullable(refValue.element.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
+            nonNullable(refValue.imported.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
           ),
         }
         this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
@@ -30,7 +31,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         const imported = importsRef(astNode)
         if (imported) {
           const fqnRef = {
-            project: imported.$container.project as c4.ProjectId,
+            project: projectIdFrom(imported),
             model: this.resolveFqn(refValue),
           }
           this.doc.c4Imports.set(fqnRef.project, fqnRef.model)

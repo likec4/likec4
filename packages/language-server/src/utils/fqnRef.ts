@@ -2,6 +2,14 @@ import { AstUtils } from 'langium'
 import { isNullish, isTruthy } from 'remeda'
 import { ast } from '../ast'
 
+export function referenceableParent(node: ast.FqnRef): ast.Referenceable | null {
+  // iterate up the root parent
+  while (node.parent) {
+    node = node.parent
+  }
+  return node.value.ref ?? null
+}
+
 export function instanceRef(deploymentRef: ast.FqnRef): ast.DeployedInstance | null {
   let referenceable
   while ((referenceable = deploymentRef.value?.ref)) {
@@ -31,11 +39,8 @@ export function deploymentNodeRef(deploymentRef: ast.FqnRef): ast.DeploymentNode
 }
 
 export function importsRef(node: ast.FqnRef): ast.Imported | null {
-  // iterate up the root parent
-  while (node.parent) {
-    node = node.parent
-  }
-  return ast.isImported(node.value.ref) ? node.value.ref : null
+  const referenceable = referenceableParent(node)
+  return referenceable?.$type === 'Imported' ? referenceable : null
 }
 
 export function isImportsRef(node: ast.FqnRef): boolean {
@@ -43,11 +48,8 @@ export function isImportsRef(node: ast.FqnRef): boolean {
 }
 
 export function isReferenceToLogicalModel(node: ast.FqnRef): boolean {
-  // iterate up the root parent
-  while (node.parent) {
-    node = node.parent
-  }
-  return ast.isElement(node.value.ref)
+  const referenceable = referenceableParent(node)
+  return referenceable?.$type === 'Element'
 }
 
 /**

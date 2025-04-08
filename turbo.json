@@ -27,7 +27,10 @@
         "generate",
         "topo"
       ],
-      "outputs": [],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
       "outputLogs": "new-only"
     },
     "build": {
@@ -47,7 +50,8 @@
       ],
       "outputs": [
         "package.tgz"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

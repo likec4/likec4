@@ -11,6 +11,7 @@ import {
   isNumber,
 } from 'remeda'
 import type {
+  ParsedAstDeployment,
   ParsedAstDeploymentRelation,
   ParsedAstElement,
   ParsedAstRelation,
@@ -170,9 +171,15 @@ export class MergedSpecification {
   /**
    * Converts a parsed deployment model into a C4 deployment model
    */
-  toDeploymentElement = (parsed: c4.DeploymentElement): c4.DeploymentElement | null => {
-    if (!DeploymentElement.isDeploymentNode(parsed)) {
-      return parsed
+  toDeploymentElement = (parsed: ParsedAstDeployment): c4.DeploymentElement | null => {
+    if ('element' in parsed && !('kind' in parsed)) {
+      return {
+        ...parsed,
+        element: FqnRef.toModelFqn(parsed.element),
+      }
+    }
+    if ('element' in parsed) {
+      return null
     }
     try {
       const __kind = this.specs.deployments[parsed.kind]

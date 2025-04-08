@@ -67,7 +67,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public resolve(reference: ast.Referenceable): Fqn {
     if (reference.$type === 'Imported') {
-      return this.getFqn(reference.element.ref as AstNd)
+      return this.getFqn(reference.imported.ref as AstNd)
     }
     if (reference.$type === 'Element') {
       return this.getFqn(reference as AstNd)

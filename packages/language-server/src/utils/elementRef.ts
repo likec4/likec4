@@ -4,9 +4,9 @@ import { ast } from '../ast'
  * Returns referenced AST Element
  */
 export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef) {
-  let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.element.value.ref
+  let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.modelElement.value.ref
   if (el?.$type === 'Imported') {
-    el = el.element.ref
+    el = el.imported.ref
   }
   return el?.$type === 'Element' ? el : undefined
 }

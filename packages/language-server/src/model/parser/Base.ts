@@ -26,6 +26,7 @@ import {
 } from '../../ast'
 import type { ProjectConfig } from '../../config'
 import type { LikeC4Services } from '../../module'
+import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
@@ -63,9 +64,9 @@ export class BaseParser {
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
     if (ast.isImported(node)) {
-      const project = node.$container.project as c4.ProjectId
+      const project = projectIdFrom(node)
       const fqn = this.resolveFqn(
-        nonNullable(node.element.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
+        nonNullable(node.imported.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
       )
       this.doc.c4Imports.set(project, fqn)
       return GlobalFqn(project, fqn)

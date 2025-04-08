@@ -19,8 +19,11 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return node.name
     }
+    if (ast.isImported(node)) {
+      return node.imported.$refText
+    }
     if (ast.isDeployedInstance(node)) {
-      return node.element.element.value.$refText
+      return node.target.modelElement.value.$refText
     }
     return undefined
   }
@@ -29,8 +32,11 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return super.getNameNode(node)
     }
+    if (ast.isImported(node)) {
+      return node.imported.$refNode
+    }
     if (ast.isDeployedInstance(node)) {
-      return node.element.element.value.$refNode
+      return node.target.modelElement.value.$refNode
     }
     return undefined
   }

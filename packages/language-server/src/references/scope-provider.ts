@@ -15,7 +15,6 @@ import {
   StreamImpl,
   StreamScope,
 } from 'langium'
-import { isFunction } from 'remeda'
 import { type AstNodeDescriptionWithFqn, ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
 import { logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
@@ -56,7 +55,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
 
         if (ast.isImported(container)) {
-          const projectId = container.$container.project as ProjectId
+          const projectId = projectIdFrom(container)
           return new StreamScope(this.fqnIndex.rootElements(projectId))
         }
 
@@ -108,10 +107,9 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
-
       // we make "target" resolvable inside ElementView
-      if (viewOf.element.value.$nodeDescription) {
-        yield viewOf.element.value.$nodeDescription
+      if (viewOf.modelElement.value.$nodeDescription) {
+        yield viewOf.modelElement.value.$nodeDescription
       }
       yield* this.genUniqueDescedants(() => elementRef(viewOf))
       return
@@ -154,20 +152,29 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   ): Stream<AstNodeDescription> {
     const parent = container.parent
     if (!parent) {
-      return stream(this.genInitialScopeForFqnRef(projectId, container, context))
+      return stream(this.genScopeForParentlessFqnRef(projectId, container, context))
     }
     const parentRef = parent.value.ref
     if (!parentRef) {
       return EMPTY_STREAM
     }
     if (ast.isImported(parentRef)) {
-      return stream(this.genScopeForImportedRef(parentRef))
+      return stream(this.genUniqueDescedants(() => {
+        return parentRef.imported.ref
+      }))
     }
     if (ast.isDeploymentNode(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      return stream(this.genUniqueDescedants(() => elementRef(parentRef.element)))
+      // if (ast.isElement(target)) {
+      return stream(this.genUniqueDescedants(() => {
+        const target = parentRef.target.modelElement.value.ref
+        if (ast.isImported(target)) {
+          return target.imported.ref
+        }
+        return ast.isElement(target) ? target : undefined
+      }))
     }
     if (ast.isElement(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
@@ -175,12 +182,15 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return nonexhaustive(parentRef)
   }
 
-  protected *genInitialScopeForFqnRef(
+  protected *genScopeForParentlessFqnRef(
     projectId: ProjectId,
     container: ast.FqnRef,
     context: ReferenceInfo,
   ): Generator<AstNodeDescription> {
-    if (isFqnRefInsideModel(container) || container.$container.$type === 'ElementRef') {
+    if (
+      AstUtils.hasContainerOfType(container, ast.isElementRef) ||
+      isFqnRefInsideModel(container)
+    ) {
       // Inside model scope we only need to resolve elements
       yield* this.computeScope(projectId, context, ast.Element)
     } else if (isFqnRefInsideGlobals(container)) {
@@ -206,13 +216,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       yield* precomputed.values().filter(nd => this.reflection.isSubtype(nd.type, ast.Imported))
     }
   }
-
-  protected *genScopeForImportedRef(container: ast.Imported): Generator<AstNodeDescriptionWithFqn, void, any> {
-    const projectId = container.$container.project as ProjectId
-    const parent = container.element.$refText as Fqn
-    yield* this.fqnIndex.uniqueDescedants(projectId, parent)
-  }
-
   /**
    * Computes the scope for a given reference context.
    *

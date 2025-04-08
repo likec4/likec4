@@ -50,6 +50,33 @@ describe.concurrent('Deployment model:', () => {
     }
   `
 
+  test('resolve instanceOf').valid`
+      specification {
+        element component
+        deploymentNode node
+      }
+      model {
+        component sys1 {
+          component cmp1 {
+            component cmp2
+          }
+        }
+      }
+      deployment {
+        node n1 {
+          instanceOf sys1.cmp1
+
+          node n2 {
+            instanceOf sys1.cmp1
+            instanceOf sys1.cmp2
+          }
+          node n3 {
+            sys = instanceOf sys1.cmp1.cmp2
+          }
+        }
+      }
+    `
+
   test('allow nested relations').valid`
     specification {
       deploymentNode environment

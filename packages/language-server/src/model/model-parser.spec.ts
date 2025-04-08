@@ -332,14 +332,18 @@ describe.concurrent('LikeC4ModelParser', () => {
           'title': 'n3',
         },
         {
-          'element': 'sys.c1',
+          'element': {
+            model: 'sys.c1',
+          },
           'id': 'n1.c1',
           'style': {
             'multiple': true,
           },
         },
         {
-          'element': 'sys.c1.c2',
+          'element': {
+            model: 'sys.c1.c2',
+          },
           'id': 'n2.c2',
           'style': {},
         },

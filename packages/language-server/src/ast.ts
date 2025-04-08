@@ -3,7 +3,7 @@ import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap,
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
 import { clamp, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
+import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -124,10 +124,12 @@ export interface ParsedAstRelation {
 }
 
 // Alias for easier refactoring
-export type ParsedAstDeployment = c4.DeploymentElement
+export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.Node, ParsedAstDeployment.Instance>>
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
-  export type Instance = c4.DeployedInstance
+  export type Instance = Omit<c4.DeployedInstance, 'element'> & {
+    readonly element: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  }
 }
 export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
   astPath: string

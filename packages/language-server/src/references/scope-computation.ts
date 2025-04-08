@@ -270,11 +270,15 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         }
       }
 
-      for (const imported of root.imports.flatMap(i => i.imports)) {
+      for (const imports of root.imports.flatMap(i => i.imports)) {
         try {
-          descendants.push(
-            this.descriptions.createDescription(imported, imported.element.$refText, document),
-          )
+          let imported = imports as ast.Imported | undefined
+          while (imported) {
+            descendants.push(
+              this.descriptions.createDescription(imported, imported.imported.$refText, document),
+            )
+            imported = imported.prev
+          }
         } catch (e) {
           logWarnError(e)
         }

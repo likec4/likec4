@@ -78,7 +78,21 @@ SpecificationRelationshipKind:
 SpecificationRelationshipStringProperty:
   key=('technology' | 'notation') ':'? value=String ';'?;
 
+// Imports -------------------------------------
+
+ImportsFromPoject:
+  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String
+;
+
+Imported:
+  imported=[Element:Id] ({infer Imported.prev=current} ',' imported=[Element:Id])* ';'?
+;
+
 // Model -------------------------------------
+
+Tags:
+  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
+;
 
 Model:
   name='model' '{'
@@ -144,7 +158,10 @@ ExtendElementProperty:
   LinkProperty |
   MetadataProperty;
 
-//
+// Hack, to strictly enforce resolution of model elements
+ElementRef:
+  modelElement=FqnRef;
+
 StrictFqnElementRef:
   el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
@@ -159,17 +176,10 @@ type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
 //  Mix of DeploymentRef and ElementRef
 FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
-// Hack, to strictly enforce resolution of model elements
-ElementRef:
-  element=FqnRef;
 
 // Strict reference allows only direct children of parent
 StrictFqnRef:
   value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
-
-Tags:
-  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
-;
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
@@ -221,23 +231,6 @@ MetadataBody: '{'
 
 MetadataAttribute:
   key=IdTerminal ':'? value=String ';'?
-;
-
-// Imports -------------------------------------
-
-ImportsFromPoject:
-  'import'
-  (
-    imports+=Imported |
-    '{'
-      imports+=Imported (',' imports+=Imported)*
-    '}'
-  )
-  'from' project=String
-;
-
-Imported:
-  element=[Element:Id]
 ;
 
 // Views -------------------------------------
@@ -580,7 +573,7 @@ DeploymentNodeBody: '{'
 DeployedInstance:
   (name=Id Eq)?
   'instanceOf'
-  element=ElementRef
+  target=ElementRef
   title=String?
   body=DeployedInstanceBody?
   ';'?

@@ -7,7 +7,7 @@ import { tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
-export const importsFromPojectChecks = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
+export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
   const projects = services.shared.workspace.ProjectsManager
   return tryOrLog((el, accept) => {
     const doc = getDocument(el)
@@ -29,7 +29,7 @@ export const importsFromPojectChecks = (services: LikeC4Services): ValidationChe
   })
 }
 
-export const importedChecks = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
+export const checkImported = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
   const fqnIndex = services.likec4.FqnIndex
   // const projects = services.shared.workspace.ProjectsManager
   return tryOrLog((el, accept) => {
