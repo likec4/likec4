@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedEdge, ComputedNode, CustomRelationExpr, ViewId, ViewRule } from '../../types'
+import type { ComputedEdge, ComputedNode, ViewId, ViewRule } from '../../types'
+import type { RelationExpr } from '../../types/expression-v2'
 import { $include, $inout, $where } from '../element-view/__test__/fixture'
 import { applyCustomRelationProperties } from './applyCustomRelationProperties'
 
-type CustomRelationProperties = Omit<CustomRelationExpr['customRelation'], 'relation'>
+type CustomRelationProperties = Omit<RelationExpr.Custom['customRelation'], 'expr'>
 
 function nd(id: string): ComputedNode {
   return { id } as ComputedNode
@@ -37,10 +38,10 @@ describe('applyRelationCustomProperties', () => {
       color: 'red',
       line: 'dashed',
       head: 'dot',
-      tail: 'diamond'
+      tail: 'diamond',
     }
     const rules = [
-      $include($inout('-> support ->'), { with: propsToOverride })
+      $include($inout('-> support ->'), { with: propsToOverride }),
     ] as ViewRule[]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
@@ -48,8 +49,8 @@ describe('applyRelationCustomProperties', () => {
         ...edge,
         ...propsToOverride,
         isCustomized: true,
-        label: undefined
-      }
+        label: undefined,
+      },
     ])
   })
 
@@ -58,7 +59,7 @@ describe('applyRelationCustomProperties', () => {
     const edges = [e('1:support'), e('1:support', { tags: ['old'] })]
     const propsToOverride: CustomRelationProperties = { color: 'red' }
     const rules = [
-      $include($where('-> support ->', { tag: { eq: 'old' } }), { with: propsToOverride })
+      $include($where('-> support ->', { tag: { eq: 'old' } }), { with: propsToOverride }),
     ] as ViewRule[]
 
     expect(applyCustomRelationProperties(rules, nodes, edges)).toStrictEqual([
@@ -67,8 +68,8 @@ describe('applyRelationCustomProperties', () => {
         ...edges[1],
         color: propsToOverride.color,
         isCustomized: true,
-        label: undefined
-      }
+        label: undefined,
+      },
     ])
   })
 
@@ -79,7 +80,7 @@ describe('applyRelationCustomProperties', () => {
     const lastRuleProps: CustomRelationProperties = { color: 'green' }
     const rules = [
       $include($inout('-> support ->'), { with: firstRuleProps }),
-      $include($inout('-> support ->'), { with: lastRuleProps })
+      $include($inout('-> support ->'), { with: lastRuleProps }),
     ] as ViewRule[]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
@@ -87,8 +88,8 @@ describe('applyRelationCustomProperties', () => {
         ...edge,
         color: lastRuleProps.color,
         isCustomized: true,
-        label: undefined
-      }
+        label: undefined,
+      },
     ])
   })
 
@@ -105,7 +106,7 @@ describe('applyRelationCustomProperties', () => {
       color: 'red',
       line: 'dashed',
       head: 'dot',
-      tail: 'diamond'
+      tail: 'diamond',
     })
     const propsToOverride = ({
       description: null,
@@ -115,18 +116,18 @@ describe('applyRelationCustomProperties', () => {
       navigateTo: null,
       notes: null,
 
-      color: null
+      color: null,
     } as unknown) as CustomRelationProperties
     const rules = [
-      $include($inout('-> support ->'), { with: propsToOverride })
+      $include($inout('-> support ->'), { with: propsToOverride }),
     ] as ViewRule[]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
       {
         ...edge,
         isCustomized: true,
-        label: undefined
-      }
+        label: undefined,
+      },
     ])
   })
 
@@ -135,7 +136,7 @@ describe('applyRelationCustomProperties', () => {
     const edge = e('1:support')
     const propsToOverride: CustomRelationProperties = { title: 'some title' }
     const rules = [
-      $include($inout('-> support ->'), { with: propsToOverride })
+      $include($inout('-> support ->'), { with: propsToOverride }),
     ] as ViewRule[]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])
@@ -148,7 +149,7 @@ describe('applyRelationCustomProperties', () => {
     const edge = e('1:support')
     const propsToOverride: CustomRelationProperties = { title: 'some title' }
     const rules = [
-      $include($inout('-> support ->'), { with: propsToOverride })
+      $include($inout('-> support ->'), { with: propsToOverride }),
     ] as ViewRule[]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])
@@ -159,11 +160,11 @@ describe('applyRelationCustomProperties', () => {
   it('keeps original properties of the edge', () => {
     const nodes = [nd('1'), nd('support')]
     const edge = e('1:support', {
-      someProp: 'some value'
+      someProp: 'some value',
     })
     const propsToOverride: CustomRelationProperties = {}
     const rules = [
-      $include($inout('-> support ->'), { with: propsToOverride })
+      $include($inout('-> support ->'), { with: propsToOverride }),
     ] as ViewRule[]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])

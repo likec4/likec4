@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
 import type { AstNode, URI } from 'langium'
 import {
   filter,
@@ -26,6 +26,7 @@ import {
 } from '../../ast'
 import type { ProjectConfig } from '../../config'
 import type { LikeC4Services } from '../../module'
+import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
@@ -62,6 +63,14 @@ export class BaseParser {
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isImported(node)) {
+      const project = projectIdFrom(node)
+      const fqn = this.resolveFqn(
+        nonNullable(node.imported.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
+      )
+      this.doc.c4Imports.set(project, fqn)
+      return GlobalFqn(project, fqn)
+    }
     if (ast.isExtendElement(node)) {
       return readStrictFqn(node.element)
     }

@@ -1,7 +1,4 @@
-import { fail } from 'assert'
 import { describe, expect, it } from 'vitest'
-import type { Element } from '../../types/element'
-import type { RelationWhereExpr } from '../../types/expression'
 import type { ComputedNode } from '../../types/view'
 import { $incoming, $inout, $outgoing, $participant, $relation, $where } from '../element-view/__test__/fixture'
 import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'
@@ -115,7 +112,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(matchingRelation)).toBe(true)
@@ -128,7 +125,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
@@ -141,7 +138,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           { tag: { eq: 'aws' } },
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
@@ -154,7 +151,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           $participant('source', { tag: { eq: 'aws' } }),
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(matchingRelation)).toBe(true)
@@ -167,7 +164,7 @@ describe('relationExpressionToPredicates', () => {
         $where(
           $relation('support -> cloud'),
           $participant('source', { tag: { eq: 'aws' } }),
-        ) as RelationWhereExpr,
+        ),
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)

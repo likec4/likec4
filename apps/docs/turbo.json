@@ -7,7 +7,11 @@
     "generate": {
       "dependsOn": [
         "^generate",
-        "likec4#build"
+        "likec4#build-cli",
+        "likec4#build-react"
+      ],
+      "outputs": [
+        ".astro/**"
       ]
     },
     "build": {

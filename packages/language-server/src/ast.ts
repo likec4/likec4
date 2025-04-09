@@ -1,9 +1,9 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
-import { DocumentState } from 'langium'
-import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
+import { AstUtils, DocumentState } from 'langium'
+import { clamp, isNullish, isTruthy } from 'remeda'
+import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -11,8 +11,6 @@ import { LikeC4LanguageMetaData } from './generated/module'
 import type { IsValidFn } from './validation'
 
 export { ast }
-
-const idattr = Symbol.for('idattr')
 
 declare module 'langium' {
   export interface LangiumDocument {
@@ -24,6 +22,7 @@ declare module 'langium' {
   }
 }
 
+const idattr = Symbol.for('idattr')
 declare module './generated/ast' {
   export interface Element {
     [idattr]?: c4.Fqn | undefined
@@ -108,8 +107,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  source: c4.Fqn
-  target: c4.Fqn
+  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
@@ -125,10 +124,12 @@ export interface ParsedAstRelation {
 }
 
 // Alias for easier refactoring
-export type ParsedAstDeployment = c4.DeploymentElement
+export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.Node, ParsedAstDeployment.Instance>>
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
-  export type Instance = c4.DeployedInstance
+  export type Instance = Omit<c4.DeployedInstance, 'element'> & {
+    readonly element: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  }
 }
 export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
   astPath: string
@@ -201,6 +202,7 @@ export const ElementOps = {
 }
 
 export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
+  likec4ProjectId: c4.ProjectId
   id: c4.Fqn
 }
 
@@ -219,6 +221,7 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
+  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
@@ -248,6 +251,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Views
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
+    && !!doc.c4Imports
   )
 }
 
@@ -400,15 +404,94 @@ export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction'])
   }
 }
 
-export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
-  if (ast.isElementExpression(predicate)) {
-    return predicate
+// export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
+//   if (ast.isElementExpression(predicate)) {
+//     return predicate
+//   }
+//   if (ast.isElementPredicateWhere(predicate)) {
+//     return predicate.subject
+//   }
+//   if (ast.isElementPredicateWith(predicate)) {
+//     return elementExpressionFromPredicate(predicate.subject)
+//   }
+//   nonexhaustive(predicate)
+// }
+
+export function getViewRulePredicateContainer<T extends AstNode>(el: T):
+  | ast.ViewRulePredicate
+  | ast.DeploymentViewRulePredicate
+  | ast.DynamicViewIncludePredicate
+  | undefined
+{
+  return AstUtils.getContainerOfType(
+    el,
+    (n): n is ast.ViewRulePredicate | ast.DeploymentViewRulePredicate | ast.DynamicViewIncludePredicate => {
+      return ast.isViewRulePredicate(n) || ast.isDeploymentViewRulePredicate(n) || ast.isDynamicViewIncludePredicate(n)
+    },
+  )
+}
+
+const _isModel = (astNode: AstNode) => {
+  return ast.isModel(astNode) ||
+    ast.isElementBody(astNode) ||
+    ast.isExtendElementBody(astNode) ||
+    ast.isElementViewBody(astNode) ||
+    ast.isDynamicViewBody(astNode) ||
+    ast.isElementRef(astNode)
+}
+
+const _isDeployment = (astNode: AstNode) => {
+  return ast.isModelDeployments(astNode) ||
+    ast.isDeploymentViewBody(astNode) ||
+    ast.isDeploymentNodeBody(astNode) ||
+    ast.isExtendDeploymentBody(astNode) ||
+    ast.isDeployedInstanceBody(astNode)
+}
+
+export function isFqnRefInsideGlobals(astNode: AstNode): boolean {
+  while (true) {
+    if (_isDeployment(astNode) || _isModel(astNode)) {
+      return false
+    }
+    if (ast.isGlobals(astNode) || ast.isModelViews(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  if (ast.isElementPredicateWhere(predicate)) {
-    return predicate.subject
+}
+
+export function isFqnRefInsideModel(astNode: AstNode): boolean {
+  while (true) {
+    if (_isDeployment(astNode)) {
+      return false
+    }
+    if (_isModel(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  if (ast.isElementPredicateWith(predicate)) {
-    return elementExpressionFromPredicate(predicate.subject)
+}
+
+export function isFqnRefInsideDeployment(astNode: AstNode): boolean {
+  while (true) {
+    if (_isModel(astNode)) {
+      return false
+    }
+    if (_isDeployment(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  nonexhaustive(predicate)
 }

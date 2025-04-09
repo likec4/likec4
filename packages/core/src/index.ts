@@ -33,8 +33,6 @@ export * from './types'
 
 export * from './utils'
 
-export * as Expr from './types/expression'
-
 export {
   computeView,
   computeViews,

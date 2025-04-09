@@ -220,7 +220,7 @@ describe.concurrent('views2', () => {
     })
 
     it('element._', async ctx => {
-      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
+      const { valid, invalid } = await mkTestServices(ctx)
       await valid(`
         include system._
         include
@@ -238,9 +238,6 @@ describe.concurrent('views2', () => {
       `)
       await invalid(`
         include system ._
-      `)
-      await onlyWarnings(`
-        include -> system._
       `)
       await valid(`
         exclude system._

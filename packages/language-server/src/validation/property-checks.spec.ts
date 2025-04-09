@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe('property-checks', () => {
@@ -20,7 +20,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual([
         'Icon must be defined once',
-        'Icon must be defined once'
+        'Icon must be defined once',
       ])
     })
 
@@ -39,7 +39,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual([
         'Icon must be defined once',
-        'Icon must be defined once'
+        'Icon must be defined once',
       ])
     })
 
@@ -59,7 +59,7 @@ describe('property-checks', () => {
         }
       `)
       expect(warnings).toEqual([
-        'Redundant as icon defined on element'
+        'Redundant as icon defined on element',
       ])
     })
   })

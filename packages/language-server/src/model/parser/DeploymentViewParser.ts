@@ -75,27 +75,12 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
       const exprs = [] as c4.ExpressionV2[]
-      let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
+      let iterator: ast.Expressions | undefined = astRule.expr
       while (iterator) {
         try {
           const expr = iterator.value
           if (isNonNullish(expr) && this.isValid(expr)) {
-            switch (true) {
-              case ast.isFqnExpr(expr):
-                exprs.unshift(this.parseFqnExpr(expr))
-                break
-              case ast.isElementPredicateWhereV2(expr):
-                exprs.unshift(this.parseElementWhereExpr(expr))
-                break
-              case ast.isRelationExpr(expr):
-                exprs.unshift(this.parseRelationExpr(expr))
-                break
-              case ast.isRelationPredicateWhereV2(expr):
-                exprs.unshift(this.parseRelationWhereExpr(expr))
-                break
-              default:
-                nonexhaustive(expr)
-            }
+            exprs.unshift(this.parseExpressionV2(expr))
           }
         } catch (e) {
           logWarnError(e)

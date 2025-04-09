@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, ModelLayer, nonexhaustive } from '@likec4/core'
 import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
@@ -148,13 +148,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ViewRulePredicate {
-      const exprs = [] as c4.Expression[]
-      let predicate = astNode.predicates
+      const exprs = [] as c4.ModelLayer.Expression[]
+      let predicate = astNode.exprs
       while (predicate) {
         const { value, prev } = predicate
         try {
           if (isTruthy(value) && this.isValid(value as any)) {
-            exprs.unshift(this.parsePredicate(value))
+            const expr = this.parsePredicate(value)
+            exprs.unshift(expr)
           }
         } catch (e) {
           logWarnError(e)
@@ -164,7 +165,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         }
         predicate = prev
       }
-      return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
+      return astNode.isInclude ? { include: exprs } : { exclude: exprs }
     }
 
     parseViewRuleGlobalPredicateRef(
@@ -221,12 +222,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseRuleStyle(
       styleProperties: ast.StyleProperty[],
-      elementExpressionsIterator: ast.ElementExpressionsIterator,
+      elementExpressionsIterator: ast.FqnExpressions,
       notationProperty?: NotationProperty,
     ): c4.ViewRuleStyle {
       const styleProps = this.parseStyleProps(styleProperties)
       const notation = removeIndent(notationProperty?.value)
-      const targets = this.parseElementExpressionsIterator(elementExpressionsIterator)
+      const targets = this.parseFqnExpressions(elementExpressionsIterator).filter((e): e is ModelLayer.FqnExpr =>
+        ModelLayer.Expression.isFqnExpr(e as any)
+      )
       return {
         targets,
         ...(notation && { notation }),
@@ -325,13 +328,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate): c4.DynamicViewIncludeRule {
-      const include = [] as c4.ElementPredicateExpression[]
-      let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
+      const include = [] as c4.ModelLayer.AnyFqnExpr[]
+      let iter: ast.Expressions | undefined = astRule.exprs
       while (iter) {
         try {
           if (isNonNullish(iter.value) && this.isValid(iter.value as any)) {
-            const c4expr = this.parseElementPredicate(iter.value)
-            include.unshift(c4expr)
+            if (ast.isFqnExprOrWith(iter.value)) {
+              const c4expr = this.parseElementPredicate(iter.value)
+              include.unshift(c4expr)
+            }
           }
         } catch (e) {
           logWarnError(e)

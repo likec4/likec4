@@ -134,6 +134,7 @@ const EMPTY: ComputedLikeC4ModelData = {
     elements: {},
     relations: {},
   },
+  imports: {},
 }
 
 export const $likeC4ModelSource = deepMap({ ...EMPTY })

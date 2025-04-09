@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedNode, Expression as C4Expression } from '../../types'
-import { $expr, $where, $with, type Expression, type FakeElementIds } from '../element-view/__test__/fixture'
+import type { ComputedNode, ModelLayer } from '../../types'
+import { type Expression, type FakeElementIds, $expr, $where, $with } from '../element-view/__test__/fixture'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-const toPredicate = (expr: C4Expression) => elementExprToPredicate(expr as any)
+const toPredicate = (expr: ModelLayer.Expression) => elementExprToPredicate(expr as any)
 
 type Node = Partial<
   ComputedNode | {
@@ -28,7 +28,7 @@ function nd(
   } as ComputedNode
 }
 
-function test$expr(expr: Expression | C4Expression) {
+function test$expr(expr: Expression | ModelLayer.Expression) {
   const predicate = toPredicate($expr(expr))
   return {
     yes(node: Node) {
@@ -41,12 +41,12 @@ function test$expr(expr: Expression | C4Expression) {
 }
 
 describe('elementExprToPredicate', () => {
-  it('returns a function that always returns true for wildcard expression', () => {
+  it('returns a function that always returns true for wildcard expression', ({ expect }) => {
     const predicate = toPredicate($expr('*'))
     expect(predicate({} as any)).toBe(true)
   })
 
-  it('returns a function that checks if the node id matches the expanded element expression', () => {
+  it('returns a function that checks if the node id matches the expanded element expression', ({ expect }) => {
     const { yes, no } = test$expr('cloud._')
     yes({ id: 'cloud' })
     yes({ id: 'cloud.backend' })
@@ -56,7 +56,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches the descedant element expression', () => {
+  it('returns a function that checks if the node id matches the descedant element expression', ({ expect }) => {
     const { yes, no } = test$expr('cloud.*')
     yes({ id: 'cloud.backend.storage' })
     yes({ id: 'cloud.frontend' })
@@ -64,7 +64,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches the element ref expression', () => {
+  it('returns a function that checks if the node id matches the element ref expression', ({ expect }) => {
     const { yes, no } = test$expr('cloud.backend')
     no({ id: 'cloud.backend.graphql' })
     yes({ id: 'cloud.backend' })
@@ -72,7 +72,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node tag matches WHERE tag == clause', () => {
+  it('returns a function that checks if the node tag matches WHERE tag == clause', ({ expect }) => {
     const { yes, no } = test$expr($where('*', {
       tag: { eq: 'aws' },
     }))
@@ -80,7 +80,7 @@ describe('elementExprToPredicate', () => {
     yes({ id: 'customer', tags: ['aws'] })
   })
 
-  it('returns a function that checks if the node tag matches WHERE tag != clause', () => {
+  it('returns a function that checks if the node tag matches WHERE tag != clause', ({ expect }) => {
     const { yes, no } = test$expr($where('*', {
       tag: { neq: 'next' },
     }))
@@ -89,7 +89,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer', tags: ['next'] })
   })
 
-  it('returns a function that checks if the node id matches internal condition of WHERE', () => {
+  it('returns a function that checks if the node id matches internal condition of WHERE', ({ expect }) => {
     const { yes, no } = test$expr($where('amazon', {
       tag: { eq: 'aws' },
     }))
@@ -97,7 +97,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer', tags: ['aws'] })
   })
 
-  it('returns a function that checks if the node id matches internal condition of custom properties expression', () => {
+  it('returns a function that checks if the node id matches internal condition of custom properties expression', ({ expect }) => {
     const { yes, no } = test$expr($with(
       $where('*', { tag: { eq: 'aws' } }),
     ))

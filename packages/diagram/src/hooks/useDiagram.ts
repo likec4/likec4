@@ -2,7 +2,7 @@ import { type DiagramView, type EdgeId, type ElementNotation, type Fqn, type Nod
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useMemo, useTransition } from 'react'
+import { useMemo } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'

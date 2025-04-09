@@ -1,11 +1,12 @@
 import type * as c4 from '@likec4/core'
-import { nonexhaustive, nonNullable } from '@likec4/core'
-import { isNonNullish } from 'remeda'
-import { ast } from '../../ast'
+import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
+import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
-import { instanceRef } from '../../utils/fqnRef'
+import { projectIdFrom } from '../../utils'
+import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
-import type { Base } from './Base'
+import { type Base, removeIndent } from './Base'
 
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
 
@@ -13,10 +14,29 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
-        astNode.value.ref,
+        astNode.value?.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
+      if (ast.isImported(refValue)) {
+        const fqnRef = {
+          project: projectIdFrom(refValue),
+          model: this.resolveFqn(
+            nonNullable(refValue.imported.ref, `FqnRef is empty of imported: ${refValue.$cstNode?.text}`),
+          ),
+        }
+        this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
+        return fqnRef
+      }
       if (ast.isElement(refValue)) {
+        const imported = importsRef(astNode)
+        if (imported) {
+          const fqnRef = {
+            project: projectIdFrom(imported),
+            model: this.resolveFqn(refValue),
+          }
+          this.doc.c4Imports.set(fqnRef.project, fqnRef.model)
+          return fqnRef
+        }
         const deployedInstanceAst = instanceRef(astNode)
         if (!deployedInstanceAst) {
           return {
@@ -39,10 +59,163 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       nonexhaustive(refValue)
     }
 
+    parseExpressionV2(astNode: ast.ExpressionV2): c4.ExpressionV2 {
+      if (ast.isFqnExprOrWith(astNode)) {
+        return this.parseFqnExprOrWith(astNode)
+      }
+      if (ast.isRelationExprOrWith(astNode)) {
+        return this.parseRelationExprOrWith(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprOrWith(astNode: ast.FqnExprOrWith): c4.FqnExpr.Any {
+      if (ast.isFqnExprWith(astNode)) {
+        return this.parseFqnExprWith(astNode)
+      }
+      if (ast.isFqnExprOrWhere(astNode)) {
+        return this.parseFqnExprOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprWith(astNode: ast.FqnExprWith): c4.FqnExpr.Custom {
+      const expr = this.parseFqnExprOrWhere(astNode.subject)
+      const props = astNode.custom?.props ?? []
+      return props.reduce(
+        (acc, prop) => {
+          if (!this.isValid(prop)) {
+            return acc
+          }
+          if (ast.isNavigateToProperty(prop)) {
+            const viewId = prop.value.view.$refText
+            if (isTruthy(viewId)) {
+              acc.custom.navigateTo = viewId as c4.ViewId
+            }
+            return acc
+          }
+          if (ast.isElementStringProperty(prop)) {
+            if (isDefined(prop.value)) {
+              acc.custom[prop.key] = removeIndent(prop.value) || ''
+            }
+            return acc
+          }
+          if (ast.isIconProperty(prop)) {
+            const value = this.parseIconProperty(prop)
+            if (isDefined(value)) {
+              acc.custom[prop.key] = value
+            }
+            return acc
+          }
+          if (ast.isColorProperty(prop)) {
+            const value = toColor(prop)
+            if (isDefined(value)) {
+              acc.custom[prop.key] = value
+            }
+            return acc
+          }
+          if (ast.isShapeProperty(prop)) {
+            if (isDefined(prop.value)) {
+              acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isBorderProperty(prop)) {
+            if (isDefined(prop.value)) {
+              acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isOpacityProperty(prop)) {
+            if (isDefined(prop.value)) {
+              acc.custom[prop.key] = parseAstOpacityProperty(prop)
+            }
+            return acc
+          }
+          if (ast.isNotationProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = removeIndent(prop.value)
+            }
+            return acc
+          }
+          if (ast.isMultipleProperty(prop)) {
+            if (isBoolean(prop.value)) {
+              acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isShapeSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isTextSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isPaddingSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          nonexhaustive(prop)
+        },
+        {
+          custom: {
+            expr,
+          },
+        } as c4.FqnExpr.Custom,
+      )
+    }
+
+    parseFqnExprOrWhere(astNode: ast.FqnExprOrWhere): c4.FqnExpr.OrWhere {
+      if (ast.isFqnExprWhere(astNode)) {
+        return this.parseFqnExprWhere(astNode)
+      }
+      if (ast.isFqnExpr(astNode)) {
+        return this.parseFqnExpr(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseFqnExprWhere(astNode: ast.FqnExprWhere): c4.FqnExpr.Where {
+      invariant(!ast.isFqnExprWhere(astNode.subject), 'FqnExprWhere is not allowed as subject of FqnExprWhere')
+      return {
+        where: {
+          expr: this.parseFqnExpr(astNode.subject),
+          condition: astNode.where ? parseWhereClause(astNode.where) : {
+            kind: { neq: '--always-true--' },
+          },
+        },
+      }
+    }
+
     parseFqnExpr(astNode: ast.FqnExpr): c4.FqnExpr {
       if (ast.isWildcardExpression(astNode)) {
         return {
           wildcard: true,
+        }
+      }
+      if (ast.isElementKindExpression(astNode)) {
+        invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+        return {
+          elementKind: astNode.kind.ref.name as c4.ElementKind,
+          isEqual: astNode.isEqual,
+        }
+      }
+      if (ast.isElementTagExpression(astNode)) {
+        invariant(astNode.tag?.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+        let elementTag = astNode.tag.$refText
+        if (elementTag.startsWith('#')) {
+          elementTag = elementTag.slice(1)
+        }
+        return {
+          elementTag: elementTag as c4.Tag,
+          isEqual: astNode.isEqual,
         }
       }
       if (ast.isFqnRefExpr(astNode)) {
@@ -74,17 +247,6 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseElementWhereExpr(astNode: ast.ElementPredicateWhereV2): c4.RelationExpr {
-      return {
-        where: {
-          expr: this.parseFqnExpr(astNode.subject as ast.FqnExpr),
-          condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' },
-          },
-        },
-      }
-    }
-
     parseFqnExpressions(astNode: ast.FqnExpressions): c4.FqnExpr[] {
       const exprs = [] as c4.FqnExpr[]
       let iter: ast.FqnExpressions['prev'] = astNode
@@ -101,10 +263,83 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return exprs.reverse()
     }
 
-    parseRelationWhereExpr(astNode: ast.RelationPredicateWhereV2): c4.RelationExpr {
+    parseRelationExprOrWith(astNode: ast.RelationExprOrWith): c4.RelationExpr.Any {
+      if (ast.isRelationExprWith(astNode)) {
+        return this.parseRelationExprWith(astNode)
+      }
+      if (ast.isRelationExprOrWhere(astNode)) {
+        return this.parseRelationExprOrWhere(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseRelationExprWith(
+      astNode: ast.RelationExprWith,
+    ): c4.RelationExpr.Custom {
+      const expr = this.parseRelationExprOrWhere(astNode.subject)
+      const props = astNode.custom?.props ?? []
+      return props.reduce(
+        (acc, prop) => {
+          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
+            if (isDefined(prop.value)) {
+              acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
+            }
+            return acc
+          }
+          if (ast.isArrowProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.customRelation[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isColorProperty(prop)) {
+            const value = toColor(prop)
+            if (isTruthy(value)) {
+              acc.customRelation[prop.key] = value
+            }
+            return acc
+          }
+          if (ast.isLineProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.customRelation[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isRelationNavigateToProperty(prop)) {
+            const viewId = prop.value.view.ref?.name
+            if (isTruthy(viewId)) {
+              acc.customRelation.navigateTo = viewId as c4.ViewId
+            }
+            return acc
+          }
+          nonexhaustive(prop)
+        },
+        {
+          customRelation: {
+            expr,
+          },
+        } as c4.RelationExpr.Custom,
+      )
+    }
+
+    parseRelationExprOrWhere(astNode: ast.RelationExprOrWhere): c4.RelationExpr.OrWhere {
+      if (ast.isRelationExprWhere(astNode)) {
+        return this.parseRelationExprWhere(astNode)
+      }
+      if (ast.isRelationExpr(astNode)) {
+        return this.parseRelationExpr(astNode)
+      }
+      nonexhaustive(astNode)
+    }
+
+    parseRelationExprWhere(astNode: ast.RelationExprWhere): c4.RelationExpr.Where {
+      invariant(
+        !ast.isRelationExprWhere(astNode.subject),
+        'RelationExprWhere is not allowed as subject of RelationExprWhere',
+      )
       return {
         where: {
-          expr: this.parseRelationExpr(astNode.subject as ast.RelationExpr),
+          expr: this.parseRelationExpr(astNode.subject),
           condition: astNode.where ? parseWhereClause(astNode.where) : {
             kind: { neq: '--always-true--' },
           },
@@ -113,31 +348,28 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     }
 
     parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
-      if (ast.isRelationPredicateWhere(astNode)) {
+      switch (astNode.$type) {
+        case 'DirectedRelationExpr':
+          return {
+            source: this.parseFqnExpr(astNode.source.from),
+            target: this.parseFqnExpr(astNode.target),
+            isBidirectional: astNode.source.isBidirectional,
+          }
+        case 'InOutRelationExpr':
+          return {
+            inout: this.parseFqnExpr(astNode.inout.to),
+          }
+        case 'OutgoingRelationExpr':
+          return {
+            outgoing: this.parseFqnExpr(astNode.from),
+          }
+        case 'IncomingRelationExpr':
+          return {
+            incoming: this.parseFqnExpr(astNode.to),
+          }
+        default:
+          nonexhaustive(astNode)
       }
-      if (ast.isDirectedRelationExpr(astNode)) {
-        return {
-          source: this.parseFqnExpr(astNode.source.from),
-          target: this.parseFqnExpr(astNode.target),
-          isBidirectional: astNode.source.isBidirectional,
-        }
-      }
-      if (ast.isInOutRelationExpr(astNode)) {
-        return {
-          inout: this.parseFqnExpr(astNode.inout.to),
-        }
-      }
-      if (ast.isOutgoingRelationExpr(astNode)) {
-        return {
-          outgoing: this.parseFqnExpr(astNode.from),
-        }
-      }
-      if (ast.isIncomingRelationExpr(astNode)) {
-        return {
-          incoming: this.parseFqnExpr(astNode.to),
-        }
-      }
-      nonexhaustive(astNode)
     }
   }
 }

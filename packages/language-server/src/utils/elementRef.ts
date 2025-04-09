@@ -1,10 +1,14 @@
 import type * as c4 from '@likec4/core'
-import type { ast } from '../ast'
+import { ast } from '../ast'
 /**
  * Returns referenced AST Element
  */
 export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef) {
-  return node.el.ref
+  let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.modelElement.value.ref
+  if (el?.$type === 'Imported') {
+    el = el.imported.ref
+  }
+  return el?.$type === 'Element' ? el : undefined
 }
 
 /**

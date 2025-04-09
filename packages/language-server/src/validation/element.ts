@@ -6,7 +6,7 @@ import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
-export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Element> => {
+export const checkElement = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   const fqnIndex = services.likec4.FqnIndex
   const locator = services.workspace.AstNodeLocator
   return tryOrLog((el, accept) => {

@@ -1,6 +1,6 @@
+import { FqnRef } from '@likec4/core'
 import { type AstNode, type MaybePromise, AstUtils } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
-import stripIndent from 'strip-indent'
 import type { Hover } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
@@ -45,7 +45,10 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     if (ast.isDeployedInstance(node)) {
       const doc = AstUtils.getDocument(node)
       const instance = this.parser.forDocument(doc).parseDeployedInstance(node)
-      const el = this.locator.getParsedElement(instance.element)
+      const [projectId, fqn] = FqnRef.isImportRef(instance.element)
+        ? [instance.element.project, instance.element.model]
+        : [doc.likec4ProjectId, instance.element.model]
+      const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
       const lines = [instance.id + '  ', `instance of \`${instance.element}\``]
       if (el) {
         lines.push(`### ${el.title}`, 'element kind `' + el.kind + '` ')

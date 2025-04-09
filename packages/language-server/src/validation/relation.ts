@@ -1,62 +1,61 @@
-import { isSameHierarchy } from '@likec4/core'
-import type { ValidationCheck } from 'langium'
+import { FqnExpr, FqnRef, isSameHierarchy } from '@likec4/core'
+import { type Reference, type ValidationCheck, AstUtils } from 'langium'
 import { isDefined } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
-import { elementRef } from '../utils/elementRef'
+import { importsRef, safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
-  const fqnIndex = services.likec4.FqnIndex
+  const modelParser = services.likec4.ModelParser
+
   return tryOrLog((el, accept) => {
-    const targetEl: ast.Element | undefined = elementRef(el.target)
-    const target = targetEl && fqnIndex.getFqn(targetEl)
+    const parser = modelParser.forDocument(AstUtils.getDocument(el))
+
+    const source = safeCall(() => parser._resolveRelationSource(el))
+    if (!source) {
+      accept('error', 'Source not resolved', {
+        node: el,
+        property: 'source',
+      })
+      return
+    }
+    const target = safeCall(() => parser.parseFqnRef(el.target))
     if (!target) {
       accept('error', 'Target not resolved', {
         node: el,
-        property: 'target'
+        property: 'target',
       })
+      return
     }
-    let sourceEl
-    if (isDefined(el.source)) {
-      sourceEl = elementRef(el.source)
-      if (!sourceEl) {
-        return accept('error', 'Source not resolved', {
+
+    if (FqnRef.isImportRef(source)) {
+      if (FqnRef.isImportRef(target)) {
+        accept('warning', 'Relationship between imported elements may not be visible in origin projects', {
           node: el,
-          property: 'source'
+        })
+      } else {
+        accept('warning', 'Relationship from imported element to local element may not be visible in origin project', {
+          node: el,
+          property: 'source',
         })
       }
-    } else {
-      if (!ast.isElementBody(el.$container)) {
-        return accept('error', 'Sourceless relation must be nested', {
-          node: el
-        })
-      }
-      sourceEl = el.$container.$container
     }
 
-    const source = fqnIndex.getFqn(sourceEl)
-
-    if (!source) {
-      accept('error', 'Source not resolved', {
-        node: el
-      })
-    }
-
-    if (source && target && isSameHierarchy(source, target)) {
+    if (isSameHierarchy(FqnRef.toModelFqn(source), FqnRef.toModelFqn(target))) {
       accept('error', 'Invalid parent-child relationship', {
-        node: el
+        node: el,
       })
     }
   })
 }
 
-export const relationBodyChecks = (_services: LikeC4Services): ValidationCheck<ast.RelationBody> => {
+export const checkRelationBody = (_services: LikeC4Services): ValidationCheck<ast.RelationBody> => {
   return tryOrLog((body, accept) => {
     const relation = body.$container
     if (relation.tags?.values && body.tags?.values) {
       accept('error', 'Relation cannot have tags in both header and body', {
-        node: body.tags
+        node: body.tags,
       })
     }
   })

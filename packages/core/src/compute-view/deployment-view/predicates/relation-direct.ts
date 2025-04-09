@@ -40,6 +40,12 @@ const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.Depl
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   include: ({ expr: { source, target, isBidirectional = false }, model, stage, where }) => {
+    if (FqnExpr.isElementTagExpr(source) || FqnExpr.isElementKindExpr(source)) {
+      throw new Error('element kind and tag expressions are not supported in include')
+    }
+    if (FqnExpr.isElementTagExpr(target) || FqnExpr.isElementKindExpr(target)) {
+      throw new Error('element kind and tag expressions are not supported in include')
+    }
     invariant(!FqnExpr.isModelRef(source), 'Invalid source model ref in direct relation')
     invariant(!FqnExpr.isModelRef(target), 'Invalid target model ref in direct relation')
     const sourceIsWildcard = FqnExpr.isWildcard(source)

@@ -1,7 +1,6 @@
 export type {
   CustomColor,
   ExclusiveUnion,
-  IconUrl,
   IteratorLike,
   KeysOf,
   NonEmptyArray,
@@ -9,9 +8,22 @@ export type {
   NTuple,
   Point,
   Predicate,
-  ProjectId,
   XYPoint,
 } from './_common'
+
+export {
+  AsFqn,
+  GlobalFqn,
+  isGlobalFqn,
+  splitGlobalFqn,
+} from './scalars'
+
+export type {
+  Fqn,
+  IconUrl,
+  ProjectId,
+  Tag,
+} from './scalars'
 
 export { DeploymentElement } from './deployments'
 export type {
@@ -26,7 +38,6 @@ export type {
 } from './deployments'
 
 export {
-  AsFqn,
   BorderStyles,
   DefaultElementShape,
   DefaultPaddingSize,
@@ -43,55 +54,13 @@ export type {
   ElementKindSpecificationStyle,
   ElementShape,
   ElementStyle,
-  Fqn,
   Link,
-  Tag,
   TagSpec,
   TypedElement,
 } from './element'
 
-export {
-  isCustomElement,
-  isCustomRelationExpr,
-  isElement,
-  isElementKindExpr,
-  isElementPredicateExpr,
-  isElementRef,
-  isElementTagExpr,
-  isElementWhere,
-  isExpandedElementExpr,
-  isIncoming,
-  isInOut,
-  isOutgoing,
-  isRelation,
-  isRelationExpression,
-  isRelationPredicateExpr,
-  isRelationWhere,
-  isWildcard,
-} from './expression'
-export type {
-  CustomElementExpr,
-  CustomRelationExpr,
-  DirectRelationExpr,
-  ElementExpression,
-  ElementKindExpr,
-  ElementPredicateExpression,
-  ElementRefExpr,
-  ElementTagExpr,
-  ElementWhereExpr,
-  ExpandedElementExpr,
-  Expression,
-  IncomingExpr,
-  InOutExpr,
-  NonWilcard,
-  OutgoingExpr,
-  RelationExpression,
-  RelationPredicateExpression,
-  RelationWhereExpr,
-  WildcardExpr,
-} from './expression'
-
 export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
+export { ModelLayer } from './expression-v2-model'
 
 export type {
   GlobalDynamicPredicates,

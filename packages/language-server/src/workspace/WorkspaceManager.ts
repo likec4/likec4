@@ -24,51 +24,54 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     folders: WorkspaceFolder[],
     collector: (document: LangiumDocument) => void,
   ): Promise<void> {
-    collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
-    await super.loadAdditionalDocuments(folders, collector)
-  }
-
-  /**
-   * We override the default implementation to process project config files during the traversal.
-   * This is necessary to ensure that the project config files are loaded and processed correctly.
-   */
-  protected override async traverseFolder(
-    workspaceFolder: WorkspaceFolder,
-    folderPath: URI,
-    fileExtensions: string[],
-    collector: (document: LangiumDocument) => void,
-  ): Promise<void> {
     const projects = this.services.workspace.ProjectsManager
-    const content = await this.fileSystemProvider.readDirectory(folderPath)
-
-    const nonConfigFiles = [] as FileSystemNode[]
-    // First load project config files
-    for (const entry of content) {
+    for (const folder of folders) {
       try {
-        if (!(await projects.loadConfigFile(entry))) {
-          nonConfigFiles.push(entry)
-        }
-      } catch (error) {
-        logError(error)
-      }
-    }
-
-    // Then load other files
-    for (const entry of nonConfigFiles) {
-      try {
-        if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {
-          if (entry.isDirectory) {
-            await this.traverseFolder(workspaceFolder, entry.uri, fileExtensions, collector)
-          } else if (entry.isFile) {
-            const document = await this.langiumDocuments.getOrCreateDocument(entry.uri)
-            collector(document)
+        const content = await this.fileSystemProvider.readDirectory(URI.parse(folder.uri))
+        // First load project config files
+        for (const entry of content) {
+          try {
+            await projects.loadConfigFile(entry)
+          } catch (error) {
+            logError(error)
           }
         }
       } catch (error) {
         logError(error)
       }
     }
+
+    collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
+    await super.loadAdditionalDocuments(folders, collector)
   }
+
+  // /**
+  //  * We override the default implementation to process project config files during the traversal.
+  //  * This is necessary to ensure that the project config files are loaded and processed correctly.
+  //  */
+  // protected override async traverseFolder(
+  //   workspaceFolder: WorkspaceFolder,
+  //   folderPath: URI,
+  //   fileExtensions: string[],
+  //   collector: (document: LangiumDocument) => void,
+  // ): Promise<void> {
+
+  //   // Then load other files
+  //   for (const entry of nonConfigFiles) {
+  //     try {
+  //       if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {
+  //         if (entry.isDirectory) {
+  //           await this.traverseFolder(workspaceFolder, entry.uri, fileExtensions, collector)
+  //         } else if (entry.isFile) {
+  //           const document = await this.langiumDocuments.getOrCreateDocument(entry.uri)
+  //           collector(document)
+  //         }
+  //       }
+  //     } catch (error) {
+  //       logError(error)
+  //     }
+  //   }
+  // }
 
   /**
    * Determine whether the given folder entry shall be included while indexing the workspace.
@@ -78,6 +81,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     entry: FileSystemNode,
     fileExtensions: string[],
   ): boolean {
+    if (this.services.workspace.ProjectsManager.isConfigFile(entry)) {
+      return false
+    }
     if (entry.isFile) {
       return !this.services.workspace.ProjectsManager.checkIfExcluded(entry.uri)
     }

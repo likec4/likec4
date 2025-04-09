@@ -1,19 +1,18 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
-import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
+import type { NonEmptyArray, Point, XYPoint } from './_common'
 import {
   type BorderStyle,
   type ElementShape,
   type ElementStyle,
-  type Fqn,
   type Link,
-  type Tag,
   ElementKind,
 } from './element'
-import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { ExpressionV2, FqnExpr } from './expression-v2'
+import type { ModelLayer } from './expression-v2-model'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type { Fqn, IconUrl, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
@@ -21,12 +20,12 @@ export type ViewId<Id extends string = string> = Tagged<Id, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
-    include: Expression[]
+    include: ModelLayer.Expression[]
     exclude?: never
   }
   | {
     include?: never
-    exclude: Expression[]
+    exclude: ModelLayer.Expression[]
   }
 
 export function isViewRulePredicate(rule: DeploymentViewRule): rule is DeploymentViewRulePredicate
@@ -47,7 +46,7 @@ export function isViewRuleGlobalPredicateRef(rule: ViewRule): rule is ViewRuleGl
 }
 
 export interface ViewRuleStyle {
-  targets: ElementExpression[]
+  targets: ModelLayer.FqnExpr[]
   notation?: string
   style: ElementStyle & {
     color?: Color
@@ -198,7 +197,7 @@ export interface DynamicViewParallelSteps {
 export type DynamicViewStepOrParallel = DynamicViewStep | DynamicViewParallelSteps
 
 export type DynamicViewIncludeRule = {
-  include: ElementPredicateExpression[]
+  include: ModelLayer.AnyFqnExpr[]
 }
 
 export type DynamicViewRule =

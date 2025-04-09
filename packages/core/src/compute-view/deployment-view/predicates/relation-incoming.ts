@@ -38,6 +38,9 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
     return stage
   },
   exclude: ({ expr, model, memory, stage, where }) => {
+    if (FqnExpr.isElementTagExpr(expr.incoming) || FqnExpr.isElementKindExpr(expr.incoming)) {
+      throw new Error('element kind and tag expressions are not supported in exclude')
+    }
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.incoming)) {
       const excludedRelations = resolveAllImcomingRelations(model, expr.incoming)

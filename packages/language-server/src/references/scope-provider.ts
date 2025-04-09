@@ -1,4 +1,4 @@
-import { type ProjectId, nonexhaustive } from '@likec4/core'
+import { type Fqn, type ProjectId, nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -15,7 +15,7 @@ import {
   StreamImpl,
   StreamScope,
 } from 'langium'
-import { ast } from '../ast'
+import { type AstNodeDescriptionWithFqn, ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
 import { logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
@@ -54,29 +54,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return this.getProjectScope(projectId, referenceType, context)
         }
 
+        if (ast.isImported(container)) {
+          const projectId = projectIdFrom(container)
+          return new StreamScope(this.fqnIndex.rootElements(projectId))
+        }
+
         if (ast.isStrictFqnElementRef(container) && context.property === 'el') {
           const parent = container.parent
           if (!parent) {
             return this.getProjectScope(projectId, referenceType, context)
           }
           return new StreamScope(this.fqnIndex.directChildrenOf(projectId, readStrictFqn(parent)))
-        }
-        if (ast.isElementRef(container) && context.property === 'el') {
-          const parent = container.parent
-          if (parent) {
-            return new StreamScope(this.streamScopeElementRef(parent))
-          }
-          // if we have elementRef "this" or "it" we resolve it to the closest element
-          if (context.reference.$refText === 'this' || context.reference.$refText === 'it') {
-            const closestElement = AstUtils.getContainerOfType(container, ast.isElement)
-            if (closestElement) {
-              return new MapScope([
-                this.descriptions.createDescription(closestElement, context.reference.$refText),
-              ])
-            } else {
-              return EMPTY_SCOPE
-            }
-          }
         }
         return new StreamScope(stream(this.computeScope(projectId, context)))
       } catch (e) {
@@ -106,56 +94,33 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       const fqn = this.deploymentsIndex.getFqn(element)
       yield* this.deploymentsIndex.uniqueDescedants(projectId, fqn)
     }
-    // return new StreamImpl(
-    //   () => {
-    //     const element = of()
-    //     if (element && ast.isElement(element)) {
-    //       const projectId = projectIdFrom(element)
-    //       const fqn = this.fqnIndex.getFqn(element)
-    //       return this.fqnIndex.uniqueDescedants(projectId, fqn).iterator()
-    //     }
-    //     if (element && ast.isDeploymentNode(element)) {
-    //       const projectId = projectIdFrom(element)
-    //       const fqn = this.deploymentsIndex.getFqn(element)
-    //       return this.deploymentsIndex.uniqueDescedants(projectId, fqn).iterator()
-    //     }
-    //     return null
-    //   },
-    //   iterator => {
-    //     if (iterator) {
-    //       return iterator.next()
-    //     }
-    //     return DONE_RESULT
-    //   },
-    // )
   }
 
-  protected streamScopeElementRef(ref: ast.ElementRef): Stream<AstNodeDescription> {
-    return stream(this.genUniqueDescedants(() => ref.el.ref))
-  }
-
-  protected streamScopeExtendElement({ element }: ast.ExtendElement): Stream<AstNodeDescription> {
+  protected *genScopeExtendElement({ element }: ast.ExtendElement): Generator<AstNodeDescription> {
+    if (element.el.$nodeDescription) {
+      yield element.el.$nodeDescription
+    }
     // we make extended element resolvable inside ExtendElementBody
-    return stream([element.el.$nodeDescription])
-      .nonNullable()
-      .concat(this.genUniqueDescedants(() => elementRef(element)))
+    yield* this.genUniqueDescedants(() => elementRef(element))
   }
 
-  protected streamScopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
+  protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
       // we make "target" resolvable inside ElementView
-      return stream([viewOf.el.$nodeDescription])
-        .nonNullable()
-        .concat(this.genUniqueDescedants(() => elementRef(viewOf)))
+      if (viewOf.modelElement.value.$nodeDescription) {
+        yield viewOf.modelElement.value.$nodeDescription
+      }
+      yield* this.genUniqueDescedants(() => elementRef(viewOf))
+      return
     }
+
     if (ext) {
-      return stream([ext]).flatMap(v => {
-        const view = v.view.ref
-        return view ? this.streamScopeElementView(view) : EMPTY_STREAM
-      })
+      const view = ext.view.ref
+      if (view) {
+        yield* this.genScopeElementView(view)
+      }
     }
-    return EMPTY_STREAM
   }
 
   protected getScopeForStrictFqnRef(projectId: ProjectId, container: ast.StrictFqnRef, context: ReferenceInfo) {
@@ -170,13 +135,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     )
   }
 
-  protected streamScopeExtendDeployment({ deploymentNode }: ast.ExtendDeployment): Stream<AstNodeDescription> {
-    return stream([deploymentNode.value.$nodeDescription])
-      .nonNullable()
-      .concat(this.genUniqueDescedants(() => {
-        const target = deploymentNode.value.ref
-        return target && ast.isDeploymentNode(target) ? target : undefined
-      }))
+  protected *genScopeExtendDeployment({ deploymentNode }: ast.ExtendDeployment): Generator<AstNodeDescription> {
+    if (deploymentNode.value.$nodeDescription) {
+      yield deploymentNode.value.$nodeDescription
+    }
+    yield* this.genUniqueDescedants(() => {
+      const target = deploymentNode.value.ref
+      return target && ast.isDeploymentNode(target) ? target : undefined
+    })
   }
 
   protected streamForFqnRef(
@@ -186,17 +152,29 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   ): Stream<AstNodeDescription> {
     const parent = container.parent
     if (!parent) {
-      return stream(this.genScopeForFqnRef(projectId, container, context))
+      return stream(this.genScopeForParentlessFqnRef(projectId, container, context))
     }
     const parentRef = parent.value.ref
     if (!parentRef) {
       return EMPTY_STREAM
     }
+    if (ast.isImported(parentRef)) {
+      return stream(this.genUniqueDescedants(() => {
+        return parentRef.imported.ref
+      }))
+    }
     if (ast.isDeploymentNode(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      return stream(this.streamScopeElementRef(parentRef.element))
+      // if (ast.isElement(target)) {
+      return stream(this.genUniqueDescedants(() => {
+        const target = parentRef.target.modelElement.value.ref
+        if (ast.isImported(target)) {
+          return target.imported.ref
+        }
+        return ast.isElement(target) ? target : undefined
+      }))
     }
     if (ast.isElement(parentRef)) {
       return stream(this.genUniqueDescedants(() => parentRef))
@@ -204,20 +182,40 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return nonexhaustive(parentRef)
   }
 
-  protected *genScopeForFqnRef(projectId: ProjectId, container: ast.FqnRef, context: ReferenceInfo) {
-    // First preference for deployment nodes
-    yield* this.computeScope(projectId, context, ast.DeploymentNode)
-    // Second preference for deployed instances
-    yield* this.computeScope(projectId, context, ast.DeployedInstance)
-
-    // Third preference for elements if we are in deployment view
+  protected *genScopeForParentlessFqnRef(
+    projectId: ProjectId,
+    container: ast.FqnRef,
+    context: ReferenceInfo,
+  ): Generator<AstNodeDescription> {
     if (
-      AstUtils.hasContainerOfType(container, ast.isDeploymentView)
+      AstUtils.hasContainerOfType(container, ast.isElementRef) ||
+      isFqnRefInsideModel(container)
     ) {
+      // Inside model scope we only need to resolve elements
       yield* this.computeScope(projectId, context, ast.Element)
+    } else if (isFqnRefInsideGlobals(container)) {
+      yield* this.computeScope(projectId, context, ast.Element)
+      yield* this.computeScope(projectId, context, ast.DeploymentNode)
+      yield* this.computeScope(projectId, context, ast.DeployedInstance)
+    } else {
+      // First preference for deployment nodes
+      yield* this.computeScope(projectId, context, ast.DeploymentNode)
+      // Second preference for deployed instances
+      yield* this.computeScope(projectId, context, ast.DeployedInstance)
+
+      // Third preference for elements if we are in deployment view
+      if (AstUtils.hasContainerOfType(container, ast.isDeploymentViewBody)) {
+        yield* this.computeScope(projectId, context, ast.Element)
+      }
+    }
+
+    const doc = getDocument(container)
+    const precomputed = doc.precomputedScopes
+    // Fourth preference for imported models
+    if (precomputed) {
+      yield* precomputed.values().filter(nd => this.reflection.isSubtype(nd.type, ast.Imported))
     }
   }
-
   /**
    * Computes the scope for a given reference context.
    *
@@ -233,7 +231,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     projectId: ProjectId,
     context: ReferenceInfo,
     referenceType = this.reflection.getReferenceType(context),
-  ) {
+  ): Generator<AstNodeDescription> {
     const isElementReference = this.reflection.isSubtype(referenceType, ast.Element)
     const isDeploymentReference = this.reflection.isSubtype(referenceType, ast.DeploymentElement)
 
@@ -254,13 +252,13 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
 
       if (isDeploymentReference && ast.isExtendDeploymentBody(container)) {
-        yield* this.streamScopeExtendDeployment(container.$container)
+        yield* this.genScopeExtendDeployment(container.$container)
       }
       if (isElementReference && ast.isExtendElementBody(container)) {
-        yield* this.streamScopeExtendElement(container.$container)
+        yield* this.genScopeExtendElement(container.$container)
       }
       if (isElementReference && ast.isElementViewBody(container)) {
-        yield* this.streamScopeElementView(container.$container)
+        yield* this.genScopeElementView(container.$container)
       }
       container = container.$container
     }
