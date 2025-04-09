@@ -1,3 +1,19 @@
+# [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
+
+
+### Bug Fixes
+
+* default exclusion pattern for node_modules from `node_modules` to `**/node_modules/**/*` ([9ae7839](https://github.com/likec4/likec4/commit/9ae78393d80f8d9c989149df4d06646ffbffdc13))
+* **deps:** update dependency canvaskit-wasm to ^0.40.0 ([#1805](https://github.com/likec4/likec4/issues/1805)) ([387821b](https://github.com/likec4/likec4/commit/387821b5a73b44fec6c92f7f173537d9b6582ba0))
+
+
+### Features
+
+*  import from projects ([#1820](https://github.com/likec4/likec4/issues/1820)) ([273171f](https://github.com/likec4/likec4/commit/273171fbbad11467f7d9409cc10c1d0b9707f15c))
+* exclude files from the project ([#1801](https://github.com/likec4/likec4/issues/1801)) ([f09fe35](https://github.com/likec4/likec4/commit/f09fe350cd91bbe69c527aa2283d2927f9d75861))
+
+
+
 ## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
 
 
