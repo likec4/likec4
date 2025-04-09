@@ -66,8 +66,8 @@ catalogs:
       specifier: ^0.14.11
       version: 0.14.11
     wrangler:
-      specifier: 4.6.0
-      version: 4.6.0
+      specifier: 4.7.0
+      version: 4.7.0
   esbuild:
     esbuild-node-externals:
       specifier: ^1.18.0
@@ -224,7 +224,7 @@ overrides:
   vscode-languageserver-types: 3.17.5
   vscode-oniguruma: 2.0.1
   vscode-uri: 3.1.0
-  type-fest: ^4.39.0
+  type-fest: ^4.39.1
   mnemonist: 0.40.3
 
 patchedDependencies:
@@ -353,7 +353,7 @@ importers:
     dependencies:
       '@cloudflare/vite-plugin':
         specifier: 0.1.19
-        version: 0.1.19(vite@6.2.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(workerd@1.20250321.0)(wrangler@4.6.0)
+        version: 0.1.19(vite@6.2.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(workerd@1.20250321.0)(wrangler@4.7.0)
       '@codingame/esbuild-import-meta-url-plugin':
         specifier: ~1.0.3
         version: 1.0.3
@@ -538,7 +538,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.0
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       typescript:
         specifier: 'catalog:'
@@ -590,7 +590,7 @@ importers:
         version: 0.14.11
       wrangler:
         specifier: 'catalog:'
-        version: 4.6.0
+        version: 4.7.0
       xstate:
         specifier: ^5.19.2
         version: 5.19.2
@@ -598,7 +598,7 @@ importers:
   packages/core:
     dependencies:
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
     devDependencies:
       '@dagrejs/dagre':
@@ -731,7 +731,7 @@ importers:
         specifier: catalog:utils
         version: 2.21.2
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       xstate:
         specifier: ^5.19.2
@@ -932,7 +932,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.0
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       typescript:
         specifier: 'catalog:'
@@ -1004,7 +1004,7 @@ importers:
         specifier: ^1.8.2
         version: 1.8.2
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       which:
         specifier: ^5.0.0
@@ -1062,7 +1062,7 @@ importers:
         specifier: catalog:vite
         version: 4.39.0
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       vite:
         specifier: catalog:vite
@@ -1432,7 +1432,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.0
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       typescript:
         specifier: 'catalog:'
@@ -1558,7 +1558,7 @@ importers:
         specifier: 'catalog:'
         version: 4.19.3
       type-fest:
-        specifier: ^4.39.0
+        specifier: ^4.39.1
         version: 4.39.1
       typescript:
         specifier: 'catalog:'
@@ -8212,8 +8212,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.6.0:
-    resolution: {integrity: sha512-2a2ZD0adlvxQ1H+nRKkuuD0dkgaYTOPlC7gBolItk5TfqOSliEV4m6DtZtKtJp33ioM+Uy6TlEWPpA2TrDveEQ==}
+  wrangler@4.7.0:
+    resolution: {integrity: sha512-5LoyNxpPG8K0kcU43Ossyj7+Hq78v8BNtu7ZNNSxDOUcairMEDwcbrbUOqzu/iM4yHiri5wCjl4Ja57fKED/Sg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
@@ -8730,7 +8730,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20250321.0
 
-  '@cloudflare/vite-plugin@0.1.19(vite@6.2.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(workerd@1.20250321.0)(wrangler@4.6.0)':
+  '@cloudflare/vite-plugin@0.1.19(vite@6.2.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(workerd@1.20250321.0)(wrangler@4.7.0)':
     dependencies:
       '@cloudflare/unenv-preset': 2.3.1(unenv@2.0.0-rc.15)(workerd@1.20250321.0)
       '@hattip/adapter-node': 0.0.49
@@ -8739,7 +8739,7 @@ snapshots:
       tinyglobby: 0.2.12
       unenv: 2.0.0-rc.15
       vite: 6.2.5(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
-      wrangler: 4.6.0
+      wrangler: 4.7.0
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -16546,7 +16546,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250321.0
       '@cloudflare/workerd-windows-64': 1.20250321.0
 
-  wrangler@4.6.0:
+  wrangler@4.7.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.3.1(unenv@2.0.0-rc.15)(workerd@1.20250321.0)
