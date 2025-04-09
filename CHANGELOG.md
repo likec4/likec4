@@ -1,3 +1,37 @@
+# [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
+
+This release improves multi-projects support
+
+### 🚀 Features
+
+* **imports**  
+  Reference elements from other projects
+  
+  ```zig
+  import { serviceA } from 'projectA'
+  
+  model {
+    serviceB = service {
+      -> serviceA.api 'calls serviceA'
+    }
+  }
+  ```
+
+* **excludes**  
+  Exclude files in the config file
+  
+  ```json
+  {
+    "name": "project-name",
+    "exclude": [
+      "**/node_modules/**/*"
+    ]
+  }
+  ```
+
+[📖 Read the documentation](https://likec4.dev/dsl/projects/)  
+
+
 ## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
 
 
