@@ -165,8 +165,8 @@ catalogs:
       specifier: ^2.21.2
       version: 2.21.2
     std-env:
-      specifier: ^3.8.1
-      version: 3.8.1
+      specifier: ^3.9.0
+      version: 3.9.0
     valibot:
       specifier: ^1.0.0
       version: 1.0.0
@@ -527,7 +527,7 @@ importers:
         version: 2.21.2
       std-env:
         specifier: catalog:utils
-        version: 3.8.1
+        version: 3.9.0
       strip-indent:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1256,7 +1256,7 @@ importers:
         version: 7.7.1
       std-env:
         specifier: catalog:utils
-        version: 3.8.1
+        version: 3.9.0
       strip-indent:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1335,7 +1335,7 @@ importers:
         version: 1.1.1
       std-env:
         specifier: catalog:utils
-        version: 3.8.1
+        version: 3.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1421,7 +1421,7 @@ importers:
         version: 2.21.2
       std-env:
         specifier: catalog:utils
-        version: 3.8.1
+        version: 3.9.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1645,7 +1645,7 @@ importers:
         version: 2.21.2
       std-env:
         specifier: catalog:utils
-        version: 3.8.1
+        version: 3.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -7332,6 +7332,9 @@ packages:
 
   std-env@3.8.1:
     resolution: {integrity: sha512-vj5lIj3Mwf9D79hBkltk5qmkFI+biIKWS2IBxEyEU3AX1tUf7AoL8nSazCOiiqQsGKIq01SClsKEzweu34uwvA==}
+
+  std-env@3.9.0:
+    resolution: {integrity: sha512-UGvjygr6F6tpH7o2qyqR6QYpwraIjKSdtzyBdyytFOHmPZY917kwdwLG0RbOjWOnKmnm3PeHjaoLLMie7kPLQw==}
 
   stoppable@1.1.0:
     resolution: {integrity: sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==}
@@ -15730,6 +15733,8 @@ snapshots:
       '@astrojs/starlight': 0.33.0(astro@5.6.1(@types/node@20.17.28)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.39.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.3)(yaml@2.7.0))
 
   std-env@3.8.1: {}
+
+  std-env@3.9.0: {}
 
   stoppable@1.1.0: {}
 
