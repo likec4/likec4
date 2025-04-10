@@ -136,7 +136,7 @@
     "std-env": "catalog:utils",
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
-    "ufo": "^1.5.4",
+    "ufo": "^1.6.1",
     "valibot": "catalog:utils",
     "vite": "catalog:vite",
     "vite-plugin-node-polyfills": "catalog:vite",

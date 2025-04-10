@@ -185,7 +185,7 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "^1.5.4",
+    "ufo": "^1.6.1",
     "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.0.0",
