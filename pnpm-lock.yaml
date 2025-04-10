@@ -385,8 +385,8 @@ importers:
         specifier: 14.0.6
         version: 14.0.6
       '@hono/oauth-providers':
-        specifier: ^0.7.0
-        version: 0.7.0(hono@4.7.5)
+        specifier: ^0.7.1
+        version: 0.7.1(hono@4.7.5)
       '@hono/valibot-validator':
         specifier: ^0.5.2
         version: 0.5.2(hono@4.7.5)(valibot@1.0.0(typescript@5.8.3))
@@ -2613,8 +2613,8 @@ packages:
     resolution: {integrity: sha512-AgJgKLooZyQnzMfoFg5Mo/aHM+HGBC9ExpXIjNqGimYTRgNbL/K7X5EM1kR2JY90BNKk9lo6Usq1T/nWFdT7TQ==}
     hasBin: true
 
-  '@hono/oauth-providers@0.7.0':
-    resolution: {integrity: sha512-TKaIKUCzkyM3VmpFKoakx81/83sl1DXcbAOLCKN/7sK5ODwDKKLo309KMJw+se42BL4VM6k/ysyqSZwgNonDTw==}
+  '@hono/oauth-providers@0.7.1':
+    resolution: {integrity: sha512-NJ9weiJ5Af+/Waq0q/DIMofxkKlK32pVl7/iXh/Q0dumRKftn1A41h3d5clsNtwNsKfADErtshbdD1Q89/bFag==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
       hono: '>=3.*'
@@ -10007,7 +10007,7 @@ snapshots:
       cac: 6.7.14
       mime-types: 2.1.35
 
-  '@hono/oauth-providers@0.7.0(hono@4.7.5)':
+  '@hono/oauth-providers@0.7.1(hono@4.7.5)':
     dependencies:
       hono: 4.7.5
 
