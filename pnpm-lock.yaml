@@ -84,23 +84,23 @@ catalogs:
       version: 3.4.0
   mantine:
     '@mantine/colors-generator':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
     '@mantine/core':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
     '@mantine/hooks':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
     '@mantine/modals':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
     '@mantine/notifications':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
     '@mantine/vanilla-extract':
-      specifier: 7.17.3
-      version: 7.17.3
+      specifier: 7.17.4
+      version: 7.17.4
   react:
     '@nanostores/react':
       specifier: 0.8.4
@@ -416,16 +416,16 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 7.17.3(react@19.0.0)
+        version: 7.17.4(react@19.0.0)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
@@ -609,7 +609,7 @@ importers:
         version: link:../tsconfig
       '@mantine/colors-generator':
         specifier: catalog:mantine
-        version: 7.17.3(chroma-js@3.1.2)
+        version: 7.17.4(chroma-js@3.1.2)
       '@types/natural-compare-lite':
         specifier: ^1.4.2
         version: 1.4.2
@@ -675,10 +675,10 @@ importers:
         version: link:../../styled-system/styles
       '@mantine/core':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 7.17.3(react@19.0.0)
+        version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
@@ -1103,10 +1103,10 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 7.17.3(react@19.0.0)
+        version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
@@ -1487,10 +1487,10 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 7.17.3(react@19.0.0)
+        version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
@@ -1587,10 +1587,10 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        version: 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -2854,48 +2854,48 @@ packages:
   '@logtape/logtape@0.9.0':
     resolution: {integrity: sha512-e4IlinGvjzp/+nSvsXB1OPSYNiuVEEJy8aMQqbveTcJoLVRsJK7nH0xVh/EdNTjRBoioJbUT/jzxaAifxf1VyA==}
 
-  '@mantine/colors-generator@7.17.3':
-    resolution: {integrity: sha512-d/noQeEyeiuuQyl1dPdEdOihMgUDwPSnYGz60eJOCc4HfOY8zNZLgfsfZf7d+1cIlySNbqK9GARUunZyfSiu3g==}
+  '@mantine/colors-generator@7.17.4':
+    resolution: {integrity: sha512-1KqfD0hnC76i43HnaAkSrT3szXC/0crfa450hx4cJqjBf5ZZ9pFWwB8qnoubtsmMpdRlHjDBhPRn/j22m1vpTg==}
     peerDependencies:
       chroma-js: '>=2.4.2'
 
-  '@mantine/core@7.17.3':
-    resolution: {integrity: sha512-N/AfV5eMnfEMx9WzI7AU5pNFBEzAfT/KtE2XDKS+0ht6RifUmolIxyIvoGMYz2yUEsCBMJZqmBq33Rabf5W7Ug==}
+  '@mantine/core@7.17.4':
+    resolution: {integrity: sha512-Ea4M/98jxgIWCuxCdM0YIotVYjfLTGQsfIA6zDg0LsClgjo/ZLnnh4zbi+bLNgM+GGjP4ju7gv4MZvaTKuLO8g==}
     peerDependencies:
-      '@mantine/hooks': 7.17.3
+      '@mantine/hooks': 7.17.4
       react: ^19.0.0
       react-dom: ^19.0.0
 
-  '@mantine/hooks@7.17.3':
-    resolution: {integrity: sha512-6o65Rbfl8jd1C1nF9icvungqL0qZViEOmrZgkyKXxBYkC3x91fz4zftwQgNjt1tZHWDNO6Bo4GpRjJyAdwl48g==}
+  '@mantine/hooks@7.17.4':
+    resolution: {integrity: sha512-PBcJxDAfGm8k1/JJmaDcxzRVQ3JSE1iXGktbgGz+qEOJmCxwbbAYe+CtGFFgi1xX2bPZ+7dtRr/+XFhnKtt/aw==}
     peerDependencies:
       react: ^19.0.0
 
-  '@mantine/modals@7.17.3':
-    resolution: {integrity: sha512-ZwNDTmfqyVRPUNl+vtBDbgZ9aVeQw6H+KLDSZxEsIYjc8p6u7FgCQ/FaBpsJOf//Oc7gHTLF0al27AqvW8jmOA==}
+  '@mantine/modals@7.17.4':
+    resolution: {integrity: sha512-KQYzLCQRBs9bq0svdpSda8fgxmqrwEy4tgvoXpmlr02srsyySvpOxhXmAUZsjPZapG+D97sYi7BscVZKZoIqgA==}
     peerDependencies:
-      '@mantine/core': 7.17.3
-      '@mantine/hooks': 7.17.3
-      react: ^19.0.0
-      react-dom: ^19.0.0
-
-  '@mantine/notifications@7.17.3':
-    resolution: {integrity: sha512-MqakDqu/CZzO4arZGpXs3TmGTajqL4xm28vtqW4qWFSU5HZWQ4EosqipqvIJ+swC6YbxNiWvFcfnxxPlHdYk9g==}
-    peerDependencies:
-      '@mantine/core': 7.17.3
-      '@mantine/hooks': 7.17.3
+      '@mantine/core': 7.17.4
+      '@mantine/hooks': 7.17.4
       react: ^19.0.0
       react-dom: ^19.0.0
 
-  '@mantine/store@7.17.3':
-    resolution: {integrity: sha512-wXQXe/Ljv2N6TDRsoVwOHmTGZey7Nt/SS6VeeMujKeNnAybPPXaP1jIbN50MKJoDS4qVPCHJNaHwVKIgMur2aQ==}
+  '@mantine/notifications@7.17.4':
+    resolution: {integrity: sha512-YxNmnZSfIG69lPMFItOZZsizYL3DsOLVUSPkkJILG5pW2F798dc4IA5mhRIbdmzDEx0ArWHJ7gsdd3Vmm5ubPg==}
+    peerDependencies:
+      '@mantine/core': 7.17.4
+      '@mantine/hooks': 7.17.4
+      react: ^19.0.0
+      react-dom: ^19.0.0
+
+  '@mantine/store@7.17.4':
+    resolution: {integrity: sha512-a/EecHPtYVxhu3oMX9uTymGolmOBWxW8Qs4fLCjiazEJbS1ScI4lS71GK/SuOa2rGuuOJkaotpyritbx3paIRg==}
     peerDependencies:
       react: ^19.0.0
 
-  '@mantine/vanilla-extract@7.17.3':
-    resolution: {integrity: sha512-eAdcYQhsEDaAKiPP3hS+ve9VYdfjfAC+AoFthlp2jxnm5NLVvSoKGXK927Dhvmk3QRJUMtGwwf9I4zJ1Q7T9Xw==}
+  '@mantine/vanilla-extract@7.17.4':
+    resolution: {integrity: sha512-APMC+lOKmfoU8ysGwFIgMV76b7xQh5xXJ2MK+UNckmap6gLSLR89RDC17Cwg4dHx/GApK+NwyzWTWPEZbuQOfg==}
     peerDependencies:
-      '@mantine/core': 7.17.3
+      '@mantine/core': 7.17.4
 
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
@@ -6937,8 +6937,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-textarea-autosize@8.5.6:
-    resolution: {integrity: sha512-aT3ioKXMa8f6zHYGebhbdMD2L00tKeRX1zuVuDx9YQK/JLLRSaSxq3ugECEmUB9z2kvk6bFSIoRHLkkUv0RJiw==}
+  react-textarea-autosize@8.5.9:
+    resolution: {integrity: sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^19.0.0
@@ -10157,51 +10157,51 @@ snapshots:
 
   '@logtape/logtape@0.9.0': {}
 
-  '@mantine/colors-generator@7.17.3(chroma-js@3.1.2)':
+  '@mantine/colors-generator@7.17.4(chroma-js@3.1.2)':
     dependencies:
       chroma-js: 3.1.2
 
-  '@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
       clsx: 2.1.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       react-number-format: 5.4.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-remove-scroll: 2.6.3(@types/react@19.0.12)(react@19.0.0)
-      react-textarea-autosize: 8.5.6(@types/react@19.0.12)(react@19.0.0)
+      react-textarea-autosize: 8.5.9(@types/react@19.0.12)(react@19.0.0)
       type-fest: 4.39.1
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@7.17.3(react@19.0.0)':
+  '@mantine/hooks@7.17.4(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
-  '@mantine/modals@7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@mantine/modals@7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@mantine/core': 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
+      '@mantine/core': 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@mantine/notifications@7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@mantine/notifications@7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@mantine/core': 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
-      '@mantine/store': 7.17.3(react@19.0.0)
+      '@mantine/core': 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
+      '@mantine/store': 7.17.4(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       react-transition-group: 4.4.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
-  '@mantine/store@7.17.3(react@19.0.0)':
+  '@mantine/store@7.17.4(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
-  '@mantine/vanilla-extract@7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
+  '@mantine/vanilla-extract@7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
-      '@mantine/core': 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/core': 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
   '@mdx-js/mdx@3.1.0(acorn@8.14.1)':
     dependencies:
@@ -15180,7 +15180,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.0.12
 
-  react-textarea-autosize@8.5.6(@types/react@19.0.12)(react@19.0.0):
+  react-textarea-autosize@8.5.9(@types/react@19.0.12)(react@19.0.0):
     dependencies:
       '@babel/runtime': 7.26.9
       react: 19.0.0

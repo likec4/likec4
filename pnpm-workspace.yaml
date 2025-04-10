@@ -49,12 +49,12 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": "7.17.3"
-    "@mantine/hooks": "7.17.3"
-    "@mantine/vanilla-extract": "7.17.3"
-    "@mantine/modals": "7.17.3"
-    "@mantine/notifications": "7.17.3"
-    "@mantine/colors-generator": "7.17.3"
+    "@mantine/core": "7.17.4"
+    "@mantine/hooks": "7.17.4"
+    "@mantine/vanilla-extract": "7.17.4"
+    "@mantine/modals": "7.17.4"
+    "@mantine/notifications": "7.17.4"
+    "@mantine/colors-generator": "7.17.4"
   vite:
     "@vitejs/plugin-react": "^4.3.4"
     vite: "^6.2.5"
