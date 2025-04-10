@@ -386,10 +386,10 @@ importers:
         version: 14.0.6
       '@hono/oauth-providers':
         specifier: ^0.7.1
-        version: 0.7.1(hono@4.7.5)
+        version: 0.7.1(hono@4.7.6)
       '@hono/valibot-validator':
         specifier: ^0.5.2
-        version: 0.5.2(hono@4.7.5)(valibot@1.0.0(typescript@5.8.3))
+        version: 0.5.2(hono@4.7.6)(valibot@1.0.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
@@ -487,8 +487,8 @@ importers:
         specifier: catalog:react
         version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       hono:
-        specifier: ^4.7.5
-        version: 4.7.5
+        specifier: ^4.7.6
+        version: 4.7.6
       hono-sessions:
         specifier: ^0.7.2
         version: 0.7.2
@@ -5258,8 +5258,8 @@ packages:
   hono-sessions@0.7.2:
     resolution: {integrity: sha512-QuoDqovzibnIYK0E3G7Pfoe63mYsyY8WgR1wmAuRDWpxpIglDVxShBn4VveFC+VGZummY407XeImoJhUpGcJMg==}
 
-  hono@4.7.5:
-    resolution: {integrity: sha512-fDOK5W2C1vZACsgLONigdZTRZxuBqFtcKh7bUQ5cVSbwI2RWjloJDcgFOVzbQrlI6pCmhlTsVYZ7zpLj4m4qMQ==}
+  hono@4.7.6:
+    resolution: {integrity: sha512-564rVzELU+9BRqqx5k8sT2NFwGD3I3Vifdb6P7CmM6FiarOSY+fDC+6B+k9wcCb86ReoayteZP2ki0cRLN1jbw==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -9949,13 +9949,13 @@ snapshots:
       cac: 6.7.14
       mime-types: 2.1.35
 
-  '@hono/oauth-providers@0.7.1(hono@4.7.5)':
+  '@hono/oauth-providers@0.7.1(hono@4.7.6)':
     dependencies:
-      hono: 4.7.5
+      hono: 4.7.6
 
-  '@hono/valibot-validator@0.5.2(hono@4.7.5)(valibot@1.0.0(typescript@5.8.3))':
+  '@hono/valibot-validator@0.5.2(hono@4.7.6)(valibot@1.0.0(typescript@5.8.3))':
     dependencies:
-      hono: 4.7.5
+      hono: 4.7.6
       valibot: 1.0.0(typescript@5.8.3)
 
   '@hpcc-js/wasm-graphviz@1.7.0': {}
@@ -13279,10 +13279,10 @@ snapshots:
 
   hono-sessions@0.7.2:
     dependencies:
-      hono: 4.7.5
+      hono: 4.7.6
       iron-webcrypto: 1.2.1
 
-  hono@4.7.5: {}
+  hono@4.7.6: {}
 
   hookable@5.5.3: {}
 
