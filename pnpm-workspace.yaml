@@ -95,7 +95,7 @@ catalogs:
     astro: "5.6.1"
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
-    starlight-links-validator: "^0.15.0"
+    starlight-links-validator: "^0.15.1"
     starlight-package-managers: "^0.10.0"
     shiki: "^3.2.1"
 
