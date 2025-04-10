@@ -72,7 +72,7 @@
   "type": "module",
   "packageManager": "pnpm@10.7.1",
   "dependencies": {
-    "@cloudflare/vite-plugin": "0.1.19",
+    "@cloudflare/vite-plugin": "1.0.0",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
     "@codingame/monaco-vscode-editor-api": "14.0.6",
     "@codingame/monaco-vscode-editor-service-override": "14.0.6",
