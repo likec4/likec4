@@ -529,7 +529,6 @@ export const diagramMachine = setup({
             type: 'xyflow:fitDiagram',
             params: { duration: 0 },
           },
-          'startSyncLayout',
           assign(({ context }) => ({
             navigationHistory: {
               currentIndex: 0,
@@ -540,6 +539,7 @@ export const diagramMachine = setup({
               }],
             },
           })),
+          'startSyncLayout',
         ],
         target: 'ready',
       }, {

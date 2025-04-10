@@ -1,4 +1,4 @@
-import { type DiagramEdge, type DiagramView, ifind, invariant, isAncestor, nonNullable } from '@likec4/core'
+import { type DiagramEdge, type DiagramView, invariant, isAncestor, nonNullable } from '@likec4/core'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
@@ -8,7 +8,7 @@ import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef } from 'react'
-import { first } from 'remeda'
+import { find, isTruthy } from 'remeda'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
@@ -66,10 +66,10 @@ export function RelationshipDetails({ actorRef }: RelationshipDetailsProps) {
       <ReactFlowProvider {...initialRef.current}>
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <AnimatePresence>
-            <RelationshipDetailsInner />
+            <RelationshipDetailsInner key="xyflow" />
+            <SyncRelationshipDetailsXYFlow key="sync" />
           </AnimatePresence>
         </LayoutGroup>
-        <SyncRelationshipDetailsXYFlow />
       </ReactFlowProvider>
     </RelationshipDetailsActorContext.Provider>
   )
@@ -80,22 +80,24 @@ const selectSubject = (state: RelationshipDetailsSnapshot) => ({
   viewId: state.context.viewId,
 })
 
-function SyncRelationshipDetailsXYFlow() {
+const SyncRelationshipDetailsXYFlow = memo(() => {
   const actor = useRelationshipDetailsActor()
   const subject = useSelector(actor, selectSubject, deepEqual)
   const likec4model = useLikeC4Model(true)
   const view = likec4model.findView(subject.viewId) ?? null
   const data = useMemo(() => {
     let data: RelationshipDetailsViewData
-    if ('edgeId' in subject) {
+    if ('edgeId' in subject && isTruthy(subject.edgeId)) {
       invariant(view, `view ${subject.viewId} not found`)
       const edge = nonNullable(view.findEdge(subject.edgeId), `edge ${subject.edgeId} not found in ${subject.viewId}`)
       data = computeEdgeDetailsViewData([edge.id], view)
-    } else {
+    } else if (!!subject.source && !!subject.target) {
       data = computeRelationshipDetailsViewData({
         source: likec4model.element(subject.source),
         target: likec4model.element(subject.target),
       })
+    } else {
+      return null
     }
     return layoutRelationshipDetails(data, view)
   }, [
@@ -114,11 +116,13 @@ function SyncRelationshipDetailsXYFlow() {
   }, [store, instance.viewportInitialized, actor])
 
   useEffect(() => {
-    actor.send({ type: 'update.layoutData', data })
+    if (data !== null) {
+      actor.send({ type: 'update.layoutData', data })
+    }
   }, [data, actor])
 
   return null
-}
+})
 
 const selector = ({ context }: RelationshipDetailsSnapshot) => ({
   // subject: context.subject,
@@ -227,13 +231,18 @@ const TopLeftPanel = memo(() => {
     return null
   }
 
-  let edge = ('edgeId' in subject)
-    ? view.findEdge(subject.edgeId)
-    : ifind(view.edges(), (e) => e.source.element?.id === subject.source && e.target.element?.id === subject.target)
-      ?? ifind(view.edges(), (e) => {
-        return (e.source.element?.id === subject.source || isAncestor(e.source.element?.id ?? '--', subject.source)) &&
-          (e.target.element?.id === subject.target || isAncestor(e.target.element?.id ?? '', subject.target))
+  const edges = [...view.edges()]
+
+  let edge = ('edgeId' in subject && isTruthy(subject.edgeId))
+    ? edges.find(e => e.id === subject.edgeId)
+    : (
+      find(edges, (e) => e.source.element?.id === subject.source && e.target.element?.id === subject.target)
+      || find(edges, (e) => {
+        return (e.source.element?.id === subject.source ||
+          isAncestor(e.source.element?.id ?? '--', subject.source ?? '__')) &&
+          (e.target.element?.id === subject.target || isAncestor(e.target.element?.id ?? '', subject.target ?? '__'))
       })
+    )
   if (!edge) {
     return null
   }

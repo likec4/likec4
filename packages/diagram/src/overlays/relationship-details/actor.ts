@@ -1,6 +1,5 @@
 import {
   type BBox,
-  type DiagramView,
   type EdgeId,
   type ExclusiveUnion,
   type Fqn,
@@ -55,6 +54,8 @@ export type Input = ExclusiveUnion<{
 
 type Subject = {
   edgeId: EdgeId
+  source?: never
+  target?: never
   // relationships: null
 } | {
   source: Fqn

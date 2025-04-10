@@ -26,20 +26,6 @@ export const SelectEdge = ({
 }) => {
   const browser = useRelationshipDetails()
   const viewport = useRef<HTMLDivElement>(null)
-  const portalProps = useMantinePortalProps()
-  // const data = useLikeC4ElementsTree(scope === 'view' ? viewId : undefined)
-  // const tree = useTree({
-  //   multiple: false
-  // })
-
-  // useEffect(() => {
-  //   ancestorsFqn(subject.id).reverse().forEach(id => {
-  //     tree.expand(id)
-  //   })
-  //   tree.select(subject.id)
-  // }, [subject.id])
-
-  const theme = useComputedColorScheme()
 
   const edgeSource = view.nodes.find(n => n.id === edge.source)
   const edgeTarget = view.nodes.find(n => n.id === edge.target)

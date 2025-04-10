@@ -20,8 +20,6 @@ type GraphvizSvgOut = {
   svg: string
 }
 
-const logger = rootLogger.getChild('Views')
-
 export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
   computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
@@ -69,28 +67,39 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (views.length === 0) {
       return []
     }
+    const logger = rootLogger.getChild(['views', projectId ?? ''])
     logger.debug`layoutAll: ${views.length} views`
     const results = [] as GraphvizOut[]
     const tasks = [] as Promise<GraphvizOut>[]
     for (const view of views) {
-      this.viewsWithReportedErrors.delete(view.id)
-      tasks.push(
-        this.layouter.layout(view)
-          .then(result => {
-            this.viewsWithReportedErrors.delete(view.id)
-            this.cache.set(view, result)
-            return result
-          })
-          .catch(e => {
-            this.cache.delete(view)
-            logWarnError(e)
-            return Promise.reject(e)
-          }),
-      )
+      try {
+        this.viewsWithReportedErrors.delete(view.id)
+        logger.debug`layout view ${view.id}`
+        tasks.push(
+          Promise
+            .resolve()
+            .then(() => this.layouter.layout(view))
+            .then(result => {
+              this.viewsWithReportedErrors.delete(view.id)
+              this.cache.set(view, result)
+              return result
+            })
+            .catch(e => {
+              this.cache.delete(view)
+              logWarnError(e)
+              return Promise.reject(e)
+            }),
+        )
+      } catch (e) {
+        logger.error`failed layout view ${view.id}`
+        logger.error(loggable(e))
+      }
     }
     for (const task of await Promise.allSettled(tasks)) {
       if (task.status === 'fulfilled') {
         results.push(task.value)
+      } else {
+        logger.error(loggable(task.reason))
       }
     }
     if (results.length !== views.length) {
@@ -109,6 +118,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
   ): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
+    const logger = rootLogger.getChild(['views', projectId ?? ''])
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
       return null

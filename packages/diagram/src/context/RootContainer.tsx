@@ -29,10 +29,6 @@ export function RootContainer({
   return (
     <Box
       className={cx('likec4-root', className)}
-      css={{
-        // '--likec4-background-color': 'mantine.colors.body',
-        // '--colors-likec4-background': 'var(--mantine-color-body)',
-      }}
       ref={ref}
       {...reduceGraphics && {
         ['data-likec4-reduced-graphics']: true,

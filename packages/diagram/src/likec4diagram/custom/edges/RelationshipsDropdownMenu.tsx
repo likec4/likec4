@@ -89,7 +89,7 @@ export const RelationshipsDropdownMenu = memo((
     diagramEdge.relations,
     map(id => {
       try {
-        return likec4model.relationship(id)
+        return likec4model.findRelationship(id)
       } catch (e) {
         // View was cached, but likec4model based on new data
         console.error(
