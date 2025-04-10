@@ -135,8 +135,8 @@ catalogs:
       specifier: 1.7.0
       version: 1.7.0
     '@react-hookz/web':
-      specifier: ^25.1.0
-      version: 25.1.0
+      specifier: ^25.1.1
+      version: 25.1.1
     '@types/picomatch':
       specifier: ^4.0.0
       version: 4.0.0
@@ -434,7 +434,7 @@ importers:
         version: 0.53.3(typescript@5.8.3)
       '@react-hookz/web':
         specifier: catalog:utils
-        version: 25.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.18.1)(xstate@5.19.2)
@@ -684,7 +684,7 @@ importers:
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@react-hookz/web':
         specifier: catalog:utils
-        version: 25.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.31.0(react@19.0.0)
@@ -1115,7 +1115,7 @@ importers:
         version: 0.53.3(typescript@5.8.3)
       '@react-hookz/web':
         specifier: catalog:utils
-        version: 25.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.31.0(react@19.0.0)
@@ -1499,7 +1499,7 @@ importers:
         version: 0.53.3(typescript@5.8.3)
       '@react-hookz/web':
         specifier: catalog:utils
-        version: 25.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.31.0(react@19.0.0)
@@ -3149,13 +3149,8 @@ packages:
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
 
-  '@react-hookz/deep-equal@3.0.3':
-    resolution: {integrity: sha512-SLy+NmiDpncqc2d9TR4Y4R7f8lUFOQK9WbnIq02A6wDxy+dTHfA2Np0dPvj0SFp6i1nqERLmEUe9MxPLuO/IqA==}
-    engines: {node: '>=18.0.0'}
-    deprecated: Package is deprecated and will be deleted soon. Use @ver0/deep-equal instead.
-
-  '@react-hookz/web@25.1.0':
-    resolution: {integrity: sha512-+ra/hRG5vPXbwzvQp+YQRn+YlnFNd3eM/lieYW7M/YY2kUjM3ODmD3sZksFQ4P0eVUlqLXe+kSipw8fvLX4mww==}
+  '@react-hookz/web@25.1.1':
+    resolution: {integrity: sha512-o1BA+5Z8PCuAnxF7+2TZI+xGBtzyLw8z/flD8AMeJXILYTM8HkI0g41oM7IW/qjUDKx30HKceQQpCKqFGj+iIw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       js-cookie: ^3.0.5
@@ -3674,6 +3669,10 @@ packages:
     resolution: {integrity: sha512-/9crJgPptVsGCL6X+JPDQyaJwkalSZ/52WuF8DiRUxJgcmpNdzYRfZ+gqMEP8W3CTVfuMWPqqvIgfwJ97f9Etw==}
     peerDependencies:
       valibot: ^1.0.0
+
+  '@ver0/deep-equal@1.0.0':
+    resolution: {integrity: sha512-XKIlF1i6UJiyTL52mDrSDDgRX7Qr5yJ7ts9zn2liZEmhiAEum4XKrJRAWmHdFwCQeGBU+rb+/b0ldw/9V8lOWw==}
+    engines: {node: '>=18'}
 
   '@vitejs/plugin-react@4.3.4':
     resolution: {integrity: sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug==}
@@ -10679,11 +10678,9 @@ snapshots:
 
   '@polka/url@1.0.0-next.28': {}
 
-  '@react-hookz/deep-equal@3.0.3': {}
-
-  '@react-hookz/web@25.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@react-hookz/web@25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@react-hookz/deep-equal': 3.0.3
+      '@ver0/deep-equal': 1.0.0
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
@@ -11220,6 +11217,8 @@ snapshots:
   '@valibot/to-json-schema@1.0.0(valibot@1.0.0(typescript@5.8.3))':
     dependencies:
       valibot: 1.0.0(typescript@5.8.3)
+
+  '@ver0/deep-equal@1.0.0': {}
 
   '@vitejs/plugin-react@4.3.4(vite@6.2.5(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))':
     dependencies:
