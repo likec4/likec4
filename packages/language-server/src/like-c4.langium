@@ -365,7 +365,7 @@ DynamicViewGlobalPredicateRef:
 
 
 ViewRuleStyle:
-  'style' target=FqnExpressions '{'
+  'style' targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -675,7 +675,7 @@ GlobalStyleId:
   name=IdTerminal;
 
 GlobalStyle:
-  'style' id=GlobalStyleId target=FqnExpressions '{'
+  'style' id=GlobalStyleId targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty

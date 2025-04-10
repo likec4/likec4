@@ -215,7 +215,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseViewRuleStyle(astRule: ast.ViewRuleStyle | ast.GlobalStyle): c4.ViewRuleStyle {
       const styleProps = astRule.props.filter(ast.isStyleProperty)
-      const targets = astRule.target
+      const targets = astRule.targets
       const notation = astRule.props.find(ast.isNotationProperty)
       return this.parseRuleStyle(styleProps, targets, notation)
     }
