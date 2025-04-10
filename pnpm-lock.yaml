@@ -205,11 +205,11 @@ catalogs:
       version: 9.2.0
   xyflow:
     '@xyflow/react':
-      specifier: ^12.5.3
+      specifier: ^12.5.4
       version: 12.5.4
     '@xyflow/system':
-      specifier: ^0.0.53
-      version: 0.0.53
+      specifier: ^0.0.54
+      version: 0.0.54
 
 overrides:
   esbuild: ^0.25.2
@@ -473,7 +473,7 @@ importers:
         version: 12.5.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.53
+        version: 0.0.54
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -696,7 +696,7 @@ importers:
         version: 12.5.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.53
+        version: 0.0.54
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1151,7 +1151,7 @@ importers:
         version: 12.5.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.53
+        version: 0.0.54
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.3)
@@ -1529,7 +1529,7 @@ importers:
         version: 12.5.4(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.53
+        version: 0.0.54
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -3835,9 +3835,6 @@ packages:
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
-
-  '@xyflow/system@0.0.53':
-    resolution: {integrity: sha512-QTWieiTtvNYyQAz1fxpzgtUGXNpnhfh6vvZa7dFWpWS2KOz6bEHODo/DTK3s07lDu0Bq0Db5lx/5M5mNjb9VDQ==}
 
   '@xyflow/system@0.0.54':
     resolution: {integrity: sha512-DBoQTcSQ2620WMfakCcjRLrlqalWcZBPgMNrfSAybnVeyZm73rT1592GAXPcC3eoVmWcvGfBgqwAmmNtlrowdw==}
@@ -11499,16 +11496,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - immer
-
-  '@xyflow/system@0.0.53':
-    dependencies:
-      '@types/d3-drag': 3.0.7
-      '@types/d3-selection': 3.0.11
-      '@types/d3-transition': 3.0.9
-      '@types/d3-zoom': 3.0.8
-      d3-drag: 3.0.0
-      d3-selection: 3.0.0
-      d3-zoom: 3.0.0
 
   '@xyflow/system@0.0.54':
     dependencies:
