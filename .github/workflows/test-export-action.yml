@@ -1,0 +1,36 @@
+name: test-export-action
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  statuses: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: export diagrams
+        uses: likec4/actions@v1
+        with:
+          export: png
+          path: likec4
+          output: "./png"
+          version: latest
+
+
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: exported images
+          push_options: "--force"
+          branch: test-export-action
+          create_branch: true
