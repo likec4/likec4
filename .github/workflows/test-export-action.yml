@@ -22,8 +22,8 @@ jobs:
         uses: likec4/actions@v1
         with:
           export: png
-          path: likec4
-          output: "./png"
+          path: examples/multi-project/boutique/
+          output: "./examples/multi-project/boutique/png"
           version: latest
 
 
