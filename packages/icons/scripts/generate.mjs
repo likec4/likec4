@@ -7,6 +7,7 @@ console.info('Generating all.js and all.d.ts')
 
 const files = new fdir()
   .glob('**/*.tsx')
+  .withFullPaths()
   .crawl()
   .sync()
   .sort()
@@ -93,15 +94,15 @@ await build({
   ],
   sourceRoot: '.',
   outdir: '.',
-  minify: true,
-  // tsconfigRaw: {
-  //   compilerOptions: {
-  //     verbatimModuleSyntax: true,
-  //     jsx: 'react-jsx',
-  //   },
-  // },
-  // jsxDev: false,
-  // jsx: 'automatic',
+  minify: false,
+  tsconfigRaw: {
+    compilerOptions: {
+      verbatimModuleSyntax: true,
+      jsx: 'react-jsx',
+    },
+  },
+  jsxDev: false,
+  jsx: 'transform',
   format: 'esm',
   target: 'esnext',
   platform: 'browser',
