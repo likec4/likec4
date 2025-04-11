@@ -152,6 +152,9 @@ catalogs:
     fast-equals:
       specifier: ^5.2.2
       version: 5.2.2
+    fdir:
+      specifier: ^6.4.3
+      version: 6.4.3
     json5:
       specifier: ^2.2.3
       version: 2.2.3
@@ -161,6 +164,9 @@ catalogs:
     p-debounce:
       specifier: ^4.0.0
       version: 4.0.0
+    p-queue:
+      specifier: ^8.1.0
+      version: 8.1.0
     p-timeout:
       specifier: ^6.1.4
       version: 6.1.4
@@ -629,7 +635,7 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       fdir:
-        specifier: ^6.4.3
+        specifier: catalog:utils
         version: 6.4.3(picomatch@4.0.2)
       graphology:
         specifier: ^0.25.4
@@ -828,18 +834,18 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.4
         version: 19.0.4(@types/react@19.0.12)
-      consola:
-        specifier: catalog:utils
-        version: 3.4.2
       esbuild:
         specifier: ^0.25.2
         version: 0.25.2
       execa:
         specifier: ^9.5.2
         version: 9.5.2
-      glob:
-        specifier: ^11.0.1
-        version: 11.0.1
+      fdir:
+        specifier: catalog:utils
+        version: 6.4.3(picomatch@4.0.2)
+      picomatch:
+        specifier: catalog:utils
+        version: 4.0.2
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -849,6 +855,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
+      wireit:
+        specifier: 'catalog:'
+        version: 0.14.11
 
   packages/language-server:
     dependencies:
@@ -899,7 +908,7 @@ importers:
         specifier: catalog:utils
         version: 5.2.2
       fdir:
-        specifier: ^6.4.3
+        specifier: catalog:utils
         version: 6.4.3(picomatch@4.0.2)
       indent-string:
         specifier: ^5.0.0
@@ -919,6 +928,9 @@ importers:
       p-debounce:
         specifier: catalog:utils
         version: 4.0.0
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.0
       p-timeout:
         specifier: catalog:utils
         version: 6.1.4
@@ -1189,7 +1201,7 @@ importers:
         specifier: catalog:utils
         version: 5.2.2
       fdir:
-        specifier: ^6.4.3
+        specifier: catalog:utils
         version: 6.4.3(picomatch@4.0.2)
       get-port:
         specifier: ^7.1.0

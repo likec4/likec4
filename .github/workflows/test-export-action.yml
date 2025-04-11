@@ -16,19 +16,19 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: export diagrams
         uses: likec4/actions@v1
         with:
           export: png
-          path: likec4
-          output: "./png"
-          version: latest
+          path: examples/multi-project/boutique/
+          output: "./examples/multi-project/boutique/png"
+          likec4-version: latest
 
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: exported images
           push_options: "--force"

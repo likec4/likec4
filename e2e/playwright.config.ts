@@ -13,7 +13,7 @@ export default defineConfig({
   forbidOnly: isCI,
 
   // Retry on CI only.
-  retries: isCI ? 1 : 0,
+  retries: isCI ? 2 : 0,
   timeout: 10 * 1000,
 
   // Opt out of parallel tests on CI.
@@ -39,6 +39,7 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: {
       scale: 'device',
+      animations: 'disabled',
       maxDiffPixelRatio: 0.1,
     },
   },

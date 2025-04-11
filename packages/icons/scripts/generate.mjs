@@ -1,16 +1,24 @@
-import consola from 'consola'
 import { build } from 'esbuild'
-import { globSync } from 'glob'
+import { fdir } from 'fdir'
 import { writeFile } from 'node:fs/promises'
 import { sep } from 'path'
 
-consola.info('Generating all.js and all.d.ts')
+console.info('Generating all.js and all.d.ts')
+
+const files = new fdir()
+  .glob('**/*.tsx')
+  .withFullPaths()
+  .crawl()
+  .sync()
+  .sort()
+
+console.info('Found %s icons', files.length)
 
 const {
   imports,
   icons,
   types,
-} = globSync(`*/*.tsx`).toSorted().reduce(
+} = files.reduce(
   /**
    * @param {{
    *  imports: string[]
@@ -77,7 +85,7 @@ export default function BundledIcon({ name, ...props }) {
 `,
 )
 
-consola.info('Generate js for all icons')
+console.info('Generate js for all icons')
 
 await build({
   entryPoints: [
@@ -86,7 +94,7 @@ await build({
   ],
   sourceRoot: '.',
   outdir: '.',
-  minify: true,
+  minify: false,
   tsconfigRaw: {
     compilerOptions: {
       verbatimModuleSyntax: true,
@@ -94,7 +102,7 @@ await build({
     },
   },
   jsxDev: false,
-  jsx: 'automatic',
+  jsx: 'transform',
   format: 'esm',
   target: 'esnext',
   platform: 'browser',

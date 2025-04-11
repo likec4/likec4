@@ -109,7 +109,7 @@ export const layouter = fromPromise<{
   const currentSubjectCenter = centerXYInternalNode(currentSubjectInternalNode)
 
   // Move to center of existing node
-  const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
+  // const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
   // const existingDimensions = getNodeDimensions(existingInternalNode)
 
   // Dim all nodes except the existing node

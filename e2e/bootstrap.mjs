@@ -33,10 +33,10 @@ import { test, expect } from "@playwright/test";
 test('${view.id} - compare snapshots', async ({ page }) => {
   await page.setViewportSize({ width: ${view.$view.bounds.width + 40}, height: ${view.$view.bounds.height + 40} });
   await page.goto('/export/${encodeURIComponent(view.id)}?padding=20');
-  const diagramElement = page.getByRole('presentation')
-  await diagramElement.waitFor()
-  await expect(diagramElement).toHaveScreenshot('${view.id}.png', {
-    omitBackground: true
+  await page.waitForSelector('.react-flow.initialized')
+  await expect(page).toHaveScreenshot('${view.id}.png', {
+    animations: 'disabled',
+    omitBackground: true,
   });
 });
 `

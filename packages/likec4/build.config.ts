@@ -109,7 +109,7 @@ const cli: BuildConfig = {
       compact: isProduction,
     },
     resolve: {
-      exportConditions: isProduction ? ['node', 'production'] : ['sources'],
+      exportConditions: ['node', 'sources'],
     },
     commonjs: {
       exclude: [
