@@ -161,6 +161,9 @@ catalogs:
     p-debounce:
       specifier: ^4.0.0
       version: 4.0.0
+    p-queue:
+      specifier: ^8.1.0
+      version: 8.1.0
     p-timeout:
       specifier: ^6.1.4
       version: 6.1.4
@@ -919,6 +922,9 @@ importers:
       p-debounce:
         specifier: catalog:utils
         version: 4.0.0
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.0
       p-timeout:
         specifier: catalog:utils
         version: 6.1.4

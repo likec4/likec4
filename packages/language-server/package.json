@@ -129,6 +129,7 @@
     "langium-cli": "catalog:langium",
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "catalog:utils",
+    "p-queue": "catalog:utils",
     "picomatch": "catalog:utils",
     "p-timeout": "catalog:utils",
     "pretty-ms": "^9.2.0",
