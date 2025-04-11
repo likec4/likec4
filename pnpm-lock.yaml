@@ -721,12 +721,6 @@ importers:
       nanostores:
         specifier: catalog:react
         version: 0.11.4
-      react:
-        specifier: ^19.0.0
-        version: 19.0.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.0.0(react@19.0.0)
       react-error-boundary:
         specifier: catalog:react
         version: 5.0.0(react@19.0.0)
@@ -773,6 +767,12 @@ importers:
       postcss:
         specifier: catalog:css
         version: 8.5.3
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1061,12 +1061,6 @@ importers:
       playwright:
         specifier: ^1.51.1
         version: 1.51.1
-      react:
-        specifier: ^19.0.0
-        version: 19.0.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.0.0(react@19.0.0)
       rollup:
         specifier: catalog:vite
         version: 4.39.0
@@ -1236,6 +1230,9 @@ importers:
       p-limit:
         specifier: ^6.2.0
         version: 6.2.0
+      package-manager-detector:
+        specifier: ^1.1.0
+        version: 1.1.0
       package-up:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1248,6 +1245,12 @@ importers:
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
       react-error-boundary:
         specifier: catalog:react
         version: 5.0.0(react@19.0.0)
