@@ -10,6 +10,7 @@ import k from 'tinyrainbow'
 import { build } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
+import { ensureReact } from '../../ensure-react'
 
 type HandlerParams = {
   /**
@@ -21,6 +22,7 @@ type HandlerParams = {
 }
 
 export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
+  await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
