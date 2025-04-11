@@ -24,7 +24,7 @@ jobs:
           export: png
           path: examples/multi-project/boutique/
           output: "./examples/multi-project/boutique/png"
-          version: latest
+          likec4-version: latest
 
 
       - name: Commit
