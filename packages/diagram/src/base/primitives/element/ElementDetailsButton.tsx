@@ -3,7 +3,7 @@ import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 
@@ -49,7 +49,7 @@ export function ElementDetailsButton({
         key={id}
         className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
         component={m.button}
-        layout
+        // layout
         initial={false}
         style={{
           originX: 0.45,

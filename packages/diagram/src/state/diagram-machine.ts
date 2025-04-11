@@ -947,13 +947,11 @@ export const diagramMachine = setup({
                   },
                 },
               })
-              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
                 params: getBBoxCenter(event.view.bounds),
               })
-              enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
             enqueue.assign(updateNavigationHistory)
             enqueue.assign({
@@ -961,6 +959,7 @@ export const diagramMachine = setup({
               lastOnNavigate: null,
             })
             enqueue('startSyncLayout')
+            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 25 })
           }),
           target: '#idle',
         },

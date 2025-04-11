@@ -336,7 +336,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     <>
       <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
         <EdgePath
-          {...props}
+          edgeProps={props}
           svgPath={edgePath}
           ref={svgPathRef}
           {...enableEdgeEditing && {
@@ -374,7 +374,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
                 <circle
                   onPointerDown={e => onControlPointerDown(i, e)}
                   className={clsx('nodrag nopan', edgesCss.controlPoint)}
-                  key={i}
+                  key={'controlPoints' + edgeId + '#' + i}
                   cx={Math.round(p.x)}
                   cy={Math.round(p.y)}
                   r={3}

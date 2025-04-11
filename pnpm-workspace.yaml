@@ -29,6 +29,8 @@ catalogs:
     object-hash: "^3.0.0"
     picomatch: "^4.0.2"
     "@types/picomatch": "^4.0.0"
+    p-timeout: "^6.1.4"
+    p-debounce: "^4.0.0"
   esbuild:
     esbuild: "^0.25.2"
     esbuild-node-externals: "^1.18.0"
@@ -43,7 +45,7 @@ catalogs:
     clsx: "^2.1.1"
     nanostores: "0.11.4"
     "@nanostores/react": "0.8.4"
-    framer-motion: "^12.6.3"
+    motion: "^12.6.3"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13

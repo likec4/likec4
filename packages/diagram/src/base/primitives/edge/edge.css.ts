@@ -71,7 +71,7 @@ export const markerContext = css({
 })
 
 export const cssEdgePath = css({
-  fill: '[none]',
+  fill: '[none!]',
   strokeDashoffset: 10,
   _noReduceGraphics: {
     transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',

@@ -3,7 +3,7 @@ import { createSafeContext } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useStore } from '@nanostores/react'
 import { atom, computed, onMount } from 'nanostores'
-import { useDeferredValue } from 'react'
+import { useCallback, useDeferredValue } from 'react'
 import { useDiagram } from '../../../hooks/useDiagram'
 
 const $search = atom('')
@@ -59,18 +59,20 @@ export function useIsPickViewActive() {
 export function useCloseSearchAndNavigateTo() {
   const diagram = useDiagram()
   const close = useCloseSearch()
-  return useCallbackRef((viewId: ViewId, fromElementFqn?: Fqn) => {
+  return useCallback((viewId: ViewId, fromElementFqn?: Fqn) => {
     close(() => {
       fromElementFqn ??= $pickView.get()?.elementFqn
       setPickView(null)
       const fromNode = fromElementFqn
         ? diagram.getContext().view.nodes.find(n => DiagramNode.modelRef(n) === fromElementFqn)?.id
         : undefined
-      if (diagram.currentView.id === viewId && fromNode) {
-        diagram.focusNode(fromNode)
+      if (diagram.currentView.id !== viewId) {
+        diagram.navigateTo(viewId, fromNode)
         return
       }
-      diagram.navigateTo(viewId, fromNode)
+      if (fromNode) {
+        diagram.focusNode(fromNode)
+      }
     })
-  })
+  }, [close, diagram])
 }

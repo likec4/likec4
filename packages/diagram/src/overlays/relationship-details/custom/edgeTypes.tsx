@@ -22,7 +22,7 @@ export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeData>((p
   const diagram = useDiagram()
   return (
     <EdgeContainer {...props}>
-      <EdgePath {...props} svgPath={svgPath} />
+      <EdgePath edgeProps={props} svgPath={svgPath} />
       <EdgeLabelContainer
         edgeProps={props}
         labelPosition={{

@@ -6,7 +6,7 @@ import {
   IconPlayerStopFilled,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 import { isNonNull, isTruthy } from 'remeda'
 import { useXYStore } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'

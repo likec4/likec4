@@ -43,7 +43,7 @@ export default defineConfig({
         'react/jsx-dev-runtime',
         'react-dom/client',
         /@likec4\/core.*/,
-        '@emotion/is-prop-valid', // dev-only import from framer-motion
+        '@emotion/is-prop-valid', // dev-only import from motion
       ],
     },
   },

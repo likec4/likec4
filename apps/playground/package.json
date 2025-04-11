@@ -116,7 +116,7 @@
     "clsx": "catalog:react",
     "date-fns": "^4.1.0",
     "fast-equals": "catalog:utils",
-    "framer-motion": "catalog:react",
+    "motion": "catalog:react",
     "hono": "^4.7.6",
     "hono-sessions": "^0.7.2",
     "langium": "catalog:langium",

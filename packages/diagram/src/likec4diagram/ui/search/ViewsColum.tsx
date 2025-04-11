@@ -4,11 +4,11 @@ import {
   isDeploymentView,
 } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import {
   type ElementProps,
   type UnstyledButtonProps,
   Badge,
-  Box,
   createScopedKeydownHandler,
   Group,
   Highlight,
@@ -18,7 +18,7 @@ import {
   VisuallyHidden,
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
