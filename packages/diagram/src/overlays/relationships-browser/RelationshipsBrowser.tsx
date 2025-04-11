@@ -10,7 +10,6 @@ import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
-import { ViewPadding } from './const'
 import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
 import {
   RelationshipsBrowserActorContext,
@@ -101,7 +100,6 @@ const RelationshipsBrowserXYFlow = memo(() => {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView={false}
-      fitViewPadding={ViewPadding}
       onNodeClick={useCallbackRef((e, node) => {
         browser.send({ type: 'xyflow.nodeClick', node })
       })}

@@ -70,7 +70,6 @@ export function viewToNodesEdge(
       draggable: false,
       selectable: true,
       focusable: true,
-      deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       style: {
@@ -181,7 +180,7 @@ export function viewToNodesEdge(
       zIndex: ZIndexes.Edge,
       // selectable: selectable,
       // hidden: !visiblePredicate(edge),
-      deletable: false,
+      // deletable: false,
       data: {
         sourceFqn: edge.sourceFqn,
         targetFqn: edge.targetFqn,
