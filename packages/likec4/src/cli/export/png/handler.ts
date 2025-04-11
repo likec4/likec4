@@ -5,7 +5,7 @@ import { chromium } from 'playwright'
 import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
-import { type Logger, type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
+import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
@@ -62,14 +62,17 @@ export async function exportViewsToPNG(
   const chromePath = chromium.executablePath()
   logger.info(k.cyan('Start chromium'))
   logger.info(k.dim(chromePath))
-  const browser = await chromium.launch()
+  const browser = await chromium.launch({
+    chromiumSandbox: true,
+    headless: true,
+  })
   logger.info(k.cyan(`Color scheme: `) + theme)
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
     colorScheme: theme,
     baseURL: serverUrl,
+    bypassCSP: true,
     ignoreHTTPSErrors: true,
-    reducedMotion: 'reduce',
     isMobile: false,
   })
   browserContext.setDefaultNavigationTimeout(timeoutMs)

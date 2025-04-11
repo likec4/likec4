@@ -1,10 +1,13 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
-import { Box, LoadingOverlay } from '@mantine/core'
+import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
+import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { notFound, useParams, useSearch } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
-import * as css from './styles.css'
+import * as styles from './styles.css'
+import { cssExportView } from './styles.css'
 
 async function downloadAsPng({
   pngFilename,
@@ -14,15 +17,9 @@ async function downloadAsPng({
   viewport: HTMLElement
 }) {
   const { toBlob } = await import('html-to-image')
-  const {
-    width,
-    height,
-  } = viewport.getBoundingClientRect()
   try {
     const blob = await toBlob(viewport, {
       backgroundColor: 'transparent',
-      width,
-      height,
       cacheBust: true,
       imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     })
@@ -64,7 +61,6 @@ export function ExportPage() {
   } = useSearch({
     strict: false,
   })
-  const { viewId } = useParams({ strict: false })
   const diagram = useCurrentDiagram()
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
@@ -74,11 +70,17 @@ export function ExportPage() {
 
   useTransparentBackground()
 
-  useEffect(() => {
-    document.querySelectorAll<HTMLDivElement>('.react-flow__viewport').forEach((el) => {
-      el.style.transform = ''
-    })
-  })
+  useEffect(
+    () => {
+      if (!viewportRef.current) {
+        return
+      }
+      const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
+      viewports.forEach((el) => {
+        el.style.transform = ''
+      })
+    },
+  )
 
   useDebouncedEffect(
     () => {
@@ -95,7 +97,7 @@ export function ExportPage() {
       }
       downloadedRef.current = true
       downloadAsPng({
-        pngFilename: viewId!,
+        pngFilename: diagram.id,
         viewport,
       })
     },
@@ -113,8 +115,8 @@ export function ExportPage() {
   return (
     <Box
       ref={viewportRef}
-      className={css.cssExportView}
-      role="presentation"
+      data-testid="export-page"
+      className={cx(cssExportView)}
       style={{
         padding,
         minWidth: width,

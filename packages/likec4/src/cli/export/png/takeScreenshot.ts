@@ -26,7 +26,7 @@ export async function takeScreenshot({
   timeout,
   maxAttempts,
   outputType,
-  theme
+  theme,
 }: TakeScreenshotParams) {
   const padding = 20
 
@@ -53,7 +53,7 @@ export async function takeScreenshot({
       } else {
         if (view.hasLayoutDrift) {
           logger.warn(
-            k.yellow('Drift detected, manual layout can not be applied, view may be invalid: ') + k.red(view.id)
+            k.yellow('Drift detected, manual layout can not be applied, view may be invalid: ') + k.red(view.id),
           )
         }
         logger.info(k.cyan(url))
@@ -63,18 +63,17 @@ export async function takeScreenshot({
 
       await page.setViewportSize({
         width: view.bounds.width + padding * 2,
-        height: view.bounds.height + padding * 2
+        height: view.bounds.height + padding * 2,
       })
 
       await page.goto(url + `?padding=${padding}&theme=${theme}`)
-
-      const diagramElement = page.getByRole('presentation')
-      await diagramElement.waitFor()
 
       const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
       if (hasImages) {
         await waitAllImages(page, timeout)
       }
+
+      await page.waitForSelector('.react-flow.initialized')
 
       let relativePath = '.'
       if (outputType === 'relative') {
@@ -87,9 +86,10 @@ export async function takeScreenshot({
       }
 
       const path = resolve(output, relativePath, `${view.id}.png`)
-      await diagramElement.screenshot({
+      await page.screenshot({
+        animations: 'disabled',
         path,
-        omitBackground: true
+        omitBackground: true,
       })
 
       succeed.push({ view, path })
@@ -125,7 +125,7 @@ async function waitAllImages(page: Page, timeout: number) {
           image.onload = res
           image.onerror = rej
         }),
-      { timeout: Math.max(30_000, timeout) } // wait at least 30s to load image
+      { timeout: Math.max(30_000, timeout) }, // wait at least 30s to load image
     )
   )
   // Wait for all once
