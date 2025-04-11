@@ -2,6 +2,7 @@ import type { ComputedView, DiagramView, OverviewGraph, ProjectId, ViewId } from
 import { GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
+import pTimeout from 'p-timeout'
 import prettyMs from 'pretty-ms'
 import { values } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
@@ -130,7 +131,10 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     try {
       const start = performance.now()
-      const result = await this.layouter.layout(view)
+      const result = await pTimeout(this.layouter.layout(view), {
+        milliseconds: 10_000,
+        message: `layout ${viewId} timed out`,
+      })
       this.viewsWithReportedErrors.delete(viewId)
       this.cache.set(view, result)
       logger.debug(`layout {viewId} ready in ${prettyMs(performance.now() - start)}`, { viewId })

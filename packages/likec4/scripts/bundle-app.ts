@@ -94,7 +94,7 @@ export async function bundleApp() {
           'react-dom',
           'likec4/model',
           'likec4/react',
-          '@emotion/is-prop-valid', // dev-only import from framer-motion
+          '@emotion/is-prop-valid', // dev-only import from motion
           resolve(cwd, 'app/src/const.js'),
           /@likec4\/core.*/,
           /likec4:/,

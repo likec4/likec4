@@ -70,6 +70,7 @@ export default defineConfig({
       external: [
         ...Object.keys(packageJson.dependencies || {}),
         /framer-motion/,
+        /motion/,
         /motion-dom/,
         /motion-utils/,
         /@likec4\/styles/,

@@ -125,7 +125,10 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     }
     for (const [projectId, elements] of entries($model.imports)) {
       for (const element of sortParentsFirst(elements)) {
-        this.addImportedElement(projectId as ProjectId, element)
+        const el = this.addImportedElement(projectId as ProjectId, element)
+        for (const tag of el.tags) {
+          this.#allTags.get(tag).add(el)
+        }
       }
     }
     for (const relation of values($model.relations)) {

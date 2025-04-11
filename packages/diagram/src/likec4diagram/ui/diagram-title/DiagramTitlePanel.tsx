@@ -2,7 +2,7 @@ import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 import { Link } from '../../../components/Link'
 import { useDiagramContext } from '../../../hooks/useDiagram'
 import * as styles from './DiagramTitlePanel.css'

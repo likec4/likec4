@@ -156,7 +156,7 @@
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "fdir": "^6.4.3",
-    "framer-motion": "catalog:react",
+    "motion": "catalog:react",
     "get-port": "^7.1.0",
     "glob": "^11.0.1",
     "html-to-image": "^1.11.13",

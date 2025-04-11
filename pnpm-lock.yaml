@@ -111,7 +111,7 @@ catalogs:
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
-    framer-motion:
+    motion:
       specifier: ^12.6.3
       version: 12.6.3
     nanostores:
@@ -158,6 +158,12 @@ catalogs:
     object-hash:
       specifier: ^3.0.0
       version: 3.0.0
+    p-debounce:
+      specifier: ^4.0.0
+      version: 4.0.0
+    p-timeout:
+      specifier: ^6.1.4
+      version: 6.1.4
     picomatch:
       specifier: ^4.0.2
       version: 4.0.2
@@ -483,9 +489,6 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
-      framer-motion:
-        specifier: catalog:react
-        version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       hono:
         specifier: ^4.7.6
         version: 4.7.6
@@ -501,6 +504,9 @@ importers:
       monaco-languageclient:
         specifier: 9.4.1
         version: 9.4.1
+      motion:
+        specifier: catalog:react
+        version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nanoid:
         specifier: ^5.1.5
         version: 5.1.5
@@ -709,7 +715,7 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
-      framer-motion:
+      motion:
         specifier: catalog:react
         version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nanostores:
@@ -911,8 +917,11 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       p-debounce:
-        specifier: ^4.0.0
+        specifier: catalog:utils
         version: 4.0.0
+      p-timeout:
+        specifier: catalog:utils
+        version: 6.1.4
       picomatch:
         specifier: catalog:utils
         version: 4.0.2
@@ -1188,9 +1197,6 @@ importers:
       fdir:
         specifier: ^6.4.3
         version: 6.4.3(picomatch@4.0.2)
-      framer-motion:
-        specifier: catalog:react
-        version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1215,6 +1221,9 @@ importers:
       mkdirp:
         specifier: ^3.0.1
         version: 3.0.1
+      motion:
+        specifier: catalog:react
+        version: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nano-spawn:
         specifier: ^0.2.0
         version: 0.2.0
@@ -6125,6 +6134,20 @@ packages:
 
   motion-utils@12.6.3:
     resolution: {integrity: sha512-R/b3Ia2VxtTNZ4LTEO5pKYau1OUNHOuUfxuP0WFCTDYdHkeTBR9UtxR1cc8mDmKr8PEhmmfnTKGz3rSMjNRoRg==}
+
+  motion@12.6.3:
+    resolution: {integrity: sha512-zw/vqUgv5F5m9fkvOl/eCv2AF1+tkeZl3fu2uIlisIaip8sm5e0CouAl6GkdiRoF+G7s29CjqMdIyPMirwUGHA==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^19.0.0
+      react-dom: ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -14365,6 +14388,14 @@ snapshots:
       motion-utils: 12.6.3
 
   motion-utils@12.6.3: {}
+
+  motion@12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      framer-motion: 12.6.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   mrmime@2.0.1: {}
 

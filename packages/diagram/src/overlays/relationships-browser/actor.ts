@@ -7,7 +7,7 @@ import {
   applyNodeChanges,
   useStoreApi,
 } from '@xyflow/react'
-import { type InternalNodeUpdate, getNodeDimensions, getViewportForBounds } from '@xyflow/system'
+import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
 import { isNullish, omit, prop } from 'remeda'
 import {
   type ActorLogicFrom,
@@ -110,7 +110,7 @@ export const layouter = fromPromise<{
 
   // Move to center of existing node
   const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
-  const existingDimensions = getNodeDimensions(existingInternalNode)
+  // const existingDimensions = getNodeDimensions(existingInternalNode)
 
   // Dim all nodes except the existing node
   // Hide nested nodes
@@ -146,8 +146,8 @@ export const layouter = fromPromise<{
       return {
         ...omit(n, ['parentId']),
         position: {
-          x: currentSubjectCenter.x - existingDimensions.width / 2,
-          y: currentSubjectCenter.y - existingDimensions.height / 2,
+          x: currentSubjectCenter.x - n.initialWidth / 2,
+          y: currentSubjectCenter.y - n.initialHeight / 2,
         },
         zIndex: ZIndexes.Max,
         hidden: false,
@@ -164,19 +164,14 @@ export const layouter = fromPromise<{
     xyedges: [],
   })
 
-  // Pick the smaller zoom level
-  zoom = Math.min(
-    zoom,
-    nextviewport.zoom,
-  )
   // allow framer to render
-  await delay(175)
+  await delay(120)
   next.xynodes = next.xynodes.map(Base.setDimmed(false))
 
   if (signal.aborted) {
     return updateXYData()
   }
-  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 350 })
+  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 300 })
   await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
   return updateXYData()
 })
@@ -551,7 +546,7 @@ export const relationshipsBrowserLogic = setup({
                   xyedges: event.output.xyedges,
                   navigateFromNode: null,
                 })
-                enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+                enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 50 })
                 for (let i = 0; i < 6; i++) {
                   enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 100 })
                 }

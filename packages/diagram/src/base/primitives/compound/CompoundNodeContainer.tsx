@@ -1,6 +1,6 @@
 import type { DiagramNode } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
-import { type HTMLMotionProps, m } from 'framer-motion'
+import { type HTMLMotionProps, m } from 'motion/react'
 import { type PropsWithChildren } from 'react'
 import { clamp, isNumber } from 'remeda'
 import { useIsReducedGraphics } from '../../../hooks/useReducedGraphics'

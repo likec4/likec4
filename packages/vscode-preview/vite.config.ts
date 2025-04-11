@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
         },
         external: [
           'vscode',
-          '@emotion/is-prop-valid', // dev-only import from framer-motion
+          '@emotion/is-prop-valid', // dev-only import from motion
         ],
       },
     },

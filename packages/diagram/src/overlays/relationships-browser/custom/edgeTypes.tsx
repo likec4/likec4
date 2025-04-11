@@ -77,10 +77,9 @@ export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((
   }
 
   return (
-    <EdgeContainer key={id} {...edgeProps}>
+    <EdgeContainer {...edgeProps}>
       <EdgePath
-        key={id}
-        {...edgeProps}
+        edgeProps={edgeProps}
         svgPath={svgPath}
         {...markOrange && {
           strokeWidth: 5,

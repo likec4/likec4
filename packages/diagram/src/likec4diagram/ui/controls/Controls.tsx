@@ -1,7 +1,7 @@
 import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core'
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { clsx } from 'clsx'
-import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
+import { LayoutGroup, m } from 'motion/react'
 import { memo } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../context/ControlsCustomLayout'
@@ -90,60 +90,58 @@ export const Controls = memo(() => {
   const portalProps = useMantinePortalProps()
   const ControlsLayout = useControlsCustomLayout() ?? ControlsDefaultLayout
   return (
-    <LayoutGroup inherit={false}>
-      <AnimatePresence initial={false} mode="wait">
-        {isNotActiveWalkthrough && (
-          <ControlsLayout
-            burgerMenu={onBurgerMenuClick && (
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  onBurgerMenuClick()
-                }}>
-                <IconMenu2 />
-              </ActionIcon>
-            )}
-            navigationButtons={enableNavigationButtons && <NavigationButtons />}
-            search={enableSearch && <LikeC4Search />}
-            syncInProgressBadge={<SyncLayoutBadge />}
-            actionsGroup={
-              <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
-                {enableVscode && (
-                  <Tooltip label="Open source" {...portalProps}>
-                    <ActionIcon
-                      onClick={e => {
-                        e.stopPropagation()
-                        onOpenSource?.({ view: viewId })
-                      }}>
-                      <IconFileSymlink stroke={1.5} />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-                {enableControls && <ToggleReadonly />}
-                {enableControls && hasLayoutDrift && <LayoutDriftNotification {...portalProps} />}
-                {enableControls && notReadOnly && (
-                  <>
-                    <ChangeAutoLayoutButton {...portalProps} />
-                    <ManualLayoutToolsButton {...portalProps} />
-                  </>
-                )}
-                {enableControls && (
-                  <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
-                    <ActionIcon
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.fitDiagram()
-                      }}>
-                      <IconFocusCentered />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </ActionIconGroup>
-            }
-          />
-        )}
-      </AnimatePresence>
-    </LayoutGroup>
+    <>
+      {isNotActiveWalkthrough && (
+        <ControlsLayout
+          burgerMenu={onBurgerMenuClick && (
+            <ActionIcon
+              onClick={e => {
+                e.stopPropagation()
+                onBurgerMenuClick()
+              }}>
+              <IconMenu2 />
+            </ActionIcon>
+          )}
+          navigationButtons={enableNavigationButtons && <NavigationButtons />}
+          search={enableSearch && <LikeC4Search />}
+          syncInProgressBadge={<SyncLayoutBadge />}
+          actionsGroup={
+            <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
+              {enableVscode && (
+                <Tooltip label="Open source" {...portalProps}>
+                  <ActionIcon
+                    onClick={e => {
+                      e.stopPropagation()
+                      onOpenSource?.({ view: viewId })
+                    }}>
+                    <IconFileSymlink stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+              {enableControls && <ToggleReadonly />}
+              {enableControls && hasLayoutDrift && <LayoutDriftNotification {...portalProps} />}
+              {enableControls && notReadOnly && (
+                <>
+                  <ChangeAutoLayoutButton {...portalProps} />
+                  <ManualLayoutToolsButton {...portalProps} />
+                </>
+              )}
+              {enableControls && (
+                <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
+                  <ActionIcon
+                    onClick={e => {
+                      e.stopPropagation()
+                      diagram.fitDiagram()
+                    }}>
+                    <IconFocusCentered />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </ActionIconGroup>
+          }
+        />
+      )}
+    </>
   )
 })
 

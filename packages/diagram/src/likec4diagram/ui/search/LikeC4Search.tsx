@@ -1,11 +1,11 @@
+import { css } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import {
   ActionIcon,
-  Box,
   Grid,
   GridCol,
   Group,
   Portal,
-  RemoveScroll,
   ScrollArea,
   ScrollAreaAutosize,
   Stack,
@@ -20,24 +20,25 @@ import {
   useWindowEvent,
 } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
-import { useRef } from 'react'
+import { AnimatePresence, LayoutGroup, m } from 'motion/react'
+import { memo, useRef } from 'react'
 import { SearchControl } from '../../../components/SearchControl'
 import { useMantinePortalProps } from '../../../hooks'
 import { ElementsColumn } from './ElementsColumn'
-import * as css from './LikeC4Search.css'
+import * as styles from './LikeC4Search.css'
 import { LikeC4SearchInput } from './SearchInput'
 import {
   LikeC4SearchContext,
   setPickView,
   useCloseSearch,
+  useIsPickViewActive,
   usePickView,
   wasResetPickView,
 } from './state'
 import { stopAndPrevent } from './utils'
 import { ViewButton, ViewsColumn } from './ViewsColum'
 
-export function LikeC4Search() {
+export const LikeC4Search = memo(() => {
   const [searchOpened, searchOps] = useDisclosure(false)
   useHotkeys([
     ['mod+k', () => searchOps.toggle(), {
@@ -69,41 +70,38 @@ export function LikeC4Search() {
           e.stopPropagation()
           searchOps.toggle()
         }} />
-      <Portal {...portalProps}>
-        <RemoveScroll enabled={searchOpened}>
-          <AnimatePresence onExitComplete={onExitComplete}>
-            {searchOpened && (
-              <>
-                <m.div
-                  key={'backdrop'}
-                  className={css.backdrop}
-                  initial={{ opacity: 0.7 }}
-                  animate={{
-                    opacity: 1,
-                    transition: {
-                      duration: 0.1,
-                    },
-                  }}
-                  exit={{
-                    opacity: 0,
-                    transition: {
-                      duration: 0.075,
-                    },
-                  }}>
-                </m.div>
-                <LikeC4SearchOverlay key="overlay" />
-              </>
-            )}
-          </AnimatePresence>
-        </RemoveScroll>
+      <Portal {...portalProps} reuseTargetNode>
+        <AnimatePresence onExitComplete={onExitComplete}>
+          {searchOpened && (
+            <m.div
+              key={'backdrop'}
+              className={styles.backdrop}
+              initial={{ opacity: 0.7 }}
+              animate={{
+                opacity: 1,
+                transition: {
+                  duration: 0.13,
+                },
+              }}
+              exit={{
+                opacity: 0,
+                transition: {
+                  duration: 0.13,
+                },
+              }}>
+            </m.div>
+          )}
+          {searchOpened && <LikeC4SearchOverlay key="overlay" />}
+        </AnimatePresence>
       </Portal>
     </LikeC4SearchContext>
   )
-}
+})
+LikeC4Search.displayName = 'LikeC4Search'
 
-function LikeC4SearchOverlay() {
+const LikeC4SearchOverlay = () => {
   const close = useCloseSearch()
-  const ref = useFocusTrap()
+  const pickViewActive = useIsPickViewActive()
 
   useWindowEvent(
     'keydown',
@@ -120,14 +118,9 @@ function LikeC4SearchOverlay() {
 
   return (
     <m.div
-      ref={ref}
-      className={css.root}
-      data-likec4-search
-      // initial={{
-      //   opacity: 0,
-      //   // scale: 0.9,
-      //   translateY: -20,
-      // }}
+      className={styles.root}
+      data-likec4-search="true"
+      initial={false}
       animate={{
         opacity: 1,
         scale: 1,
@@ -136,8 +129,9 @@ function LikeC4SearchOverlay() {
       exit={{
         opacity: 0,
         scale: 0.9,
+        translateY: -30,
         transition: {
-          duration: 0.1,
+          duration: 0.13,
         },
       }}
     >
@@ -166,16 +160,16 @@ function LikeC4SearchOverlay() {
         </GridCol>
       </Grid>
       <Grid
-        style={{
+        className={css({
           containerName: 'likec4-search-elements',
           containerType: 'size',
           overflow: 'hidden',
           flexGrow: 1,
-        }}>
+        })}>
         <GridCol span={6}>
           <ScrollArea
             type="hover"
-            className={css.scrollArea}
+            className={styles.scrollArea}
             pr="xs"
             scrollbars="y">
             <AnimatePresence>
@@ -188,7 +182,7 @@ function LikeC4SearchOverlay() {
         <GridCol span={6}>
           <ScrollArea
             type="hover"
-            className={css.scrollArea}
+            className={styles.scrollArea}
             pr="xs"
             scrollbars="y">
             <AnimatePresence>
@@ -199,8 +193,7 @@ function LikeC4SearchOverlay() {
           </ScrollArea>
         </GridCol>
       </Grid>
-      <Box></Box>
-      <PickView />
+      {pickViewActive && <PickView />}
     </m.div>
   )
 }
@@ -220,7 +213,7 @@ function PickView() {
           <>
             <m.div
               key="backdrop"
-              className={css.pickviewBackdrop}
+              className={styles.pickviewBackdrop}
               onClick={e => {
                 e.stopPropagation()
                 setPickView(null)
@@ -248,7 +241,7 @@ function PickView() {
                   duration: 0.1,
                 },
               }}
-              className={css.pickview}
+              className={styles.pickview}
               data-likec4-search-views
               ref={focusTrapRef}>
               <Group px="sm" py="md" justify="space-between">
@@ -266,7 +259,7 @@ function PickView() {
 
               <ScrollAreaAutosize mah={'calc(100vh - 8rem - 50px)'} type="never">
                 {pickview.scoped.length > 0 && (
-                  <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
+                  <Stack gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
                     <Title order={6} c={'dimmed'}>scoped views of the element</Title>
                     {pickview.scoped.map((view, i) => (
                       <ViewButton
@@ -283,7 +276,7 @@ function PickView() {
                 )}
 
                 {pickview.others.length > 0 && (
-                  <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
+                  <Stack gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
                     <Title order={6} c={'dimmed'}>views including this element</Title>
                     {pickview.others.map((view, i) => (
                       <ViewButton

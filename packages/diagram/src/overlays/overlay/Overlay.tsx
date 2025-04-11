@@ -5,7 +5,7 @@ import {
 } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
-import { m, useReducedMotionConfig } from 'framer-motion'
+import { m, useReducedMotionConfig } from 'motion/react'
 import { type PropsWithChildren, forwardRef, useEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
 import { backdropBlur, backdropOpacity, level as cssVarLevel, overlay as overlayCVA } from './Overlay.css'
@@ -49,6 +49,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   useEffect(() => {
     const cancel = (e: Event) => {
       e.preventDefault()
+      e.stopPropagation()
       close()
     }
     dialogRef.current?.addEventListener('cancel', cancel, { capture: true })

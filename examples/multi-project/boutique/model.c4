@@ -32,7 +32,7 @@ model {
 
     checkout = service 'Checkout Service' {
       #teamB
-      icon tech:nodejs    
+      icon tech:nodejs
       description 'Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.'
       link https://github.com/likec4/template 'Repository'
       metadata {
@@ -45,7 +45,7 @@ model {
       }
       -> shipping 'sends checkout data' {
         navigateTo order-fulfillment
-      }      
+      }
       -> email 'sends order confirmation'
       -> actionLog 'sends activity data' #v2 #next
     }
@@ -63,7 +63,7 @@ model {
         link https://github.com/likec4/template 'Repository'
         metadata {
           npm '@boutique/cart-api'
-          version: '1.0.0'
+          version : '1.0.0'
         }
       }
 
