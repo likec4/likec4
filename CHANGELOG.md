@@ -1,3 +1,14 @@
+## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
+
+
+### Bug Fixes
+
+* **e2e:** improve screenshot tests stability and increase CI retries ([2da1a02](https://github.com/likec4/likec4/commit/2da1a026e756e2627fcb318a82e736608c71e319))
+* strange glitches on mouse hover in search view ([ac6fad6](https://github.com/likec4/likec4/commit/ac6fad63278215e5c3800dbef285f22f41f3ff4a)), closes [#1798](https://github.com/likec4/likec4/issues/1798)
+* **vscode:** apply style changes ([c2f9a17](https://github.com/likec4/likec4/commit/c2f9a172e544e3a5b494fe94e1146b2f5cabadb9))
+
+
+
 # [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
 
 This release improves multi-projects support
