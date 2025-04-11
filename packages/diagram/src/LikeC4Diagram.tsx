@@ -1,5 +1,5 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
-import { useRef } from 'react'
+import { type PropsWithChildren, useRef } from 'react'
 import { isEmpty } from 'remeda'
 import {
   DiagramEventHandlers,
@@ -9,40 +9,18 @@ import {
   IconRendererProvider,
   RootContainer,
 } from './context'
-import { ReducedGraphicsContext } from './hooks/useIsReducedGraphics'
+import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
+import { ReduceGraphicsContext } from './context/ReduceGraphics'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
 import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
-import { LikeC4DiagramXYFlow } from './likec4diagram/XYFlow'
 import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
-export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
+export type LikeC4DiagramProps = PropsWithChildren<LikeC4DiagramProperties & LikeC4DiagramEventHandlers>
 export function LikeC4Diagram({
-  view,
-  className,
-  fitView = true,
-  fitViewPadding = 0,
-  readonly = true,
-  pannable = true,
-  zoomable = true,
-  background = 'dots',
-  enableFocusMode = false,
-  enableElementDetails = false,
-  enableRelationshipDetails = enableElementDetails,
-  enableRelationshipBrowser = enableRelationshipDetails,
-  nodesSelectable = !readonly || enableFocusMode,
-  nodesDraggable = !readonly,
-  controls = !readonly,
-  showDiagramTitle = true,
-  showNotations = true,
-  enableDynamicViewWalkthrough = false,
-  enableSearch = true,
-  initialWidth,
-  initialHeight,
-  experimentalEdgeEditing = false,
-  reduceGraphics = 'auto',
   onCanvasClick,
   onCanvasContextMenu,
   onCanvasDblClick,
@@ -54,9 +32,35 @@ export function LikeC4Diagram({
   onNodeContextMenu,
   onOpenSource,
   onBurgerMenuClick,
-  renderIcon,
-  where,
+  view,
+  className,
+  fitView = true,
+  fitViewPadding = '8px',
+  readonly = true,
+  pannable = true,
+  zoomable = true,
+  background = 'dots',
+  enableFocusMode = false,
+  enableElementDetails = false,
+  enableRelationshipDetails = enableElementDetails,
+  enableRelationshipBrowser = enableRelationshipDetails,
+  nodesDraggable = !readonly,
+  nodesSelectable = !readonly || enableFocusMode || !!onNavigateTo || !!onNodeClick,
+  controls = !readonly,
+  showDiagramTitle = true,
+  showNotations = true,
   showNavigationButtons = !!onNavigateTo,
+  enableDynamicViewWalkthrough = false,
+  enableSearch = true,
+  initialWidth,
+  initialHeight,
+  experimentalEdgeEditing = !readonly,
+  reduceGraphics = 'auto',
+  renderIcon,
+  renderControls,
+  where,
+  reactFlowProps = {},
+  children,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
   const initialRef = useRef<{
@@ -65,12 +69,6 @@ export function LikeC4Diagram({
     initialWidth: number
     initialHeight: number
   }>(null)
-
-  const xyNodesEdges = useViewToNodesEdges({
-    view,
-    where,
-    nodesSelectable,
-  })
 
   const isDynamicView = view.__ === 'dynamic'
 
@@ -83,14 +81,17 @@ export function LikeC4Diagram({
     }
   }
 
-  // If view has more then 3000 * 2000 pixels - assume it is a big diagram
   const isReducedGraphicsMode = reduceGraphics === 'auto'
-    ? (view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000
+    // If view has more then 3000 * 2000 pixels - assume it is a big diagram
+    // Enable reduced graphics mode if diagram is "big" and pannable
+    ? pannable && ((view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000)
     : reduceGraphics
 
   return (
     <EnsureMantine>
-      <FramerMotionConfig>
+      <FramerMotionConfig
+        {...isReducedGraphicsMode && { reducedMotion: 'always' }}
+      >
         <IconRendererProvider value={renderIcon ?? null}>
           <DiagramFeatures
             features={{
@@ -126,8 +127,8 @@ export function LikeC4Diagram({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <ReducedGraphicsContext value={isReducedGraphicsMode}>
-                <RootContainer className={className}>
+              <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
+                <RootContainer className={className} reduceGraphics={isReducedGraphicsMode}>
                   {!isEmpty(view.customColorDefinitions) && (
                     <LikeC4CustomColors customColors={view.customColorDefinitions} />
                   )}
@@ -140,18 +141,23 @@ export function LikeC4Diagram({
                         view,
                         pannable,
                         zoomable,
+                        nodesSelectable,
                         fitViewPadding,
-                        ...xyNodesEdges,
                       }}>
-                      <LikeC4DiagramXYFlow
-                        nodesDraggable={nodesDraggable}
-                        nodesSelectable={nodesSelectable}
-                        background={background}
-                      />
+                      <ControlsCustomLayoutProvider value={renderControls ?? null}>
+                        <LikeC4DiagramXYFlow
+                          nodesDraggable={nodesDraggable}
+                          nodesSelectable={nodesSelectable}
+                          background={background}
+                          reactFlowProps={reactFlowProps}
+                        >
+                          {children}
+                        </LikeC4DiagramXYFlow>
+                      </ControlsCustomLayoutProvider>
                     </DiagramActorProvider>
                   </XYFlowProvider>
                 </RootContainer>
-              </ReducedGraphicsContext>
+              </ReduceGraphicsContext>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>

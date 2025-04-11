@@ -1,15 +1,14 @@
 import { viteAliases } from '@/vite/aliases'
 import { logger as consola } from '@likec4/log'
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
-import { shadowStyle } from 'vite-plugin-shadow-style'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
-import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
@@ -37,7 +36,7 @@ export async function viteWebcomponentConfig({
     root,
     configFile: false,
     resolve: {
-      conditions: ['development', 'sources'],
+      conditions: ['sources'],
       alias: viteAliases(),
     },
     clearScreen: false,
@@ -45,7 +44,6 @@ export async function viteWebcomponentConfig({
     publicDir: false,
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_STYLE_BUNDLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
       __USE_OVERVIEW_GRAPH__: 'false',
       'process.env.NODE_ENV': '"development"',
@@ -59,7 +57,7 @@ export async function viteWebcomponentConfig({
       minify: 'esbuild',
       chunkSizeWarningLimit,
       lib: {
-        entry: 'webcomponent/webcomponent.tsx',
+        entry: 'src/webcomponent.tsx',
         fileName(_format, _entryName) {
           return filename
         },
@@ -76,18 +74,17 @@ export async function viteWebcomponentConfig({
           hoistTransitiveImports: false,
           entryFileNames: filename,
         },
-        plugins: [
-          shadowStyle(),
-        ],
+      },
+    },
+    css: {
+      postcss: {
+        plugins: [pandaCss()],
       },
     },
     plugins: [
       react({}),
-      vanillaExtractPlugin({
-        unstable_mode: 'transform',
-      }),
-      likec4Plugin({
-        languageServices,
+      LikeC4VitePlugin({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),
     ],

@@ -1,13 +1,10 @@
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
-import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections'
-import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightLinksValidator from 'starlight-links-validator'
 import { searchForWorkspaceRoot } from 'vite'
-import likec4grammar from './likec4.tmLanguage.json' with { type: 'json' }
-import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 
 const version = process.env.npm_package_version || 'latest'
 
@@ -21,10 +18,10 @@ export default defineConfig({
     starlight({
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
-      social: {
-        github: 'https://github.com/likec4/likec4',
-        discord: 'https://discord.gg/86ZSpjKAdA',
-      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/likec4/likec4' },
+        { icon: 'discord', label: 'Discord', href: 'https://discord.gg/86ZSpjKAdA' },
+      ],
       logo: {
         dark: './src/assets/logo-dark.svg',
         light: './src/assets/logo-light.svg',
@@ -34,10 +31,6 @@ export default defineConfig({
         baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/',
       },
       customCss: [
-        // Fontsource files for to regular and semi-bold font weights.
-        '@fontsource/ibm-plex-sans/400.css',
-        '@fontsource/ibm-plex-sans/500.css',
-        '@fontsource/ibm-plex-sans/600.css',
         './src/styles/global.css',
       ],
       sidebar: [
@@ -96,25 +89,6 @@ export default defineConfig({
           ],
         },
       ],
-      expressiveCode: {
-        plugins: [
-          pluginLineNumbers(),
-          pluginCollapsibleSections(),
-        ],
-        styleOverrides: {
-          borderRadius: '4px',
-        },
-        defaultProps: {
-          // Disable line numbers by default
-          showLineNumbers: false,
-        },
-        shiki: {
-          langs: [
-            likec4grammar,
-            structurizr,
-          ],
-        },
-      },
       pagination: true,
       credits: false,
       components: {
@@ -134,14 +108,18 @@ export default defineConfig({
     }),
   ],
 
+  experimental: {
+    contentIntellisense: true,
+  },
+
   vite: {
     resolve: {
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
         'likec4/model': new URL('../../packages/likec4/src/model', import.meta.url).pathname,
-        // Alias to bundled React components, can't use 'development' condition html#server
-        'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,
+        // Alias to bundled React components, can't use 'development' condition
+        'likec4/react': new URL('../../packages/likec4/react/index.mjs', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname,
       },
     },
@@ -151,5 +129,10 @@ export default defineConfig({
         allow: [searchForWorkspaceRoot(process.cwd())],
       },
     },
+    plugins: [
+      LikeC4VitePlugin({
+        workspace: 'src/components',
+      }),
+    ],
   },
 })

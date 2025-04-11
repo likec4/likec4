@@ -11,7 +11,7 @@ export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData
   && eq(prev.dragging ?? false, next.dragging ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)
   && eq(prev.height ?? 0, next.height ?? 0)
-  && eq(prev.zIndex, next.zIndex)
+  && eq(prev.zIndex ?? 0, next.zIndex ?? 0)
   // we can ignore position, as custom nodes positioned relative to it's NodeRenderer
   // && eq(prev.positionAbsoluteX, next.positionAbsoluteX)
   // && eq(prev.positionAbsoluteY, next.positionAbsoluteY)

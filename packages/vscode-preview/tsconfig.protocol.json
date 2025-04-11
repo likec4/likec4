@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "lib/protocol.tsbuildinfo",
+    "rootDir": ".",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "vscode-webview"
+    ],
+  },
+  "files": [
+    "protocol.ts"
+  ]
+}

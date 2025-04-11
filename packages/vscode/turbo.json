@@ -15,16 +15,18 @@
     },
     "build": {
       "dependsOn": [
-        "topo",
+        "^generate",
         "generate",
-        "@likec4/language-server#build",
+        "topo",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [
         "dist/**",
+        "data/config.schema.json",
         "!dist/src/**",
         "!dist/**/*.metafile.json"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

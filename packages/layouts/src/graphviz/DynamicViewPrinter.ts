@@ -14,7 +14,7 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
   }
 
   protected override postBuild(G: RootGraphModel): void {
-    G.set(_.TBbalance, 'max')
+    G.delete(_.TBbalance)
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {

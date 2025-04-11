@@ -12,6 +12,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  FORCE_COLOR: true
 
 jobs:
   publish-release:
@@ -39,6 +40,9 @@ jobs:
         run: |
           git config user.name "${{ env.BOT_NAME }}[bot]"
           git config user.email "${{ env.BOT_NAME }}[bot]@users.noreply.github.com"
+
+      - name: ⚙️ build
+        run: pnpm ci:build
 
       - name: release
         run: pnpm shipjs trigger

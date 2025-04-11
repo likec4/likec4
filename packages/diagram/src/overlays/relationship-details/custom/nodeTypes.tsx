@@ -29,31 +29,27 @@ const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTyp
   )
 }
 
-export const nodeTypes = {
-  element: customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
-    return (
-      <ElementNodeContainer nodeProps={props}>
-        <ElementShape {...props} />
-        <ElementTitle {...props} iconSize={40} />
-        <ElementDetailsButtonWithHandler {...props} />
-        <ElementActions {...props} />
-        <ElementPorts {...props} />
-      </ElementNodeContainer>
-    )
-  }),
+export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
+  return (
+    <ElementNodeContainer nodeProps={props}>
+      <ElementShape {...props} />
+      <ElementTitle {...props} />
+      <ElementDetailsButtonWithHandler {...props} />
+      <ElementActions {...props} />
+      <ElementPorts {...props} />
+    </ElementNodeContainer>
+  )
+})
 
-  compound: customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
-    return (
-      <CompoundNodeContainer nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props} />
-        <CompoundTitle {...props} />
-        <CompoundPorts {...props} />
-      </CompoundNodeContainer>
-    )
-  }),
-} satisfies {
-  [key in RelationshipDetailsTypes.Node['type']]: any
-}
+export const CompoundNode = customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
+  return (
+    <CompoundNodeContainer nodeProps={props}>
+      <ElementDetailsButtonWithHandler {...props} />
+      <CompoundTitle {...props} />
+      <CompoundPorts {...props} />
+    </CompoundNodeContainer>
+  )
+})
 
 type ElementPortsProps = NodeProps<
   Pick<

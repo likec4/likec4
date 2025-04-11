@@ -1,5 +1,6 @@
 import type { Fqn } from '@likec4/core'
 import { getHotkeyHandler } from '@mantine/hooks'
+import type { KeyboardEvent } from 'react'
 import { isString, last, reverse } from 'remeda'
 import {
   type ActorLogicFrom,
@@ -45,7 +46,10 @@ const hotkeyLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
 }) => {
   const handler = getHotkeyHandler([
-    ['Escape', () => sendBack({ type: 'close' }), {
+    ['Escape', (event: KeyboardEvent) => {
+      event.stopPropagation()
+      sendBack({ type: 'close' })
+    }, {
       preventDefault: true,
     }],
   ])
@@ -133,8 +137,8 @@ export const overlaysActorLogic = setup({
       const currentOverlay = last(context.overlays)
       if (currentOverlay?.type === 'relationshipDetails') {
         enqueue.sendTo(currentOverlay.id, {
+          ...event,
           type: 'navigate.to',
-          edgeId: event.edgeId,
         })
         return
       }
@@ -161,6 +165,7 @@ export const overlaysActorLogic = setup({
         enqueue.sendTo(currentOverlay.id, {
           type: 'navigate.to',
           subject: event.subject,
+          viewId: event.viewId,
         })
         return
       }

@@ -1,11 +1,12 @@
+import { css, cx } from '@likec4/styles/css'
+import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
-import clsx from 'clsx'
-import { m } from 'framer-motion'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
-import * as css from './CompoundDetailsButton.css'
+import { compoundActionBtn } from './actionbtns.css'
 
 type CompoundDetailsButtonProps = NodeProps & {
   icon?: React.ReactNode
@@ -19,33 +20,55 @@ export function CompoundDetailsButton({
   icon,
   onClick,
 }: CompoundDetailsButtonProps) {
+  // Debounce first "isHovered"
+  const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
+  const isHoverDebounced = debounced[0] && isHovered
   return (
-    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'details-button')} onClick={stopPropagation}>
-      <ActionIcon
-        component={m.div}
-        className={clsx('nodrag nopan', css.actionIcon)}
+    <Box
+      className={cx(
+        css({
+          position: 'absolute',
+          top: '[2px]',
+          right: '[2px]',
+          _smallZoom: {
+            display: 'none',
+          },
+        }),
+        'details-button',
+      )}
+      onClick={stopPropagation}>
+      <m.div
         initial={false}
-        style={{
-          originX: 0.45,
-          originY: 0.55,
+        animate={{
+          scale: isHoverDebounced ? 1.2 : 1,
+          opacity: isHoverDebounced ? 1 : 0.6,
         }}
-        animate={isHovered
-          ? {
-            scale: 1.2,
-          }
-          : {
-            scale: 1,
-          }}
         whileHover={{
-          scale: 1.42,
+          scale: 1.4,
         }}
-        whileTap={{ scale: 1.15 }}
-        size={'md'}
-        radius="md"
-        onClick={onClick}
-        onDoubleClick={stopPropagation}>
-        {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
-      </ActionIcon>
+        whileTap={{ scale: 1 }}
+      >
+        <ActionIcon
+          className={cx(
+            'nodrag nopan',
+            compoundActionBtn({
+              delay: isHovered && !isHoverDebounced,
+            }),
+            css({
+              _whenHovered: {
+                opacity: .75,
+              },
+              _hover: {
+                opacity: 1,
+              },
+            }),
+            actionBtn({ variant: 'transparent' }),
+          )}
+          onClick={onClick}
+          onDoubleClick={stopPropagation}>
+          {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
+        </ActionIcon>
+      </m.div>
     </Box>
   )
 }

@@ -418,6 +418,7 @@ export const likeC4Model = LikeC4Model.fromDump({
       },
     },
   },
+  imports: {},
   __: 'computed',
   views: {
     index: {

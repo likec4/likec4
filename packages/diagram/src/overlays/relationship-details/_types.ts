@@ -2,6 +2,7 @@ import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipDetailsTypes {
+  export type Column = 'sources' | 'targets'
   /**
    * The node's incoming and outgoing ports
    */
@@ -26,6 +27,7 @@ export namespace RelationshipDetailsTypes {
       >
     >
     & {
+      column: Column
       fqn: Fqn
       icon: IconUrl
       ports: Ports
@@ -38,11 +40,11 @@ export namespace RelationshipDetailsTypes {
         DiagramNode,
         | 'title'
         | 'color'
-        | 'shape'
         | 'style'
       >
     >
     & {
+      column: Column
       fqn: Fqn
       depth: number
       icon?: IconUrl

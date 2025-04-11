@@ -1,3 +1,218 @@
+# [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
+
+This release improves multi-projects support
+
+### 🚀 Features
+
+* **imports**  
+  Reference elements from other projects
+  
+  ```zig
+  import { serviceA } from 'projectA'
+  
+  model {
+    serviceB = service {
+      -> serviceA.api 'calls serviceA'
+    }
+  }
+  ```
+
+* **excludes**  
+  Exclude files in the config file
+  
+  ```json
+  {
+    "name": "project-name",
+    "exclude": [
+      "**/node_modules/**/*"
+    ]
+  }
+  ```
+
+[📖 Read the documentation](https://likec4.dev/dsl/projects/)  
+
+
+## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
+
+
+### Bug Fixes
+
+* regression: buttons on elements do not work anymore when clicked, closes [#1797](https://github.com/likec4/likec4/issues/1797)
+
+
+### Improvements
+
+* build embed url with respect to the current history mode, thanks @pavelpykhtin, closes [#1678](https://github.com/likec4/likec4/issues/1678) ([#1795](https://github.com/likec4/likec4/issues/1795))
+
+
+
+## [1.27.2](https://github.com/likec4/likec4/compare/v1.27.1...v1.27.2) (2025-04-01)
+
+
+### Bug Fixes
+
+* hovering notation did not highlight elements anymore, closes [#1681](https://github.com/likec4/likec4/issues/1681)
+* color style definition not respected in 1.27.1, closes [#1785](https://github.com/likec4/likec4/issues/1785)
+
+
+### Improvements
+
+* Navigate to relationship details from RelationshipsBrowser
+
+
+## [1.27.1](https://github.com/likec4/likec4/compare/v1.27.0...v1.27.1) (2025-03-28)
+
+### Bug Fixes
+
+* react component links error ([#1771](https://github.com/likec4/likec4/issues/1771)), closes [#1728](https://github.com/likec4/likec4/issues/1728)
+* relationships not rendered correctly when exporting to PNG ([477cf99](https://github.com/likec4/likec4/commit/477cf992783c99d906ed182d7a3f6a6e88b12907))
+* layout editor fails on edge changes ([949fd4c](https://github.com/likec4/likec4/commit/949fd4cd8904cf25f3e11e8cf49f2ef7ec9d151a))
+
+
+# [1.27.0](https://github.com/likec4/likec4/compare/v1.26.2...v1.27.0) (2025-03-27)
+
+### Features
+
+* Global/View scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732))
+  ![image](https://github.com/user-attachments/assets/c5595c1f-8087-4375-a0b3-93f2a0a4c498)
+
+
+* multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749))
+  ```jsx
+  // where `project-a` and `project-b` are the names of your projects
+  import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
+  import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
+  
+  const example = () => (
+    <>
+      <ProjectA_LikeC4View viewId='index' />
+      <ProjectB_LikeC4View viewId='index' />
+    </>
+  )
+  ```
+
+
+* Styled-system based on [pandacss](https://panda-css.com/) ([#1726](https://github.com/likec4/likec4/issues/1726))  
+  Step closer to Diagram customizations, documentation comes soon
+  
+
+### Bug Fixes
+
+* typo and link, thanks @husa [#1765](https://github.com/likec4/likec4/issues/1765)
+
+
+## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
+
+### Bug Fixes
+
+* empty sidebar, closes [#1715](https://github.com/likec4/likec4/issues/1715)
+* extending a view does not inherit title or description, closes [#1719](https://github.com/likec4/likec4/issues/1719)
+* unexpected arrow style derived from model to dynamic view, closes [#1723](https://github.com/likec4/likec4/issues/1723)
+
+
+## [1.26.1](https://github.com/likec4/likec4/compare/v1.26.0...v1.26.1) (2025-03-11)
+
+### Hot Fix
+
+* **app:** wrong `LikeC4ModelProvider` in generated app ([d09c709](https://github.com/likec4/likec4/commit/d09c7090f09f11adb03815dae3b138499847fb7b))
+
+
+# [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
+
+This release marks a **huge first step** in simplifying LikeC4 integration with any Vite-based application.
+
+### 🚀 Features
+
+* **🔌 Vite Plugin**  
+ 
+  The new Vite plugin allows you to **embed LikeC4 views** directly into your application or documentation website.  
+  Configure:
+  
+  ```ts  
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+  import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+  export default defineConfig({
+    plugins: [
+      react(),
+      LikeC4VitePlugin({}),
+    ],
+  })
+  ```
+
+  Use:
+  ```tsx
+  import { StrictMode } from 'react'
+  import { createRoot } from 'react-dom/client'
+  import { LikeC4View } from 'likec4:react'
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <LikeC4View viewId='index' />
+    </StrictMode>
+  )
+  ```
+
+  [📖 Read the documentation](https://likec4.dev/tooling/vite-plugin/)
+
+* **📂 Multi-Project Workspaces**  
+  
+  This release adds multi-project support in both the CLI and VS Code.
+  Simply create a likec4.config.json file in a folder, and it will be recognized as a LikeC4 project.
+  
+  [📖 Learn more](https://likec4.dev/dsl/projects/)
+
+* **llms.txt support**  
+  Thanks to @simonwfarrow for suggesting this in [#1683](https://github.com/likec4/likec4/discussions/1683).
+  likec4.dev now provides:
+  - [llms.txt](https://likec4.dev/llms.txt)
+  - [llms-full.txt](https://likec4.dev/llms-full.txt) 
+  
+  [Read more about llms.txt](https://llmstxt.org/)
+
+
+## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
+
+### Improvements
+
+* **diagram:** reduce graphics on panning/zooming only ([fa184a6](https://github.com/likec4/likec4/commit/fa184a666a68f6adf7e3520bea4c0a8522e809d4))
+
+
+### Bug Fixes
+
+* **lsp:** fixed typo in `likec4-language-server` bin entry
+
+
+
+# [1.25.0](https://github.com/likec4/likec4/compare/v1.24.1...v1.25.0) (2025-03-07)
+
+### 🚀 Features
+
+* **Share**  
+  You can share your LikeC4 model and diagrams using Playground.  
+  This is the first step, and we need your feedback, ideas and [support](https://github.com/sponsors/likec4).
+  
+  Example:  
+  - https://playground.likec4.dev/share/fXFN2k0RiZ/  
+    pincode is `1111` 
+  
+  ![image](https://github.com/user-attachments/assets/6b73633e-a744-49b8-9d1f-965790409b70)
+
+  
+
+* **Performance**  
+  In large diagrams, degradation comes from `dashed`-styled connections.  
+  This version introduces a temporary "tradeoff", auto-switching to solid lines in large pannable diagrams (controlled by `reduceGraphics` property, if you use React components).  
+  We are looking for better solution.
+
+  
+### Improvements
+
+* **playground:** xyflow catches and prevents keypress`Space`, that breaks monaco ([26223c3](https://github.com/likec4/likec4/commit/26223c37f8dd318130efe39f50ca736d695e0a0b))
+* **vscode:** refactor extension with `reactive-vscode` ([#1668](https://github.com/likec4/likec4/issues/1668)) ([0bb02e7](https://github.com/likec4/likec4/commit/0bb02e769c322f34d5460a94ac4880a662001dbf))
+
+
 ## [1.24.1](https://github.com/likec4/likec4/compare/v1.24.0...v1.24.1) (2025-02-27)
 
 

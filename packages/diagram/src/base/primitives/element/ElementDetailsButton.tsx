@@ -1,16 +1,38 @@
+import { css, cx } from '@likec4/styles/css'
+import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useId } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
-import clsx from 'clsx'
-import { m } from 'framer-motion'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
-import * as css from './ElementDetailsButton.css'
 
 type ElementDetailsButtonProps = NodeProps & {
   icon?: React.ReactNode
   onClick: (e: React.MouseEvent) => void
 }
+
+const container = css({
+  position: 'absolute',
+  top: 2,
+  right: 2,
+  _shapeBrowser: {
+    right: '5px',
+  },
+  _shapeCylinder: {
+    top: '14px',
+  },
+  _shapeStorage: {
+    top: '14px',
+  },
+  _shapeQueue: {
+    top: '1px',
+    right: '12px',
+  },
+  _smallZoom: {
+    display: 'none',
+  },
+})
 
 export function ElementDetailsButton({
   selected = false,
@@ -20,11 +42,14 @@ export function ElementDetailsButton({
   icon,
   onClick,
 }: ElementDetailsButtonProps) {
+  const id = useId()
   return (
-    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'details-button')}>
+    <Box className={cx(container, 'details-button')}>
       <ActionIcon
-        className={clsx('nodrag nopan', css.actionIcon)}
+        key={id}
+        className={cx('nodrag nopan', actionBtn({ variant: 'transparent' }))}
         component={m.button}
+        // layout
         initial={false}
         style={{
           originX: 0.45,
@@ -33,7 +58,7 @@ export function ElementDetailsButton({
         animate={(isHovered || selected)
           ? {
             scale: 1.2,
-            opacity: 0.7,
+            opacity: 0.8,
           }
           : {
             scale: 1,
@@ -44,8 +69,6 @@ export function ElementDetailsButton({
           opacity: 1,
         }}
         whileTap={{ scale: 1.15 }}
-        size={'md'}
-        radius="md"
         onClick={onClick}
         onDoubleClick={stopPropagation}
       >

@@ -5,14 +5,13 @@ import {
   HoverCardDropdown,
   HoverCardTarget,
   Notification,
-  Overlay,
   Text,
 } from '@mantine/core'
 import {
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
-import { mantine } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 import { ActionIcon } from './_shared'
 
 export const LayoutDriftNotification = (props: PopoverProps) => (
@@ -22,8 +21,13 @@ export const LayoutDriftNotification = (props: PopoverProps) => (
     closeDelay={100}
     {...props}>
     <HoverCardTarget>
-      <ActionIcon c="orange">
-        <Overlay color={mantine.colors.orange.lightHover} backgroundOpacity={1} />
+      <ActionIcon
+        color={'orange'}
+        c="orange"
+        className={css({
+          bg: 'mantine.colors.orange.light',
+        })}
+      >
         <IconAlertTriangle />
       </ActionIcon>
     </HoverCardTarget>

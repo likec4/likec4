@@ -1,23 +1,45 @@
-import type { DiagramEdge, DiagramView } from '@likec4/core'
+import { type DiagramEdge, type DiagramView, invariant, isAncestor, nonNullable } from '@likec4/core'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
-import { Panel, ReactFlowProvider } from '@xyflow/react'
+import { useSelector } from '@xstate/react'
+import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
-import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
-import { memo, useEffect, useRef } from 'react'
+import { deepEqual } from 'fast-equals'
+import { AnimatePresence, LayoutGroup, m } from 'motion/react'
+import { memo, useEffect, useMemo, useRef } from 'react'
+import { find, isTruthy } from 'remeda'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import type { RelationshipDetailsTypes as Types } from './_types'
+import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
-import { edgeTypes } from './custom/edgeTypes'
-import { nodeTypes } from './custom/nodeTypes'
+import {
+  type RelationshipDetailsViewData,
+  computeEdgeDetailsViewData,
+  computeRelationshipDetailsViewData,
+} from './compute'
+import { CompoundNode, ElementNode, RelationshipEdge } from './custom'
 import {
   RelationshipDetailsActorContext,
   useRelationshipDetails,
+  useRelationshipDetailsActor,
   useRelationshipDetailsState,
 } from './hooks'
+import { layoutRelationshipDetails } from './layout'
 import { SelectEdge } from './SelectEdge'
-import { useLayoutedDetails } from './useLayoutedDetails'
+
+const nodeTypes = {
+  element: ElementNode,
+  compound: CompoundNode,
+} satisfies {
+  [key in RelationshipDetailsTypes.Node['type']]: any
+}
+
+export const edgeTypes = {
+  relationship: RelationshipEdge,
+} satisfies {
+  [key in RelationshipDetailsTypes.Edge['type']]: any
+}
 
 export type RelationshipDetailsProps = {
   actorRef: RelationshipDetailsActorRef
@@ -44,7 +66,8 @@ export function RelationshipDetails({ actorRef }: RelationshipDetailsProps) {
       <ReactFlowProvider {...initialRef.current}>
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <AnimatePresence>
-            <RelationshipDetailsInner />
+            <RelationshipDetailsInner key="xyflow" />
+            <SyncRelationshipDetailsXYFlow key="sync" />
           </AnimatePresence>
         </LayoutGroup>
       </ReactFlowProvider>
@@ -52,55 +75,74 @@ export function RelationshipDetails({ actorRef }: RelationshipDetailsProps) {
   )
 }
 
-const selector = (state: RelationshipDetailsSnapshot) => ({
-  edgeId: state.context.edgeId,
-  view: state.context.view,
-  initialized: state.context.initialized,
-  nodes: state.context.xynodes,
-  edges: state.context.xyedges,
+const selectSubject = (state: RelationshipDetailsSnapshot) => ({
+  ...state.context.subject,
+  viewId: state.context.viewId,
+})
+
+const SyncRelationshipDetailsXYFlow = memo(() => {
+  const actor = useRelationshipDetailsActor()
+  const subject = useSelector(actor, selectSubject, deepEqual)
+  const likec4model = useLikeC4Model(true)
+  const view = likec4model.findView(subject.viewId) ?? null
+  const data = useMemo(() => {
+    let data: RelationshipDetailsViewData
+    if ('edgeId' in subject && isTruthy(subject.edgeId)) {
+      invariant(view, `view ${subject.viewId} not found`)
+      const edge = nonNullable(view.findEdge(subject.edgeId), `edge ${subject.edgeId} not found in ${subject.viewId}`)
+      data = computeEdgeDetailsViewData([edge.id], view)
+    } else if (!!subject.source && !!subject.target) {
+      data = computeRelationshipDetailsViewData({
+        source: likec4model.element(subject.source),
+        target: likec4model.element(subject.target),
+      })
+    } else {
+      return null
+    }
+    return layoutRelationshipDetails(data, view)
+  }, [
+    subject,
+    view,
+    likec4model,
+  ])
+
+  const store = useStoreApi<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>()
+  const instance = useReactFlow<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>()
+
+  useEffect(() => {
+    if (instance.viewportInitialized) {
+      actor.send({ type: 'xyflow.init', instance, store })
+    }
+  }, [store, instance.viewportInitialized, actor])
+
+  useEffect(() => {
+    if (data !== null) {
+      actor.send({ type: 'update.layoutData', data })
+    }
+  }, [data, actor])
+
+  return null
+})
+
+const selector = ({ context }: RelationshipDetailsSnapshot) => ({
+  // subject: context.subject,
+  // view: state.context.view,
+  initialized: context.initialized.xydata && context.initialized.xyflow,
+  nodes: context.xynodes,
+  edges: context.xyedges,
 })
 
 const RelationshipDetailsInner = memo(() => {
   const browser = useRelationshipDetails()
   const {
-    edgeId,
-    view,
     initialized,
     nodes,
     edges,
-  } = useRelationshipDetailsState(selector)
-
-  const {
-    edge,
-    xynodes,
-    xyedges,
-    bounds,
-  } = useLayoutedDetails(edgeId, view)
-
-  useEffect(() => {
-    browser.send({ type: 'update.xydata', xynodes, xyedges })
-  }, [xynodes, xyedges])
-
-  const [historyEdgeId, historyOps, { history, current }] = useStateHistory(edgeId)
-
-  useEffect(() => {
-    if (historyEdgeId !== edgeId) {
-      historyOps.set(edgeId)
-    }
-  }, [edgeId])
-
-  useEffect(() => {
-    if (historyEdgeId !== edgeId) {
-      browser.navigateTo(historyEdgeId)
-    }
-  }, [historyEdgeId])
-
-  const hasStepBack = current > 0
-  const hasStepForward = current + 1 < history.length
+  } = useRelationshipDetailsState(selector, deepEqual)
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
-      id={`relationships-details-${browser.actor.sessionId}`}
+      id={browser.rootElementId}
       nodes={nodes}
       edges={edges}
       className={clsx(initialized ? 'initialized' : 'not-initialized')}
@@ -113,9 +155,6 @@ const RelationshipDetailsInner = memo(() => {
         browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
       fitViewPadding={0.05}
-      onInit={useCallbackRef((instance) => {
-        browser.send({ type: 'xyflow.init', instance })
-      })}
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
         browser.send({ type: 'xyflow.nodeClick', node })
@@ -125,17 +164,23 @@ const RelationshipDetailsInner = memo(() => {
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
       onPaneClick={useCallbackRef((e) => {
-        e.stopPropagation()
         browser.send({ type: 'xyflow.paneClick' })
+      })}
+      onDoubleClick={useCallbackRef(e => {
+        browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {
         browser.send({ type: 'xyflow.resized' })
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        browser.send({ type: 'xyflow.edgeMouseEnter', edge })
+        if (!edge.data.hovered) {
+          browser.send({ type: 'xyflow.edgeMouseEnter', edge })
+        }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        browser.send({ type: 'xyflow.edgeMouseLeave', edge })
+        if (edge.data.hovered) {
+          browser.send({ type: 'xyflow.edgeMouseLeave', edge })
+        }
       })}
       onSelectionChange={useCallbackRef((params) => {
         browser.send({ type: 'xyflow.selectionChange', ...params })
@@ -145,14 +190,7 @@ const RelationshipDetailsInner = memo(() => {
       pannable
       zoomable
     >
-      <TopLeftPanel
-        edge={edge}
-        view={view}
-        hasStepBack={hasStepBack}
-        hasStepForward={hasStepForward}
-        onStepBack={() => historyOps.back()}
-        onStepForward={() => historyOps.forward()}
-      />
+      <TopLeftPanel />
       <Panel position="top-right">
         <ActionIcon
           variant="default"
@@ -172,23 +210,69 @@ const RelationshipDetailsInner = memo(() => {
   )
 })
 
+// type TopLeftPanelProps = {
+//   edge: DiagramEdge
+//   view: DiagramView
+//   hasStepBack: boolean
+//   hasStepForward: boolean
+//   onStepBack: () => void
+//   onStepForward: () => void
+// }
+const topLeftPanelselector = ({ context }: RelationshipDetailsSnapshot) => ({
+  subject: context.subject,
+  viewId: context.viewId,
+})
+const TopLeftPanel = memo(() => {
+  const { subject, viewId } = useRelationshipDetailsState(topLeftPanelselector, deepEqual)
+  const likec4model = useLikeC4Model(true)
+  const view = likec4model.findView(viewId)
+
+  if (!view || !view.isDiagram()) {
+    return null
+  }
+
+  const edges = [...view.edges()]
+
+  let edge = ('edgeId' in subject && isTruthy(subject.edgeId))
+    ? edges.find(e => e.id === subject.edgeId)
+    : (
+      find(edges, (e) => e.source.element?.id === subject.source && e.target.element?.id === subject.target)
+      || find(edges, (e) => {
+        return (e.source.element?.id === subject.source ||
+          isAncestor(e.source.element?.id ?? '--', subject.source ?? '__')) &&
+          (e.target.element?.id === subject.target || isAncestor(e.target.element?.id ?? '', subject.target ?? '__'))
+      })
+    )
+  if (!edge) {
+    return null
+  }
+  return <TopLeftPanelInner edge={edge.$edge} view={view.$view} />
+})
+
 type TopLeftPanelProps = {
   edge: DiagramEdge
   view: DiagramView
-  hasStepBack: boolean
-  hasStepForward: boolean
-  onStepBack: () => void
-  onStepForward: () => void
 }
-const TopLeftPanel = ({
-  edge,
-  view,
-  hasStepBack,
-  hasStepForward,
-  onStepBack,
-  onStepForward,
-}: TopLeftPanelProps) => {
+const TopLeftPanelInner = ({ edge, view }: TopLeftPanelProps) => {
   const browser = useRelationshipDetails()
+  const edgeId = edge.id
+  const [historyEdgeId, historyOps, { history, current }] = useStateHistory(edge.id)
+
+  useEffect(() => {
+    if (historyEdgeId !== edgeId) {
+      historyOps.set(edgeId)
+    }
+  }, [edgeId])
+
+  useEffect(() => {
+    if (historyEdgeId !== edgeId) {
+      browser.navigateTo(historyEdgeId)
+    }
+  }, [historyEdgeId])
+
+  const hasStepBack = current > 0
+  const hasStepForward = current + 1 < history.length
+
   return (
     <Panel position="top-left">
       <Group gap={4} wrap={'nowrap'}>
@@ -208,7 +292,7 @@ const TopLeftPanel = ({
                 color="gray"
                 onClick={e => {
                   e.stopPropagation()
-                  onStepBack()
+                  historyOps.back()
                 }}>
                 <IconChevronLeft />
               </ActionIcon>
@@ -229,7 +313,7 @@ const TopLeftPanel = ({
                 color="gray"
                 onClick={e => {
                   e.stopPropagation()
-                  onStepForward()
+                  historyOps.forward()
                 }}>
                 <IconChevronRight />
               </ActionIcon>

@@ -1,11 +1,9 @@
-import { rem } from '@mantine/core'
-import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { easings, mantine, transitions, vars, whereDark, whereLight } from '../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const cardBg = createVar('card-bg')
-const cardBgImage = createVar('card-bg-top')
+export const backdropBlur = '--_blur'
+export const backdropOpacity = '--_opacity'
 
-export const dialog = style({
+export const dialog = css({
   boxSizing: 'border-box',
   margin: 0,
   padding: 0,
@@ -15,68 +13,55 @@ export const dialog = style({
   height: '100vh',
   maxWidth: '100vw',
   maxHeight: '100vh',
-  background: 'transparent',
-  border: '0 solid transparent',
-  vars: {
-    '--backdrop-opacity': '0%',
-    '--backdrop-blur': '0px',
-  },
-  selectors: {
-    [`&::backdrop`]: {
-      WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
-      backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(36 36 36 / var(--backdrop-opacity))`,
-    },
+  background: '[transparent]',
+  border: 'transparent',
+  _backdrop: {
+    // WebkitBackdropFilter: `blur(${backdropBlur})`,
+    backdropFilter: 'auto',
+    backdropBlur: `var(${backdropBlur})`,
+    backgroundColor: `[rgb(36 36 36 / var(${backdropOpacity}, 5%))]`,
   },
 })
-export const card = style({
+export const card = css({
   position: 'absolute',
   pointerEvents: 'all',
-  gap: mantine.spacing.lg,
+  gap: 'lg',
   justifyContent: 'stretch',
-  vars: {
-    [cardBg]: mantine.colors.body,
-    [cardBgImage]: `linear-gradient(180deg, ${vars.element.fill}, ${vars.element.fill} 4px, transparent 4px)`,
-  },
-  backgroundColor: cardBg,
-  backgroundImage: cardBgImage,
-  borderTopColor: vars.element.fill,
-  selectors: {
-    [`${whereDark} &`]: {
-      vars: {
-        [cardBg]: mantine.colors.dark[6],
-        [cardBgImage]: `
-          linear-gradient(180deg, color-mix(in srgb, ${vars.element.fill} 15%, transparent), transparent 80px),
-          linear-gradient(180deg, ${vars.element.fill}, ${vars.element.fill} 4px, transparent 4px)
+  backgroundColor: 'mantine.colors.body',
+  backgroundImage:
+    `linear-gradient(180deg, {colors.likec4.palette.fill}, {colors.likec4.palette.fill} 4px, transparent 4px)`,
+  borderTopColor: 'likec4.palette.fill',
+  _dark: {
+    backgroundColor: `mantine.colors.dark[6]`,
+    backgroundImage: `
+          linear-gradient(180deg, color-mix(in srgb, {colors.likec4.palette.fill} 15%, transparent), transparent 80px),
+          linear-gradient(180deg, {colors.likec4.palette.fill}, {colors.likec4.palette.fill} 4px, transparent 4px)
         `,
-      },
-    },
+  },
+  '& .react-flow__attribution': {
+    display: 'none',
   },
 })
 
-export const cardHeader = style({
+export const cardHeader = css({
   flex: 0,
   cursor: 'move',
 })
 
-globalStyle(`:where(${card}) .react-flow__attribution`, {
-  display: 'none',
-})
-
-export const title = style({
+export const title = css({
   display: 'block',
-  fontFamily: vars.element.font,
+  fontFamily: 'likec4.element',
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 600,
-  fontSize: 24,
+  fontSize: '24px',
   // lineHeight: 1.15,
-  lineHeight: mantine.lineHeights.xs,
+  lineHeight: 'xs',
   // color: vars.element.hiContrast
 })
 
 const iconSize = '40px'
-export const elementIcon = style({
+export const elementIcon = css({
   flex: `0 0 ${iconSize}`,
   height: iconSize,
   width: iconSize,
@@ -85,93 +70,80 @@ export const elementIcon = style({
   justifyContent: 'center',
   alignSelf: 'flex-start',
   cursor: 'move',
-  selectors: {
-    [`${whereDark} &`]: {
-      mixBlendMode: 'hard-light',
-    },
+  _dark: {
+    mixBlendMode: 'hard-light',
   },
-})
-globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
-  width: '100%',
-  height: 'auto',
-  maxHeight: '100%',
-  pointerEvents: 'none',
-  filter: `
+  '& :where(svg, img)': {
+    width: '100%',
+    height: 'auto',
+    maxHeight: '100%',
+    pointerEvents: 'none',
+    filter: `
     drop-shadow(0 0 3px rgb(0 0 0 / 10%))
     drop-shadow(0 1px 8px rgb(0 0 0 / 5%))
     drop-shadow(1px 1px 16px rgb(0 0 0 / 2%))
   `,
-})
-globalStyle(`${elementIcon} img`, {
-  objectFit: 'contain',
+  },
+  '& img': {
+    objectFit: 'contain',
+  },
 })
 
-const viewTitleColor = createVar('view-title-color')
-const iconColor = createVar('icon-color')
-export const viewButton = style({
+const viewTitleColor = '--view-title-color'
+const iconColor = '--icon-color'
+export const viewButton = css({
   // display: 'flex',
   width: '100%',
-  background: mantine.colors.body,
-  borderRadius: mantine.radius.sm,
+  background: 'mantine.colors.body',
+  borderRadius: 'sm',
   padding: `10px 8px`,
   // gap: 6,
   // alignItems: 'flex-start',
-  transition: transitions.fast,
-  border: `1px solid ${mantine.colors.defaultBorder}`,
-  vars: {
-    [viewTitleColor]: mantine.colors.dark[1],
+  transition: 'fast',
+  border: `1px dashed`,
+  borderColor: 'mantine.colors.defaultBorder',
+  [viewTitleColor]: '{colors.mantine.colors.dark[1]}',
+  _hover: {
+    background: 'mantine.colors.defaultHover',
+    [iconColor]: '{colors.mantine.colors.dark[1]}',
+    [viewTitleColor]: '{colors.mantine.colors.defaultColor}',
   },
-  ':hover': {
-    background: mantine.colors.defaultHover,
-    vars: {
-      [iconColor]: mantine.colors.dark[1],
-      [viewTitleColor]: mantine.colors.defaultColor,
-    },
+  _dark: {
+    background: 'mantine.colors.dark[6]',
   },
-  selectors: {
-    [`${whereDark} &`]: {
-      background: mantine.colors.dark[6],
-    },
-    [`${whereLight} &`]: {
-      vars: {
-        [iconColor]: mantine.colors.gray[6],
-        [viewTitleColor]: mantine.colors.gray[7],
-      },
-    },
-    [`${whereLight} &:hover`]: {
-      vars: {
-        [iconColor]: mantine.colors.gray[7],
-      },
+  _light: {
+    [iconColor]: '{colors.mantine.colors.gray[6]}',
+    [viewTitleColor]: '{colors.mantine.colors.gray[7]}',
+    _hover: {
+      [iconColor]: '{colors.mantine.colors.gray[7]}',
     },
   },
-})
 
-globalStyle(`${viewButton} .mantine-ThemeIcon-root`, {
-  transition: transitions.fast,
-  color: fallbackVar(iconColor, mantine.colors.dark[2]),
-  vars: {
+  '& .mantine-ThemeIcon-root': {
+    transition: 'fast',
+    // color: fallbackVar(iconColor, 'mantine.colors.dark[2])',
+    color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
     '--ti-size': '22px',
+    _hover: {
+      color: 'mantine.colors.defaultColor',
+    },
+  },
+
+  '& > *': {
+    transition: `all 130ms {easings.inOut}`,
+  },
+  '&:hover > *': {
+    transitionTimingFunction: 'out',
+    transform: 'translateX(1.6px)',
   },
 })
 
-globalStyle(`${viewButton} .mantine-ThemeIcon-root:hover`, {
-  color: mantine.colors.defaultColor,
-})
-
-globalStyle(`${viewButton} > *`, {
-  transition: `all 130ms ${easings.inOut}`,
-})
-globalStyle(`${viewButton}:hover > *`, {
-  transitionTimingFunction: easings.out,
-  transform: 'translateX(1.6px)',
-})
-
-export const viewButtonTitle = style({
-  transition: transitions.fast,
-  color: fallbackVar(viewTitleColor, mantine.colors.gray[7]),
-  fontSize: 15,
+export const viewButtonTitle = css({
+  transition: 'fast',
+  color: `[var(${viewTitleColor}, {colors.mantine.colors.gray[7]})]`,
+  fontSize: '15px',
   fontWeight: 500,
-  lineHeight: 1.4,
+  lineHeight: '1.4',
 })
 // globalStyle(`${viewButton} .tabler-icon`, {
 //   width: '85%',
@@ -185,110 +157,107 @@ export const viewButtonTitle = style({
 //   color: mantine.colors.dark[3]
 // })
 
-export const tabsRoot = style({
+export const tabsRoot = css({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'stretch',
   overflow: 'hidden',
-  gap: mantine.spacing.sm,
+  gap: 'sm',
 })
 
-export const tabsList = style({
+export const tabsList = css({
   // flex: '0',
-  background: mantine.colors.gray[1],
-  borderRadius: mantine.radius.sm,
+  background: 'mantine.colors.gray[1]',
+  borderRadius: 'sm',
   flexWrap: 'nowrap',
-  gap: 6,
-  padding: 4,
-  selectors: {
-    [`${whereDark} &`]: {
-      background: mantine.colors.dark[7],
-    },
+  gap: '6px',
+  padding: '4px',
+  _dark: {
+    background: 'mantine.colors.dark[7]',
   },
 })
 
-export const tabsTab = style({
-  fontSize: mantine.fontSizes.xs,
+export const tabsTab = css({
+  fontSize: 'xs',
   fontWeight: 500,
   flexGrow: 1,
   padding: '6px 8px',
-  transition: transitions.fast,
-  borderRadius: mantine.radius.sm,
-  color: mantine.colors.gray[7],
-  ':hover': {
-    transitionTimingFunction: easings.out,
-    color: mantine.colors.defaultColor,
-    background: mantine.colors.gray[3],
+  transition: 'fast',
+  borderRadius: 'sm',
+  color: 'mantine.colors.gray[7]',
+  _hover: {
+    transitionTimingFunction: 'out',
+    color: 'mantine.colors.defaultColor',
+    background: 'mantine.colors.gray[3]',
   },
-  selectors: {
-    ['&[data-active]']: {
-      transition: 'none',
-      background: mantine.colors.white,
-      boxShadow: mantine.shadows.xs,
-      color: mantine.colors.defaultColor,
+  ['&[data-active]']: {
+    transition: 'none',
+    background: 'mantine.colors.white',
+    shadow: 'xs',
+    color: 'mantine.colors.defaultColor',
+  },
+  _dark: {
+    color: 'mantine.colors.dark[1]',
+    _hover: {
+      color: 'mantine.colors.white',
+      background: 'mantine.colors.dark[6]',
     },
-    [`${whereDark} &`]: {
-      color: mantine.colors.dark[1],
-    },
-    [`${whereDark} &:hover`]: {
-      color: mantine.colors.white,
-      background: mantine.colors.dark[6],
-    },
-    [`${whereDark} &:is([data-active])`]: {
-      color: mantine.colors.white,
-      background: mantine.colors.dark[5],
+
+    [`&:is([data-active])`]: {
+      color: 'mantine.colors.white',
+      background: 'mantine.colors.dark[5]',
     },
   },
 })
 
-export const tabsPanel = style({
+export const tabsPanel = css({
   flex: 1,
   overflow: 'hidden',
   position: 'relative',
+  '&:not(:has(.mantine-ScrollArea-root))': {
+    paddingLeft: '4px',
+    paddingRight: '4px',
+  },
+  '& .mantine-ScrollArea-root': {
+    width: '100%',
+    height: '100%',
+    '& > div': {
+      paddingLeft: '4px',
+      paddingRight: '4px',
+    },
+  },
 })
 
-globalStyle(`${tabsPanel}:not(:has(.mantine-ScrollArea-root))`, {
-  paddingLeft: 4,
-  paddingRight: 4,
-})
-globalStyle(`${tabsPanel} .mantine-ScrollArea-root`, {
-  width: '100%',
-  height: '100%',
-})
-globalStyle(`${tabsPanel} .mantine-ScrollArea-viewport > div`, {
-  paddingLeft: 4,
-  paddingRight: 4,
-})
-
-export const propertiesGrid = style({
+export const propertiesGrid = css({
   flex: 1,
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: `${rem(20)} ${rem(16)}`,
+  gap: `[20px 16px]`,
   alignItems: 'baseline',
   justifyItems: 'stretch',
 })
 
-export const propertyLabel = style({
+export const propertyLabel = css({
   justifySelf: 'end',
 })
 
-export const resizeHandle = style({
+export const resizeHandle = css({
   position: 'absolute',
-  width: 14,
-  height: 14,
-  border: `3.5px solid ${mantine.colors.dark[3]}`,
+  width: '14px',
+  height: '14px',
+  border: `3.5px solid`,
+  borderColor: 'mantine.colors.dark[3]',
   borderTop: 'none',
   borderLeft: 'none',
-  borderRadius: 2,
-  bottom: 2,
-  right: 2,
-  transition: transitions.fast,
+  borderRadius: '2px',
+  bottom: '2px',
+  right: '2px',
+  transition: 'fast',
   cursor: 'se-resize',
-  ':hover': {
-    borderWidth: 4,
-    borderColor: mantine.colors.dark[1],
+  _hover: {
+    borderWidth: '4px',
+    borderColor: 'mantine.colors.dark[1]',
   },
 })

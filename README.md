@@ -6,7 +6,7 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </h4>
 
-[docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/cloud)
+[docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/index)
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
@@ -40,8 +40,8 @@ And result:
   <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
 </div>
 
-Template repository - [likec4/template](https://github.com/likec4/template)\
-Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+Template repository - [likec4/template](https://github.com/likec4/template)  
+Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/index)
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
 

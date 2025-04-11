@@ -77,8 +77,6 @@ export function computeDeploymentView<M extends AnyAux>(
     },
     edges: sorted.edges,
     nodes: map(nodes, n => {
-      // omit notation
-      delete n.notation
       if (n.icon === 'none') {
         delete n.icon
       }

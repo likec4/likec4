@@ -34,5 +34,8 @@ export default defineBuildConfig({
       lineLimit: 500,
     },
     inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources'],
+    },
   },
 })

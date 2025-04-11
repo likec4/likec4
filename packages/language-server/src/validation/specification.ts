@@ -1,9 +1,10 @@
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
-export const specificationRuleChecks = (
+export const checkSpecificationRule = (
   _: LikeC4Services,
 ): ValidationCheck<ast.SpecificationRule> => {
   return tryOrLog((node, accept) => {
@@ -16,7 +17,7 @@ export const specificationRuleChecks = (
   })
 }
 
-export const modelRuleChecks = (_: LikeC4Services): ValidationCheck<ast.Model> => {
+export const checkModel = (_: LikeC4Services): ValidationCheck<ast.Model> => {
   return tryOrLog((node, accept) => {
     if (node.$containerIndex && node.$containerIndex > 0) {
       accept('warning', `Prefer one model per document`, {
@@ -27,7 +28,7 @@ export const modelRuleChecks = (_: LikeC4Services): ValidationCheck<ast.Model> =
   })
 }
 
-export const globalsChecks = (_: LikeC4Services): ValidationCheck<ast.Globals> => {
+export const checkGlobals = (_: LikeC4Services): ValidationCheck<ast.Globals> => {
   return tryOrLog((node, accept) => {
     if (node.$containerIndex && node.$containerIndex > 0) {
       accept('warning', `Prefer one global block per document`, {
@@ -38,7 +39,7 @@ export const globalsChecks = (_: LikeC4Services): ValidationCheck<ast.Globals> =
   })
 }
 
-export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
+export const checkElementKind = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
     if (RESERVED_WORDS.includes(node.name)) {
@@ -47,8 +48,9 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKind = index
-      .allElements(ast.ElementKind)
+      .projectElements(projectId, ast.ElementKind)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -72,7 +74,7 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
   })
 }
 
-export const deploymentNodeKindChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentNodeKind> => {
+export const checkDeploymentNodeKind = (services: LikeC4Services): ValidationCheck<ast.DeploymentNodeKind> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
     if (RESERVED_WORDS.includes(node.name)) {
@@ -81,8 +83,9 @@ export const deploymentNodeKindChecks = (services: LikeC4Services): ValidationCh
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKind = index
-      .allElements(ast.DeploymentNodeKind)
+      .projectElements(projectId, ast.DeploymentNodeKind)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -106,12 +109,13 @@ export const deploymentNodeKindChecks = (services: LikeC4Services): ValidationCh
   })
 }
 
-export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
+export const checkTag = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
     const tagname = '#' + node.name
+    const projectId = projectIdFrom(node)
     const sameTag = index
-      .allElements(ast.Tag)
+      .projectElements(projectId, ast.Tag)
       .filter(n => n.name === tagname && n.node !== node)
       .head()
     if (sameTag) {
@@ -139,7 +143,7 @@ export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> =>
   })
 }
 
-export const relationshipChecks = (
+export const checkRelationshipKind = (
   services: LikeC4Services,
 ): ValidationCheck<ast.RelationshipKind> => {
   const index = services.shared.workspace.IndexManager
@@ -150,8 +154,9 @@ export const relationshipChecks = (
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(node)
     const sameKinds = index
-      .allElements(ast.RelationshipKind)
+      .projectElements(projectId, ast.RelationshipKind)
       .filter(n => n.name === node.name)
       .limit(2)
       .count()
@@ -164,13 +169,15 @@ export const relationshipChecks = (
   })
 }
 
-export const globalPredicateChecks = (
+export const checkGlobalPredicate = (
   services: LikeC4Services,
 ): ValidationCheck<ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
-    const predicateGroups = index.allElements(ast.GlobalPredicateGroup)
-    const dynamicPredicateGroups = index.allElements(ast.GlobalDynamicPredicateGroup)
+    const projectId = projectIdFrom(node)
+
+    const predicateGroups = index.projectElements(projectId, ast.GlobalPredicateGroup)
+    const dynamicPredicateGroups = index.projectElements(projectId, ast.GlobalDynamicPredicateGroup)
     const sameName = predicateGroups
       .concat(dynamicPredicateGroups)
       .filter(s => s.name === node.name)
@@ -185,13 +192,14 @@ export const globalPredicateChecks = (
   })
 }
 
-export const globalStyleIdChecks = (
+export const checkGlobalStyleId = (
   services: LikeC4Services,
 ): ValidationCheck<ast.GlobalStyleId> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
+    const projectId = projectIdFrom(node)
     const sameName = index
-      .allElements(ast.GlobalStyleId)
+      .projectElements(projectId, ast.GlobalStyleId)
       .filter(s => s.name === node.name)
       .limit(2)
       .count()

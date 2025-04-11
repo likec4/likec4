@@ -391,8 +391,8 @@ export function updateActiveWalkthrough({ context }: ActionArg): Partial<Diagram
       })
     }),
     xynodes: context.xynodes.map(node => {
-      const active = step.source === node.id || step.target === node.id
-      return Base.setDimmed(node, !active)
+      const dimmed = step.source !== node.id && step.target !== node.id
+      return Base.setDimmed(node, dimmed)
     }),
   }
 }

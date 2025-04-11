@@ -1,8 +1,7 @@
 import type { ExclusiveUnion, NonEmptyArray } from '@likec4/core'
-import { useCustomCompareEffect } from '@react-hookz/web'
-import { type PropsWithChildren, createContext, useContext, useState } from 'react'
+import { shallowEqual } from 'fast-equals'
+import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
 import { map, mapToObj, pick } from 'remeda'
-import { depsShallowEqual } from '../hooks/useUpdateEffect'
 
 const FeatureNames = [
   'Controls',
@@ -87,23 +86,25 @@ export function DiagramFeatures({
     }
   }>
 >) {
-  const scope = useContext(DiagramFeaturesContext)
-  const [enabled, setFeatures] = useState(scope)
+  const outerScope = useContext(DiagramFeaturesContext)
+  const [scope, setScope] = useState(outerScope)
 
-  useCustomCompareEffect(
+  useEffect(
     () => {
-      setFeatures(validate({
-        ...scope,
-        ...features,
-        ...overrides,
-      }))
+      setScope(current => {
+        const next = validate({
+          ...outerScope,
+          ...features,
+          ...overrides,
+        })
+        return shallowEqual(current, next) ? current : next
+      })
     },
-    [scope, features, overrides],
-    depsShallowEqual,
+    [outerScope, features, overrides],
   )
 
   return (
-    <DiagramFeaturesContext.Provider value={enabled}>
+    <DiagramFeaturesContext.Provider value={scope}>
       {children}
     </DiagramFeaturesContext.Provider>
   )

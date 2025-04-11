@@ -1,8 +1,8 @@
-import { type EdgeId, nonNullable } from '@likec4/core'
+import { type EdgeId, type Fqn, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { createContext, useContext, useMemo, useTransition } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 
@@ -23,23 +23,22 @@ export function useRelationshipDetailsState<T = unknown>(
 
 export function useRelationshipDetails() {
   const actor = useRelationshipDetailsActor()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
+    get rootElementId(): string {
+      return `relationship-details-${actor.sessionId.replaceAll(':', '_')}`
+    },
     getState: () => actor.getSnapshot().context,
     send: actor.send,
-    navigateTo: (edgeId: EdgeId) => {
-      startTransition(() => {
-        actor.send({
-          type: 'navigate.to',
-          edgeId,
-        })
-      })
+    navigateTo: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+      if (params.length === 1) {
+        actor.send({ type: 'navigate.to', params: { edgeId: params[0] } })
+      } else {
+        actor.send({ type: 'navigate.to', params: { source: params[0], target: params[1] } })
+      }
     },
     fitDiagram: () => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram' })
-      })
+      actor.send({ type: 'fitDiagram' })
     },
     close: () => {
       if (actor._parent) {

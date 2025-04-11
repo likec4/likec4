@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.24.1",
+  "version": "1.28.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -17,7 +17,6 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "rm -r -f dist",
-    "prepack": "turbo run build",
     "pack": "pnpm pack",
     "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
@@ -46,6 +45,14 @@
         "types": "./dist/builder/index.d.mts",
         "import": "./dist/builder/index.mjs",
         "default": "./dist/builder/index.mjs"
+      }
+    },
+    "./compute-view/relationships": {
+      "sources": "./src/compute-view/relationships-view/index.ts",
+      "default": {
+        "types": "./dist/compute-view/relationships-view/index.d.mts",
+        "import": "./dist/compute-view/relationships-view/index.mjs",
+        "default": "./dist/compute-view/relationships-view/index.mjs"
       }
     },
     "./compute-view": {
@@ -79,35 +86,37 @@
         "import": "./dist/types/index.mjs",
         "default": "./dist/types/index.mjs"
       }
-    }
+    },
+    "./src": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "4.34.1"
+    "type-fest": "catalog:utils"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "7.17.0",
+    "@mantine/colors-generator": "catalog:mantine",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
+    "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
-    "mnemonist": "0.40.2",
+    "mnemonist": "0.40.3",
     "natural-compare-lite": "^1.4.0",
-    "object-hash": "^3.0.0",
+    "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
-    "remeda": "^2.20.2",
-    "turbo": "^2.4.2",
+    "remeda": "catalog:utils",
+    "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
-    "vitest": "^3.0.6"
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.8.0"
 }

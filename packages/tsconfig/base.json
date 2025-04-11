@@ -1,21 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Base Strictest",
-  "exclude": [
-    "node_modules",
-    "**/node_modules/**",
-    "${configDir}/node_modules",
-    "dist",
-    "${configDir}/dist"
-  ],
-  "include": [
-    "${configDir}/src"
-  ],
   "compilerOptions": {
-    "outDir": "${configDir}/dist",
-    "target": "es2022",
-    "module": "es2022",
+    "target": "esnext",
+    "module": "Preserve",
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "lib": [
       "esnext"
     ],
@@ -28,28 +18,28 @@
     "checkJs": false,
     "declaration": true,
     "declarationMap": false,
+    "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noUnusedParameters": true,
+    "noEmitOnError": false,
     "pretty": true,
     "resolveJsonModule": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "strict": true,
     "strictBuiltinIteratorReturn": true,
-    "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
-    "useDefineForClassFields": true,
-    "verbatimModuleSyntax": true
+    "outDir": "${configDir}/lib",
+    "useDefineForClassFields": true
   }
 }

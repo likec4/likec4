@@ -4,6 +4,7 @@ import {
   type DeploymentNodeKind,
   type DiagramView,
   type ElementShape as C4ElementShape,
+  type ElementStyle,
   type IconUrl,
   type IteratorLike,
   type Link,
@@ -112,6 +113,10 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   get navigateTo(): LikeC4ViewModel<M> | null {
     return this.$node.navigateTo ? this.$view.$model.view(this.$node.navigateTo) : null
+  }
+
+  get style(): ElementStyle {
+    return this.$node.style
   }
 
   /**

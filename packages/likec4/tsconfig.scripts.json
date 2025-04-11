@@ -2,22 +2,19 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "noEmit": true,
     "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "ESNext",
-    "composite": true,
-    "tsBuildInfoFile": "scripts.tsbuildinfo",
+    "tsBuildInfoFile": "lib/scripts/.tsbuildinfo",
+    "outDir": "lib/scripts",
+    "rootDir": ".",
     "types": [
       "node"
     ]
   },
   "include": [
     "scripts",
+    "*.config.ts",
     "package.json"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.cli.json"
-    }
   ]
 }

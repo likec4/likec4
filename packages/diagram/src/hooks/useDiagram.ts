@@ -1,8 +1,8 @@
-import { type DiagramView, type EdgeId, type Fqn, type NodeId, type ViewId } from '@likec4/core'
+import { type DiagramView, type EdgeId, type ElementNotation, type Fqn, type NodeId, type ViewId } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useMemo, useTransition } from 'react'
+import { useMemo } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -16,46 +16,37 @@ export { useDiagramActorRef }
 
 export function useDiagram() {
   const actor = useDiagramActorRef()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
     send: actor.send,
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
-      startTransition(() => {
-        actor.send({
-          type: 'navigate.to',
-          viewId,
-          ...(fromNode && { fromNode }),
-        })
+      actor.send({
+        type: 'navigate.to',
+        viewId,
+        ...(fromNode && { fromNode }),
       })
     },
     navigate: (direction: 'back' | 'forward') => {
-      startTransition(() => {
-        actor.send({ type: `navigate.${direction}` })
-      })
+      actor.send({ type: `navigate.${direction}` })
     },
     fitDiagram: (duration = 350) => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram', duration })
-      })
+      actor.send({ type: 'fitDiagram', duration })
     },
     openRelationshipsBrowser: (fqn: Fqn) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipsBrowser', fqn })
-      })
+      actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
     openSource: (params: OpenSourceParams) => {
       actor.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.elementDetails', fqn, fromNode })
-      })
+      actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (edgeId: EdgeId) => {
-      startTransition(() => {
-        actor.send({ type: 'open.relationshipDetails', edgeId })
-      })
+    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+      if (params.length === 1) {
+        actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
+      } else {
+        actor.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
+      }
     },
 
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
@@ -135,6 +126,13 @@ export function useDiagram() {
     toggleFeature: (feature: FeatureName, forceValue?: boolean) => {
       actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
     },
+
+    highlightNotation: (notation: ElementNotation, kind?: string) => {
+      actor.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
+    },
+    unhighlightNotation: () => {
+      actor.send({ type: 'notations.unhighlight' })
+    },
   }), [actor])
 }
 
@@ -155,8 +153,9 @@ export function useDiagramSyncLayoutState<T = unknown>(
 }
 
 export function useDiagramContext<T = unknown>(
-  selector: (state: DiagramContext) => T,
+  selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-) {
-  return useDiagramActorSnapshot(useCallbackRef(s => selector(s.context)), compare)
+): T {
+  const actorRef = useDiagramActorRef()
+  return useXstateSelector(actorRef, useCallbackRef(s => selector(s.context)), compare)
 }

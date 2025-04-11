@@ -6,9 +6,9 @@
       "ES2022",
       "WebWorker"
     ],
-    "rootDir": "."
+    "rootDir": "src"
   },
   "include": [
-    "src"
+    "src",
   ]
 }

@@ -19,16 +19,14 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "debugWebviews": true,
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-updates",
         "--disable-workspace-trust",
         "--skip-release-notes",
         "--skip-welcome",
-        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/cloud-system",
+        "${workspaceFolder}/examples/multi-project",
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"

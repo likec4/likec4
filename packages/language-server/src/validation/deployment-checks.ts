@@ -3,6 +3,7 @@ import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
+import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -26,9 +27,10 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
         range,
       })
     }
+    const projectId = projectIdFrom(el)
     const fqnName = DeploymentsIndex.getFqn(el)
 
-    const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
+    const withSameName = DeploymentsIndex.byFqn(projectId, fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
       accept(
         'error',
@@ -62,10 +64,10 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
         range,
       })
     }
-
+    const projectId = projectIdFrom(el)
     const fqnName = DeploymentsIndex.getFqn(el)
 
-    const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
+    const withSameName = DeploymentsIndex.byFqn(projectId, fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
       accept(
         'error',
@@ -82,15 +84,6 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
   const ModelParser = services.likec4.ModelParser
   return tryOrLog((el, accept) => {
-    const source = el.source?.value?.ref
-    if (!source) {
-      let sourceCstText = el.source?.$cstNode?.text ?? ''
-      accept('error', `DeploymentRelation source '${sourceCstText}' not resolved`, {
-        node: el,
-        property: 'source',
-      })
-      return
-    }
     const target = el.target?.value?.ref
     if (!target) {
       let targetCstText = el.target?.$cstNode?.text ?? ''
@@ -100,11 +93,27 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       })
       return
     }
-
     const doc = getDocument(el)
     const parser = ModelParser.forDocument(doc)
 
-    const sourceFqnRef = parser.parseFqnRef(el.source)
+    let sourceFqnRef
+    try {
+      sourceFqnRef = parser._resolveDeploymentRelationSource(el)
+    } catch (e) {
+      accept('error', 'DeploymentRelation source not resolved', {
+        node: el,
+        property: 'source',
+      })
+      return
+    }
+    if (FqnRef.isImportRef(sourceFqnRef)) {
+      accept('error', 'DeploymentRelation cannot refer imported model (not implemented yet)', {
+        node: el,
+        property: 'source',
+      })
+      return
+    }
+
     if (FqnRef.isModelRef(sourceFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
@@ -114,6 +123,13 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     }
 
     const targetFqnRef = parser.parseFqnRef(el.target)
+    if (FqnRef.isImportRef(targetFqnRef)) {
+      accept('error', 'DeploymentRelation cannot refer imported model (not implemented yet)', {
+        node: el,
+        property: 'target',
+      })
+      return
+    }
     if (FqnRef.isModelRef(targetFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,

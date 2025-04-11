@@ -1,19 +1,18 @@
 import { viteAliases } from '@/vite/aliases'
+import pandaCss from '@likec4/styles/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import type { LikeC4ViteConfig } from './config-app.prod'
-import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 export type { LikeC4ViteConfig }
@@ -58,7 +57,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     mode: 'development',
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_STYLE_BUNDLE__: 'false',
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"',
@@ -123,18 +121,13 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     css: {
       postcss: {
-        plugins: [
-          postcssPresetMantine(),
-        ],
+        plugins: [pandaCss()],
       },
     },
     customLogger,
     plugins: [
-      vanillaExtractPlugin({
-        unstable_mode: 'transform',
-      }),
-      likec4Plugin({
-        languageServices,
+      LikeC4VitePlugin({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,
       }),
       TanStackRouterVite({
@@ -144,51 +137,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         quoteStyle: 'single',
       }),
       react(),
+      Inspect(),
     ].concat(
-      cfg.outputSingleFile ? [viteSingleFile()] : [cssInjectedByJsPlugin({
-        injectionCodeFormat: 'esm',
-        injectCodeFunction: function(cssCode: string, options) {
-          try {
-            if (typeof document != 'undefined') {
-              const id = options.styleId ?? options.attributes?.['data-vite-dev-id']
-              if (!id) {
-                throw new Error('styleId or data-vite-dev-id is required')
-              }
-              // @ts-ignore
-              if (window.__likec4styles) {
-                // @ts-ignore
-                window.__likec4styles.set(id, cssCode)
-                return
-              }
-
-              var elementStyle = document.createElement('style')
-
-              // SET ALL ATTRIBUTES
-              for (const attribute in options.attributes) {
-                elementStyle.setAttribute(attribute, options.attributes[attribute]!)
-              }
-
-              elementStyle.appendChild(document.createTextNode(cssCode))
-              document.head.appendChild(elementStyle)
-            }
-          } catch (e) {
-            console.error('vite-plugin-css-injected-by-js', e)
-          }
-        },
-        dev: {
-          enableDev: true,
-          removeStyleCodeFunction: function(id) {
-            document.querySelectorAll(`[data-vite-dev-id="${id}"]`).forEach((el) => {
-              el.parentNode!.removeChild(el)
-            })
-            // @ts-ignore
-            if (window.__likec4styles) {
-              // @ts-ignore
-              window.__likec4styles.set(id, '')
-            }
-          },
-        },
-      })],
+      cfg.outputSingleFile ? [viteSingleFile()] : [],
     ),
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

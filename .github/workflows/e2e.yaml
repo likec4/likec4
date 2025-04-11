@@ -20,7 +20,7 @@ jobs:
 
       - name: 📦 pack
         run: |
-          pnpm turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
@@ -28,6 +28,7 @@ jobs:
           NODE_ENV: development
         run: |
           pnpm install
+          pnpm install:chromium
           pnpm bootstrap
 
       - name: ⚙️ run playwright tests
@@ -37,7 +38,7 @@ jobs:
       - id: cloudflare
         if: ${{ failure() }}
         name: ⚙️ publish playwright-report
-        uses: cloudflare/wrangler-action@392082e81ffbcb9ebdde27400634aa004b35ea37 # v3
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -69,7 +70,7 @@ jobs:
 
       - name: 📦 pack
         run: |
-          pnpm turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e

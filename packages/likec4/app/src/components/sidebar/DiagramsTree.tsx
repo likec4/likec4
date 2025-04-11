@@ -20,9 +20,9 @@ import {
   IconStack2,
   IconStarFilled,
 } from '@tabler/icons-react'
-import { useParams, useRouter } from '@tanstack/react-router'
-import { type MouseEvent, type PropsWithChildren, memo, useEffect, useTransition } from 'react'
-import { RenderIcon } from '../RenderIcon'
+import { useRouter } from '@tanstack/react-router'
+import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
+import { useCurrentDiagram } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -42,13 +42,13 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
-export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupBy | undefined }) => {
+export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
+  groupBy: GroupBy | undefined
+}) => {
   const data = useDiagramsTreeData(groupBy)
-  const { viewId } = useParams({
-    from: '/view/$viewId',
-  })
   const router = useRouter()
-  const diagram = useLikeC4Model(true).findView(viewId)?.$view
+  const diagram = useCurrentDiagram()
+  const viewId = diagram?.id ?? null
 
   const tree = useTree({
     multiple: false,
@@ -72,11 +72,12 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
   }, [relativePath, groupBy])
 
   useEffect(() => {
-    tree.select(viewId)
+    if (viewId) {
+      tree.select(viewId)
+    }
   }, [viewId])
 
   const theme = useComputedColorScheme()
-  const [, startTransition] = useTransition()
 
   return (
     <Box>
@@ -96,6 +97,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
+              // color={theme === 'light' ? 'dark' : 'gray'}
               variant={selected ? 'transparent' : 'subtle'}
               size="sm"
               fz={'sm'}
@@ -121,12 +123,14 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  startTransition(() =>
-                    router.buildAndCommitLocation({
-                      params: {
+                  router.commitLocation(
+                    router.buildLocation({
+                      to: '.',
+                      params: (p: any) => ({
+                        ...p,
                         viewId: node.value,
-                      },
-                    })
+                      }),
+                    }),
                   )
                 },
               })}
@@ -181,10 +185,10 @@ function DiagramPreview({
       <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
         <StaticLikeC4Diagram
           view={diagram}
-          renderIcon={RenderIcon}
           fitView
-          fitViewPadding={0}
+          fitViewPadding={'4px'}
           enableElementDetails={false}
+          reduceGraphics
           initialWidth={width}
           initialHeight={height}
         />

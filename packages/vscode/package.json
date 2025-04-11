@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.24.1",
+  "version": "1.28.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -26,12 +26,12 @@
     "dependencies": false
   },
   "scripts": {
-    "vscode:prepublish": "tsx scripts/prepublish.mts",
+    "vscode:prepublish": "tsx --conditions=sources scripts/prepublish.mts",
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
-    "build": "tsx scripts/build.mts",
+    "build": "tsx --conditions=sources scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f contrib dist src/generated",
     "vsce:pack": "pnpx vsce package",
@@ -62,7 +62,33 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ],
+        "url": "./data/config.schema.json"
+      }
+    ],
     "languages": [
+      {
+        "id": "jsonc",
+        "filenames": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ]
+      },
+      {
+        "id": "json5",
+        "filenames": [
+          ".likec4rc",
+          ".likec4.config.json",
+          "likec4.config.json"
+        ]
+      },
       {
         "id": "likec4",
         "aliases": [
@@ -205,42 +231,44 @@
     }
   },
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "1.7.0",
+    "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^20.17.17",
+    "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.8",
-    "consola": "^3.4.0",
-    "esbuild": "^0.25.0",
-    "esbuild-plugins-node-modules-polyfill": "^1.6.8",
-    "esm-env": "^1.2.2",
+    "consola": "catalog:utils",
+    "esbuild": "catalog:esbuild",
+    "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
+    "@valibot/to-json-schema": "catalog:utils",
+    "esm-env": "catalog:utils",
     "execa": "^9.5.2",
-    "fast-equals": "^5.2.2",
-    "langium": "3.3.1",
+    "fast-equals": "catalog:utils",
+    "langium": "catalog:langium",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
-    "reactive-vscode": "^0.2.13",
-    "remeda": "^2.20.2",
-    "std-env": "^3.8.0",
+    "reactive-vscode": "^0.2.14",
+    "remeda": "catalog:utils",
+    "std-env": "catalog:utils",
     "tslib": "^2.8.1",
-    "tsx": "~4.19.3",
-    "turbo": "^2.4.2",
-    "type-fest": "4.34.1",
+    "valibot": "catalog:utils",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "type-fest": "catalog:utils",
     "typescript": "catalog:",
     "vscode-ext-gen": "^1.0.2",
-    "vscode-jsonrpc": "8.2.0",
-    "vscode-languageclient": "9.0.1",
-    "vscode-languageserver": "9.0.1",
-    "vscode-languageserver-types": "3.17.5",
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-languageclient": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
     "vscode-messenger": "^0.5.1",
     "vscode-messenger-common": "^0.5.1",
-    "vscode-uri": "3.1.0"
+    "vscode-uri": "catalog:vscode"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.8.0"
 }

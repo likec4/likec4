@@ -1,13 +1,12 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { FqnRef, invariant, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
+import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstDeployment,
   type ParsedAstDeploymentRelation,
   type ParsedAstExtend,
   ast,
-  toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -27,10 +26,6 @@ function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
   while ((el = traverseStack.shift())) {
     if (ast.isDeploymentRelation(el)) {
       relations.push(el)
-      continue
-    }
-    if (ast.isDeployedInstance(el)) {
-      yield el
       continue
     }
     if (el.body && el.body.elements.length > 0) {
@@ -85,8 +80,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const id = this.resolveFqn(astNode)
       const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
       const tags = this.convertTags(astNode.body)
-      const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-      const style = toElementStyle(stylePropsAst, isValid)
+      const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = pipe(
@@ -101,15 +95,6 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const technology = toSingleLine(bodyProps.technology)
 
       const links = this.convertLinks(astNode.body)
-
-      // Property has higher priority than from style
-      const iconProp = astNode.body?.props.find(ast.isIconProperty)
-      if (iconProp && isValid(iconProp)) {
-        const value = iconProp.libicon?.ref?.name ?? iconProp.value
-        if (isTruthy(value)) {
-          style.icon = value as c4.IconUrl
-        }
-      }
 
       return {
         id,
@@ -127,11 +112,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
     parseDeployedInstance(astNode: ast.DeployedInstance): ParsedAstDeployment.Instance {
       const isValid = this.isValid
       const id = this.resolveFqn(astNode)
-      const element = this.resolveFqn(nonNullable(elementRef(astNode.element), 'DeployedInstance element not found'))
+      const target = this.parseFqnRef(astNode.target.modelElement)
+      invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
+      // const element = FqnRef.toModelFqn(target)
 
       const tags = this.convertTags(astNode.body)
-      const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-      const style = toElementStyle(stylePropsAst, isValid)
+      const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = pipe(
@@ -147,18 +133,9 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const links = this.convertLinks(astNode.body)
 
-      // Property has higher priority than from style
-      const iconProp = astNode.body?.props.find(ast.isIconProperty)
-      if (iconProp && isValid(iconProp)) {
-        const value = iconProp.libicon?.ref?.name ?? iconProp.value
-        if (isTruthy(value)) {
-          style.icon = value as c4.IconUrl
-        }
-      }
-
       return {
         id,
-        element,
+        element: target,
         ...(metadata && { metadata }),
         ...(title && { title }),
         ...(tags && { tags }),
@@ -192,10 +169,22 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       }
     }
 
+    _resolveDeploymentRelationSource(node: ast.DeploymentRelation): FqnRef {
+      if (isDefined(node.source)) {
+        return this.parseFqnRef(node.source)
+      }
+      if (node.$container.$type === 'DeploymentNodeBody' || node.$container.$type === 'DeployedInstanceBody') {
+        return {
+          deployment: this.resolveFqn(node.$container.$container),
+        }
+      }
+      throw new Error('RelationRefError: Invalid container for sourceless relation')
+    }
+
     parseDeploymentRelation(astNode: ast.DeploymentRelation): ParsedAstDeploymentRelation {
       const isValid = this.isValid
       const astPath = this.getAstNodePath(astNode)
-      const source = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.source))
+      const source = FqnRef.toDeploymentRef(this._resolveDeploymentRelationSource(astNode))
       const target = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.target))
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)

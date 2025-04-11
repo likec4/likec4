@@ -60,6 +60,6 @@ views {
   }
 
 }
-`.trimStart()
-  }
+`.trimStart(),
+  },
 }

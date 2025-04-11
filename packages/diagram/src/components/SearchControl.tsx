@@ -1,10 +1,7 @@
 import {
-  type BoxProps,
   type ElementProps,
   type UnstyledButtonProps,
-  Box,
   Group,
-  rem,
   Text,
   UnstyledButton,
 } from '@mantine/core'
@@ -18,13 +15,13 @@ interface SearchControlProps extends UnstyledButtonProps, ElementProps<'button'>
 export function SearchControl({ className, ...others }: SearchControlProps) {
   const isMac = isMacOs()
   return (
-    <UnstyledButton {...others} className={cx(classes.root, className)}>
+    <UnstyledButton {...others} className={cx('group', classes.root, className)}>
       <Group gap="xs">
-        <IconSearch style={{ width: rem(15), height: rem(15) }} stroke={2} />
-        <Text fz="sm" fw="500" pr={50}>
+        <IconSearch style={{ width: '15px', height: '15px' }} stroke={2} />
+        <Text component="div" className={classes.placeholder}>
           Search
         </Text>
-        <Text fw={700} className={classes.shortcut}>
+        <Text component="div" className={classes.shortcut}>
           {isMac ? '⌘ + K' : 'Ctrl + K'}
         </Text>
       </Group>

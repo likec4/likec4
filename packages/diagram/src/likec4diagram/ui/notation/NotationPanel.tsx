@@ -1,4 +1,5 @@
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
+import { css, cx } from '@likec4/styles/css'
 import {
   ActionIcon,
   Badge,
@@ -19,7 +20,7 @@ import {
 import { useLocalStorage } from '@mantine/hooks'
 import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 import { ElementShape } from '../../../base/primitives'
@@ -27,8 +28,7 @@ import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
 import type { DiagramContext } from '../../../state/types'
-import { vars } from '../../../theme-vars'
-import * as css from './NotationPanel.css'
+import * as styles from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
 
@@ -47,17 +47,20 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
       shadow="none"
       px={'xs'}
       py={'sm'}
-      className={css.elementNotation}
-      mod={{
-        'likec4-color': color,
-      }}
+      className={cx(
+        styles.elementNotation,
+        css({
+          likec4Palette: color,
+        }),
+      )}
+      data-likec4-color={color}
       onMouseEnter={() => {
         setOnlyKind(null)
-        // diagramStore.getState().highlightByElementNotation(value)
+        diagram.highlightNotation(value)
       }}
       onMouseLeave={() => {
         setOnlyKind(null)
-        // diagramStore.setState({ dimmed: new Set() })
+        diagram.unhighlightNotation()
       }}
     >
       <Group
@@ -85,17 +88,18 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
             {value.kinds.map((kind) => (
               <Badge
                 key={kind}
-                className={css.shapeBadge}
+                className={cx(
+                  styles.shapeBadge,
+                )}
                 onMouseEnter={() => {
                   setOnlyKind(kind)
-                  // diagramStore.getState().highlightByElementNotation(value, kind)
+                  diagram.highlightNotation(value, kind)
                 }}
                 onMouseLeave={() => {
                   setOnlyKind(null)
-                  // diagramStore.getState().highlightByElementNotation(value)
+                  diagram.highlightNotation(value)
                 }}
                 opacity={isNonNullish(onlyKind) && onlyKind !== kind ? 0.25 : 1}
-                color={isNonNullish(onlyKind) && onlyKind !== kind ? 'gray' : vars.element.fill}
               >
                 {kind}
               </Badge>
@@ -149,7 +153,7 @@ export const NotationPanel = memo(() => {
             translateX: '100%',
             opacity: 0.6,
           }}
-          className={clsx('react-flow__panel', css.container)}>
+          className={clsx('react-flow__panel', styles.container)}>
           <Tooltip label="View has no notations" color="orange" {...portalProps}>
             <ThemeIcon
               size={'lg'}
@@ -171,14 +175,14 @@ export const NotationPanel = memo(() => {
             translateX: '100%',
             opacity: 0.6,
           }}
-          className={clsx('react-flow__panel', css.container)}
+          className={clsx('react-flow__panel', styles.container)}
         >
           <Tooltip label="Show notation" color="dark" fz={'xs'} {...portalProps}>
             <ActionIcon
               size={'lg'}
               variant="default"
               color="gray"
-              radius={'md'}
+              className={styles.icon}
               onClick={() => setCollapsed(false)}
             >
               <IconHelpCircle stroke={1.5} />
@@ -200,7 +204,7 @@ export const NotationPanel = memo(() => {
             opacity: 0,
             scale: 0.25,
           }}
-          className={clsx('react-flow__panel', css.container)}
+          className={clsx('react-flow__panel', styles.container)}
           style={{
             transformOrigin: 'bottom right',
           }}
@@ -209,7 +213,7 @@ export const NotationPanel = memo(() => {
             radius="sm"
             withBorder
             shadow="lg"
-            className={css.card}>
+            className={styles.card}>
             {/* <Text fz={'sm'} fw={500} c={'dimmed'} ml={'md'}>diagram notation</Text> */}
             <Tabs defaultValue="first" radius={'xs'}>
               <TabsList>
@@ -231,7 +235,7 @@ export const NotationPanel = memo(() => {
                 </TabsTab>
               </TabsList>
 
-              <TabsPanel value="first" className={css.tabPanel} hidden={isCollapsed}>
+              <TabsPanel value="first" className={styles.tabPanel} hidden={isCollapsed}>
                 <ScrollAreaAutosize
                   viewportProps={{
                     style: {

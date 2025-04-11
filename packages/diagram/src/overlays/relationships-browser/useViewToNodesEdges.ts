@@ -9,8 +9,8 @@ import {
 import { useDeepCompareMemo } from '@react-hookz/web'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes } from './_types'
+import { LayoutRelationshipsViewResult } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 export function viewToNodesEdge(
@@ -70,7 +70,6 @@ export function viewToNodesEdge(
       draggable: false,
       selectable: true,
       focusable: true,
-      deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       style: {
@@ -121,6 +120,7 @@ export function viewToNodesEdge(
               depth: node.depth ?? 0,
               icon: node.icon ?? 'none',
               ports: node.ports,
+              existsInCurrentView: node.existsInCurrentView,
               fqn,
               ...navigateTo,
             },
@@ -147,6 +147,7 @@ export function viewToNodesEdge(
               icon: node.icon ?? 'none',
               ports: node.ports,
               style: node.style,
+              existsInCurrentView: node.existsInCurrentView,
               ...navigateTo,
             },
           },
@@ -171,7 +172,7 @@ export function viewToNodesEdge(
 
     xyedges.push({
       id,
-      type: 'relationships',
+      type: 'relationship',
       source: ns + source,
       target: ns + target,
       sourceHandle: edge.sourceHandle,
@@ -179,22 +180,16 @@ export function viewToNodesEdge(
       zIndex: ZIndexes.Edge,
       // selectable: selectable,
       // hidden: !visiblePredicate(edge),
-      deletable: false,
+      // deletable: false,
       data: {
+        sourceFqn: edge.sourceFqn,
+        targetFqn: edge.targetFqn,
         relations: edge.relations,
         color: edge.color ?? 'gray',
         label: edge.label,
         navigateTo: edge.navigateTo ?? null,
-
-        // technology: edge.technology,
-        // navigateTo: edge.navigateTo,
-        // labelBBox: edge.labelBBox ?? null,
-        // points: edge.points,
-        // color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',
-        // dir: edge.dir ?? 'forward',
-        // head: edge.head ?? 'normal',
-        // tail: edge.tail ?? 'none',
+        existsInCurrentView: edge.existsInCurrentView,
       },
       interactionWidth: 20,
     })

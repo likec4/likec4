@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   type ComputedNode,
-  type ElementExpression,
-  ElementKind,
   type IconUrl,
+  type ModelLayer,
   type NonEmptyArray,
-  type ViewRuleStyle
+  type ViewRuleStyle,
+  ElementKind,
 } from '../../types'
 import { $expr } from '../element-view/__test__/fixture'
 import { applyViewRuleStyles } from './applyViewRuleStyles'
@@ -18,11 +18,14 @@ function g(id: string): ComputedNode {
   return { id, kind: ElementKind.Group } as any
 }
 
-function r(targets: NonEmptyArray<ElementExpression>, props: Partial<Omit<ViewRuleStyle, 'targets'>>): ViewRuleStyle {
+function r(
+  targets: NonEmptyArray<ModelLayer.Expression>,
+  props: Partial<Omit<ViewRuleStyle, 'targets'>>,
+): ViewRuleStyle {
   return {
     targets,
     style: {},
-    ...props
+    ...props,
   }
 }
 
@@ -38,7 +41,7 @@ describe('applyViewRuleStyles', () => {
   it('does not modify groups', () => {
     const groups = [g('1'), g('2')] as ComputedNode[]
 
-    const rules = [r([$expr('*') as ElementExpression], { notation: 'some notation' })] as ViewRuleStyle[]
+    const rules = [r([$expr('*')], { notation: 'some notation' })] as ViewRuleStyle[]
 
     expect(applyViewRuleStyles(rules, groups)).toStrictEqual(groups)
   })
@@ -48,17 +51,17 @@ describe('applyViewRuleStyles', () => {
 
     const rules = [
       r([
-        $expr('support') as ElementExpression,
-        $expr('cloud') as ElementExpression
-      ], { notation: 'some notation' })
+        $expr('support'),
+        $expr('cloud'),
+      ], { notation: 'some notation' }),
     ]
 
     expect(applyViewRuleStyles(rules, nodes)).toStrictEqual([
       {
         ...nodes[0],
-        notation: 'some notation'
+        notation: 'some notation',
       },
-      nodes[1]
+      nodes[1],
     ])
   })
 
@@ -67,8 +70,8 @@ describe('applyViewRuleStyles', () => {
 
     const rules = [
       r([
-        $expr('support') as ElementExpression,
-        $expr('cloud') as ElementExpression
+        $expr('support'),
+        $expr('cloud'),
       ], {
         notation: 'some notation',
         style: {
@@ -76,9 +79,9 @@ describe('applyViewRuleStyles', () => {
           icon: 'aws:lambda' as IconUrl,
           border: 'dashed',
           shape: 'browser',
-          opacity: 30
-        }
-      })
+          opacity: 30,
+        },
+      }),
     ]
 
     expect(applyViewRuleStyles(rules, nodes)).toStrictEqual([
@@ -90,10 +93,10 @@ describe('applyViewRuleStyles', () => {
         shape: 'browser',
         style: {
           border: 'dashed',
-          opacity: 30
-        }
+          opacity: 30,
+        },
       },
-      nodes[1]
+      nodes[1],
     ])
   })
 
@@ -105,11 +108,11 @@ describe('applyViewRuleStyles', () => {
       shape: 'browser',
       style: {
         border: 'dashed',
-        opacity: 30
-      }
+        opacity: 30,
+      },
     })] as ComputedNode[]
 
-    expect(applyViewRuleStyles([r([$expr('*') as ElementExpression], {})], nodes)).toStrictEqual([nodes[0]])
-    expect(applyViewRuleStyles([r([$expr('*') as ElementExpression], { style: {} })], nodes)).toStrictEqual([nodes[0]])
+    expect(applyViewRuleStyles([r([$expr('*')], {})], nodes)).toStrictEqual([nodes[0]])
+    expect(applyViewRuleStyles([r([$expr('*')], { style: {} })], nodes)).toStrictEqual([nodes[0]])
   })
 })

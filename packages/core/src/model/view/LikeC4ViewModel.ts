@@ -1,6 +1,7 @@
 import { nonNullable } from '../../errors'
-import type { IteratorLike } from '../../types'
-import type { Link, Tag } from '../../types/element'
+import type { IteratorLike } from '../../types/_common'
+import type { Link } from '../../types/element'
+import type { Tag } from '../../types/scalars'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,

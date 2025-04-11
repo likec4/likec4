@@ -1,13 +1,7 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
-import type { IconUrl, NonEmptyArray } from './_common'
+import type { NonEmptyArray } from './_common'
+import type { Fqn, IconUrl, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
-
-// Full-qualified-name
-export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
-
-export function AsFqn(name: string, parent?: Fqn | null) {
-  return (parent ? parent + '.' + name : name) as Fqn
-}
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
@@ -59,8 +53,6 @@ export interface ElementStyle {
 
   readonly textSize?: TextSize
 }
-
-export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
 
 export interface TagSpec {
   readonly id: Tag

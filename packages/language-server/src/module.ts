@@ -21,6 +21,7 @@ import {
   LikeC4GeneratedModule,
   LikeC4GeneratedSharedModule,
 } from './generated/module'
+import { type LikeC4LanguageServices, DefaultLikeC4LanguageServices } from './LikeC4LanguageServices'
 import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
@@ -32,9 +33,10 @@ import {
   LikeC4SemanticTokenProvider,
 } from './lsp'
 import {
+  type LikeC4ModelBuilder,
+  DefaultLikeC4ModelBuilder,
   DeploymentsIndex,
   FqnIndex,
-  LikeC4ModelBuilder,
   LikeC4ModelLocator,
   LikeC4ModelParser,
 } from './model'
@@ -46,12 +48,18 @@ import {
 } from './references'
 import { Rpc } from './Rpc'
 import {
-  LikeC4WorkspaceManager,
   NodeKindProvider,
   WorkspaceSymbolProvider,
 } from './shared'
 import { registerValidationChecks } from './validation'
-import { LikeC4Views } from './views'
+import { type LikeC4Views, DefaultLikeC4Views } from './views'
+import {
+  AstNodeDescriptionProvider,
+  IndexManager,
+  LangiumDocuments,
+  LikeC4WorkspaceManager,
+  ProjectsManager,
+} from './workspace'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
@@ -62,6 +70,9 @@ interface LikeC4AddedSharedServices {
     WorkspaceSymbolProvider: WorkspaceSymbolProvider
   }
   workspace: {
+    ProjectsManager: ProjectsManager
+    IndexManager: IndexManager
+    LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
   }
 }
@@ -77,6 +88,9 @@ const LikeC4SharedModule: Module<
     WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
   },
   workspace: {
+    IndexManager: services => new IndexManager(services),
+    LangiumDocuments: services => new LangiumDocuments(services),
+    ProjectsManager: services => new ProjectsManager(services),
     WorkspaceManager: services => new LikeC4WorkspaceManager(services),
   },
 }
@@ -92,6 +106,7 @@ export interface LikeC4AddedServices {
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
+    LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
     Layouter: GraphvizLayouter
     DeploymentsIndex: DeploymentsIndex
@@ -132,16 +147,17 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   likec4: {
+    LanguageServices: bind(DefaultLikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
       logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
       return new GraphvizLayouter(new GraphvizWasmAdapter())
     },
-    Views: bind(LikeC4Views),
+    Views: bind(DefaultLikeC4Views),
     DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
-    ModelBuilder: bind(LikeC4ModelBuilder),
+    ModelBuilder: bind(DefaultLikeC4ModelBuilder),
     ModelLocator: bind(LikeC4ModelLocator),
   },
   lsp: {
@@ -154,6 +170,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     CodeLensProvider: bind(LikeC4CodeLensProvider),
     DocumentLinkProvider: bind(LikeC4DocumentLinkProvider),
     Formatter: bind(LikeC4Formatter),
+  },
+  workspace: {
+    AstNodeDescriptionProvider: bind(AstNodeDescriptionProvider),
   },
   references: {
     NameProvider: bind(LikeC4NameProvider),

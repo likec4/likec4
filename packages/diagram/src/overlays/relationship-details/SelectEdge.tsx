@@ -24,36 +24,29 @@ export const SelectEdge = ({
   view: DiagramView
   // onSelect: (id: Fqn) => void
 }) => {
-  const overlay = useRelationshipDetails()
+  const browser = useRelationshipDetails()
   const viewport = useRef<HTMLDivElement>(null)
-  const portalProps = useMantinePortalProps()
-  // const data = useLikeC4ElementsTree(scope === 'view' ? viewId : undefined)
-  // const tree = useTree({
-  //   multiple: false
-  // })
 
-  // useEffect(() => {
-  //   ancestorsFqn(subject.id).reverse().forEach(id => {
-  //     tree.expand(id)
-  //   })
-  //   tree.select(subject.id)
-  // }, [subject.id])
+  const edgeSource = view.nodes.find(n => n.id === edge.source)
+  const edgeTarget = view.nodes.find(n => n.id === edge.target)
 
-  const theme = useComputedColorScheme()
-
-  const edgeSource = view.nodes.find(n => n.id === edge.source)!
-  const edgeTarget = view.nodes.find(n => n.id === edge.target)!
-
-  const edges = view.edges.map(edge => {
-    const source = view.nodes.find(n => n.id === edge.source)!
-    const target = view.nodes.find(n => n.id === edge.target)!
-    return {
-      id: edge.id,
-      source,
-      target,
-      label: edge.label,
+  const edges = view.edges.flatMap(edge => {
+    const source = view.nodes.find(n => n.id === edge.source)
+    const target = view.nodes.find(n => n.id === edge.target)
+    if (source && target) {
+      return {
+        id: edge.id,
+        source,
+        target,
+        label: edge.label,
+      }
     }
+    return []
   })
+
+  if (!edgeSource || !edgeTarget || edges.length === 0) {
+    return null
+  }
 
   return (
     <Popover
@@ -73,8 +66,7 @@ export const SelectEdge = ({
       <PopoverTarget>
         <Button
           size="xs"
-          variant="light"
-          color={theme === 'light' ? 'dark' : 'gray'}
+          variant="default"
           fw={'500'}
           style={{ padding: '0.25rem 0.75rem' }}
           rightSection={<IconSelector size={16} />}
@@ -114,7 +106,7 @@ export const SelectEdge = ({
                 data-selected={e.id === edge.id}
                 onClick={event => {
                   event.stopPropagation()
-                  overlay.navigateTo(e.id)
+                  browser.navigateTo(e.id)
                 }}>
                 <Box
                   className={css.edgeSource}

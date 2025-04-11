@@ -16,19 +16,20 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-async function main() {
-  await configureLogger({
-    sinks: {
-      console: getConsoleSink(),
+configureLogger({
+  sinks: {
+    console: getConsoleSink(),
+  },
+  loggers: [
+    {
+      category: 'likec4',
+      sinks: ['console'],
+      lowestLevel: DEV ? 'debug' : 'info',
     },
-    loggers: [
-      {
-        category: 'likec4',
-        sinks: ['console'],
-        lowestLevel: DEV ? 'debug' : 'info',
-      },
-    ],
-  })
+  ],
+})
+
+async function main() {
   if (!DEV) {
     notifyAvailableUpdate()
   }

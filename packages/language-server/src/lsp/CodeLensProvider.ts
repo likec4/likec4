@@ -1,9 +1,10 @@
-import { type LangiumDocument, type MaybePromise, DocumentState, interruptAndCheck } from 'langium'
+import { type LangiumDocument, DocumentState } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
+import { isLikeC4LangiumDocument, ViewOps } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {
   constructor(private services: LikeC4Services) {
@@ -30,6 +31,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
       if (!range || !viewId) {
         return []
       }
+      const projectId = projectIdFrom(ast)
 
       return {
         range: {
@@ -41,7 +43,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
         },
         command: {
           command: 'likec4.open-preview',
-          arguments: [viewId],
+          arguments: [viewId, projectId],
           title: 'open preview',
         },
       }

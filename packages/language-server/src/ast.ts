@@ -1,9 +1,9 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, MultiMap, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
-import { DocumentState } from 'langium'
-import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
+import { AstUtils, DocumentState } from 'langium'
+import { clamp, isNullish, isTruthy } from 'remeda'
+import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -12,8 +12,17 @@ import type { IsValidFn } from './validation'
 
 export { ast }
 
-const idattr = Symbol.for('idattr')
+declare module 'langium' {
+  export interface LangiumDocument {
+    likec4ProjectId?: c4.ProjectId
+  }
 
+  export interface AstNodeDescription {
+    likec4ProjectId?: c4.ProjectId
+  }
+}
+
+const idattr = Symbol.for('idattr')
 declare module './generated/ast' {
   export interface Element {
     [idattr]?: c4.Fqn | undefined
@@ -35,7 +44,7 @@ declare module './generated/ast' {
   }
 }
 
-type ParsedElementStyle = {
+export type ParsedElementStyle = {
   shape?: c4.ElementShape
   icon?: c4.IconUrl
   color?: c4.Color
@@ -98,8 +107,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  source: c4.Fqn
-  target: c4.Fqn
+  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
@@ -115,10 +124,12 @@ export interface ParsedAstRelation {
 }
 
 // Alias for easier refactoring
-export type ParsedAstDeployment = c4.DeploymentElement
+export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.Node, ParsedAstDeployment.Instance>>
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
-  export type Instance = c4.DeployedInstance
+  export type Instance = Omit<c4.DeployedInstance, 'element'> & {
+    readonly element: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  }
 }
 export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
   astPath: string
@@ -191,6 +202,7 @@ export const ElementOps = {
 }
 
 export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
+  likec4ProjectId: c4.ProjectId
   id: c4.Fqn
 }
 
@@ -209,12 +221,17 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
+  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
-export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {}
-export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
+export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
+  likec4ProjectId: c4.ProjectId
+}
+export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
+  likec4ProjectId: c4.ProjectId
+}
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
@@ -234,6 +251,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Views
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
+    && !!doc.c4Imports
   )
 }
 
@@ -263,75 +281,6 @@ export function parseAstSizeValue({ value }: { value: ast.SizeValue }): 'xs' | '
     default:
       nonexhaustive(value)
   }
-}
-
-export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isValid: IsValidFn) {
-  const result = {} as ParsedElementStyle
-  if (!props || props.length === 0) {
-    return result
-  }
-  for (const prop of props) {
-    if (!isValid(prop)) {
-      continue
-    }
-    switch (true) {
-      case ast.isBorderProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.border = prop.value
-        }
-        break
-      }
-      case ast.isColorProperty(prop): {
-        const color = toColor(prop)
-        if (isTruthy(color)) {
-          result.color = color
-        }
-        break
-      }
-      case ast.isShapeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.shape = prop.value
-        }
-        break
-      }
-      case ast.isIconProperty(prop): {
-        const icon = prop.libicon?.ref?.name ?? prop.value
-        if (isTruthy(icon)) {
-          result.icon = icon as c4.IconUrl
-        }
-        break
-      }
-      case ast.isOpacityProperty(prop): {
-        result.opacity = parseAstOpacityProperty(prop)
-        break
-      }
-      case ast.isMultipleProperty(prop): {
-        result.multiple = isBoolean(prop.value) ? prop.value : false
-        break
-      }
-      case ast.isShapeSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.size = parseAstSizeValue(prop)
-        }
-        break
-      }
-      case ast.isPaddingSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.padding = parseAstSizeValue(prop)
-        }
-        break
-      }
-      case ast.isTextSizeProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.textSize = parseAstSizeValue(prop)
-        }
-        break
-      }
-      default:
-        nonexhaustive(prop)
-    }
-  }
-  return result
 }
 
 export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | undefined, isValid: IsValidFn) {
@@ -455,15 +404,94 @@ export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction'])
   }
 }
 
-export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
-  if (ast.isElementExpression(predicate)) {
-    return predicate
+// export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
+//   if (ast.isElementExpression(predicate)) {
+//     return predicate
+//   }
+//   if (ast.isElementPredicateWhere(predicate)) {
+//     return predicate.subject
+//   }
+//   if (ast.isElementPredicateWith(predicate)) {
+//     return elementExpressionFromPredicate(predicate.subject)
+//   }
+//   nonexhaustive(predicate)
+// }
+
+export function getViewRulePredicateContainer<T extends AstNode>(el: T):
+  | ast.ViewRulePredicate
+  | ast.DeploymentViewRulePredicate
+  | ast.DynamicViewIncludePredicate
+  | undefined
+{
+  return AstUtils.getContainerOfType(
+    el,
+    (n): n is ast.ViewRulePredicate | ast.DeploymentViewRulePredicate | ast.DynamicViewIncludePredicate => {
+      return ast.isViewRulePredicate(n) || ast.isDeploymentViewRulePredicate(n) || ast.isDynamicViewIncludePredicate(n)
+    },
+  )
+}
+
+const _isModel = (astNode: AstNode) => {
+  return ast.isModel(astNode) ||
+    ast.isElementBody(astNode) ||
+    ast.isExtendElementBody(astNode) ||
+    ast.isElementViewBody(astNode) ||
+    ast.isDynamicViewBody(astNode) ||
+    ast.isElementRef(astNode)
+}
+
+const _isDeployment = (astNode: AstNode) => {
+  return ast.isModelDeployments(astNode) ||
+    ast.isDeploymentViewBody(astNode) ||
+    ast.isDeploymentNodeBody(astNode) ||
+    ast.isExtendDeploymentBody(astNode) ||
+    ast.isDeployedInstanceBody(astNode)
+}
+
+export function isFqnRefInsideGlobals(astNode: AstNode): boolean {
+  while (true) {
+    if (_isDeployment(astNode) || _isModel(astNode)) {
+      return false
+    }
+    if (ast.isGlobals(astNode) || ast.isModelViews(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  if (ast.isElementPredicateWhere(predicate)) {
-    return predicate.subject
+}
+
+export function isFqnRefInsideModel(astNode: AstNode): boolean {
+  while (true) {
+    if (_isDeployment(astNode)) {
+      return false
+    }
+    if (_isModel(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  if (ast.isElementPredicateWith(predicate)) {
-    return elementExpressionFromPredicate(predicate.subject)
+}
+
+export function isFqnRefInsideDeployment(astNode: AstNode): boolean {
+  while (true) {
+    if (_isModel(astNode)) {
+      return false
+    }
+    if (_isDeployment(astNode)) {
+      return true
+    }
+    if (astNode.$container) {
+      astNode = astNode.$container
+    } else {
+      return false
+    }
   }
-  nonexhaustive(predicate)
 }

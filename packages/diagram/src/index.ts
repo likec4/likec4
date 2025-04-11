@@ -1,6 +1,6 @@
-import '@xyflow/react/dist/style.css'
-
+export type { ControlsCustomLayout, ControlsCustomLayoutProps } from './context/ControlsCustomLayout'
 export { FramerMotionConfig } from './context/FramerMotionConfig'
+export { IconRendererProvider } from './context/IconRenderer'
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
 export { Overlay } from './overlays/overlay/Overlay'
@@ -14,7 +14,7 @@ export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
 export { useSetState } from './hooks/useSetState'
 export { useUpdateEffect } from './hooks/useUpdateEffect'
-export { vars, xyvars } from './theme-vars'
+// export { vars, xyvars } from './theme-vars'
 
 export type {
   ChangeEvent,

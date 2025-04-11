@@ -1,18 +1,14 @@
-import { style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
+import { css } from '@likec4/styles/css'
 
-export const cssHeader = style({
+export const cssHeader = css({
   position: 'absolute',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-  WebkitBackdropFilter: 'blur(3px)',
-  backdropFilter: 'blur(3px)',
-  selectors: {
-    [`:where([data-mantine-color-scheme='dark']) &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
-    },
+  backgroundColor: `mantine.colors.body/80`,
+  _dark: {
+    backgroundColor: `mantine.colors.dark[6]/60`,
   },
-  // paddingLeft: 60,
-  // paddingRight: 20,ody,
-  // overflow: 'hidden'
-  // border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  [`#likec4-root:has([data-likec4-diagram-panning]) &`]: {
+    boxShadow: 'none',
+    borderRadius: '0px',
+    backgroundColor: `mantine.colors.body`,
+  },
 })

@@ -1,7 +1,7 @@
 import { type AstNode, type ValidationAcceptor, type ValidationCheck } from 'langium'
 import { isPromise } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import { logWarnError } from '../logger'
+import { logger, logWarnError } from '../logger'
 
 export const RESERVED_WORDS = [
   'this',
@@ -23,7 +23,7 @@ export function tryOrLog<T extends AstNode>(fn: ValidationCheck<T>): ValidationC
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e)
       accept('error', `Validation failed: ${message}`, { node })
-      logWarnError(e)
+      logger.debug(`Validation failed: ${message}`, { error: e })
     }
   }
 }

@@ -1,90 +1,84 @@
-import { rem } from '@mantine/core'
-import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
-import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
-import { mantine, vars } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const navigationButtons = style({
-  gap: calc(mantine.spacing.xs).divide(1.5).toString(),
-  ':empty': {
+export const navigationButtons = css({
+  gap: 'micro',
+  _empty: {
     display: 'none',
   },
 })
 
-export const panel = style({
-  top: fallbackVar(vars.navigationPanel.top, '1rem'),
-  left: fallbackVar(vars.navigationPanel.left, '1rem'),
+export const panel = css({
+  top: '1rem',
+  left: '1rem',
   margin: 0,
   pointerEvents: 'none',
-})
-
-globalStyle(`${panel} :where(button, .action-icon)`, {
-  pointerEvents: 'all',
-})
-
-globalStyle(`.likec4-top-left-panel .action-icon`, {
-  vars: {
+  '& :where(button, .action-icon, [role=\'dialog\'])': {
+    pointerEvents: 'all',
+  },
+  ['& .action-icon']: {
     ['--ai-size']: '2rem',
   },
-})
-globalStyle(`.likec4-top-left-panel .action-icon .tabler-icon`, {
-  width: '65%',
-  height: '65%',
-})
-
-export const actionIconGroup = style({
-  selectors: {
-    [`${whereNotReducedGraphics} &`]: {
-      boxShadow: mantine.shadows.md,
+  ['& .tabler-icon']: {
+    width: '65%',
+    height: '65%',
+  },
+  _reduceGraphics: {
+    '& .action-icon': {
+      '--ai-radius': '0px',
     },
   },
 })
 
-export const autolayoutIcon = style({})
-
-globalStyle(`${autolayoutIcon} .tabler-icon`, {
-  width: '65%',
-  height: '65%',
+export const actionIconGroup = css({
+  shadow: {
+    base: 'md',
+    _whenPanning: 'none',
+  },
 })
 
-export const autolayoutButton = style({
+export const autolayoutIcon = css({
+  ['& .tabler-icon']: {
+    width: '65%',
+    height: '65%',
+  },
+})
+
+export const autolayoutButton = css({
   flex: '1 1 40%',
   textAlign: 'center',
   fontWeight: 500,
   padding: '4px 6px',
-  fontSize: rem(11),
+  fontSize: '11px',
   zIndex: 1,
 })
 
-export const autolayoutIndicator = style({
-  background: mantine.colors.gray[2],
-  borderRadius: mantine.radius.sm,
-  border: `1px solid ${mantine.colors.gray[3]}`,
-  selectors: {
-    [`:where([data-mantine-color-scheme="dark"]) &`]: {
-      background: mantine.colors.dark[5],
-      borderColor: mantine.colors.dark[4],
-    },
+export const autolayoutIndicator = css({
+  background: 'mantine.colors.gray[2]',
+  borderRadius: 'sm',
+  border: `1px solid`,
+  borderColor: 'mantine.colors.gray[4]',
+  _dark: {
+    background: 'mantine.colors.dark[5]',
+    borderColor: 'mantine.colors.dark[4]',
   },
 })
 
-export const spacingSliderBody = style({
+export const spacingSliderBody = css({
   position: 'relative',
-  borderRadius: mantine.radius.sm,
-  background: mantine.colors.gray[3],
+  borderRadius: 'sm',
+  background: 'mantine.colors.gray[3]',
   boxShadow: 'inset 1px 1px 3px 0px #00000024',
-  selectors: {
-    [`:where([data-mantine-color-scheme="dark"]) &`]: {
-      background: mantine.colors.dark[7],
-    },
+  _dark: {
+    background: 'mantine.colors.dark[7]',
   },
 })
 
-export const spacingSliderThumb = style({
+export const spacingSliderThumb = css({
   position: 'absolute',
   width: 8,
   height: 8,
-  border: `2px solid ${mantine.colors.gray[5]}`,
+  border: `2px solid`,
+  borderColor: 'mantine.colors.gray[5]',
   borderRadius: 3,
   transform: 'translate(-50%, -50%)',
 })

@@ -81,7 +81,7 @@ deployment {
 
 ### Extend nodes
 
-As in the logical model, you can [`extend`](/dsl/workspace/#extend-element) deployment nodes:
+As in the logical model, you can [`extend`](/dsl/extend/#extend-element) deployment nodes:
 
 ```likec4
 // 'deployments/prod.c4'
@@ -97,9 +97,9 @@ deployment {
 }
 ```
 
-Same [rules](/dsl/workspace/#extend-element) apply for extending nodes:
+Same [rules](/dsl/extend/#extend-element) apply for extending nodes:
 - extended node must be referenced by a fully qualified name.  
-- define [additional properties](/dsl/workspace/#additional-properties).
+- define [additional properties](/dsl/extend/#additional-properties).
 
 ## Deployed instances
 
@@ -176,7 +176,7 @@ deployment {
 As you see, relationship is between same logical element, but different instances.  
 Assume, we don't need this relationship in our logical model, but it makes sense for deployment.
 
-Deployment relationships can be kinded, and have [same properties](/dsl/relationships/#relationship-properties) as logical ones:
+Deployment relationships can be "kinded", and have [same properties](/dsl/relationships/#relationship-properties) as logical ones:
 
 ```likec4
 deployment {
@@ -214,6 +214,6 @@ deployment {
 :::
 
 :::note
-Check this <a href="https://github.com/likec4/likec4/discussions/1269" target='_blank'>GitHub discussion</a> for futher development.  
+Check this <a href="https://github.com/likec4/likec4/discussions/1269" target='_blank'>GitHub discussion</a> for further development.  
 Feel free to share your ideas.
 :::

@@ -1,4 +1,3 @@
-import os from 'node:os'
 import { computed, createSingletonComposable, useWorkspaceFolders } from 'reactive-vscode'
 import vscode, { type DocumentFilter } from 'vscode'
 import { useExtensionLogger } from '../common/useExtensionLogger'
@@ -11,7 +10,7 @@ const useDocumentSelector = createSingletonComposable(() => {
   return computed(() => {
     const workspaceFolders = wFolders.value ?? []
 
-    const isVirtual = wFolders.value?.every(f => f.uri.scheme !== 'file') || false
+    const isVirtual = workspaceFolders.every(f => f.uri.scheme !== 'file') || false
     if (workspaceFolders.length === 0) {
       logger.warn(`No workspace folder found`)
     }
@@ -26,7 +25,7 @@ const useDocumentSelector = createSingletonComposable(() => {
       documentSelector.push({ language: languageId, scheme: 'vscode-vfs', pattern: globPattern })
     }
 
-    documentSelector.push({ language: languageId, scheme: 'vscode-remote' })
+    documentSelector.push({ language: languageId, scheme: 'vscode-remote', pattern: globPattern })
 
     return documentSelector
   })

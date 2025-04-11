@@ -5,25 +5,23 @@
   ],
   "tasks": {
     "generate": {
-      "outputs": [
-        "src/routeTree.gen.ts"
+      "dependsOn": [
+        "^generate"
       ],
-      "inputs": [
-        "vite.config.mts",
-        "src/routes/*.tsx",
-        "tsr.config.json",
-        "package.json"
+      "outputs": [
+        "src/routeTree.gen.ts",
+        "styled-system",
+        "worker-configuration.d.ts"
       ]
     },
     "build": {
+      "env": [
+        "NODE_ENV",
+        "CLOUDFLARE_ENV"
+      ],
       "dependsOn": [
         "generate",
         "^build"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!src/routeTree.gen.ts",
-        "!tsr.config.json"
       ],
       "outputs": [
         "dist/**"

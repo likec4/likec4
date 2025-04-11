@@ -6,21 +6,22 @@ import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices 
 export { logger as lspLogger } from './logger'
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 
+export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
 export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
 
-export async function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): Promise<{
+export function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
-}> {
+} {
   /* browser specific setup code */
 
   const messageReader = new BrowserMessageReader(port)
   const messageWriter = new BrowserMessageWriter(port)
 
   const connection = createConnection(messageReader, messageWriter)
-  await configureLogger({
+  configureLogger({
     sinks: {
       console: getConsoleSink({
         formatter: getAnsiColorFormatter({

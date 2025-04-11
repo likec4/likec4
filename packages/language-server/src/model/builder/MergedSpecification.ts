@@ -1,7 +1,9 @@
 import type * as c4 from '@likec4/core'
+import { MultiMap } from '@likec4/core'
 import {
   DeploymentElement,
-} from '@likec4/core'
+  FqnRef,
+} from '@likec4/core/types'
 import {
   isBoolean,
   isEmpty,
@@ -9,6 +11,7 @@ import {
   isNumber,
 } from 'remeda'
 import type {
+  ParsedAstDeployment,
   ParsedAstDeploymentRelation,
   ParsedAstElement,
   ParsedAstRelation,
@@ -38,11 +41,14 @@ export class MergedSpecification {
     styles: {},
   }
 
+  public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
+
   constructor(docs: ParsedLikeC4LangiumDocument[]) {
     for (const doc of docs) {
       const {
         c4Specification: spec,
         c4Globals,
+        c4Imports,
       } = doc
 
       spec.tags.forEach(t => this.specs.tags.add(t))
@@ -53,6 +59,10 @@ export class MergedSpecification {
       Object.assign(this.globals.predicates, c4Globals.predicates)
       Object.assign(this.globals.dynamicPredicates, c4Globals.dynamicPredicates)
       Object.assign(this.globals.styles, c4Globals.styles)
+
+      for (const [projectId, fqn] of c4Imports) {
+        this.imports.set(projectId, fqn)
+      }
     }
   }
 
@@ -129,13 +139,15 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath,
-    source,
-    target,
+    source: sourceFqnRef,
+    target: targetFqnRef,
     kind,
     links,
     id,
     ...model
   }: ParsedAstRelation): c4.ModelRelation | null => {
+    const target = FqnRef.toModelFqn(targetFqnRef)
+    const source = FqnRef.toModelFqn(sourceFqnRef)
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],
@@ -159,9 +171,15 @@ export class MergedSpecification {
   /**
    * Converts a parsed deployment model into a C4 deployment model
    */
-  toDeploymentElement = (parsed: c4.DeploymentElement): c4.DeploymentElement | null => {
-    if (!DeploymentElement.isDeploymentNode(parsed)) {
-      return parsed
+  toDeploymentElement = (parsed: ParsedAstDeployment): c4.DeploymentElement | null => {
+    if ('element' in parsed && !('kind' in parsed)) {
+      return {
+        ...parsed,
+        element: FqnRef.toModelFqn(parsed.element),
+      }
+    }
+    if ('element' in parsed) {
+      return null
     }
     try {
       const __kind = this.specs.deployments[parsed.kind]

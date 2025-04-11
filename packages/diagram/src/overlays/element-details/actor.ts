@@ -62,8 +62,10 @@ export const elementDetailsLogic = setup({
         id: ({ self }) => `${self.id}-relationships`,
         input: ({ context }) => ({
           subject: context.subject,
-          scope: context.currentView,
-          enableNavigationMenu: false,
+          viewId: context.currentView.id,
+          scope: 'view',
+          enableSelectSubject: false,
+          enableChangeScope: true,
           closeable: false,
         }),
       }),

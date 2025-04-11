@@ -1,8 +1,4 @@
-import { createVar, fallbackVar, style } from '@vanilla-extract/css'
-import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
-import { easings, vars } from '../../../theme-vars'
-
-export const stokeFillMix = createVar('stroke-fill-mix')
+import { css as style } from '@likec4/styles/css'
 
 export const container = style({
   position: 'relative',
@@ -13,37 +9,43 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  vars: {
-    [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`,
-  },
-  ':after': {
-    content: ' ',
+  pointerEvents: 'none',
+  _before: {
+    content: '" "',
     position: 'absolute',
-    top: '100%',
+    top: 'calc(100% - 4px)',
     left: 0,
-    right: 0,
-    height: 24,
-    background: 'transparent',
+    width: '100%',
+    height: '24px',
+    background: '[transparent]',
     pointerEvents: 'all',
   },
+  _focusVisible: {
+    outline: 'none',
+  },
 
-  selectors: {
-    [`&:is([data-likec4-dimmed="true"])`]: {
-      opacity: 0.25,
-      transition: `opacity 400ms ${easings.inOut}, filter 500ms ${easings.inOut}`,
-      transitionDelay: '50ms',
-      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-    },
-    [`&:is([data-likec4-dimmed="immediate"])`]: {
-      opacity: 0.25,
-      transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
-      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-    },
-    [`${reactFlowReducedGraphics} &:after`]: {
+  // _whenDimmed: {
+  //   opacity: 0.25,
+  //   transition: `opacity 400ms {easings.inOut}, filter 500ms {easings.inOut}`,
+  //   transitionDelay: '50ms',
+  //   grayscale: 0.85,
+  //   blur: '2px',
+  //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  // },
+  // _whenDimmedImmediate: {
+  //   opacity: 0.25,
+  //   grayscale: 0.85,
+  //   blur: '2px',
+  //   // transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
+  //   // filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  // },
+  _reduceGraphicsOnPan: {
+    _before: {
       display: 'none',
     },
-    [`:where(.react-flow__node.selectable:not(.dragging)) &`]: {
-      cursor: 'pointer',
-    },
+  },
+
+  [`:where(.react-flow__node.selectable:not(.dragging)) &`]: {
+    cursor: 'pointer',
   },
 })

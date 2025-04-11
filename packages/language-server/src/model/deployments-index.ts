@@ -26,6 +26,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
     if (rootNodes.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
+    const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
@@ -37,6 +38,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
       const desc = {
         ...Descriptions.createDescription(node, name, document),
         id: fqn,
+        likec4ProjectId: projectId,
       }
       ElementOps.writeId(node, fqn)
       byfqn.set(fqn, desc)
@@ -108,6 +110,6 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
         logWarnError(e)
       }
     }
-    return new DocumentFqnIndex(root, children, descendants, byfqn)
+    return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)
   }
 }

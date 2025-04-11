@@ -1,68 +1,103 @@
+import { css } from '@likec4/styles/css'
+import { Tooltip } from '@mantine/core'
 import { getBezierPath } from '@xyflow/system'
-import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from '../../../base/primitives'
+import {
+  customEdge,
+  EdgeActionButton,
+  EdgeContainer,
+  EdgeLabel,
+  EdgeLabelContainer,
+  EdgePath,
+} from '../../../base/primitives'
 import { useEnabledFeature } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
+import { useRelationshipsBrowser } from '../hooks'
 
-export const edgeTypes = {
-  relationships: customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
-    const { enableNavigateTo } = useEnabledFeature('NavigateTo')
-    const {
+export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
+  const browser = useRelationshipsBrowser()
+  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const {
+    id,
+    data: {
+      navigateTo,
+      relations,
+      existsInCurrentView,
+    },
+  } = props
+  const [svgPath, labelX, labelY] = getBezierPath(props)
+  const diagram = useDiagram()
+
+  const markOrange = relations.length > 1 || !existsInCurrentView
+
+  const edgeProps = markOrange
+    ? {
+      ...props,
       data: {
-        navigateTo,
-        relations,
-      },
-    } = props
-    const [svgPath, labelX, labelY] = getBezierPath(props)
-    const diagram = useDiagram()
+        ...props.data,
+        line: 'solid',
+        color: 'amber',
+      } satisfies RelationshipsBrowserTypes.EdgeData,
+    }
+    : props
 
-    const edgeProps = relations.length > 1
-      ? {
-        ...props,
-        data: {
-          ...props.data,
-          line: 'solid',
-          color: 'amber',
-        } satisfies RelationshipsBrowserTypes.EdgeData,
-      }
-      : props
+  let label = (
+    <EdgeLabel
+      edgeProps={edgeProps}
+      className={css({
+        transition: 'fast',
+      })}
+    >
+      {enableNavigateTo && navigateTo && (
+        <EdgeActionButton
+          {...props}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.navigateTo(navigateTo)
+          }} />
+      )}
+    </EdgeLabel>
+  )
 
-    return (
-      <EdgeContainer {...edgeProps}>
-        <EdgePath
-          {...edgeProps}
-          svgPath={svgPath}
-          {...relations.length > 1 && {
-            strokeWidth: 5,
-          }}
-        />
-        <EdgeLabel
-          edgeProps={edgeProps}
-          labelPosition={{
-            x: labelX,
-            y: labelY,
-            translate: 'translate(-50%, 0)',
-          }}
-          style={{
-            maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
-          }}>
-          {enableNavigateTo && navigateTo && (
-            <EdgeActionButton
-              {...props}
-              onClick={e => {
-                e.stopPropagation()
-                diagram.navigateTo(navigateTo)
-              }} />
-          )}
-        </EdgeLabel>
-        {
-          /* <EdgeLabel {...props}>
-
-        </EdgeLabel> */
-        }
-      </EdgeContainer>
+  if (!existsInCurrentView) {
+    label = (
+      <Tooltip
+        color="orange"
+        c={'black'}
+        label="This relationship is not included in the current view"
+        // withinPortal={false}
+        portalProps={{
+          target: `#${browser.rootElementId}`,
+        }}
+        openDelay={800}
+      >
+        {label}
+      </Tooltip>
     )
-  }),
-} satisfies {
-  [key in RelationshipsBrowserTypes.Edge['type']]: any
-}
+  }
+
+  return (
+    <EdgeContainer {...edgeProps}>
+      <EdgePath
+        edgeProps={edgeProps}
+        svgPath={svgPath}
+        {...markOrange && {
+          strokeWidth: 5,
+        }}
+      />
+      <EdgeLabelContainer
+        edgeProps={edgeProps}
+        labelPosition={{
+          x: labelX,
+          y: labelY,
+          translate: 'translate(-50%, 0)',
+        }}
+        style={{
+          maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+        }}
+      >
+        {label}
+      </EdgeLabelContainer>
+    </EdgeContainer>
+  )
+})

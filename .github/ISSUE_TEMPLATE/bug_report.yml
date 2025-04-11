@@ -1,0 +1,52 @@
+name: Report an issue
+description: Use this template to report issues with LikeC4. To ask questions use GitHub discussions instead
+labels:
+  - bug
+type: Bug
+body:
+
+  - type: dropdown
+    id: relatesTo
+    attributes:
+      label: Relates to
+      description: |
+        Select the component that the issue is related to.
+        If the issue is related to multiple components, select "Other".
+      options:
+        - "LikeC4 Language"
+        - "CLI"
+        - "VSCode extension"
+        - "Diagrams (React)"
+        - "Other, I will specify in the description"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      placeholder: 1.x.x
+      label: Version you are using
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      placeholder: |
+        A clear and concise description of what the bug is.
+        If applicable, add screenshots to help explain your problem.
+    validations:
+      required: true
+
+  - type: input
+    id: link
+    attributes:
+      label: If possible, include link to the playground with example
+
+  - type: markdown
+    attributes:
+      value: |
+        1. Create new blank playground https://playground.likec4.dev/
+        2. Add your example
+        3. Press Share button and add the link here

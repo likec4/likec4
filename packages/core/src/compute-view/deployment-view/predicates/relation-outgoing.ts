@@ -1,7 +1,7 @@
 import { anyPass, filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type { LikeC4DeploymentModel } from '../../../model'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
+import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { type RelationExpr, FqnExpr } from '../../../types'
 import { isAncestor } from '../../../utils'
@@ -39,6 +39,9 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
     return stage
   },
   exclude: ({ expr, model, memory, stage, where }) => {
+    if (FqnExpr.isElementTagExpr(expr.outgoing) || FqnExpr.isElementKindExpr(expr.outgoing)) {
+      throw new Error('element kind and tag expressions are not supported in exclude')
+    }
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.outgoing)) {
       const excludedRelations = resolveAllOutgoingRelations(model, expr.outgoing)

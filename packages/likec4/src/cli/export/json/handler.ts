@@ -23,8 +23,9 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   const model = await languageServices.layoutedModel()
 

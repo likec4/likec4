@@ -2,9 +2,10 @@ import { type Fqn, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { createContext, useContext, useMemo, useTransition } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
+import type { LayoutRelationshipsViewResult } from './layout'
 
 export const RelationshipsBrowserActorContext = createContext<RelationshipsBrowserActorRef | null>(null)
 
@@ -22,24 +23,34 @@ export function useRelationshipsBrowserState<T>(
 
 export function useRelationshipsBrowser() {
   const actor = useRelationshipsBrowserActor()
-  const [, startTransition] = useTransition()
   return useMemo(() => ({
     actor,
+    get rootElementId(): string {
+      return `relationships-browser-${actor.sessionId.replaceAll(':', '_')}`
+    },
     getState: () => actor.getSnapshot().context,
     send: actor.send,
+    updateView: (layouted: LayoutRelationshipsViewResult) => {
+      actor.send({
+        type: 'update.view',
+        layouted,
+      })
+    },
+    changeScope: (scope: 'global' | 'view') => {
+      actor.send({
+        type: 'change.scope',
+        scope,
+      })
+    },
     navigateTo: (subject: Fqn, fromNode?: string) => {
-      startTransition(() => {
-        actor.send({
-          type: 'navigate.to',
-          subject,
-          fromNode,
-        })
+      actor.send({
+        type: 'navigate.to',
+        subject,
+        fromNode,
       })
     },
     fitDiagram: () => {
-      startTransition(() => {
-        actor.send({ type: 'fitDiagram' })
-      })
+      actor.send({ type: 'fitDiagram' })
     },
     close: () => {
       if (actor._parent) {

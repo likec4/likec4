@@ -1,0 +1,55 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "dependsOn": [
+        "^generate"
+      ],
+      "outputs": [
+        "styled-system/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^generate",
+        "generate",
+        "topo"
+      ],
+      "outputs": [
+        "lib/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build:dist": {
+      "dependsOn": [
+        "generate",
+        "@likec4/core#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build:bundle": {
+      "dependsOn": [
+        "generate",
+        "@likec4/core#build"
+      ],
+      "outputs": [
+        "bundle/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "build:dist",
+        "build:bundle"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

@@ -1,14 +1,17 @@
-import { usePlayground, usePlaygroundWorkspace } from '$/hooks/usePlayground'
-import { Box, Tabs, TabsList } from '@mantine/core'
+import { usePlayground, usePlaygroundContext, usePlaygroundWorkspace } from '$hooks/usePlayground'
+import { css } from '@likec4/styles/css'
+import { HStack, VStack } from '@likec4/styles/jsx'
+import { HoverCard, Tabs, TabsList, Text, ThemeIcon } from '@mantine/core'
+import { IconAlertTriangle } from '@tabler/icons-react'
 
 export function WorkspaceFileTabs() {
   const playground = usePlayground()
   const { filenames, activeFilename } = usePlaygroundWorkspace()
-  if (filenames.length <= 1) {
-    return null
-  }
+
+  const diagnosticErrors = usePlaygroundContext(s => s.diagnosticErrors)
+
   return (
-    <Box flex={0}>
+    <HStack className={css({})} justify={'space-between'}>
       <Tabs
         style={{
           overflowX: 'scroll',
@@ -26,8 +29,43 @@ export function WorkspaceFileTabs() {
               {filename}
             </Tabs.Tab>
           ))}
+          {
+            /* <Button
+            size="compact-xs"
+            color="gray"
+            variant="subtle"
+            className={css({
+              alignSelf: 'center',
+              fontWeight: 'medium',
+              color: 'dimmed'
+              // color: 'gray.7',
+            })}>
+            + add
+          </Button> */
+          }
         </TabsList>
       </Tabs>
-    </Box>
+      {diagnosticErrors.length > 0 && (
+        <HoverCard position="right-start">
+          <HoverCard.Target>
+            <ThemeIcon color="red" size={'sm'} radius={'sm'}>
+              <IconAlertTriangle size={14} />
+            </ThemeIcon>
+          </HoverCard.Target>
+          <HoverCard.Dropdown p={0}>
+            <VStack
+              // css={{
+              //   _
+              //   bg: 'mantine.red.6/20',
+              //   alignItems: 'flex-start',
+              //   p: 'xs',
+              // }}>
+            >
+              {diagnosticErrors.map((error, i) => <Text component="div" c="red.7" key={i} fz="sm">{error}</Text>)}
+            </VStack>
+          </HoverCard.Dropdown>
+        </HoverCard>
+      )}
+    </HStack>
   )
 }

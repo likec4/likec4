@@ -1,5 +1,4 @@
-import { createSafeContext } from '@mantine/core'
-import { createContext, use, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import type { DiagramActorRef } from '../state/types'
 
 /**
@@ -9,7 +8,7 @@ export const DiagramActorSafeContext = createContext<DiagramActorRef>(null as an
 DiagramActorSafeContext.displayName = 'DiagramActorSafeContext'
 
 export const useDiagramActorRef = () => {
-  const ctx = use(DiagramActorSafeContext)
+  const ctx = useContext(DiagramActorSafeContext)
   if (ctx === null) {
     throw new Error('DiagramActorRef is not provided')
   }

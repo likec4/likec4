@@ -2,8 +2,8 @@ import { nonexhaustive } from '@likec4/core'
 import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { AnimatePresence, useReducedMotion } from 'framer-motion'
-import { animate } from 'framer-motion/dom'
+import { animate } from 'motion'
+import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { isNonNullish } from 'remeda'
@@ -83,7 +83,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
     xyflowDomNode,
   ])
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
-  const isMotionReduced = useReducedMotion() ?? false
+  const isMotionReduced = useReducedMotionConfig() ?? false
 
   const isActiveOverlay = overlays.length > 0
 
@@ -102,12 +102,13 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
     overlaysActorRef.send({ type: 'close', actorId: actorRef.id })
   }
 
-  const overlaysReact = overlays.map((overlay) => {
+  const overlaysReact = overlays.map((overlay, index) => {
     switch (overlay.type) {
       case 'relationshipsBrowser':
         return (
           <Overlay
             key={overlay.actorRef.sessionId}
+            overlayLevel={index}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipsBrowser actorRef={overlay.actorRef} />
           </Overlay>
@@ -115,6 +116,7 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
       case 'relationshipDetails':
         return (
           <Overlay
+            overlayLevel={index}
             key={overlay.actorRef.sessionId}
             onClose={() => close(overlay.actorRef)}>
             <RelationshipDetails actorRef={overlay.actorRef} />
@@ -135,9 +137,11 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
   return (
     <DiagramFeatures.Overlays>
       <ErrorBoundary FallbackComponent={Fallback} onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
-        <AnimatePresence>
-          {overlaysReact}
-        </AnimatePresence>
+        <LayoutGroup>
+          <AnimatePresence>
+            {overlaysReact}
+          </AnimatePresence>
+        </LayoutGroup>
       </ErrorBoundary>
     </DiagramFeatures.Overlays>
   )

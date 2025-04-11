@@ -1,138 +1,64 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
-import { type BoxProps, Box, createPolymorphicComponent, Text } from '@mantine/core'
-import { assignInlineVars } from '@vanilla-extract/dynamic'
-import { EdgeLabelRenderer } from '@xyflow/react'
-import clsx from 'clsx'
-import { type PropsWithChildren, forwardRef } from 'react'
-import { isNumber, isTruthy } from 'remeda'
+import { cx } from '@likec4/styles/css'
+import { type BoxProps, Box, Text } from '@mantine/core'
+import { type PropsWithChildren } from 'react'
+import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
-import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
-import * as css from './EdgeLabel.css'
+import { labelsva } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
     DiagramEdge,
     | 'label'
     | 'technology'
-    | 'labelBBox'
-    | 'color'
   >
 >
 
 type EdgeLabelProps = PropsWithChildren<
   BoxProps & {
-    /**
-     * label position with optional translate
-     */
-    labelPosition?: {
-      x?: number | undefined
-      y?: number | undefined
-      translate?: string | undefined
-    } | undefined
-
     edgeProps: EdgeProps<Data>
   }
 >
 
-const toCssVarValue = (value: number | string | undefined) => {
-  if (value === undefined) return undefined
-  return isNumber(value) ? `${value}px` : value
-}
-
-export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
-  forwardRef<HTMLDivElement, EdgeLabelProps>(({
-    edgeProps: {
-      id,
-      data: {
-        technology,
-        hovered: isHovered = false,
-        active: isActive = false,
-        dimmed: isDimmed = false,
-        labelBBox,
-        ...data
-      },
+export function EdgeLabel({
+  edgeProps: {
+    id,
+    data: {
+      label,
+      technology,
     },
-    labelPosition: labelXY,
-    className,
-    style,
-    children,
-    ...rest
-  }, ref) => {
-    const isZoomTooSmall = useIsZoomTooSmall()
-    const stepNum = isStepEdgeId(id) ? extractStep(id) : null
+  },
+  className,
+  style,
+  children,
+  ...rest
+}: EdgeLabelProps) {
+  const stepNum = isStepEdgeId(id) ? extractStep(id) : null
+  const classes = labelsva({
+    isStepEdge: stepNum !== null,
+  })
 
-    let zIndex = ZIndexes.Edge
-    if (isHovered || isActive) {
-      // Move above the elements
-      zIndex = ZIndexes.Element + 1
-    }
-
-    let labelX = labelXY?.x ?? labelBBox?.x,
-      labelY = labelXY?.y ?? labelBBox?.y
-
-    if (labelX === undefined || labelY === undefined || isZoomTooSmall) {
-      return null
-    }
-
-    const translate = labelXY?.translate
-
-    return (
-      <EdgeLabelRenderer>
-        <Box
-          className={clsx(
-            'nodrag nopan',
-            css.edgeLabelContainer,
-            className,
-          )}
-          data-likec4-color={data.color ?? 'gray'}
-          data-edge-active={isActive}
-          data-edge-animated={isActive}
-          data-edge-hovered={isHovered}
-          {...isDimmed !== false && {
-            'data-edge-dimmed': isDimmed,
-          }}
-          style={{
-            top: toCssVarValue(labelY),
-            left: toCssVarValue(labelX),
-            // ...assignInlineVars({
-            //   [css.varLabelX]: toCssVarValue(labelX),
-            //   [css.varLabelY]: toCssVarValue(labelY),
-            // }),
-            ...(translate && assignInlineVars({
-              [css.varTranslate]: translate,
-            })),
-            ...(labelBBox && {
-              maxWidth: labelBBox.width + 18,
-            }),
-            zIndex,
-            ...style,
-          }}
-        >
-          <Box ref={ref} className={css.edgeLabel} {...rest}>
-            {stepNum !== null && (
-              <Box className={css.stepEdgeNumber}>
-                {stepNum}
-              </Box>
-            )}
-            <Box className={css.secondColumn}>
-              {isTruthy(data.label) && (
-                <Text component="div" className={css.edgeLabelText} lineClamp={5}>
-                  {data.label}
-                </Text>
-              )}
-              {isTruthy(technology) && (
-                <Text component="div" className={css.edgeLabelTechnology}>
-                  {'[ ' + technology + ' ]'}
-                </Text>
-              )}
-              {children}
-            </Box>
-          </Box>
+  return (
+    <Box className={cx(classes.root!, className)} {...rest}>
+      {stepNum !== null && (
+        <Box className={classes.stepNumber!}>
+          {stepNum}
         </Box>
-      </EdgeLabelRenderer>
-    )
-  }),
-)
-EdgeLabel.displayName = 'EdgeLabel'
+      )}
+      <Box className={classes.labelContents!}>
+        {isTruthy(label) && (
+          <Text component="div" className={classes.labelText!} lineClamp={5}>
+            {label}
+          </Text>
+        )}
+        {isTruthy(technology) && (
+          <Text component="div" className={classes.labelTechnology!}>
+            {'[ ' + technology + ' ]'}
+          </Text>
+        )}
+        {children}
+      </Box>
+    </Box>
+  )
+}

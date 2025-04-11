@@ -11,6 +11,7 @@ import { build } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { mkTempPublicDir } from '../../../vite/utils'
+import { ensureReact } from '../../ensure-react'
 
 type HandlerParams = {
   /**
@@ -28,12 +29,14 @@ export async function webcomponentHandler({
   webcomponentPrefix = 'likec4',
   outfile,
 }: HandlerParams) {
+  await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 

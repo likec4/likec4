@@ -1,6 +1,6 @@
 import {
   type Config,
-  configure as configureLogtape,
+  configureSync as configureLogtape,
   getLogger,
 } from '@logtape/logtape'
 import { getConsoleSink } from './formatters'
@@ -51,13 +51,13 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
 
 let configureWasCalled = false
 
-export async function configureLogger<TSinkId extends string, TFilterId extends string>(
+export function configureLogger<TSinkId extends string, TFilterId extends string>(
   config?: Config<TSinkId, TFilterId>,
 ) {
   try {
     configureWasCalled = true
     const sinks = config?.sinks ?? {}
-    await configureLogtape<any, any>({
+    configureLogtape<any, any>({
       ...config,
       sinks: {
         ...sinks,
@@ -77,12 +77,5 @@ export async function configureLogger<TSinkId extends string, TFilterId extends 
     })
   } catch (e) {
     console.error(e)
-  }
-}
-
-export function ensureLoggerIsConfigured() {
-  if (!configureWasCalled) {
-    configureLogger()
-    console.warn('logger automatically configured with default settings')
   }
 }
