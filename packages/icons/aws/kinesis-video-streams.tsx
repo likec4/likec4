@@ -5,8 +5,8 @@ const SvgKinesisVideoStreams = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" {...props}>
     <defs>
       <linearGradient id="Kinesis-Video-Streams_svg__a" x1="0%" x2="100%" y1="100%" y2="0%">
-        <stop offset="0%" stopColor="#4D27A8" />
-        <stop offset="100%" stopColor="#A166FF" />
+        <stop offset="0%" stopColor="#C8511B" />
+        <stop offset="100%" stopColor="#F90" />
       </linearGradient>
     </defs>
     <g fill="none" fillRule="evenodd">

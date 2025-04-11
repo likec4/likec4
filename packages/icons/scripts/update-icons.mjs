@@ -1,6 +1,5 @@
-import consola from 'consola'
 import { $ } from 'execa'
-import { glob, globSync } from 'glob'
+import { fdir } from 'fdir'
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import * as path from 'path'
@@ -9,7 +8,7 @@ await rm('.tmp/src', { force: true, recursive: true })
 await mkdir('.tmp/src', { recursive: true })
 
 if (!existsSync('.tmp/tech.zip')) {
-  consola.info('Fetching tech-icons...')
+  console.info('Fetching tech-icons...')
   await $`curl -o .tmp/tech.zip https://icon.icepanel.io/Technology/svg.zip`
 }
 await $`unzip .tmp/tech.zip -d .tmp/src/tech`
@@ -105,41 +104,41 @@ const techRenames = {
 for (const [oldName, newName] of Object.entries(techRenames)) {
   await $`mv .tmp/src/tech/${oldName}.svg .tmp/src/tech/${newName}.svg`
 }
-consola.success('tech-icons - OK')
+console.info('tech-icons - OK')
 
 if (!existsSync('.tmp/gcp.zip')) {
-  consola.info('Fetching gcp-icons...')
+  console.info('Fetching gcp-icons...')
   await $`curl -o .tmp/gcp.zip https://icon.icepanel.io/GCP/svg.zip`
 }
 await rm('.tmp/gcp', { force: true, recursive: true })
 await $`unzip .tmp/gcp.zip  -d .tmp/gcp`
 await $`mv .tmp/gcp/svg .tmp/src/gcp`
-consola.success('gcp-icons - OK')
+console.info('gcp-icons - OK')
 
 if (!existsSync('.tmp/aws.zip')) {
-  consola.info('Fetching aws-icons...')
+  console.info('Fetching aws-icons...')
   await $`curl -o .tmp/aws.zip https://icon.icepanel.io/AWS/svg.zip`
 }
 await rm('.tmp/aws', { force: true, recursive: true })
 await $`unzip .tmp/aws.zip -d .tmp/aws`
 await mkdir('.tmp/src/aws', { recursive: true })
 
-const awsSvgs = await glob('.tmp/aws/**/*.svg')
+const awsSvgs = new fdir().glob('**/*.svg').withFullPaths().crawl('.tmp/aws').sync()
 for (const svg of awsSvgs) {
   const name = path.basename(svg)
   await $`mv ${svg} .tmp/src/aws/${name}`
 }
-consola.success('aws-icons - OK')
+console.info('aws-icons - OK')
 
 if (!existsSync('.tmp/azure.zip')) {
-  consola.info('Fetching azure-icons...')
+  console.info('Fetching azure-icons...')
   await $`curl -o .tmp/azure.zip https://arch-center.azureedge.net/icons/Azure_Public_Service_Icons_V19.zip`
 }
 await rm('.tmp/azure', { force: true, recursive: true })
 await $`unzip .tmp/azure.zip  -d .tmp/azure`
 await mkdir('.tmp/src/azure', { recursive: true })
 
-const azureSvgs = await glob('.tmp/azure/**/*.svg')
+const azureSvgs = new fdir().glob('**/*.svg').withFullPaths().crawl('.tmp/azure').sync()
 for (const svg of azureSvgs) {
   let name = path.basename(svg).replace(/^\d+-icon-service-/, '')
   name = path.resolve('.tmp/src/azure', name)
@@ -152,10 +151,11 @@ const azureRenames = {
 for (const [oldName, newName] of Object.entries(azureRenames)) {
   await $`mv .tmp/src/azure/${oldName}.svg .tmp/src/azure/${newName}.svg`
 }
-consola.success('azure-icons - OK')
+console.info('azure-icons - OK')
 
 await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech']}`
-console.log('rm')
+
+console.info('generating svg...')
 const opts = [
   '--filename-case',
   'kebab',
@@ -166,8 +166,8 @@ const opts = [
   'svgo.config.json',
 ]
 
-await $`npx @svgr/cli ${opts} --out-dir . -- .tmp/src`
-consola.success('generated svg - DONE')
+await $`pnpx @svgr/cli ${opts} --out-dir . -- .tmp/src`
+console.info('generated svg - DONE')
 
 await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp`
 
@@ -181,14 +181,14 @@ await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp`
 //   // ...globSync('tech/*.jsx')
 // ]
 
-for (const fname of globSync('*/*.tsx')) {
+for (const fname of new fdir().glob('**/*.tsx').withFullPaths().crawl().sync()) {
   const input = readFileSync(fname, 'utf-8')
 
   const output = `// @ts-nocheck \n\n` + input
   await writeFile(fname, output)
 }
 
-consola.start('Formatting...')
+console.info('Formatting...')
 await $`dprint fmt ${'./**/*.{tsx,ts}'}`
 
-consola.success('DONE')
+console.info('DONE')
