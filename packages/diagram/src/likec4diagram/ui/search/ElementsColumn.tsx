@@ -124,6 +124,8 @@ export function ElementsColumn() {
   return <ElementsTree data={data} handleClick={handleClick} />
 }
 
+const setHoveredNode = () => {}
+
 function ElementsTree({
   data: {
     all,
@@ -142,6 +144,7 @@ function ElementsTree({
   const tree = useTree({
     multiple: false,
   })
+  tree.setHoveredNode = setHoveredNode
 
   useEffect(() => {
     tree.collapseAllNodes()
