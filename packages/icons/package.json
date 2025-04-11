@@ -60,13 +60,14 @@
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "execa": "^9.5.2",
-    "glob": "^11.0.1",
+    "fdir": "catalog:utils",
+    "picomatch": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "wireit": "catalog:"
   },
   "packageManager": "pnpm@10.8.0"
 }

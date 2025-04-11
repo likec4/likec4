@@ -155,7 +155,7 @@
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "fdir": "^6.4.3",
+    "fdir": "catalog:utils",
     "motion": "catalog:react",
     "get-port": "^7.1.0",
     "glob": "^11.0.1",

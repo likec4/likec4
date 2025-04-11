@@ -122,7 +122,7 @@
     "@types/which": "^3.0.4",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "fdir": "^6.4.3",
+    "fdir": "catalog:utils",
     "indent-string": "^5.0.0",
     "json5": "catalog:utils",
     "langium": "catalog:langium",

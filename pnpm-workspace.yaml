@@ -32,6 +32,7 @@ catalogs:
     p-timeout: "^6.1.4"
     p-debounce: "^4.0.0"
     p-queue: "^8.1.0"
+    fdir: "^6.4.3"
   esbuild:
     esbuild: "^0.25.2"
     esbuild-node-externals: "^1.18.0"
