@@ -1,3 +1,13 @@
+## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
+
+### Bug Fixes
+
+* **export:** relationships not rendered correctly when exporting to PNG, closes [#1707](https://github.com/likec4/likec4/issues/1707)
+* **diagram:** strange glitches on mouse hover in search view, closes [#1798](https://github.com/likec4/likec4/issues/1798)
+* **vscode:** apply style changes in deployment views
+* **react:** mark `react` as peerDependency with relaxed semver range (compatible with react 18 and 19)
+
+
 # [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
 
 This release improves multi-projects support

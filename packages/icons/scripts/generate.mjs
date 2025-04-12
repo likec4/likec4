@@ -62,10 +62,20 @@ export declare const Icons: {
 ${types.join('\n')}
 };
 export type IconName = keyof typeof Icons;
-export type IconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
+
+export type IconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | null | undefined
+  }
+}
+export function IconRenderer(props: IconRendererProps): JSX.Element;
+
+export type BundledIconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
   name: IconName;
 };
-export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
+export default function BundledIcon({ name, ...props }: BundledIconProps): JSX.Element;
 `,
 )
 
@@ -78,6 +88,15 @@ ${imports.join('\n')}
 export const Icons = {
 ${icons.join('\n')}
 }
+
+export function IconRenderer({ node, ...props }) {
+  if (!node.icon || node.icon === 'none') {
+    return null
+  }
+  const IconComponent = Icons[node.icon ?? ''];
+  return IconComponent ? jsx(IconComponent, { ...props }) : null;
+}
+
 export default function BundledIcon({ name, ...props }) {
   const IconComponent = Icons[name];
   return IconComponent ? jsx(IconComponent, { ...props }) : null;
@@ -94,16 +113,15 @@ await build({
   ],
   sourceRoot: '.',
   outdir: '.',
-  minify: false,
+  minify: true,
   tsconfigRaw: {
     compilerOptions: {
+      module: 'esnext',
+      target: 'esnext',
       verbatimModuleSyntax: true,
       jsx: 'react-jsx',
     },
   },
   jsxDev: false,
-  jsx: 'transform',
   format: 'esm',
-  target: 'esnext',
-  platform: 'browser',
 })
