@@ -13,6 +13,7 @@ import {
   getBBoxCenter,
   getParallelStepsPrefix,
   invariant,
+  isStepEdgeId,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
@@ -199,6 +200,7 @@ export const diagramMachine = setup({
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
+    'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
     'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -226,6 +228,10 @@ export const diagramMachine = setup({
     'click: node has connections': ({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return context.xyedges.some(e => e.source === event.node.id || e.target === event.node.id)
+    },
+    'click: selected edge': ({ event }) => {
+      assertEvent(event, 'xyflow.edgeClick')
+      return event.edge.selected === true || event.edge.data.active === true
     },
   },
   actions: {
@@ -767,6 +773,26 @@ export const diagramMachine = setup({
               }),
               target: 'focused',
             },
+            'xyflow.edgeClick': [{
+              guard: and([
+                'is dynamic view',
+                'click: selected edge',
+              ]) as any,
+              actions: raise(({ event }) => ({
+                type: 'walkthrough.start',
+                stepId: event.edge.id as StepEdgeId,
+              })),
+            }, {
+              guard: and([
+                'enabled: RelationshipDetails',
+                'click: selected edge',
+              ]) as any,
+              actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+                type: 'open.relationshipDetails',
+                viewId: context.view.id,
+                edgeId: event.edge.id as EdgeId,
+              })),
+            }],
           },
         },
         focused: {
@@ -779,18 +805,18 @@ export const diagramMachine = setup({
             spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
             'xyflow:fitFocusedBounds',
           ],
-          exit: enqueueActions(({ enqueue, context }) => {
+          exit: enqueueActions(({ enqueue, context, event }) => {
             enqueue.stopChild('hotkey')
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
               enqueue({ type: 'xyflow:fitDiagram' })
             }
-            enqueue.assign((s) => ({
-              ...unfocusNodesEdges(s),
+            enqueue.assign({
+              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
               focusedNode: null,
-            }))
+            })
           }),
           on: {
             'xyflow.nodeClick': [
@@ -884,6 +910,23 @@ export const diagramMachine = setup({
                 enqueue.assign(updateActiveWalkthrough)
                 enqueue('xyflow:fitFocusedBounds')
               }),
+            },
+            'xyflow.edgeClick': {
+              actions: [
+                assign(({ event, context }) => {
+                  if (!isStepEdgeId(event.edge.id) || event.edge.id === context.activeWalkthrough?.stepId) {
+                    return {}
+                  }
+                  return {
+                    activeWalkthrough: {
+                      stepId: event.edge.id,
+                      parallelPrefix: getParallelStepsPrefix(event.edge.id),
+                    },
+                  }
+                }),
+                assign(updateActiveWalkthrough),
+                'xyflow:fitFocusedBounds',
+              ],
             },
             'notations.unhighlight': {
               actions: assign(s => ({

@@ -1,6 +1,7 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
-import { type BoxProps, Box, Text } from '@mantine/core'
+import { type BoxProps, Box } from '@likec4/styles/jsx'
+import { Text } from '@mantine/core'
 import { type PropsWithChildren } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
