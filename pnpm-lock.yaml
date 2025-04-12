@@ -492,6 +492,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      elkjs:
+        specifier: ^0.10.0
+        version: 0.10.0
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
@@ -4725,6 +4728,9 @@ packages:
 
   electron-to-chromium@1.5.109:
     resolution: {integrity: sha512-AidaH9JETVRr9DIPGfp1kAarm/W6hRJTPuCnkF+2MqhF4KaAgRIcBc8nvjk+YMXZhwfISof/7WG29eS4iGxQLQ==}
+
+  elkjs@0.10.0:
+    resolution: {integrity: sha512-v/3r+3Bl2NMrWmVoRTMBtHtWvRISTix/s9EfnsfEWApNrsmNjqgqJOispCGg46BPwIFdkag3N/HYSxJczvCm6w==}
 
   elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -12503,6 +12509,8 @@ snapshots:
       jake: 10.9.2
 
   electron-to-chromium@1.5.109: {}
+
+  elkjs@0.10.0: {}
 
   elliptic@6.6.1:
     dependencies:
