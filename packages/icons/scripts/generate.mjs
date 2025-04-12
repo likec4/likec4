@@ -89,7 +89,7 @@ export const Icons = {
 ${icons.join('\n')}
 }
 
-export function IconRenderer({ node }) {
+export function IconRenderer({ node, ...props }) {
   if (!node.icon || node.icon === 'none') {
     return null
   }
