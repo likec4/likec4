@@ -1,7 +1,5 @@
-import ELK, { type ElkExtendedEdge, type ElkNode, type ElkPoint, type ElkPort } from 'elkjs/lib/elk.bundled.js'
-
 import { type DiagramEdge, type DiagramNode, type DiagramView, nonNullable } from '@likec4/core'
-import '@xyflow/react/dist/style.css'
+import ELK, { type ElkExtendedEdge, type ElkNode, type ElkPoint, type ElkPort } from 'elkjs/lib/elk.bundled.js'
 import { flatMap, hasAtLeast, map, pipe } from 'remeda'
 
 const elk = new ELK({
