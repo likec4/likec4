@@ -40,9 +40,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatViewRuleGlobalStyle(node)
     this.formatViewRuleGlobalPredicate(node)
     this.formatIncludeExcludeExpressions(node)
-    this.formatDeploymentViewRulePredicateExpressions(node)
     this.formatWhereExpression(node)
-    this.formatWhereExpressionV2(node)
     this.formatWhereRelationExpression(node)
     this.formatWhereElementExpression(node)
     this.formatRelationExpression(node)
@@ -69,7 +67,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatDeploymentRelation(node: AstNode) {
-    this.on(node, ast.isDeploymentRelation, (n, f) => {      
+    this.on(node, ast.isDeploymentRelation, (n, f) => {
       const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
 
       f.cst(sourceNodes).append(FormattingOptions.oneSpace)
@@ -86,19 +84,23 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatRelation(node: AstNode) {
-    this.on(node, ast.isRelation, (n, f) => {
-      const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
+    this.on(
+      node,
+      (n): n is ast.Relation | ast.DeploymentRelation => ast.isRelation(n) || ast.isDeploymentRelation(n),
+      (n, f) => {
+        const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
 
-      f.cst(sourceNodes).append(FormattingOptions.oneSpace)
-      f.keywords(']->').prepend(FormattingOptions.noSpace)
-      f.keywords('-[').append(FormattingOptions.noSpace)
+        f.cst(sourceNodes).append(FormattingOptions.oneSpace)
+        f.keywords(']->').prepend(FormattingOptions.noSpace)
+        f.keywords('-[').append(FormattingOptions.noSpace)
 
-      f.nodes(...filter([
-        n.target,
-        n.tags,
-      ], isTruthy)).prepend(FormattingOptions.oneSpace)
-      f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
-    })
+        f.nodes(...filter([
+          n.target,
+          n.tags,
+        ], isTruthy)).prepend(FormattingOptions.oneSpace)
+        f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+      },
+    )
 
     this.on(node, ast.isDynamicViewStep, (n, f) => {
       f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
@@ -114,34 +116,12 @@ export class LikeC4Formatter extends AbstractFormatter {
 
       f.properties('title').prepend(FormattingOptions.oneSpace)
     })
-
-    this.on(node, ast.isDirectedRelationExpression)
-      ?.property('target').prepend(FormattingOptions.oneSpace)
-
-    this.on(node, ast.isOutgoingRelationExpression, (n, f) => {
-      f.property('from').append(FormattingOptions.oneSpace)
-      f.keywords(']->').prepend(FormattingOptions.noSpace)
-      f.keywords('-[').append(FormattingOptions.noSpace)
-    })
-
-    this.on(node, ast.isIncomingRelationExpression)
-      ?.keywords('->').append(FormattingOptions.oneSpace)
-
-    this.on(node, ast.isInOutRelationExpression)
-      ?.keyword('->').prepend(FormattingOptions.oneSpace)
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {
-    if (
-      ast.isModel(node)
-      || ast.isSpecificationRule(node)
-      || ast.isModelViews(node)
-      || ast.isLikeC4Lib(node)
-      || ast.isGlobals(node)
-      || ast.isModelDeployments(node)
-    ) {
+    if (ast.isLikeC4Grammar(node.$container)) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'global', 'deployments')
+      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'global', 'deployments', 'import')
         .prepend(FormattingOptions.noIndent)
     }
   }
@@ -382,14 +362,14 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatWithPredicate(node: AstNode) {
-    const formatter = this.getNodeFormatter(node)
     if (
-      ast.isElementPredicateWith(node)
-      || ast.isRelationPredicateWith(node)
+      ast.isFqnExprWith(node)
+      || ast.isRelationExprWith(node)
     ) {
+      const formatter = this.getNodeFormatter(node)
       formatter.keyword('with').prepend(FormattingOptions.oneSpace)
     }
-  }  
+  }
 
   protected formatDeploymentNodeDeclaration(node: AstNode) {
     this.on(node, ast.isDeploymentNode, (n, f) => {
@@ -414,7 +394,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatDeployedInstance(node: AstNode) {
     this.on(node, ast.isDeployedInstance, (n, f) => {
-      const eqNode = (<CompositeCstNode>n.$cstNode)?.content.find(c => c.text === '=')
+      const eqNode = (<CompositeCstNode> n.$cstNode)?.content.find(c => c.text === '=')
       if (eqNode) {
         f.cst([eqNode]).surround(FormattingOptions.oneSpace)
       }
@@ -452,8 +432,8 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     this.on(node, ast.isDeploymentViewRuleStyle)
       ?.keyword('style').append(FormattingOptions.oneSpace)
-  
-    this.on(node, ast.isElementExpressionsIterator)
+
+    this.on(node, ast.isExpressions)
       ?.keyword(',')
       .prepend(FormattingOptions.noSpace)
       .append(FormattingOptions.oneSpace)
@@ -466,18 +446,8 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereExpression(node: AstNode) {
     if (
-      ast.isRelationPredicateOrWhere(node)
-      || ast.isElementPredicateOrWhere(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.keyword('where').append(FormattingOptions.oneSpace)
-    }
-  }
-
-  protected formatWhereExpressionV2(node: AstNode) {
-    if (
-      ast.isRelationPredicateOrWhereV2(node)
-      || ast.isElementPredicateOrWhereV2(node)
+      ast.isRelationExprWhere(node)
+      || ast.isFqnExprWhere(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       formatter.keyword('where').append(FormattingOptions.oneSpace)
@@ -486,9 +456,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereRelationExpression(node: AstNode) {
     this.on(node, ast.isWhereRelationExpression, (n, f) => {
-      f.property('operator').surround(FormattingOptions.oneSpace)      
+      f.property('operator').surround(FormattingOptions.oneSpace)
     })
-    this.on(node, ast.isWhereRelationNegation, (n, f) => {      
+    this.on(node, ast.isWhereRelationNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
     if (
@@ -504,9 +474,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatWhereElementExpression(node: AstNode) {
     this.on(node, ast.isWhereElementExpression, (n, f) => {
-      f.property('operator').surround(FormattingOptions.oneSpace)      
+      f.property('operator').surround(FormattingOptions.oneSpace)
     })
-    this.on(node, ast.isWhereElementNegation, (n, f) => {      
+    this.on(node, ast.isWhereElementNegation, (n, f) => {
       f.keyword('not').append(FormattingOptions.oneSpace)
     })
     if (
@@ -523,8 +493,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatIncludeExcludeExpressions(node: AstNode) {
     if (
       ast.isDynamicViewRule(node)
-      || ast.isIncludePredicate(node)
-      || ast.isExcludePredicate(node)
+      || ast.isViewRulePredicate(node)
       || ast.isDeploymentViewRulePredicate(node)
     ) {
       const formatter = this.getNodeFormatter(node)
@@ -535,11 +504,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       }
     }
 
-    if (
-      ast.isDynamicViewPredicateIterator(node)
-      || ast.isPredicates(node)
-      || ast.isPredicates(node)
-    ) {
+    if (ast.isExpressions(node)) {
       const formatter = this.getNodeFormatter(node)
       const parent = this.findPredicateExpressionRoot(node)
       const isMultiline = parent?.$cstNode && utils.isMultiline(parent?.$cstNode)
@@ -559,7 +524,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
     this.on(node, ast.isInOutRelationExpr, (n, f) => {
       f.keyword('->').prepend(FormattingOptions.oneSpace)
-    })    
+    })
     this.on(node, ast.isOutgoingRelationExpr, (n, f) => {
       f.keywords('->', '<->').prepend(FormattingOptions.oneSpace)
       f.keywords('-[')
@@ -577,45 +542,13 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
   }
 
-  protected formatDeploymentViewRulePredicateExpressions(node: AstNode) {
-    if (
-      ast.isDynamicViewRule(node)
-      || ast.isIncludePredicate(node)
-      || ast.isExcludePredicate(node)
-      || ast.isDeploymentViewRulePredicate(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-
-      if (!node.$cstNode || !utils.isMultiline(node.$cstNode)) {
-        formatter.keywords('include', 'exclude')
-          .append(FormattingOptions.oneSpace)
-      }
-    }
-
-    if (
-      ast.isDeploymentViewRulePredicateExpression(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      const parent = this.findPredicateExpressionRoot(node)
-      const isMultiline = parent?.$cstNode && utils.isMultiline(parent?.$cstNode)
-
-      if (isMultiline) {
-        formatter.property('value').prepend(FormattingOptions.indent)
-      }
-      formatter.keyword(',')
-        .prepend(FormattingOptions.noSpace)
-        .append(isMultiline ? FormattingOptions.newLine : FormattingOptions.oneSpace)
-    }
-  }
-
   private findPredicateExpressionRoot(node: AstNode): AstNode | undefined {
     let parent = node.$container
     while (true) {
       if (
         !parent
         || ast.isDynamicViewRule(parent)
-        || ast.isIncludePredicate(parent)
-        || ast.isExcludePredicate(parent)
+        || ast.isViewRulePredicate(parent)
         || ast.isDeploymentViewRulePredicate(parent)
       ) {
         return parent

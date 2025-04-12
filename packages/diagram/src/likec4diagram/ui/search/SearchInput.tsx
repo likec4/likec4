@@ -39,7 +39,7 @@ export function LikeC4SearchInput() {
   const previous = usePreviousDistinct(search)
   const isFirstRender = useIsFirstRender()
 
-  const [isEmptyForSomeTime] = useDebouncedValue(search === '' && !isFirstRender, isString(previous) ? 400 : 1000)
+  const [isEmptyForSomeTime] = useDebouncedValue(search === '' && !isFirstRender, isString(previous) ? 500 : 2000)
 
   useWindowEvent(
     'keydown',
@@ -130,7 +130,7 @@ export function LikeC4SearchInput() {
           combobox.closeDropdown()
           // Let react to display filtered elements
           setTimeout(() => {
-            document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
+            document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
           }, 50)
         }
       }}
@@ -217,7 +217,7 @@ export function LikeC4SearchInput() {
             ) {
               combobox.closeDropdown()
               stopAndPrevent(e)
-              document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
+              document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
               return
             }
           }} />

@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
@@ -6,7 +5,7 @@ import {
   type ComputedDeploymentView,
   type DeploymentRef,
   type DeploymentRelation,
-  type GenericLikeC4Model,
+  type GenericLikeC4ModelData,
   type IteratorLike,
   type Tag as C4Tag,
   DeploymentElement,
@@ -14,6 +13,7 @@ import {
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
+import { DefaultMap } from '../utils/mnemonist'
 import {
   type DeployedInstancesIterator,
   type DeploymentElementModel,
@@ -64,7 +64,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: GenericLikeC4Model['deployments'],
+    public readonly $deployments: GenericLikeC4ModelData['deployments'],
   ) {
     for (const element of sortParentsFirst(values($deployments.elements))) {
       const el = this.addElement(element)

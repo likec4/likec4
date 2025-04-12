@@ -7,7 +7,7 @@ import type { InlineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import { type ViteLogger } from '../logger'
-import { likec4Plugin } from './plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {
@@ -81,7 +81,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_STYLE_BUNDLE__: 'false',
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"',
@@ -90,8 +89,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       outDir,
       modulePreload: false,
       emptyOutDir: false,
-      cssCodeSplit: false,
       sourcemap: false,
+      cssCodeSplit: true,
       cssMinify: true,
       minify: true,
       copyPublicDir: true,
@@ -109,9 +108,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     customLogger,
     plugins: [
       react(),
-      likec4Plugin({
-        languageServices,
-        useOverviewGraph,
+      LikeC4VitePlugin({
+        languageServices: languageServices.languageServices,
+        useOverviewGraph: useOverviewGraph,
       }),
     ].concat(cfg.outputSingleFile ? [viteSingleFile()] : []),
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }

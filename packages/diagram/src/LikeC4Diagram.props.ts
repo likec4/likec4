@@ -8,7 +8,9 @@ import type {
   ViewId,
   WhereOperator,
 } from '@likec4/core'
+import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 
 export type { WhereOperator }
 
@@ -55,6 +57,35 @@ export type OnChange = (event: ChangeEvent) => void
 
 export type LikeC4ColorScheme = 'light' | 'dark'
 
+export type OverrideReactFlowProps = Pick<
+  XYFlowProps,
+  | 'paneClickDistance'
+  | 'nodeClickDistance'
+  | 'selectionKeyCode'
+  | 'panActivationKeyCode'
+  | 'multiSelectionKeyCode'
+  | 'zoomActivationKeyCode'
+  | 'snapToGrid'
+  | 'snapGrid'
+  | 'onlyRenderVisibleElements'
+  | 'nodesDraggable'
+  | 'nodesFocusable'
+  | 'elementsSelectable'
+  | 'selectNodesOnDrag'
+  | 'panOnDrag'
+  | 'preventScrolling'
+  | 'zoomOnScroll'
+  | 'zoomOnPinch'
+  | 'panOnScroll'
+  | 'panOnScrollSpeed'
+  | 'panOnScrollMode'
+  | 'zoomOnDoubleClick'
+  | 'nodeDragThreshold'
+>
+
+export type PaddingUnit = 'px' | '%'
+export type PaddingWithUnit = `${number}${PaddingUnit}` | number
+
 export interface LikeC4DiagramProperties {
   view: DiagramView
 
@@ -86,11 +117,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   fitView?: boolean | undefined
+
   /**
-   * Seems like this is percentage of the view size
-   * @default 0
+   * Padding around the diagram
+   * @default '8px'
    */
-  fitViewPadding?: number | undefined
+  fitViewPadding?: PaddingWithUnit | undefined
 
   /**
    * @default false if readonly
@@ -173,15 +205,32 @@ export interface LikeC4DiagramProperties {
   experimentalEdgeEditing?: boolean | undefined
 
   /**
+   * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
+   *
+   * @default 'auto' - will be set to true if view has more then 3000 * 2000 pixels
+   */
+  reduceGraphics?: 'auto' | boolean | undefined
+
+  /**
    * Render icon for an element, bundled or remote
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
 
   /**
+   * Customize layout of the controls on the top left
+   */
+  renderControls?: ControlsCustomLayout | undefined
+
+  /**
    * Dynamic filter, applies both to nodes and edges
    */
   where?: WhereOperator<string, string> | undefined
+
+  /**
+   * Override ReactFlow props
+   */
+  reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
 export type OpenSourceParams =

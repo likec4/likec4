@@ -1,0 +1,175 @@
+views {
+
+  view index {
+    title 'System Landscape'
+    include
+      *
+  }
+
+  view customer of customer {
+    description '
+      Customer interactions with the system.
+    '
+    include
+      *,
+      -> boutique.*
+  }
+
+  view boutique of boutique {
+    description '
+      E-commerce app for browsing items, add them to the cart,
+      and purchasing them.
+    '
+    include
+      *,
+      customer with {
+        size sm
+      }
+    exclude
+      frontend -> actionLog,
+      payment-gateway,
+      email-provider
+
+    style db, frontend {
+      multiple true
+    }
+    style boutique {
+      opacity 0%
+    }
+  }
+
+  view frontend of boutique.frontend {
+    include
+      *,
+      boutique
+
+    style * {
+      color secondary
+      opacity 10%
+    }
+
+    style frontend._ {
+      color green
+    }
+  }
+
+  view checkout of boutique.checkout {
+    description '
+      Retrieves user cart, prepares order and
+      orchestrates the payment, shipping and the email notification.
+    '
+    link https://github.com/likec4/template 'Repository'
+    include
+      *,
+      boutique,
+      customer,
+      payment-gateway,
+      email-provider
+
+    style * {
+      color secondary
+    }
+    style boutique {
+      color muted
+      opacity 10%
+    }
+
+    style checkout._ {
+      color green
+    }
+  }
+
+  view cart of boutique.cart {
+    include
+      *,
+      boutique.frontend.* -> cart.*,
+      boutique,
+      customer
+
+    style * {
+      color secondary
+      opacity 0%
+    }
+
+    style cart._ {
+      opacity 100%
+      color green
+    }
+  }
+
+  view payments of boutique.payments {
+    include
+      *,
+      boutique,
+      customer,
+      -> boutique.db.*,
+      boutique.checkout
+
+    style * {
+      color secondary
+    }
+    style boutique {
+      color muted
+      opacity 10%
+    }
+
+    style payments._ {
+      color green
+    }
+  }
+
+  view actionLog of boutique.actionLog {
+    include
+      *
+
+    style * {
+      color secondary
+    }
+    style actionLog {
+      color green
+    }
+  }
+
+  view shipping of boutique.shipping {
+    include
+      *,
+      -> boutique.db.*,
+      boutique
+
+    style * {
+      color secondary
+      opacity 0%
+    }
+    style shipping {
+      color green
+    }
+  }
+
+  view database of boutique.db {
+    include
+      *,
+      boutique
+
+    style boutique {
+      opacity 0%
+    }
+    style boutique.db._ {
+      icon tech:postgresql
+    }
+  }
+
+  view catalogue of boutique.catalogue {
+    include
+      *,
+      -> boutique.db.*,
+      boutique
+
+    style * {
+      color secondary
+      opacity 10%
+    }
+    style catalogue {
+      color green
+    }
+  }
+}

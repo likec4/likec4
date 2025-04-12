@@ -1,7 +1,6 @@
 export type {
   CustomColor,
   ExclusiveUnion,
-  IconUrl,
   IteratorLike,
   KeysOf,
   NonEmptyArray,
@@ -11,6 +10,20 @@ export type {
   Predicate,
   XYPoint,
 } from './_common'
+
+export {
+  AsFqn,
+  GlobalFqn,
+  isGlobalFqn,
+  splitGlobalFqn,
+} from './scalars'
+
+export type {
+  Fqn,
+  IconUrl,
+  ProjectId,
+  Tag,
+} from './scalars'
 
 export { DeploymentElement } from './deployments'
 export type {
@@ -25,7 +38,6 @@ export type {
 } from './deployments'
 
 export {
-  AsFqn,
   BorderStyles,
   DefaultElementShape,
   DefaultPaddingSize,
@@ -42,55 +54,13 @@ export type {
   ElementKindSpecificationStyle,
   ElementShape,
   ElementStyle,
-  Fqn,
   Link,
-  Tag,
   TagSpec,
   TypedElement,
 } from './element'
 
-export {
-  isCustomElement,
-  isCustomRelationExpr,
-  isElement,
-  isElementKindExpr,
-  isElementPredicateExpr,
-  isElementRef,
-  isElementTagExpr,
-  isElementWhere,
-  isExpandedElementExpr,
-  isIncoming,
-  isInOut,
-  isOutgoing,
-  isRelation,
-  isRelationExpression,
-  isRelationPredicateExpr,
-  isRelationWhere,
-  isWildcard,
-} from './expression'
-export type {
-  CustomElementExpr,
-  CustomRelationExpr,
-  DirectRelationExpr,
-  ElementExpression,
-  ElementKindExpr,
-  ElementPredicateExpression,
-  ElementRefExpr,
-  ElementTagExpr,
-  ElementWhereExpr,
-  ExpandedElementExpr,
-  Expression,
-  IncomingExpr,
-  InOutExpr,
-  NonWilcard,
-  OutgoingExpr,
-  RelationExpression,
-  RelationPredicateExpression,
-  RelationWhereExpr,
-  WildcardExpr,
-} from './expression'
-
 export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
+export { ModelLayer } from './expression-v2-model'
 
 export type {
   GlobalDynamicPredicates,
@@ -102,23 +72,25 @@ export type {
 } from './global'
 
 export type {
-  AnyParsedLikeC4Model,
-  ComputedLikeC4Model,
-  GenericLikeC4Model,
-  LayoutedLikeC4Model,
+  AnyParsedLikeC4ModelData,
+  ComputedLikeC4ModelData,
+  GenericLikeC4ModelData,
+  LayoutedLikeC4ModelData,
   LikeC4ModelDump,
-  ParsedLikeC4Model,
-} from './model'
+  ParsedLikeC4ModelData,
+} from './model-data'
 
 export {
   isAndOperator,
   isKindEqual,
   isNotOperator,
   isOrOperator,
+  isParticipantOperator,
   isTagEqual,
   whereOperatorAsPredicate,
 } from './operators'
 export type {
+  AllNever,
   AndOperator,
   EqualOperator,
   Filterable,
@@ -126,6 +98,8 @@ export type {
   NotOperator,
   OperatorPredicate,
   OrOperator,
+  Participant,
+  ParticipantOperator,
   TagEqual,
   WhereOperator,
 } from './operators'
@@ -140,7 +114,7 @@ export type {
   RelationshipKindSpecification,
   RelationshipLineType,
 } from './relation'
-export { isThemeColor } from './theme'
+export { isThemeColor, ThemeColors } from './theme'
 export type {
   Color,
   ColorLiteral,

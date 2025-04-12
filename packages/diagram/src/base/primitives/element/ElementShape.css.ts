@@ -1,139 +1,112 @@
-import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { easings, mantine, vars } from '../../../theme-vars'
-import { container, stokeFillMix } from './ElementNodeContainer.css'
+import { css, cx } from '@likec4/styles/css'
 
-const indicatorKeyframes = keyframes({
-  'from': {
-    strokeOpacity: 0.8,
+export const indicator = css({
+  _smallZoom: {
+    visibility: 'hidden',
   },
-  'to': {
-    strokeOpacity: 0.5,
-  },
-})
+  stroke: 'likec4.palette.loContrast',
+  fill: '[none]',
 
-const outlineColor = fallbackVar(
-  mantine.colors.primaryColors.outline,
-  mantine.colors.primaryColors.filled,
-  vars.element.stroke,
-)
-
-const indicatorStroke = createVar('indicator-stroke')
-
-export const indicator = style({
-  stroke: indicatorStroke,
-  fill: 'none',
-  transformOrigin: 'center center',
-  strokeWidth: 6,
-  animationDuration: '1s',
-  animationIterationCount: 'infinite',
-  animationDirection: 'alternate',
+  strokeWidth: 8,
   strokeOpacity: 0.8,
   visibility: 'hidden',
   pointerEvents: 'none',
-  vars: {
-    [indicatorStroke]: vars.element.loContrast,
+  _light: {
+    stroke: `[color-mix(in srgb, {colors.likec4.palette.fill} 50%,rgb(121, 121, 121))]`,
   },
-  selectors: {
-    ':where(.react-flow__node.selected) &': {
-      visibility: 'visible',
-      animationName: fallbackVar(vars.safariAnimationHook, indicatorKeyframes),
-    },
-    [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-      strokeWidth: 10,
-      stroke: outlineColor,
-      visibility: 'visible',
-    },
-    ':where([data-likec4-shape="queue"], [data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      strokeWidth: 10,
-    },
-    [`:where([data-mantine-color-scheme='light']) &`]: {
-      vars: {
-        [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 50%, #3c3c3c)`,
-      },
-    },
+  _whenFocused: {
+    visibility: 'visible',
+  },
+  _groupFocusVisible: {
+    visibility: 'visible',
+  },
+  _whenSelected: {
+    animationStyle: 'indicator',
+    visibility: 'visible',
   },
 })
 
-export const fillElementFill = style({
-  fill: vars.element.fill,
+export const fillElementFill = css({
+  fill: 'likec4.palette.fill',
 })
 
-export const fillElementStroke = style({
-  fill: vars.element.stroke,
+export const fillElementStroke = css({
+  fill: 'likec4.palette.stroke',
 })
 
-export const fillMixStroke = style({
-  fill: fallbackVar(stokeFillMix, `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`),
+export const fillMixStroke = css({
+  fill: '[color-mix(in srgb, {colors.likec4.palette.stroke} 90%, {colors.likec4.palette.fill})]',
+  '.shape-svg-multiple &': {
+    fill: 'likec4.palette.fill',
+  },
 })
 
-const filterShadow = createVar('filter-shadow')
-
-const shapeBase = style({
+const shapeBase = css.raw({
   top: 0,
   left: 0,
   position: 'absolute',
   width: '100%',
   height: '100%',
   pointerEvents: 'none',
-  fill: vars.element.fill,
-  stroke: vars.element.stroke,
+  fill: 'likec4.palette.fill',
+  stroke: 'likec4.palette.stroke',
   overflow: 'visible',
-  zIndex: -1,
+  // zIndex is removed to improve rendering performance
+  // this forces to keep shape in the same layer as the node
+  // zIndex: -1,
 })
 
-export const shapeSvgMultiple = style([shapeBase, {
-  transformOrigin: '50% 25%',
-  transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
-  filter: ' brightness(0.65) saturate(0.8)',
-  stroke: 'none',
-  selectors: {
-    // [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-    //   visibility: 'hidden',
-    // },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      transformOrigin: '50% 100%',
+export const shapeSvgMultiple = cx(
+  'shape-svg-multiple',
+  css(shapeBase, {
+    transformOrigin: {
+      base: '50% 50%',
+      _shapeQueue: '75% 25%',
+      _shapeCylinder: '50% 100%',
+      _shapeStorage: '50% 100%',
     },
-    ':where([data-likec4-shape="queue"]) &': {
-      transformOrigin: '75% 25%',
-      // transform: 'translate(14px,15px) perspective(200px) translateZ(-2px)',
+    transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
+    filter: 'brightness(0.65) saturate(0.8)',
+    stroke: '[none]',
+    display: {
+      _smallZoom: 'none',
+      _reduceGraphicsOnPan: 'none',
+      _whenSelected: 'none',
+      _whenFocused: 'none',
     },
-  },
-  // filter: 'brightness(0.5)'
-}])
-globalStyle(`.${shapeSvgMultiple} ${fillMixStroke}`, {
-  fill: vars.element.fill,
-})
-export const shapeSvg = style([shapeBase, {
-  filter: filterShadow,
-  transition: `fill 120ms linear, filter 130ms ${easings.inOut}`,
+  }),
+)
+
+export const shapeSvg = css(shapeBase, {
+  transition: `fill 120ms linear, filter 130ms {easings.inOut}`,
   transitionDelay: '0ms',
-  vars: {
-    [filterShadow]: `
+  filter: `
       drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))
-      drop-shadow(0 1px 1px color-mix(in srgb, ${vars.element.stroke} 40%, transparent))
+      drop-shadow(0 1px 1px color-mix(in srgb, {colors.likec4.palette.stroke} 40%, transparent))
       drop-shadow(0 5px 3px rgba(0, 0, 0, 0.1))
     `,
-  },
-  selectors: {
-    [`:where([data-hovered='true']) &`]: {
-      vars: {
-        [filterShadow]: `
+  _whenHovered: {
+    filter: `
         drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
         drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
         drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
-
         `,
-      },
-    },
-    [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-      vars: {
-        [filterShadow]: `none`,
-      },
-    },
-    [`:where([data-likec4-zoom-small="true"]) &`]: {
-      vars: {
-        [filterShadow]: `none`,
-      },
-    },
   },
-}])
+  [`:where([data-likec4-level='true']) &`]: {
+    filter: `
+        drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
+        drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
+        `,
+  },
+  _whenSelected: {
+    filter: 'none',
+  },
+  _smallZoom: {
+    filter: 'none',
+  },
+  _whenPanning: {
+    transition: 'none',
+    filter: 'none',
+  },
+})

@@ -1,12 +1,12 @@
 import { filter } from 'remeda'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
-import type { WildcardExpr } from '../../../types/expression'
+import type { ModelLayer } from '../../../types/expression-v2-model'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
 import { type PredicateExecutor, Memory } from '../_types'
 import { NoWhere } from '../utils'
 
-export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
+export const WildcardPredicate: PredicateExecutor<ModelLayer.FqnExpr.Wildcard> = {
   include: ({ scope, model, stage, memory, where }) => {
     if (!scope) {
       const rootElements = [...model.roots()].filter(where)

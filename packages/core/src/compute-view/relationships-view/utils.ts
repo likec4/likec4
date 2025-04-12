@@ -1,14 +1,14 @@
-import { DefaultMap } from 'mnemonist'
 import { nonNullable } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
-import type { Fqn } from '../../types'
+import type { AnyAux } from '../../model/types'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
+import { DefaultMap } from '../../utils/mnemonist'
 
-export function treeFromElements(elements: Iterable<ElementModel>) {
-  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel>
+export function treeFromElements<const M extends AnyAux>(elements: Iterable<ElementModel<M>>) {
+  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel<M>>
   const root = new Set(sorted)
-  const map = new Map(sorted.map(e => [e.id, e]))
-  const parents = new DefaultMap<ElementModel, ElementModel | null>(() => null)
+  const map = new Map(sorted.map(e => [e._literalId, e]))
+  const parents = new DefaultMap<ElementModel<M>, ElementModel<M> | null>(() => null)
   const children = sorted.reduce((acc, parent, index, all) => {
     acc.set(
       parent,
@@ -25,16 +25,49 @@ export function treeFromElements(elements: Iterable<ElementModel>) {
             parents.set(el, parent)
           }
           return acc
-        }, [] as ElementModel[]),
+        }, [] as ElementModel<M>[]),
     )
     return acc
-  }, new DefaultMap<ElementModel, ElementModel[]>(() => []))
+  }, new DefaultMap<ElementModel<M>, ElementModel<M>[]>(() => []))
 
   return {
     sorted,
-    byId: (id: string) => nonNullable(map.get(id as Fqn), `Element not found by id: ${id}`),
-    root: root as ReadonlySet<ElementModel>,
-    parent: (el: ElementModel) => parents.get(el),
-    children: (el: ElementModel): ReadonlyArray<ElementModel> => children.get(el),
+    byId: (id: M['Element']): ElementModel<M> => nonNullable(map.get(id), `Element not found by id: ${id}`),
+    root: root as ReadonlySet<ElementModel<M>>,
+    parent: (el: ElementModel<M>): ElementModel<M> | null => parents.get(el),
+    children: (el: ElementModel<M>): ReadonlyArray<ElementModel<M>> => children.get(el),
+    /**
+     * Flattens the tree structure by removing redundant hierarchy levels.
+     * @example
+     *   A
+     *   └── B
+     *       ├── C
+     *       │   └── D
+     *       │       └── E
+     *       └── F
+     *           └── G
+     * becomes
+     *   A
+     *   ├── C
+     *   │   └── E
+     *   └── F
+     *       └── G
+     */
+    flatten: (): Set<ElementModel<M>> => {
+      return new Set([
+        ...root,
+        ...sorted.reduce((acc, el) => {
+          const _children = children.get(el)
+          if (_children.length === 0) {
+            acc.push(el)
+            return acc
+          }
+          if (_children.length > 1) {
+            acc.push(..._children)
+          }
+          return acc
+        }, [] as ElementModel<M>[]),
+      ])
+    },
   }
 }

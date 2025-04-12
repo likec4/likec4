@@ -1,11 +1,13 @@
-import { LikeC4Model } from '@likec4/core'
-import { DocumentState, EmptyFileSystem, TextDocument } from 'langium'
+import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
+import { DocumentState, EmptyFileSystem, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
+import { entries } from 'remeda'
 import stripIndent from 'strip-indent'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { createLanguageServices } from '../module'
+import { ProjectsManager } from '../workspace'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
   const services = createLanguageServices(EmptyFileSystem).likec4
@@ -22,22 +24,22 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   let isInitialized = false
   let documentIndex = 1
 
-  const parse = async (input: string, uri?: string) => {
-    if (!isInitialized) {
-      await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-        if (isInitialized) {
-          return
-        }
-        isInitialized = true
-        services.shared.workspace.WorkspaceManager.initialize({
-          capabilities: {},
-          processId: null,
-          rootUri: null,
-          workspaceFolders: [workspaceFolder],
-        })
-        await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+  async function initialize() {
+    if (isInitialized) return
+    isInitialized = true
+    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      services.shared.workspace.WorkspaceManager.initialize({
+        capabilities: {},
+        processId: null,
+        rootUri: workspaceFolder.uri,
+        workspaceFolders: [workspaceFolder],
       })
-    }
+      await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+    })
+  }
+
+  const addDocument = async (input: string, uri?: string) => {
+    await initialize()
     const docUri = Utils.resolvePath(
       workspaceUri,
       './src/',
@@ -48,6 +50,11 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       docUri,
     )
     langiumDocuments.addDocument(document)
+    return document as LikeC4LangiumDocument
+  }
+
+  const parse = async (input: string, uri?: string) => {
+    const document = await addDocument(input, uri)
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
       await documentBuilder.build([document], { validation: false })
     })
@@ -55,7 +62,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
-    const document = typeof input === 'string' ? await parse(input, uri) : input
+    const document = typeof input === 'string' ? await addDocument(input, uri) : input
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
       await documentBuilder.build([document], { validation: true })
     })
@@ -94,13 +101,9 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validateAll = async () => {
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      const docs = langiumDocuments.all.toArray()
-      await documentBuilder.build(docs, { validation: true })
-    })
-    await documentBuilder.waitUntil(DocumentState.Validated)
     const docs = langiumDocuments.all.toArray()
     assert.ok(docs.length > 0, 'no documents to validate')
+    await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -112,17 +115,21 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const buildModel = async () => {
-    await validateAll()
-    const model = await modelBuilder.buildComputedModel()
-    if (!model) throw new Error('No model found')
-    return model
+    if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+      await validateAll()
+    }
+    const likec4model = await modelBuilder.buildLikeC4Model()
+    if (!likec4model) throw new Error('No model found')
+    return likec4model.$model as ComputedLikeC4ModelData
   }
 
   const buildLikeC4Model = async () => {
-    await validateAll()
-    const model = await modelBuilder.buildComputedModel()
-    if (!model) throw new Error('No model found')
-    return LikeC4Model.create(model)
+    if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+      await validateAll()
+    }
+    const likec4model = await modelBuilder.buildLikeC4Model()
+    if (!likec4model) throw new Error('No model found')
+    return likec4model
   }
 
   /**
@@ -130,13 +137,14 @@ export function createTestServices(workspace = 'file:///test/workspace') {
    */
   const resetState = async () => {
     await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
-      const docs = langiumDocuments.all.toArray().map(doc => doc.uri)
+      const docs = langiumDocuments.allExcludingBuiltin.toArray().map(doc => doc.uri)
       await documentBuilder.update([], docs, cancelToken)
     })
   }
 
   return {
     services,
+    addDocument,
     parse,
     validate,
     validateAll,
@@ -144,6 +152,71 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     buildLikeC4Model,
     resetState,
     format,
+  }
+}
+
+export async function createMultiProjectTestServices<const Projects extends Record<string, Record<string, string>>>(
+  data: Projects,
+) {
+  const workspace = 'file:///test/workspace'
+  const {
+    services,
+    addDocument,
+    validateAll,
+  } = createTestServices(workspace)
+
+  const projects = {} as {
+    readonly [K in keyof Projects]: {
+      readonly [L in keyof Projects[K]]: LikeC4LangiumDocument
+    }
+  }
+
+  for (const [name, files] of entries(data)) {
+    const folderUri = UriUtils.joinPath(URI.parse(workspace), 'src', name)
+    services.shared.workspace.ProjectsManager.registerProject({
+      config: {
+        name,
+        exclude: ['node_modules'],
+      },
+      folderUri,
+    })
+    // @ts-ignore
+    projects[name] = {} as any
+
+    for (let [docName, content] of entries(files)) {
+      const fileName = docName.endsWith('.c4') ? docName : `${docName}.c4`
+      // @ts-ignore
+      projects[name][docName] = await addDocument(content, `${name}/${fileName}`)
+    }
+  }
+
+  async function buildLikeC4Model(projectId: keyof Projects) {
+    if (services.shared.workspace.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+      await validateAll()
+    }
+    const likec4model = await services.likec4.ModelBuilder.buildLikeC4Model(projectId as ProjectId)
+    if (!likec4model) throw new Error('No model found')
+    return likec4model
+  }
+
+  async function buildModel(projectId: keyof Projects) {
+    const model = await buildLikeC4Model(projectId)
+    return model.$model as ComputedLikeC4ModelData
+  }
+
+  return {
+    services,
+    projects,
+    projectsManager: services.shared.workspace.ProjectsManager,
+    /**
+     * Add document outside of projects
+     */
+    addDocumentOutside: async (input: string) => {
+      return await addDocument(input)
+    },
+    validateAll,
+    buildModel,
+    buildLikeC4Model,
   }
 }
 

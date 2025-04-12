@@ -1,9 +1,9 @@
 export const ZIndexes = {
-  Compound: 2,
-  Edge: 4,
-  Element: 6,
+  Compound: 0,
+  Edge: 2,
+  Element: 2,
   Max: 8,
 } as const
 
-export const MinZoom = 0.1
+export const MinZoom = 0.05
 export const MaxZoom = 2

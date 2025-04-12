@@ -1,0 +1,50 @@
+{
+  "name": "@likec4/style-preset",
+  "license": "MIT",
+  "version": "1.28.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "generate": "tsx --conditions=sources ./generate.ts",
+    "typecheck": "tsc --noEmit",
+    "prebuild": "rm -rf dist/*",
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./src": "./src/index.ts"
+  },
+  "dependencies": {
+    "@pandacss/dev": "catalog:css"
+  },
+  "devDependencies": {
+    "remeda": "catalog:utils",
+    "@likec4/core": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@mantine/vanilla-extract": "catalog:mantine",
+    "@mantine/core": "catalog:mantine",
+    "khroma": "^2.1.0",
+    "json5": "catalog:utils",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.8.0"
+}

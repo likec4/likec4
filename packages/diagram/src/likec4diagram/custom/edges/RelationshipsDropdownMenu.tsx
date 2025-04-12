@@ -1,11 +1,12 @@
 import {
   type DiagramEdge,
   type EdgeId,
+  type LikeC4Model,
   type NodeId,
   DiagramNode,
-  LikeC4Model,
   nameFromFqn,
 } from '@likec4/core'
+import { css, cx } from '@likec4/styles/css'
 import {
   type StackProps,
   ActionIcon,
@@ -24,17 +25,15 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
-import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
+import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, memo, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../../components/Link'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useLikeC4Model } from '../../../likec4model'
-import { DiagramContext } from '../../state/machine'
-import * as css from './RelationshipsDropdownMenu.css'
+import { findDiagramEdge, findDiagramNode } from '../../../state/utils'
+import * as styles from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
 
@@ -49,22 +48,24 @@ export const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
 })
 
-export function RelationshipsDropdownMenu({
-  edgeId,
-  source,
-  target,
-  disabled = false,
-  children,
-}: PropsWithChildren<{
-  edgeId: EdgeId
-  source: string
-  target: string
-  disabled?: boolean | undefined
-}>) {
+export const RelationshipsDropdownMenu = memo((
+  {
+    edgeId,
+    source,
+    target,
+    disabled = false,
+    children,
+  }: PropsWithChildren<{
+    edgeId: EdgeId
+    source: string
+    target: string
+    disabled?: boolean | undefined
+  }>,
+) => {
   const { diagramEdge, sourceNode, targetNode } = useDiagramContext(ctx => ({
-    diagramEdge: DiagramContext.findDiagramEdge(ctx, edgeId),
-    sourceNode: DiagramContext.findDiagramNode(ctx, source),
-    targetNode: DiagramContext.findDiagramNode(ctx, target),
+    diagramEdge: findDiagramEdge(ctx, edgeId),
+    sourceNode: findDiagramNode(ctx, source),
+    targetNode: findDiagramNode(ctx, target),
   }))
   const likec4model = useLikeC4Model(true)
   const diagram = useDiagram()
@@ -88,7 +89,7 @@ export function RelationshipsDropdownMenu({
     diagramEdge.relations,
     map(id => {
       try {
-        return likec4model.relationship(id)
+        return likec4model.findRelationship(id)
       } catch (e) {
         // View was cached, but likec4model based on new data
         console.error(
@@ -138,7 +139,7 @@ export function RelationshipsDropdownMenu({
         {children}
       </MenuTarget>
       <MenuDropdown
-        className={css.menuDropdown}
+        className={styles.menuDropdown}
         onPointerDownCapture={stopPropagation}
         onPointerDown={stopPropagation}
         onClick={stopPropagation}
@@ -168,7 +169,7 @@ export function RelationshipsDropdownMenu({
       </MenuDropdown>
     </Menu>
   )
-}
+})
 
 const Relationship = forwardRef<
   HTMLDivElement,
@@ -189,7 +190,7 @@ const Relationship = forwardRef<
   const diagram = useDiagram()
   const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const { onOpenSource } = useDiagramEventHandlers()
-  const viewId = diagram.currentView().id
+  const viewId = diagram.currentView.id
 
   const sourceId = getShortId(r, r.source.id, sourceNode)
   const targetId = getShortId(r, r.target.id, targetNode)
@@ -197,13 +198,13 @@ const Relationship = forwardRef<
   const links = r.links
 
   return (
-    <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>
+    <Stack ref={ref} className={cx(styles.menuItemRelationship, className)} {...props}>
       <Group gap={4}>
-        <Text component="div" className={css.endpoint} data-likec4-color={sourceNode.color}>
+        <Text component="div" className={cx(css({ likec4Palette: sourceNode.color }), styles.endpoint)}>
           {sourceId}
         </Text>
-        <IconArrowRight stroke={2.5} size={11} />
-        <Text component="div" className={css.endpoint} data-likec4-color={targetNode.color}>
+        <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
+        <Text component="div" className={cx(css({ likec4Palette: targetNode.color }), styles.endpoint)}>
           {targetId}
         </Text>
         {(navigateTo || !!onOpenSource) && (
@@ -212,7 +213,7 @@ const Relationship = forwardRef<
             {navigateTo && (
               <Tooltip label={'Open dynamic view'}>
                 <ActionIcon
-                  className={clsx('nodrag nopan')}
+                  className={cx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
                   variant="default"
@@ -230,7 +231,7 @@ const Relationship = forwardRef<
             <IfEnabled feature="Vscode">
               <Tooltip label={'Open source'}>
                 <ActionIcon
-                  className={clsx('nodrag nopan')}
+                  className={cx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
                   variant="default"
@@ -248,7 +249,7 @@ const Relationship = forwardRef<
           </TooltipGroup>
         )}
       </Group>
-      <Box className={css.title}>{r.title || 'untitled'}</Box>
+      <Box className={styles.title}>{r.title || 'untitled'}</Box>
       {r.description && <Text size="xs" c="dimmed">{r.description}</Text>}
       {links.length > 0 && (
         <Stack

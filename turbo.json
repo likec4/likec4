@@ -5,42 +5,53 @@
   ],
   "globalDependencies": [
     ".tool-versions",
-    "package.json"
+    "package.json",
+    "pnpm-workspace.yaml"
   ],
   "ui": "tui",
   "tasks": {
     "generate": {
-      "outputs": [],
+      "dependsOn": [
+        "^generate"
+      ],
       "outputLogs": "new-only"
+    },
+    "topo": {
+      "dependsOn": [
+        "^topo"
+      ]
     },
     "typecheck": {
       "dependsOn": [
         "^generate",
-        "generate"
+        "generate",
+        "topo"
       ],
-      "outputs": [],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "^build",
-        "generate"
+        "^generate",
+        "generate",
+        "topo"
       ],
       "outputs": [
         "dist/**"
       ],
       "outputLogs": "new-only"
     },
-    "dev": {
+    "pack": {
       "dependsOn": [
-        "^generate",
-        "generate"
+        "build"
       ],
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
+      "outputs": [
+        "package.tgz"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

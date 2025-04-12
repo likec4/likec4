@@ -1,122 +1,135 @@
-import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { cssReactFlow } from '../../../LikeC4Diagram.css'
-import { vars, xyvars } from '../../../theme-vars'
-import { whereDark, whereLight } from '../../../theme-vars.css'
-
-export const mixColor = createVar('mix-color')
-
-export const edgeVars = style({
-  vars: {
-    [mixColor]: `black`,
-    [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 40%)`,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
-    [xyvars.edge.strokeWidth]: '3',
-  },
-})
-
-globalStyle(`${whereDark} ${edgeVars}`, {
-  vars: {
-    [mixColor]: `white`,
-    [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
-  },
-})
+import { css } from '@likec4/styles/css'
 
 const isSelected = '.react-flow__edge.selected'
 
-globalStyle(`:where(${isSelected}) ${edgeVars}`, {
-  vars: {
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3',
+const edgeStroke = '--xy-edge-stroke'
+const edgeStrokeSelected = '--xy-edge-stroke-selected'
+const labelColor = '--xy-edge-label-color'
+const labelBg = '--xy-edge-label-background-color'
+
+export const edgeVars = css({
+  [edgeStroke]: '{colors.likec4.relation.stroke}',
+  [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
+  [labelColor]: {
+    base: '{colors.likec4.relation.label}',
+    _light: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
+  },
+  [labelBg]: {
+    _light: `{colors.likec4.relation.label.bg/60}`,
+    _dark: `{colors.likec4.relation.label.bg/50}`,
+  },
+  ['--xy-edge-stroke-width']: '3',
+  '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
+    [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
+    _whenSelected: {
+      ['--xy-edge-stroke-width']: '4',
+    },
   },
 })
 
-globalStyle(`${edgeVars}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
-  vars: {
-    // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3',
+export const edgeContainer = css({
+  _reduceGraphics: {
+    transition: 'none',
   },
 })
 
-globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
-  vars: {
-    [xyvars.edge.strokeWidth]: '4',
+const _hideOnReducedGraphics = css.raw({
+  _reduceGraphicsOnPan: {
+    display: 'none',
+  },
+  _smallZoom: {
+    display: 'none',
   },
 })
+export const hideOnReducedGraphics = css(_hideOnReducedGraphics)
 
-globalStyle(`${cssReactFlow} .react-flow__edges > svg`, {
-  mixBlendMode: 'plus-lighter',
-})
-globalStyle(`${whereLight} ${cssReactFlow} .react-flow__edges > svg`, {
-  mixBlendMode: 'screen',
-})
-
-export const dimmed = style({})
-
-globalStyle(`${cssReactFlow} .react-flow__edges > svg:has(${dimmed})`, {
-  opacity: 0.6,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter',
-})
-
-export const edgePathBg = style({
-  // strokeWidth: xyvars.edge.strokeWidth,
+export const edgePathBg = css(_hideOnReducedGraphics, {
+  fill: '[none]',
+  strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
   strokeOpacity: 0.08,
-  // transition: 'stroke-width 175ms ease-in-out',
-  // transition: 'stroke-width 175ms ease-in-out, stroke-opacity 150ms ease-out',
   transitionProperty: 'stroke-width, stroke-opacity',
-  transitionDuration: '155ms',
-  transitionTimingFunction: 'ease-out',
-  selectors: {
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
-      strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
-      strokeOpacity: 0.15,
+  transitionDuration: 'fast',
+  transitionTimingFunction: 'inOut',
+  _whenHovered: {
+    transitionTimingFunction: 'out',
+    strokeWidth: 'calc(var(--xy-edge-stroke-width) + 4)',
+    strokeOpacity: 0.2,
+  },
+  _whenSelected: {
+    strokeWidth: 'calc(var(--xy-edge-stroke-width) + 6)',
+    strokeOpacity: 0.25,
+    _whenHovered: {
+      strokeOpacity: 0.4,
     },
   },
 })
 
 // To fix issue with marker not inheriting color from path - we need to create container
-export const markerContext = style({
-  fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke,
+export const markerContext = css({
+  fill: '[var(--xy-edge-stroke)]' as const,
+  stroke: '[var(--xy-edge-stroke)]' as const,
 })
 
-const strokeKeyframes = keyframes({
-  'from': {
-    strokeDashoffset: 18 * 2 + 10,
-  },
-  'to': {
-    strokeDashoffset: 10,
-  },
-})
-
-export const cssEdgePath = style({
-  animationDuration: '800ms',
-  animationIterationCount: 'infinite',
-  animationTimingFunction: 'linear',
-  animationFillMode: 'both',
+export const cssEdgePath = css({
+  fill: '[none!]',
   strokeDashoffset: 10,
-  selectors: {
-    [`:where([data-edge-hovered='true']) &`]: {
-      animationName: strokeKeyframes,
-      animationDelay: '450ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
-    },
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
-      animationName: strokeKeyframes,
-      animationDelay: '0ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
-    },
-    [`:where([data-edge-dir='back']) &`]: {
-      animationDirection: 'reverse',
-    },
-    [`${dimmed} &`]: {
-      animationPlayState: 'paused',
-    },
+  _noReduceGraphics: {
+    transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
+  },
+  _whenHovered: {
+    animationStyle: 'xyedgeAnimated',
+    animationDelay: '450ms',
+  },
+  [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
+    animationStyle: 'xyedgeAnimated',
+    animationDelay: '0ms',
+  },
+  [`:where([data-edge-dir='back']) &`]: {
+    animationDirection: 'reverse',
+  },
+  _whenDimmed: {
+    animationPlayState: 'paused',
+  },
+  _smallZoom: {
+    animationName: 'none',
+  },
+  _whenPanning: {
+    strokeDasharray: 'none !important',
+    animationName: 'none',
+  },
+})
+
+const aiBg = {
+  var: '--ai-bg',
+  ref: 'var(--ai-bg)',
+} as const
+
+export const actionBtn = css({
+  // zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  pointerEvents: 'all',
+  // color: `xyedge.label`,
+  cursor: 'pointer',
+  opacity: 0.75,
+  transition: 'fast',
+  // backgroundColor: aiBg.ref,
+  [aiBg.var]: 'var(--xy-edge-label-background-color)',
+  '--ai-hover': `color-mix(in srgb , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
+  '--ai-size': `var(--ai-size-sm)`,
+  '--ai-radius': `var(--mantine-radius-sm)`,
+  _hover: {
+    translateY: '1px',
+    scale: 1.15,
+  },
+  _active: {
+    translateY: '-1px',
+    scale: '0.9',
+  },
+  _whenHovered: {
+    opacity: 1,
+  },
+  '& .tabler-icon': {
+    width: '80%',
+    height: '80%',
+    strokeWidth: '2',
   },
 })

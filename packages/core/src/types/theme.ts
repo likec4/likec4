@@ -1,6 +1,6 @@
 import type { LiteralUnion } from 'type-fest'
 
-const ThemeColors = [
+export const ThemeColors = [
   'amber',
   'blue',
   'gray',

@@ -3,11 +3,12 @@ import {
   type Tag,
   isDeploymentView,
 } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import {
   type ElementProps,
   type UnstyledButtonProps,
   Badge,
-  Box,
   createScopedKeydownHandler,
   Group,
   Highlight,
@@ -17,18 +18,17 @@ import {
   VisuallyHidden,
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import { first } from 'remeda'
-import { useCurrentViewId } from '../../../hooks'
+import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
-import { emptyBoX } from './_shared.css'
+import { buttonsva } from './_shared.css'
 import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput } from './utils'
-import * as css from './ViewsColumn.css'
+import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
-  <Box className={emptyBoX}>
+  <Box className={styles.emptyBoX}>
     Nothing found
   </Box>
 )
@@ -97,6 +97,8 @@ export function ViewsColumn() {
   )
 }
 
+const btn = buttonsva()
+
 export function ViewButton(
   { className, view, loop = false, search, ...props }:
     & {
@@ -113,7 +115,7 @@ export function ViewButton(
   return (
     <UnstyledButton
       {...props}
-      className={clsx(css.focusable, css.viewButton, className)}
+      className={cx(btn.root, 'group', styles.focusable, styles.viewButton, className)}
       data-likec4-view={view.id}
       {...isCurrentView && { 'data-disabled': true }}
       onClick={(e) => {
@@ -133,14 +135,14 @@ export function ViewButton(
           }
         },
       })}>
-      <ThemeIcon variant="transparent">
+      <ThemeIcon variant="transparent" className={btn.icon!}>
         {isDeploymentView(view)
           ? <IconStack2 stroke={1.8} />
           : <IconZoomScan stroke={1.8} />}
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
-          <Highlight component="div" highlight={search} className={css.viewTitle}>
+          <Highlight component="div" highlight={search} className={btn.title!}>
             {view.title || 'untitled'}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
@@ -148,7 +150,7 @@ export function ViewButton(
         <Highlight
           highlight={view.$view.description ? search : ''}
           component="div"
-          className={css.viewDescription}
+          className={btn.description!}
           lineClamp={1}>
           {view.$view.description || 'No description'}
         </Highlight>

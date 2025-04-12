@@ -145,6 +145,7 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
+  languageServices.ensureSingleProject()
 
   const views = await languageServices.viewsService.computedViews()
   if (views.length === 0) {

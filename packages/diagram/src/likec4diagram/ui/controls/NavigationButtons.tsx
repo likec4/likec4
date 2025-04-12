@@ -1,10 +1,9 @@
 import { IconChevronRight } from '@tabler/icons-react'
 
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 
 import { IconChevronLeft } from '@tabler/icons-react'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { ActionIcon } from './_shared'
 
 export const NavigationButtons = () => {
@@ -19,7 +18,12 @@ export const NavigationButtons = () => {
   return (
     <AnimatePresence>
       {hasStepBack && (
-        <m.div
+        <ActionIcon
+          component={m.button}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.navigate('back')
+          }}
           layout
           initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
           animate={{ opacity: 1, transform: 'translateX(0)' }}
@@ -27,18 +31,14 @@ export const NavigationButtons = () => {
             opacity: 0.05,
             transform: 'translateX(-10px)',
           }}
-          key={'back'}>
-          <ActionIcon
-            onClick={e => {
-              e.stopPropagation()
-              diagram.navigate('back')
-            }}>
-            <IconChevronLeft />
-          </ActionIcon>
-        </m.div>
+          key={'back'}
+        >
+          <IconChevronLeft />
+        </ActionIcon>
       )}
       {hasStepForward && (
-        <m.div
+        <ActionIcon
+          component={m.button}
           layout
           initial={{ opacity: 0.05, transform: 'translateX(10px)' }}
           animate={{ opacity: 1, transform: 'translateX(0)' }}
@@ -46,15 +46,13 @@ export const NavigationButtons = () => {
             opacity: 0,
             transform: 'translateX(10px)',
           }}
-          key={'forward'}>
-          <ActionIcon
-            onClick={e => {
-              e.stopPropagation()
-              diagram.navigate('forward')
-            }}>
-            <IconChevronRight />
-          </ActionIcon>
-        </m.div>
+          key={'forward'}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.navigate('forward')
+          }}>
+          <IconChevronRight />
+        </ActionIcon>
       )}
     </AnimatePresence>
   )

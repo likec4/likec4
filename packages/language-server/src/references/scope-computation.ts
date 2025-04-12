@@ -13,7 +13,11 @@ import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
-type DeploymentsContainer = ast.ModelDeployments | ast.DeploymentNodeBody
+type DeploymentsContainer =
+  | ast.ModelDeployments
+  | ast.DeploymentNodeBody
+  | ast.ExtendDeploymentBody
+  | ast.DeployedInstanceBody
 
 function uniqueDescriptions(
   descs: AstNodeDescription[],
@@ -37,7 +41,15 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views, globals, likec4lib, deployments } = document.parseResult.value
+      const {
+        specifications,
+        models,
+        views,
+        globals,
+        likec4lib,
+        deployments,
+        imports,
+      } = document.parseResult.value
 
       // Process library
       this.exportLibrary(likec4lib, docExports, document)
@@ -258,6 +270,20 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         }
       }
 
+      for (const imports of root.imports.flatMap(i => i.imports)) {
+        try {
+          let imported = imports as ast.Imported | undefined
+          while (imported) {
+            descendants.push(
+              this.descriptions.createDescription(imported, imported.imported.$refText, document),
+            )
+            imported = imported.prev
+          }
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+
       uniqueDescriptions(descendants).forEach(desc => {
         scopes.add(root, desc)
       })
@@ -285,6 +311,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
         }
         subcontainer = el.body
+        if (subcontainer) {
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'this', document))
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'it', document))
+        }
       } else if (ast.isExtendElement(el)) {
         subcontainer = el.body
       }
@@ -322,7 +352,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     scopes: PrecomputedScopes,
     document: LikeC4LangiumDocument,
   ): AstNodeDescription[] {
-    const localnames = new Set<string>()
+    const localScope = new MultiMap<string, AstNodeDescription>()
     const descedants = [] as AstNodeDescription[]
 
     for (const el of container.elements) {
@@ -330,35 +360,43 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         continue
       }
 
-      let name = this.nameProvider.getName(el)
-      if (isTruthy(name)) {
-        const desc = this.descriptions.createDescription(el, name, document)
-        scopes.add(container, desc)
-        localnames.add(desc.name)
+      let subcontainer = el.body
+      if (!ast.isExtendDeployment(el)) {
+        let name = this.nameProvider.getName(el)
+        if (isTruthy(name)) {
+          const desc = this.descriptions.createDescription(el, name, document)
+          localScope.add(name, desc)
+        }
+        if (subcontainer) {
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'this', document))
+          scopes.add(subcontainer, this.descriptions.createDescription(el, 'it', document))
+        }
       }
 
-      if (ast.isDeploymentNode(el) && el.body) {
+      if (subcontainer) {
         try {
           descedants.push(
-            ...this.processDeployments(el.body, scopes, document),
+            ...this.processDeployments(subcontainer, scopes, document),
           )
         } catch (e) {
           logWarnError(e)
         }
       }
     }
-    if (descedants.length > 0) {
+    if (descedants.length) {
       pipe(
         descedants,
-        filter(desc => !localnames.has(desc.name)),
+        filter(desc => !localScope.has(desc.name)),
         groupBy(desc => desc.name),
         forEachObj((descs, name) => {
           if (descs.length === 1) {
-            scopes.add(container, descs[0])
+            localScope.add(name, descs[0])
           }
         }),
       )
     }
-    return [...scopes.get(container).values()]
+    const local = [...localScope.values()]
+    scopes.addAll(container, local)
+    return local
   }
 }

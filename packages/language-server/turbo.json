@@ -8,25 +8,16 @@
       "dependsOn": [
         "@likec4/icons#generate"
       ],
-      "outputs": [
-        "contrib/**",
-        "src/generated/**",
-        "src/generated-lib/**"
-      ],
       "inputs": [
         "scripts/**",
         "src/**/*.langium",
         "langium-config.json",
         "package.json"
-      ]
-    },
-    "build": {
-      "dependsOn": [
-        "^build",
-        "generate"
       ],
       "outputs": [
-        "dist/**"
+        "contrib/**",
+        "src/generated/**",
+        "src/generated-lib/**"
       ],
       "outputLogs": "new-only"
     }

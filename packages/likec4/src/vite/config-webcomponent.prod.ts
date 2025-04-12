@@ -1,8 +1,9 @@
 import { viteAliases } from '@/vite/aliases'
+import react from '@vitejs/plugin-react'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { likec4Plugin } from './plugin'
+import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
@@ -51,21 +52,12 @@ export async function viteWebcomponentConfig({
       assetsInlineLimit: 100 * 1024,
       chunkSizeWarningLimit,
       lib: {
-        entry: 'webcomponent/webcomponent.js',
+        entry: 'src/webcomponent.tsx',
         fileName(_format, _entryName) {
           return filename
         },
         formats: ['iife'],
         name: 'LikeC4Views',
-      },
-      commonjsOptions: {
-        defaultIsModuleExports: (id: string) => {
-          if (id.includes('react')) {
-            return true
-          }
-          return 'auto'
-        },
-        requireReturnsDefault: 'auto',
       },
       rollupOptions: {
         treeshake: {
@@ -80,8 +72,9 @@ export async function viteWebcomponentConfig({
     },
     customLogger,
     plugins: [
-      likec4Plugin({
-        languageServices,
+      react(),
+      LikeC4VitePlugin({
+        languageServices: languageServices.languageServices,
         useOverviewGraph: false,
       }),
     ],

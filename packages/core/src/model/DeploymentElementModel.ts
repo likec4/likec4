@@ -2,20 +2,25 @@ import { isEmpty, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
+  type Color,
   type ComputedDeploymentView,
   type DeployedInstance,
   type DeploymentElementStyle,
   type DeploymentNode,
   type DeploymentNodeKind,
   type DeploymentRelation,
+  type ElementKind,
   type ElementShape as C4ElementShape,
   type IteratorLike,
   type Link,
   type RelationshipKind,
+  type RelationshipLineType,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor,
   DefaultElementShape,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
   DefaultThemeColor,
 } from '../types'
 import { DefaultShapeSize } from '../types/element'
@@ -43,6 +48,7 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
   abstract readonly $model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
+  abstract readonly kind: DeploymentNodeKind | ElementKind
 
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     return {
@@ -63,10 +69,6 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
   get tags(): ReadonlyArray<C4Tag> {
     return this.$node.tags ?? []
-  }
-
-  get kind(): DeploymentNodeKind | string | null {
-    return this.$node.kind ?? null
   }
 
   get description(): string | null {
@@ -375,8 +377,8 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
     return this.$instance.tags ?? []
   }
 
-  override get kind(): string | null {
-    return this.$instance.kind ?? null
+  override get kind(): ElementKind {
+    return this.element.kind
   }
 
   override get description(): string | null {
@@ -536,6 +538,14 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
 
   get links(): ReadonlyArray<Link> {
     return this.$relationship.links ?? []
+  }
+
+  get color(): Color {
+    return this.$relationship.color ?? DefaultRelationshipColor
+  }
+
+  get line(): RelationshipLineType {
+    return this.$relationship.line ?? DefaultLineStyle
   }
 
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {

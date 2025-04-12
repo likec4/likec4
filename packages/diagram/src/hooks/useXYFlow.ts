@@ -21,6 +21,6 @@ export type XYStoreApi = ReturnType<typeof useXYStoreApi>
 export const useXYInternalNode = useInternalNode<Types.Node>
 
 const selectZoom = (state: ReactFlowState) => state.transform[2] < 0.2
-export function useIsZoomTooSmall() {
+export function useIsZoomTooSmall(): boolean {
   return useStore(selectZoom)
 }

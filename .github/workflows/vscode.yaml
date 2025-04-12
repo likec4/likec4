@@ -9,6 +9,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  FORCE_COLOR: true
 
 jobs:
   publish-vscode:
@@ -35,7 +36,7 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: upload a build artifact
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: vscode-extension-vsix
           if-no-files-found: error
@@ -50,7 +51,7 @@ jobs:
 
       - name: publish open vsx
         run: |
-          pnpx ovsx publish --skip-duplicate likec4.vsix
+          npx ovsx publish --skip-duplicate likec4.vsix
         working-directory: packages/vscode
         env:
           OVSX_PAT: ${{ secrets.VSX_PAT }}

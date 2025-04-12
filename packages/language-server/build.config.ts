@@ -9,6 +9,7 @@ const mkdist: BuildEntry = {
   declaration: true,
   globOptions: {
     ignore: [
+      '**/bundled.ts',
       '**/*.langium',
       '**/__test*/**',
       '**/*.spec.ts',
@@ -33,5 +34,8 @@ export default defineBuildConfig({
       lineLimit: 500,
     },
     inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources'],
+    },
   },
 })

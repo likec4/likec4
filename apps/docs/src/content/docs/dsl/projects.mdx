@@ -1,0 +1,86 @@
+---
+title: Multi-projects
+description: Learn how to split your LikeC4 model into multiple projects
+sidebar: 
+  label: Multi-projects
+  order: 13
+---
+
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+
+Sometimes you may want to split your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
+
+You can do this by creating multiple projects in your workspace and linking them together.  
+You can also use this feature to share your model with other teams or projects.
+
+## Usage
+
+To mark a folder as a project, create a `likec4.config.json` file in the folder:
+
+<FileTree>
+- cloud
+  - likec4.config.json
+  - service1.c4
+  - service2.c4
+  - ...
+- externals
+  - likec4.config.json
+  - amazon.c4
+  - ...
+</FileTree>
+
+The `likec4.config.json` file must have the name of the project and must be unique in the workspace.
+
+
+```json
+{
+  "name": "project-name"
+}
+```
+
+:::tip
+You can use these names for the config file:
+- `.likec4rc`
+- `.likec4.config.json`
+- `likec4.config.json`
+
+LikeC4 interprets any file as JSON5
+:::
+
+## Exclude files
+
+By default, LikeC4 recursively scans in the project folder.  
+You can exclude files by adding an `exclude` array to the config file.
+
+```json
+{
+  "name": "project-name",
+  "exclude": [
+    "**/node_modules/**/*"
+  ]
+}
+```
+
+If no exclude pattern is provided, LikeC4 uses `["**/node_modules/**/*"]` as default.  
+The exclude pattern is the same as the one used by [picomatch](https://github.com/micromatch/picomatch).  
+
+
+## Import elements
+
+You can import elements from other projects by using the `import` keyword.
+
+```likec4
+import { serviceA } from 'projectA'
+
+model {
+  serviceB = service {
+    -> serviceA.api 'calls serviceA'
+  }
+}
+```
+
+<Aside type='caution' title="Limitations">
+At the moment, the following limitations apply:
+- Referenced projects must be loaded in the same workspace
+- Only top-level **model** elements can be imported
+</Aside>

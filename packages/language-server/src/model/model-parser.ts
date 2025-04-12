@@ -1,15 +1,19 @@
-import { invariant } from '@likec4/core'
-import { type LangiumDocument, DocumentCache, DocumentState } from 'langium'
-import { DefaultWeakMap } from 'mnemonist'
+import type { ProjectId } from '@likec4/core'
+import { DefaultWeakMap, MultiMap } from '@likec4/core/utils'
+import { loggable } from '@likec4/log'
+import { type LangiumDocument, type Stream, DocumentState } from 'langium'
 import { pipe } from 'remeda'
+import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
-import { isFqnIndexedDocument } from '../ast'
+import { isLikeC4Builtin } from '../likec4lib'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
 import { ExpressionV2Parser } from './parser/FqnRefParser'
 import { GlobalsParser } from './parser/GlobalsParser'
+import { ImportsParser } from './parser/ImportsParser'
 import { ModelParser } from './parser/ModelParser'
 import { PredicatesParser } from './parser/PredicatesParser'
 import { SpecificationParser } from './parser/SpecificationParser'
@@ -20,6 +24,7 @@ export type ModelParsedListener = () => void
 const DocumentParserFromMixins = pipe(
   BaseParser,
   ExpressionV2Parser,
+  ImportsParser,
   ModelParser,
   DeploymentModelParser,
   DeploymentViewParser,
@@ -32,43 +37,46 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
+const logger = rootLogger.getChild('ModelParser')
+
 export class LikeC4ModelParser {
-  private cachedParsers: DocumentCache<string, DocumentParser>
+  protected cachedParsers = new DefaultWeakMap((doc: LangiumDocument) => this.createParser(doc))
 
   constructor(private services: LikeC4Services) {
-    this.cachedParsers = new DocumentCache(services.shared, DocumentState.Validated)
+    services.shared.workspace.DocumentBuilder.onDocumentPhase(
+      DocumentState.Linked,
+      doc => {
+        try {
+          if (!isLikeC4Builtin(doc.uri)) {
+            this.cachedParsers.set(doc, this.createParser(doc))
+          }
+        } catch (e) {
+          logger.warn(loggable(e))
+        }
+      },
+    )
+
+    // We need to clean up cached parser after document is validated
+    // Because after that parser takes into account validation results
+    services.shared.workspace.DocumentBuilder.onDocumentPhase(
+      DocumentState.Validated,
+      doc => {
+        if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error)) {
+          this.cachedParsers.delete(doc)
+        }
+      },
+    )
+  }
+
+  documents(projectId: ProjectId): Stream<ParsedLikeC4LangiumDocument> {
+    return this.services.shared.workspace.LangiumDocuments.projectDocuments(projectId).map(
+      d => this.parse(d),
+    )
   }
 
   parse(doc: LangiumDocument): ParsedLikeC4LangiumDocument {
-    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
     try {
-      const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
-        c4Specification: {
-          tags: new Set(),
-          elements: {},
-          relationships: {},
-          colors: {},
-          deployments: {},
-        },
-        c4Elements: [],
-        c4ExtendElements: [],
-        c4Relations: [],
-        c4Deployments: [],
-        c4DeploymentRelations: [],
-        c4Globals: {
-          predicates: {},
-          dynamicPredicates: {},
-          styles: {},
-        },
-        c4Views: [],
-      }
-      doc = Object.assign(doc, props)
       const parser = this.forDocument(doc)
-      parser.parseSpecification()
-      parser.parseModel()
-      parser.parseGlobals()
-      parser.parseDeployment()
-      parser.parseViews()
       return parser.doc
     } catch (cause) {
       throw new Error(`Error parsing document ${doc.uri.toString()}`, { cause })
@@ -76,11 +84,43 @@ export class LikeC4ModelParser {
   }
 
   forDocument(doc: LangiumDocument): DocumentParser {
-    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
-    return this.cachedParsers.get(
-      doc.uri,
-      'DocumentParser',
-      () => new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument),
-    )
+    if (doc.state < DocumentState.Linked) {
+      logger.warn(`Document ${doc.uri.toString()} is not linked`)
+    }
+    return this.cachedParsers.get(doc)
+  }
+
+  private createParser(doc: LangiumDocument): DocumentParser {
+    const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {
+      c4Specification: {
+        tags: new Set(),
+        elements: {},
+        relationships: {},
+        colors: {},
+        deployments: {},
+      },
+      c4Elements: [],
+      c4ExtendElements: [],
+      c4ExtendDeployments: [],
+      c4Relations: [],
+      c4Deployments: [],
+      c4DeploymentRelations: [],
+      c4Globals: {
+        predicates: {},
+        dynamicPredicates: {},
+        styles: {},
+      },
+      c4Views: [],
+      c4Imports: new MultiMap(Set),
+    }
+    doc = Object.assign(doc, props)
+    const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
+    parser.parseSpecification()
+    parser.parseImports()
+    parser.parseModel()
+    parser.parseGlobals()
+    parser.parseDeployment()
+    parser.parseViews()
+    return parser
   }
 }

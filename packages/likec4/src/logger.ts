@@ -1,10 +1,10 @@
-import { rootLogger } from '@likec4/log'
+import { type Logger as LOGGER, rootLogger } from '@likec4/log'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogType } from 'vite'
 
-export const logger = rootLogger.getChild('cli')
+export const logger: LOGGER = rootLogger.getChild('cli')
 
 const ERROR = k.bold(k.bgRed(k.white('ERROR')))
 const WARN = k.bold(k.yellow('WARN'))

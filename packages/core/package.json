@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.22.1",
+  "version": "1.28.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -17,9 +17,8 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "rm -r -f dist",
-    "prepack": "turbo run build",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz"
+    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
   "files": [
     "dist",
@@ -34,10 +33,6 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      },
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
@@ -46,22 +41,22 @@
     },
     "./builder": {
       "sources": "./src/builder/index.ts",
-      "require": {
-        "types": "./dist/builder/index.d.cts",
-        "default": "./dist/builder/index.cjs"
-      },
       "default": {
         "types": "./dist/builder/index.d.mts",
         "import": "./dist/builder/index.mjs",
         "default": "./dist/builder/index.mjs"
       }
     },
+    "./compute-view/relationships": {
+      "sources": "./src/compute-view/relationships-view/index.ts",
+      "default": {
+        "types": "./dist/compute-view/relationships-view/index.d.mts",
+        "import": "./dist/compute-view/relationships-view/index.mjs",
+        "default": "./dist/compute-view/relationships-view/index.mjs"
+      }
+    },
     "./compute-view": {
       "sources": "./src/compute-view/index.ts",
-      "require": {
-        "types": "./dist/compute-view/index.d.cts",
-        "default": "./dist/compute-view/index.cjs"
-      },
       "default": {
         "types": "./dist/compute-view/index.d.mts",
         "import": "./dist/compute-view/index.mjs",
@@ -70,10 +65,6 @@
     },
     "./model": {
       "sources": "./src/model/index.ts",
-      "require": {
-        "types": "./dist/model/index.d.cts",
-        "default": "./dist/model/index.cjs"
-      },
       "default": {
         "types": "./dist/model/index.d.mts",
         "import": "./dist/model/index.mjs",
@@ -82,10 +73,6 @@
     },
     "./utils": {
       "sources": "./src/utils/index.ts",
-      "require": {
-        "types": "./dist/utils/index.d.cts",
-        "default": "./dist/utils/index.cjs"
-      },
       "default": {
         "types": "./dist/utils/index.d.mts",
         "import": "./dist/utils/index.mjs",
@@ -94,44 +81,42 @@
     },
     "./types": {
       "sources": "./src/types/index.ts",
-      "require": {
-        "types": "./dist/types/index.d.cts",
-        "default": "./dist/types/index.cjs"
-      },
       "default": {
         "types": "./dist/types/index.d.mts",
         "import": "./dist/types/index.mjs",
         "default": "./dist/types/index.mjs"
       }
-    }
+    },
+    "./src": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "4.34.1"
+    "type-fest": "catalog:utils"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "7.17.0",
+    "@mantine/colors-generator": "catalog:mantine",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
+    "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
-    "mnemonist": "^0.40.2",
+    "mnemonist": "0.40.3",
     "natural-compare-lite": "^1.4.0",
-    "object-hash": "^3.0.0",
+    "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
-    "remeda": "^2.20.1",
-    "turbo": "^2.4.1",
+    "remeda": "catalog:utils",
+    "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
-    "vitest": "^3.0.4"
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.8.0"
 }

@@ -2,6 +2,7 @@ import { invariant } from '@likec4/core'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
+import { ensureReact } from '../ensure-react'
 import { outdir, path, useDotBin } from '../options'
 import { handler as jsonHandler } from './json/handler'
 import { pngHandler } from './png/handler'
@@ -23,36 +24,36 @@ export const exportCmd = {
             .option('output', outdir)
             .option('theme', {
               choices: ['light', 'dark'] as const,
-              desc: 'color-scheme to use, default is light'
+              desc: 'color-scheme to use, default is light',
             })
             .option('flat', {
               boolean: true,
               type: 'boolean',
-              desc: 'ignore sources structure and export all PNGs in output directory'
+              desc: 'ignore sources structure and export all PNGs in output directory',
             })
             .option('use-dot', useDotBin)
             .options({
               'ignore': {
                 boolean: true,
                 alias: 'i',
-                desc: 'continue if some views failed to export'
+                desc: 'continue if some views failed to export',
               },
               timeout: {
                 type: 'number',
                 alias: 't',
                 desc: '(sec) timeout for playwright ',
-                default: 10
+                default: 10,
               },
               'max-attempts': {
                 type: 'number',
                 describe: '',
                 desc: '(number) max attempts to export failing view',
-                default: 3
+                default: 3,
               },
               'server-url': {
                 type: 'string',
-                desc: 'use this url instead of starting new likec4 server'
-              }
+                desc: 'use this url instead of starting new likec4 server',
+              },
             })
             .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
@@ -65,6 +66,7 @@ export const exportCmd = {
           // args.
           invariant(args.timeout >= 1, 'timeout must be >= 1')
           invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
+          await ensureReact()
           await pngHandler({
             path: args.path,
             useDotBin: args.useDotBin,
@@ -74,9 +76,9 @@ export const exportCmd = {
             ignore: args.ignore === true,
             outputType: args.flat ? 'flat' : 'relative',
             serverUrl: args.serverUrl,
-            theme: args.theme ?? 'light'
+            theme: args.theme ?? 'light',
           })
-        }
+        },
       })
       // ----------------------
       // JSON command
@@ -91,7 +93,7 @@ export const exportCmd = {
               desc: '<file> output .json file',
               default: 'likec4.json',
               normalize: true,
-              coerce: resolve
+              coerce: resolve,
             })
             .option('use-dot', useDotBin)
             .epilog(`${k.bold('Examples:')}
@@ -105,14 +107,14 @@ export const exportCmd = {
           await jsonHandler({
             path: args.path,
             useDotBin: args.useDotBin,
-            outfile: args.outfile
+            outfile: args.outfile,
           })
-        }
+        },
       })
       .updateStrings({
-        'Commands:': k.bold('Formats:')
+        'Commands:': k.bold('Formats:'),
       }),
-  handler: () => void 0
+  handler: () => void 0,
 } satisfies CommandModule
 
 export default exportCmd

@@ -1,12 +1,13 @@
 import {
   type Fqn,
+  type LikeC4Model,
   ifilter,
   isAncestor,
-  LikeC4Model,
   nameFromFqn,
   sortParentsFirst,
   toArray,
 } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
@@ -22,13 +23,14 @@ import {
 import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { m } from 'framer-motion'
-import { useEffect, useMemo } from 'react'
+import * as m from 'motion/react-m'
+import { type KeyboardEventHandler, useCallback, useEffect, useMemo } from 'react'
 import { first, indexBy, isEmpty, only, partition, pipe, prop, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
-import * as css from './ElementsColumn.css'
+import { buttonsva } from './_shared.css'
+import * as styles from './ElementsColumn.css'
 import { setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
@@ -54,14 +56,13 @@ function buildNode(
   }
 }
 
+const btn = buttonsva()
+
 export function ElementsColumn() {
   const search = useNormalizedSearch()
   const model = useLikeC4Model(true)
-  const {
-    all,
-    byid,
-    roots: data,
-  } = useMemo(() => {
+
+  const data = useMemo(() => {
     const searchTerms = search.split('.')
     let elements
     if (isEmpty(search) || search === 'kind:') {
@@ -78,9 +79,9 @@ export function ElementsColumn() {
           .toLocaleLowerCase().includes(search)
       })
     }
+    const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
     const { all, roots } = pipe(
-      elements,
-      toArray(),
+      [...elements],
       sortParentsFirst,
       reduce((acc, element) => {
         const treeItem: LikeC4ModelTreeNodeData = {
@@ -90,6 +91,7 @@ export function ElementsColumn() {
           searchTerms,
           children: [],
         }
+        byid[treeItem.value] = treeItem
         const parent = acc.all.findLast((root) => isAncestor(root.value, treeItem.value))
         if (parent) {
           parent.children.push(treeItem)
@@ -108,14 +110,42 @@ export function ElementsColumn() {
     )
     return {
       all,
-      byid: indexBy(all, prop('value')),
+      byid,
       roots: roots.sort(sortByLabel),
     }
   }, [model, search])
 
+  const handleClick = useHandleElementSelection()
+
+  if (data.all.length === 0) {
+    return <NothingFound />
+  }
+
+  return <ElementsTree data={data} handleClick={handleClick} />
+}
+
+const setHoveredNode = () => {}
+
+function ElementsTree({
+  data: {
+    all,
+    byid,
+    roots,
+  },
+  handleClick,
+}: {
+  data: {
+    all: LikeC4ModelTreeNodeData[]
+    byid: Record<Fqn, LikeC4ModelTreeNodeData>
+    roots: LikeC4ModelTreeNodeData[]
+  }
+  handleClick: (element: LikeC4Model.Element) => void
+}) {
   const tree = useTree({
     multiple: false,
   })
+  tree.setHoveredNode = setHoveredNode
+
   useEffect(() => {
     tree.collapseAllNodes()
     for (const nd of all) {
@@ -125,66 +155,63 @@ export function ElementsColumn() {
     }
   }, [all])
 
-  const handleClick = useHandleElementSelection()
+  const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
+    const target = e.target as HTMLElement
+    const id = target.getAttribute('data-value')
+    const node = !!id && byid[id as Fqn]
+    if (!node) return
+    if (e.key === 'ArrowUp') {
+      if (id === roots[0]?.value) {
+        stopAndPrevent(e)
+        moveFocusToSearchInput()
+      }
+      return
+    }
+    if (e.key === 'ArrowRight') {
+      const hasChildren = node.children.length > 0
+      if (hasChildren && tree.expandedState[id] === false) {
+        return
+      }
+      const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
+      const maxY = label.getBoundingClientRect().y
+      const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
+        `[data-likec4-search-views] .${styles.focusable}`,
+      )]
+      let view = viewButtons.length > 1
+        ? viewButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
+        : null
+      view ??= first(viewButtons)
+      if (view) {
+        stopAndPrevent(e)
+        view.focus()
+      }
+      return
+    }
+    if (e.key === ' ' || e.key === 'Enter') {
+      stopAndPrevent(e)
+      handleClick(node.element)
+      return
+    }
+  })
 
   return (
-    <>
-      {data.length === 0 && <NothingFound />}
-      <Tree
-        data-likec4-search-elements
-        allowRangeSelection={false}
-        clearSelectionOnOutsideClick
-        selectOnClick={false}
-        tree={tree}
-        data={data}
-        levelOffset={'lg'}
-        classNames={{
-          root: css.treeRoot,
-          node: clsx(css.focusable, css.treeNode),
-          label: css.treeLabel,
-          subtree: css.treeSubtree,
-        }}
-        onKeyDownCapture={(e) => {
-          const target = e.target as HTMLElement
-          const id = target.getAttribute('data-value')
-          const node = !!id && byid[id as Fqn]
-          if (!node) return
-          if (e.key === 'ArrowUp') {
-            if (id === data[0]?.value) {
-              stopAndPrevent(e)
-              moveFocusToSearchInput()
-            }
-            return
-          }
-          if (e.key === 'ArrowRight') {
-            const hasChildren = node.children.length > 0
-            if (hasChildren && tree.expandedState[id] === false) {
-              return
-            }
-            const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
-            const maxY = label.getBoundingClientRect().y
-            const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
-              `[data-likec4-search-views] .${css.focusable}`,
-            )]
-            let view = viewButtons.length > 1
-              ? viewButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
-              : null
-            view ??= first(viewButtons)
-            if (view) {
-              stopAndPrevent(e)
-              view.focus()
-            }
-            return
-          }
-          if (e.key === ' ' || e.key === 'Enter') {
-            stopAndPrevent(e)
-            handleClick(node.element)
-            return
-          }
-        }}
-        renderNode={ElementTreeNode}
-      />
-    </>
+    <Tree
+      data-likec4-search-elements
+      allowRangeSelection={false}
+      clearSelectionOnOutsideClick
+      selectOnClick={false}
+      tree={tree}
+      data={roots}
+      levelOffset={'lg'}
+      classNames={{
+        root: styles.treeRoot,
+        node: cx(styles.focusable, styles.treeNode),
+        label: styles.treeLabel,
+        subtree: styles.treeSubtree,
+      }}
+      onKeyDownCapture={onKeyDownCapture}
+      renderNode={ElementTreeNode}
+    />
   )
 }
 
@@ -199,7 +226,7 @@ function ElementTreeNode(
       shape: element.shape,
       icon: element.icon,
     },
-    className: css.elementIcon,
+    className: cx(btn.icon, styles.elementIcon),
   })
   const views = [...element.views()]
 
@@ -208,12 +235,12 @@ function ElementTreeNode(
   const key = `@tree.${node.value}`
 
   return (
-    <m.div layoutId={key} key={key} {...elementProps as any}>
+    <m.div layoutId={key} {...elementProps as any}>
       <ActionIcon
         variant="transparent"
         size={16}
         tabIndex={-1}
-        className={clsx(css.elementExpandIcon)}
+        className={clsx(styles.elementExpandIcon)}
         style={{
           visibility: hasChildren ? 'visible' : 'hidden',
         }}>
@@ -229,7 +256,7 @@ function ElementTreeNode(
         component={m.button}
         layout
         tabIndex={-1}
-        className={clsx(css.elementButton, 'likec4-element-button')}
+        className={clsx(btn.root, 'group', 'likec4-element-button')}
         {...views.length > 0 && {
           onClick: (e) => {
             if (!hasChildren || expanded) {
@@ -241,22 +268,25 @@ function ElementTreeNode(
       >
         {elementIcon}
         <Box style={{ flexGrow: 1 }}>
-          <Group gap={'xs'} wrap="nowrap" align="center" className={css.elementTitleAndId}>
-            <Highlight component="div" highlight={searchTerms} className={css.elementTitle}>
+          <Group gap={'xs'} wrap="nowrap" align="center" className={styles.elementTitleAndId}>
+            <Highlight component="div" highlight={searchTerms} className={btn.title!}>
               {node.label as any}
             </Highlight>
             <Tooltip label={element.id} withinPortal={false} fz={'xs'} disabled={!element.id.includes('.')}>
-              <Highlight component="div" highlight={searchTerms} className={css.elementId}>
+              <Highlight
+                component="div"
+                highlight={searchTerms}
+                className={cx(styles.elementId, btn.descriptionColor)}>
                 {nameFromFqn(element.id)}
               </Highlight>
             </Tooltip>
           </Group>
-          <Highlight component="div" highlight={searchTerms} className={css.elementDescription} lineClamp={1}>
+          <Highlight component="div" highlight={searchTerms} className={btn.description!} lineClamp={1}>
             {element.description || 'No description'}
           </Highlight>
         </Box>
 
-        <Text component="div" className={css.elementViewsCount}>
+        <Text component="div" className={cx(styles.elementViewsCount, btn.descriptionColor)} fz={'xs'}>
           {views.length === 0 ? 'No views' : (
             <>
               {views.length} view{views.length > 1 ? 's' : ''}
@@ -271,7 +301,7 @@ function ElementTreeNode(
 function useHandleElementSelection() {
   const navigateTo = useCloseSearchAndNavigateTo()
 
-  return useCallbackRef((element: LikeC4Model.Element) => {
+  return useCallback((element: LikeC4Model.Element) => {
     const views = [...element.views()]
     if (views.length === 0) {
       return
@@ -287,5 +317,5 @@ function useHandleElementSelection() {
       scoped,
       others,
     })
-  })
+  }, [setPickView, navigateTo])
 }

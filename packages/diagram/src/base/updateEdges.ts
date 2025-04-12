@@ -5,7 +5,7 @@ import type { Base } from './types'
 function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
   return update.map((next) => {
     const existing = current.find(n => n.id === next.id)
-    if (existing && existing.type === next.type) {
+    if (existing && eq(existing.type, next.type)) {
       if (
         eq(existing.hidden ?? false, next.hidden ?? false)
         && eq(existing.source, next.source)
@@ -20,10 +20,7 @@ function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
       return {
         ...omit(existing, ['hidden', 'zIndex']),
         ...next,
-        data: {
-          ...existing.data,
-          ...next.data,
-        },
+        data: next.data,
       }
     }
     return next

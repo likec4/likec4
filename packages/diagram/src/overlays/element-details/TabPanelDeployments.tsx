@@ -37,7 +37,7 @@ const DeployedInstanceRenderer = (
   },
 ) => {
   const diagram = useDiagram()
-  const currentViewId = diagram.currentView().id
+  const currentViewId = diagram.currentView.id
   const views = [...instance.views()]
   return (
     (
@@ -105,6 +105,7 @@ const DeployedInstanceRenderer = (
   )
 }
 
+const setHoveredNode = () => {}
 export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn }) => {
   const element = useLikeC4Model(true).element(elementFqn)
   const deployments = [...element.deployments()]
@@ -112,6 +113,7 @@ export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn 
   const tree = useTree({
     multiple: false,
   })
+  tree.setHoveredNode = setHoveredNode
 
   const data = useMemo(() => {
     let roots = [] as TreeNodeData[]

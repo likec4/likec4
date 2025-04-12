@@ -1,11 +1,12 @@
+import { css, cx } from '@likec4/styles/css'
+import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
-import clsx from 'clsx'
-import { m } from 'framer-motion'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
-import * as css from './CompoundActionButton.css'
+import { compoundActionBtn } from './actionbtns.css'
 
 type CompoundActionButtonProps = NodeProps & {
   icon?: React.ReactNode
@@ -19,35 +20,51 @@ export function CompoundActionButton({
   icon,
   onClick,
 }: CompoundActionButtonProps) {
+  // Debounce first "isHovered"
+  const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
+  const isHoverDebounced = debounced[0] && isHovered
   return (
-    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'compound-action')}>
-      <Box
-        className={clsx('nodrag nopan', css.actionButton)}
-        component={m.div}
+    <Box
+      className={cx(
+        css({
+          position: 'absolute',
+          top: '5px',
+          left: '4px',
+          _smallZoom: {
+            display: 'none',
+          },
+        }),
+        'compound-action',
+      )}>
+      <m.div
         initial={false}
         animate={{
-          scale: isHovered ? 1.2 : 1,
-          x: isHovered ? -1 : 0,
-          // y: isHovered ? -1 : 0,
+          scale: isHoverDebounced ? 1.2 : 1,
+          x: isHoverDebounced ? -1 : 0,
+          y: isHoverDebounced ? -1 : 0,
         }}
         whileHover={{
-          scale: 1.35,
-          x: -1,
-          // y: 1,
+          scale: 1.4,
+          x: -2,
+          y: -2,
         }}
         whileTap={{ scale: 1 }}
       >
         <ActionIcon
-          className={css.actionIcon}
-          size={'md'}
-          radius="md"
+          className={cx(
+            'nodrag nopan',
+            compoundActionBtn({
+              delay: isHovered && !isHoverDebounced,
+            }),
+            actionBtn(),
+          )}
           // Otherwise node receives click event and is selected
           onClick={onClick}
           onDoubleClick={stopPropagation}
         >
           {icon ?? <IconZoomScan stroke={2} />}
         </ActionIcon>
-      </Box>
+      </m.div>
     </Box>
   )
 }

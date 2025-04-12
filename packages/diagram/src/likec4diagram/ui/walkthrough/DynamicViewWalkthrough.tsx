@@ -6,12 +6,11 @@ import {
   IconPlayerStopFilled,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 import { isNonNull, isTruthy } from 'remeda'
 import { useXYStore } from '../../../hooks'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
-import * as css from './DynamicViewWalkthrough.css'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
+import * as styles from './DynamicViewWalkthrough.css'
 
 export function DynamicViewWalkthrough() {
   const isMobile = useXYStore(s => s.width <= 750)
@@ -29,7 +28,7 @@ export function DynamicViewWalkthrough() {
   const diagram = useDiagram()
 
   const buttonProps = {
-    className: css.btn,
+    className: styles.btn,
     size: isMobile ? 'compact-md' : 'lg',
     radius: isMobile ? 'lg' : 'xl',
   }
@@ -59,11 +58,11 @@ export function DynamicViewWalkthrough() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={clsx('react-flow__panel', css.parallelStateFrame)}
+          className={clsx('react-flow__panel', styles.parallelStateFrame)}
         />
       )}
       <Box
-        className={clsx('react-flow__panel', css.container)}
+        className={clsx('react-flow__panel', styles.container)}
         onClick={(e) => e.stopPropagation()}
         onDoubleClick={(e) => e.stopPropagation()}
       >
@@ -71,7 +70,7 @@ export function DynamicViewWalkthrough() {
           && (
             <Button
               {...buttonProps}
-              className={clsx(css.buttons, css.btn)}
+              className={clsx(styles.buttons, styles.btn)}
               rightSection={<IconPlayerPlayFilled />}
               onClick={() => diagram.startWalkthrough()}
               px={'xl'}>
@@ -96,7 +95,7 @@ export function DynamicViewWalkthrough() {
           </Badge>
         )}
         {isActive && (
-          <ButtonGroup className={css.buttons}>
+          <ButtonGroup className={styles.buttons}>
             <Button
               {...buttonProps}
               pl={'lg'}

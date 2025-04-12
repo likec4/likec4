@@ -1,18 +1,16 @@
+import { css, cx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
   type ReactFlowState,
   ReactFlow,
-  useOnViewportChange,
   useStore,
-  useStoreApi,
 } from '@xyflow/react'
-import clsx from 'clsx'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import { useUpdateEffect } from '../hooks'
-import { useIsZoomTooSmall } from '../hooks/useXYFlow'
-import * as css from '../LikeC4Diagram.css'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
+import type { PaddingWithUnit } from '../LikeC4Diagram.props'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -25,7 +23,7 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     nodesSelectable?: boolean
     nodesDraggable?: boolean
     background?: 'transparent' | 'solid' | XYBackground
-    fitViewPadding?: number
+    fitViewPadding?: PaddingWithUnit | undefined
     onViewportResize?: undefined | (() => void)
   }
   & SetRequired<
@@ -34,17 +32,8 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
       // Omited props
       | 'defaultNodes'
       | 'defaultEdges'
-      | 'panOnScroll'
-      | 'panOnDrag'
-      | 'preventScrolling'
-      | 'zoomOnPinch'
-      | 'zoomActivationKeyCode'
-      | 'zoomOnScroll'
-      | 'elementsSelectable'
-      | 'onNodeMouseEnter'
-      | 'onNodeMouseLeave'
-      | 'onEdgeMouseEnter'
-      | 'onEdgeMouseLeave'
+      | 'onNodeDoubleClick'
+      | 'onEdgeDoubleClick'
       | 'fitViewOptions'
     >,
     // Required props
@@ -54,6 +43,35 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     | 'onEdgesChange'
   >
 >
+
+const cssTransparentBg = css({
+  background: 'transparent !important',
+  ['--xy-background-color']: 'transparent !important',
+})
+
+const cssReactFlow = css({
+  // '@supports': {
+  //   // https://wojtek.im/journal/targeting-safari-with-css-media-query
+  //   '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
+  //     // TODO: this workaround disables animations in Safari (to improve performance)
+  //     vars: {
+  //       [vars.safariAnimationHook]: '',
+  //     },
+  //   },
+  // },
+
+  ['--xy-background-color']: '{colors.mantine.colors.body}',
+  ['--xy-background-pattern-color']: {
+    _dark: '{colors.mantine.colors.dark[5]}',
+    _light: '{colors.mantine.colors.gray[4]}',
+  },
+  '& .react-flow__pane': {
+    WebkitUserSelect: 'none',
+  },
+  '& .react-flow__attribution': {
+    display: 'none',
+  },
+})
 
 export const BaseXYFlow = <
   NodeType extends Base.Node,
@@ -75,22 +93,26 @@ export const BaseXYFlow = <
   fitView = true,
   zoomOnDoubleClick = false,
   onViewportResize,
+  onMoveEnd,
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
+  const xystore = useXYStoreApi()
+
   return (
     <ReactFlow<NodeType, EdgeType>
       colorMode={colorMode}
       nodes={nodes}
       edges={edges}
-      className={clsx(
-        css.cssReactFlow,
-        pannable !== true && css.cssDisablePan,
-        background === 'transparent' && css.cssTransparentBg,
+      className={cx(
+        cssReactFlow,
+        background === 'transparent' && cssTransparentBg,
         className,
       )}
-      data-likec4-zoom-small={isZoomTooSmall}
+      {...isZoomTooSmall && {
+        ['data-likec4-zoom-small']: true,
+      }}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {
@@ -113,96 +135,92 @@ export const BaseXYFlow = <
       panOnScroll={pannable}
       panOnDrag={pannable}
       {...(!pannable && {
+        panActivationKeyCode: null,
         selectionKeyCode: null,
       })}
-      onlyRenderVisibleElements={nodes.length > 75}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
       nodesDraggable={nodesDraggable}
       nodeDragThreshold={4}
-      nodeClickDistance={1.9}
-      paneClickDistance={1.9}
+      nodeClickDistance={3}
+      paneClickDistance={3}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
+      onMoveEnd={useCallbackRef((event, { x, y, zoom }) => {
+        /**
+         * WORKAROUND
+         * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+         * https://github.com/xyflow/xyflow/issues/3282
+         * https://github.com/likec4/likec4/issues/734
+         */
+        const roundedX = Math.round(x),
+          roundedY = Math.round(y)
+        if (x !== roundedX || y !== roundedY) {
+          xystore.setState({ transform: [roundedX, roundedY, zoom] })
+        }
+        onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
+      })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, true),
-        }])
+        if (!node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, true),
+          }])
+        }
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, false),
-        }])
+        if (node.data.hovered) {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, false),
+          }])
+        }
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, true),
-        }])
+        if (!edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, true),
+          }])
+        }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, false),
-        }])
+        if (edge.data.hovered) {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, false),
+          }])
+        }
       })}
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}
       {...props}
     >
-      {isBgWithPattern && <Background background={background} />}
-      <BaseXYFlowInner onViewportResize={onViewportResize} />
+      <Fragment key="_internals">
+        {isBgWithPattern && <Background background={background} />}
+        {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+      </Fragment>
       {children}
     </ReactFlow>
   )
 }
 
-const BaseXYFlowInner = ({
-  onViewportResize,
-}: Pick<BaseXYFlowProps<any, any>, 'onViewportResize'>) => {
-  const xyflowApi = useStoreApi()
-
-  /**
-   * WORKAROUND - Called on viewport change
-   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
-   * https://github.com/xyflow/xyflow/issues/3282
-   * https://github.com/likec4/likec4/issues/734
-   */
-  useOnViewportChange({
-    onEnd: ({ x, y, zoom }) => {
-      const roundedX = Math.round(x),
-        roundedY = Math.round(y)
-      if (x !== roundedX || y !== roundedY) {
-        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
-      }
-    },
-  })
-
-  return (
-    <>
-      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
-    </>
-  )
-}
-
-const selectDimensions = ({ width, height }: ReactFlowState) => ({ width, height })
+const selectDimensions = ({ width, height }: ReactFlowState) => (width || 1) * (height || 1)
 
 const ViewportResizeHanlder = ({
   onViewportResize,
 }: {
   onViewportResize: () => void
 }) => {
-  const { width, height } = useStore(selectDimensions)
-  useUpdateEffect(onViewportResize, [width, height])
+  const square = useStore(selectDimensions)
+  useUpdateEffect(onViewportResize, [square])
 
-  return <></>
+  return null
 }

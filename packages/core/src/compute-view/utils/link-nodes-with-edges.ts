@@ -1,6 +1,6 @@
 import { last, reverse } from 'remeda'
 import { invariant } from '../../errors'
-import type { Fqn } from '../../types/element'
+import type { Fqn } from '../../types'
 import type { ComputedEdge, ComputedNode } from '../../types/view'
 import { commonHead } from '../../utils/common-head'
 import { ancestorsOfNode } from './ancestorsOfNode'

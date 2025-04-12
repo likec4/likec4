@@ -6,9 +6,9 @@ import type {
   IconUrl,
   ModelRelation,
   NonEmptyArray,
-  ParsedLikeC4Model,
+  ParsedLikeC4ModelData,
   RelationId,
-  ViewId
+  ViewId,
 } from '@likec4/core'
 
 /**
@@ -105,77 +105,77 @@ const el = ({
   tags: tags as NonEmptyArray<any> ?? null,
   links: null,
   style: {
-    ...style
+    ...style,
   },
-  ...props
+  ...props,
 })
 export const fakeElements = {
   'cloud': el({
     id: 'cloud',
     kind: 'system',
-    title: 'cloud'
+    title: 'cloud',
   }),
   'customer': el({
     id: 'customer',
     kind: 'actor',
     title: 'customer',
-    shape: 'person'
+    shape: 'person',
   }),
   'support': el({
     id: 'support',
     kind: 'actor',
     title: 'Support Engineer',
     description: 'Support engineers are responsible for supporting customers',
-    shape: 'person'
+    shape: 'person',
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
     kind: 'component',
-    title: 'Backend'
+    title: 'Backend',
   }),
   'cloud.frontend': el({
     id: 'cloud.frontend',
     kind: 'component',
     title: 'Frontend',
-    shape: 'browser'
+    shape: 'browser',
   }),
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
     title: 'Graphql API',
-    description: 'Component that allows to query data via GraphQL.'
+    description: 'Component that allows to query data via GraphQL.',
   }),
   'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
     title: 'Backend Storage',
     description: 'The backend storage is a component that stores data.',
-    shape: 'storage'
+    shape: 'storage',
   }),
   'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
     title: 'Admin Panel Webapp',
-    description: 'The admin panel is a webapp that allows support staff to manage customer data.'
+    description: 'The admin panel is a webapp that allows support staff to manage customer data.',
   }),
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'Customer Dashboard Webapp',
-    description: 'The customer dashboard is a webapp that allows customers to view their data.'
+    description: 'The customer dashboard is a webapp that allows customers to view their data.',
   }),
   'amazon': el({
     id: 'amazon',
     kind: 'system',
     title: 'Amazon',
-    description: 'Amazon is a cloud provider'
+    description: 'Amazon is a cloud provider',
   }),
   'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 'S3',
-    description: 'S3 is a storage service'
-  })
+    description: 'S3 is a storage service',
+  }),
 } satisfies Record<string, Element>
 
 export type FakeElementIds = keyof typeof fakeElements
@@ -185,39 +185,39 @@ const fakeRelations = {
     id: 'customer:cloud.frontend.dashboard' as RelationId,
     source: 'customer' as Fqn,
     target: 'cloud.frontend.dashboard' as Fqn,
-    title: 'opens in browser'
+    title: 'opens in browser',
   },
   'support:cloud.frontend.adminPanel': {
     id: 'support:cloud.frontend.adminPanel' as RelationId,
     source: 'support' as Fqn,
     target: 'cloud.frontend.adminPanel' as Fqn,
-    title: 'manages'
+    title: 'manages',
   },
   'cloud.backend.storage:amazon.s3': {
     id: 'cloud.backend.storage:amazon.s3' as RelationId,
     source: 'cloud.backend.storage' as Fqn,
     target: 'amazon.s3' as Fqn,
     title: 'persists artifacts',
-    tail: 'odiamond'
+    tail: 'odiamond',
   },
   'cloud.backend.graphql:cloud.backend.storage': {
     id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
     source: 'cloud.backend.graphql' as Fqn,
     target: 'cloud.backend.storage' as Fqn,
-    title: ''
+    title: '',
   },
   'cloud.frontend.dashboard:cloud.backend.graphql': {
     id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.dashboard' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
-    title: 'fetches data'
+    title: 'fetches data',
   },
   'cloud.frontend.adminPanel:cloud.backend.graphql': {
     id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.adminPanel' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
-    title: 'fetches data in zero trust network with sso authentification'
-  }
+    title: 'fetches data in zero trust network with sso authentification',
+  },
 } satisfies Record<string, ModelRelation>
 
 export const indexView = {
@@ -232,11 +232,11 @@ export const indexView = {
     {
       include: [
         {
-          wildcard: true
-        }
-      ]
-    }
-  ]
+          wildcard: true,
+        },
+      ],
+    },
+  ],
 } satisfies ElementView
 
 export const cloudView = {
@@ -250,9 +250,9 @@ export const cloudView = {
   viewOf: 'cloud' as Fqn,
   rules: [
     {
-      include: [{ wildcard: true }]
-    }
-  ]
+      include: [{ wildcard: true }],
+    },
+  ],
 } satisfies ElementView
 
 export const cloud3levels = {
@@ -270,18 +270,24 @@ export const cloud3levels = {
         // include *
         { wildcard: true },
         // include cloud.frontend.*
-        { element: fakeElements['cloud.frontend'].id, isChildren: true },
+        {
+          ref: { model: 'cloud.frontend' as Fqn },
+          selector: 'children',
+        },
         // include cloud.backend.*
-        { element: fakeElements['cloud.backend'].id, isChildren: true }
-      ]
+        {
+          ref: { model: 'cloud.backend' as Fqn },
+          selector: 'children',
+        },
+      ],
     },
     {
       exclude: [
         // exclude cloud.frontend
-        { element: 'cloud.frontend' as Fqn, isChildren: false }
-      ]
-    }
-  ]
+        { ref: { model: 'cloud.frontend' as Fqn } },
+      ],
+    },
+  ],
 } satisfies ElementView
 
 export const amazonView = {
@@ -299,15 +305,15 @@ export const amazonView = {
         // include *
         { wildcard: true },
         // include cloud
-        { element: 'cloud' as Fqn, isChildren: false },
+        { ref: { model: 'cloud' as Fqn } },
         // include cloud.* -> amazon
         {
-          source: { element: 'cloud' as Fqn, isChildren: true },
-          target: { element: 'amazon' as Fqn, isChildren: false }
-        }
-      ]
-    }
-  ]
+          source: { ref: { model: 'cloud' as Fqn }, selector: 'children' },
+          target: { ref: { model: 'amazon' as Fqn } },
+        },
+      ],
+    },
+  ],
 } satisfies ElementView
 
 // see https://github.com/likec4/likec4/issues/577
@@ -323,22 +329,22 @@ export const issue577View = (icon: string) => ({
     {
       include: [
         // include *
-        { wildcard: true }
-      ]
+        { wildcard: true },
+      ],
     },
     {
       targets: [
-        { wildcard: true }
+        { wildcard: true },
       ],
       style: {
         color: 'red',
-        icon: icon as IconUrl
-      }
-    }
-  ]
+        icon: icon as IconUrl,
+      },
+    },
+  ],
 } satisfies ElementView)
 
-export const FakeModel: ParsedLikeC4Model = {
+export const FakeModel: ParsedLikeC4ModelData = {
   elements: fakeElements,
   relations: fakeRelations,
   views: {},
@@ -346,15 +352,16 @@ export const FakeModel: ParsedLikeC4Model = {
     elements: {},
     relationships: {},
     deployments: {},
-    tags: []
+    tags: [],
   },
   deployments: {
     elements: {},
-    relations: {}
+    relations: {},
   },
   globals: {
     dynamicPredicates: {},
     predicates: {},
-    styles: {}
-  }
+    styles: {},
+  },
+  imports: {},
 }

@@ -9,12 +9,12 @@ import { ConfigurableLayouter } from './views/configurable-layouter'
 /**
  * This is used as `bin` entry point to start the language server.
  */
-export async function startLanguageServer(): Promise<{
+export function startLanguageServer(): {
   shared: LikeC4SharedServices
   likec4: LikeC4Services
-}> {
+} {
   const connection = createConnection(ProposedFeatures.all)
-  await configureLogger({
+  configureLogger({
     sinks: {
       console: getConsoleSink(),
     },

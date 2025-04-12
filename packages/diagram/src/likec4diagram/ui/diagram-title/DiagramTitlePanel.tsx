@@ -2,22 +2,19 @@ import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 import { Link } from '../../../components/Link'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
-import type { DiagramContext } from '../../state/machine'
-import * as css from './DiagramTitlePanel.css'
-
-const selector = (s: DiagramContext) => ({
-  id: s.view.id,
-  title: s.view.title ?? 'untitled',
-  description: s.view.description,
-  links: s.view.links,
-  isNotActiveWalkthrough: s.activeWalkthrough === null,
-})
+import { useDiagramContext } from '../../../hooks/useDiagram'
+import * as styles from './DiagramTitlePanel.css'
 
 export function DiagramTitlePanel() {
-  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(selector)
+  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(s => ({
+    id: s.view.id,
+    title: s.view.title ?? 'untitled',
+    description: s.view.description,
+    links: s.view.links,
+    isNotActiveWalkthrough: s.activeWalkthrough === null,
+  }))
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,
@@ -44,21 +41,19 @@ export function DiagramTitlePanel() {
       }
       {isNotActiveWalkthrough && (
         <m.div
-          key={id}
           initial={{ opacity: 0.05, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{
             opacity: 0.05,
             scale: 0.6,
           }}
-          className={clsx('react-flow__panel', css.container)}
+          className={clsx('react-flow__panel', 'left', 'bottom')}
           style={{
             transformOrigin: 'left center',
           }}
         >
           <Card
-            radius="sm"
-            className={css.card}
+            className={styles.card}
             withBorder={!isCollapsed}
             p={isCollapsed ? 'sm' : 'md'}
             onDoubleClick={e => e.stopPropagation()}>
@@ -105,7 +100,7 @@ export function DiagramTitlePanel() {
                     size={'md'}
                     fw={500}
                     lh={1.1}
-                    className={css.title}
+                    className={styles.title}
                   >
                     {title}
                   </Text>
@@ -129,15 +124,19 @@ export function DiagramTitlePanel() {
                   <Spoiler
                     maxHeight={42}
                     showLabel={
-                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>show more</Button>
+                      <Button component={'div'} color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>
+                        show more
+                      </Button>
                     }
                     hideLabel={
-                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>hide</Button>
+                      <Button component={'div'} color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>
+                        hide
+                      </Button>
                     }>
                     <Text
                       component={'div'}
                       size="sm"
-                      className={css.description}>
+                      className={styles.description}>
                       {description || 'no description'}
                     </Text>
                   </Spoiler>

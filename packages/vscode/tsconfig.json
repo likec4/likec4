@@ -5,9 +5,10 @@
     "lib": [
       "ES2022",
       "WebWorker"
-    ]
+    ],
+    "rootDir": "src"
   },
   "include": [
-    "src"
+    "src",
   ]
 }

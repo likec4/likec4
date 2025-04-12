@@ -4,17 +4,20 @@ module.exports = {
     mainVersionFile: 'package.json', // or `lerna.json`, or whatever a json file you can read the latest `version` from.
     packagesToBump: [
       'packages/*',
-      'apps/*'
+      'apps/*',
+      'styled-system/*',
     ],
     packagesToPublish: [
       'packages/core',
-      'packages/log',
       'packages/icons',
       'packages/diagram',
       'packages/language-server',
-      'packages/layouts',
-      'packages/likec4'
-    ]
+      'packages/likec4',
+      'styled-system/preset',
+      'styled-system/styles',
+    ],
   },
-  publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public --tolerate-republish`
+  installCommand: () => 'pnpm install',
+  buildCommand: () => 'pnpm build',
+  publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public`,
 }

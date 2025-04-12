@@ -13,21 +13,21 @@ const packageJson = {
   exports: {
     '.': {
       types: './index.d.ts',
-      default: './index.js'
-    }
+      default: './index.js',
+    },
   },
   dependencies: {
     'likec4': clipkg.version,
-    ...pick(clipkg.dependencies, [
+    ...pick(clipkg.peerDependencies, [
       'react',
-      'react-dom'
-    ])
-  }
+      'react-dom',
+    ]),
+  },
 }
 
 export async function writePackageJson({
   pkgName,
-  pkgJsonPath
+  pkgJsonPath,
 }: {
   pkgName: string
   pkgJsonPath: string

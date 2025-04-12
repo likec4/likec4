@@ -4,20 +4,29 @@
     "//"
   ],
   "tasks": {
-    "build": {
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!data/**"
+    "generate": {
+      "outputs": [
+        "src/meta.ts"
       ],
+      "inputs": [
+        "package.json"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
       "dependsOn": [
-        "^build",
+        "^generate",
+        "generate",
+        "topo",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [
         "dist/**",
+        "data/config.schema.json",
         "!dist/src/**",
         "!dist/**/*.metafile.json"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

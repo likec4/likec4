@@ -14,6 +14,7 @@ tableOfContents:
 
 import { LinkCard } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
@@ -26,7 +27,7 @@ The `likec4` CLI is a tool for various operations and automation, such as:
 - Export to PNG, Mermaid, Dot, D2
 - Generate [source code artifacts](/tooling/code-generation/react/):
   - React components
-  - Webcomponents
+  - Web Components
   - Typed data
 
 ## Install
@@ -35,9 +36,12 @@ The `likec4` CLI is a tool for various operations and automation, such as:
 
 If you're using it in an npm project, install it as a development dependency:
 
-```sh npm2yarn
-npm install --save-dev likec4
-```
+<PackageManagers
+    pkg="likec4"
+    dev
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
 
 You can reference it directly in the `package.json#scripts` object:
 
@@ -52,11 +56,16 @@ You can reference it directly in the `package.json#scripts` object:
 
 ### Global installation
 
-To use the CLI globally, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx):
+To fetch and execute a package binary, without installing it as a dependency:
 
-```sh
-npx likec4 [command]
-```
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="start"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
 
 If you want to use it in any arbitrary project without [`npx`](https://docs.npmjs.com/cli/v10/commands/npx), install it globally:
 
@@ -77,7 +86,6 @@ likec4 gen react -h
 ```
 
 
-
 ### Preview diagrams
 
 In a folder with LikeC4 sources:
@@ -89,7 +97,7 @@ likec4 start
 likec4 dev
 ```
 
-This recursively searches for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.  
+This recursively searches for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams via local web server.  
 Any change in the sources triggers hot update in the browser immediately.
 
 :::tip
@@ -97,13 +105,13 @@ You can start the process in a separate terminal window and keep it running whil
 :::
 
 <Aside type="caution">
-By default the web server listening localhost (127.0.0.1). If you want it to listen on all newtwork interfaces add '--listen 0.0.0.0' to the serve command.
+By default the web server listening localhost (127.0.0.1). If you want it to listen on all network interfaces add `--listen 0.0.0.0` to the serve command.
 </Aside>
 
 ### Build static website
 
 Build a single HTML with diagrams, ready to be deployed or embedded into your website.
-When you deployed the website, you can use "Share" button to get a link to a specific diagram.
+When you deployed the website, you can use "Share" button and get a link to a specific diagram.
 
 The resulting website is strictly bound to the given base path (`/` by default).
 A relocatable app can be built with `--base "./"`.
@@ -149,7 +157,7 @@ or consider [LikeC4 GitHub Actions](/tooling/github)
 
 :::note
 Export to PNG requires Playwright.  
-You will be prompted with a command to install it if it's not found.
+You will be prompted with a command to install if it's not found.
 :::
 
 ### Export to JSON
@@ -171,7 +179,7 @@ likec4 gen d2
 
 <LinkCard
   title="Generate components"
-  description="Learn how to generate React and Webcomponents"
+  description="Learn how to generate React and Web Components"
   href="/tooling/code-generation/react/"
 />
 

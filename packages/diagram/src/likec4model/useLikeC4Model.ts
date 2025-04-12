@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core'
 import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
 import { LikeC4ModelContext } from './LikeC4ModelContext'

@@ -27,12 +27,22 @@
       pinDigests: false,
     },
     {
+      automerge: true,
+      matchPackageNames: [
+        'dprint',
+        'type-fest',
+        'remeda',
+        'turbo',
+        'wrangler',
+        'pnpm'
+      ]
+    },
+    {
       groupName: 'linters',
       matchDepNames: [
         '@types/eslint',
         'prettier',
-        'lint-staged',
-        'dprint',
+        'lint-staged',        
       ],
       matchPackageNames: [
         '@commitlint{/,}**',
@@ -70,13 +80,6 @@
       matchPackageNames: [
        // '@tabler{/,}**',
         '@fontsource{/,}**',
-      ]
-    },
-    {
-      automerge: true,
-      matchDepNames: [
-        'turbo',
-        'pnpm'
       ]
     },
     {

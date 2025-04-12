@@ -2,7 +2,7 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test/testServices'
 import { test } from './asserts'
 
-describe('Deployment model:', () => {
+describe.concurrent('Deployment model:', () => {
   test('deployment node with properties').valid`
      specification {
       deploymentNode environment
@@ -49,6 +49,78 @@ describe('Deployment model:', () => {
       }
     }
   `
+
+  test('resolve instanceOf').valid`
+      specification {
+        element component
+        deploymentNode node
+      }
+      model {
+        component sys1 {
+          component cmp1 {
+            component cmp2
+          }
+        }
+      }
+      deployment {
+        node n1 {
+          instanceOf sys1.cmp1
+
+          node n2 {
+            instanceOf sys1.cmp1
+            instanceOf sys1.cmp2
+          }
+          node n3 {
+            sys = instanceOf sys1.cmp1.cmp2
+          }
+        }
+      }
+    `
+
+  test('resolve internals of instanceOf').valid`
+      specification {
+        element component
+        deploymentNode node
+      }
+      model {
+        component sys1 {
+          component cmp1 {
+            component cmp2
+          }
+        }
+      }
+      deployment {
+        node n1 {
+          instanceOf sys1.cmp1
+        }
+      }
+      views {
+        deployment view dep1 {
+          include n1
+          style n1.cmp1.cmp2 {
+            color red
+          }
+        }
+      }
+    `
+
+  test('allow nested relations').valid`
+    specification {
+      deploymentNode environment
+      deploymentNode node
+    }
+    deployment {
+      environment dev {
+        node n1 {
+          node n2 {
+            -> n3
+          }
+          node n3
+        }
+      }
+    }
+  `
+
   describe('deployment ref', () => {
     test('resolve deployment ref').valid`
       specification {
@@ -90,7 +162,7 @@ describe('Deployment model:', () => {
       }
     `
 
-    it.concurrent('resolve global deployment ref', async ({ expect }) => {
+    it('resolve global deployment ref', async ({ expect }) => {
       const { parse, validateAll } = createTestServices()
       await parse(`
         specification {
@@ -137,7 +209,7 @@ describe('Deployment model:', () => {
       const validation2 = await validateAll()
       expect(validation2.errors).toEqual([
         `Could not resolve reference to Referenceable named 'sys1'.`,
-        `DeploymentRelation source 'sys1' not resolved`
+        `DeploymentRelation source not resolved`,
       ])
     })
   })

@@ -1,13 +1,15 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "strict": false,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolvePackageJsonExports": true,
-    "composite": true
+    "tsBuildInfoFile": "lib/vite.tsbuildinfo",
+    "rootDir": ".",
+    "types": [
+      "node",
+    ],
   },
-  "files": [
-    "vite.config.ts",
+  "include": [
+    "*.config.ts",
+    "package.json"
   ]
 }

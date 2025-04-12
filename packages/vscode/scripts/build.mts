@@ -1,8 +1,10 @@
+import { ProjectConfig } from '@likec4/language-server/config'
+import { toJsonSchema } from '@valibot/to-json-schema'
 import { consola } from 'consola'
 import { type BuildOptions, analyzeMetafileSync, build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { cp, mkdir } from 'node:fs/promises'
+import { cp, mkdir, writeFile } from 'node:fs/promises'
 import { isProduction } from 'std-env'
 
 import { resolve } from 'node:path'
@@ -37,6 +39,8 @@ await cp(
   { recursive: true },
 )
 
+await writeFile('./data/config.schema.json', JSON.stringify(toJsonSchema(ProjectConfig), null, 2))
+
 consola.start('Build vscode extension')
 
 const base = {
@@ -47,11 +51,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: isProduction ? ['vscode'] : [
-    'vscode',
-    '@vscode/extension-telemetry',
-    // '@hpcc-js/wasm-graphviz'
-  ],
+  external: ['vscode'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -75,7 +75,7 @@ configs.push({
   ],
   target: 'node20',
   platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['sources', 'development'],
+  conditions: ['sources', 'node'],
 }, {
   ...base,
   entryPoints: [
@@ -83,7 +83,7 @@ configs.push({
   ],
   target: 'node20',
   platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['sources', 'development'],
+  conditions: ['sources', 'node'],
 })
 
 // ----------- Browser
@@ -97,7 +97,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: ['sources', 'browser'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -107,7 +107,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: ['sources', 'browser'],
 })
 
 let hasErrors = false

@@ -10,6 +10,7 @@ export const validateCmd = {
     yargs
       .positional('path', path)
       .option('ignore-layout', {
+        alias: ['skip-layout'],
         boolean: true,
         default: false,
         description: 'do not validate layout of views',

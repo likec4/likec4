@@ -1,14 +1,14 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { $exclude, $include, computeView } from './fixture'
 
 describe('element-expr', () => {
-  it('include elements without relations', () => {
+  it('include elements without relations', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView([$include('customer'), $include('support')])
     expect(nodeIds).toEqual(['customer', 'support'])
     expect(edgeIds).toEqual([])
   })
 
-  it('include elements with relations', () => {
+  it('include elements with relations', ({ expect }) => {
     const { nodes, nodeIds, edgeIds } = computeView([
       $include('customer'),
       $include('cloud.frontend'),
@@ -28,7 +28,7 @@ describe('element-expr', () => {
     }
   })
 
-  it('include elements with descedants', () => {
+  it('include elements with descedants', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView([
       $include('customer'),
       $include('cloud.*'),
@@ -48,7 +48,7 @@ describe('element-expr', () => {
     ])
   })
 
-  it('exclude element ref', () => {
+  it('exclude element ref', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView([
       $include('customer'),
       $include('cloud'),
@@ -69,7 +69,7 @@ describe('element-expr', () => {
   })
 
   describe('view of cloud', () => {
-    it('include *', () => {
+    it('include *', ({ expect }) => {
       const { nodes, nodeIds, edgeIds } = computeView('cloud', [$include('*')])
       expect(nodeIds).toEqual([
         'customer',
@@ -103,7 +103,7 @@ describe('element-expr', () => {
       ])
     })
 
-    it('include *, exclude support', () => {
+    it('include *, exclude support', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('support')])
       expect(nodeIds).toEqual([
         'customer',
@@ -121,7 +121,7 @@ describe('element-expr', () => {
       ])
     })
 
-    it('include *, exclude cloud', () => {
+    it('include *, exclude cloud', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $exclude('support'),
@@ -142,7 +142,7 @@ describe('element-expr', () => {
       ])
     })
 
-    it('include *, cloud.frontend.*', () => {
+    it('include *, cloud.frontend.*', ({ expect }) => {
       const { nodes, nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $include('cloud.frontend.*'),
@@ -174,7 +174,7 @@ describe('element-expr', () => {
       expect(cloud).toHaveProperty('depth', 2)
     })
 
-    it('include *, exclude backend', () => {
+    it('include *, exclude backend', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $include('cloud.backend.*'),
@@ -200,7 +200,7 @@ describe('element-expr', () => {
   })
 
   describe('view of cloud.frontend', () => {
-    it('include *', () => {
+    it('include *', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.frontend', [$include('*')])
       expect(nodeIds).toEqual([
         'customer',
@@ -217,7 +217,7 @@ describe('element-expr', () => {
         'cloud.frontend.supportPanel:cloud.backend',
       ])
     })
-    it('include *, cloud', () => {
+    it('include *, cloud', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.frontend', [$include('*'), $include('cloud')])
       expect(nodeIds).toEqual([
         'customer',
@@ -235,7 +235,7 @@ describe('element-expr', () => {
         'cloud.frontend.dashboard:cloud.backend',
       ])
     })
-    it('include *, exclude support', () => {
+    it('include *, exclude support', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.frontend', [
         $include('*'),
         $exclude('support'),
@@ -253,7 +253,7 @@ describe('element-expr', () => {
         'cloud.frontend.supportPanel:cloud.backend',
       ])
     })
-    it('include *, cloud, exclude cloud.backend', () => {
+    it('include *, cloud, exclude cloud.backend', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.frontend', [
         $include('*'),
         $include('cloud'),
@@ -275,7 +275,7 @@ describe('element-expr', () => {
   })
 
   describe('view of cloud.backend', () => {
-    it('include *', () => {
+    it('include *', ({ expect }) => {
       const view = computeView('cloud.backend', [$include('*')])
       expect(view).toMatchObject({
         nodeIds: [
@@ -292,7 +292,7 @@ describe('element-expr', () => {
         ],
       })
     })
-    it('include *, cloud.frontend.* -> cloud.backend', () => {
+    it('include *, cloud.frontend.* -> cloud.backend', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.backend', [
         $include('*'),
         $include('cloud.frontend.* -> cloud.backend'),
@@ -313,7 +313,7 @@ describe('element-expr', () => {
         'cloud.frontend.supportPanel:cloud.backend.graphql',
       ])
     })
-    it('include *, cloud.frontend, cloud.frontend.* -> cloud.backend', () => {
+    it('include *, cloud.frontend, cloud.frontend.* -> cloud.backend', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.backend', [
         $include('*'),
         $include('cloud.frontend'),
@@ -335,7 +335,7 @@ describe('element-expr', () => {
         'cloud.frontend.supportPanel:cloud.backend.graphql',
       ])
     })
-    it('include *, cloud', () => {
+    it('include *, cloud', ({ expect }) => {
       const view = computeView('cloud.backend', [
         $include('*'),
         $include('cloud'),
@@ -359,7 +359,7 @@ describe('element-expr', () => {
   })
 
   describe('view of cloud.backend.graphql', () => {
-    it('include *', () => {
+    it('include *', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.backend.graphql', [$include('*')])
       expect(nodeIds).toEqual(['cloud.frontend', 'cloud.backend.graphql', 'cloud.backend.storage'])
       expect(edgeIds).to.have.same.members([
@@ -368,7 +368,7 @@ describe('element-expr', () => {
       ])
     })
 
-    it('include *, amazon', () => {
+    it('include *, amazon', ({ expect }) => {
       const { nodeIds, edgeIds } = computeView('cloud.backend.graphql', [
         $include('*'),
         $include('amazon'),

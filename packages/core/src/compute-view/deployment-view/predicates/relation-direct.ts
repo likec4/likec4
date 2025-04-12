@@ -1,14 +1,13 @@
 import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type {
-  ConnectionModel,
-  DeploymentElementModel,
-  DeploymentRelationModel,
-  LikeC4DeploymentModel,
-} from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
+import {
+  type ConnectionModel,
+  findConnectionsBetween as findModelConnectionsBetween,
+} from '../../../model/connection/model'
+import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
+import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { type Filterable, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
@@ -41,6 +40,12 @@ const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.Depl
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   include: ({ expr: { source, target, isBidirectional = false }, model, stage, where }) => {
+    if (FqnExpr.isElementTagExpr(source) || FqnExpr.isElementKindExpr(source)) {
+      throw new Error('element kind and tag expressions are not supported in include')
+    }
+    if (FqnExpr.isElementTagExpr(target) || FqnExpr.isElementKindExpr(target)) {
+      throw new Error('element kind and tag expressions are not supported in include')
+    }
     invariant(!FqnExpr.isModelRef(source), 'Invalid source model ref in direct relation')
     invariant(!FqnExpr.isModelRef(target), 'Invalid target model ref in direct relation')
     const sourceIsWildcard = FqnExpr.isWildcard(source)

@@ -1,5 +1,5 @@
 import { useSyncedRef } from '@react-hookz/web'
-import { type PropsWithChildren, createContext, useContext, useMemo } from 'react'
+import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
 import { isFunction, mapToObj } from 'remeda'
 import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
@@ -21,9 +21,16 @@ const HandlerNames = [
   'onCanvasDblClick',
 ] as const
 
-const DiagramEventHandlersContext = createContext<RequiredOrNull<LikeC4DiagramEventHandlers>>(
-  mapToObj(HandlerNames, (name) => [name, null]),
-)
+type DiagramEventHandlersContextValue = RequiredOrNull<LikeC4DiagramEventHandlers> & {
+  handlersRef: RefObject<LikeC4DiagramEventHandlers>
+}
+
+const DiagramEventHandlersContext = createContext<DiagramEventHandlersContextValue>({
+  ...mapToObj(HandlerNames, (name) => [name, null]),
+  handlersRef: {
+    current: {},
+  },
+})
 
 export function DiagramEventHandlers({
   handlers,
@@ -33,16 +40,19 @@ export function DiagramEventHandlers({
 
   const deps = HandlerNames.map((name) => isFunction(handlers[name]))
 
+  const value = useMemo((): DiagramEventHandlersContextValue => ({
+    ...mapToObj(HandlerNames, (name) => {
+      if (handlersRef.current[name]) {
+        // @ts-expect-error TODO: fix this
+        return [name, (...args: any[]) => handlersRef.current[name]?.(...args)]
+      }
+      return [name, null]
+    }),
+    handlersRef,
+  }), [handlersRef, ...deps])
+
   return (
-    <DiagramEventHandlersContext.Provider
-      value={useMemo(() =>
-        mapToObj(HandlerNames, (name) => {
-          if (handlersRef.current[name]) {
-            // @ts-expect-error TODO: fix this
-            return [name, (...args: any[]) => handlersRef.current[name]?.(...args)]
-          }
-          return [name, null]
-        }), [handlersRef, ...deps])}>
+    <DiagramEventHandlersContext.Provider value={value}>
       {children}
     </DiagramEventHandlersContext.Provider>
   )
@@ -50,4 +60,8 @@ export function DiagramEventHandlers({
 
 export function useDiagramEventHandlers() {
   return useContext(DiagramEventHandlersContext)
+}
+
+export function useDiagramEventHandlersRef() {
+  return useContext(DiagramEventHandlersContext).handlersRef
 }

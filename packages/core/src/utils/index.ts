@@ -1,4 +1,12 @@
-export { DefaultMap, LinkedList, Queue, Stack } from 'mnemonist'
+export {
+  BiMap,
+  DefaultMap,
+  DefaultWeakMap,
+  LinkedList,
+  MultiMap,
+  Queue,
+  Stack,
+} from './mnemonist'
 
 export {
   commonHead,

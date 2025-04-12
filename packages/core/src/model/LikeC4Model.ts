@@ -1,16 +1,18 @@
-import { DefaultMap } from 'mnemonist'
-import { mapValues, pipe, sort, values } from 'remeda'
+import { entries, mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { computeView, unsafeComputeView } from '../compute-view'
 import type { ComputeViewResult } from '../compute-view/compute-view'
 import { invariant, nonNullable } from '../errors'
-import type { ComputedView, DiagramView, IteratorLike, LikeC4View, ModelGlobals } from '../types'
+import type { IteratorLike } from '../types/_common'
 import type { Element } from '../types/element'
-import { type Tag as C4Tag } from '../types/element'
-import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '../types/model'
+import type { ModelGlobals } from '../types/global'
+import type { AnyParsedLikeC4ModelData, GenericLikeC4ModelData, LikeC4ModelDump } from '../types/model-data'
 import type { ModelRelation } from '../types/relation'
+import { type ProjectId, type Tag as C4Tag, GlobalFqn, isGlobalFqn } from '../types/scalars'
+import type { ComputedView, DiagramView, LikeC4View } from '../types/view'
 import { compareNatural } from '../utils'
-import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
+import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
+import { DefaultMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
   DeploymentElementModel,
@@ -68,7 +70,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * @param parsed - The parsed LikeC4 model to compute from
    * @returns A new LikeC4Model instance with computed relationships and structure
    */
-  static compute<const M extends AnyParsedLikeC4Model>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
+  static compute<const M extends AnyParsedLikeC4ModelData>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
     let { views, ...rest } = parsed as Omit<M, '__'>
     const model = new LikeC4Model({ ...rest, views: {} })
     return new LikeC4Model({
@@ -84,9 +86,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * const compute = LikeC4Model.makeCompute(parsedModel);
    * const result = compute(viewSource);
    */
-  static makeCompute<M extends AnyParsedLikeC4Model>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
+  static makeCompute<M extends AnyParsedLikeC4ModelData>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
     let { views, ...rest } = parsed as Omit<M, '__'>
-    const model = new LikeC4Model(structuredClone({ ...rest, views: {} }))
+    const model = new LikeC4Model({ ...rest, views: {} })
     return (viewsource) => computeView(viewsource, model)
   }
 
@@ -97,7 +99,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * @param model - The model data to create a LikeC4Model from
    * @returns A new LikeC4Model instance with the type derived from the input model
    */
-  static create<const M extends GenericLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
+  static create<const M extends GenericLikeC4ModelData>(model: M): LikeC4Model<Aux.FromModel<M>> {
     return new LikeC4Model(model as any)
   }
 
@@ -119,6 +121,14 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
+      }
+    }
+    for (const [projectId, elements] of entries($model.imports)) {
+      for (const element of sortParentsFirst(elements)) {
+        const el = this.addImportedElement(projectId as ProjectId, element)
+        for (const tag of el.tags) {
+          this.#allTags.get(tag).add(el)
+        }
       }
     }
     for (const relation of values($model.relations)) {
@@ -365,7 +375,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     if (this.#elements.has(element.id)) {
       throw new Error(`Element ${element.id} already exists`)
     }
-    const el = new ElementModel(this, Object.freeze(structuredClone(element)))
+    const el = new ElementModel(this, Object.freeze(element))
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -378,13 +388,42 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return el
   }
 
+  private addImportedElement(projectId: ProjectId, element: Element) {
+    invariant(!isGlobalFqn(element.id), `Imported element already has global FQN`)
+    const id = GlobalFqn(projectId, element.id)
+    if (this.#elements.has(id)) {
+      throw new Error(`Element ${id} already exists`)
+    }
+    const el = new ElementModel(
+      this,
+      Object.freeze({
+        ...element,
+        id,
+      }),
+    )
+    this.#elements.set(el.id, el)
+    let parentId = parentFqn(el.id)
+    while (parentId) {
+      // For imported elements - id has format `@projectId.fqn`
+      // We need to exclude `@projectId` from the parentId
+      if (parentId.includes('.') && this.#elements.has(parentId)) {
+        this.#parents.set(el.id, this.element(parentId))
+        this.#children.get(parentId).add(el)
+        return el
+      }
+      parentId = parentFqn(parentId)
+    }
+    this.#rootElements.add(el)
+    return el
+  }
+
   private addRelation(relation: ModelRelation) {
     if (this.#relations.has(relation.id)) {
       throw new Error(`Relation ${relation.id} already exists`)
     }
     const rel = new RelationshipModel(
       this,
-      Object.freeze(structuredClone(relation)),
+      Object.freeze(relation),
     )
     const { source, target } = rel
     this.#relations.set(rel.id, rel)
@@ -417,6 +456,29 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 }
 
 export namespace LikeC4Model {
+  export const EMPTY = LikeC4Model.create({
+    projectId: 'default' as ProjectId,
+    specification: {
+      elements: {},
+      relationships: {},
+      deployments: {},
+      tags: [],
+    },
+    globals: {
+      predicates: {},
+      dynamicPredicates: {},
+      styles: {},
+    },
+    deployments: {
+      elements: {},
+      relations: {},
+    },
+    elements: {},
+    relations: {},
+    views: {},
+    imports: {},
+  }) as LikeC4Model<AnyAux>
+
   export type Any = Aux<
     string,
     string,

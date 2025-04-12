@@ -1,104 +1,187 @@
-import { type StyleRule, createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../theme-vars'
-import { whereDark, whereLight } from '../../../theme-vars.css'
+import { css, sva } from '@likec4/styles/css'
+import type { ColorToken } from '@likec4/styles/tokens'
 
-export const titleColor = createVar('title-color')
-export const descriptionColor = createVar('description-color')
-export const iconColor = createVar('icon-color')
+// export const titleColor = '--title-color'
+// export const descriptionColor = '---description-color'
+// export const iconColor = '--icon-color'
 
-export const buttonFocused = {
+const buttonFocused = css.raw({
   outline: 'none',
-  backgroundColor: mantine.colors.primaryColors[8],
-  borderColor: mantine.colors.primaryColors[9],
-  vars: {
-    [iconColor]: mantine.colors.primaryColors[2],
-    [titleColor]: mantine.colors.primaryColors[0],
-    [descriptionColor]: mantine.colors.primaryColors[1],
-  },
-} satisfies StyleRule
+  background: 'mantine.colors.primary[8]',
+  borderColor: 'mantine.colors.primary[9]',
+})
 
-export const button = style({
+const _treenodefocus = '.mantine-Tree-node:focus > .mantine-Tree-label &'
+
+function colors(color: ColorToken, hover: ColorToken) {
+  return {
+    color,
+    _groupHover: {
+      color: hover,
+    },
+    _groupFocus: {
+      color: hover,
+    },
+    [_treenodefocus]: {
+      color: hover,
+    },
+  }
+}
+
+const button = css.raw({
   display: 'flex',
   width: '100%',
-  background: mantine.colors.body,
-  borderRadius: mantine.radius.sm,
+  background: 'mantine.colors.body',
+  rounded: 'sm',
   padding: `12px 8px 12px 14px`,
-  minHeight: 60,
-  gap: 10,
+  minHeight: '60px',
+  gap: '8',
   // alignItems: 'flex-start',
   // transition: `all 50ms ${easings.inOut}`,
-  border: `1px solid ${mantine.colors.defaultBorder}`,
-  vars: {
-    [titleColor]: mantine.colors.dark[1],
-    [iconColor]: mantine.colors.dimmed,
-    [descriptionColor]: mantine.colors.dimmed,
-  },
-  ':hover': {
+  border: `1px solid`,
+  borderColor: 'mantine.colors.defaultBorder',
+  // [titleColor]: '{colors.mantine.colors.dark[1]}',
+  // [iconColor]: '{colors.mantine.colors.dimmed}',
+  // [descriptionColor]: '{colors.mantine.colors.dimmed}',
+  _hover: {
     ...buttonFocused,
-    borderColor: mantine.colors.primaryColors[9],
-    backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
+    borderColor: 'mantine.colors.primary[9]',
+    background: `mantine.colors.primary[8]/60`,
   },
-  ':focus': buttonFocused,
-  selectors: {
-    [`${whereDark} &`]: {
-      borderColor: 'transparent',
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
-      // background: mantine.colors.dark[6],
-    },
-    [`${whereLight} &`]: {
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.white}, transparent 10%)`,
-      vars: {
-        [iconColor]: mantine.colors.gray[6],
-        [titleColor]: mantine.colors.gray[7],
-      },
-    },
-    [`${whereLight} &:hover`]: {
-      borderColor: mantine.colors.primaryColors[6],
-      backgroundColor: mantine.colors.primaryColors[5],
-      vars: {
-        [iconColor]: mantine.colors.primaryColors[3],
-        [titleColor]: mantine.colors.primaryColors[0],
-        [descriptionColor]: mantine.colors.primaryColors[1],
-      },
+  _focus: buttonFocused,
+  [_treenodefocus]: buttonFocused,
+  _dark: {
+    borderColor: 'transparent',
+    background: `mantine.colors.dark[6]/80`,
+    // background: 'mantine.colors.dark[6]',
+  },
+  _light: {
+    background: `mantine.colors.white/80`,
+    // [iconColor]: '{colors.mantine.colors.gray[6]}',
+    // [titleColor]: '{colors.mantine.colors.gray[7]}',
+    _hover: {
+      borderColor: 'mantine.colors.primary[6]',
+      backgroundColor: 'mantine.colors.primary[5]',
+      // [iconColor]: '{colors.mantine.colors.primary[3])',
+      // [titleColor]: '{colors.mantine.colors.primary[0])',
+      // [descriptionColor]: '{colors.mantine.colors.primary[1]}',
     },
   },
 })
 
-export const focusable = style({})
+export const focusable = 'likec4-focusable'
 
-export const title = style({
-  color: fallbackVar(titleColor, mantine.colors.gray[7]),
-  fontSize: 16,
+const iconSize = {
+  ref: 'var(--likec4-icon-size, 24px)',
+}
+
+const icon = css.raw({
+  ...colors('mantine.colors.dimmed', 'mantine.colors.primary[0]'),
+  _light: {
+    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
+  },
+  flex: `0 0 ${iconSize.ref}`,
+  height: iconSize.ref,
+  width: iconSize.ref,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  alignSelf: 'flex-start',
+
+  ['--ti-size']: iconSize.ref,
+  [`& svg, & img`]: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: '100%',
+    pointerEvents: 'none',
+  },
+  [`& img`]: {
+    objectFit: 'contain',
+  },
+  '&.likec4-shape-icon svg': {
+    // color: `[var(${iconColor})]`,
+    strokeWidth: 1.5,
+  },
+  // [iconSize]: '24px',
+  // [whenContainerIsNarrow]: {
+  //   [iconSize]: '18px',
+  // },
+})
+
+const title = css.raw({
+  fontSize: '16px',
   fontWeight: 500,
-  lineHeight: 1.1,
-  selectors: {
-    [`:where([data-disabled]) &`]: {
-      opacity: 0.4,
-    },
+  lineHeight: '1.1',
+  [`:where([data-disabled]) &`]: {
+    opacity: 0.4,
+  },
+
+  // color: 'mantine.colors.dark[1]',
+  // _groupHover: {
+  //   color: 'mantine.colors.primary[1]',
+  // },
+  // _groupFocus: {
+  //   color: 'mantine.colors.primary[1]',
+  // },
+  ...colors('mantine.colors.dark[1]', 'mantine.colors.primary[1]'),
+  _light: {
+    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
+    // color: `mantine.colors.gray[6]`,
+    // _groupHover: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
+    // _groupFocus: {
+    //   color: 'mantine.colors.primary[3]',
+    // },
   },
 })
-export const description = style({
-  marginTop: 4,
-  color: fallbackVar(descriptionColor, mantine.colors.dimmed),
-  fontSize: 12,
-  lineHeight: 1.4,
-  selectors: {
-    [`:where([data-disabled]) &`]: {
-      opacity: 0.85,
+const descriptionColor = css.raw({
+  color: {
+    base: 'mantine.colors.dimmed',
+    _groupHover: {
+      base: 'mantine.colors.primary[1]',
+      _light: 'mantine.colors.primary[0]',
     },
+    _groupFocus: 'mantine.colors.primary[0]',
+  },
+  [_treenodefocus]: {
+    color: 'mantine.colors.primary[0]',
   },
 })
 
-export const emptyBoX = style({
+const description = css.raw(descriptionColor, {
+  marginTop: '4px',
+  fontSize: '12px',
+  lineHeight: '1.4',
+
+  [`:where([data-disabled]) &`]: {
+    opacity: 0.85,
+  },
+})
+
+export const emptyBoX = css({
   width: '100%',
   height: '100%',
-  border: `2px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
+  border: `2px dashed`,
+  borderColor: 'mantine.colors.defaultBorder',
+  rounded: 'md',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  fontSize: mantine.fontSizes.md,
-  color: mantine.colors.dimmed,
-  padding: mantine.spacing.md,
-  paddingBlock: mantine.spacing.xl,
+  fontSize: 'md',
+  color: 'mantine.colors.dimmed',
+  padding: 'md',
+  paddingBlock: 'xl',
+})
+
+export const buttonsva = sva({
+  slots: ['root', 'icon', 'title', 'description', 'descriptionColor'],
+  className: 'search-button',
+  base: {
+    root: button,
+    icon,
+    title,
+    description,
+    descriptionColor,
+  },
 })

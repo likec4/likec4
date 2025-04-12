@@ -1,14 +1,17 @@
 import { nonexhaustive } from '@likec4/core'
-import { type AstNode, type MaybePromise, AstUtils, GrammarUtils } from 'langium'
+import { type AstNode, type LangiumDocument, AstUtils, DocumentState, GrammarUtils } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
+import type { CancellationToken, DocumentSymbolParams } from 'vscode-languageserver'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
-import { type LikeC4LangiumDocument, ast } from '../ast'
-import { logError, logWarnError } from '../logger'
+import { ast, isLikeC4LangiumDocument } from '../ast'
+import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
-import { getFqnElementRef } from '../utils/elementRef'
+import { readStrictFqn } from '../utils/elementRef'
+
+const logger = rootLogger.getChild('DocumentSymbolProvider')
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
@@ -23,11 +26,25 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     this.nameProvider = services.references.NameProvider
   }
 
-  getSymbols({
-    parseResult: {
-      value: { specifications, models, deployments, views, likec4lib },
-    },
-  }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
+  async getSymbols(
+    doc: LangiumDocument,
+    _params: DocumentSymbolParams,
+    cancelToken?: CancellationToken,
+  ): Promise<DocumentSymbol[]> {
+    if (!isLikeC4LangiumDocument(doc)) {
+      return []
+    }
+    if (doc.state <= DocumentState.Linked) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
+      logger.debug(`document is Linked`)
+    }
+    const {
+      parseResult: {
+        value: { specifications, models, deployments, views, likec4lib },
+      },
+    } = doc
+
     return [
       ...likec4lib.map(l => () => this.getLikec4LibSymbol(l)),
       ...specifications.map(s => () => this.getSpecSymbol(s)),
@@ -158,7 +175,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     return [
       {
         kind: this.symbolKind(astElement),
-        name: getFqnElementRef(astElement.element),
+        name: readStrictFqn(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
         children: body.elements.flatMap(e => this.getElementsSymbol(e)),
@@ -250,13 +267,18 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     ]
   }
 
-  protected getDeploymentElementSymbol(el: ast.DeploymentElement | ast.DeploymentRelation): DocumentSymbol[] {
+  protected getDeploymentElementSymbol(
+    el: ast.DeploymentElement | ast.DeploymentRelation | ast.ExtendDeployment,
+  ): DocumentSymbol[] {
     try {
       if (ast.isDeploymentNode(el)) {
         return this.getDeploymentNodeSymbol(el)
       }
       if (ast.isDeployedInstance(el)) {
         return this.getDeployedInstanceSymbol(el)
+      }
+      if (ast.isExtendDeployment(el)) {
+        return []
       }
     } catch (e) {
       logWarnError(e)

@@ -1,13 +1,9 @@
-// dprint-ignore
-import '@mantine/core/styles.layer.css'
-import '@xyflow/react/dist/style.css'
-import './main.css'
-
 import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
 import { MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
 import ReactDOM from 'react-dom/client'
+import { theme } from './mantine'
 import { Routes } from './router'
-import { theme } from './theme'
 
 configureLogger({
   sinks: {
@@ -26,12 +22,12 @@ configureLogger({
       lowestLevel: 'debug',
     },
   ],
-}).then(() => {
-  ReactDOM.createRoot(document.getElementById('like4-root')!).render(
-    <MantineProvider
-      defaultColorScheme="dark"
-      theme={theme}>
-      <Routes />
-    </MantineProvider>,
-  )
 })
+
+ReactDOM.createRoot(document.getElementById('likec4-root')!).render(
+  <MantineProvider defaultColorScheme="dark" theme={theme}>
+    <ModalsProvider>
+      <Routes />
+    </ModalsProvider>
+  </MantineProvider>,
+)

@@ -1,18 +1,28 @@
 import {
   type EdgeId,
-  isStepEdgeId,
   nonNullable,
 } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
+import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'
-import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from '../../../base/primitives'
-import { useEnabledFeature } from '../../../context'
-import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
-import { useDiagram } from '../../../hooks/useDiagram'
+import { ZIndexes } from '../../../base/const'
+import {
+  customEdge,
+  EdgeActionButton,
+  EdgeContainer,
+  EdgeLabel,
+  EdgeLabelContainer,
+  EdgePath,
+} from '../../../base/primitives'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useDiagram, useDiagramActorSnapshot } from '../../../hooks/useDiagram'
+import { useIsPanning } from '../../../hooks/useReducedGraphics'
+import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
+import type { DiagramActorSnapshot } from '../../../state/types'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
@@ -26,16 +36,15 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
+const selectActiveStepId = (s: DiagramActorSnapshot) => s.context.activeWalkthrough?.stepId ?? null
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+  const isPanning = useIsPanning()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
-  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeature(
-    'NavigateTo',
-    'EdgeEditing',
-    'RelationshipDetails',
-  )
+  const activeWalkthroughStep = useDiagramActorSnapshot(selectActiveStepId)
+  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeatures()
   const {
     id,
     source,
@@ -44,17 +53,21 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     target,
     targetX,
     targetY,
+    selected = false,
     data: {
       id: edgeId,
-      navigateTo,
       points,
+      hovered = false,
       active = false,
       dimmed = false,
       labelBBox,
       labelXY,
       ...data
     },
+    style = {},
   } = props
+
+  const navigateTo = enableNavigateTo ? data.navigateTo : undefined
 
   const sourceNode = nonNullable(useXYInternalNode(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
@@ -119,7 +132,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         return
       }
       // This update stays only in internal xystate, not in diagram xstate
-      xyflow.updateEdgeData(id, {
+      diagram.updateEdgeData(id as EdgeId, {
         labelXY: {
           x: labelPos.x,
           y: labelPos.y,
@@ -156,15 +169,13 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         hasMoved = true
         pointer = clientPoint
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
-        xyflow.updateEdgeData(id, xyedge => {
-          const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
-          cp[index] = {
-            x: Math.round(x),
-            y: Math.round(y),
-          }
-          return {
-            controlPoints: cp,
-          }
+        const cp = controlPoints.slice()
+        cp[index] = {
+          x: Math.round(x),
+          y: Math.round(y),
+        }
+        diagram.updateEdgeData(id as EdgeId, {
+          controlPoints: cp,
         })
       }
       e.stopPropagation()
@@ -203,14 +214,9 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       e.stopPropagation()
       // Defer the update to avoid conflict with the pointerup event
       setTimeout(() => {
-        xyflow.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
+        diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
         diagram.scheduleSaveManualLayout()
       }, 10)
-
-      domNode.removeEventListener('pointerup', onPointerUp, {
-        capture: true,
-      })
-      e.stopPropagation()
     }
 
     domNode.addEventListener('pointerup', onPointerUp, {
@@ -246,109 +252,138 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     if (e.button !== 2) {
       return
     }
+    const points: VectorImpl[] = [
+      new VectorImpl(sourceX, sourceY),
+      ...controlPoints.map(vector) || [],
+      new VectorImpl(targetX, targetY),
+    ]
 
-    xyflow.updateEdgeData(id, edge => {
-      const points: VectorImpl[] = [
-        new VectorImpl(sourceX, sourceY),
-        ...controlPoints.map(vector) || [],
-        new VectorImpl(targetX, targetY),
-      ]
+    let pointer = { x: e.clientX, y: e.clientY }
+    const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
 
-      let pointer = { x: e.clientX, y: e.clientY }
-      const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
+    let insertionIndex = 0
+    let minDistance = Infinity
+    for (let i = 0; i < points.length - 1; i++) {
+      const a = points[i]!,
+        b = points[i + 1]!,
+        fromCurrentToNext = b.sub(a),
+        fromCurrentToNew = newPoint.sub(a),
+        fromNextToNew = newPoint.sub(b)
 
-      let insertionIndex = 0
-      let minDistance = Infinity
-      for (let i = 0; i < points.length - 1; i++) {
-        const a = points[i]!, b = points[i + 1]!
-        const fromCurrentToNext = b.sub(a)
-        const fromCurrentToNew = newPoint.sub(a)
-        const fromNextToNew = newPoint.sub(b)
+      // Is pointer above the current segment?
+      if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
+        // Calculate distance by approximating edge segment with a staight line
+        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
 
-        // Is pointer above the current segment?
-        if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
-          // Calculate distance by approximating edge segment with a staight line
-          const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
-
-          if (distanceToEdge < minDistance) {
-            minDistance = distanceToEdge
-            insertionIndex = i
-          }
+        if (distanceToEdge < minDistance) {
+          minDistance = distanceToEdge
+          insertionIndex = i
         }
       }
+    }
 
-      const newControlPoints = edge.data.controlPoints?.slice() || []
-      newControlPoints.splice(insertionIndex, 0, newPoint)
+    const newControlPoints = controlPoints.slice() || []
+    newControlPoints.splice(insertionIndex, 0, newPoint)
 
-      return { controlPoints: newControlPoints }
-    })
+    diagram.updateEdgeData(id as EdgeId, { controlPoints: newControlPoints })
 
     diagram.scheduleSaveManualLayout()
 
     e.stopPropagation()
   }
 
-  let renderLabel: undefined | ((props: any) => any)
-  if (!isControlPointDragging) {
+  let zIndex = ZIndexes.Edge
+  if (hovered || active) {
+    // Move above the elements
+    zIndex = ZIndexes.Element + 1
+  }
+
+  let edgeLabel = (
+    <EdgeLabel edgeProps={props}>
+      {!isControlPointDragging && navigateTo && (
+        <EdgeActionButton
+          {...props}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.navigateTo(navigateTo)
+          }} />
+      )}
+    </EdgeLabel>
+  )
+
+  if (!isControlPointDragging && !isPanning) {
     const notes = props.data.notes
-    if (notes && isStepEdgeId(props.id) && diagram.getState().context.activeWalkthrough?.stepId === props.id) {
-      renderLabel = (props: any) => (
+    if (notes && activeWalkthroughStep === props.id) {
+      edgeLabel = (
         <NotePopover notes={notes}>
-          <div {...props} />
+          {edgeLabel}
         </NotePopover>
       )
     } else if (enableRelationshipDetails) {
-      renderLabel = (props: any) => (
+      edgeLabel = (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}
           source={source}
           target={target}
           edgeId={edgeId}>
-          <div {...props} />
+          {edgeLabel}
         </RelationshipsDropdownMenu>
       )
     }
   }
 
   return (
-    <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
-      <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
-      {enableEdgeEditing && (
-        <g
-          onContextMenu={e => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}>
-          {controlPoints.map((p, i) => (
-            <circle
-              onPointerDown={e => onControlPointerDown(i, e)}
-              className={edgesCss.controlPoint}
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={3}
-            />
-          ))}
-        </g>
-      )}
-      <EdgeLabel
-        edgeProps={props}
-        labelPosition={{
-          x: labelX,
-          y: labelY,
-          translate: isModified ? 'translate(-50%, 0)' : undefined,
-        }}
-        {...renderLabel && { renderRoot: renderLabel }}
-      >
-        {!isControlPointDragging && enableNavigateTo && navigateTo && (
-          <EdgeActionButton
+    <>
+      <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
+        <EdgePath
+          edgeProps={props}
+          svgPath={edgePath}
+          ref={svgPathRef}
+          {...enableEdgeEditing && {
+            onEdgePointerDown,
+          }} />
+        <EdgeLabelContainer
+          edgeProps={props}
+          labelPosition={{
+            x: labelX,
+            y: labelY,
+            translate: isModified ? 'translate(-50%, 0)' : undefined,
+          }}
+        >
+          {edgeLabel}
+        </EdgeLabelContainer>
+      </EdgeContainer>
+      {/* Render control points above edge label  */}
+      {enableEdgeEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (
+        <EdgeLabelRenderer>
+          <EdgeContainer
+            component="svg"
+            className={edgesCss.controlPointsContainer}
             {...props}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.navigateTo(navigateTo)
-            }} />
-        )}
-      </EdgeLabel>
-    </EdgeContainer>
+            style={{
+              ...style,
+              zIndex,
+            }}
+          >
+            <g
+              onContextMenu={e => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}>
+              {controlPoints.map((p, i) => (
+                <circle
+                  onPointerDown={e => onControlPointerDown(i, e)}
+                  className={clsx('nodrag nopan', edgesCss.controlPoint)}
+                  key={'controlPoints' + edgeId + '#' + i}
+                  cx={Math.round(p.x)}
+                  cy={Math.round(p.y)}
+                  r={3}
+                />
+              ))}
+            </g>
+          </EdgeContainer>
+        </EdgeLabelRenderer>
+      )}
+    </>
   )
 })

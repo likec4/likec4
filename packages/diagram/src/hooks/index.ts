@@ -1,4 +1,3 @@
-export { useCurrentViewId } from './useCurrentViewId'
 export { useMantinePortalProps } from './useMantinePortalProps'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'

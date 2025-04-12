@@ -1,5 +1,5 @@
 import { nonNullable } from '@likec4/core'
-import { type AstNode, type CstNode, DefaultNameProvider, isNamed, type NamedAstNode } from 'langium'
+import { type AstNode, type CstNode, type NamedAstNode, DefaultNameProvider, isNamed } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
@@ -11,7 +11,7 @@ export class LikeC4NameProvider extends DefaultNameProvider {
   public getNameStrict(node: AstNode): string {
     return nonNullable(
       this.getName(node),
-      `Failed getName for ${this.services.workspace.AstNodeLocator.getAstNodePath(node)}`
+      `Failed getName for ${this.services.workspace.AstNodeLocator.getAstNodePath(node)}`,
     )
   }
 
@@ -19,8 +19,11 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return node.name
     }
+    if (ast.isImported(node)) {
+      return node.imported.$refText
+    }
     if (ast.isDeployedInstance(node)) {
-      return node.element.el.$refText
+      return node.target.modelElement.value.$refText
     }
     return undefined
   }
@@ -29,8 +32,11 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return super.getNameNode(node)
     }
+    if (ast.isImported(node)) {
+      return node.imported.$refNode
+    }
     if (ast.isDeployedInstance(node)) {
-      return node.element.el.$refNode
+      return node.target.modelElement.value.$refNode
     }
     return undefined
   }

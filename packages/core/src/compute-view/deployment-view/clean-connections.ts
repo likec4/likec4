@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import {
   dropWhile,
   filter,
@@ -25,6 +24,7 @@ import { findConnection } from '../../model/connection/deployment'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import { imap, toArray } from '../../utils/iterable'
+import { DefaultMap } from '../../utils/mnemonist'
 import { intersection, union } from '../../utils/set'
 import type { Connection, Connections } from './_types'
 

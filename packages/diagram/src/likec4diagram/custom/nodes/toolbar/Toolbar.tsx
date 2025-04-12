@@ -1,12 +1,12 @@
-import { Box, Group, Paper, Stack, Text } from '@mantine/core'
+import { Box, Group, Paper, Stack, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import clsx from 'clsx'
 import type { ReactNode } from 'react'
 import type { Base } from '../../../../base'
-import { useDiagramContext } from '../../../../hooks/useDiagramContext'
+import { useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
-import * as css from './styles.css'
+import * as styles from './styles.css'
 
 export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
   nodeProps: Base.NodeProps
@@ -45,9 +45,13 @@ export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) 
   }
   // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, delay)
+  if (!isToolbarVisible) {
+    return null
+  }
+
   return (
     <NodeToolbar
-      isVisible={!dragging && isToolbarVisible}
+      isVisible={!dragging}
       offset={4}
       {...props}>
       <Paper
@@ -63,9 +67,9 @@ export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) 
         onClick={stopPropagation}
         onDoubleClick={stopPropagation}
         withBorder>
-        <Stack gap={6}>
-          <Box pl={2}>
-            <Text c="dimmed" className={css.toolbarTitle}>{title}</Text>
+        <Stack gap={'6px'}>
+          <Box px={'4px'}>
+            <Text className={styles.toolbarTitle}>{title}</Text>
           </Box>
           <Group gap={4}>
             {children}

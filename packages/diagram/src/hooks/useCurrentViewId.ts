@@ -1,8 +1,10 @@
 import type { ViewId } from '@likec4/core'
-import type { DiagramContext } from '../likec4diagram/state/machine'
-import { useDiagramContext } from './useDiagramContext'
+import { useSelector } from '@xstate/react'
+import type { DiagramActorSnapshot } from '../state/types'
+import { useDiagramActorRef } from './useDiagram'
 
-const selectViewId = (state: DiagramContext) => state.view.id
+const selectViewId = (s: DiagramActorSnapshot) => s.context.view.id
 export function useCurrentViewId(): ViewId {
-  return useDiagramContext(selectViewId)
+  const actorRef = useDiagramActorRef()
+  return useSelector(actorRef, selectViewId)
 }

@@ -1,0 +1,95 @@
+views {
+  dynamic view place-order {
+    title 'Usecase 01: Placing an Order'
+    description '
+      This use case describes the process of placing an order.
+    '
+
+    customer -> boutique.frontend 'places products in cart' {
+      notes '
+        The customer interacts with the web application to place an order.
+      '
+    }
+    boutique.frontend -> boutique.cart 'creates or updates cart'
+    customer -> boutique.frontend 'enters shipping information' {
+      notes '
+        Custmer enters shipping information to get shipping cost estimates.
+      '
+    }
+    customer -> boutique.frontend 'enters payment information' {
+      notes '
+        Customer enters payment information and confirms the order.
+      '
+    }
+    boutique.frontend -> boutique.checkout 'initiates payment'
+
+    boutique.checkout -> boutique.db 'persists order'
+    boutique.checkout -> boutique.shipping 'reserves inventory' {
+      notes '
+        Reserving inventory is an asynchronous process that may take a few seconds.
+      '
+    }
+    boutique.checkout <- boutique.shipping 'confirms inventory reservation' {
+      notes '
+        The shipping service confirms that the inventory has been reserved.
+      '
+    }
+    parallel {
+      boutique.checkout -> boutique.cart 'marks cart as purchased' {
+        notes '
+          The cart is marked as immutable to prevent further changes.
+        '
+      }
+      boutique.checkout -> boutique.email 'sends order confirmation'
+      boutique.checkout -> boutique.payments 'creates payment' {
+        notes '
+          Initiates online payment processing.
+        '
+      }
+    }
+    boutique.payments -> payment-gateway 'processes payment'
+    payment-gateway -> payment-gateway 'processes payment with customer' {
+      notes '
+        This is a asynchronous process that may take a few seconds to a few minutes.
+
+        Customer may be prompted to enter additional information or confirm the payment.
+      '
+    }
+    boutique.payments <- payment-gateway 'confirms payment with webnook' {
+      notes '
+        When customer completes the payment, the payment gateway sends a confirmation as a webhook.
+      '
+    }
+    boutique.checkout <- boutique.payments
+    parallel {
+      boutique.checkout -> boutique.shipping 'requests fulfillment' {
+        navigateTo order-fulfillment
+        notes '
+          The shipping service is requested to fulfill the order.
+        '
+      }
+      boutique.checkout -> boutique.email 'sends confirmation' {
+        notes '
+          Email confirmation is sent to the customer.
+        '
+      }
+      boutique.checkout -> boutique.db 'updates order status' {
+        notes '
+          The order status is updated to "paid".
+        '
+      }
+    }
+
+    include
+      boutique with {
+        color gray
+        opacity 10%
+      }
+    style customer {
+      color green
+    }
+    style payment-gateway {
+      color muted
+    }
+  }
+}

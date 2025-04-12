@@ -6,11 +6,10 @@ import type { Base } from './types'
 function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
   return updated.map((update) => {
     const existing = current.find(n => n.id === update.id)
-    if (existing) {
+    if (existing && eq(existing.type, update.type)) {
       const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
-        eq(existing.type, update.type)
-        && eq(existingWidth, update.initialWidth)
+        eq(existingWidth, update.initialWidth)
         && eq(existingHeight, update.initialHeight)
         && eq(existing.parentId ?? null, update.parentId ?? null)
         && eq(existing.hidden ?? false, update.hidden ?? false)
@@ -26,10 +25,7 @@ function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
         // Force dimensions from update
         width: update.initialWidth,
         height: update.initialHeight,
-        data: {
-          ...existing.data,
-          ...update.data,
-        },
+        data: update.data,
       } as N
     }
     return update

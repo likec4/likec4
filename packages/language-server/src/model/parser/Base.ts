@@ -1,11 +1,33 @@
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray } from '@likec4/core'
-import type { AstNode } from 'langium'
-import { filter, flatMap, fromEntries, isEmpty, isNonNullish, isTruthy, map, pipe, unique } from 'remeda'
+import { GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
+import type { AstNode, URI } from 'langium'
+import {
+  filter,
+  flatMap,
+  fromEntries,
+  isArray,
+  isBoolean,
+  isEmpty,
+  isNonNullish,
+  isTruthy,
+  map,
+  pipe,
+  unique,
+} from 'remeda'
 import stripIndent from 'strip-indent'
-import { type ParsedLikeC4LangiumDocument, type ParsedLink, ast } from '../../ast'
+import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
+import {
+  type ParsedElementStyle,
+  type ParsedLikeC4LangiumDocument,
+  ast,
+  parseAstOpacityProperty,
+  parseAstSizeValue,
+  toColor,
+} from '../../ast'
+import type { ProjectConfig } from '../../config'
 import type { LikeC4Services } from '../../module'
-import { getFqnElementRef } from '../../utils/elementRef'
+import { projectIdFrom } from '../../utils'
+import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
 // the class which this mixin is applied to
@@ -32,16 +54,33 @@ export class BaseParser {
     this.isValid = checksFromDiagnostics(doc).isValid
   }
 
+  get project(): {
+    id: c4.ProjectId
+    folder: URI
+    config: Readonly<ProjectConfig>
+  } {
+    return this.services.shared.workspace.ProjectsManager.getProject(this.doc)
+  }
+
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isImported(node)) {
+      const project = projectIdFrom(node)
+      const fqn = this.resolveFqn(
+        nonNullable(node.imported.ref, `FqnRef is empty of imported: ${node.$cstNode?.text}`),
+      )
+      this.doc.c4Imports.set(project, fqn)
+      return GlobalFqn(project, fqn)
+    }
+    if (ast.isExtendElement(node)) {
+      return readStrictFqn(node.element)
+    }
+    if (ast.isExtendDeployment(node)) {
+      return readStrictFqn(node.deploymentNode)
+    }
     if (ast.isDeploymentElement(node)) {
       return this.services.likec4.DeploymentsIndex.getFqn(node)
     }
-    if (ast.isExtendElement(node)) {
-      return getFqnElementRef(node.element)
-    }
-    const fqn = this.services.likec4.FqnIndex.getFqn(node)
-    invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)
-    return fqn
+    return this.services.likec4.FqnIndex.getFqn(node)
   }
 
   getAstNodePath(node: AstNode) {
@@ -87,10 +126,10 @@ export class BaseParser {
     return isNonEmptyArray(tags) ? tags : null
   }
 
-  convertLinks(source?: ast.LinkProperty['$container']): ParsedLink[] | undefined {
+  convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
     return this.parseLinks(source)
   }
-  parseLinks(source?: ast.LinkProperty['$container']): ParsedLink[] | undefined {
+  parseLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
     if (!source?.props || source.props.length === 0) {
       return undefined
     }
@@ -104,10 +143,126 @@ export class BaseParser {
         const url = p.value
         if (isTruthy(url)) {
           const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
-          return title ? { url, title } : { url }
+          const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
+          return {
+            url,
+            ...(title && { title }),
+            ...(relative && relative !== url && { relative }),
+          }
         }
         return []
       }),
     )
+  }
+
+  parseIconProperty(prop: ast.IconProperty | undefined): c4.IconUrl | undefined {
+    if (!prop || !this.isValid(prop)) {
+      return undefined
+    }
+    const { libicon, value } = prop
+    switch (true) {
+      case !!libicon: {
+        return libicon.ref?.name as c4.IconUrl
+      }
+      case value && hasProtocol(value): {
+        return value as c4.IconUrl
+      }
+      case value && isRelative(value): {
+        return joinRelativeURL(this.doc.uri.toString(), '../', value) as c4.IconUrl
+      }
+      case value && hasLeadingSlash(value): {
+        return joinURL(this.project.folder.toString(), value) as c4.IconUrl
+      }
+      default: {
+        return undefined
+      }
+    }
+  }
+
+  parseElementStyle(
+    elementProps: Array<ast.ElementProperty> | ast.ElementStyleProperty | undefined,
+  ): ParsedElementStyle {
+    if (!elementProps) {
+      return {} as ParsedElementStyle
+    }
+    if (isArray(elementProps)) {
+      const style = this.parseStyleProps(elementProps?.find(ast.isElementStyleProperty)?.props)
+      // Property on element has higher priority than from style
+      const iconProp = this.parseIconProperty(elementProps?.find(ast.isIconProperty))
+      if (iconProp) {
+        style.icon = iconProp
+      }
+      return style
+    }
+    return this.parseStyleProps(elementProps.props)
+  }
+
+  parseStyleProps(styleProps: Array<ast.StyleProperty> | undefined): ParsedElementStyle {
+    const result = {} as ParsedElementStyle
+    if (!styleProps || styleProps.length === 0) {
+      return result
+    }
+    for (const prop of styleProps) {
+      if (!this.isValid(prop)) {
+        continue
+      }
+      switch (true) {
+        case ast.isBorderProperty(prop): {
+          if (isTruthy(prop.value)) {
+            result.border = prop.value
+          }
+          break
+        }
+        case ast.isColorProperty(prop): {
+          const color = toColor(prop)
+          if (isTruthy(color)) {
+            result.color = color
+          }
+          break
+        }
+        case ast.isShapeProperty(prop): {
+          if (isTruthy(prop.value)) {
+            result.shape = prop.value
+          }
+          break
+        }
+        case ast.isIconProperty(prop): {
+          const icon = this.parseIconProperty(prop)
+          if (isTruthy(icon)) {
+            result.icon = icon
+          }
+          break
+        }
+        case ast.isOpacityProperty(prop): {
+          result.opacity = parseAstOpacityProperty(prop)
+          break
+        }
+        case ast.isMultipleProperty(prop): {
+          result.multiple = isBoolean(prop.value) ? prop.value : false
+          break
+        }
+        case ast.isShapeSizeProperty(prop): {
+          if (isTruthy(prop.value)) {
+            result.size = parseAstSizeValue(prop)
+          }
+          break
+        }
+        case ast.isPaddingSizeProperty(prop): {
+          if (isTruthy(prop.value)) {
+            result.padding = parseAstSizeValue(prop)
+          }
+          break
+        }
+        case ast.isTextSizeProperty(prop): {
+          if (isTruthy(prop.value)) {
+            result.textSize = parseAstSizeValue(prop)
+          }
+          break
+        }
+        default:
+          nonexhaustive(prop)
+      }
+    }
+    return result
   }
 }

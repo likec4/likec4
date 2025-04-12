@@ -1,4 +1,5 @@
 import {
+  type Logger,
   type Sink,
   type TextFormatter,
   errorFromLogRecord,
@@ -9,7 +10,7 @@ import {
 } from '@likec4/log'
 import type { Connection } from 'vscode-languageserver'
 
-export const logger = root.getChild('server')
+export const logger: Logger = root.getChild('server')
 // export const logger = root
 
 export function logError(err: unknown): void {

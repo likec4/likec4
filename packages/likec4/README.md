@@ -1,12 +1,15 @@
 # LikeC4
 
-`likec4` is a CLI tool for various operations and automation over LikeC4 projects.
+![NPM Version](https://img.shields.io/npm/v/likec4)
+
+`likec4` package is a composition of language services, react components, vite plugin and CLI.
 
 Features:
 
 - Preview diagrams in a local web server (with lightning-fast updates) ⚡️
 - Build a static .website (deploy to github pages, netlify...) 🔗
 - Export to PNG, JSON, Mermaid, Dot, D2 (if you need something static) 🖼️
+- Vite Plugin (for embedding diagrams into your Vite-based application) ⚙️
 - Generate React components (for custom integrations ) 🛠️
 
 ## Install
@@ -50,7 +53,7 @@ npm install --global likec4
 likec4 [command]
 ```
 
-## Usage
+## CLI Usage
 
 > Refer to the help:
 >
@@ -74,7 +77,7 @@ likec4 dev
 ```
 
 This recursively searches for `*.c4`, `*.likec4` files in the current folder, parses and serves diagrams in a local web server.\
-Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
+Any change in the sources triggers a hot update in the browser.
 
 > **Tip:**\
 > You can use `likec4 start [path]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
@@ -87,24 +90,18 @@ Build a single HTML with diagrams, ready to be embedded into your website:
 likec4 build -o ./dist
 ```
 
-Example [https://template.likec4.dev](https://template.likec4.dev/view/index/)
-
-When you deploy the website, you can use the "Share" button to get links.
+Demo - [https://template.likec4.dev](https://template.likec4.dev/view/boutique/)
 
 > **Tip:**\
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
 
-There is also a supplementary command to preview the build:
+### Generate React components
 
 ```sh
-likec4 preview -o ./dist
+likec4 codegen react --outfile ./src/likec4.generated.tsx
 ```
 
-For example, this command can be used on CI, to compare diagrams with ones from the previous/main build.
-
-> **Tip:**\
-> The website root is strictly bound to the given base path (`/` by default).
-> If you need a relocatable bundle you may use `--base "./"`.
+[📖 Read documentation](https://likec4.dev/tooling/code-generation/react/)
 
 ### Export to PNG
 
@@ -114,12 +111,6 @@ likec4 export png -o ./assets
 
 This command starts the local web server and uses Playwright to take screenshots.\
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
-
-### Export to JSON
-
-```sh
-likec4 export json -o dump.json
-```
 
 ### Export to Mermaid, Dot, D2
 
@@ -132,39 +123,52 @@ likec4 codegen dot
 likec4 codegen d2
 ```
 
-### Generate React components
+[📖 Read documentation](https://likec4.dev/tooling/cli/) for other CLI usage
 
-```sh
-likec4 codegen react --outfile ./src/likec4.generated.tsx
+## Vite Plugin
+
+LikeC4 Vite Plugin allows you to embed views from your LikeC4 model into your Vite-based application.\
+The plugin will automatically generate the necessary code to render the views.
+
+Add LikeC4 plugin to the Vite config:
+
+```ts
+// vite.config.ts
+import react from '@vitejs/plugin-react'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    LikeC4VitePlugin(),
+  ],
+})
 ```
 
-Check [documentation](https://likec4.dev/docs/tools/react/)
+Use the `LikeC4View` component in your application:
 
-> Output file should have `.tsx` extension\
-> By default, it generates `likec4.generated.tsx` in current directory
+```tsx
+import { LikeC4View } from 'likec4:react'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 
-### Generate structured data
-
-Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
-
-```sh
-likec4 codegen views-data --outfile ./src/likec4.generated.ts
-
-#Aliases
-likec4 codegen views ...
-likec4 codegen ts ...
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <LikeC4View viewId="index" />
+  </StrictMode>,
+)
 ```
 
-> Output file should have `.ts` extension\
-> By default, it generates `likec4.generated.ts` in current directory
+[📖 Read documentation](https://likec4.dev/tooling/vite-plugin/) for Vite piugin usage
 
 ## API Usage
 
-You can access and traverse your architecture model programmatically using the LikeC4 Model API.
+You can access and traverse your architecture model programmatically using the LikeC4 API.
 
 ### From workspace
 
-Recursively searches and parses source files from the wokrkspace directory:
+Recursively searches and parses source files from the given workspace directory:
 
 ```ts
 import { LikeC4 } from 'likec4'
@@ -177,9 +181,10 @@ const likec4 = await LikeC4.fromWorkspace('path to workspace', opts)
 Parses the model from the string:
 
 ```ts
-import { LikeC4 } from "likec4"
+import { LikeC4 } from 'likec4'
 
-const likec4 = await LikeC4.fromSource(`
+const likec4 = await LikeC4.fromSource(
+  `
   specification {
     element system
     element user
@@ -192,8 +197,9 @@ const likec4 = await LikeC4.fromSource(`
     view index {
       include *
     }
-  }
-`, opts)
+  }`,
+  opts,
+)
 ```
 
 ### Example
@@ -201,7 +207,7 @@ const likec4 = await LikeC4.fromSource(`
 When the model is initialized, you can use the following methods to query and traverse it.
 
 ```ts
-import { LikeC4 } from "likec4"
+import { LikeC4 } from 'likec4'
 
 const likec4 = await LikeC4.fromSource(`....`)
 
@@ -218,24 +224,29 @@ model
 
 // Layouted views
 const diagrams = await likec4.diagrams()
-
-
-```  
-
-Check Typescript definitions for available methods.
-
-## Development
-
-In root workspace:
-
-```sh
-yarn install
-yarn build
-
-cd packages/likec4
-yarn dev
 ```
 
-## Support
+## Getting help
 
-If there's a problem you're encountering or something you need help with, don't hesitate to take advantage of my [_Priority Support_ service](https://github.com/sponsors/davydkov) where you can ask me questions in an exclusive forum. I'm well-equipped to assist you with this project and would be happy to help you out! 🙂
+We are always happy to help you get started:
+
+- [Join Discord community](https://discord.gg/86ZSpjKAdA) – it is the easiest way to get help
+- [GitHub Discussions](https://github.com/likec4/likec4/discussions) – ask anything about the project or give feedback
+
+## Contributors
+
+<a href="https://github.com/likec4/likec4/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=likec4/likec4" />
+</a>
+
+[Become a contributor](../../CONTRIBUTING.md)
+
+## Support development
+
+LikeC4 is a MIT-licensed open source project with its ongoing development made possible entirely by your support.\
+If you like the project, please consider contributing financially to help grow and improve it.\
+You can support us via [OpenCollective](https://opencollective.com/likec4) or [GitHub Sponsors](https://github.com/sponsors/likec4).
+
+## License
+
+This project is released under the [MIT License](LICENSE)

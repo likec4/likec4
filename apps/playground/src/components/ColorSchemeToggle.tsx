@@ -1,6 +1,6 @@
+import { css } from '@likec4/styles/css'
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
-import { icon } from './ColorSchemeToggle.css'
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme()
@@ -8,6 +8,10 @@ export function ColorSchemeToggle() {
 
   return (
     <ActionIcon
+      className={css({
+        width: '18px',
+        height: '18px',
+      })}
       visibleFrom="lg"
       size={'md'}
       variant="subtle"
@@ -16,8 +20,8 @@ export function ColorSchemeToggle() {
       aria-label="Toggle color scheme"
     >
       {computedColorScheme === 'light'
-        ? <IconMoonStars stroke={1.5} className={icon} />
-        : <IconSun stroke={1.5} className={icon} />}
+        ? <IconMoonStars stroke={1.5} />
+        : <IconSun stroke={1.5} />}
     </ActionIcon>
   )
 }

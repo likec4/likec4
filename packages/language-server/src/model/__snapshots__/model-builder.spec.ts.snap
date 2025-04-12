@@ -61,6 +61,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     "predicates": {},
     "styles": {},
   },
+  "imports": {},
   "relations": {
     "90t726": {
       "id": "90t726",
@@ -228,6 +229,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "predicates": {},
     "styles": {},
   },
+  "imports": {},
   "relations": {
     "14imtre": {
       "id": "14imtre",
@@ -557,6 +559,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     "predicates": {},
     "styles": {},
   },
+  "imports": {},
   "relations": {
     "1qlbaph": {
       "id": "1qlbaph",
@@ -692,6 +695,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     "predicates": {},
     "styles": {},
   },
+  "imports": {},
   "relations": {
     "1qlbaph": {
       "id": "1qlbaph",
@@ -823,6 +827,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     "predicates": {},
     "styles": {},
   },
+  "imports": {},
   "relations": {
     "1qlbaph": {
       "color": "red",

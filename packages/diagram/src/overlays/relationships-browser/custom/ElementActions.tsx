@@ -1,21 +1,24 @@
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
-import { useEnabledFeature } from '../../../context/DiagramFeatures'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes as Types } from '../_types'
-import { useRelationshipsBrowser } from '../hooks'
+import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
-  const { enableNavigateTo, enableVscode } = useEnabledFeature('NavigateTo', 'Vscode')
+  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
   const diagram = useDiagram()
+  const currentViewId = useCurrentViewId()
   const browser = useRelationshipsBrowser()
+  const subject = useRelationshipsBrowserState(s => s.context.subject)
 
   const buttons = [] as ElementActionButtons.Item[]
 
   const { navigateTo, fqn } = props.data
-  if (navigateTo && enableNavigateTo) {
+  if (navigateTo && enableNavigateTo && currentViewId !== navigateTo) {
     buttons.push({
       key: 'navigate',
       icon: <IconZoomScan />,
@@ -25,7 +28,7 @@ export const ElementActions = (props: ElementActionsProps) => {
       },
     })
   }
-  if (fqn !== browser.getState().subject) {
+  if (fqn !== subject) {
     buttons.push({
       key: 'relationships',
       icon: <IconTransform />,

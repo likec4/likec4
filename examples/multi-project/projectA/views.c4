@@ -1,0 +1,40 @@
+views {
+
+  view cloud of cloud {
+    title "The Cloud System"
+
+    include
+      *,
+      ui.*,
+      next.*,
+      legacy.*
+    exclude
+      supportUser,
+      ui.supportPanel,
+      next -> legacy
+
+    style amazon {
+      color indigo
+    }
+    style customer {
+      color green
+    }
+    style cloud {
+      color sky
+    }
+    style cloud.* {
+      color primary
+    }
+  }
+
+  view view-with-custom-colors {
+    include *,
+    cloud -> * with {
+      color custom
+    }
+
+    style cloud {
+      color custom
+    }
+  }
+}

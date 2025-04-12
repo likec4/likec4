@@ -1,6 +1,6 @@
 # `@likec4/diagram`
 
-[docs](https://likec4.dev/docs/tools/react/) | [demo](https://template.likec4.dev/view/index/)
+[docs](https://likec4.dev/tooling/code-generation/react/) | [demo](https://template.likec4.dev/view/index/)
 
 React components to render diagrams.
 Although you can use them directly, it is recommended to use [likec4](../likec4/) CLI to generate components from LikeC4 sources.

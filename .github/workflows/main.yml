@@ -16,10 +16,11 @@ permissions:
 
 env:
   NODE_ENV: production
+  FORCE_COLOR: true
 
 jobs:
   build:
-    name: build
+    name: 🛠️ build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -34,7 +35,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ generate
-        run: pnpm ci:generate
+        run: pnpm generate
 
       - name: ʦ typecheck
         run: pnpm ci:typecheck
@@ -42,7 +43,7 @@ jobs:
       - name: ⚙️ build
         run: pnpm ci:build
 
-      - name: test
+      - name: 🔬 test
         env:
           NODE_ENV: test
         run: pnpm ci:test
@@ -52,6 +53,7 @@ jobs:
           pnpm turbo run typecheck --filter='./apps/*'
 
   release:
+    name: 📦 release
     uses: ./.github/workflows/release.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build

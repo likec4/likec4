@@ -1,9 +1,9 @@
-import type { LangiumDocument, MaybePromise } from 'langium'
+import type { LangiumDocument } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
-import { hasLeadingSlash, hasProtocol, isRelative, withoutBase, withoutLeadingSlash } from 'ufo'
-import type { DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
-import { ast, isParsedLikeC4LangiumDocument } from '../ast'
+import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, withoutBase, withoutLeadingSlash } from 'ufo'
+import type { CancellationToken, DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
+import { ast, isLikeC4LangiumDocument } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -11,11 +11,13 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LikeC4Services) {
     //
   }
-  getDocumentLinks(
+
+  async getDocumentLinks(
     doc: LangiumDocument,
-    _params: DocumentLinkParams
-  ): MaybePromise<DocumentLink[]> {
-    if (!isParsedLikeC4LangiumDocument(doc)) {
+    _params: DocumentLinkParams,
+    cancelToken?: CancellationToken,
+  ): Promise<DocumentLink[]> {
+    if (!isLikeC4LangiumDocument(doc)) {
       return []
     }
     return AstUtils.streamAllContents(doc.parseResult.value)
@@ -23,11 +25,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       .map((n): DocumentLink | null => {
         try {
           const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
-          const target = this.resolveLink(doc, n.value)
-          if (range && hasProtocol(target)) {
+          const target = range && this.resolveLink(doc, n.value)
+          if (target && hasProtocol(target)) {
             return {
               range,
-              target
+              target,
             }
           }
         } catch (e) {
@@ -43,10 +45,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (hasProtocol(link) || hasLeadingSlash(link)) {
       return link
     }
-    const base = isRelative(link)
-      ? new URL(doc.uri.toString(true))
-      : this.services.shared.workspace.WorkspaceManager.workspaceURL
-    return new URL(link, base).toString()
+    if (isRelative(link)) {
+      return joinRelativeURL(doc.uri.toString(), '../', link)
+    }
+    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folder
+    return joinRelativeURL(base.toString(), link)
   }
 
   relativeLink(doc: LangiumDocument, link: string): string | null {
@@ -57,7 +60,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       const base = new URL(doc.uri.toString(true))
       const linkURL = new URL(link, base).toString()
       return withoutLeadingSlash(
-        withoutBase(linkURL, this.services.shared.workspace.WorkspaceManager.workspaceURL.toString())
+        withoutBase(linkURL, this.services.shared.workspace.WorkspaceManager.workspaceURL.toString()),
       )
     }
     return null

@@ -1,69 +1,73 @@
-import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, transitions, vars, whereDark, whereLight } from '../theme-vars'
+import { css } from '@likec4/styles/css'
 
-const transparent = createVar('transparent')
-const bgColor = createVar('bgcolor')
-export const root = style({
-  height: '32px',
-  paddingLeft: mantine.spacing.sm,
+export const root = css({
+  height: '30px',
+  paddingLeft: 'sm',
   paddingRight: '4px',
-  borderRadius: mantine.radius.sm,
-  color: mantine.colors.placeholder,
-  boxShadow: mantine.shadows.xs,
+  borderRadius: 'sm',
+  // TODO
+  // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
   border: '1px solid',
+  borderColor: {
+    base: 'mantine.colors.defaultBorder',
+    _light: 'mantine.colors.gray[4]',
+    _dark: 'mantine.colors.dark[4]',
+    _hover: 'mantine.colors.defaultBorder',
+  },
   cursor: 'pointer',
-  transition: transitions.fast,
-  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
-  vars: {
-    [transparent]: '20%',
-    [bgColor]: mantine.colors.default,
+  background: {
+    base: 'mantine.colors.default',
+    _light: 'mantine.colors.white',
+    _dark: 'mantine.colors.dark[6]',
+    _hover: 'mantine.colors.defaultHover',
   },
-  selectors: {
-    [`${whereLight} &`]: {
-      borderColor: mantine.colors.gray[4],
-      vars: {
-        [bgColor]: mantine.colors.white,
-      },
-    },
-    [`${whereDark} &`]: {
-      borderColor: mantine.colors.dark[4],
-      vars: {
-        [bgColor]: mantine.colors.dark[6],
-      },
-    },
+
+  width: '100%',
+  '& .tabler-icon': {
+    color: 'mantine.colors.text',
   },
-  ':hover': {
-    borderColor: mantine.colors.defaultBorder,
-    boxShadow: mantine.shadows.sm,
-    vars: {
-      [transparent]: '10%',
-      [bgColor]: mantine.colors.defaultHover,
-    },
+
+  transition: {
+    base: 'fast',
+    _whenPanning: 'none !important',
   },
-})
-globalStyle(`${root} .tabler-icon`, {
-  color: mantine.colors.text,
+  boxShadow: {
+    base: 'xs',
+    _hover: 'sm',
+    _whenPanning: 'none !important',
+  },
 })
 
-export const shortcut = style({
+export const placeholder = css({
+  fontSize: 'sm', // mantine.fontSizes.sm,
+  fontWeight: 500,
+  paddingRight: '50px',
+  color: 'mantine.colors.placeholder',
+  flex: '1',
+})
+
+export const shortcut = css({
   fontSize: '11px',
+  fontWeight: 600,
   lineHeight: 1,
   padding: '4px 7px',
-  borderRadius: mantine.radius.sm,
+  borderRadius: 'sm',
   border: '1px solid',
-  fontWeight: 'bold',
-  selectors: {
-    [`${whereLight} &`]: {
-      color: mantine.colors.gray[7],
-      borderColor: mantine.colors.gray[2],
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.gray[2]}, transparent 20%)`,
-    },
-    [`${whereDark} &`]: {
-      color: mantine.colors.dark[0],
-      borderColor: mantine.colors.dark[7],
-      backgroundColor: mantine.colors.dark[8],
+  transition: 'fast',
+  _light: {
+    color: 'mantine.colors.gray[7]',
+    borderColor: 'mantine.colors.gray[2]',
+  },
+  _dark: {
+    color: 'mantine.colors.dark[0]',
+    borderColor: 'mantine.colors.dark[7]',
+  },
+  backgroundColor: {
+    _light: 'mantine.colors.gray[2]/70',
+    _dark: 'mantine.colors.dark[8]/70',
+    _groupHover: {
+      _light: 'mantine.colors.gray[2]',
+      _dark: 'mantine.colors.dark[8]',
     },
   },
 })

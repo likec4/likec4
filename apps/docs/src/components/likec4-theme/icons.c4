@@ -36,6 +36,8 @@ views {
     include pg with {
       icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
       color muted
+      size sm
+      textSize lg
     }
   }
 

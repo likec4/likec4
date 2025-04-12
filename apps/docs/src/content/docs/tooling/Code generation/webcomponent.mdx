@@ -1,11 +1,11 @@
 ---
-title: Generate Webcomponents
-description: How to generate React components, Webcomponents, and TypeScript models from the LikeC4 DSL.
+title: Generate Web Components
+description: How to generate React components, Web Components, and TypeScript models from the LikeC4 DSL.
 head:
   - tag: title
-    content: Webcomponents | LikeC4
+    content: Web Components | LikeC4
 sidebar:
-  label: Webcomponents
+  label: Web Components
   order: 7
 tableOfContents:
   # minHeadingLevel: 3
@@ -13,24 +13,38 @@ tableOfContents:
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
 </p>
 
+
+## Install
+
 Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
 
-```sh
-npm add likec4
-```
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
 
-## Webcomponent
 
-Generate javascript bundle with webcomponent:
+## Web Component
 
-```sh
-npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
-```  
+Generate javascript bundle with web component:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<br />   
 
 Use it:
 
@@ -39,14 +53,18 @@ Use it:
 <likec4-view view-id="index"></likec4-view>
 ```
 
-By default, cli generates a `likec4-view` webcomponent.  
+By default, cli generates a `likec4-view` web component.  
 You can change the `likec4` prefix by `-w, --webcomponent-prefix`.
 
 For example:
 
-```sh
-npx likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
-```  
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
 
 And in HTML:
 
@@ -55,6 +73,6 @@ And in HTML:
 ```
 
 :::note
-CLI command [build](/tooling/cli/#build-static-website) always generates javascript with webcomponents.  
-Check `Share` button on the top at <a href="https://template.likec4.dev/view/cloud" target="_blank">this example</a>
+CLI command [build](/tooling/cli/#build-static-website) always generates javascript with web components.  
+Check `Share` button on the top at <a href="https://template.likec4.dev/view/index" target="_blank">this example</a>
 :::

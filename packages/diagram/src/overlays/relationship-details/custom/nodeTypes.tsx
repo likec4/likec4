@@ -2,6 +2,7 @@ import {
   CompoundNodeContainer,
   CompoundTitle,
   customNode,
+  ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTitle,
@@ -11,31 +12,44 @@ import { ElementActions } from './ElementActions'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { NodeProps } from '../../../base'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-export const nodeTypes = {
-  element: customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
-    return (
-      <ElementNodeContainer nodeProps={props}>
-        <ElementShape {...props} />
-        <ElementTitle {...props} iconSize={40} />
-        <ElementActions {...props} />
-        <ElementPorts {...props} />
-      </ElementNodeContainer>
-    )
-  }),
+const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTypes.NodeData>) => {
+  const diagram = useDiagram()
 
-  compound: customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
-    return (
-      <CompoundNodeContainer nodeProps={props}>
-        <CompoundTitle {...props} />
-        <CompoundPorts {...props} />
-      </CompoundNodeContainer>
-    )
-  }),
-} satisfies {
-  [key in RelationshipDetailsTypes.Node['type']]: any
+  return (
+    <ElementDetailsButton
+      {...props}
+      onClick={e => {
+        e.stopPropagation()
+        diagram.openElementDetails(props.data.fqn)
+      }}
+    />
+  )
 }
+
+export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
+  return (
+    <ElementNodeContainer nodeProps={props}>
+      <ElementShape {...props} />
+      <ElementTitle {...props} />
+      <ElementDetailsButtonWithHandler {...props} />
+      <ElementActions {...props} />
+      <ElementPorts {...props} />
+    </ElementNodeContainer>
+  )
+})
+
+export const CompoundNode = customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
+  return (
+    <CompoundNodeContainer nodeProps={props}>
+      <ElementDetailsButtonWithHandler {...props} />
+      <CompoundTitle {...props} />
+      <CompoundPorts {...props} />
+    </CompoundNodeContainer>
+  )
+})
 
 type ElementPortsProps = NodeProps<
   Pick<

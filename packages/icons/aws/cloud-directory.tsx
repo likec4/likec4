@@ -5,8 +5,8 @@ const SvgCloudDirectory = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" {...props}>
     <defs>
       <linearGradient id="Cloud-Directory_svg__a" x1="0%" x2="100%" y1="100%" y2="0%">
-        <stop offset="0%" stopColor="#4D27A8" />
-        <stop offset="100%" stopColor="#A166FF" />
+        <stop offset="0%" stopColor="#BD0816" />
+        <stop offset="100%" stopColor="#FF5252" />
       </linearGradient>
     </defs>
     <g fill="none" fillRule="evenodd">

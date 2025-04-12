@@ -1,111 +1,138 @@
+import { cx } from '@likec4/styles/css'
 import {
   Box,
   RemoveScroll,
 } from '@mantine/core'
+import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
-import clsx from 'clsx'
-import { type HTMLMotionProps, m } from 'framer-motion'
-import { type PropsWithChildren, useRef, useState } from 'react'
-import * as css from './Overlay.css'
+import { m, useReducedMotionConfig } from 'motion/react'
+import { type PropsWithChildren, forwardRef, useEffect, useRef, useState } from 'react'
+import { stopPropagation } from '../../utils'
+import { backdropBlur, backdropOpacity, level as cssVarLevel, overlay as overlayCVA } from './Overlay.css'
 
-type OverlayProps = PropsWithChildren<
-  HTMLMotionProps<'dialog'> & {
-    classes?: {
-      dialog?: string
-      body?: string
-    }
-    onClose: () => void
-    onClick?: never
+type OverlayProps = PropsWithChildren<{
+  overlayLevel?: number
+  className?: string
+  classes?: {
+    dialog?: string
+    body?: string
   }
->
+  onClose: () => void
+  onClick?: never
+}>
 
-export function Overlay({ children, onClose, className, classes, ...rest }: OverlayProps) {
+export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
+  onClose,
+  className,
+  classes,
+  overlayLevel = 0,
+  children,
+  ...rest
+}, ref) => {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const isClosingRef = useRef(false)
 
-  // Move dialog to the top of the DOM
+  const motionNotReduced = useReducedMotionConfig() !== true
+
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
     () => {
+      if (isClosingRef.current) return
+      isClosingRef.current = true
       onCloseRef.current()
     },
     [],
     50,
   )
-  // const close = useCallbackRef(() => {
-  //   if (isOpenedRef.current) {
-  //     isOpenedRef.current = false
-  //     requestAnimationFrame(() => {
-  //       onClose()
-  //     })
-  //   }
-  // })
 
-  // useLayoutEffect(() => {
-  //   const cancel = (e: Event) => {
-  //     e.preventDefault()
-  //     close()
-  //   }
-  //   dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
-  //   return () => {
-  //     dialogRef.current?.removeEventListener('cancel', cancel, { capture: true })
-  //   }
-  // }, [])
+  useEffect(() => {
+    const cancel = (e: Event) => {
+      e.preventDefault()
+      e.stopPropagation()
+      close()
+    }
+    dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
+    return () => {
+      dialogRef.current?.removeEventListener('cancel', cancel, { capture: true })
+    }
+  }, [])
 
   useTimeoutEffect(() => {
     if (!dialogRef.current?.open) {
+      // Move dialog to the top of the DOM
       dialogRef.current?.showModal()
     }
-    setOpened(true)
   }, 30)
+
+  useTimeoutEffect(() => {
+    setOpened(true)
+  }, 120)
+
+  const styles = overlayCVA({
+    level: overlayLevel as 0 | 1 | 2 | 3,
+  })
 
   return (
     <m.dialog
-      ref={dialogRef}
-      className={clsx(css.dialog, classes?.dialog, className)}
-      initial={{
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '5%',
-        opacity: 0.85,
-        translateY: 12,
-        // opacity: 02.8,
+      ref={useMergedRef(dialogRef, ref)}
+      className={cx(RemoveScroll.classNames.fullWidth, styles.dialog, classes?.dialog, className)}
+      layout
+      style={{
+        // @ts-ignore
+        [cssVarLevel]: overlayLevel,
       }}
-      animate={{
-        '--backdrop-blur': '6px',
-        '--backdrop-opacity': '60%',
-        translateY: 0,
-        opacity: 1,
-        // transition: {
-        //   delay: 0.25,
-        // }
-      }}
-      exit={{
-        opacity: 0,
-        translateY: -10,
-        '--backdrop-blur': '0px',
-        '--backdrop-opacity': '0%',
-        transition: {
-          duration: 0.1,
-        },
-      }}
+      {...motionNotReduced
+        ? ({
+          initial: {
+            [backdropBlur]: '0px',
+            [backdropOpacity]: '0%',
+            scale: overlayLevel > 0 ? 0.9 : 1.075,
+            opacity: 0,
+          },
+          animate: {
+            [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
+            [backdropOpacity]: overlayLevel > 0 ? '50%' : '60%',
+            scale: 1,
+            opacity: 1,
+            transition: {
+              delay: 0.075,
+            },
+          },
+          exit: {
+            scale: 1.2,
+            opacity: 0,
+            [backdropBlur]: '0px',
+            [backdropOpacity]: '0%',
+          },
+        })
+        : {
+          initial: {
+            [backdropBlur]: '8px',
+            [backdropOpacity]: '60%',
+          },
+        }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           dialogRef.current?.close()
           return
         }
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
       onClose={e => {
         e.stopPropagation()
         close()
       }}
       {...rest}
     >
-      <RemoveScroll forwardProps>
-        <Box className={clsx(css.body, classes?.body)}>
+      <RemoveScroll forwardProps removeScrollBar={false}>
+        <Box className={cx(styles.body, 'overlay-body', classes?.body)}>
           {opened && <>{children}</>}
         </Box>
       </RemoveScroll>
     </m.dialog>
   )
-}
+})
+Overlay.displayName = 'Overlay'

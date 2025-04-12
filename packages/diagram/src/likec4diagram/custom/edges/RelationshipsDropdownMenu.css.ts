@@ -1,61 +1,40 @@
-import { style } from '@vanilla-extract/css'
-import { mantine, vars } from '../../../theme-vars'
+import { css } from '@likec4/styles/css'
 
-export const menuDropdown = style({
+export const menuDropdown = css({
   overflowY: 'scroll',
-  minWidth: 250,
+  minWidth: '250px',
   maxWidth: 'min(90vw, 500px)',
 })
 
-export const menuItemRelationship = style({
-  // padding: mantine.spacing.sm,
-  // paddingTop: mantine.spacing.xs,
-  // borderRadius: mantine.radius.sm,
-  // paddingTop: mantine.spacing.xs,
-  // paddingBottom: mantine.spacing.xs,
+export const menuItemRelationship = css({
   gap: 4,
-  // cursor: 'pointer',
-  // ':hover': {
-  // borderColor: mantine.colors.gray.light,
-  // background: mantine.colors.gray[2]
-  // },
-
-  // selectors: {
-  //   [`:where([data-mantine-color-scheme="dark"]) &`]: {
-  //     // borderColor: mantine.colors.dark[6]
-  //   },
-  //   [`:where([data-mantine-color-scheme="dark"]) &:hover`]: {
-  //     // background: mantine.colors.dark[5]
-  //   }
-  // }
 })
 
-export const endpoint = style({
+export const endpoint = css({
   display: 'block',
-  fontSize: 10,
+  fontSize: 'xxs',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '2px 5px',
+  padding: '2px 4px',
   borderRadius: 2,
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent 45%)`,
-  lineHeight: 1.1,
-  selectors: {
-    [`:where([data-mantine-color-scheme="dark"]) &`]: {
-      color: vars.element.loContrast,
-    },
+  background: `likec4.palette.fill/30`,
+  lineHeight: '[1.11]',
+  mixBlendMode: 'hard-light',
+  color: {
+    _light: `[color-mix(in srgb, {colors.likec4.palette.stroke}, {colors.likec4.mixColor} 60%)]`,
+    _dark: 'likec4.palette.loContrast',
   },
+  // _dark: {
+  //   background: `likec4.palette.fill/60`,
+  // },
 })
 
-export const title = style({
+export const title = css({
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: mantine.fontSizes.sm,
+  fontSize: 'xs',
 })
-//
-// export const sourceId = style({
-//
-// })
-//
-// export const targetId = style({
-//   fontSize: 11,
-//   whiteSpace: 'nowrap'
-// })
+
+export const arrowFromTo = css({
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: 'xs',
+})

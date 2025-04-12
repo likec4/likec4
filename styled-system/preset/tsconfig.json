@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "declarationMap": false,
+    "outDir": "dist"
+  },
+  "include": [
+    "src"
+  ]
+}

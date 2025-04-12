@@ -1,0 +1,118 @@
+model {
+
+  extend cloud.ui {
+
+    dashboard = app {
+      title 'Customer Dashboard'
+      description 'Nextjs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+    }
+
+    dashboard -> cloud.graphql.myAccount "fetches via GraphQL"
+    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"
+
+    dashboard -> cloud.legacy.services "fetches via REST"
+
+    mobile = mobileApp {
+      title 'Customer Mobile App'
+      description '
+        Native iOS Application
+        written in Swift
+      '
+      link /view/mobile 'view'
+
+      .requests cloud.graphql.myAccount "fetches via GraphQL"
+      .uses cloud.graphql.updateAccount "mutates via GraphQL"
+      .uses cloud.legacy.services "fetches via REST"
+    }
+
+    supportPanel = app {
+      title 'Support Panel'
+      description 'Retoool Application'
+      icon tech:astro
+      -> cloud.next.graphql "updates data in case of a support request"
+      -> amazon.aurora.tblUsers "reads users from the database" {
+        navigateTo cloud-to-amazon
+        technology 'postgres-rest'
+      }
+    }
+
+  }
+
+  customer -> dashboard "opens in the browser vit HTTPS"
+  customer -> mobile "opens on a mobile device"
+  cloud.supportUser -> supportPanel "accesses via browser with encrypted VPN connection"
+
+}
+
+views {
+
+  view cloud_ui of cloud.ui {
+    include *
+    include cloud
+
+    style * {
+      color muted
+    }
+    style customer, cloud.supportUser {
+      color secondary
+    }
+    style cloud.ui, cloud.ui.* {
+      color primary
+      border none
+      opacity 15%
+    }
+    style cloud {
+      opacity 20%
+      border dashed
+    }
+  }
+
+  view mobile of mobile {
+    include *
+    include cloud
+
+    style * {
+      color secondary
+    }
+    style mobile {
+      color primary
+    }
+  }
+
+  view cloud_ui_dashboard of dashboard {
+    include *
+    exclude * -> dashboard
+    include cloud.ui
+
+    style * {
+      color muted
+    }
+
+    style cloud.ui, cloud.ui.* {
+      color primary
+    }
+
+    autoLayout TopBottom
+  }
+
+  view cloud_ui_supportPanel of supportPanel {
+    include
+      *,
+      cloud.ui,
+      cloud,
+      supportPanel ->,
+      amazon.rds
+
+    style cloud, cloud.* {
+      color muted
+    }
+
+    style cloud.ui, cloud.ui.* {
+      color primary
+    }
+  }
+
+}

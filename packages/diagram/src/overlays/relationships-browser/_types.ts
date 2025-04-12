@@ -41,6 +41,7 @@ export namespace RelationshipsBrowserTypes {
       fqn: Fqn
       icon: string | null
       ports: Ports
+      existsInCurrentView: boolean
     }
   >
 
@@ -60,6 +61,7 @@ export namespace RelationshipsBrowserTypes {
       depth: number
       icon: IconUrl
       ports: Ports
+      existsInCurrentView: boolean
     }
   >
 
@@ -78,23 +80,18 @@ export namespace RelationshipsBrowserTypes {
   export type Node = ElementNode | CompoundNode | EmptyNode
   export type NodeData = Node['data']
 
-  /**
-   * Data that is exclusive to the relationships-of overlay. It will be merged into the edge types
-   * provided by SharedFlowTypes.
-   */
-  type RelationshipsOfEdgeData = {
-    existsInCurrentView: boolean
-  }
-
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
   export type EdgeData = Base.EdgeData<{
+    sourceFqn: Fqn
+    targetFqn: Fqn
     relations: NonEmptyArray<RelationId>
     color: Color | undefined
     label: string | null
     navigateTo: ViewId | null
     line: RelationshipLineType
+    existsInCurrentView: boolean
   }>
 
-  export type Edge = ReactFlowEdge<EdgeData, 'relationships'>
+  export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
 }

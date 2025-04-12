@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { filter, findLast, forEach, map, pipe } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
@@ -8,15 +7,14 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
 import type {
   ComputedElementView,
-  ElementPredicateExpression,
   ElementView,
   NodeId,
-  RelationPredicateExpression,
   ViewRule,
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
-import * as Expr from '../../types/expression'
+import { ModelLayer } from '../../types/expression-v2-model'
 import { sortParentsFirst } from '../../utils'
+import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -41,52 +39,54 @@ import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
 function processElementPredicate(
   // ...args:
-  //   | [expr: ElementPredicateExpression, op: 'include', IncludePredicateCtx<ElementPredicateExpression>]
-  //   | [expr: ElementPredicateExpression, op: 'exclude', ExcludePredicateCtx<ElementPredicateExpression>]
-  expr: ElementPredicateExpression,
+  //   | [expr: ModelLayer.AnyFqnExpr, op: 'include', IncludePredicateCtx<ModelLayer.AnyFqnExpr>]
+  //   | [expr: ModelLayer.AnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelLayer.AnyFqnExpr>]
+  expr: ModelLayer.AnyFqnExpr,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
+  ctx: Omit<PredicateCtx<ModelLayer.AnyFqnExpr>, 'expr'>,
 ): Stage {
   switch (true) {
-    case Expr.isCustomElement(expr): {
+    case ModelLayer.FqnExpr.isCustom(expr): {
       if (op === 'include') {
         return processElementPredicate(expr.custom.expr, op, ctx)
       }
       return ctx.stage
     }
-    case Expr.isElementWhere(expr): {
+    case ModelLayer.FqnExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterWhere = filter<Elem>(where)
       return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
-    case Expr.isExpandedElementExpr(expr): {
+    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
       return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isElementRef(expr): {
+    case ModelLayer.FqnExpr.isWildcard(expr): {
+      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case ModelLayer.FqnExpr.isElementKindExpr(expr):
+    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case ModelLayer.FqnExpr.isModelRef(expr): {
       return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isWildcard(expr):
-      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
-    case Expr.isElementKindExpr(expr):
-    case Expr.isElementTagExpr(expr):
-      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     default:
       nonexhaustive(expr)
   }
 }
 function processRelationtPredicate(
-  expr: RelationPredicateExpression,
+  expr: ModelLayer.AnyRelationExpr,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
+  ctx: Omit<PredicateCtx<ModelLayer.AnyRelationExpr>, 'expr'>,
 ): Stage {
   switch (true) {
-    case Expr.isCustomRelationExpr(expr): {
+    case ModelLayer.RelationExpr.isCustom(expr): {
       if (op === 'include') {
-        return processRelationtPredicate(expr.customRelation.relation, op, ctx)
+        return processRelationtPredicate(expr.customRelation.expr, op, ctx)
       }
       return ctx.stage
     }
-    case Expr.isRelationWhere(expr): {
+    case ModelLayer.RelationExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterRelations = (relations: ReadonlySet<RelationshipModel>) => {
         return new Set(filter([...relations], where))
@@ -104,16 +104,16 @@ function processRelationtPredicate(
         filterWhere,
       })
     }
-    case Expr.isInOut(expr): {
+    case ModelLayer.RelationExpr.isInOut(expr): {
       return InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isRelation(expr): {
+    case ModelLayer.RelationExpr.isDirect(expr): {
       return DirectRelationExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isOutgoing(expr): {
+    case ModelLayer.RelationExpr.isOutgoing(expr): {
       return OutgoingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case Expr.isIncoming(expr): {
+    case ModelLayer.RelationExpr.isIncoming(expr): {
       return IncomingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     default:
@@ -146,14 +146,14 @@ export function processPredicates<M extends AnyAux>(
       for (const expr of exprs) {
         let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
         switch (true) {
-          case Expr.isElementPredicateExpr(expr):
+          case ModelLayer.isAnyFqnExpr(expr):
             stage = processElementPredicate(expr, op, {
               ...ctx,
               stage,
               memory,
             } as any) ?? stage
             break
-          case Expr.isRelationPredicateExpr(expr):
+          case ModelLayer.isAnyRelationExpr(expr):
             stage = processRelationtPredicate(expr, op, {
               ...ctx,
               stage,
@@ -224,8 +224,6 @@ export function computeElementView<M extends AnyAux>(
     },
     edges: applyCustomRelationProperties(rules, nodes, sorted.edges),
     nodes: map(nodes, n => {
-      // omit notation
-      delete n.notation
       if (n.icon === 'none') {
         delete n.icon
       }

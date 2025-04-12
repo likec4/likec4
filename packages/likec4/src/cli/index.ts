@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { configureLogger, getConsoleSink } from '@likec4/log'
+import { DEV } from 'esm-env'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
-import { nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -16,20 +16,23 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-async function main() {
-  await configureLogger({
-    sinks: {
-      console: getConsoleSink(),
+configureLogger({
+  sinks: {
+    console: getConsoleSink(),
+  },
+  loggers: [
+    {
+      category: 'likec4',
+      sinks: ['console'],
+      lowestLevel: DEV ? 'debug' : 'info',
     },
-    loggers: [
-      {
-        category: 'likec4',
-        sinks: ['console'],
-        lowestLevel: nodeENV === 'development' ? 'debug' : 'info',
-      },
-    ],
-  })
-  notifyAvailableUpdate()
+  ],
+})
+
+async function main() {
+  if (!DEV) {
+    notifyAvailableUpdate()
+  }
 
   return await yargs(hideBin(argv))
     .scriptName('likec4')
@@ -39,7 +42,7 @@ async function main() {
     .command(codegenCmd)
     .command(exportCmd)
     .command(previewCmd)
-    .command(validateCmd)    
+    .command(validateCmd)
     .command({
       command: 'check-update',
       describe: 'Check for updates',
