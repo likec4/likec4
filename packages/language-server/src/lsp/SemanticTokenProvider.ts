@@ -33,7 +33,9 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return 'prune'
     }
 
-    if (ast.isRelation(node) || ast.isOutgoingRelationExpr(node) && 'kind' in node) {
+    if (
+      (ast.isRelation(node) || ast.isOutgoingRelationExpr(node) || ast.isDeploymentRelation(node)) && 'kind' in node
+    ) {
       acceptor({
         node,
         property: 'kind',
@@ -49,7 +51,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.variable,
+        type: SemanticTokenTypes.interface,
         modifier: [
           SemanticTokenModifiers.definition,
           SemanticTokenModifiers.readonly,
@@ -66,17 +68,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           SemanticTokenModifiers.readonly,
         ],
       })
-      if (ast.isFqnRefExpr(node) && node.selector) {
-        acceptor({
-          node,
-          property: 'selector',
-          type: SemanticTokenTypes.variable,
-          modifier: [
-            SemanticTokenModifiers.definition,
-            SemanticTokenModifiers.readonly,
-          ],
-        })
-      }
       return 'prune'
     }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
@@ -113,7 +104,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition],
       })
-      return 'prune'
+      return
     }
     if (
       ast.isGlobalStyleGroup(node)
@@ -176,7 +167,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition],
       })
-      return 'prune'
+      return
     }
     if (ast.isFqnRef(node) || ast.isStrictFqnRef(node)) {
       acceptor({
@@ -201,18 +192,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ],
       })
       return !node.parent ? 'prune' : undefined
-    }
-    if (ast.isImported(node)) {
-      acceptor({
-        node,
-        property: 'imported',
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly,
-        ],
-      })
-      return 'prune'
     }
     if (ast.isSpecificationColor(node)) {
       acceptor({
@@ -341,7 +320,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     acceptor({
       node,
       property: 'name',
-      type: SemanticTokenTypes.function,
+      type: SemanticTokenTypes.variable,
       modifier: [
         SemanticTokenModifiers.declaration,
         SemanticTokenModifiers.readonly,
