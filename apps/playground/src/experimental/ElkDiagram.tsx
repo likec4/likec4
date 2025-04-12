@@ -30,7 +30,6 @@ export function ElkDiagram({ diagram, onNavigateTo }: ElkDiagramProps) {
       readonly
       controls
       fitView
-      fitViewPadding={0.07}
       experimentalEdgeEditing={false}
       nodesSelectable
       showNavigationButtons
@@ -45,14 +44,6 @@ export function ElkDiagram({ diagram, onNavigateTo }: ElkDiagramProps) {
       onNavigateTo={onNavigateTo}
     />
   )
-
-  // return (
-  //   <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-  //     <Suspense>
-  //       <ElkLaoutedDiagram diagram={useDeferredValue(layoutedDiagram)} onNavigateTo={onNavigateTo} />
-  //     </Suspense>
-  //   </ErrorBoundary>
-  // )
 }
 
 function ElkLaoutedDiagram({ diagram, onNavigateTo }: {
