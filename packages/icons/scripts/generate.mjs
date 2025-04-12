@@ -113,16 +113,15 @@ await build({
   ],
   sourceRoot: '.',
   outdir: '.',
-  minify: false,
+  minify: true,
   tsconfigRaw: {
     compilerOptions: {
+      module: 'esnext',
+      target: 'esnext',
       verbatimModuleSyntax: true,
       jsx: 'react-jsx',
     },
   },
   jsxDev: false,
-  jsx: 'transform',
   format: 'esm',
-  target: 'esnext',
-  platform: 'browser',
 })
