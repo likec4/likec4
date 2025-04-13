@@ -1,0 +1,88 @@
+{
+  "name": "@likec4/mcp",
+  "license": "MIT",
+  "version": "1.28.1",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/mcp"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sources": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "wireit",
+    "inspector": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "unbuild",
+      "files": [
+        "src/**/*"
+      ]
+    },
+    "inspector": {
+      "dependencies": [
+        "build"
+      ],
+      "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
+      "env": {
+        "LIKEC4_WORKSPACE": "../../examples/"
+      },
+      "service": {
+        "readyWhen": {
+          "lineMatches": "MCP Inspector is up"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "likec4": "workspace:*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "catalog:mcp",
+    "package-manager-detector": "catalog:utils",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "esm-env": "catalog:utils",
+    "fast-equals": "catalog:utils",
+    "fdir": "catalog:utils",
+    "langium": "catalog:langium",
+    "nano-spawn": "^0.2.0",
+    "pretty-ms": "^9.2.0",
+    "remeda": "catalog:utils",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "ufo": "catalog:utils",
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest",
+    "zod": "catalog:utils",
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
+    "wireit": "catalog:"
+  },
+  "packageManager": "pnpm@10.8.0"
+}

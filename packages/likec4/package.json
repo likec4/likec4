@@ -118,7 +118,7 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "package-manager-detector": "^1.1.0",
+    "package-manager-detector": "catalog:utils",
     "@dagrejs/dagre": "1.1.4",
     "@fontsource/ibm-plex-sans": "^5.2.5",
     "@likec4/diagram": "workspace:*",
@@ -189,7 +189,7 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "^1.6.1",
+    "ufo": "catalog:utils",
     "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.0.0",
