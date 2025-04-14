@@ -7,8 +7,8 @@
     'npm:unpublishSafe',
     'helpers:disableTypesNodeMajor',
   ],
-  prHourlyLimit: 15,
-  prConcurrentLimit: 8,
+  prHourlyLimit: 20,
+  prConcurrentLimit: 5,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: [
@@ -34,22 +34,10 @@
         'remeda',
         'turbo',
         'wrangler',
-        'pnpm'
+        'wireit',
+        'pnpm',
+        '@fontsource{/,}**',
       ]
-    },
-    {
-      groupName: 'linters',
-      matchDepNames: [
-        '@types/eslint',
-        'prettier',
-        'lint-staged',        
-      ],
-      matchPackageNames: [
-        '@commitlint{/,}**',
-        '@typescript-eslint/{/,}**',
-        'eslint{/,}**',
-      ],
-      automerge: true,
     },
     {
       groupName: '@langium',
@@ -58,9 +46,10 @@
       ],
     },
     {
-      groupName: '@vanilla-extract',
+      groupName: '@nanostores',
       matchPackageNames: [
-        '@vanilla-extract{/,}**',
+        'nanostores',
+        '@nanostores{/,}**',
       ],
     },
     {
@@ -76,26 +65,14 @@
       ],
     },
     {
-      automerge: true,
-      matchPackageNames: [
-       // '@tabler{/,}**',
-        '@fontsource{/,}**',
-      ]
-    },
-    {
       enabled: false,
-      matchDepNames: [
+      matchPackageNames: [
         '/^monaco/',
         '/^@monaco/',
         '/^@codingame/',
         '@types/vscode',
         'vscode',
         '/^vscode-/',
-      ],
-    },
-    {
-      enabled: false,
-      matchPackageNames: [
         '@tanstack{/,}**',
       ]
     },
