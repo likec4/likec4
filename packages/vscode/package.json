@@ -117,6 +117,16 @@
     "configuration": {
       "title": "%ext.title%",
       "properties": {
+        "likec4.mcp.enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable MCP Server  \nAdd MCP Server to your `#mcp#` configuration: \n```jsonc\n{\n  servers: {\n    likec4: {\n      type: 'sse',\n      url: 'http://localhost:33335/sse'\n    }\n  }\n}\n```"
+        },
+        "likec4.mcp.port": {
+          "description": "Port to use for MCP Server",
+          "type": "integer",
+          "default": 33335
+        },
         "likec4.graphviz.mode": {
           "title": "Graphviz mode",
           "description": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary (\"dot\")",

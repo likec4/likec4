@@ -108,6 +108,10 @@ catalogs:
 
   mcp:
     "@modelcontextprotocol/sdk": "^1.9.0"
+  hono:
+    hono: "^4.7.6"
+    hono-sessions: "^0.7.2"
+    "@hono/node-server": "^1.14.1"
 
 onlyBuiltDependencies:
   - dprint
