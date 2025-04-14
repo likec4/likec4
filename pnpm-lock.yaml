@@ -1428,6 +1428,9 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.21.2
+      strip-indent:
+        specifier: ^4.0.0
+        version: 4.0.0
       tsx:
         specifier: 'catalog:'
         version: 4.19.3

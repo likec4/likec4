@@ -53,11 +53,9 @@
       }
     }
   },
-  "dependencies": {
-    "@likec4/core": "workspace:*",
-    "likec4": "workspace:*"
-  },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
+    "likec4": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "package-manager-detector": "catalog:utils",
     "@likec4/language-server": "workspace:*",
@@ -71,6 +69,7 @@
     "nano-spawn": "^0.2.0",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
+    "strip-indent": "^4.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

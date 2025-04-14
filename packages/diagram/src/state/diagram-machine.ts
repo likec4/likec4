@@ -25,7 +25,7 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { clamp, first, hasAtLeast, prop, reduce } from 'remeda'
+import { clamp, first, hasAtLeast, prop } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,

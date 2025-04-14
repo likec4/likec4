@@ -1,7 +1,21 @@
+import {
+  type ProjectId,
+  ifilter,
+} from '@likec4/core'
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import type { Resource } from '@modelcontextprotocol/sdk/types.js'
 import { LikeC4 } from 'likec4'
 import { resolve } from 'node:path'
+import stripIndent from 'strip-indent'
+import { z } from 'zod'
+import { version } from '../package.json' assert { type: 'json' }
+import { listProjects } from './tools/list-projects'
+import { readElement } from './tools/read-element'
+import { readProject } from './tools/read-project'
+import { readView } from './tools/read-view'
+import { searchElement } from './tools/search-element'
+import { elementResource } from './utils'
 
 const LIKEC4_WORKSPACE = resolve(process.env['LIKEC4_WORKSPACE'] || '.')
 
@@ -11,8 +25,8 @@ const likec4 = await LikeC4.fromWorkspace(LIKEC4_WORKSPACE, {
 
 // Create an MCP server
 const mcp = new McpServer({
-  name: 'Demo',
-  version: '1.0.0',
+  name: 'LikeC4',
+  version,
 }, {
   capabilities: {
     completions: {},
@@ -22,105 +36,162 @@ const mcp = new McpServer({
   },
 })
 
-// // Add an addition tool
-// mcp.tool('add', { a: z.number(), b: z.number() }, async ({ a, b }) => ({
-//   content: [{ type: 'text', text: String(a + b) }],
-// }))
+mcp.tool(
+  'list-projects',
+  stripIndent(`
+    List all LikeC4 projects in the workspace.
+  `),
+  async () => {
+    const text = await listProjects(likec4.languageServices)
+    return {
+      content: [{
+        type: 'text',
+        text,
+      }],
+    }
+  },
+)
 
-// mcp.resource(
-//   'likec4 projects',
-//   'likec4://projects',
-//   {
-//     description: 'A list of likec4 projects in the workspace',
-//   },
-//   async () => ({
-//     // contents: [{
-//     //   uri: 'likec4://projects',
-//     //   mimeType: 'application/json',
-//     //   text: JSON.stringify({
-//     //     projects: [{
-//     //       uri: 'likec4://projects/default',
-//     //       name: 'default',
-//     //       description: 'Default project',
-//     //     }, {
-//     //       uri: 'likec4://projects/projectA',
-//     //       name: 'projectA',
-//     //       description: 'Project A',
-//     //     }],
-//     //   }),
-//     // }],
-//     contents: [{
-//       uri: 'likec4://projects/default',
-//       mimeType: 'application/json',
-//       text: JSON.stringify({
-//         uri: 'likec4://projects/default',
-//         name: 'default',
-//         description: 'Default project',
-//       }),
-//     }, {
-//       uri: 'likec4://projects/projectA',
-//       mimeType: 'application/json',
-//       text: JSON.stringify({
-//         uri: 'likec4://projects/projectA',
-//         name: 'projectA',
-//         description: 'Project A',
-//       }),
-//     }, {
-//       uri: 'likec4://projects/projectB',
-//       mimeType: 'application/json',
-//       text: JSON.stringify({
-//         uri: 'likec4://projects/projectB',
-//         name: 'projectB',
-//         description: 'Project B',
-//       }),
-//     }],
-//   }),
-// )
+mcp.tool(
+  'read-project-summary',
+  stripIndent(`
+    Searches for LikeC4 project and returns its summary, specifications, elements and views
 
-// Add a dynamic greeting resource
+    Args:
+      project: Project name
+  `),
+  { project: z.string().optional() },
+  async (params) => {
+    const text = await readProject(likec4.languageServices, params)
+    return {
+      content: [{
+        type: 'text',
+        text,
+      }],
+    }
+  },
+)
+
+mcp.tool(
+  'search-element',
+  stripIndent(`
+    Search for LikeC4 elements that have the search string in their names
+    Can be used to resolve projects for further requests (like read-element or read-project-summary)
+
+    Args:
+      search: non-empty string
+  `),
+  { search: z.string().min(1) },
+  async (params) => {
+    const text = await searchElement(likec4.languageServices, params)
+    return {
+      content: [{
+        type: 'text',
+        text,
+      }],
+    }
+  },
+)
+
+mcp.tool(
+  'read-element',
+  stripIndent(`
+    Read details about LikeC4 element.
+
+    Args:
+      id: Element id (FQN)
+      project: Project name (optional, will use default project if not specified)
+  `),
+  {
+    project: z.string().optional(),
+    id: z.string().min(1),
+  },
+  async (params) => {
+    const text = await readElement(likec4.languageServices, params)
+    return {
+      content: [{
+        type: 'text',
+        text,
+      }],
+    }
+  },
+)
+
+mcp.tool(
+  'read-view',
+  stripIndent(`
+    Read details about LikeC4 view.
+
+    Args:
+      id: View id
+      project: Project name (optional, will use default project if not specified)
+  `),
+  {
+    project: z.string().optional(),
+    id: z.string(),
+  },
+  async (params) => {
+    const text = await readView(likec4.languageServices, params)
+    return {
+      content: [{
+        type: 'text',
+        text,
+      }],
+    }
+  },
+)
+
 mcp.resource(
-  'likec4 project',
-  new ResourceTemplate('likec4://projects/{name}', {
+  'likec4 element',
+  new ResourceTemplate('likec4://projects/{project}/elements/{id}', {
     list: async () => {
       const projects = await likec4.languageServices.projects()
+      const resources: Resource[] = []
+      for (const { id } of projects) {
+        const model = likec4.computedModel(id)
+        for (const el of model.elements()) {
+          resources.push({
+            uri: `likec4://projects/${id}/elements/${el.id}`,
+            name: el.title,
+            id: el.id,
+            description: `Model element of kind "${el.kind}"`,
+          })
+        }
+      }
       return ({
-        resources: projects.map(p => ({
-          uri: `likec4://projects/${p.id}`,
-          name: p.id,
-          description: `likec4 project"${p.id}", folder: "${p.folder.fsPath}"`,
-        })),
+        resources,
       })
     },
     complete: {
-      name: async (name) => {
+      project: async (name) => {
         const projects = await likec4.projects()
-        return projects.filter(id => id.toLowerCase().startsWith(name.toLowerCase()))
+        const newLocal = name.toLowerCase()
+        return projects.filter(id => id.toLowerCase().startsWith(newLocal))
+      },
+      id: async (name) => {
+        const { id } = likec4.languageServices.projects()[0]
+        const model = likec4.computedModel(id)
+        return [...ifilter(model.elements(), el => el.id.startsWith(name))].map(i => i.id)
       },
     },
   }),
-  {
-    description: 'likec4 project in the workspace',
-  },
-  // list: undefined }),
-  async (uri, { name }) => {
-    const project = await likec4.languageServices.projects().find(p => p.id === name)
-    if (!project) {
-      return ({
-        contents: [],
-      })
+  async (uri, { project, id }) => {
+    const model = likec4.computedModel(project as ProjectId)
+    const el = model.findElement(id as string)
+    if (!el) {
+      throw new Error(`Element not found: ${id}`)
     }
     return ({
       contents: [{
         uri: uri.href,
         mimeType: 'application/json',
-        text: JSON.stringify(project),
+        text: JSON.stringify(elementResource(likec4.languageServices, el, project as ProjectId)),
       }],
     })
   },
 )
 
 mcp.server.oninitialized = () => {
-  // mcp.server.listRoots().then(r => {
   mcp.server.sendLoggingMessage({
     level: 'info',
     data: {
@@ -128,9 +199,7 @@ mcp.server.oninitialized = () => {
       workspace: likec4.workspace,
     },
   })
-  // })
 }
 
-// Start receiving messages on stdin and sending messages on stdout
 const transport = new StdioServerTransport()
 await mcp.connect(transport)
