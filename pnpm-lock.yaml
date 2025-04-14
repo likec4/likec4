@@ -63,8 +63,8 @@ catalogs:
       specifier: ^3.5.0
       version: 3.5.0
     wireit:
-      specifier: ^0.14.11
-      version: 0.14.11
+      specifier: ^0.14.12
+      version: 0.14.12
     wrangler:
       specifier: 4.10.0
       version: 4.10.0
@@ -599,7 +599,7 @@ importers:
         version: 3.1.0
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
       wrangler:
         specifier: 'catalog:'
         version: 4.10.0
@@ -793,7 +793,7 @@ importers:
         version: 3.1.1(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
 
   packages/generators:
     dependencies:
@@ -857,7 +857,7 @@ importers:
         version: 5.8.3
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
 
   packages/language-server:
     dependencies:
@@ -1331,7 +1331,7 @@ importers:
         version: 5.0.0
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
       yargs:
         specifier: 17.7.2
         version: 17.7.2
@@ -8325,8 +8325,8 @@ packages:
     resolution: {integrity: sha512-OSOGH1QYiW5yVor9TtmXKQvt2vjQqbYS+DqmsZw+r7xDwLXEeT3JGW0ZppFmHx4diyXmxt238KFR3N9jzevBRg==}
     engines: {node: '>=6'}
 
-  wireit@0.14.11:
-    resolution: {integrity: sha512-edO3AiL1wYlBIapwx8e1OGEmsG37sv7qnRzx4YDsMPcKo+6NMOjWYcfRbaeoB1MzakLrnozWB2Q1q7Ko45NckA==}
+  wireit@0.14.12:
+    resolution: {integrity: sha512-gNSd+nZmMo6cuICezYXRIayu6TSOeCSCDzjSF0q6g8FKDsRbdqrONrSZYzdk/uBISmRcv4vZtsno6GyGvdXwGA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -16746,7 +16746,7 @@ snapshots:
     dependencies:
       execa: 1.0.0
 
-  wireit@0.14.11:
+  wireit@0.14.12:
     dependencies:
       brace-expansion: 4.0.0
       chokidar: 3.6.0
