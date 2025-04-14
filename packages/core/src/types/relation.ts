@@ -52,6 +52,8 @@ export interface ModelRelation extends AbstractRelation {
 }
 
 export interface RelationshipKindSpecification {
+  readonly title?: string
+  readonly description?: string
   readonly technology?: string
   readonly notation?: string
   readonly color?: Color

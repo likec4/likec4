@@ -50,7 +50,7 @@ model {
       }
     }
   }
-  customer .uses cloud 'uses and pays' {
+  customer .uses cloud {
     navigateTo dynamic-view-1
   }
 

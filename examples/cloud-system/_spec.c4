@@ -89,7 +89,10 @@ specification {
     }
   }
 
-  relationship uses
+  relationship uses {
+    title "uses"
+    description "uses and pays"
+  }
   relationship requests
 
   tag deprecated

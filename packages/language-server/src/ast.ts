@@ -66,6 +66,8 @@ export interface ParsedAstSpecification {
   relationships: Record<
     c4.RelationshipKind,
     {
+      title?: string
+      description?: string
       technology?: string
       notation?: string
       color?: c4.Color

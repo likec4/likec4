@@ -76,7 +76,7 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('technology' | 'notation') ':'? value=String ';'?;
+  key=('title' | 'description' | 'technology' | 'notation') ':'? value=String ';'?;
 
 // Imports -------------------------------------
 
