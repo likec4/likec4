@@ -46,7 +46,7 @@ catalogs:
     "@tabler/icons-react": "3.31.0"
     clsx: "^2.1.1"
     nanostores: "0.11.4"
-    "@nanostores/react": "0.8.4"
+    "@nanostores/react": "1.0.0"
     motion: "^12.6.3"
   router:
     "@tanstack/react-router": ^1.114.13

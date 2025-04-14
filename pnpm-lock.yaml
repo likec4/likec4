@@ -103,8 +103,8 @@ catalogs:
       version: 7.17.4
   react:
     '@nanostores/react':
-      specifier: 0.8.4
-      version: 0.8.4
+      specifier: 1.0.0
+      version: 1.0.0
     '@tabler/icons-react':
       specifier: 3.31.0
       version: 3.31.0
@@ -440,7 +440,7 @@ importers:
         version: 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@0.11.4)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -693,7 +693,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@0.11.4)(react@19.0.0)
       '@react-hookz/web':
         specifier: catalog:utils
         version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1124,7 +1124,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@0.11.4)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -1514,7 +1514,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@0.11.4)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -2993,11 +2993,11 @@ packages:
     resolution: {integrity: sha512-DnBpqkMOUGayNVKyTLlkM6ILmU/m/+VUxGkuQlPQVAcvreLz5jn1OlQnWd8uHKL/ZSiljpM12rjRhr51VtvJUQ==}
     engines: {node: '>= 18'}
 
-  '@nanostores/react@0.8.4':
-    resolution: {integrity: sha512-EciHSzDXg7GmGODjegGG1VldPEinbAK+12/Uz5+MAdHmxf082Rl6eXqKFxAAu4pZAcr5dNTpv6wMfEe7XacjkQ==}
-    engines: {node: ^18.0.0 || >=20.0.0}
+  '@nanostores/react@1.0.0':
+    resolution: {integrity: sha512-eDduyNy+lbQJMg6XxZ/YssQqF6b4OXMFEZMYKPJCCmBevp1lg0g+4ZRi94qGHirMtsNfAWKNwsjOhC+q1gvC+A==}
+    engines: {node: ^20.0.0 || >=22.0.0}
     peerDependencies:
-      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0
+      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
       react: ^19.0.0
 
   '@nevware21/ts-async@0.5.4':
@@ -10350,7 +10350,7 @@ snapshots:
 
   '@msgpack/msgpack@3.1.1': {}
 
-  '@nanostores/react@0.8.4(nanostores@0.11.4)(react@19.0.0)':
+  '@nanostores/react@1.0.0(nanostores@0.11.4)(react@19.0.0)':
     dependencies:
       nanostores: 0.11.4
       react: 19.0.0
