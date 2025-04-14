@@ -1,14 +1,10 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-// import { useWorkspaceState, WorkspaceContextProvider } from '../state'
-// import { EditorPanel } from './-workspace/EditorPanel'
-// import { Header } from './-workspace/Header'
-// import { PlaygroundActorProvider } from '$state/context'
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { IconRenderer } from '$components/IconRenderer'
 import type { ViewId } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { only } from 'remeda'
 import * as css from '../styles.css'
@@ -78,10 +74,6 @@ function WorkspaceDiagramPage() {
 
   const isInvalid = state === 'error'
   const icon = isInvalid ? <IconX style={{ width: 20, height: 20 }} /> : <IconCheck style={{ width: 20, height: 20 }} />
-
-  // const showLocation = (location: LocateParams) => {
-  //   store.getState().showLocation(location)
-  // }
 
   if (_diagram && likec4model) {
     return (
