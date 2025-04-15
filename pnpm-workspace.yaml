@@ -33,6 +33,9 @@ catalogs:
     p-debounce: "^4.0.0"
     p-queue: "^8.1.0"
     fdir: "^6.4.3"
+    package-manager-detector: "^1.1.0"
+    ufo: "^1.6.1"
+    zod: "^3.24.2"
   esbuild:
     esbuild: "^0.25.2"
     esbuild-node-externals: "^1.18.0"
@@ -102,6 +105,13 @@ catalogs:
     starlight-links-validator: "^0.15.1"
     starlight-package-managers: "^0.10.0"
     shiki: "^3.2.1"
+
+  mcp:
+    "@modelcontextprotocol/sdk": "^1.9.0"
+  hono:
+    hono: "^4.7.6"
+    hono-sessions: "^0.7.2"
+    "@hono/node-server": "^1.14.1"
 
 onlyBuiltDependencies:
   - dprint

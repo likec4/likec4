@@ -32,6 +32,8 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
+import { type LikeC4MCPServer, LikeC4MCPServerFactory, NoopLikeC4MCPServer } from './mcp/LikeC4MCPServerFactory'
+import { type LikeC4MCPTools, DefaultLikeC4MCPTools } from './mcp/LikeC4MCPTools'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -105,6 +107,11 @@ export interface LikeC4AddedServices {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
+  mcp: {
+    Tools: LikeC4MCPTools
+    Server: LikeC4MCPServer
+    ServerFactory: LikeC4MCPServerFactory
+  }
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
@@ -146,6 +153,11 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   },
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
+  mcp: {
+    Tools: bind(DefaultLikeC4MCPTools),
+    Server: bind(NoopLikeC4MCPServer),
+    ServerFactory: bind(LikeC4MCPServerFactory),
+  },
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
