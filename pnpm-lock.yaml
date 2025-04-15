@@ -1400,16 +1400,14 @@ importers:
         version: 3.0.1
 
   packages/mcp:
+    dependencies:
+      likec4:
+        specifier: workspace:*
+        version: link:../likec4
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/language-server':
-        specifier: workspace:*
-        version: link:../language-server
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1419,36 +1417,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.30
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
-      fast-equals:
-        specifier: catalog:utils
-        version: 5.2.2
-      fdir:
-        specifier: catalog:utils
-        version: 6.4.3(picomatch@4.0.2)
-      langium:
-        specifier: catalog:langium
-        version: 3.4.0
-      likec4:
-        specifier: workspace:*
-        version: link:../likec4
-      nano-spawn:
-        specifier: ^0.2.0
-        version: 0.2.0
-      package-manager-detector:
-        specifier: catalog:utils
-        version: 1.1.0
-      pretty-ms:
-        specifier: ^9.2.0
-        version: 9.2.0
       remeda:
         specifier: catalog:utils
         version: 2.21.2
-      strip-indent:
-        specifier: ^4.0.0
-        version: 4.0.0
       tsx:
         specifier: 'catalog:'
         version: 4.19.3
@@ -1458,27 +1429,12 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.1
       unbuild:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.8.3)
       vitest:
         specifier: catalog:vitest
         version: 3.1.1(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
-      vscode-jsonrpc:
-        specifier: 8.2.0
-        version: 8.2.0
-      vscode-languageserver:
-        specifier: 9.0.1
-        version: 9.0.1
-      vscode-languageserver-types:
-        specifier: 3.17.5
-        version: 3.17.5
-      vscode-uri:
-        specifier: 3.1.0
-        version: 3.1.0
       wireit:
         specifier: 'catalog:'
         version: 0.14.11
