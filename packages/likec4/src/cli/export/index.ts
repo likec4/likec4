@@ -83,6 +83,7 @@ export const exportCmd = {
             outputType: args.flat ? 'flat' : 'relative',
             serverUrl: args.serverUrl,
             theme: args.theme ?? 'light',
+            filter: args.filter,
           })
         },
       })
