@@ -1,6 +1,6 @@
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import packageJson from '../../package.json' assert { type: 'json' }
+import packageJson from '../../package.json' with { type: 'json' }
 import type { LikeC4Services } from '../module'
 import { LikeC4MCPTools } from './LikeC4MCPTools'
 

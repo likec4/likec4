@@ -9,9 +9,12 @@ module.exports = {
     ],
     packagesToPublish: [
       'packages/core',
+      'packages/log',
       'packages/icons',
       'packages/diagram',
       'packages/language-server',
+      'packages/generators',
+      'packages/layouts',
       'packages/likec4',
       'packages/mcp',
       'styled-system/preset',

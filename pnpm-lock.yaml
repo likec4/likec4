@@ -1178,6 +1178,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.30
+      '@types/picomatch':
+        specifier: catalog:utils
+        version: 4.0.0
       '@types/prop-types':
         specifier: ^15.7.14
         version: 15.7.14
@@ -1277,6 +1280,9 @@ importers:
       package-up:
         specifier: ^5.0.0
         version: 5.0.0
+      picomatch:
+        specifier: catalog:utils
+        version: 4.0.2
       postcss:
         specifier: catalog:css
         version: 8.5.3
@@ -1437,7 +1443,7 @@ importers:
         version: 3.1.1(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
       zod:
         specifier: catalog:utils
         version: 3.24.2
