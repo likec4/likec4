@@ -15,7 +15,6 @@ import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
-import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
 import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 

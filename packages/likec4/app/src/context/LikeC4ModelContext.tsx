@@ -3,12 +3,12 @@ import { LikeC4ModelProvider } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { createLikeC4Model } from 'likec4/model'
 import { type Atom, computed } from 'nanostores'
-import { type PropsWithChildren, createContext, use, useMemo } from 'react'
+import { type PropsWithChildren, createContext, useContext, useMemo } from 'react'
 
 const LikeC4ModelDataContext = createContext<Atom<LayoutedLikeC4ModelData>>(null as any)
 
 export function useLikeC4ModelDataContext() {
-  return use(LikeC4ModelDataContext)
+  return useContext(LikeC4ModelDataContext)
 }
 
 export function LikeC4ModelContext(
@@ -19,10 +19,10 @@ export function LikeC4ModelContext(
   const model = useStore($likec4model)
 
   return (
-    <LikeC4ModelDataContext value={likec4data}>
+    <LikeC4ModelDataContext.Provider value={likec4data}>
       <LikeC4ModelProvider likec4model={model}>
         {children}
       </LikeC4ModelProvider>
-    </LikeC4ModelDataContext>
+    </LikeC4ModelDataContext.Provider>
   )
 }
