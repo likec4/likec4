@@ -33,6 +33,7 @@ type HandlerParams = {
   timeoutMs?: number
   maxAttempts?: number
   ignore?: boolean
+  filter?: string[] | undefined
 }
 
 export async function exportViewsToPNG(
@@ -105,6 +106,7 @@ export async function pngHandler({
   ignore = false,
   timeoutMs = 10_000,
   maxAttempts = 3,
+  filter,
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const startTakeScreenshot = hrtime()
@@ -117,7 +119,19 @@ export async function pngHandler({
 
   output ??= languageServices.workspace
 
-  const views = await languageServices.diagrams()
+  let views = await languageServices.diagrams()
+
+  if (filter && filter.length > 0) {
+    logger.info(`${k.cyan('filter')} ${k.dim(filter.join(', '))}`)
+    views = views.filter(v => {
+      const match = filter.some(f => v.id.includes(f))
+      if (match) {
+        logger.info(`${k.cyan('include')} ${k.dim(v.id)}`)
+      }
+      return match
+    })
+  }
+
   if (!hasAtLeast(views, 1)) {
     logger.warn('no views found')
     throw new Error('no views found')

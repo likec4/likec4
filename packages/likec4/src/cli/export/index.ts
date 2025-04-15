@@ -33,6 +33,12 @@ export const exportCmd = {
             })
             .option('use-dot', useDotBin)
             .options({
+              'filter': {
+                alias: 'f',
+                array: true,
+                string: true,
+                desc: 'export views with ids including given strings',
+              },
               'ignore': {
                 boolean: true,
                 alias: 'i',
