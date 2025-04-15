@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, type NonEmptyArray, hasAtLeast } from '@likec4/core'
 import { hrtime } from 'node:process'
+import picomatch from 'picomatch'
 import { chromium } from 'playwright'
 import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
@@ -121,14 +122,16 @@ export async function pngHandler({
 
   let views = await languageServices.diagrams()
 
-  if (filter && filter.length > 0) {
-    logger.info(`${k.cyan('filter')} ${k.dim(filter.join(', '))}`)
+  if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
+    const matcher = picomatch(filter)
+    logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
     views = views.filter(v => {
-      const match = filter.some(f => v.id.includes(f))
-      if (match) {
-        logger.info(`${k.cyan('include')} ${k.dim(v.id)}`)
+      if (matcher(v.id)) {
+        logger.info(`${k.green('include')} ${v.id} ✅`)
+        return true
       }
-      return match
+      logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
+      return false
     })
   }
 
@@ -136,6 +139,8 @@ export async function pngHandler({
     logger.warn('no views found')
     throw new Error('no views found')
   }
+  return
+
   let server: ViteDevServer | undefined
   if (!serverUrl) {
     logger.info(k.cyan(`start preview server`))

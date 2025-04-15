@@ -8,53 +8,6 @@ if (!isProduction) {
   consola.warn('Bundling CLI in development mode')
 }
 
-// const reactbundle: BuildConfig = {
-//   entries: [
-//     'react/index.ts',
-//   ],
-//   clean: false,
-//   outDir: '.',
-//   stub: false,
-//   failOnWarn: false,
-//   declaration: false,
-//   externals: [
-//     'react',
-//     'react/jsx-runtime',
-//     'react/dom',
-//     'likec4/model',
-//     '@likec4/core',
-//   ],
-//   rollup: {
-//     emitCJS: false,
-//     inlineDependencies: true,
-//     esbuild: {
-//       platform: 'browser',
-//       minifyIdentifiers: false,
-//       minifyWhitespace: true,
-//       minifySyntax: true,
-//       lineLimit: 500,
-//     },
-//     output: {
-//       compact: true,
-//     },
-//     resolve: {
-//       exportConditions: ['production'],
-//     },
-//   },
-//   // hooks: {
-//   //   async 'build:before'() {
-//   //     consola.info('Generating TypeScript declaration files for React bundle')
-//   //   },
-//   //   async 'build:done'() {
-//   //     consola.info('Generating TypeScript declaration files for React bundle')
-//   //     await spawn('dts-bundle-generator', ['--config', 'bundle-dts.config.cjs'], {
-//   //       preferLocal: true,
-//   //       stdio: ['ignore', 'inherit', 'inherit'],
-//   //     })
-//   //   },
-//   // },
-// }
-
 const cli: BuildConfig = {
   entries: [
     'src/index.ts',
