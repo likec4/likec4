@@ -12,6 +12,12 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/likec4"
   },
+  "keywords": [
+    "likec4",
+    "architecture",
+    "diagrams",
+    "graph"
+  ],
   "engines": {
     "node": ">=20.19.0"
   },

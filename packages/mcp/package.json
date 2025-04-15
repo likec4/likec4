@@ -5,27 +5,25 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "src"
-  ],
+  "type": "module",
+  "bin": {
+    "likec4-mcp-server": "dist/index.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/mcp"
   },
-  "type": "module",
-  "sideEffects": false,
-  "exports": {
-    ".": {
-      "sources": "./src/index.ts",
-      "default": "./dist/index.mjs"
-    }
-  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
+  "keywords": [
+    "likec4",
+    "mcp",
+    "model context protocol",
+    "server"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "wireit",
@@ -53,9 +51,10 @@
       }
     }
   },
+  "dependencies": {
+    "likec4": "workspace:*"
+  },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
-    "likec4": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "package-manager-detector": "catalog:utils",
     "@likec4/language-server": "workspace:*",

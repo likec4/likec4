@@ -13,6 +13,7 @@ module.exports = {
       'packages/diagram',
       'packages/language-server',
       'packages/likec4',
+      'packages/mcp',
       'styled-system/preset',
       'styled-system/styles',
     ],

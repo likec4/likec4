@@ -1,3 +1,4 @@
+import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import packageJson from '../../package.json' assert { type: 'json' }
 import type { LikeC4Services } from '../module'
@@ -21,7 +22,7 @@ export class LikeC4MCPServerFactory {
   constructor(private services: LikeC4Services) {
   }
 
-  create(): McpServer {
+  create(options?: ServerOptions): McpServer {
     const {
       instructions,
       listProjects,
@@ -35,12 +36,12 @@ export class LikeC4MCPServerFactory {
       name: 'LikeC4',
       version: packageJson.version,
     }, {
-      capabilities: {
-        // completions: {},
-        tools: {},
-        // resources: {},
-      },
       instructions,
+      ...options,
+      capabilities: {
+        tools: {},
+        ...options?.capabilities,
+      },
     })
 
     const tools = this.services.mcp.Tools
