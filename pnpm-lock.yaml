@@ -16,11 +16,11 @@ catalogs:
       specifier: 0.33.1
       version: 0.33.1
     '@expressive-code/plugin-collapsible-sections':
-      specifier: ^0.40.2
-      version: 0.40.2
+      specifier: ^0.41.0
+      version: 0.41.1
     '@expressive-code/plugin-line-numbers':
-      specifier: ^0.40.2
-      version: 0.40.2
+      specifier: ^0.41.0
+      version: 0.41.1
     astro:
       specifier: 5.6.1
       version: 5.6.1
@@ -327,10 +327,10 @@ importers:
         version: 0.33.1(astro@5.6.1(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.39.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.3)(yaml@2.7.0))
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
-        version: 0.40.2
+        version: 0.41.1
       '@expressive-code/plugin-line-numbers':
         specifier: catalog:astro
-        version: 0.40.2
+        version: 0.41.1
       astro:
         specifier: catalog:astro
         version: 5.6.1(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.39.0)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.3)(yaml@2.7.0)
@@ -1437,7 +1437,7 @@ importers:
         version: 3.1.1(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       wireit:
         specifier: 'catalog:'
-        version: 0.14.11
+        version: 0.14.12
       zod:
         specifier: catalog:utils
         version: 3.24.2
@@ -2644,14 +2644,17 @@ packages:
   '@expressive-code/core@0.40.2':
     resolution: {integrity: sha512-gXY3v7jbgz6nWKvRpoDxK4AHUPkZRuJsM79vHX/5uhV9/qX6Qnctp/U/dMHog/LCVXcuOps+5nRmf1uxQVPb3w==}
 
-  '@expressive-code/plugin-collapsible-sections@0.40.2':
-    resolution: {integrity: sha512-EtfuluXKk3CdFMAeCJoDsUJo/s+Yh9b+kX0hNHeFlZ/W2/H8FmdZ9Pu+Qel41vw4yP6AyiQpsamquO7bzlakug==}
+  '@expressive-code/core@0.41.1':
+    resolution: {integrity: sha512-mG2IrN4t/NGPmEeeswmttsW7W7c96sz3ASjo1psQnOqU5QWAF61HpnBu3lPxHI8iQJyZI8wfAroo9FFpwlkvAQ==}
+
+  '@expressive-code/plugin-collapsible-sections@0.41.1':
+    resolution: {integrity: sha512-/sF6maDwv71GoLPP3WcvGQuJ0ew47gG3vmpV7nzq3I2jxUtGl7NKcMfT87bMkT7Hrp0FvaHe8s7WHpQEu5vlAg==}
 
   '@expressive-code/plugin-frames@0.40.2':
     resolution: {integrity: sha512-aLw5IlDlZWb10Jo/TTDCVsmJhKfZ7FJI83Zo9VDrV0OBlmHAg7klZqw68VDz7FlftIBVAmMby53/MNXPnMjTSQ==}
 
-  '@expressive-code/plugin-line-numbers@0.40.2':
-    resolution: {integrity: sha512-YMLkn68n9a9DI/4fQW/f6QJ33uQUzHmGdV3pDl+f6fVTxv7rvhRja+UtPksm0ZJpft6vrrACV8wS2TaH77SBzw==}
+  '@expressive-code/plugin-line-numbers@0.41.1':
+    resolution: {integrity: sha512-uxSfpK8y3h47A/g2JPxND6zLiWHFElaMGqQ7JYGMEPI9O7ET826RBv82ZPnkM11vuohdO96/jgxzkOjoqIiQkA==}
 
   '@expressive-code/plugin-shiki@0.40.2':
     resolution: {integrity: sha512-t2HMR5BO6GdDW1c1ISBTk66xO503e/Z8ecZdNcr6E4NpUfvY+MRje+LtrcvbBqMwWBBO8RpVKcam/Uy+1GxwKQ==}
@@ -10180,17 +10183,29 @@ snapshots:
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.1
 
-  '@expressive-code/plugin-collapsible-sections@0.40.2':
+  '@expressive-code/core@0.41.1':
     dependencies:
-      '@expressive-code/core': 0.40.2
+      '@ctrl/tinycolor': 4.1.0
+      hast-util-select: 6.0.4
+      hast-util-to-html: 9.0.5
+      hast-util-to-text: 4.0.2
+      hastscript: 9.0.1
+      postcss: 8.5.3
+      postcss-nested: 6.2.0(postcss@8.5.3)
+      unist-util-visit: 5.0.0
+      unist-util-visit-parents: 6.0.1
+
+  '@expressive-code/plugin-collapsible-sections@0.41.1':
+    dependencies:
+      '@expressive-code/core': 0.41.1
 
   '@expressive-code/plugin-frames@0.40.2':
     dependencies:
       '@expressive-code/core': 0.40.2
 
-  '@expressive-code/plugin-line-numbers@0.40.2':
+  '@expressive-code/plugin-line-numbers@0.41.1':
     dependencies:
-      '@expressive-code/core': 0.40.2
+      '@expressive-code/core': 0.41.1
 
   '@expressive-code/plugin-shiki@0.40.2':
     dependencies:
