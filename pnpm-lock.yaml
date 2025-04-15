@@ -114,8 +114,8 @@ catalogs:
       version: 1.9.0
   react:
     '@nanostores/react':
-      specifier: 0.8.4
-      version: 0.8.4
+      specifier: 1.0.0
+      version: 1.0.0
     '@tabler/icons-react':
       specifier: 3.31.0
       version: 3.31.0
@@ -123,11 +123,11 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^12.6.5
-      version: 12.7.2
+      specifier: ^12.7.3
+      version: 12.7.3
     nanostores:
-      specifier: 0.11.4
-      version: 0.11.4
+      specifier: 1.0.1
+      version: 1.0.1
     react-error-boundary:
       specifier: ^5.0.0
       version: 5.0.0
@@ -460,7 +460,7 @@ importers:
         version: 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@1.0.1)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -532,13 +532,13 @@ importers:
         version: 9.4.1
       motion:
         specifier: catalog:react
-        version: 12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nanoid:
         specifier: ^5.1.5
         version: 5.1.5
       nanostores:
         specifier: catalog:react
-        version: 0.11.4
+        version: 1.0.1
       postcss:
         specifier: catalog:css
         version: 8.5.3
@@ -713,7 +713,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@1.0.1)(react@19.0.0)
       '@react-hookz/web':
         specifier: catalog:utils
         version: 25.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -743,10 +743,10 @@ importers:
         version: 5.2.2
       motion:
         specifier: catalog:react
-        version: 12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nanostores:
         specifier: catalog:react
-        version: 0.11.4
+        version: 1.0.1
       react-error-boundary:
         specifier: catalog:react
         version: 5.0.0(react@19.0.0)
@@ -1156,7 +1156,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@1.0.1)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -1261,13 +1261,13 @@ importers:
         version: 3.0.1
       motion:
         specifier: catalog:react
-        version: 12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nano-spawn:
         specifier: ^0.2.0
         version: 0.2.0
       nanostores:
         specifier: catalog:react
-        version: 0.11.4
+        version: 1.0.1
       npm-run-all2:
         specifier: ^7.0.1
         version: 7.0.2
@@ -1595,7 +1595,7 @@ importers:
         version: 7.17.4(react@19.0.0)
       '@nanostores/react':
         specifier: catalog:react
-        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
+        version: 1.0.0(nanostores@1.0.1)(react@19.0.0)
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.3(typescript@5.8.3)
@@ -1637,7 +1637,7 @@ importers:
         version: 1.2.2
       nanostores:
         specifier: catalog:react
-        version: 0.11.4
+        version: 1.0.1
       object-hash:
         specifier: catalog:utils
         version: 3.0.0
@@ -3078,11 +3078,11 @@ packages:
     resolution: {integrity: sha512-DnBpqkMOUGayNVKyTLlkM6ILmU/m/+VUxGkuQlPQVAcvreLz5jn1OlQnWd8uHKL/ZSiljpM12rjRhr51VtvJUQ==}
     engines: {node: '>= 18'}
 
-  '@nanostores/react@0.8.4':
-    resolution: {integrity: sha512-EciHSzDXg7GmGODjegGG1VldPEinbAK+12/Uz5+MAdHmxf082Rl6eXqKFxAAu4pZAcr5dNTpv6wMfEe7XacjkQ==}
-    engines: {node: ^18.0.0 || >=20.0.0}
+  '@nanostores/react@1.0.0':
+    resolution: {integrity: sha512-eDduyNy+lbQJMg6XxZ/YssQqF6b4OXMFEZMYKPJCCmBevp1lg0g+4ZRi94qGHirMtsNfAWKNwsjOhC+q1gvC+A==}
+    engines: {node: ^20.0.0 || >=22.0.0}
     peerDependencies:
-      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0
+      nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
       react: ^19.0.0
 
   '@nevware21/ts-async@0.5.4':
@@ -5196,8 +5196,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@12.7.2:
-    resolution: {integrity: sha512-0vLY/JqYqieojTriuIR+UTCBVbj89eNUxXTkb01Xg8gSiTXDeuscOvoYm8vvgRGLMYGsCuJ31kDsTy081kPKFw==}
+  framer-motion@12.7.3:
+    resolution: {integrity: sha512-dNT4l5gEnUo2ytXLUBUf6AI21dZ77TMclDKE3ElaIHZ8m90nJ/NCcExW51zdSIaS0RhAS5iXcF7bEIxZe8XG2g==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.0.0
@@ -6363,14 +6363,14 @@ packages:
     resolution: {integrity: sha512-qDs/5M2687+C4tk3ARt+R9wcY295iRCQc3nT5/pl9/77G3aoHf3ORhG3t0RxvbkPYp9/FWC3JiK2AoZUDsMG4Q==}
     engines: {node: '>=18.19.0', npm: '>=10.2.3'}
 
-  motion-dom@12.7.2:
-    resolution: {integrity: sha512-7+sytBQyb9XRRH6lyLRQf+R6y2BE79J2EgTijTSxYgGt+ufpnoRDPgru9KHvA125tTHnbAXDzeTUb9OvscSitA==}
+  motion-dom@12.7.3:
+    resolution: {integrity: sha512-IjMt1YJHrvyvruFvmpmd6bGXXGCvmygrnvSb3aZ8KhOzF4H3PulU+cMBzH+U8TBJHjC/mnmJFRIA1Cu4vBfcBA==}
 
   motion-utils@12.7.2:
     resolution: {integrity: sha512-XhZwqctxyJs89oX00zn3OGCuIIpVevbTa+u82usWBC6pSHUd2AoNWiYa7Du8tJxJy9TFbZ82pcn5t7NOm1PHAw==}
 
-  motion@12.7.2:
-    resolution: {integrity: sha512-ZFzhSCuKJYq0UdvFkEkWB6kWfiP+BjiLUkYh1ev7S48fipH0XdiCVHK1xct/zZU13AN7ESIqtm50pKsSDvRqmg==}
+  motion@12.7.3:
+    resolution: {integrity: sha512-EGhzIg7vj+USH9SLNLjHRzglldWEletUZTEtBVKW7IJF+1Ig3RI5LnJmHQBNutuOIyeUbcF36MrNFT00etlc3g==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.0.0
@@ -6419,9 +6419,9 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  nanostores@0.11.4:
-    resolution: {integrity: sha512-k1oiVNN4hDK8NcNERSZLQiMfRzEGtfnvZvdBvey3SQbgn8Dcrk0h1I6vpxApjb10PFUflZrgJ2WEZyJQ+5v7YQ==}
-    engines: {node: ^18.0.0 || >=20.0.0}
+  nanostores@1.0.1:
+    resolution: {integrity: sha512-kNZ9xnoJYKg/AfxjrVL4SS0fKX++4awQReGqWnwTRHxeHGZ1FJFVgTqr/eMrNQdp0Tz7M7tG/TDaX8QfHDwVCw==}
+    engines: {node: ^20.0.0 || >=22.0.0}
 
   natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
@@ -10654,9 +10654,9 @@ snapshots:
 
   '@msgpack/msgpack@3.1.1': {}
 
-  '@nanostores/react@0.8.4(nanostores@0.11.4)(react@19.0.0)':
+  '@nanostores/react@1.0.0(nanostores@1.0.1)(react@19.0.0)':
     dependencies:
-      nanostores: 0.11.4
+      nanostores: 1.0.1
       react: 19.0.0
 
   '@nevware21/ts-async@0.5.4':
@@ -13288,9 +13288,9 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  framer-motion@12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
-      motion-dom: 12.7.2
+      motion-dom: 12.7.3
       motion-utils: 12.7.2
       tslib: 2.8.1
     optionalDependencies:
@@ -14850,15 +14850,15 @@ snapshots:
       vscode: '@codingame/monaco-vscode-extension-api@14.0.6'
       vscode-languageclient: 9.0.1
 
-  motion-dom@12.7.2:
+  motion-dom@12.7.3:
     dependencies:
       motion-utils: 12.7.2
 
   motion-utils@12.7.2: {}
 
-  motion@12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  motion@12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
-      framer-motion: 12.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      framer-motion: 12.7.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.0.0
@@ -14884,7 +14884,7 @@ snapshots:
 
   nanoid@5.1.5: {}
 
-  nanostores@0.11.4: {}
+  nanostores@1.0.1: {}
 
   natural-compare-lite@1.4.0: {}
 

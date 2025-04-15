@@ -48,9 +48,9 @@ catalogs:
     react-error-boundary: "^5.0.0"
     "@tabler/icons-react": "3.31.0"
     clsx: "^2.1.1"
-    nanostores: "0.11.4"
-    "@nanostores/react": "0.8.4"
-    motion: "^12.6.5"
+    nanostores: "1.0.1"
+    "@nanostores/react": "1.0.0"
+    motion: "^12.7.3"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
