@@ -16,13 +16,10 @@ export function elementResource(
     projectId,
     title: el.title,
     kind: el.kind,
+    shape: el.shape,
     technology: el.technology,
     description: el.description,
     tags: el.tags,
-    views: toArray(imap(el.views(), v => ({
-      id: v.id,
-      title: v.title,
-    }))),
     children: toArray(imap(el.children(), c => ({
       id: c.id,
       title: c.title,
@@ -76,6 +73,10 @@ export function elementResource(
           }),
       }))),
     },
+    views: toArray(imap(el.views(), v => ({
+      id: v.id,
+      title: v.title,
+    }))),
     sourceFile: languageServices.locate({
       element: el.id,
       projectId,
@@ -94,6 +95,7 @@ export function modelViewResource(
     projectId,
     viewType: view.__,
     description: view.$view.description ?? '',
+    tags: view.tags,
     nodes: toArray(imap(view.nodes(), node => ({
       id: node.id,
       title: node.title,

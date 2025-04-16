@@ -155,7 +155,7 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
       }
       response.push(
         `<likec4project>`,
-        `id: ${project.id}`,
+        `id: "${project.id}"`,
         `folder: ${project.folder.toString()}`,
         'sources:',
         ...project.documents.map(d => `- ${d.toString()}`),
@@ -197,7 +197,7 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
     if (response.length === 0) {
       response.push(
         `<likec4project>`,
-        `id: default`,
+        `id: "default"`,
         `folder: ${this.languageServices.workspaceUri.toString()}`,
         `</likec4project>`,
       )
@@ -214,7 +214,7 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
     }
     const model = await this.languageServices.computedModel(project.id)
     const response = [
-      `project: ${project.id}`,
+      `project: "${project.id}"`,
       `folder: ${project.folder.toString()}`,
     ]
     if (project.documents) {
@@ -266,9 +266,16 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
       '<elements>',
       ...outputEach(model.elements(), 'No elements', el => [
         `- id: ${el.id}`,
+        ...(el.parent
+          ? [
+            `  parentId: ${el.parent.id}`,
+          ]
+          : []),
         `  kind: ${el.kind}`,
+        `  shape: ${el.shape}`,
         `  title: ${singleLine(el.title)}`,
         `  description: ${singleLine(el.description)}`,
+        `  technology: ${singleLine(el.technology)}`,
         `  tags: ${JSON.stringify(el.tags)}`,
         '',
       ]),

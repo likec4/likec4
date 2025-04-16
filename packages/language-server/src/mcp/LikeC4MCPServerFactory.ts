@@ -1,5 +1,6 @@
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 import packageJson from '../../package.json' with { type: 'json' }
 import type { LikeC4Services } from '../module'
 import { LikeC4MCPTools } from './LikeC4MCPTools'
@@ -15,6 +16,15 @@ export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   }
   stop() {
     return Promise.reject(new Error('Not implemented'))
+  }
+}
+
+function toolResponse(text: string): CallToolResult {
+  return {
+    content: [{
+      type: 'text',
+      text,
+    }],
   }
 }
 
@@ -50,13 +60,7 @@ export class LikeC4MCPServerFactory {
       listProjects.name,
       listProjects.description,
       async () => {
-        const text = await tools.listProjects()
-        return {
-          content: [{
-            type: 'text',
-            text,
-          }],
-        }
+        return toolResponse(await tools.listProjects())
       },
     )
 
@@ -65,13 +69,7 @@ export class LikeC4MCPServerFactory {
       readProjectSummary.description,
       readProjectSummary.paramsSchema,
       async (params) => {
-        const text = await tools.readProjectSummary(params.project)
-        return {
-          content: [{
-            type: 'text',
-            text,
-          }],
-        }
+        return toolResponse(await tools.readProjectSummary(params.project))
       },
     )
 
@@ -80,13 +78,7 @@ export class LikeC4MCPServerFactory {
       searchElement.description,
       searchElement.paramsSchema,
       async (params) => {
-        const text = await tools.searchElement(params)
-        return {
-          content: [{
-            type: 'text',
-            text,
-          }],
-        }
+        return toolResponse(await tools.searchElement(params))
       },
     )
 
@@ -95,13 +87,7 @@ export class LikeC4MCPServerFactory {
       readElement.description,
       readElement.paramsSchema,
       async (params) => {
-        const text = await tools.readElement(params)
-        return {
-          content: [{
-            type: 'text',
-            text,
-          }],
-        }
+        return toolResponse(await tools.readElement(params))
       },
     )
 
@@ -110,13 +96,7 @@ export class LikeC4MCPServerFactory {
       readView.description,
       readView.paramsSchema,
       async (params) => {
-        const text = await tools.readView(params)
-        return {
-          content: [{
-            type: 'text',
-            text,
-          }],
-        }
+        return toolResponse(await tools.readView(params))
       },
     )
 
