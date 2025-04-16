@@ -41,10 +41,10 @@ catalogs:
     esbuild-node-externals: "^1.18.0"
     esbuild-plugins-node-modules-polyfill: "^1.7.0"
   react:
-    react: ^19.0.0
-    react-dom: ^19.0.0
-    "@types/react": ^19.0.12
-    "@types/react-dom": ^19.0.4
+    react: ^19.1.0
+    react-dom: ^19.1.0
+    "@types/react": ^19.1.1
+    "@types/react-dom": ^19.1.2
     react-error-boundary: "^5.0.0"
     "@tabler/icons-react": "3.31.0"
     clsx: "^2.1.1"
