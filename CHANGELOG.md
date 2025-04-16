@@ -1,3 +1,21 @@
+# [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
+
+
+### Bug Fixes
+
+* **diagram:** use Context.Provider instead of bare Context for react 18 compatibility ([6b1b2f8](https://github.com/likec4/likec4/commit/6b1b2f85df303f0c1674314b2449ccba42f94a0a))
+* **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio` ([1d3740b](https://github.com/likec4/likec4/commit/1d3740b7fdf0c3623ed865e431e5a524c140fa94))
+
+
+### Features
+
+* add MCP to extension ([c94f1be](https://github.com/likec4/likec4/commit/c94f1bea1b2650edd90d810f1f5e9fa1855cdc76))
+* **cli:** use picomatch for filter ([07ce73f](https://github.com/likec4/likec4/commit/07ce73fc4a4c14a0b41b6a968ae21d7eed4e0a0e))
+* filter option to `export` command for selective view export by ID ([23dcd54](https://github.com/likec4/likec4/commit/23dcd544465999332f6ba14deac9db84f8437483))
+* likec4 MCP ([a2f82e0](https://github.com/likec4/likec4/commit/a2f82e0053d873fc73461c8540c227c61026aebc))
+
+
+
 ## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
 
 ### Bug Fixes
