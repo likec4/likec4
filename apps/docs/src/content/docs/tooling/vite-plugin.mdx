@@ -1,20 +1,24 @@
 ---
 title: LikeC4 Vite Plugin
-description: Learn how to use LikeC4 Vite Plugin to embed your architecture diagrams.
+description: Learn how to use LikeC4 Vite Plugin to embed your views directly.
 head:
   - tag: title
     content: LikeC4 Vite Plugin
 sidebar:
   label: Vite Plugin
-  order: 4
+  order: 3
 ---
 import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
 import { PackageManagers } from 'starlight-package-managers'
 
-LikeC4 Vite Plugin allows you to embed views from your model into Vite-based application.  
-The plugin will automatically generate all the necessary code to render the views in your application, with Hot Module Replacement (HMR) supported.
+<p>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
 
-This is useful for building documentation, tutorials, or any other application where you want to display architecture diagrams.  
+LikeC4 Vite Plugin allows you to embed views directly, without any pre-build/generate steps.  
+The plugin automatically generates all the necessary code to render the views in your application, with Hot Module Replacement (HMR) supported.
+
+This is useful for building documentation, tutorials, or any other application where you want to include diagrams.  
 
 ## Guide
 
@@ -52,18 +56,18 @@ This is useful for building documentation, tutorials, or any other application w
 
 3. ### Configure Vite
   
-    Add LikeC4 plugin to the Vite config:
+    Add LikeC4 plugin to vite config:
 
-    ```ts
+    ```diff lang="ts"
     // vite.config.ts
     import { defineConfig } from 'vite'
     import react from '@vitejs/plugin-react'
-    import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+    + import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 
     export default defineConfig({
       plugins: [
         react(),
-        LikeC4VitePlugin(),
+    +     LikeC4VitePlugin(),
       ],
     })
     ```
@@ -75,10 +79,10 @@ This is useful for building documentation, tutorials, or any other application w
     Add types reference to the `vite-env.d.ts` file  
     (or create new one, like `src/likec4.d.ts`)
 
-    ```ts
+    ```diff lang="ts"
     // src/vite-env.d.ts
     /// <reference types="vite/client" />
-    /// <reference types="likec4/vite-plugin-modules" />
+    + /// <reference types="likec4/vite-plugin-modules" />
     ```
 
     Another option is to add to the `tsconfig.json`:
@@ -354,7 +358,7 @@ This is an example of using LikeC4 in your documentation
 For Next.js (since it does not use Vite), there is a workaround - [library mode](https://vite.dev/guide/build.html#library-mode):  
 Vite will generate a bundled library with likec4 diagrams, that you can import from your Next.js app.  
 
-For example, export everything from `likec4:react`:
+Export everything from `likec4:react`:
 
 ```tsx
 // src/likec4/index.tsx
@@ -372,6 +376,7 @@ import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 
 export default defineConfig({
   build: {
+    // Build views to 'lib' directory
     outDir: 'lib',
     lib: {
       entry: 'src/likec4/index.tsx',
@@ -408,13 +413,13 @@ export default function Home() {
 }
 ```
 
-If you run `vite build --watch` as a background process, you’ll even get auto-updates on any change (though probably without HMR).
+You can run `vite build --watch` as a background process to watch for changes in likec4 source files.
 
 <br />
 <br />
 
 :::tip
 You can use LikeC4 with other frameworks as well:
-- Check [React code generation](/tooling/code-generation/react/)   
+- via [React code generation](/tooling/code-generation/react/)   
 - For non-react-based documentation tools like Docusaurus, see [Web Components](/tooling/code-generation/webcomponent/)
 :::
