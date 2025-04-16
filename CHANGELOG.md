@@ -1,3 +1,21 @@
+# [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
+
+### 🚀 Features
+
+* **MCP Server**  
+  [📖 Documentation](https://likec4.dev/tools/mcp/)
+  
+* Filter option to `export` command for selective view export by ID  
+  ```sh
+  likec4 export png --filter="team1*" --filter="index" .
+  ```
+
+### Bug Fixes
+
+* **diagram:** use Context.Provider instead of bare Context for react 18 compatibility, closes [#1858](https://github.com/likec4/likec4/issues/1858)
+* **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio`
+
+
 ## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
 
 ### Bug Fixes
