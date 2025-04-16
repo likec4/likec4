@@ -10,5 +10,8 @@ export default defineBuildConfig({
     },
     emitCJS: false,
     inlineDependencies: true,
+    resolve: {
+      exportConditions: ['sources'],
+    },
   },
 })
