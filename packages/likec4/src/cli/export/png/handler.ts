@@ -139,7 +139,6 @@ export async function pngHandler({
     logger.warn('no views found')
     throw new Error('no views found')
   }
-  return
 
   let server: ViteDevServer | undefined
   if (!serverUrl) {
