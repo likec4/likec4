@@ -103,7 +103,7 @@ catalogs:
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
     starlight-links-validator: "^0.16.0"
-    starlight-package-managers: "^0.10.0"
+    starlight-package-managers: "^0.11.0"
     shiki: "^3.2.2"
 
   mcp:
