@@ -280,5 +280,5 @@
     "vscode-messenger-common": "^0.5.1",
     "vscode-uri": "catalog:vscode"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.8.1"
 }

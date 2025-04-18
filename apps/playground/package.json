@@ -70,7 +70,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@10.8.1",
   "dependencies": {
     "@cloudflare/vite-plugin": "1.0.5",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
