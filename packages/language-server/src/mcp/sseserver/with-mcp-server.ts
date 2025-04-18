@@ -10,6 +10,8 @@ export const WithMCPServer = {
       const server = new SSELikeC4MCPServer(services)
       const langId = services.LanguageMetaData.languageId
 
+      const connection = services.shared.lsp.Connection
+
       services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
         if (update.section !== langId) {
           logger.warn('Unexpected configuration update: {update}', { update })
@@ -26,7 +28,14 @@ export const WithMCPServer = {
           server.stop()
           return
         }
-        server.start(port)
+        Promise.resolve()
+          .then(() => server.start(port))
+          .then(() => {
+            connection?.telemetry?.logEvent({
+              eventName: 'mcp-server-started',
+            })
+          })
+          .catch(err => logger.error('Failed to start LikeC4 MCP Server', { err }))
       })
 
       return server

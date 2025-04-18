@@ -1,5 +1,7 @@
 # `@likec4/mcp`
 
+[Documentation](https://likec4.dev/tooling/mcp/)
+
 ## Usage
 
 ```json
