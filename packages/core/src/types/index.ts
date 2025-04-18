@@ -12,8 +12,10 @@ export type {
 } from './_common'
 
 export {
+  ActivityId,
   AsFqn,
   GlobalFqn,
+  isActivityId,
   isGlobalFqn,
   splitGlobalFqn,
 } from './scalars'
@@ -58,6 +60,11 @@ export type {
   TagSpec,
   TypedElement,
 } from './element'
+
+export type {
+  Activity,
+  ActivityStep,
+} from './activity'
 
 export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
 export { ModelLayer } from './expression-v2-model'

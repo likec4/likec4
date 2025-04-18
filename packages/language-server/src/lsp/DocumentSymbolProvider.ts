@@ -178,7 +178,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: readStrictFqn(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
-        children: body.elements.flatMap(e => this.getElementsSymbol(e)),
+        children: body.elements.flatMap(e => ast.isElement(e) ? this.getElementsSymbol(e) : []),
       },
     ]
   }
@@ -199,7 +199,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         range: cst.range,
         selectionRange: nameNode.range,
         detail,
-        children: astElement.body?.elements.flatMap(e => this.getElementsSymbol(e)) ?? [],
+        children: astElement.body?.elements.flatMap(e => ast.isElement(e) ? this.getElementsSymbol(e) : []) ?? [],
       },
     ]
   }

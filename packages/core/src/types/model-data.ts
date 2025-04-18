@@ -1,4 +1,5 @@
 import type { NonEmptyArray } from './_common'
+import type { Activity } from './activity'
 import type {
   DeploymentElement,
   DeploymentNodeKind,
@@ -8,7 +9,7 @@ import type {
 import type { Element, ElementKindSpecification, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
-import type { ProjectId, Tag } from './scalars'
+import type { ActivityId, ProjectId, Tag } from './scalars'
 import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**
@@ -42,6 +43,7 @@ export interface ParsedLikeC4ModelData<
     relationships: Record<RelationKinds, RelationshipKindSpecification>
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
+  activities: Record<ActivityId, Activity>
   relations: Record<RelationId, ModelRelation>
   globals: ModelGlobals
   views: Record<Views, LikeC4View<Views, Tags>>

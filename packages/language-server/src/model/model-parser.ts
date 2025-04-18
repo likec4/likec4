@@ -100,6 +100,7 @@ export class LikeC4ModelParser {
         deployments: {},
       },
       c4Elements: [],
+      c4Activities: [],
       c4ExtendElements: [],
       c4ExtendDeployments: [],
       c4Relations: [],

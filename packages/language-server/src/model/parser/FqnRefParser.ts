@@ -17,6 +17,11 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         astNode.value?.ref,
         `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
+      if (ast.isActivity(refValue)) {
+        return {
+          activity: this.resolveFqn(refValue) as c4.ActivityId,
+        }
+      }
       if (ast.isImported(refValue)) {
         const fqnRef = {
           project: projectIdFrom(refValue),

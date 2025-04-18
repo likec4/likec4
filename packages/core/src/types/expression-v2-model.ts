@@ -3,7 +3,7 @@ import type { PredicateSelector } from './deployments'
 import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, type ProjectId, type Tag, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type ProjectId, type Tag, ActivityId, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
@@ -16,7 +16,14 @@ export namespace ModelLayer {
       model: F
     }
     export const isModelRef = (ref: FqnRef): ref is ModelRef => {
-      return 'model' in ref && !('project' in ref)
+      return 'model' in ref && !('project' in ref) && !('activity' in ref)
+    }
+
+    export type ActivityRef<F extends string = Fqn> = {
+      activity: ActivityId<F>
+    }
+    export const isActivityRef = (ref: FqnRef): ref is ActivityRef => {
+      return 'activity' in ref
     }
 
     /**
@@ -27,10 +34,13 @@ export namespace ModelLayer {
       model: F
     }
     export const isImportRef = (ref: FqnRef): ref is ImportRef => {
-      return 'project' in ref && 'model' in ref
+      return 'project' in ref && 'model' in ref && !('activity' in ref)
     }
 
     export const toFqn = (ref: FqnRef): Fqn => {
+      if (isActivityRef(ref)) {
+        return ref.activity
+      }
       if (isImportRef(ref)) {
         return GlobalFqn(ref.project, ref.model)
       }
@@ -44,6 +54,7 @@ export namespace ModelLayer {
   export type FqnRef<M = Fqn> = ExclusiveUnion<{
     ModelRef: FqnRef.ModelRef<M>
     ImportRef: FqnRef.ImportRef<M>
+    ActivityRef: FqnRef.ActivityRef<M>
   }>
 
   export namespace FqnExpr {
@@ -55,7 +66,7 @@ export namespace ModelLayer {
     }
 
     export type ModelRef<M = Fqn> = {
-      ref: FqnRef.ModelRef<M> | FqnRef.ImportRef<M>
+      ref: FqnRef.ModelRef<M> | FqnRef.ImportRef<M> | FqnRef.ActivityRef<M>
       selector?: PredicateSelector
     }
     export const isModelRef = (ref: Expression): ref is FqnExpr.ModelRef => {

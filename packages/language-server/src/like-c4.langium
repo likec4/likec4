@@ -124,6 +124,7 @@ ElementBody: '{'
   props+=ElementProperty*
   elements+=(
     Relation<false> |
+    Activity |
     Element
   )*
 '}'
@@ -149,6 +150,7 @@ ExtendElementBody:  '{'
 
   elements+=(
     Relation<true> |
+    Activity |
     Element
   )*
 '}'
@@ -167,7 +169,7 @@ StrictFqnElementRef:
 
 
 type ModelReferenceable = Element | Imported;
-type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
+type Referenceable = DeploymentNode | DeployedInstance | Element | Imported | Activity;
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
 //  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
@@ -232,6 +234,30 @@ MetadataBody: '{'
 MetadataAttribute:
   key=IdTerminal ':'? value=String ';'?
 ;
+
+// Activities -------------------------------------
+
+Activity:
+  'activity'
+  name=Id
+  body=ActivityBody?;
+
+ActivityBody: '{'
+  props+=RelationProperty*
+  steps+=ActivityStep*
+'}';
+
+ActivityStep:
+  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
+  target=FqnRef
+  (
+    title=String
+    technology=String?
+  )?
+  tags=Tags?
+  body=RelationBody?
+;
+
 
 // Views -------------------------------------
 

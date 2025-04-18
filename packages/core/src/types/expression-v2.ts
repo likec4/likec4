@@ -4,7 +4,7 @@ import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './d
 import type { BorderStyle, ElementKind, ElementShape } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import { type Fqn, type IconUrl, type ProjectId, type Tag, GlobalFqn } from './scalars'
+import { type Fqn, type IconUrl, type ProjectId, type Tag, ActivityId, GlobalFqn } from './scalars'
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
@@ -41,7 +41,7 @@ export namespace FqnRef {
 
   export type DeploymentRef<D = Fqn, M = Fqn> = DeploymentElementRef<D> | InsideInstanceRef<D, M>
   export const isDeploymentRef = (ref: FqnRef): ref is DeploymentRef => {
-    return !isModelRef(ref) && !isImportRef(ref)
+    return !isModelRef(ref) && !isImportRef(ref) && !isActivityRef(ref)
   }
 
   /**
@@ -51,7 +51,14 @@ export namespace FqnRef {
     model: F
   }
   export const isModelRef = (ref: FqnRef): ref is ModelRef => {
-    return 'model' in ref && !('project' in ref)
+    return 'model' in ref && !('project' in ref) && !('activity' in ref)
+  }
+
+  export type ActivityRef<F extends string = Fqn> = {
+    activity: ActivityId<F>
+  }
+  export const isActivityRef = (ref: FqnRef): ref is ActivityRef => {
+    return 'activity' in ref
   }
 
   /**
@@ -62,7 +69,7 @@ export namespace FqnRef {
     model: F
   }
   export const isImportRef = (ref: FqnRef): ref is ImportRef => {
-    return 'project' in ref && 'model' in ref
+    return 'project' in ref && 'model' in ref && !('activity' in ref)
   }
 
   export const toDeploymentRef = (ref: FqnRef): DeploymentModelRef => {
@@ -78,6 +85,9 @@ export namespace FqnRef {
   }
 
   export const toModelFqn = (ref: FqnRef): Fqn => {
+    if (isActivityRef(ref)) {
+      return ActivityId(ref.model, ref.activity)
+    }
     if (isImportRef(ref)) {
       return GlobalFqn(ref.project, ref.model)
     }
@@ -92,6 +102,7 @@ export type FqnRef<D = Fqn, M = Fqn> = ExclusiveUnion<{
   InsideInstanceRef: FqnRef.InsideInstanceRef<D, M>
   DeploymentRef: FqnRef.DeploymentRef<D>
   ModelRef: FqnRef.ModelRef<M>
+  ActivityRef: FqnRef.ActivityRef<M>
   ImportRef: FqnRef.ImportRef<M>
 }>
 
@@ -104,11 +115,11 @@ export namespace FqnExpr {
   }
 
   export type ModelRef<M = Fqn> = {
-    ref: FqnRef.ModelRef<M> | FqnRef.ImportRef<M>
+    ref: FqnRef.ModelRef<M> | FqnRef.ImportRef<M> | FqnRef.ActivityRef<M>
     selector?: PredicateSelector
   }
   export const isModelRef = (ref: ExpressionV2): ref is FqnExpr.ModelRef => {
-    return 'ref' in ref && (FqnRef.isModelRef(ref.ref) || FqnRef.isImportRef(ref.ref))
+    return 'ref' in ref && (FqnRef.isModelRef(ref.ref) || FqnRef.isImportRef(ref.ref) || FqnRef.isActivityRef(ref.ref))
   }
 
   export type DeploymentRef<D = Fqn, M = Fqn> = {
@@ -210,7 +221,7 @@ export namespace FqnExpr {
     Custom: Custom<D, M>
   }>
 
-  export const unwrap = (expr: FqnExpr): Wildcard | ModelRef | DeploymentRef | ElementKindExpr | ElementTagExpr  => {
+  export const unwrap = (expr: FqnExpr): Wildcard | ModelRef | DeploymentRef | ElementKindExpr | ElementTagExpr => {
     if (isCustom(expr)) {
       expr = expr.custom.expr
     }

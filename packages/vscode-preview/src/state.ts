@@ -124,6 +124,7 @@ const EMPTY: ComputedLikeC4ModelData = {
   },
   elements: {},
   relations: {},
+  activities: {},
   globals: {
     predicates: {},
     dynamicPredicates: {},

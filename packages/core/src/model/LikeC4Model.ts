@@ -473,6 +473,7 @@ export namespace LikeC4Model {
       elements: {},
       relations: {},
     },
+    activities: {},
     elements: {},
     relations: {},
     views: {},

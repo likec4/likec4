@@ -304,6 +304,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       if (ast.isRelation(el)) {
         continue
       }
+      if (ast.isActivity(el)) {
+        scopes.add(container, this.descriptions.createDescription(el, el.name, document))
+        continue
+      }
 
       let subcontainer
       if (ast.isElement(el)) {

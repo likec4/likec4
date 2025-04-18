@@ -4,6 +4,7 @@ import {
   type ViewId,
   computeColorValues,
   DeploymentElement,
+  isActivityId,
   isGlobalFqn,
   parentFqn,
   sortByFqnHierarchically,
@@ -23,6 +24,7 @@ import {
   prop,
   reduce,
 } from 'remeda'
+import type { Writable } from 'type-fest'
 import type {
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
@@ -85,8 +87,8 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
     filter((rel): rel is c4.ModelRelation => {
       if (!rel) return false
       if (
-        (isNullish(elements[rel.source]) && !isGlobalFqn(rel.source)) ||
-        (isNullish(elements[rel.target]) && !isGlobalFqn(rel.target))
+        (isNullish(elements[rel.source]) && !isGlobalFqn(rel.source) && !isActivityId(rel.source)) ||
+        (isNullish(elements[rel.target]) && !isGlobalFqn(rel.target) && !isActivityId(rel.target))
       ) {
         logger.debug`Invalid relation ${rel.id}
   source: ${rel.source} resolved: ${!!elements[rel.source]}
@@ -95,6 +97,26 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
       }
       return true
     }),
+    indexBy(prop('id')),
+  )
+
+  const activities = pipe(
+    docs,
+    flatMap(d =>
+      map(d.c4Activities, parsed => {
+        const activity = c4Specification.toModelActivity(parsed)
+        const parent = elements[parsed.parent]
+        if (!parent || !activity) {
+          logger.debug`No parent found for activity ${parsed.id}`
+          return null
+        }
+        ;(parent as Writable<typeof parent>).activities ??= []
+        parent.activities?.push(activity.id)
+
+        return activity
+      })
+    ),
+    filter(isTruthy),
     indexBy(prop('id')),
   )
 
@@ -223,6 +245,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
         deployments: c4Specification.specs.deployments,
       },
       elements,
+      activities,
       relations,
       globals: c4Specification.globals,
       views,

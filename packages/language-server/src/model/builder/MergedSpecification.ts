@@ -3,6 +3,7 @@ import { MultiMap } from '@likec4/core'
 import {
   DeploymentElement,
   FqnRef,
+  isActivityId,
 } from '@likec4/core/types'
 import {
   isBoolean,
@@ -11,6 +12,7 @@ import {
   isNumber,
 } from 'remeda'
 import type {
+  ParsedAstActivity,
   ParsedAstDeployment,
   ParsedAstDeploymentRelation,
   ParsedAstElement,
@@ -132,6 +134,18 @@ export class MergedSpecification {
       logWarnError(e)
     }
     return null
+  }
+
+  toModelActivity = ({
+    id,
+    name,
+    steps,
+  }: ParsedAstActivity): c4.Activity | null => {
+    return {
+      id,
+      name,
+      steps: steps.map(s => ({ id: s.id })),
+    }
   }
 
   /**

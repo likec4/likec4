@@ -1,7 +1,7 @@
 import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Link } from './element'
-import type { Fqn, Tag } from './scalars'
+import type { ActivityId, Fqn, Tag } from './scalars'
 import type { Color, ThemeColor } from './theme'
 import type { ViewId } from './view'
 
@@ -46,6 +46,7 @@ export interface AbstractRelation {
 
 // TODO: rename to Relationship
 export interface ModelRelation extends AbstractRelation {
+  readonly activityId?: ActivityId | null
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string

@@ -7,6 +7,8 @@ export default defineProject({
     // Seems vitest doesn't resolve conditions
     alias: {
       '@likec4/core': resolve(__dirname, '../core/src'),
+      '@likec4/layouts': resolve(__dirname, '../layouts/src'),
+      '@likec4/generators': resolve(__dirname, '../generators/src'),
     },
   },
   test: {

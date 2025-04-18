@@ -9,6 +9,14 @@ export type IconUrl = Tagged<string, 'IconUrl'> | 'none'
 // Full-qualified-name
 export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
 
+export type ActivityId<Id extends string = string> = Tagged<`${Fqn<Id>}#${string}`, 'Fqn'>
+export function ActivityId(parent: Fqn, name: string): ActivityId {
+  return (parent + '#' + name) as ActivityId
+}
+export function isActivityId(id: string): id is ActivityId {
+  return id.includes('#')
+}
+
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
 
 export function AsFqn(name: string, parent?: Fqn | null): Fqn {

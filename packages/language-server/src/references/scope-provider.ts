@@ -155,7 +155,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genScopeForParentlessFqnRef(projectId, container, context))
     }
     const parentRef = parent.value.ref
-    if (!parentRef) {
+    if (!parentRef || ast.isActivity(parentRef)) {
       return EMPTY_STREAM
     }
     if (ast.isImported(parentRef)) {

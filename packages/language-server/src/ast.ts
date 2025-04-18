@@ -27,6 +27,9 @@ declare module './generated/ast' {
   export interface Element {
     [idattr]?: c4.Fqn | undefined
   }
+  export interface Activity {
+    [idattr]?: c4.ActivityId | undefined
+  }
   export interface ElementView {
     [idattr]?: c4.ViewId | undefined
   }
@@ -96,6 +99,13 @@ export interface ParsedAstElement {
   metadata?: { [key: string]: string }
 }
 
+export interface ParsedAstActivity {
+  id: c4.ActivityId
+  parent: c4.Fqn
+  name: string
+  steps: ParsedAstRelation[]
+}
+
 export interface ParsedAstExtend {
   id: c4.Fqn
   astPath: string
@@ -107,6 +117,7 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
+  activityId?: c4.ActivityId
   source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
   target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
   kind?: c4.RelationshipKind
@@ -187,18 +198,26 @@ export const ViewOps = {
   },
 }
 
+function writeId<N extends ast.Activity>(node: N, id: c4.ActivityId | null): N
+function writeId<N extends ast.Element | ast.DeploymentElement>(node: N, Id: c4.Fqn | null): N
+function writeId(node: any, id: any): any {
+  if (isNullish(id)) {
+    node[idattr] = undefined
+  } else {
+    node[idattr] = id
+  }
+  return node
+}
+
+// function readId(node: ast.Activity): c4.ActivityId | undefined
+// function readId(node: ast.Element | ast.DeploymentElement): c4.Fqn | undefined
+function readId(node: ast.Activity | ast.Element | ast.DeploymentElement): c4.Fqn | undefined {
+  return node[idattr] as c4.Fqn | undefined
+}
+
 export const ElementOps = {
-  writeId(node: ast.Element | ast.DeploymentElement, id: c4.Fqn | null) {
-    if (isNullish(id)) {
-      node[idattr] = undefined
-    } else {
-      node[idattr] = id
-    }
-    return node
-  },
-  readId(node: ast.Element | ast.DeploymentElement) {
-    return node[idattr]
-  },
+  writeId,
+  readId,
 }
 
 export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
@@ -214,6 +233,7 @@ export interface LikeC4DocumentProps {
   diagnostics?: Array<LikeC4DocumentDiagnostic>
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
+  c4Activities?: ParsedAstActivity[]
   c4ExtendElements?: ParsedAstExtend[]
   c4ExtendDeployments?: ParsedAstExtend[]
   c4Relations?: ParsedAstRelation[]

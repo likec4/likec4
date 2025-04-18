@@ -29,6 +29,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
     const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
+    const activities = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const byfqn = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const Names = this.Names
@@ -110,6 +111,6 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
         logWarnError(e)
       }
     }
-    return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)
+    return new DocumentFqnIndex(root, children, descendants, byfqn, activities, projectId)
   }
 }

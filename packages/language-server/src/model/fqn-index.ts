@@ -1,5 +1,5 @@
 import { invariant, nonNullable } from '@likec4/core'
-import { type Fqn, type ProjectId, AsFqn } from '@likec4/core/types'
+import { type ActivityId, type Fqn, type ProjectId, AsFqn } from '@likec4/core/types'
 import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
 import {
   type AstNode,
@@ -23,7 +23,7 @@ import { ADisposable } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'
 
-export class FqnIndex<AstNd = ast.Element> extends ADisposable {
+export class FqnIndex<AstNd = ast.Element | ast.Activity> extends ADisposable {
   protected projects: ProjectsManager
   protected langiumDocuments: LangiumDocuments
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
@@ -69,14 +69,14 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     if (reference.$type === 'Imported') {
       return this.getFqn(reference.imported.ref as AstNd)
     }
-    if (reference.$type === 'Element') {
+    if (reference.$type === 'Element' || reference.$type === 'Activity') {
       return this.getFqn(reference as AstNd)
     }
     return this.services.likec4.DeploymentsIndex.getFqn(reference)
   }
 
   public getFqn(el: AstNd): Fqn {
-    invariant(ast.isElement(el) || ast.isDeploymentElement(el))
+    invariant(ast.isElement(el) || ast.isDeploymentElement(el) || ast.isActivity(el))
     let id = ElementOps.readId(el)
     if (isTruthy(id)) {
       return id
@@ -122,7 +122,11 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       this.workspaceCache.get(`${this.cachePrefix}:${projectId}:directChildrenOf:${parent}`, () => {
         const allchildren = this.documents(projectId)
           .reduce((map, doc) => {
-            this.get(doc).children(parent).forEach(desc => {
+            const docIndex = this.get(doc)
+            docIndex.children(parent).forEach(desc => {
+              map.set(desc.name, desc)
+            })
+            docIndex.activities(parent).forEach(desc => {
               map.set(desc.name, desc)
             })
             return map
@@ -143,6 +147,9 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
           .reduce((map, doc) => {
             const docIndex = this.get(doc)
             docIndex.children(parent).forEach(desc => {
+              map.children.set(desc.name, desc)
+            })
+            docIndex.activities(parent).forEach(desc => {
               map.children.set(desc.name, desc)
             })
             docIndex.descendants(parent).forEach(desc => {
@@ -176,6 +183,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
+    const activities = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const byfqn = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
@@ -192,9 +200,22 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }
 
     const traverseNode = (
-      el: ast.Element | ast.ExtendElement,
+      el: ast.Element | ast.ExtendElement | ast.Activity,
       parentFqn: Fqn | null,
     ): readonly AstNodeDescriptionWithFqn[] => {
+      if (ast.isActivity(el)) {
+        invariant(parentFqn)
+        const activityId = `${parentFqn}#${el.name}` as ActivityId
+        ElementOps.writeId(el, activityId)
+        const desc = {
+          ...Descriptions.createDescription(el, el.name, document),
+          id: activityId,
+          likec4ProjectId: projectId,
+        }
+        activities.set(parentFqn, desc)
+        byfqn.set(activityId, desc)
+        return []
+      }
       let thisFqn: Fqn
       if (ast.isElement(el)) {
         thisFqn = AsFqn(el.name, parentFqn)
@@ -250,7 +271,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       }
     }
 
-    return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)
+    return new DocumentFqnIndex(root, children, descendants, byfqn, activities, projectId)
   }
 }
 
@@ -262,6 +283,7 @@ function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
 export class DocumentFqnIndex {
   static readonly EMPTY = new DocumentFqnIndex(
     [],
+    new MultiMap(),
     new MultiMap(),
     new MultiMap(),
     new MultiMap(),
@@ -282,6 +304,10 @@ export class DocumentFqnIndex {
      * All elements by FQN
      */
     private _byfqn: MultiMap<Fqn, AstNodeDescriptionWithFqn>,
+    /**
+     * All activities by parent
+     */
+    private _activities: MultiMap<Fqn, AstNodeDescriptionWithFqn>,
     public readonly projectId: ProjectId,
   ) {}
 
@@ -295,6 +321,10 @@ export class DocumentFqnIndex {
 
   public children(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {
     return this._children.get(parent) ?? []
+  }
+
+  public activities(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {
+    return this._activities.get(parent) ?? []
   }
 
   public descendants(nodeName: Fqn): readonly AstNodeDescriptionWithFqn[] {

@@ -1,6 +1,6 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
 import type { NonEmptyArray } from './_common'
-import type { Fqn, IconUrl, Tag } from './scalars'
+import type { ActivityId, Fqn, IconUrl, Tag } from './scalars'
 import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
@@ -86,6 +86,7 @@ export interface TypedElement<
   readonly style?: ElementStyle
   readonly notation?: string
   readonly metadata?: Record<MetadataKeys, string>
+  readonly activities?: ActivityId[]
 }
 
 export interface Element extends TypedElement<string, string, string, string> {
