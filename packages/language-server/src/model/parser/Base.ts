@@ -164,6 +164,9 @@ export class BaseParser {
       case !!libicon: {
         return libicon.ref?.name as c4.IconUrl
       }
+      case value && value === 'none': {
+        return value as c4.IconUrl
+      }
       case value && hasProtocol(value): {
         return value as c4.IconUrl
       }
