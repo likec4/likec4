@@ -2,6 +2,7 @@
 
 exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -146,6 +147,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 
 exports[`Builder (style1) > should build view  1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -277,6 +279,7 @@ exports[`Builder (style1) > should build view  1`] = `
 
 exports[`Builder (style1) > should build viewOf  1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
