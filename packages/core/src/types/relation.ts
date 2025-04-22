@@ -46,7 +46,6 @@ export interface AbstractRelation {
 
 // TODO: rename to Relationship
 export interface ModelRelation extends AbstractRelation {
-  readonly activityId?: ActivityId | null
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string

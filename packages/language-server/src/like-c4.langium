@@ -243,6 +243,7 @@ Activity:
   body=ActivityBody?;
 
 ActivityBody: '{'
+  tags=Tags?
   props+=RelationProperty*
   steps+=ActivityStep*
 '}';

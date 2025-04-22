@@ -1,5 +1,5 @@
 import { invariant, nonNullable } from '@likec4/core'
-import { type ActivityId, type Fqn, type ProjectId, AsFqn } from '@likec4/core/types'
+import { type Fqn, type ProjectId, ActivityId, AsFqn } from '@likec4/core/types'
 import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
 import {
   type AstNode,
@@ -205,7 +205,7 @@ export class FqnIndex<AstNd = ast.Element | ast.Activity> extends ADisposable {
     ): readonly AstNodeDescriptionWithFqn[] => {
       if (ast.isActivity(el)) {
         invariant(parentFqn)
-        const activityId = `${parentFqn}#${el.name}` as ActivityId
+        const activityId = ActivityId(parentFqn, el.name)
         ElementOps.writeId(el, activityId)
         const desc = {
           ...Descriptions.createDescription(el, el.name, document),

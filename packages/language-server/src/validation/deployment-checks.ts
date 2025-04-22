@@ -114,7 +114,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       return
     }
 
-    if (FqnRef.isModelRef(sourceFqnRef)) {
+    if (FqnRef.isModelRef(sourceFqnRef) || FqnRef.isActivityRef(sourceFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
         property: 'source',
@@ -130,7 +130,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       })
       return
     }
-    if (FqnRef.isModelRef(targetFqnRef)) {
+    if (FqnRef.isModelRef(targetFqnRef) || FqnRef.isActivityRef(targetFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
         property: 'target',

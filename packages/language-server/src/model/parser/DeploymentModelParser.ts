@@ -228,7 +228,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(isTruthy(description) && { description }),
         ...(kind && { kind }),
         ...(tags && { tags }),
-        ...(isNonEmptyArray(links) && { links }),
+        ...(links && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
         ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
         astPath,

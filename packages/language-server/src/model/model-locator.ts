@@ -99,6 +99,7 @@ export class LikeC4ModelLocator {
     for (const doc of this.documents(project)) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
         ?? doc.c4DeploymentRelations.find(r => r.id === relationId)
+        ?? doc.c4Activities.flatMap(a => a.steps).find(s => s.id === relationId)
       if (!relation) {
         continue
       }

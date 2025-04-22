@@ -7,14 +7,18 @@ export type ProjectId = Tagged<string, 'ProjectID'>
 export type IconUrl = Tagged<string, 'IconUrl'> | 'none'
 
 // Full-qualified-name
-export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
+export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
 
-export type ActivityId<Id extends string = string> = Tagged<`${Fqn<Id>}#${string}`, 'Fqn'>
+export type ActivityId<Id = string> = Tagged<Fqn<Id>, 'ActivityId'>
 export function ActivityId(parent: Fqn, name: string): ActivityId {
   return (parent + '#' + name) as ActivityId
 }
 export function isActivityId(id: string): id is ActivityId {
   return id.includes('#')
+}
+export function elementFromActivityId(id: string): Fqn {
+  invariant(isActivityId(id), 'Expected ActivityId')
+  return id.slice(0, id.lastIndexOf('#')) as Fqn
 }
 
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
@@ -23,7 +27,7 @@ export function AsFqn(name: string, parent?: Fqn | null): Fqn {
   return (parent ? parent + '.' + name : name) as Fqn
 }
 
-export type GlobalFqn<Id extends string = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
+export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
 export function GlobalFqn(projectId: ProjectId, name: string): GlobalFqn {
   invariant(isTruthy(projectId), 'Project ID must start with @')
   return '@' + projectId + '.' + name as GlobalFqn

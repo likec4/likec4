@@ -86,7 +86,6 @@ export interface TypedElement<
   readonly style?: ElementStyle
   readonly notation?: string
   readonly metadata?: Record<MetadataKeys, string>
-  readonly activities?: ActivityId[]
 }
 
 export interface Element extends TypedElement<string, string, string, string> {

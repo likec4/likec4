@@ -13,7 +13,9 @@ import {
   type NonEmptyArray,
   type Tag,
   DefaultArrowType,
+  elementFromActivityId,
   FqnExpr,
+  FqnRef,
   isViewRuleStyle,
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
@@ -48,7 +50,9 @@ export function resolveModelElements(
   model: LikeC4DeploymentModel,
   expr: FqnExpr.ModelRef,
 ): ElementModel[] {
-  const ref = model.$model.element(expr.ref.model)
+  const ref = FqnRef.isActivityRef(expr.ref)
+    ? model.$model.element(elementFromActivityId(expr.ref.activity))
+    : model.$model.element(expr.ref.model)
   if (expr.selector === 'children') {
     return [...ref.children()]
   }
@@ -86,6 +90,9 @@ export function deploymentExpressionToPredicate<T extends { id: string; modelRef
     return n => n.id === fqn
   }
   if (FqnExpr.isModelRef(target)) {
+    if (FqnRef.isActivityRef(target.ref)) {
+      throw new Error('activity references are not supported in deployment view rules')
+    }
     const modelFqn = (node: T) => {
       if (isString(node.modelRef)) {
         return node.modelRef

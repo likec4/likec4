@@ -14,6 +14,7 @@ export type {
 export {
   ActivityId,
   AsFqn,
+  elementFromActivityId,
   GlobalFqn,
   isActivityId,
   isGlobalFqn,

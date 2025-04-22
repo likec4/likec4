@@ -2,6 +2,7 @@
 
 exports[`LikeC4ModelBuilder > builds model with description and technology 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -168,6 +169,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
 
 exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -528,6 +530,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -664,6 +667,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec with technology 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},
@@ -796,6 +800,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
 
 exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
 {
+  "activities": {},
   "deployments": {
     "elements": {},
     "relations": {},

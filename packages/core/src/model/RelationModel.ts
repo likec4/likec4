@@ -10,6 +10,7 @@ import {
 import type { Tag } from '../types/scalars'
 import type { Color } from '../types/theme'
 import { commonAncestor } from '../utils/fqn'
+import type { ActivityModel, ActivityStepModel } from './ActivityModel'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
@@ -36,6 +37,10 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
     this.target = model.element($relationship.target)
     const parent = commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.model.element(parent) : null
+  }
+
+  public get activity(): ActivityModel<M> | null {
+    return null
   }
 
   get id(): M['RelationId'] {
@@ -101,6 +106,10 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
       }
     }
     return
+  }
+
+  public isActivityStep(): this is ActivityStepModel<M> {
+    return false
   }
 
   public isDeploymentRelation(): this is DeploymentRelationModel<M> {

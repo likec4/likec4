@@ -62,7 +62,11 @@ export class BaseParser {
     return this.services.shared.workspace.ProjectsManager.getProject(this.doc)
   }
 
-  resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+  resolveFqn(node: ast.Activity): c4.ActivityId
+  resolveFqn(
+    node: ast.DeploymentElement | ast.Element | ast.Imported | ast.ExtendElement | ast.ExtendDeployment,
+  ): c4.Fqn
+  resolveFqn(node: ast.FqnReferenceable): c4.Fqn | c4.ActivityId {
     if (ast.isImported(node)) {
       const project = projectIdFrom(node)
       const fqn = this.resolveFqn(
@@ -126,14 +130,14 @@ export class BaseParser {
     return isNonEmptyArray(tags) ? tags : null
   }
 
-  convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
+  convertLinks(source?: ast.LinkProperty['$container']): c4.NonEmptyArray<c4.Link> | undefined {
     return this.parseLinks(source)
   }
-  parseLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
+  parseLinks(source?: ast.LinkProperty['$container']): c4.NonEmptyArray<c4.Link> | undefined {
     if (!source?.props || source.props.length === 0) {
       return undefined
     }
-    return pipe(
+    const links = pipe(
       source.props,
       filter(ast.isLinkProperty),
       flatMap(p => {
@@ -153,6 +157,7 @@ export class BaseParser {
         return []
       }),
     )
+    return isNonEmptyArray(links) ? links : undefined
   }
 
   parseIconProperty(prop: ast.IconProperty | undefined): c4.IconUrl | undefined {

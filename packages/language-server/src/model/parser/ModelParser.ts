@@ -2,10 +2,11 @@ import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
-import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, flatMap, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstActivity,
+  type ParsedAstActivityStep,
   type ParsedAstElement,
   type ParsedAstExtend,
   type ParsedAstRelation,
@@ -13,9 +14,8 @@ import {
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
-import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
-import { type Base, removeIndent, toSingleLine } from './Base'
+import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
@@ -28,15 +28,11 @@ function* streamModel(
   const traverseStack = LinkedList.from<ast.Element | ast.ExtendElement | ast.Relation | ast.Activity>(
     doc.parseResult.value.models.flatMap(m => m.elements),
   )
-  const relations = [] as ast.Relation[]
+  const relations = [] as Array<ast.Relation | ast.Activity>
   let el
   while ((el = traverseStack.shift())) {
-    if (ast.isRelation(el)) {
+    if (ast.isRelation(el) || ast.isActivity(el)) {
       relations.push(el)
-      continue
-    }
-    if (ast.isActivity(el)) {
-      yield el
       continue
     }
     if (el.body && el.body.elements && el.body.elements.length > 0) {
@@ -70,9 +66,6 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
             const parsed = this.parseActivity(el)
             if (parsed) {
               doc.c4Activities.push(parsed)
-              if (parsed.steps.length > 0) {
-                doc.c4Relations.push(...parsed.steps)
-              }
             }
             continue
           }
@@ -128,7 +121,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         title: title ?? astNode.name,
         ...(metadata && { metadata }),
         ...(tags && { tags }),
-        ...(links && isNonEmptyArray(links) && { links }),
+        ...(links && { links }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
         style,
@@ -136,13 +129,48 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
     }
 
     parseActivity(astNode: ast.Activity): ParsedAstActivity {
-      const parent = this.resolveFqn(astNode.$container.$container)
-      const id = this.resolveFqn(astNode) as c4.ActivityId
-      const steps = map(astNode.body?.steps ?? [], this.parseActivityStep)
+      const id = this.resolveFqn(astNode)
+      const astPath = this.getAstNodePath(astNode)
+      const tags = this.parseTags(astNode.body)
+      const links = this.parseLinks(astNode.body)
+      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+      const bodyProps = mapToObj(
+        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
+        p => [p.key, p.value || undefined],
+      )
+
+      const navigateTo = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationNavigateToProperty),
+        map(p => p.value.view.ref?.name),
+        filter(isTruthy),
+        first(),
+      )
+
+      const title = removeIndent(bodyProps.title) ?? ''
+      const description = removeIndent(bodyProps.description)
+      const technology = removeIndent(bodyProps.technology)
+
+      const steps = flatMap(astNode.body?.steps ?? [], step => {
+        try {
+          return this.parseActivityStep(step)
+        } catch (error) {
+          logger.error('Failed to parse activity step', { error })
+          return []
+        }
+      })
       return {
         id,
-        parent,
+        astPath,
         name: astNode.name,
+        ...(isTruthy(title) && { title }),
+        ...(isTruthy(technology) && { technology }),
+        ...(isTruthy(description) && { description }),
+        ...(metadata && { metadata }),
+        ...(tags && { tags }),
+        ...(links && { links }),
+        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
         steps,
       }
     }
@@ -227,18 +255,17 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         ...(isTruthy(description) && { description }),
         ...(kind && { kind }),
         ...(tags && { tags }),
-        ...(isNonEmptyArray(links) && { links }),
+        ...(links && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
         ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
       }
     }
 
-    parseActivityStep(astNode: ast.ActivityStep): ParsedAstRelation {
+    parseActivityStep(
+      astNode: ast.ActivityStep,
+    ): ParsedAstActivityStep {
+      const activityId = this.resolveFqn(astNode.$container.$container)
       const isValid = this.isValid
-      const activity: ast.Activity = astNode.$container.$container
-      const activityId = this.resolveFqn(activity) as c4.ActivityId
-      const parent: ast.Element | ast.ExtendElement = activity.$container.$container
-      const source = this.resolveFqn(parent)
       const target = this.parseFqnRef(astNode.target)
       invariant(
         FqnRef.isModelRef(target) || FqnRef.isActivityRef(target) || FqnRef.isImportRef(target),
@@ -271,23 +298,20 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
         activityId,
-        astPath,
-        source,
-        target.model,
+        (astNode.$containerIndex ?? 0).toString(),
       ) as c4.RelationId
       return {
         id,
         astPath,
-        source: { model: source },
+        ...(astNode.isBackward && { isBackward: astNode.isBackward }),
         target,
         title,
-        activityId,
-        ...(metadata && { metadata }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
         ...(kind && { kind }),
         ...(tags && { tags }),
-        ...(isNonEmptyArray(links) && { links }),
+        ...(metadata && { metadata }),
+        ...(links && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
         ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
       }

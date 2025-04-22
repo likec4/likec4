@@ -268,7 +268,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
 
       const tags = this.convertTags(body)
-      const links = this.convertLinks(body)
+      const links = this.convertLinks(body) ?? null
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -281,7 +281,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         title,
         description,
         tags,
-        links: isNonEmptyArray(links) ? links : null,
+        links,
         rules: [
           ...additionalStyles,
           ...body.rules.flatMap(n => {

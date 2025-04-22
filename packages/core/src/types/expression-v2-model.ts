@@ -19,8 +19,8 @@ export namespace ModelLayer {
       return 'model' in ref && !('project' in ref) && !('activity' in ref)
     }
 
-    export type ActivityRef<F extends string = Fqn> = {
-      activity: ActivityId<F>
+    export type ActivityRef<M = Fqn> = {
+      activity: ActivityId<M>
     }
     export const isActivityRef = (ref: FqnRef): ref is ActivityRef => {
       return 'activity' in ref

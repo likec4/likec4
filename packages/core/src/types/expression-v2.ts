@@ -54,8 +54,8 @@ export namespace FqnRef {
     return 'model' in ref && !('project' in ref) && !('activity' in ref)
   }
 
-  export type ActivityRef<F extends string = Fqn> = {
-    activity: ActivityId<F>
+  export type ActivityRef<Id = string> = {
+    activity: ActivityId<Id>
   }
   export const isActivityRef = (ref: FqnRef): ref is ActivityRef => {
     return 'activity' in ref
@@ -86,7 +86,7 @@ export namespace FqnRef {
 
   export const toModelFqn = (ref: FqnRef): Fqn => {
     if (isActivityRef(ref)) {
-      return ActivityId(ref.model, ref.activity)
+      return ref.activity
     }
     if (isImportRef(ref)) {
       return GlobalFqn(ref.project, ref.model)

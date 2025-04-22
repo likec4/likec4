@@ -19,6 +19,7 @@ import {
 } from '../types/scalars'
 import type { ThemeColor } from '../types/theme'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
+import type { ActivitiesIterator, ActivityModel } from './ActivityModel'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -257,6 +258,10 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   public deployments(): DeployedInstancesIterator<M> {
     return this.$model.deployment.instancesOf(this)
+  }
+
+  public activities(): ReadonlySet<ActivityModel<M>> {
+    return this.$model.activities(this)
   }
 }
 

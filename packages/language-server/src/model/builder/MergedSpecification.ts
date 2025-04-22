@@ -1,9 +1,8 @@
 import type * as c4 from '@likec4/core'
 import { MultiMap } from '@likec4/core'
 import {
-  DeploymentElement,
+  elementFromActivityId,
   FqnRef,
-  isActivityId,
 } from '@likec4/core/types'
 import {
   isBoolean,
@@ -13,6 +12,7 @@ import {
 } from 'remeda'
 import type {
   ParsedAstActivity,
+  ParsedAstActivityStep,
   ParsedAstDeployment,
   ParsedAstDeploymentRelation,
   ParsedAstElement,
@@ -137,14 +137,39 @@ export class MergedSpecification {
   }
 
   toModelActivity = ({
+    astPath,
     id,
-    name,
     steps,
+    name,
+    ...model
   }: ParsedAstActivity): c4.Activity | null => {
+    const modelRef = elementFromActivityId(id)
     return {
-      id,
+      ...model,
+      steps: steps.map(s => this.toModelActivityStep(s)),
+      modelRef,
       name,
-      steps: steps.map(s => ({ id: s.id })),
+      id,
+    }
+  }
+
+  toModelActivityStep = ({
+    astPath,
+    id,
+    kind,
+    ...model
+  }: ParsedAstActivityStep): c4.ActivityStep => {
+    if (isNonNullish(kind) && this.specs.relationships[kind]) {
+      return {
+        ...this.specs.relationships[kind],
+        ...model,
+        kind,
+        id,
+      } satisfies c4.ActivityStep
+    }
+    return {
+      ...model,
+      id,
     }
   }
 

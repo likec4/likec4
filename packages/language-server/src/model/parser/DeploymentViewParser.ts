@@ -34,7 +34,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
 
       const tags = this.convertTags(body)
-      const links = this.convertLinks(body)
+      const links = this.convertLinks(body) ?? null
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -47,7 +47,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         title,
         description,
         tags,
-        links: isNonEmptyArray(links) ? links : null,
+        links,
         rules: body.rules.flatMap(n => {
           try {
             return this.isValid(n) ? this.parseDeploymentViewRule(n) : []

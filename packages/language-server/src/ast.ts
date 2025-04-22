@@ -101,9 +101,35 @@ export interface ParsedAstElement {
 
 export interface ParsedAstActivity {
   id: c4.ActivityId
-  parent: c4.Fqn
+  astPath: string
   name: string
-  steps: ParsedAstRelation[]
+  steps: ParsedAstActivityStep[]
+  tags?: c4.NonEmptyArray<c4.Tag>
+  title?: string
+  description?: string
+  technology?: string
+  links?: c4.NonEmptyArray<c4.Link>
+  navigateTo?: c4.ViewId
+  metadata?: { [key: string]: string }
+}
+
+export interface ParsedAstActivityStep {
+  id: c4.RelationId
+  astPath: string
+  isBackward?: boolean
+  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef | c4.FqnRef.ActivityRef
+  kind?: c4.RelationshipKind
+  tags?: c4.NonEmptyArray<c4.Tag>
+  title: string
+  description?: string
+  technology?: string
+  color?: c4.Color
+  line?: c4.RelationshipLineType
+  head?: c4.RelationshipArrowType
+  tail?: c4.RelationshipArrowType
+  links?: c4.NonEmptyArray<c4.Link>
+  navigateTo?: c4.ViewId
+  metadata?: { [key: string]: string }
 }
 
 export interface ParsedAstExtend {
@@ -117,9 +143,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  activityId?: c4.ActivityId
-  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
-  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef | c4.FqnRef.ActivityRef
+  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef | c4.FqnRef.ActivityRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
