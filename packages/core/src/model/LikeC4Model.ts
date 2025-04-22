@@ -2,13 +2,14 @@ import { entries, mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { computeView, unsafeComputeView } from '../compute-view'
 import type { ComputeViewResult } from '../compute-view/compute-view'
-import { invariant, nonNullable } from '../errors'
-import type { Activity } from '../types'
+import { invariant, nonexhaustive, nonNullable } from '../errors'
+import { type Activity, FqnRef } from '../types'
 import type { IteratorLike } from '../types/_common'
 import type { Element } from '../types/element'
 import type { ModelGlobals } from '../types/global'
 import type { AnyParsedLikeC4ModelData, GenericLikeC4ModelData, LikeC4ModelDump } from '../types/model-data'
 import {
+  type ActivityId,
   type ProjectId,
   type Tag as C4Tag,
   elementFromActivityId,
@@ -26,6 +27,7 @@ import type {
   DeploymentElementModel,
   DeploymentNodeModel,
   DeploymentRelationModel,
+  NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
@@ -48,7 +50,8 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   readonly #children = new DefaultMap<M['Element'], Set<ElementModel<M>>>(() => new Set())
 
   // Activities of the element
-  readonly #activities = new DefaultMap<M['Element'], Set<ActivityModel<M>>>(() => new Set())
+  readonly #activities = new Map<M['Element'], ActivityModel<M>>()
+  readonly #elementActivities = new DefaultMap<M['Element'], Set<ActivityModel<M>>>(() => new Set())
 
   readonly #rootElements = new Set<ElementModel<M>>()
 
@@ -207,6 +210,35 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   }
 
   /**
+   * Returns a model/deployment element or activity by its FQN reference.
+   * @param ref - The FQN reference to look up
+   * @returns The element or activity that matches the reference
+   */
+  public fqnRef(
+    ref: FqnRef,
+  ): ElementModel<M> | ActivityModel<M> | DeploymentElementModel<M> | NestedElementOfDeployedInstanceModel<M> {
+    if (FqnRef.isActivityRef(ref)) {
+      return nonNullable(this.#activities.get(ref.activity as ActivityId), `Activity ${ref.activity} not found`)
+    }
+    if (FqnRef.isImportRef(ref)) {
+      return this.element(FqnRef.toModelFqn(ref))
+    }
+    if (FqnRef.isInsideInstanceRef(ref)) {
+      return this.deployment.deploymentRef({
+        id: ref.deployment,
+        element: ref.element,
+      })
+    }
+    if (FqnRef.isDeploymentRef(ref)) {
+      return this.deployment.element(ref.deployment)
+    }
+    if (FqnRef.isModelRef(ref)) {
+      return this.element(ref.model)
+    }
+    nonexhaustive(ref)
+  }
+
+  /**
    * Returns all relationships in the model.
    */
   public relationships(): RelationshipsIterator<M> {
@@ -312,7 +344,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    */
   public activities(element: M['ElementOrFqn']): ReadonlySet<ActivityModel<M>> {
     const id = getId(element) as M['Fqn']
-    return this.#activities.get(id)
+    return this.#elementActivities.get(id)
   }
 
   /**
@@ -500,7 +532,8 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     if (this.#activities.has(activity.id)) {
       throw new Error(`Activity ${activity.id} already exists`)
     }
-    this.#activities.get(el.id).add(activity)
+    this.#activities.set(activity.id, activity)
+    this.#elementActivities.get(el.id).add(activity)
     for (const step of activityRaw.steps) {
       const rel = new ActivityStepModel(
         this,

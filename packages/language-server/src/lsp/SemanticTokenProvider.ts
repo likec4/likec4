@@ -66,7 +66,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           SemanticTokenModifiers.readonly,
         ],
       })
-      return 'prune'
+      return
     }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
       acceptor({
@@ -229,7 +229,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'values',
         type: SemanticTokenTypes.interface,
       })
-      return 'prune'
+      return !node.prev ? 'prune' : undefined
     }
     if (ast.isTag(node)) {
       return acceptor({

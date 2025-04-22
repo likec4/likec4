@@ -1,4 +1,4 @@
-import { isEmpty } from 'remeda'
+import { first, isEmpty, last } from 'remeda'
 import { FqnRef } from '../types'
 import type { IteratorLike } from '../types/_common'
 import type { Activity, ActivityStep } from '../types/activity'
@@ -18,9 +18,10 @@ import type { AnyAux } from './types'
 export type ActivitiesIterator<M extends AnyAux> = IteratorLike<ActivityModel<M>>
 
 export class ActivityModel<M extends AnyAux = AnyAux> {
-  readonly id: M['Fqn']
+  public readonly id: M['Fqn']
+  public readonly parent: ElementModel<M>
   // readonly _literalId: M['Element']
-  readonly hierarchyLevel: number
+  public readonly hierarchyLevel: number
 
   // readonly imported: null | {
   //   from: ProjectId
@@ -45,10 +46,7 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
     //   this.imported = null
     //   this.hierarchyLevel = hierarchyLevel(this.id)
     // }
-  }
-
-  get parent(): ElementModel<M> {
-    return this.element
+    this.parent = this.element
   }
 
   get name(): string {
@@ -228,6 +226,10 @@ export function isActivityModel<M extends AnyAux = AnyAux>(element: any): elemen
 }
 
 export class ActivityStepModel<M extends AnyAux = AnyAux> extends RelationshipModel<M> {
+  public readonly isBackward: boolean
+  public readonly isFirstStep: boolean
+  public readonly isLastStep: boolean
+
   constructor(
     public readonly $model: LikeC4Model<M>,
     public readonly $activityStep: ActivityStep,
@@ -235,14 +237,26 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> extends RelationshipMo
   ) {
     super(
       $model,
-      Object.freeze({
-        ...$activityStep,
-        source: _activity.$activity.modelRef,
-        target: FqnRef.isActivityRef($activityStep.target)
-          ? elementFromActivityId($activityStep.target.activity)
-          : FqnRef.toModelFqn($activityStep.target),
-      }),
+      $activityStep.isBackward === true
+        ? {
+          ...$activityStep,
+          source: FqnRef.isActivityRef($activityStep.target)
+            ? elementFromActivityId($activityStep.target.activity)
+            : FqnRef.toModelFqn($activityStep.target),
+          target: _activity.$activity.modelRef,
+        }
+        : {
+          ...$activityStep,
+          source: _activity.$activity.modelRef,
+          target: FqnRef.isActivityRef($activityStep.target)
+            ? elementFromActivityId($activityStep.target.activity)
+            : FqnRef.toModelFqn($activityStep.target),
+        },
     )
+
+    this.isBackward = $activityStep.isBackward === true
+    this.isFirstStep = first(_activity.$activity.steps)?.id === $activityStep.id
+    this.isLastStep = last(_activity.$activity.steps)?.id === $activityStep.id
   }
 
   public override get title(): string | null {
@@ -265,5 +279,23 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> extends RelationshipMo
 
   public override isActivityStep(): this is ActivityStepModel<M> {
     return true
+  }
+
+  public next(): ActivityStepModel<M> | null {
+    const steps = this._activity.$activity.steps
+    const index = steps.findIndex(s => s.id === this.$activityStep.id)
+    if (index === -1 || index === steps.length - 1) {
+      return null
+    }
+    return this.$model.relationship(steps[index + 1]!.id, 'activity-step')
+  }
+
+  public previous(): ActivityStepModel<M> | null {
+    const steps = this._activity.$activity.steps
+    const index = steps.findIndex(s => s.id === this.$activityStep.id)
+    if (index === -1 || index === 0) {
+      return null
+    }
+    return this.$model.relationship(steps[index - 1]!.id, 'activity-step')
   }
 }
