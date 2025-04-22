@@ -4,6 +4,7 @@ import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { checkActivity } from './activity'
 import {
   deployedInstanceChecks,
   deploymentNodeChecks,
@@ -46,6 +47,7 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
+  ast.isActivity,
   ast.isImportsFromPoject,
   ast.isImported,
   ast.isGlobals,
@@ -132,6 +134,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   logger.debug('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
+    Activity: checkActivity(services),
     DeployedInstance: deployedInstanceChecks(services),
     DeploymentNodeKind: checkDeploymentNodeKind(services),
     DeploymentNode: deploymentNodeChecks(services),

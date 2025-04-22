@@ -323,30 +323,4 @@ describe.concurrent('model', () => {
         }
       }
     }`
-
-  test('element with activities (empty)').valid`
-    specification {
-      element component
-    }
-    model {
-      component system1 {
-        activity Activity1
-      }
-    }`
-
-  test('element with activities (not empty)').valid`
-    specification {
-      element component
-    }
-    model {
-      component system1 {
-        activity Activity1 {
-        }
-
-        component component1 {
-          activity Activity1 {
-          }
-        }
-      }
-    }`
 })

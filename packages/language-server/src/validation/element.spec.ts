@@ -8,7 +8,7 @@ const specs = `
   }
 `
 
-describe('elementChecks', () => {
+describe.concurrent('elementChecks', () => {
   it('should report duplicate element names', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`

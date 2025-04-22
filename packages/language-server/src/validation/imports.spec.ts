@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 
-describe('import checks', () => {
+describe.concurrent('import checks', () => {
   it('should report invalid import from same project (default)', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
