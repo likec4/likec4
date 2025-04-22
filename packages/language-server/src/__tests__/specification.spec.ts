@@ -71,6 +71,11 @@ describe.concurrent('specification', () => {
         element it
       }`
 
+    test('fail if element kind is "activity"').invalid`
+      specification {
+        element activity
+      }`
+
     test('allow element with kinds "element"/"node"/"deployment"').valid`
       specification {
         element element
@@ -386,6 +391,11 @@ describe.concurrent('specification', () => {
       specification {
         relationship it
       }`
+
+    test('fail if relationshipkind is "activity"').invalid`
+      specification {
+        relationship activity
+      }`
   })
 
   describe('for deployment kinds', () => {
@@ -429,6 +439,11 @@ describe.concurrent('specification', () => {
     test('fail if deployment kind is "it"').invalid`
       specification {
         deploymentNode it
+      }`
+
+    test('fail if deployment kind is "activity"').invalid`
+      specification {
+        deploymentNode activity
       }`
 
     test('allow deployment with kinds "element"/"node"/"deployment"').valid`
