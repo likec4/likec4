@@ -86,9 +86,9 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatRelation(node: AstNode) {
     this.on(
       node,
-      (n): n is ast.Relation | ast.DeploymentRelation => ast.isRelation(n) || ast.isDeploymentRelation(n),
+      (n): n is ast.RelationLike => ast.isRelationLike(n),
       (n, f) => {
-        const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
+        const sourceNodes = 'source' in n && n.source.$cstNode ? [n.source.$cstNode] : []
 
         f.cst(sourceNodes).append(FormattingOptions.oneSpace)
         f.keywords(']->').prepend(FormattingOptions.noSpace)
@@ -143,6 +143,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isElementBody(node)
       || ast.isExtendElementBody(node)
       || ast.isRelationBody(node)
+      || ast.isActivityBody(node)
       || ast.isRelationStyleProperty(node)
       || ast.isMetadataBody(node)
       || ast.isModelViews(node)

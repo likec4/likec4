@@ -260,6 +260,10 @@ ActivityStep:
 ;
 
 
+// AST nodes that represent relations
+type RelationLike = Relation | DeploymentRelation | ActivityStep;
+
+
 // Views -------------------------------------
 
 ModelViews:

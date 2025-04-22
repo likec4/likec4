@@ -107,7 +107,7 @@ export class LikeC4ModelLocator {
         doc.parseResult.value,
         relation.astPath,
       )
-      if (!ast.isRelation(node) && !ast.isDeploymentRelation(node)) {
+      if (!ast.isRelationLike(node)) {
         continue
       }
 

@@ -8,7 +8,14 @@ import type { IteratorLike } from '../types/_common'
 import type { Element } from '../types/element'
 import type { ModelGlobals } from '../types/global'
 import type { AnyParsedLikeC4ModelData, GenericLikeC4ModelData, LikeC4ModelDump } from '../types/model-data'
-import { type ProjectId, type Tag as C4Tag, GlobalFqn, isGlobalFqn } from '../types/scalars'
+import {
+  type ProjectId,
+  type Tag as C4Tag,
+  elementFromActivityId,
+  GlobalFqn,
+  isActivityId,
+  isGlobalFqn,
+} from '../types/scalars'
 import type { ComputedView, DiagramView, LikeC4View } from '../types/view'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
@@ -179,6 +186,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
   }
   public findElement(el: LiteralUnion<M['Element'], string>): ElementModel<M> | null {
+    if (isActivityId(el)) {
+      el = elementFromActivityId(el)
+    }
     return this.#elements.get(el) ?? null
   }
 
