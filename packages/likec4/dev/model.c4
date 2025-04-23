@@ -81,7 +81,7 @@ model {
         Data storage
         and data processing
       '
-      icon file://images/data-services.svg
+      icon ./images/data-services.svg
     }
 
     billing = service 'Billing' {

@@ -1,6 +1,6 @@
 import { filter, isString, isTruthy, pipe, unique } from 'remeda'
 import k from 'tinyrainbow'
-import { joinURL, withoutProtocol } from 'ufo'
+import { joinURL } from 'ufo'
 import type { ComputedView } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 
@@ -27,7 +27,7 @@ function code(views: ComputedView[]) {
       // is not in the same directory as the code that's running.
       // We need to find the path of the original file that contained
       // the model, and then make the path (s) relative to that.
-      acc.imports.push(`import ${Component} from '${withoutProtocol(s)}?inline'`)
+      acc.imports.push(`import ${Component} from '${s}?inline'`)
       acc.cases.push(`  '[${s}]': () => <img src={${Component}} />`)
 
       return acc
