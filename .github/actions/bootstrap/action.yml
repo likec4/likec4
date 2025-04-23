@@ -14,13 +14,13 @@ runs:
       uses: pnpm/action-setup@v4
 
     - name: 🛠️ Setup node
-      uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
 
     - name: 🛠️ Cache for turbo
-      uses: rharkor/caching-for-turbo@v1.6
+      uses: rharkor/caching-for-turbo@v1.8
       with:
         cache-prefix: turbo_cache_
 

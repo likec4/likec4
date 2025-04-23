@@ -1,21 +1,21 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { type ElementKind, type Fqn, type IconUrl, type Tag } from '../../../types'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $expr, $include, computeView } from './fixture'
 
 describe('compute-element-view', () => {
-  it('should be empty if no root and no rules', () => {
+  it('should be empty if no root and no rules', ({ expect }) => {
     const { nodes, edges } = computeView([])
     expect.soft(nodes).toEqual([])
     expect(edges).toEqual([])
   })
 
-  it('should show only root if no rules', () => {
+  it('should show only root if no rules', ({ expect }) => {
     const { nodeIds, edges } = computeView('cloud', [])
     expect(nodeIds).toEqual(['cloud'])
     expect(edges).toEqual([])
   })
 
-  it('should return landscape view on top `include *`', () => {
+  it('should return landscape view on top `include *`', ({ expect }) => {
     const { nodes, nodeIds, edgeIds } = computeView([$include('*')])
     expect.soft(nodeIds).toEqual([
       'customer',
@@ -62,7 +62,7 @@ describe('compute-element-view', () => {
   })
 
   // TODO investigate why this test fails
-  it.fails('should return nodes in the same order as was in view', () => {
+  it.fails('should return nodes in the same order as was in view', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView([$include('email'), $include('*')])
     expect(nodeIds).toEqual([
       'email',
@@ -74,7 +74,7 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual(['customer:cloud', 'support:cloud', 'cloud:amazon'])
   })
 
-  it('view of cloud', () => {
+  it('view of cloud', ({ expect }) => {
     const { nodeIds, edgeIds, ...view } = computeView('cloud', [$include('*')])
     expect.soft(nodeIds).toEqual([
       'customer',
@@ -97,7 +97,7 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
-  it('view of cloud.backend', () => {
+  it('view of cloud.backend', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView('cloud.backend', [
       $include('*'),
       $include('customer'),
@@ -120,7 +120,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view of cloud.frontend', () => {
+  it('view of cloud.frontend', ({ expect }) => {
     const { nodeIds, edgeIds, ...view } = computeView('cloud.frontend', [$include('*')])
     expect.soft(nodeIds).toEqual([
       'customer',
@@ -141,14 +141,14 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
-  it('view of amazon', () => {
+  it('view of amazon', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView('amazon', [$include('*')])
 
     expect(nodeIds).toEqual(['cloud', 'amazon', 'amazon.s3'])
     expect(edgeIds).toEqual(['cloud:amazon.s3'])
   })
 
-  it('view of amazon including cloud.* ->', () => {
+  it('view of amazon including cloud.* ->', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('amazon', [$include('*'), $include('cloud.* ->')])
 
     expect(nodeIds).toEqual([
@@ -161,7 +161,7 @@ describe('compute-element-view', () => {
     expect(edgeIds).to.have.same.members(['cloud.backend:amazon.s3'])
   })
 
-  it('view of cloud.frontend (and include parent cloud)', () => {
+  it('view of cloud.frontend (and include parent cloud)', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [$include('*'), $include('cloud')])
 
     expect(nodeIds).toEqual([
@@ -182,7 +182,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view of cloud.frontend (and include cloud.backend.*)', () => {
+  it('view of cloud.frontend (and include cloud.backend.*)', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [
       $include('*'),
       $include('cloud'),
@@ -210,7 +210,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view of cloud.frontend (and include cloud.frontend -> cloud.backend.*)', () => {
+  it('view of cloud.frontend (and include cloud.frontend -> cloud.backend.*)', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [
       $include('*'),
       $include('cloud'),
@@ -236,7 +236,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view of cloud (exclude cloud, amazon)', () => {
+  it('view of cloud (exclude cloud, amazon)', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud', [
       $include('*'),
       $exclude('cloud'),
@@ -258,7 +258,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view with 3 levels', () => {
+  it('view with 3 levels', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud', [
       $include('*'),
       $include('cloud.frontend.*'),
@@ -291,7 +291,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view with 3 levels (with only relevant elements)', () => {
+  it('view with 3 levels (with only relevant elements)', ({ expect }) => {
     const { edgeIds, nodeIds } = computeView('cloud', [
       $include('*'),
       $include('-> cloud.frontend.*'),
@@ -319,7 +319,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('index view with applied styles', () => {
+  it('index view with applied styles', ({ expect }) => {
     const { nodes } = computeView([
       $include('customer'),
       $include('amazon'),
@@ -338,7 +338,7 @@ describe('compute-element-view', () => {
       // cloud
       // color: muted
       {
-        targets: [{ element: 'cloud' as Fqn }],
+        targets: [$expr('cloud')],
         style: {
           color: 'muted',
           icon: 'http://some-icon' as IconUrl,
@@ -347,7 +347,7 @@ describe('compute-element-view', () => {
       // cloud.*
       // shape: browser
       {
-        targets: [{ element: 'cloud' as Fqn, isChildren: true }],
+        targets: [$expr('cloud.*')],
         style: {
           shape: 'browser',
         },
@@ -376,6 +376,7 @@ describe('compute-element-view', () => {
       icon: 'http://some-icon',
     })
     expect(frontend).toMatchObject({
+      id: 'cloud.frontend.dashboard',
       parent: 'cloud',
       color: 'secondary',
       shape: 'browser',
@@ -383,7 +384,7 @@ describe('compute-element-view', () => {
     expect(frontend).not.toHaveProperty('icon')
   })
 
-  it('should include by element kind', () => {
+  it('should include by element kind', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView({
       include: [
         {
@@ -405,7 +406,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('should include by element tag', () => {
+  it('should include by element tag', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView({
       include: [
         {
@@ -420,7 +421,7 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual([])
   })
 
-  it('should exclude by element kind', () => {
+  it('should exclude by element kind', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView('cloud.frontend', [
       $include('*'),
       {
@@ -446,7 +447,7 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('should exclude by element tag', () => {
+  it('should exclude by element tag', ({ expect }) => {
     const { nodeIds, edgeIds } = computeView('cloud.backend', [
       $include('*'),
       {

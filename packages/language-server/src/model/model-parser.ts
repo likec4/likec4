@@ -1,5 +1,5 @@
 import type { ProjectId } from '@likec4/core'
-import { DefaultWeakMap } from '@likec4/core/utils'
+import { DefaultWeakMap, MultiMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type LangiumDocument, type Stream, DocumentState } from 'langium'
 import { pipe } from 'remeda'
@@ -13,6 +13,7 @@ import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
 import { ExpressionV2Parser } from './parser/FqnRefParser'
 import { GlobalsParser } from './parser/GlobalsParser'
+import { ImportsParser } from './parser/ImportsParser'
 import { ModelParser } from './parser/ModelParser'
 import { PredicatesParser } from './parser/PredicatesParser'
 import { SpecificationParser } from './parser/SpecificationParser'
@@ -23,6 +24,7 @@ export type ModelParsedListener = () => void
 const DocumentParserFromMixins = pipe(
   BaseParser,
   ExpressionV2Parser,
+  ImportsParser,
   ModelParser,
   DeploymentModelParser,
   DeploymentViewParser,
@@ -109,10 +111,12 @@ export class LikeC4ModelParser {
         styles: {},
       },
       c4Views: [],
+      c4Imports: new MultiMap(Set),
     }
     doc = Object.assign(doc, props)
     const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
     parser.parseSpecification()
+    parser.parseImports()
     parser.parseModel()
     parser.parseGlobals()
     parser.parseDeployment()

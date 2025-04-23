@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, type NonEmptyArray, hasAtLeast } from '@likec4/core'
 import { hrtime } from 'node:process'
+import picomatch from 'picomatch'
 import { chromium } from 'playwright'
 import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
-import { type Logger, type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
+import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
@@ -33,6 +34,7 @@ type HandlerParams = {
   timeoutMs?: number
   maxAttempts?: number
   ignore?: boolean
+  filter?: string[] | undefined
 }
 
 export async function exportViewsToPNG(
@@ -62,14 +64,17 @@ export async function exportViewsToPNG(
   const chromePath = chromium.executablePath()
   logger.info(k.cyan('Start chromium'))
   logger.info(k.dim(chromePath))
-  const browser = await chromium.launch()
+  const browser = await chromium.launch({
+    chromiumSandbox: true,
+    headless: true,
+  })
   logger.info(k.cyan(`Color scheme: `) + theme)
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
     colorScheme: theme,
     baseURL: serverUrl,
+    bypassCSP: true,
     ignoreHTTPSErrors: true,
-    reducedMotion: 'reduce',
     isMobile: false,
   })
   browserContext.setDefaultNavigationTimeout(timeoutMs)
@@ -102,6 +107,7 @@ export async function pngHandler({
   ignore = false,
   timeoutMs = 10_000,
   maxAttempts = 3,
+  filter,
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const startTakeScreenshot = hrtime()
@@ -114,11 +120,26 @@ export async function pngHandler({
 
   output ??= languageServices.workspace
 
-  const views = await languageServices.diagrams()
+  let views = await languageServices.diagrams()
+
+  if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
+    const matcher = picomatch(filter)
+    logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
+    views = views.filter(v => {
+      if (matcher(v.id)) {
+        logger.info(`${k.green('include')} ${v.id} ✅`)
+        return true
+      }
+      logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
+      return false
+    })
+  }
+
   if (!hasAtLeast(views, 1)) {
     logger.warn('no views found')
     throw new Error('no views found')
   }
+
   let server: ViteDevServer | undefined
   if (!serverUrl) {
     logger.info(k.cyan(`start preview server`))

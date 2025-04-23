@@ -1,14 +1,14 @@
 ---
 title: Multi-projects
-description: Learn how to separate your LikeC4 model into multiple projects
+description: Learn how to split your LikeC4 model into multiple projects
 sidebar: 
   label: Multi-projects
   order: 13
 ---
 
-import { Card, FileTree } from '@astrojs/starlight/components';
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
 
-Sometimes you may want to separate your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
+Sometimes you may want to split your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
 
 You can do this by creating multiple projects in your workspace and linking them together.  
 You can also use this feature to share your model with other teams or projects.
@@ -56,19 +56,31 @@ You can exclude files by adding an `exclude` array to the config file.
 {
   "name": "project-name",
   "exclude": [
-    "node_modules",
+    "**/node_modules/**/*"
   ]
 }
 ```
 
-If no exclude pattern is provided, LikeC4 uses `["node_modules"]` as default.  
+If no exclude pattern is provided, LikeC4 uses `["**/node_modules/**/*"]` as default.  
 The exclude pattern is the same as the one used by [picomatch](https://github.com/micromatch/picomatch).  
 
 
-## Linking projects
+## Import elements
 
-<Card title="Active development" icon="warning">
-  This feature is under active development.
+You can import elements from other projects by using the `import` keyword.
 
-  Please see <a href="https://github.com/likec4/likec4/discussions/1674" target='_blank'>GitHub discussion</a> for more details.
-</Card>
+```likec4
+import { serviceA } from 'projectA'
+
+model {
+  serviceB = service {
+    -> serviceA.api 'calls serviceA'
+  }
+}
+```
+
+<Aside type='caution' title="Limitations">
+At the moment, the following limitations apply:
+- Referenced projects must be loaded in the same workspace
+- Only top-level **model** elements can be imported
+</Aside>

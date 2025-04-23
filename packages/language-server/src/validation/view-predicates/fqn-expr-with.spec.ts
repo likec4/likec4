@@ -1,7 +1,8 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe.concurrent('elementPredicateWithChecks', () => {
+describe.concurrent('checkFqnExprWith', () => {
+  //
   it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
@@ -64,7 +65,7 @@ describe.concurrent('elementPredicateWithChecks', () => {
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
       expect(diagnostic.message, 'diagnostic message').toBe(
-        'Invalid usage inside "exclude"'
+        'Invalid usage inside "exclude"',
       )
     }
   })

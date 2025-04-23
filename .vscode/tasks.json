@@ -3,8 +3,14 @@
   "tasks": [
     {
       "label": "tsc: build",
-      "type": "typescript",
-      "tsconfig": "tsconfig.json",
+      "type": "shell",
+      "command": "pnpm tsc --build --verbose",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "NODE_ENV": "development",
+        }
+      },
       "problemMatcher": [
         "$tsc"
       ],
@@ -14,7 +20,6 @@
       },
       "promptOnClose": false,
       "presentation": {
-        "echo": false,
         "showReuseMessage": false,
         "reveal": "always",
         "revealProblems": "onProblem",
@@ -57,9 +62,8 @@
     {
       "label": "build_extension",
       "type": "shell",
-      "command": "pnpm turbo run build --filter='likec4-vscode'",
+      "command": "pnpm turbo run build --filter='@likec4/vscode-preview' --filter='likec4-vscode'",
       "options": {
-        "cwd": "${workspaceFolder}/packages/vscode",
         "env": {
           "NODE_ENV": "development",
         }

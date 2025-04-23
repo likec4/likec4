@@ -1,11 +1,12 @@
 import { isString } from 'remeda'
 import type { IsStringLiteral } from 'type-fest/source/is-literal'
-import { type Expression as C4Expression, type Fqn } from '../types'
+import { type ExpressionV2 } from '../types/expression-v2'
+import { type Fqn } from '../types/scalars'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
 import type { ViewsBuilder } from './Builder.views'
 
-export interface ElementViewBuilder<T extends AnyTypes> extends LikeC4ViewBuilder<T, T['Fqn'], C4Expression> {
+export interface ElementViewBuilder<T extends AnyTypes> extends LikeC4ViewBuilder<T, T['Fqn'], Types.ToExpression<T>> {
 }
 
 export type ElementViewRulesBuilder<T extends AnyTypes> = (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
@@ -125,13 +126,15 @@ export interface TypedAddViewOfHelper<A extends AnyTypes> {
   }
 }
 // To hook types
-const asTypedExpr = (expr: C4Expression): C4Expression => {
-  return expr as C4Expression
+const asTypedExpr = (expr: ExpressionV2): ExpressionV2 => {
+  return expr as ExpressionV2
 }
 
-export function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C4Expression): C4Expression {
+export function $expr<Types extends AnyTypes>(
+  expr: ViewPredicate.Expression<Types> | ExpressionV2,
+): ExpressionV2 {
   if (!isString(expr)) {
-    return expr as C4Expression
+    return expr as ExpressionV2
   }
   if (expr === '*') {
     return asTypedExpr({ wildcard: true })
@@ -168,22 +171,31 @@ export function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Typ
   }
   if (expr.endsWith('._')) {
     return asTypedExpr({
-      expanded: expr.replace('._', '') as Fqn,
-    })
-  }
-  if (expr.endsWith('.*')) {
-    return asTypedExpr({
-      element: expr.replace('.*', '') as Fqn,
-      isChildren: true,
+      ref: {
+        model: expr.replace('._', '') as Fqn,
+      },
+      selector: 'expanded',
     })
   }
   if (expr.endsWith('.**')) {
     return asTypedExpr({
-      element: expr.replace('.**', '') as Fqn,
-      isDescendants: true,
+      ref: {
+        model: expr.replace('.**', '') as Fqn,
+      },
+      selector: 'descendants',
+    })
+  }
+  if (expr.endsWith('.*')) {
+    return asTypedExpr({
+      ref: {
+        model: expr.replace('.*', '') as Fqn,
+      },
+      selector: 'children',
     })
   }
   return asTypedExpr({
-    element: expr as any as Fqn,
+    ref: {
+      model: expr as any as Fqn,
+    },
   })
 }

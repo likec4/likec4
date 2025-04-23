@@ -125,6 +125,9 @@ export const labelsva = sva({
           padding: '0px',
         },
         labelContents: {
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           padding: '2px 5px 4px 0px',
         },
         labelText: {

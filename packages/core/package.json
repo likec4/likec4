@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.27.3",
+  "version": "1.29.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -104,7 +104,7 @@
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
-    "fdir": "^6.4.3",
+    "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
@@ -118,5 +118,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.7.1"
+  "packageManager": "pnpm@10.8.1"
 }

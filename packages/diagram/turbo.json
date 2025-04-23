@@ -13,6 +13,17 @@
       ],
       "outputLogs": "new-only"
     },
+    "typecheck": {
+      "dependsOn": [
+        "^generate",
+        "generate",
+        "topo"
+      ],
+      "outputs": [
+        "lib/**"
+      ],
+      "outputLogs": "new-only"
+    },
     "build:dist": {
       "dependsOn": [
         "generate",

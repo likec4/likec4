@@ -1,17 +1,21 @@
 import { type ValidationCheck, AstUtils } from 'langium'
-import { ast } from '../../ast'
+import { ast, getViewRulePredicateContainer } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
-export const relationPredicateWithChecks = (
+export const checkRelationExprWith = (
   _services: LikeC4Services,
-): ValidationCheck<ast.RelationPredicateWith> => {
+): ValidationCheck<ast.RelationExprWith> => {
   return tryOrLog((el, accept) => {
-    const container = AstUtils.getContainerOfType(el, ast.isViewRulePredicate)
-    if (ast.isExcludePredicate(container)) {
+    const container = getViewRulePredicateContainer(el)
+    if (!container || container.$type == 'DynamicViewIncludePredicate') {
+      return
+    }
+    if (!container.isInclude) {
       accept('error', 'Invalid usage inside "exclude"', {
         node: el,
       })
+      return
     }
   })
 }

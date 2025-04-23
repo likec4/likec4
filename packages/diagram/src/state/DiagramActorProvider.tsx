@@ -6,7 +6,7 @@ import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect } from 'react'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
-import { DiagramActorSafeContext } from '../hooks/safeContext'
+import { DiagramActorContextProvider } from '../hooks/safeContext'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
@@ -34,7 +34,10 @@ export function DiagramActorProvider({
     diagramMachine.provide({
       actions: {
         'trigger:NavigateTo': ((_, { viewId }) => {
-          handlersRef.current.onNavigateTo?.(viewId as ViewId)
+          // this delay allows tap animations to finish
+          setTimeout(() => {
+            handlersRef.current.onNavigateTo?.(viewId as ViewId)
+          }, 30)
         }),
 
         'trigger:OnChange': ((_, params) => {
@@ -89,10 +92,10 @@ export function DiagramActorProvider({
   const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
 
   return (
-    <DiagramActorSafeContext value={actorRef}>
+    <DiagramActorContextProvider value={actorRef}>
       <DiagramFeatures overrides={toggledFeatures}>
         {children}
       </DiagramFeatures>
-    </DiagramActorSafeContext>
+    </DiagramActorContextProvider>
   )
 }

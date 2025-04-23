@@ -65,15 +65,15 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
       logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
         const pkg = joinURL(`likec4:${moduleId}`, id)
-        return ` case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
+        return `    case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
       })
       return `
-    export async function ${fnName}(projectId) {
-      switch (projectId) {
-        ${cases.join('\n')}
-        default: throw new Error('Unknown projectId: ' + projectId)
-      }
-    }
+export async function ${fnName}(projectId) {
+  switch (projectId) {
+    ${cases.join('\n')}
+    default: throw new Error('Unknown projectId: ' + projectId)
+  }
+}
     `
     },
   }

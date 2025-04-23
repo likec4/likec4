@@ -18,10 +18,10 @@ export default defineConfig({
     starlight({
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
-      social: {
-        github: 'https://github.com/likec4/likec4',
-        discord: 'https://discord.gg/86ZSpjKAdA',
-      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/likec4/likec4' },
+        { icon: 'discord', label: 'Discord', href: 'https://discord.gg/86ZSpjKAdA' },
+      ],
       logo: {
         dark: './src/assets/logo-dark.svg',
         light: './src/assets/logo-light.svg',

@@ -1,4 +1,5 @@
 import type * as c4 from '@likec4/core'
+import { splitGlobalFqn } from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import { isString } from 'remeda'
@@ -66,8 +67,9 @@ export class LikeC4ModelLocator {
   }
 
   public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
-    const _projectId = this.projects.ensureProjectId(projectId)
-    const entry = this.fqnIndex.byFqn(_projectId, fqn).head()
+    let [_projectId, _fqn] = splitGlobalFqn(fqn)
+    _projectId ??= this.projects.ensureProjectId(projectId)
+    const entry = this.fqnIndex.byFqn(_projectId, _fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null
@@ -79,8 +81,9 @@ export class LikeC4ModelLocator {
   }
 
   public locateDeploymentElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
-    const _projectId = this.projects.ensureProjectId(projectId)
-    const entry = this.deploymentsIndex.byFqn(_projectId, fqn).head()
+    let [_projectId, _fqn] = splitGlobalFqn(fqn)
+    _projectId ??= this.projects.ensureProjectId(projectId)
+    const entry = this.deploymentsIndex.byFqn(_projectId, _fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null

@@ -1,9 +1,9 @@
 import { LikeC4Diagram } from '@likec4/diagram'
+import { IconRenderer } from '@likec4/icons/all'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
-import { IconRenderer } from './Icons'
 import { changeViewId, refetchCurrentDiagram, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 

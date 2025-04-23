@@ -1,6 +1,14 @@
 import { AstUtils } from 'langium'
-import { isNullish } from 'remeda'
+import { isNullish, isTruthy } from 'remeda'
 import { ast } from '../ast'
+
+export function referenceableParent(node: ast.FqnRef): ast.Referenceable | null {
+  // iterate up the root parent
+  while (node.parent) {
+    node = node.parent
+  }
+  return node.value.ref ?? null
+}
 
 export function instanceRef(deploymentRef: ast.FqnRef): ast.DeployedInstance | null {
   let referenceable
@@ -30,18 +38,24 @@ export function deploymentNodeRef(deploymentRef: ast.FqnRef): ast.DeploymentNode
   return artifact ? AstUtils.getContainerOfType(artifact, ast.isDeploymentNode) ?? null : null
 }
 
-export function isReferenceToLogicalModel(node: ast.FqnRef) {
-  // iterate up the root parent
-  while (node.parent) {
-    node = node.parent
-  }
-  return ast.isElement(node.value.ref)
+export function importsRef(node: ast.FqnRef): ast.Imported | null {
+  const referenceable = referenceableParent(node)
+  return referenceable?.$type === 'Imported' ? referenceable : null
+}
+
+export function isImportsRef(node: ast.FqnRef): boolean {
+  return !!importsRef(node)
+}
+
+export function isReferenceToLogicalModel(node: ast.FqnRef): boolean {
+  const referenceable = referenceableParent(node)
+  return referenceable?.$type === 'Element'
 }
 
 /**
  * Returns true if node references deployment model
  */
-export function isReferenceToDeploymentModel(node: ast.FqnRef) {
+export function isReferenceToDeploymentModel(node: ast.FqnRef): boolean {
   let referenceable
   while ((referenceable = node.value?.ref)) {
     if (ast.isDeploymentElement(referenceable)) {

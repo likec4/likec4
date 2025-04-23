@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 
 const specs = `
@@ -9,7 +9,7 @@ const specs = `
 `
 
 describe('elementChecks', () => {
-  it('should report duplicate element names', async () => {
+  it('should report duplicate element names', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -28,7 +28,7 @@ describe('elementChecks', () => {
     ])
   })
 
-  it('should report duplicate element names in same project', async () => {
+  it('should report duplicate element names in same project', async ({ expect }) => {
     const { validateAll } = await createMultiProjectTestServices({
       project1: {
         specs,
@@ -77,7 +77,7 @@ describe('elementChecks', () => {
     expect(warnings).toHaveLength(0)
   })
 
-  it('should report duplicate element names in extendElement', async () => {
+  it('should report duplicate element names in extendElement', async ({ expect }) => {
     const { parse, validateAll } = createTestServices()
     await parse(`
       specification {
@@ -106,7 +106,7 @@ describe('elementChecks', () => {
     }
   })
 
-  it('should not report duplicate element names in nested', async () => {
+  it('should not report duplicate element names in nested', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {

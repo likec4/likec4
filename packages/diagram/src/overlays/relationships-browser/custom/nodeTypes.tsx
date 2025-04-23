@@ -1,6 +1,6 @@
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import type { NodeProps } from '../../../base'
 import {
   CompoundNodeContainer,

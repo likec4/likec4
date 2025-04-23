@@ -1,16 +1,24 @@
-import consola from 'consola'
 import { build } from 'esbuild'
-import { globSync } from 'glob'
+import { fdir } from 'fdir'
 import { writeFile } from 'node:fs/promises'
 import { sep } from 'path'
 
-consola.info('Generating all.js and all.d.ts')
+console.info('Generating all.js and all.d.ts')
+
+const files = new fdir()
+  .glob('**/*.tsx')
+  .withFullPaths()
+  .crawl()
+  .sync()
+  .sort()
+
+console.info('Found %s icons', files.length)
 
 const {
   imports,
   icons,
   types,
-} = globSync(`*/*.tsx`).toSorted().reduce(
+} = files.reduce(
   /**
    * @param {{
    *  imports: string[]
@@ -54,10 +62,20 @@ export declare const Icons: {
 ${types.join('\n')}
 };
 export type IconName = keyof typeof Icons;
-export type IconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
+
+export type IconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | null | undefined
+  }
+}
+export function IconRenderer(props: IconRendererProps): JSX.Element;
+
+export type BundledIconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
   name: IconName;
 };
-export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
+export default function BundledIcon({ name, ...props }: BundledIconProps): JSX.Element;
 `,
 )
 
@@ -70,6 +88,15 @@ ${imports.join('\n')}
 export const Icons = {
 ${icons.join('\n')}
 }
+
+export function IconRenderer({ node, ...props }) {
+  if (!node.icon || node.icon === 'none') {
+    return null
+  }
+  const IconComponent = Icons[node.icon ?? ''];
+  return IconComponent ? jsx(IconComponent, { ...props }) : null;
+}
+
 export default function BundledIcon({ name, ...props }) {
   const IconComponent = Icons[name];
   return IconComponent ? jsx(IconComponent, { ...props }) : null;
@@ -77,7 +104,7 @@ export default function BundledIcon({ name, ...props }) {
 `,
 )
 
-consola.info('Generate js for all icons')
+console.info('Generate js for all icons')
 
 await build({
   entryPoints: [
@@ -89,13 +116,12 @@ await build({
   minify: true,
   tsconfigRaw: {
     compilerOptions: {
+      module: 'esnext',
+      target: 'esnext',
       verbatimModuleSyntax: true,
       jsx: 'react-jsx',
     },
   },
   jsxDev: false,
-  jsx: 'automatic',
   format: 'esm',
-  target: 'esnext',
-  platform: 'browser',
 })

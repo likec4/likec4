@@ -264,6 +264,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected createGraph(): RootGraphModel {
     const autoLayout = this.view.autoLayout
     const G = digraph({
+      [_.likec4_viewId]: this.view.id,
       [_.bgcolor]: 'transparent',
       [_.layout]: 'dot',
       [_.compound]: true,

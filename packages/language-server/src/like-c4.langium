@@ -2,6 +2,7 @@ grammar LikeC4
 
 entry LikeC4Grammar:
   (
+    imports+=ImportsFromPoject |
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
@@ -77,7 +78,21 @@ SpecificationRelationshipKind:
 SpecificationRelationshipStringProperty:
   key=('technology' | 'notation') ':'? value=String ';'?;
 
+// Imports -------------------------------------
+
+ImportsFromPoject:
+  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String
+;
+
+Imported:
+  imported=[Element:Id] ({infer Imported.prev=current} ',' imported=[Element:Id])* ';'?
+;
+
 // Model -------------------------------------
+
+Tags:
+  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
+;
 
 Model:
   name='model' '{'
@@ -143,25 +158,37 @@ ExtendElementProperty:
   LinkProperty |
   MetadataProperty;
 
-//
+// Hack, to strictly enforce resolution of model elements
+ElementRef:
+  modelElement=FqnRef;
+
 StrictFqnElementRef:
   el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
-ElementRef:
-  el=[Element:Id] ({infer ElementRef.parent=current} StickyDot el=[Element:Id])*;
 
-Tags:
-  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
-;
+type ModelReferenceable = Element | Imported;
+type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
+// Reference to Elements in logical or deployment model
+// Scope computation is based on the parent element:
+//  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
+//  - If parent is DeployedInstance, then it can reference  nested  Element
+//  - If parent is Element, then it can reference  nested  Element
+//  Mix of DeploymentRef and ElementRef
+FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
+
+// Strict reference allows only direct children of parent
+StrictFqnRef:
+  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 Relation<isExplicit>:
-  (<isExplicit> source=ElementRef | <!isExplicit> source=ElementRef?)
+  (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   (
     kind=[RelationshipKind:DotId] |
     '-[' kind=[RelationshipKind] ']->' |
     '->'
   )
-  target=ElementRef
+  target=FqnRef
   (
     title=String
     technology=String?
@@ -322,157 +349,23 @@ DynamicViewStep:
 ;
 
 ViewRulePredicate:
-  {infer IncludePredicate} 'include' predicates=Predicates |
-  {infer ExcludePredicate} 'exclude' predicates=Predicates
-;
-Predicates:
-  value=Predicate ({infer Predicates.prev=current} ',' value=Predicate?)*
-;
-
-Predicate:
-  RelationPredicate |
-  ElementPredicate
+  (isInclude?='include' | 'exclude')
+  exprs=Expressions
 ;
 
 ViewRuleGlobalPredicateRef:
   'global' 'predicate' predicate=[GlobalPredicateGroup];
 
-ElementPredicate:
-  ElementPredicates;
-
-ElementPredicates infers ElementPredicate:
-  ElementPredicateOrWhere ({infer ElementPredicateWith.subject=current} 'with' custom=CustomElementProperties?)?
-;
-
-ElementPredicateOrWhere:
-  ElementExpression ({infer ElementPredicateWhere.subject=current} 'where' where=WhereElementExpression?)?
-;
-
-WhereElementExpression:
-  WhereElementOr
-;
-WhereElementOr infers WhereElementExpression:
-  WhereElementAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereElementAnd)*
-;
-WhereElementAnd infers WhereElementExpression:
-  WhereElementPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereElementPrimary)*
-;
-
-WhereElementPrimary infers WhereElementExpression:
-  '(' WhereElementExpression ')' |
-  WhereElementNegation |
-  WhereElement
-;
-
-WhereElementNegation:
-  'not' value=WhereElementExpression;
-
-WhereElement:
-  {infer WhereElementTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]?
-;
-
-ElementExpression:
-  ElementSelectorExpression |
-  ElementDescedantsExpression
-;
-
-ElementSelectorExpression infers ElementExpression:
-  {infer WildcardExpression} isWildcard?='*' |
-  {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
-  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]?
-;
-
-ElementDescedantsExpression infers ElementExpression:
-  ElementRef (
-    {infer ExpandElementExpression.expand=current} DotUnderscore |
-    {infer ElementDescedantsExpression.parent=current} suffix=DotWildcard
-  )?
-;
-
-RelationPredicate:
-  RelationPredicates
-;
-
-RelationPredicates infers RelationPredicate:
-  RelationPredicateOrWhere ({infer RelationPredicateWith.subject=current} 'with' custom=CustomRelationProperties?)?
-;
-
-RelationPredicateOrWhere:
-  RelationExpression ({infer RelationPredicateWhere.subject=current} 'where' where=WhereRelationExpression?)?
-;
-
-WhereRelationExpression:
-  WhereRelationOr
-;
-
-WhereRelationOr infers WhereRelationExpression:
-  WhereRelationAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereRelationAnd)*
-;
-WhereRelationAnd infers WhereRelationExpression:
-  WhereRelationPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereRelationPrimary)*
-;
-
-WhereRelationPrimary infers WhereRelationExpression:
-  '(' WhereRelationExpression ')' |
-  WhereRelationNegation |
-  WhereRelation
-;
-
-WhereRelationNegation:
-  'not' value=WhereRelationExpression;
-
-WhereRelation:
-  {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]? |
-  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]?
-;
-type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
-type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
-type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationParticipantKind;
-
-type WhereExpression = WhereElementExpression | WhereRelationExpression;
-
-RelationExpression:
-  InOutRelationExpressions |
-  DirectedRelationExpressions
-;
-
-InOutRelationExpressions infers RelationExpression:
-  IncomingRelationExpression ({infer InOutRelationExpression.inout=current} '->')?
-;
-
-IncomingRelationExpression:
-  '->' to=ElementExpression;
-
-DirectedRelationExpressions infers RelationExpression:
-  OutgoingRelationExpression ({infer DirectedRelationExpression.source=current} target=ElementExpression)?
-;
-
-OutgoingRelationExpression:
-  from=ElementExpression
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
-;
-
-// Comma-separated list of ElementExpressions
-ElementExpressionsIterator:
-  value=ElementExpression ({infer ElementExpressionsIterator.prev=current} ',' (value=ElementExpression)?)*
-;
-
 DynamicViewIncludePredicate:
-  'include' predicates=DynamicViewPredicateIterator
+  'include' exprs=Expressions
 ;
 
 DynamicViewGlobalPredicateRef:
   'global' 'predicate' predicate=[GlobalDynamicPredicateGroup];
 
-DynamicViewPredicateIterator:
-  value=ElementPredicate ({infer DynamicViewPredicateIterator.prev=current} ',' (value=ElementPredicate)?)*
-;
 
 ViewRuleStyle:
-  'style' target=ElementExpressionsIterator '{'
+  'style' targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -525,13 +418,133 @@ NavigateToProperty:
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
 
+// Expressions -------------------------------------
+
+Expressions:
+  value=ExpressionV2 ({infer Expressions.prev=current} ',' (value=ExpressionV2)?)*
+;
+
+ExpressionV2:
+  RelationExprOrWith |
+  FqnExprOrWith
+;
+
+FqnExprOrWith:
+  FqnExprOrWhere ({infer FqnExprWith.subject=current} 'with' custom=CustomElementProperties?)?
+;
+
+FqnExprOrWhere:
+  FqnExpr ({infer FqnExprWhere.subject=current} 'where' where=WhereElementExpression?)?
+;
+
+RelationExprOrWith:
+  RelationExprOrWhere ({infer RelationExprWith.subject=current} 'with' custom=CustomRelationProperties?)?
+;
+
+RelationExprOrWhere:
+  RelationExpr ({infer RelationExprWhere.subject=current} 'where' where=WhereRelationExpression?)?
+;
+
+FqnExpr:
+  {infer WildcardExpression} isWildcard?='*' |
+  // These are not valid in FqnExpr, but we keep for backward compatibility
+  {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]? |
+  FqnRefExpr
+;
+
+FqnRefExpr:
+  ref=FqnRef selector=(DotUnderscore | DotWildcard)?
+;
+
+RelationExpr:
+  InOutRelationExpr |
+  DirectedRelationExpr
+;
+
+InOutRelationExpr infers RelationExpr:
+  IncomingRelationExpr ({infer InOutRelationExpr.inout=current} '->')?
+;
+
+IncomingRelationExpr:
+  '->' to=FqnExpr;
+
+DirectedRelationExpr infers RelationExpr:
+  OutgoingRelationExpr ({infer DirectedRelationExpr.source=current} target=FqnExpr)?
+;
+
+OutgoingRelationExpr:
+  from=FqnExpr
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+;
+
+FqnExpressions:
+  value=FqnExpr ({infer FqnExpressions.prev=current} ',' (value=FqnExpr)?)*
+;
+
+WhereElementExpression:
+  WhereElementOr
+;
+WhereElementOr infers WhereElementExpression:
+  WhereElementAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereElementAnd)*
+;
+WhereElementAnd infers WhereElementExpression:
+  WhereElementPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereElementPrimary)*
+;
+
+WhereElementPrimary infers WhereElementExpression:
+  '(' WhereElementExpression ')' |
+  WhereElementNegation |
+  WhereElement
+;
+
+WhereElementNegation:
+  'not' value=WhereElementExpression;
+
+WhereElement:
+  {infer WhereElementTag} 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]?
+;
+
+WhereRelationExpression:
+  WhereRelationOr
+;
+
+WhereRelationOr infers WhereRelationExpression:
+  WhereRelationAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereRelationAnd)*
+;
+WhereRelationAnd infers WhereRelationExpression:
+  WhereRelationPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereRelationPrimary)*
+;
+
+WhereRelationPrimary infers WhereRelationExpression:
+  '(' WhereRelationExpression ')' |
+  WhereRelationNegation |
+  WhereRelation
+;
+
+WhereRelationNegation:
+  'not' value=WhereRelationExpression;
+
+WhereRelation:
+  {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]? |
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]?
+;
+type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
+type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
+type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationParticipantKind;
+
+type WhereExpression = WhereElementExpression | WhereRelationExpression;
+
 // Deployment -------------------------------------
 
 ModelDeployments:
   name='deployment' '{'
     elements+=(
       DeploymentNode |
-      DeploymentRelation |
+      DeploymentRelation<true> |
       ExtendDeployment
     )*
   '}';
@@ -552,7 +565,7 @@ DeploymentNodeBody: '{'
   props+=ElementProperty*
   elements+=(
     DeployedInstance |
-    DeploymentRelation |
+    DeploymentRelation<false> |
     DeploymentNode
   )*
 '}';
@@ -560,7 +573,7 @@ DeploymentNodeBody: '{'
 DeployedInstance:
   (name=Id Eq)?
   'instanceOf'
-  element=ElementRef
+  target=ElementRef
   title=String?
   body=DeployedInstanceBody?
   ';'?
@@ -569,6 +582,9 @@ DeployedInstance:
 DeployedInstanceBody: '{'
   tags=Tags?
   props+=ElementProperty*
+  elements+=(
+    DeploymentRelation<false>
+  )*
 '}';
 
 ExtendDeployment:
@@ -581,28 +597,15 @@ ExtendDeploymentBody:  '{'
 
   elements+=(
     DeployedInstance |
-    DeploymentRelation |
+    DeploymentRelation<true> |
     DeploymentNode
   )*
 '}'
 ;
 
-type Referenceable = DeploymentNode | DeployedInstance | Element;
-// Reference to Elements in logical or deployment model
-// Scope computation is based on the parent element:
-//  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
-//  - If parent is DeployedInstance, then it can reference  nested  Element
-//  - If parent is Element, then it can reference  nested  Element
-//  Mix of DeploymentRef and ElementRef
-FqnRef:
-  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
-// Strict reference allows only direct children of parent
-StrictFqnRef:
-  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
-
-DeploymentRelation:
-  source=FqnRef
+DeploymentRelation<isExplicit>:
+  (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
   target=FqnRef
   (
@@ -646,58 +649,7 @@ DeploymentViewRuleStyle:
 
 DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
-  expr=DeploymentViewRulePredicateExpression
-;
-
-DeploymentViewRulePredicateExpression:
-  value=ExpressionV2 ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=ExpressionV2)?)*
-;
-
-ExpressionV2:
-  RelationPredicateOrWhereV2 |
-  ElementPredicateOrWhereV2
-;
-
-ElementPredicateOrWhereV2:
-  FqnExpr ({infer ElementPredicateWhereV2.subject=current} 'where' where=WhereElementExpression?)?
-;
-
-RelationPredicateOrWhereV2:
-  RelationExpr ({infer RelationPredicateWhereV2.subject=current} 'where' where=WhereRelationExpression?)?
-;
-
-FqnExpr:
-  {infer WildcardExpression} isWildcard?='*' |
-  FqnRefExpr
-;
-
-FqnRefExpr:
-  ref=FqnRef selector=(DotUnderscore | DotWildcard)?
-;
-
-RelationExpr:
-  InOutRelationExpr |
-  DirectedRelationExpr
-;
-
-InOutRelationExpr infers RelationExpr:
-  IncomingRelationExpr ({infer InOutRelationExpr.inout=current} '->')?
-;
-
-IncomingRelationExpr:
-  '->' to=FqnExpr;
-
-DirectedRelationExpr infers RelationExpr:
-  OutgoingRelationExpr ({infer DirectedRelationExpr.source=current} target=FqnExpr)?
-;
-
-OutgoingRelationExpr:
-  from=FqnExpr
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
-;
-
-FqnExpressions:
-  value=FqnExpr ({infer FqnExpressions.prev=current} ',' (value=FqnExpr)?)*
+  expr=Expressions
 ;
 // Global -------------------------------------
 
@@ -723,7 +675,7 @@ GlobalStyleId:
   name=IdTerminal;
 
 GlobalStyle:
-  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
+  'style' id=GlobalStyleId targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -899,7 +851,7 @@ hidden terminal NL: /[\r\n]+/;
 // LibIcons
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
-terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
+terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;

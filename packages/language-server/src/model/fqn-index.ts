@@ -23,7 +23,7 @@ import { ADisposable } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'
 
-export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
+export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   protected projects: ProjectsManager
   protected langiumDocuments: LangiumDocuments
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
@@ -42,11 +42,10 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.IndexedContent,
-        async (doc, _cancelToken) => {
+        (doc) => {
           if (isLikeC4LangiumDocument(doc)) {
             this.documentCache.set(doc, this.createDocumentIndex(doc))
           }
-          return await Promise.resolve()
         },
       ),
     )
@@ -66,6 +65,16 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     return this.documentCache.get(document)
   }
 
+  public resolve(reference: ast.Referenceable): Fqn {
+    if (reference.$type === 'Imported') {
+      return this.getFqn(reference.imported.ref as AstNd)
+    }
+    if (reference.$type === 'Element') {
+      return this.getFqn(reference as AstNd)
+    }
+    return this.services.likec4.DeploymentsIndex.getFqn(reference)
+  }
+
   public getFqn(el: AstNd): Fqn {
     invariant(ast.isElement(el) || ast.isDeploymentElement(el))
     let id = ElementOps.readId(el)
@@ -82,7 +91,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
   }
 
   public byFqn(projectId: ProjectId, fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    return stream(this.workspaceCache.get(`${this.cachePrefix}:${projectId}:${fqn}`, () => {
+    return stream(this.workspaceCache.get(`${this.cachePrefix}:${projectId}:fqn:${fqn}`, () => {
       return this
         .documents(projectId)
         .toArray()
@@ -90,6 +99,22 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
           return this.get(doc).byFqn(fqn)
         })
     }))
+  }
+
+  public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return stream(
+      this.workspaceCache.get(`${this.cachePrefix}:${projectId}:rootElements`, () => {
+        const allchildren = this.documents(projectId)
+          .reduce((map, doc) => {
+            this.get(doc).rootElements().forEach(desc => {
+              map.set(desc.name, desc)
+            })
+            return map
+          }, new MultiMap<string, AstNodeDescriptionWithFqn>())
+        return uniqueByName(allchildren)
+          .sort((a, b) => compareNatural(a.name, b.name))
+      }),
+    )
   }
 
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
@@ -148,6 +173,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
+    const projectId = document.likec4ProjectId ??= this.projects.belongsTo(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
@@ -158,6 +184,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
       const desc = {
         ...Descriptions.createDescription(node, name, document),
         id: fqn,
+        likec4ProjectId: projectId,
       }
       ElementOps.writeId(node, fqn)
       byfqn.set(fqn, desc)
@@ -223,7 +250,7 @@ export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
       }
     }
 
-    return new DocumentFqnIndex(root, children, descendants, byfqn, this.projects.belongsTo(document))
+    return new DocumentFqnIndex(root, children, descendants, byfqn, projectId)
   }
 }
 

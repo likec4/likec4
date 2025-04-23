@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.27.3",
+  "version": "1.29.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -40,7 +40,7 @@
     "./package.json": "./package.json",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.7.1",
+  "packageManager": "pnpm@10.8.1",
   "scripts": {
     "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
@@ -66,15 +66,17 @@
     "clsx": "catalog:react",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
-    "framer-motion": "catalog:react",
+    "motion": "catalog:react",
     "nanostores": "catalog:react",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
     "xstate": "^5.19.2"
+  },
+  "peerDependencies": {
+    "react": "^18.x || ^19.x",
+    "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
@@ -87,6 +89,8 @@
     "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:vite",
     "postcss": "catalog:css",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",

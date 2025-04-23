@@ -1,12 +1,14 @@
 import { isEmpty } from 'remeda'
-import type { Color, IteratorLike } from '../types'
-import type { Link, Tag } from '../types/element'
+import type { IteratorLike } from '../types/_common'
+import type { Link } from '../types/element'
 import {
   type ModelRelation,
   type RelationshipLineType,
   DefaultLineStyle,
   DefaultRelationshipColor,
 } from '../types/relation'
+import type { Tag } from '../types/scalars'
+import type { Color } from '../types/theme'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'

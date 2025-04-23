@@ -3,7 +3,7 @@ import { invariant } from '../../../errors'
 import { ConnectionModel, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import * as Expr from '../../../types/expression'
+import { ModelLayer } from '../../../types/expression-v2-model'
 import { isSameHierarchy } from '../../../utils'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
@@ -11,10 +11,12 @@ import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
-export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationExpr> = {
+const isWildcard = ModelLayer.FqnExpr.isWildcard
+
+export const DirectRelationExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.Direct> = {
   include: ({ expr: { source, target, isBidirectional = false }, memory, model, stage, where, filterWhere }) => {
-    const sourceIsWildcard = Expr.isWildcard(source)
-    const targetIsWildcard = Expr.isWildcard(target)
+    const sourceIsWildcard = isWildcard(source)
+    const targetIsWildcard = isWildcard(target)
 
     const connections = [] as ConnectionModel<AnyAux>[]
     switch (true) {
@@ -166,8 +168,8 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
       }
 
       default: {
-        invariant(!Expr.isWildcard(source), 'Inference failed - source must be not a wildcard')
-        invariant(!Expr.isWildcard(target), 'Inference failed - target must be not a wildcard')
+        invariant(!isWildcard(source), 'Inference failed - source must be not a wildcard')
+        invariant(!isWildcard(target), 'Inference failed - target must be not a wildcard')
         const sources = resolveAndIncludeFromMemory(source, { memory, model })
         const targets = resolveAndIncludeFromMemory(target, { memory, model })
         const dir = isBidirectional ? 'both' : 'directed'
@@ -186,8 +188,8 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
     return stage
   },
   exclude: ({ expr: { source, target, isBidirectional }, model, memory, stage, where }) => {
-    const sourceIsWildcard = Expr.isWildcard(source)
-    const targetIsWildcard = Expr.isWildcard(target)
+    const sourceIsWildcard = isWildcard(source)
+    const targetIsWildcard = isWildcard(target)
 
     let relations: Set<RelationshipModel<AnyAux>>
 
@@ -249,8 +251,8 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
       }
 
       default: {
-        invariant(!Expr.isWildcard(source), 'Inferrence failed - source must be not a wildcard')
-        invariant(!Expr.isWildcard(target), 'Inferrence failed - target must be not a wildcard')
+        invariant(!isWildcard(source), 'Inferrence failed - source must be not a wildcard')
+        invariant(!isWildcard(target), 'Inferrence failed - target must be not a wildcard')
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 
@@ -281,7 +283,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
  * Resolve elements for both source and target, when one of them is a wildcard
  */
 function resolveWildcard(
-  nonWildcard: Expr.NonWilcard,
+  nonWildcard: ModelLayer.FqnExpr.NonWildcard,
   { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>,
 ): [elements: Elem[], wildcard: Elem[]] {
   let sources = resolveElements(model, nonWildcard)
@@ -289,8 +291,8 @@ function resolveWildcard(
     return [[], []]
   }
 
-  if (Expr.isExpandedElementExpr(nonWildcard) || Expr.isElementRef(nonWildcard)) {
-    const parent = model.element(nonWildcard.element ?? nonWildcard.expanded)
+  if (ModelLayer.FqnExpr.isModelRef(nonWildcard)) {
+    const parent = model.element(ModelLayer.FqnRef.toFqn(nonWildcard.ref))
     const targets = toArray(parent.ascendingSiblings())
     return [
       includeDescendantsFromMemory(sources, memory),

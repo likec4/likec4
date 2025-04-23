@@ -4,13 +4,12 @@ import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
-import { ViewPadding } from './const'
 import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
 import {
   RelationshipsBrowserActorContext,
@@ -101,7 +100,6 @@ const RelationshipsBrowserXYFlow = memo(() => {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView={false}
-      fitViewPadding={ViewPadding}
       onNodeClick={useCallbackRef((e, node) => {
         browser.send({ type: 'xyflow.nodeClick', node })
       })}

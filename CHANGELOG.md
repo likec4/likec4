@@ -1,3 +1,65 @@
+# [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
+
+### 🚀 Features
+
+* **MCP Server**  
+  [📖 Documentation](https://likec4.dev/tools/mcp/)
+  
+* Filter option to `export` command for selective view export by ID  
+  ```sh
+  likec4 export png --filter="team1*" --filter="index" .
+  ```
+
+### Bug Fixes
+
+* **diagram:** use Context.Provider instead of bare Context for react 18 compatibility, closes [#1858](https://github.com/likec4/likec4/issues/1858)
+* **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio`
+
+
+## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
+
+### Bug Fixes
+
+* **export:** relationships not rendered correctly when exporting to PNG, closes [#1707](https://github.com/likec4/likec4/issues/1707)
+* **diagram:** strange glitches on mouse hover in search view, closes [#1798](https://github.com/likec4/likec4/issues/1798)
+* **vscode:** apply style changes in deployment views
+* **react:** mark `react` as peerDependency with relaxed semver range (compatible with react 18 and 19)
+
+
+# [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
+
+This release improves multi-projects support
+
+### 🚀 Features
+
+* **imports**  
+  Reference elements from other projects
+  
+  ```zig
+  import { serviceA } from 'projectA'
+  
+  model {
+    serviceB = service {
+      -> serviceA.api 'calls serviceA'
+    }
+  }
+  ```
+
+* **excludes**  
+  Exclude files in the config file
+  
+  ```json
+  {
+    "name": "project-name",
+    "exclude": [
+      "**/node_modules/**/*"
+    ]
+  }
+  ```
+
+[📖 Read the documentation](https://likec4.dev/dsl/projects/)  
+
+
 ## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
 
 

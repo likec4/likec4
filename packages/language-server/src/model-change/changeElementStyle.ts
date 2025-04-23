@@ -1,10 +1,11 @@
-import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChange } from '@likec4/core'
-import { GrammarUtils } from 'langium'
+import { type Fqn, type NonEmptyArray, type ViewChange, invariant, isAncestor, nonNullable } from '@likec4/core'
+import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-types'
-import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
+import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
+import { isReferenceToLogicalModel } from '../utils'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 
@@ -15,7 +16,7 @@ const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['s
     ...entries(style).map(([key, value]) =>
       indentStr + `  ${key} ${key === 'opacity' ? value.toString() + '%' : value}`
     ),
-    indentStr + `}`
+    indentStr + `}`,
   ]
 }
 
@@ -32,25 +33,29 @@ type ChangeElementStyleArg = {
  * - has exactly one target
  * - the target is an ElementRef to the given fqn
  */
-const isMatchingViewRule =
-  (fqn: string, index: FqnIndex) => (rule: ast.ViewRule | ast.DynamicViewRule): rule is ast.ViewRuleStyle => {
-    if (!ast.isViewRuleStyle(rule)) {
-      return false
-    }
-    const target = rule.target.value
-    if (!target || isTruthy(rule.target.prev) || !ast.isElementRef(target)) {
-      return false
-    }
-    const ref = target.el.ref
-    const _fqn = ref ? index.getFqn(ref) : null
-    return _fqn === fqn
+const isMatchingViewRule = (fqn: string, index: FqnIndex) =>
+(
+  rule: ast.ViewRule | ast.DynamicViewRule | ast.DeploymentViewRule,
+): rule is ast.ViewRuleStyle | ast.DeploymentViewRuleStyle => {
+  if (!ast.isViewRuleStyle(rule) && !ast.isDeploymentViewRuleStyle(rule)) {
+    return false
   }
+  const target = rule.targets.value
+  if (
+    !target || isTruthy(rule.targets.prev) || target.$type !== 'FqnRefExpr' || isTruthy(target.selector)
+  ) {
+    return false
+  }
+  const ref = target.ref?.value?.ref
+  const _fqn = ref ? index.resolve(ref) : null
+  return _fqn === fqn
+}
 
 export function changeElementStyle(services: LikeC4Services, {
   view,
   viewAst,
   targets,
-  style
+  style,
 }: ChangeElementStyleArg): {
   modifiedRange: Range
   edits: TextEdit[]
@@ -65,10 +70,14 @@ export function changeElementStyle(services: LikeC4Services, {
   invariant(insertPos, 'insertPos is not defined')
   const indent = viewCstNode.range.start.character + 2
   const fqnIndex = services.likec4.FqnIndex
-  const styleRules = filter(viewAst.body.rules, ast.isViewRuleStyle)
+  const styleRules = filter(
+    viewAst.body.rules,
+    (r: AstNode): r is ast.ViewRuleStyle | ast.DeploymentViewRuleStyle =>
+      ast.isViewRuleStyle(r) || ast.isDeploymentViewRuleStyle(r),
+  )
   const viewOf = view.__ === 'element' ? view.viewOf : null
   // Find existing rules
-  const existing = [] as Array<{ fqn: Fqn; rule: ast.ViewRuleStyle }>
+  const existing = [] as Array<{ fqn: Fqn; rule: ast.ViewRuleStyle | ast.DeploymentViewRuleStyle }>
   const insert = [] as Array<{ fqn: Fqn }>
   // const existingRules = [] as Array<{ fqn: Fqn, rule: ast.ViewRuleStyle }>
   targets.forEach(target => {
@@ -84,7 +93,7 @@ export function changeElementStyle(services: LikeC4Services, {
 
   const modifiedRange = {
     start: insertPos,
-    end: insertPos
+    end: insertPos,
   }
 
   const includeRange = (range: Range) => {
@@ -111,16 +120,16 @@ export function changeElementStyle(services: LikeC4Services, {
     edits.push(
       TextEdit.insert(
         insertPos,
-        '\n' + linesToInsert.join('\n')
-      )
+        '\n' + linesToInsert.join('\n'),
+      ),
     )
     modifiedRange.start = {
       line: insertPos.line + 1,
-      character: indent
+      character: indent,
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
-      character: (last(linesToInsert)?.length ?? 0)
+      character: (last(linesToInsert)?.length ?? 0),
     }
   }
 
@@ -136,7 +145,7 @@ export function changeElementStyle(services: LikeC4Services, {
           const { range: { start, end } } = ruleProp.$cstNode
           includeRange({
             start,
-            end
+            end,
           })
           edits.push(TextEdit.replace({ start, end }, key + ' ' + value))
           continue
@@ -149,24 +158,24 @@ export function changeElementStyle(services: LikeC4Services, {
         edits.push(
           TextEdit.insert(
             insertPos,
-            '\n' + insertKeyValue
-          )
+            '\n' + insertKeyValue,
+          ),
         )
         includeRange({
           start: {
             line: insertPos.line + 1,
-            character: indentStr.length
+            character: indentStr.length,
           },
           end: {
             line: insertPos.line + 1,
-            character: insertKeyValue.length
-          }
+            character: insertKeyValue.length,
+          },
         })
       }
     }
   }
   return {
     modifiedRange,
-    edits
+    edits,
   }
 }

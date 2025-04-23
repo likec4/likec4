@@ -1,6 +1,6 @@
 import { IconChevronRight } from '@tabler/icons-react'
 
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, m } from 'motion/react'
 
 import { IconChevronLeft } from '@tabler/icons-react'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'

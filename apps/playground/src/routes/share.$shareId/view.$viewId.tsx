@@ -9,7 +9,7 @@ import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { Button, UnstyledButton } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 
 export const Route = createFileRoute('/share/$shareId/view/$viewId')({
   component: RouteComponent,

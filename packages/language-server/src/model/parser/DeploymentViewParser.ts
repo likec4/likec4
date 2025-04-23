@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isNonNullish } from 'remeda'
-import { type ParsedAstDeploymentView, ast, toAutoLayout, toElementStyle, ViewOps } from '../../ast'
+import { type ParsedAstDeploymentView, ast, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -75,27 +75,12 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
       const exprs = [] as c4.ExpressionV2[]
-      let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
+      let iterator: ast.Expressions | undefined = astRule.expr
       while (iterator) {
         try {
           const expr = iterator.value
           if (isNonNullish(expr) && this.isValid(expr)) {
-            switch (true) {
-              case ast.isFqnExpr(expr):
-                exprs.unshift(this.parseFqnExpr(expr))
-                break
-              case ast.isElementPredicateWhereV2(expr):
-                exprs.unshift(this.parseElementWhereExpr(expr))
-                break
-              case ast.isRelationExpr(expr):
-                exprs.unshift(this.parseRelationExpr(expr))
-                break
-              case ast.isRelationPredicateWhereV2(expr):
-                exprs.unshift(this.parseRelationWhereExpr(expr))
-                break
-              default:
-                nonexhaustive(expr)
-            }
+            exprs.unshift(this.parseExpressionV2(expr))
           }
         } catch (e) {
           logWarnError(e)
@@ -106,16 +91,13 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
     }
 
     parseDeploymentViewRuleStyle(astRule: ast.DeploymentViewRuleStyle): c4.DeploymentViewRuleStyle {
-      const styleProps = astRule.props.filter(ast.isStyleProperty)
-      const notationProperty = astRule.props.find(ast.isNotationProperty)
-      const notation = removeIndent(notationProperty?.value)
+      const style = this.parseStyleProps(astRule.props.filter(ast.isStyleProperty))
+      const notation = removeIndent(astRule.props.find(ast.isNotationProperty)?.value)
       const targets = this.parseFqnExpressions(astRule.targets)
       return {
         targets,
+        style,
         ...(notation && { notation }),
-        style: {
-          ...toElementStyle(styleProps, this.isValid),
-        },
       }
     }
   }

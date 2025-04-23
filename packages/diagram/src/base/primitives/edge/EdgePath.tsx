@@ -1,5 +1,5 @@
 import type { DiagramEdge } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
@@ -16,25 +16,28 @@ type Data = UndefinedOnPartialDeep<
   >
 >
 
-type EdgePathProps = EdgeProps<Data> & {
+type EdgePathProps = {
+  edgeProps: EdgeProps<Data>
   svgPath: string
   strokeWidth?: number
   onEdgePointerDown?: PointerEventHandler<SVGGElement> | undefined
 }
 
 export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
-  id,
-  data: {
-    line,
-    dir,
-    tail,
-    head,
+  edgeProps: {
+    id,
+    data: {
+      line,
+      dir,
+      tail,
+      head,
+    },
+    style,
+    interactionWidth,
   },
+  onEdgePointerDown,
   strokeWidth,
   svgPath,
-  style,
-  interactionWidth,
-  onEdgePointerDown,
 }, svgPathRef) => {
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
@@ -69,10 +72,15 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   return (
     <>
       <path
-        className={cx('react-flow__edge-interaction', hideOnReducedGraphics)}
+        className={cx(
+          'react-flow__edge-interaction',
+          hideOnReducedGraphics,
+          css({
+            fill: '[none]',
+            strokeOpacity: 0,
+          }),
+        )}
         d={svgPath}
-        fill="none"
-        stroke={'transparent'}
         strokeWidth={interactionWidth ?? 10}
       />
       <g className={markerContext} onPointerDown={onEdgePointerDown}>

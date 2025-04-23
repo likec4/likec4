@@ -24,10 +24,10 @@ export function ElementDetails({
     shallowEqual,
   )
   return (
-    <ElementDetailsActorContext value={actorRef}>
+    <ElementDetailsActorContext.Provider value={actorRef}>
       <ElementDetailsCard
         onClose={onClose}
         {...props} />
-    </ElementDetailsActorContext>
+    </ElementDetailsActorContext.Provider>
   )
 }

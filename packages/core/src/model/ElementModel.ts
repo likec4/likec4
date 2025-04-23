@@ -1,19 +1,23 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
+import type { IteratorLike } from '../types/_common'
 import {
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
   type ElementStyle,
-  type IconUrl,
-  type IteratorLike,
   type Link,
-  type Tag as C4Tag,
-  type ThemeColor,
   DefaultElementShape,
   DefaultThemeColor,
-} from '../types'
+} from '../types/element'
 import { DefaultShapeSize } from '../types/element'
+import {
+  type IconUrl,
+  type ProjectId,
+  type Tag as C4Tag,
+  splitGlobalFqn,
+} from '../types/scalars'
+import type { ThemeColor } from '../types/theme'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
@@ -28,13 +32,28 @@ export class ElementModel<M extends AnyAux = AnyAux> {
   readonly _literalId: M['Element']
   readonly hierarchyLevel: number
 
+  readonly imported: null | {
+    from: ProjectId
+    fqn: string
+  }
+
   constructor(
     public readonly $model: LikeC4Model<M>,
     public readonly $element: C4Element,
   ) {
     this.id = this.$element.id
     this._literalId = this.$element.id
-    this.hierarchyLevel = hierarchyLevel(this.id)
+    const [projectId, fqn] = splitGlobalFqn(this.id)
+    if (projectId) {
+      this.imported = {
+        from: projectId,
+        fqn,
+      }
+      this.hierarchyLevel = hierarchyLevel(fqn)
+    } else {
+      this.imported = null
+      this.hierarchyLevel = hierarchyLevel(this.id)
+    }
   }
 
   get parent(): ElementModel<M> | null {

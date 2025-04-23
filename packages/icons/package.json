@@ -1,6 +1,6 @@
 {
   "name": "@likec4/icons",
-  "version": "1.27.3",
+  "version": "1.29.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -48,25 +48,26 @@
     "access": "public"
   },
   "scripts": {
-    "update-icons": "node scripts/update-icons.mjs && run generate",
-    "generate": "node scripts/generate.mjs",
+    "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
+    "generate": "pnpm node scripts/generate.mjs",
     "pack": "pnpm pack",
     "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react": "^18.x || ^19.x",
+    "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "execa": "^9.5.2",
-    "glob": "^11.0.1",
+    "fdir": "catalog:utils",
+    "picomatch": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "wireit": "catalog:"
   },
-  "packageManager": "pnpm@10.7.1"
+  "packageManager": "pnpm@10.8.1"
 }

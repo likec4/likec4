@@ -4,8 +4,10 @@ import type { DiagramActorRef } from '../state/types'
 /**
  * To improve experience with HMR, we use `createSafeContext` as a boundary for hoooks
  */
-export const DiagramActorSafeContext = createContext<DiagramActorRef>(null as any)
+const DiagramActorSafeContext = createContext<DiagramActorRef>(null as any)
 DiagramActorSafeContext.displayName = 'DiagramActorSafeContext'
+
+export const DiagramActorContextProvider = DiagramActorSafeContext.Provider
 
 export const useDiagramActorRef = () => {
   const ctx = useContext(DiagramActorSafeContext)

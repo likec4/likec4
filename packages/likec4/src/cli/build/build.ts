@@ -5,6 +5,7 @@ import k from 'tinyrainbow'
 import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger } from '../../logger'
 import { viteBuild } from '../../vite/vite-build'
+import { ensureReact } from '../ensure-react'
 import { pngHandler } from '../export/png/handler'
 
 const { cyan, dim } = k
@@ -33,9 +34,9 @@ type HandlerParams = {
 
   useHashHistory: boolean | undefined
 
-  webcomponentPrefix: string,
+  webcomponentPrefix: string
 
-  outputSingleFile : boolean | undefined
+  outputSingleFile: boolean | undefined
 }
 
 export async function buildHandler({
@@ -46,13 +47,15 @@ export async function buildHandler({
   useOverview = false,
   output: outputDir,
   outputSingleFile,
-  base
+  base,
 }: HandlerParams) {
+  await ensureReact()
+
   const logger = createLikeC4Logger('c4:build')
 
   const languageServices = await LikeC4.fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
-    logger: 'vite'
+    logger: 'vite',
   })
 
   const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')
@@ -69,7 +72,7 @@ export async function buildHandler({
         useDotBin,
         output: likec4AssetsDir,
         outputType: 'flat',
-        ignore: true
+        ignore: true,
       })
     } catch (error) {
       logger.error(k.red('Failed to generate previews'))
@@ -88,7 +91,7 @@ export async function buildHandler({
     languageServices,
     likec4AssetsDir,
     outputDir,
-    outputSingleFile
+    outputSingleFile,
   })
 
   if (useOverview) {

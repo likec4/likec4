@@ -1,6 +1,7 @@
 import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
-import type { Fqn, Link, Tag } from './element'
+import type { Link } from './element'
+import type { Fqn, Tag } from './scalars'
 import type { Color, ThemeColor } from './theme'
 import type { ViewId } from './view'
 

@@ -1,15 +1,14 @@
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, ModelLayer, nonexhaustive } from '@likec4/core'
 import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
-  ast,
   type ParsedAstDynamicView,
   type ParsedAstElementView,
+  ast,
   toAutoLayout,
   toColor,
-  toElementStyle,
-  ViewOps
+  ViewOps,
 } from '../../ast'
 import type { NotationProperty } from '../../generated/ast'
 import { logger, logWarnError } from '../../logger'
@@ -82,7 +81,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         id = 'view_' + stringHash(
           this.doc.uri.toString(),
           astPath,
-          viewOf ?? ''
+          viewOf ?? '',
         ) as c4.ViewId
       }
 
@@ -111,10 +110,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               logWarnError(e)
               return []
             }
-          })
+          }),
         ],
         ...(viewOf && { viewOf }),
-        ...(manualLayout && { manualLayout })
+        ...(manualLayout && { manualLayout }),
       }
       ViewOps.writeId(astNode, view.id)
 
@@ -122,7 +121,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         const extendsView = astNode.extends.view.ref
         invariant(extendsView?.name, 'view extends is not resolved: ' + astNode.$cstNode?.text)
         return Object.assign(view, {
-          extends: extendsView.name as c4.ViewId
+          extends: extendsView.name as c4.ViewId,
         })
       }
 
@@ -149,13 +148,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ViewRulePredicate {
-      const exprs = [] as c4.Expression[]
-      let predicate = astNode.predicates
+      const exprs = [] as c4.ModelLayer.Expression[]
+      let predicate = astNode.exprs
       while (predicate) {
         const { value, prev } = predicate
         try {
           if (isTruthy(value) && this.isValid(value as any)) {
-            exprs.unshift(this.parsePredicate(value))
+            const expr = this.parsePredicate(value)
+            exprs.unshift(expr)
           }
         } catch (e) {
           logWarnError(e)
@@ -165,14 +165,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         }
         predicate = prev
       }
-      return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
+      return astNode.isInclude ? { include: exprs } : { exclude: exprs }
     }
 
     parseViewRuleGlobalPredicateRef(
-      astRule: ast.ViewRuleGlobalPredicateRef | ast.DynamicViewGlobalPredicateRef
+      astRule: ast.ViewRuleGlobalPredicateRef | ast.DynamicViewGlobalPredicateRef,
     ): c4.ViewRuleGlobalPredicateRef {
       return {
-        predicateId: astRule.predicate.$refText as c4.GlobalPredicateId
+        predicateId: astRule.predicate.$refText as c4.GlobalPredicateId,
       }
     }
 
@@ -209,43 +209,45 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return {
         title: toSingleLine(astNode.title) ?? null,
         groupRules,
-        ...toElementStyle(astNode.props, this.isValid)
+        ...this.parseStyleProps(astNode.props),
       }
     }
 
     parseViewRuleStyle(astRule: ast.ViewRuleStyle | ast.GlobalStyle): c4.ViewRuleStyle {
       const styleProps = astRule.props.filter(ast.isStyleProperty)
-      const targets = astRule.target
+      const targets = astRule.targets
       const notation = astRule.props.find(ast.isNotationProperty)
       return this.parseRuleStyle(styleProps, targets, notation)
     }
 
     parseRuleStyle(
       styleProperties: ast.StyleProperty[],
-      elementExpressionsIterator: ast.ElementExpressionsIterator,
-      notationProperty?: NotationProperty
+      elementExpressionsIterator: ast.FqnExpressions,
+      notationProperty?: NotationProperty,
     ): c4.ViewRuleStyle {
-      const styleProps = toElementStyle(styleProperties, this.isValid)
+      const styleProps = this.parseStyleProps(styleProperties)
       const notation = removeIndent(notationProperty?.value)
-      const targets = this.parseElementExpressionsIterator(elementExpressionsIterator)
+      const targets = this.parseFqnExpressions(elementExpressionsIterator).filter((e): e is ModelLayer.FqnExpr =>
+        ModelLayer.Expression.isFqnExpr(e as any)
+      )
       return {
         targets,
         ...(notation && { notation }),
         style: {
-          ...styleProps
-        }
+          ...styleProps,
+        },
       }
     }
 
     parseViewRuleGlobalStyle(astRule: ast.ViewRuleGlobalStyle): c4.ViewRuleGlobalStyle {
       return {
-        styleId: astRule.style.$refText as c4.GlobalStyleID
+        styleId: astRule.style.$refText as c4.GlobalStyleID,
       }
     }
 
     parseDynamicElementView(
       astNode: ast.DynamicView,
-      additionalStyles: c4.ViewRuleStyleOrGlobalRef[]
+      additionalStyles: c4.ViewRuleStyleOrGlobalRef[],
     ): ParsedAstDynamicView {
       const body = astNode.body
       invariant(body, 'DynamicElementView body is not defined')
@@ -258,7 +260,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       if (!id) {
         id = 'dynamic_' + stringHash(
           this.doc.uri.toString(),
-          astPath
+          astPath,
         ) as c4.ViewId
       }
 
@@ -289,7 +291,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               logWarnError(e)
               return []
             }
-          }, [] as Array<c4.DynamicViewRule>)
+          }, [] as Array<c4.DynamicViewRule>),
         ],
         steps: body.steps.reduce((acc, n) => {
           try {
@@ -305,7 +307,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
           return acc
         }, [] as c4.DynamicViewStepOrParallel[]),
-        ...(manualLayout && { manualLayout })
+        ...(manualLayout && { manualLayout }),
       }
     }
 
@@ -326,13 +328,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate): c4.DynamicViewIncludeRule {
-      const include = [] as c4.ElementPredicateExpression[]
-      let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
+      const include = [] as c4.ModelLayer.AnyFqnExpr[]
+      let iter: ast.Expressions | undefined = astRule.exprs
       while (iter) {
         try {
           if (isNonNullish(iter.value) && this.isValid(iter.value as any)) {
-            const c4expr = this.parseElementPredicate(iter.value)
-            include.unshift(c4expr)
+            if (ast.isFqnExprOrWith(iter.value)) {
+              const c4expr = this.parseElementPredicate(iter.value)
+              include.unshift(c4expr)
+            }
           }
         } catch (e) {
           logWarnError(e)
@@ -344,7 +348,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicViewParallelSteps {
       return {
-        __parallel: node.steps.map(step => this.parseDynamicStep(step))
+        __parallel: node.steps.map(step => this.parseDynamicStep(step)),
       }
     }
 
@@ -364,14 +368,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       let step: Writable<c4.DynamicViewStep> = {
         source,
         target,
-        title
+        title,
       }
       if (node.isBackward) {
         step = {
           source: target,
           target: source,
           title,
-          isBackward: true
+          isBackward: true,
         }
       }
       if (!isArray(node.custom?.props)) {

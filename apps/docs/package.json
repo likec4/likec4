@@ -1,8 +1,8 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.27.3",
-  "packageManager": "pnpm@10.7.1",
+  "version": "1.29.0",
+  "packageManager": "pnpm@10.8.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -27,16 +27,16 @@
     "shiki": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
-    "canvaskit-wasm": "^0.39.1",
+    "canvaskit-wasm": "^0.40.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "sharp": "^0.33.5",
+    "sharp": "^0.34.1",
     "starlight-heading-badges": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
-    "@types/picomatch": "^2.3.4",
+    "@types/picomatch": "^4.0.0",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tsx": "catalog:",

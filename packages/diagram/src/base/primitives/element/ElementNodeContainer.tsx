@@ -7,7 +7,7 @@ import {
 } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import { type PropsWithChildren, forwardRef } from 'react'
 import type { NodeProps } from '../../types'
 import * as styles from './ElementNodeContainer.css'

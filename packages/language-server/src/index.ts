@@ -3,6 +3,7 @@ import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { LikeC4FileSystem } from './LikeC4FileSystem'
 import { getTelemetrySink, logger } from './logger'
+import { WithMCPServer } from './mcp/sseserver/with-mcp-server'
 import { type LikeC4Services, type LikeC4SharedServices, createCustomLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/configurable-layouter'
 
@@ -12,6 +13,7 @@ export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4Mode
 
 export type { LikeC4LanguageServices } from './LikeC4LanguageServices'
 export { isLikeC4Builtin } from './likec4lib'
+export { LikeC4MCPTools } from './mcp/LikeC4MCPTools'
 export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
@@ -39,7 +41,11 @@ export function startLanguageServer(): {
   })
   logger.info('Starting LikeC4 language server')
   // Inject the shared services and language-specific services
-  const services = createCustomLanguageServices({ connection, ...LikeC4FileSystem }, ConfigurableLayouter)
+  const services = createCustomLanguageServices(
+    { connection, ...LikeC4FileSystem },
+    ConfigurableLayouter,
+    WithMCPServer,
+  )
 
   // Start the language server with the shared services
   startLanguim(services.shared)

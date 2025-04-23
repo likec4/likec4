@@ -1,5 +1,6 @@
 import type { NonEmptyArray } from './_common'
-import type { BorderStyle, ElementShape, Fqn } from './element'
+import type { BorderStyle, ElementShape } from './element'
+import type { Fqn } from './scalars'
 import type { ThemeColor } from './theme'
 import type { AutoLayoutDirection, ViewManualLayout } from './view'
 

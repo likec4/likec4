@@ -1,8 +1,8 @@
-import { configureLogger, getConsoleSink } from '@likec4/log'
+import { configureLogger } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { LikeC4FileSystem } from './LikeC4FileSystem'
-import { logger } from './logger'
+import { getLspConnectionSink, logger } from './logger'
 import { type LikeC4Services, type LikeC4SharedServices, createCustomLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/configurable-layouter'
 
@@ -16,7 +16,8 @@ export function startLanguageServer(): {
   const connection = createConnection(ProposedFeatures.all)
   configureLogger({
     sinks: {
-      console: getConsoleSink(),
+      // Name it as console to override internal logger
+      console: getLspConnectionSink(connection),
     },
     loggers: [
       {
@@ -25,7 +26,6 @@ export function startLanguageServer(): {
       },
     ],
   })
-  logger.info('Starting LikeC4 language server')
   // Inject the shared services and language-specific services
   const services = createCustomLanguageServices({ connection, ...LikeC4FileSystem }, ConfigurableLayouter)
 

@@ -10,31 +10,31 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
-import { elementChecks } from './element'
+import { checkElement } from './element'
+import { checkElementRef } from './element-ref'
+import { checkImported, checkImportsFromPoject } from './imports'
 import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
-import { relationBodyChecks, relationChecks } from './relation'
+import { checkRelationBody, relationChecks } from './relation'
 import {
-  deploymentNodeKindChecks,
-  elementKindChecks,
-  globalPredicateChecks,
-  globalsChecks,
-  globalStyleIdChecks,
-  modelRuleChecks,
-  relationshipChecks,
-  specificationRuleChecks,
-  tagChecks,
+  checkDeploymentNodeKind,
+  checkElementKind,
+  checkGlobalPredicate,
+  checkGlobals,
+  checkGlobalStyleId,
+  checkModel,
+  checkRelationshipKind,
+  checkSpecificationRule,
+  checkTag,
 } from './specification'
 import { viewChecks } from './view'
 import {
-  elementPredicateWithChecks,
-  expandElementExprChecks,
-  fqnRefExprChecks,
-  incomingExpressionChecks,
-  outgoingExpressionChecks,
-  relationExprChecks,
-  relationPredicateWithChecks,
+  checkFqnExprWith,
+  checkFqnRefExpr,
+  checkIncomingRelationExpr,
+  checkOutgoingRelationExpr,
+  checkRelationExpr,
+  checkRelationExprWith,
 } from './view-predicates'
 
 type Guard<N extends AstNode> = (n: AstNode) => n is N
@@ -46,16 +46,17 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
+  ast.isImportsFromPoject,
+  ast.isImported,
   ast.isGlobals,
   ast.isGlobalPredicateGroup,
   ast.isGlobalDynamicPredicateGroup,
   ast.isGlobalStyle,
   ast.isGlobalStyleGroup,
-  ast.isDynamicViewPredicateIterator,
-  ast.isElementPredicateWith,
-  ast.isRelationPredicateWith,
-  ast.isElementExpression,
-  ast.isRelationExpression,
+  ast.isFqnExprWith,
+  ast.isRelationExprWith,
+  ast.isFqnExpr,
+  ast.isRelationExpr,
   ast.isDynamicViewParallelSteps,
   ast.isDynamicViewStep,
   ast.isDeploymentViewRule,
@@ -65,7 +66,6 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isFqnRefExpr,
   ast.isViewProperty,
   ast.isStyleProperty,
-  ast.isPredicate,
   ast.isTags,
   ast.isViewRule,
   ast.isDynamicViewRule,
@@ -81,6 +81,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isStringProperty,
   ast.isNavigateToProperty,
   ast.isElement,
+  ast.isElementRef,
   ast.isExtendElement,
   ast.isExtendDeployment,
   ast.isSpecificationElementKind,
@@ -132,35 +133,36 @@ export function registerValidationChecks(services: LikeC4Services) {
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
     DeployedInstance: deployedInstanceChecks(services),
-    DeploymentNodeKind: deploymentNodeKindChecks(services),
+    DeploymentNodeKind: checkDeploymentNodeKind(services),
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
     ExtendDeployment: extendDeploymentChecks(services),
-    FqnRefExpr: fqnRefExprChecks(services),
-    RelationExpr: relationExprChecks(services),
+    FqnRefExpr: checkFqnRefExpr(services),
+    RelationExpr: checkRelationExpr(services),
     NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
-    SpecificationRule: specificationRuleChecks(services),
-    Model: modelRuleChecks(services),
-    Globals: globalsChecks(services),
-    GlobalPredicateGroup: globalPredicateChecks(services),
-    GlobalDynamicPredicateGroup: globalPredicateChecks(services),
-    GlobalStyleId: globalStyleIdChecks(services),
+    SpecificationRule: checkSpecificationRule(services),
+    Model: checkModel(services),
+    Globals: checkGlobals(services),
+    GlobalPredicateGroup: checkGlobalPredicate(services),
+    GlobalDynamicPredicateGroup: checkGlobalPredicate(services),
+    GlobalStyleId: checkGlobalStyleId(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
-    Element: elementChecks(services),
-    ElementKind: elementKindChecks(services),
+    Element: checkElement(services),
+    ElementRef: checkElementRef(services),
+    ElementKind: checkElementKind(services),
     Relation: relationChecks(services),
-    RelationBody: relationBodyChecks(services),
-    Tag: tagChecks(services),
-    DynamicViewPredicateIterator: dynamicViewRulePredicate(services),
-    ElementPredicateWith: elementPredicateWithChecks(services),
-    RelationPredicateWith: relationPredicateWithChecks(services),
-    ExpandElementExpression: expandElementExprChecks(services),
-    RelationshipKind: relationshipChecks(services),
-    IncomingRelationExpression: incomingExpressionChecks(services),
-    OutgoingRelationExpression: outgoingExpressionChecks(services),
+    RelationBody: checkRelationBody(services),
+    Tag: checkTag(services),
+    FqnExprWith: checkFqnExprWith(services),
+    RelationExprWith: checkRelationExprWith(services),
+    RelationshipKind: checkRelationshipKind(services),
+    IncomingRelationExpr: checkIncomingRelationExpr(services),
+    OutgoingRelationExpr: checkOutgoingRelationExpr(services),
+    ImportsFromPoject: checkImportsFromPoject(services),
+    Imported: checkImported(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

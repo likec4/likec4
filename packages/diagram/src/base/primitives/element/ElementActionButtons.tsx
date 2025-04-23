@@ -2,7 +2,7 @@ import { css, cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon, Box } from '@mantine/core'
 import { useId } from '@mantine/hooks'
-import { m } from 'framer-motion'
+import * as m from 'motion/react-m'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
@@ -67,7 +67,7 @@ export function ElementActionButtons({
         {buttons.map((button, index) => (
           <ActionIcon
             component={m.button}
-            layout
+            // layout
             className={actionBtn({})}
             key={`${id}-${button.key ?? index}`}
             initial={false}

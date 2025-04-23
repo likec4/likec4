@@ -1,4 +1,5 @@
 import type { CommandModule } from 'yargs'
+import { ensureReact } from '../ensure-react'
 import { base, listen, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 
@@ -16,6 +17,7 @@ export const serveCmd = {
       .option('use-dot', useDotBin)
       .option('listen', listen),
   handler: async args => {
+    await ensureReact()
     await handler({
       path: args.path,
       useDotBin: args['use-dot'],
@@ -23,16 +25,16 @@ export const serveCmd = {
       useOverview: args['use-overview'] ?? false,
       webcomponentPrefix: args['webcomponent-prefix'],
       useHashHistory: args['use-hash-history'],
-      listen: args['listen']
+      listen: args['listen'],
     })
-  }
+  },
 } satisfies CommandModule<object, {
   path: string
   'use-dot': boolean
   'use-hash-history': boolean | undefined
   base?: string | undefined
   'use-overview': boolean | undefined
-  'webcomponent-prefix': string,
+  'webcomponent-prefix': string
   'listen': string
 }>
 // } satisfies CommandModule<object, {
