@@ -24,6 +24,25 @@ describe('property-checks', () => {
       ])
     })
 
+    it('should error when file:// schema used', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component c1 {
+            style {
+              icon file://image.png
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([
+        'Icon URI must not start with file://',
+      ])
+    })
+
     it('should error duplicate icon on element', async ({ expect }) => {
       const { validate } = createTestServices()
       const { errors } = await validate(`

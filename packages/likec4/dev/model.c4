@@ -72,6 +72,7 @@ model {
       link https://github.com/likec4/likec4 'source'
       link /view/reporting/editor
       link ./cloud/reporting.c4#L3
+      icon ./images/report.svg
     }
 
     data = container 'Data Services' {
@@ -80,6 +81,7 @@ model {
         Data storage
         and data processing
       '
+      icon ./images/data-services.svg
     }
 
     billing = service 'Billing' {
