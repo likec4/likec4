@@ -28,7 +28,7 @@ function code(views: ComputedView[]) {
       // We need to find the path of the original file that contained
       // the model, and then make the path (s) relative to that.
       acc.imports.push(`import ${Component} from '${s}?inline'`)
-      acc.cases.push(`  '[${s}]': () => <img src={${Component}} />`)
+      acc.cases.push(`  '${s}': () => jsx('img', { src: ${Component} })`)
 
       return acc
     }
@@ -84,7 +84,7 @@ export const projectIconsModule = {
 
 export const iconsModule = {
   id: 'likec4:icons',
-  virtualId: 'likec4:plugin/icons.js',
+  virtualId: 'likec4:plugin/icons.jsx',
   async load({ likec4, projects, logger }) {
     logger.info(k.dim(`generating likec4:icons`))
 
