@@ -23,10 +23,6 @@ function code(views: ComputedView[]) {
     const Component = 'Icon' + i.toString().padStart(2, '0')
 
     if (isLocalImage) {
-      // Here the path can't be found, presumably because the file
-      // is not in the same directory as the code that's running.
-      // We need to find the path of the original file that contained
-      // the model, and then make the path (s) relative to that.
       acc.imports.push(`import ${Component} from '${s}?inline'`)
       acc.cases.push(`  '${s}': () => jsx('img', { src: ${Component} })`)
 
