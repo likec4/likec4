@@ -110,8 +110,8 @@ catalogs:
       version: 7.17.4
   mcp:
     '@modelcontextprotocol/sdk':
-      specifier: ^1.10.0
-      version: 1.10.0
+      specifier: ^1.10.2
+      version: 1.10.2
   react:
     '@nanostores/react':
       specifier: 1.0.0
@@ -911,7 +911,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.10.0
+        version: 1.10.2
       '@msgpack/msgpack':
         specifier: ^3.1.1
         version: 3.1.1
@@ -1422,7 +1422,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.10.0
+        version: 1.10.2
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.30
@@ -3105,8 +3105,8 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@modelcontextprotocol/sdk@1.10.0':
-    resolution: {integrity: sha512-wijOavYZfSOADbVM0LA7mrQ17N4IKNdFcfezknCCsZ1Y1KstVWlkDZ5ebcxuQJmqTTxsNjBHLc7it1SV0TBiPg==}
+  '@modelcontextprotocol/sdk@1.10.2':
+    resolution: {integrity: sha512-rb6AMp2DR4SN+kc6L1ta2NCpApyA9WYNx3CrTSZvGxq9wH71bRur+zRqPfg0vQ9mjywR7qZdX2RGHOPq3ss+tA==}
     engines: {node: '>=18'}
 
   '@msgpack/msgpack@3.1.1':
@@ -10924,7 +10924,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@modelcontextprotocol/sdk@1.10.0':
+  '@modelcontextprotocol/sdk@1.10.2':
     dependencies:
       content-type: 1.0.5
       cors: 2.8.5
