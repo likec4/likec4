@@ -7,7 +7,7 @@ import { memo, useLayoutEffect, useState } from 'react'
 
 import type { DiagramView } from '@likec4/core'
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
-import { useInViewport } from '@mantine/hooks'
+import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { keys } from 'remeda'
 // import { useLikeC4Model } from 'likec4:model'
 import * as css from './index.css'
@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_single/single-index')({
 })
 
 function RouteComponent() {
+  useDocumentTitle('LikeC4')
   const views = keys(useLikeC4Model(true).$model.views)
   return (
     <SimpleGrid

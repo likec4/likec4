@@ -41,9 +41,15 @@ export const root = css({
 export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
-  paddingRight: '50px',
+  paddingRight: '10px',
   color: 'mantine.colors.placeholder',
   flex: '1',
+  sm: {
+    paddingRight: '30px',
+  },
+  md: {
+    paddingRight: '50px',
+  },
 })
 
 export const shortcut = css({

@@ -1,3 +1,14 @@
+## [1.29.1](https://github.com/likec4/likec4/compare/v1.29.0...v1.29.1) (2025-04-25)
+
+### Improvements
+* dynamic document title, closes [#1875](https://github.com/likec4/likec4/issues/1875)
+
+### Bug Fixes
+
+* **dsl:** 'none' icon value does not have any effect ([ef6d33e](https://github.com/likec4/likec4/commit/ef6d33e65de3bdacb59563036432482190071804))
+* **cli:** build multi-projects ([3554f59](https://github.com/likec4/likec4/commit/3554f590fb5c7591d18f3987f18f73871032b19e))
+* **cli:** export multi-projects ([ccb2347](https://github.com/likec4/likec4/commit/ccb2347c17131cbbc1b34eb3889f716f2a404efd))
+
 # [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
 
 ### 🚀 Features
