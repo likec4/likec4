@@ -1,3 +1,20 @@
+## [1.29.1](https://github.com/likec4/likec4/compare/v1.29.0...v1.29.1) (2025-04-25)
+
+
+### Bug Fixes
+
+* 'none' icon value does not have any effect ([ef6d33e](https://github.com/likec4/likec4/commit/ef6d33e65de3bdacb59563036432482190071804))
+* **cli:** build multi-projects ([3554f59](https://github.com/likec4/likec4/commit/3554f590fb5c7591d18f3987f18f73871032b19e))
+* **cli:** export multi-projects ([ccb2347](https://github.com/likec4/likec4/commit/ccb2347c17131cbbc1b34eb3889f716f2a404efd))
+* **deps:** update dependency @cloudflare/vite-plugin to v1.0.5 ([#1852](https://github.com/likec4/likec4/issues/1852)) ([470a195](https://github.com/likec4/likec4/commit/470a195622ed230d81ab9a5478b33cae8e33e2e4))
+
+
+### Features
+
+* dynamic document title ([218f4ce](https://github.com/likec4/likec4/commit/218f4ce36dab2e5b09f917887a36dddb18bad319)), closes [#1875](https://github.com/likec4/likec4/issues/1875)
+
+
+
 # [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
 
 ### 🚀 Features
