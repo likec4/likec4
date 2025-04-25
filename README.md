@@ -6,6 +6,12 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </h4>
 
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/likec4)</a>
+<a href="https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode" target="_blank">![VSCode Installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/likec4.likec4-vscode?label=vscode%20installs)</a>
+<a href="https://open-vsx.org/extension/likec4/likec4-vscode" target="_blank">![Open VSX Installs](https://img.shields.io/open-vsx/dt/likec4/likec4-vscode?label=open-vsx
+)</a>
+
 [docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/index)
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
@@ -40,7 +46,7 @@ And result:
   <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
 </div>
 
-Template repository - [likec4/template](https://github.com/likec4/template)  
+Template repository - [likec4/template](https://github.com/likec4/template)\
 Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/index)
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
@@ -67,8 +73,8 @@ We are always happy to help you get started:
 
 ## Support development
 
-LikeC4 is a MIT-licensed open source project with its ongoing development made possible entirely by your support.  
-If you like the project, please consider contributing financially to help grow and improve it.  
+LikeC4 is a MIT-licensed open source project with its ongoing development made possible entirely by your support.\
+If you like the project, please consider contributing financially to help grow and improve it.\
 You can support us via [OpenCollective](https://opencollective.com/likec4) or [GitHub Sponsors](https://github.com/sponsors/likec4).
 
 ## License
