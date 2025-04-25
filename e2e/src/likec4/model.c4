@@ -34,7 +34,7 @@ model {
 
     next = container 'Cloud Next' {
       description 'Cloud Next is the next version of our cloud systems'
-      icon file://images/cloud-next.svg
+      icon ./images/cloud-next.svg
     }
 
     supportUser = actor 'Support User' {
