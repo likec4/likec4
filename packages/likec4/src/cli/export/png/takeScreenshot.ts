@@ -1,6 +1,6 @@
 /// <reference lib="DOM" />
 import type { DiagramView, NonEmptyArray } from '@likec4/core'
-import { resolve } from 'node:path'
+import { relative, resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { BrowserContext, Page } from 'playwright'
 import { clamp, isTruthy } from 'remeda'
@@ -38,7 +38,7 @@ export async function takeScreenshot({
   let next
   while ((next = pending.shift())) {
     const { view, attempt } = next
-    const url = `/export/${encodeURIComponent(view.id)}`
+    const url = `export/${encodeURIComponent(view.id)}`
     try {
       if (attempt > 1) {
         if (page) {
@@ -56,24 +56,7 @@ export async function takeScreenshot({
             k.yellow('Drift detected, manual layout can not be applied, view may be invalid: ') + k.red(view.id),
           )
         }
-        logger.info(k.cyan(url))
       }
-
-      page ??= await browserContext.newPage()
-
-      await page.setViewportSize({
-        width: view.bounds.width + padding * 2,
-        height: view.bounds.height + padding * 2,
-      })
-
-      await page.goto(url + `?padding=${padding}&theme=${theme}`)
-
-      const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
-      if (hasImages) {
-        await waitAllImages(page, timeout)
-      }
-
-      await page.waitForSelector('.react-flow.initialized')
 
       let relativePath = '.'
       if (outputType === 'relative') {
@@ -84,8 +67,25 @@ export async function takeScreenshot({
           relativePath = '.'
         }
       }
-
       const path = resolve(output, relativePath, `${view.id}.png`)
+
+      page ??= await browserContext.newPage()
+
+      await page.setViewportSize({
+        width: view.bounds.width + padding * 2,
+        height: view.bounds.height + padding * 2,
+      })
+
+      await page.goto(url + `?padding=${padding}&theme=${theme}`)
+
+      logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
+
+      const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
+      if (hasImages) {
+        await waitAllImages(page, timeout)
+      }
+
+      await page.waitForSelector('.react-flow.initialized')
       await page.screenshot({
         animations: 'disabled',
         path,
