@@ -36,6 +36,13 @@ export const iconPropertyRuleChecks = (
         node,
       })
     }
+
+    if (node.value?.startsWith('file://')) {
+      accept('error', `Icon URI must not start with file://`, {
+        node,
+        property: 'value',
+      })
+    }
   }
 }
 
