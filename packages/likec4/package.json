@@ -99,6 +99,7 @@
     "dev:example-cloud": "pnpm cli:serve ../../examples/cloud-system",
     "dev:failed": "pnpm cli:serve ../../examples/failed",
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
+    "dev:examples": "pnpm cli:serve ../../examples",
     "cli": "tsx --conditions=sources src/cli/index.ts",
     "cli:serve": "tsx watch --conditions=sources src/cli/index.ts serve",
     "cli:build": "pnpm cli build -o dev/dist dev",

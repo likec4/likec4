@@ -43,36 +43,49 @@ export const viteBuild = async ({
     }
   }
 
-  const computed = await languageServices.viewsService.computedViews()
-  const diagrams = await languageServices.diagrams()
-  if (diagrams.length === 0) {
-    process.exitCode = 1
-    throw new Error('no views found')
-  }
-  if (diagrams.length === computed.length) {
-    config.customLogger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
-  } else {
-    config.customLogger.warn(
-      `${k.dim('workspace:')} ${k.yellow(`✗ layouted ${diagrams.length} of ${computed.length} views`)}`,
-    )
-  }
+  const projects = languageServices.languageServices.projects()
 
-  diagrams.forEach(view => {
-    if (view.hasLayoutDrift) {
+  if (projects.length === 1) {
+    const computed = await languageServices.viewsService.computedViews()
+    const diagrams = await languageServices.diagrams()
+    if (diagrams.length === 0) {
+      process.exitCode = 1
+      throw new Error('no views found')
+    }
+    if (diagrams.length === computed.length) {
+      config.customLogger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
+    } else {
       config.customLogger.warn(
-        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
+        `${k.dim('workspace:')} ${k.yellow(`✗ layouted ${diagrams.length} of ${computed.length} views`)}`,
       )
     }
-  })
 
-  if (buildWebcomponent) {
-    const webcomponentConfig = await viteWebcomponentConfig({
-      webcomponentPrefix,
-      languageServices,
-      outDir: publicDir,
-      base: config.base,
+    diagrams.forEach(view => {
+      if (view.hasLayoutDrift) {
+        config.customLogger.warn(
+          k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
+        )
+      }
     })
-    await build(webcomponentConfig)
+
+    if (buildWebcomponent) {
+      const webcomponentConfig = await viteWebcomponentConfig({
+        webcomponentPrefix,
+        languageServices,
+        outDir: publicDir,
+        base: config.base,
+      })
+      await build(webcomponentConfig)
+    }
+  } else {
+    for (const project of projects) {
+      const computed = await languageServices.viewsService.computedViews(project.id)
+      if (computed.length === 0) {
+        config.customLogger.warn(`${k.dim('project:')} ${project.id} ${k.yellow(`✗ no views found`)}`)
+      } else {
+        config.customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
+      }
+    }
   }
 
   // Static website
