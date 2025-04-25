@@ -12,7 +12,7 @@ tableOfContents:
   maxHeadingLevel: 5    
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside,  TabItem as Tab, Tabs } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers';
 
 You can access and traverse your architecture model programmatically using the LikeC4 Model API.
@@ -218,13 +218,91 @@ API provides methods to query and traverse deployment model.
 
 ## Model Builder
 
-Type-safe builder available from `@likec4/core/builder`:
+Type-safe builder available from `@likec4/core/builder`.  
+Builder can be used to create model programmatically and supports two styles:
 
-```ts
-import { Builder } from "@likec4/core/builder"
+<Tabs>
+  <Tab label='Chain'>
+  ```ts
+  import { Builder } from "@likec4/core/builder"
 
-const m = Builder
-  .specification({
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {
+          style: {
+            shape: 'person',
+          },
+        },
+        system: {},
+        component: {},
+      },
+      relationships: {
+        likes: {},
+      },
+      tags: ['tag1', 'tag2', 'tag1'],
+    })
+    .model(({ actor, system, component, relTo, rel }, _) =>
+      _(
+        actor('alice'),
+        actor('bob'),
+        rel('alice', 'bob', {
+          tags: ['tag1'], // you get code completion for tags
+          kind: 'likes',  // code completion for kind
+        }),
+        system('cloud', { tags: ['tag1', 'tag2'] }).with(
+          component('backend').with(
+            component('api'),
+            component('db'),
+            // code completion for relationships
+            rel('cloud.backend.api', 'cloud.backend.db')
+          ),
+          component('frontend').with(
+            relTo('cloud.backend.api')
+          ),
+        ),
+      )
+    )    
+    .views(({ view, viewOf, $include, $style }, _) =>
+      _(
+        view('index', 'Index').with(
+          $include('cloud.*'),
+        ),
+        viewOf('ui', 'cloud.ui').with(
+          // code completion for predicates
+          $include('* -> cloud.**'),
+          $style('cloud.ui', { color: 'red' }),
+        ),
+      )
+    )
+    .toLikeC4Model()
+  ```
+  </Tab>
+
+  <Tab label='Composition'>
+
+  ```ts
+  import { Builder } from "@likec4/core/builder"
+
+  // Get composition functions for given specification
+  const {
+    model: {
+      model,
+      actor,
+      system,
+      component,
+      rel,
+      relTo,
+    },
+    views: {
+      view,
+      viewOf,
+      views,
+      $include,
+      $style,
+    },      
+    builder,
+  } = Builder.forSpecification({
     elements: {
       actor: {
         style: {
@@ -239,19 +317,19 @@ const m = Builder
     },
     tags: ['tag1', 'tag2', 'tag1'],
   })
-  .model(({ actor, system, component, relTo, rel }, _) =>
-    _(
+
+  const b1 = builder.with(
+    model(
       actor('alice'),
       actor('bob'),
       rel('alice', 'bob', {
-        tags: ['tag1'], // you get code completion for tags
-        kind: 'likes',  // code completion for kind
+        tags: ['tag1'],
+        kind: 'likes',
       }),
       system('cloud', { tags: ['tag1', 'tag2'] }).with(
         component('backend').with(
           component('api'),
           component('db'),
-          // code completion for relationships
           rel('cloud.backend.api', 'cloud.backend.db')
         ),
         component('frontend').with(
@@ -259,26 +337,28 @@ const m = Builder
         ),
       ),
     )
-  )    
-  .views(({ view, viewOf, $include, $style }, _) =>
-    _(
+  )
+
+  const b2 = b1.with(
+    views(
       view('index', 'Index').with(
         $include('cloud.*'),
       ),
       viewOf('ui', 'cloud.ui').with(
-        // code completion for predicates
         $include('* -> cloud.**'),
         $style('cloud.ui', { color: 'red' }),
       ),
     )
   )
   .toLikeC4Model()
-```
+  ```
+  </Tab>
+</Tabs>
 
-<Aside type='caution' title="In progress" >
-  Documentation in progress
+You can mix both styles, depending on your preference and use cases.  
 
-  Check <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style1.spec.ts">Builder-style1</a>
-  and <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style2.spec.ts">Builder-style2</a> for examples.
-  
-</Aside>
+:::tip
+Check unit tests in our repository for examples:
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style1.spec.ts">Builder-style1</a>
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style2.spec.ts">Builder-style2</a>
+:::

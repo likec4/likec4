@@ -194,7 +194,7 @@ export class ProjectsManager {
       ),
     )
     this.projectIdToFolder.set(id, folder)
-    logger.info`register project ${id} folder: ${folder})`
+    logger.info`register project ${id} folder: ${folder}`
     return project
   }
 

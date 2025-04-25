@@ -22,7 +22,7 @@ import {
   useParentMatches,
   useRouterState,
 } from '@tanstack/react-router'
-// import { usePreviewUrl } from 'likec4:previews'
+import { projects } from 'likec4:projects'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as styles from './Header.css'
 import { SelectProject } from './SelectProject'
@@ -57,11 +57,15 @@ export function Header({ diagram }: HeaderProps) {
         {isReactDiagramRoute
           ? (
             <>
-              {/* <ViewPageButton isTablet={isTablet} /> */}
               <SelectProject />
-              <Button size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
-                Share
-              </Button>
+              {projects.length <= 1 && (
+                <Button
+                  size={isTablet ? 'sm' : 'xs'}
+                  leftSection={<IconShare size={14} />}
+                  onClick={open}>
+                  Share
+                </Button>
+              )}
               <ExportButton diagram={diagram} />
             </>
           )

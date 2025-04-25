@@ -44,7 +44,7 @@
     "**/routeTree.gen.ts": true
   },
   "files.exclude": {
-    "**/.tsbuildinfo": true,
+    "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "**/.wireit": true,
     "**/.wrangler": true,

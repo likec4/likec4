@@ -167,8 +167,8 @@ ${k.red('Please specify a project folder')}
    * Diagram is a computed view, layouted using Graphviz
    * Used in React components
    */
-  async diagrams(): Promise<DiagramView[]> {
-    return await this.langium.likec4.Views.diagrams()
+  async diagrams(projectId?: ProjectId | undefined): Promise<DiagramView[]> {
+    return await this.langium.likec4.Views.diagrams(projectId)
   }
 
   /**
