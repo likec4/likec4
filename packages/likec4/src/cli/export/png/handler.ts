@@ -36,6 +36,10 @@ type HandlerParams = {
   maxAttempts?: number
   ignore?: boolean
   filter?: string[] | undefined
+  /**
+   * Enable/disable chromium sandbox
+   */
+  chromiumSandbox?: boolean
 }
 
 export async function exportViewsToPNG(
@@ -48,6 +52,7 @@ export async function exportViewsToPNG(
     output,
     outputType = 'relative',
     maxAttempts = 3,
+    chromiumSandbox,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -57,6 +62,7 @@ export async function exportViewsToPNG(
     output: string
     outputType?: 'relative' | 'flat'
     maxAttempts?: number
+    chromiumSandbox: boolean
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -65,7 +71,7 @@ export async function exportViewsToPNG(
   const chromePath = chromium.executablePath()
   logger.info(k.cyan('Start chromium') + ' ' + k.dim(chromePath))
   const browser = await chromium.launch({
-    chromiumSandbox: true,
+    chromiumSandbox,
     headless: true,
   })
   logger.info(k.cyan(`Color scheme: `) + theme + '\n')
@@ -108,6 +114,7 @@ export async function pngHandler({
   timeoutMs = 10_000,
   maxAttempts = 3,
   filter,
+  chromiumSandbox = false,
 }: HandlerParams) {
   const logger = createLikeC4Logger('export')
   const startTakeScreenshot = hrtime()
@@ -176,6 +183,7 @@ export async function pngHandler({
       output: _output,
       outputType,
       maxAttempts,
+      chromiumSandbox,
     })
     const { pretty } = inMillis(startTakeScreenshot)
 

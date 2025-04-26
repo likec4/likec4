@@ -47,17 +47,22 @@ export const exportCmd = {
               timeout: {
                 type: 'number',
                 alias: 't',
-                desc: '(sec) timeout for playwright',
+                desc: 'timeout for playwright',
                 default: 10,
               },
               'max-attempts': {
                 type: 'number',
-                desc: '(number) max attempts to export failing view, 1 means no retry',
+                desc: 'max attempts to export failing view, 1 means no retry',
                 default: 3,
               },
               'server-url': {
                 type: 'string',
                 desc: 'use this url instead of starting new likec4 server',
+              },
+              'chromium-sandbox': {
+                boolean: true,
+                desc: 'enable/disable chromium sandbox\nsee Playwright docs',
+                default: false,
               },
             })
             .epilog(`${k.bold('Examples:')}
@@ -86,6 +91,7 @@ export const exportCmd = {
             serverUrl: args.serverUrl,
             theme: args.theme ?? 'light',
             filter: args.filter,
+            chromiumSandbox: args['chromium-sandbox'],
           })
         },
       })
