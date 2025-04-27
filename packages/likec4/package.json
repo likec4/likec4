@@ -201,7 +201,7 @@
     "ufo": "catalog:utils",
     "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
-    "vite-plugin-inspect": "^11.0.0",
+    "vite-plugin-inspect": "^11.0.1",
     "vite-plugin-singlefile": "^2.2.0",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",
