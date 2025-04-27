@@ -52,7 +52,7 @@ export async function exportViewsToPNG(
     output,
     outputType = 'relative',
     maxAttempts = 3,
-    chromiumSandbox,
+    chromiumSandbox = false,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -62,7 +62,7 @@ export async function exportViewsToPNG(
     output: string
     outputType?: 'relative' | 'flat'
     maxAttempts?: number
-    chromiumSandbox: boolean
+    chromiumSandbox?: boolean
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
