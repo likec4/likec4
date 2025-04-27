@@ -84,11 +84,11 @@ catalogs:
       version: 0.7.2
   langium:
     langium:
-      specifier: 3.4.0
-      version: 3.4.0
+      specifier: 3.5.0
+      version: 3.5.0
     langium-cli:
-      specifier: 3.4.0
-      version: 3.4.0
+      specifier: 3.5.0
+      version: 3.5.0
   mantine:
     '@mantine/colors-generator':
       specifier: 7.17.4
@@ -526,7 +526,7 @@ importers:
         version: 0.7.2
       langium:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       monaco-editor-wrapper:
         specifier: 6.5.0
         version: 6.5.0
@@ -828,7 +828,7 @@ importers:
         version: 2.2.3
       langium:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       remeda:
         specifier: catalog:utils
         version: 2.21.2
@@ -950,10 +950,10 @@ importers:
         version: 2.2.3
       langium:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       langium-cli:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0
@@ -1255,7 +1255,7 @@ importers:
         version: 1.8.1
       langium:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       merge-error-cause:
         specifier: ^5.0.2
         version: 5.0.2
@@ -1511,7 +1511,7 @@ importers:
         version: 5.2.2
       langium:
         specifier: catalog:langium
-        version: 3.4.0
+        version: 3.5.0
       p-timeout:
         specifier: ^6.1.4
         version: 6.1.4
@@ -6017,16 +6017,16 @@ packages:
     resolution: {integrity: sha512-7Bp3TpsE+L+TARSnnDpk3xg8Idi8RwSLdj6CMbNWoOARIrGrbuLGusV0dYwbZOm4bB3jHNxSw8Wk/ByDqJEnDw==}
     engines: {node: '>=18'}
 
-  langium-cli@3.4.0:
-    resolution: {integrity: sha512-7dU5kPlfzwzPLkaaMcBCc0tfnVPHOcxcgMW/l2xRDy9Y/cljTCXSV8y3lJUlHASQa3LZDF0+8bGZX3Noxa+GLw==}
+  langium-cli@3.5.0:
+    resolution: {integrity: sha512-TPIzIiMAQwTPPphtHGSrFXo4t0orx3aRh0syg9jnOihvBkBDvsQdJP9fBo9hp5Qaosklpc2CfbH0wh/dkgZcJA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  langium-railroad@3.4.0:
-    resolution: {integrity: sha512-dTSTm4+UI2byf+kMnjXBJgcif6XjpvFrFv4HhRONV6ZzQIVWweAycg40q7Wm8D/iagtZa/eFa1l5yCxQf896eA==}
+  langium-railroad@3.5.0:
+    resolution: {integrity: sha512-80Enc6bOR6oHZD18IQlVTdfCh07rbrM5SOsPUPc1kyh7n3zQbmLs5P2E9hV4SoWlkhOjGKL1I9Z6uORpgy+jTQ==}
 
-  langium@3.4.0:
-    resolution: {integrity: sha512-7xufsaF5jYGFMXHOTka8bN48b9FHn2vZGL2R+PGgyi+JY/xgimUFDKYcz/h4gm5m8p3sSRtZDh+sK2U63K0MNg==}
+  langium@3.5.0:
+    resolution: {integrity: sha512-tnqVzWOkUcoiY0bWlyE8diFrZjmGBCF7MesC1bjUaZM+YGQSfdPC+KkhmHM0DWFG+uLcPxidKaPP1SYGtg3J0Q==}
     engines: {node: '>=18.0.0'}
 
   lightningcss-darwin-arm64@1.25.1:
@@ -14419,22 +14419,22 @@ snapshots:
 
   ky@1.8.1: {}
 
-  langium-cli@3.4.0:
+  langium-cli@3.5.0:
     dependencies:
       chalk: 5.3.0
       commander: 11.0.0
       fs-extra: 11.1.1
       jsonschema: 1.4.1
-      langium: 3.4.0
-      langium-railroad: 3.4.0
+      langium: 3.5.0
+      langium-railroad: 3.5.0
       lodash: 4.17.21
 
-  langium-railroad@3.4.0:
+  langium-railroad@3.5.0:
     dependencies:
-      langium: 3.4.0
+      langium: 3.5.0
       railroad-diagrams: 1.0.0
 
-  langium@3.4.0:
+  langium@3.5.0:
     dependencies:
       chevrotain: 11.0.3
       chevrotain-allstar: 0.3.1(chevrotain@11.0.3)

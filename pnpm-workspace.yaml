@@ -91,8 +91,8 @@ catalogs:
     "@xyflow/react": "^12.5.5"
     "@xyflow/system": "^0.0.55"
   langium:
-    langium: "3.4.0"
-    langium-cli: "3.4.0"
+    langium: "3.5.0"
+    langium-cli: "3.5.0"
 
   astro:
     "@astrojs/check": "^0.9.4"
