@@ -213,7 +213,7 @@ catalogs:
       specifier: ^4.40.0
       version: 4.40.0
     vite:
-      specifier: ^6.3.2
+      specifier: ^6.3.3
       version: 6.3.3
     vite-plugin-dts:
       specifier: ^4.5.3
