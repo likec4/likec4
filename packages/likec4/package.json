@@ -186,7 +186,7 @@
     "prop-types": "^15.8.1",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^2.1.7",
+    "react-resizable-panels": "^2.1.8",
     "react-shadow": "^20.6.0",
     "react": "catalog:react",
     "remeda": "catalog:utils",
