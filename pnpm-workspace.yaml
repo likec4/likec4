@@ -64,7 +64,7 @@ catalogs:
     "@mantine/notifications": "7.17.4"
     "@mantine/colors-generator": "7.17.4"
   vite:
-    "@vitejs/plugin-react": "^4.4.0"
+    "@vitejs/plugin-react": "^4.4.1"
     vite: "^6.3.1"
     vite-plugin-dts: "^4.5.3"
     vite-plugin-node-polyfills: "^0.23.0"
