@@ -71,9 +71,11 @@ export async function takeScreenshot({
 
       page ??= await browserContext.newPage()
 
+      // @see https://github.com/likec4/likec4/issues/1857
+      const extraPadding = 16
       await page.setViewportSize({
-        width: view.bounds.width + padding * 2,
-        height: view.bounds.height + padding * 2,
+        width: view.bounds.width + padding * 2 + extraPadding,
+        height: view.bounds.height + padding * 2 + extraPadding,
       })
 
       await page.goto(url + `?padding=${padding}&theme=${theme}`)

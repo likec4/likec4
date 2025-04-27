@@ -3,10 +3,9 @@ import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { notFound, useParams, useSearch } from '@tanstack/react-router'
+import { notFound, useSearch } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
-import * as styles from './styles.css'
 import { cssExportView } from './styles.css'
 
 async function downloadAsPng({
@@ -109,8 +108,10 @@ export function ExportPage() {
     throw notFound()
   }
 
-  const width = diagram.bounds.width + padding * 2,
-    height = diagram.bounds.height + padding * 2
+  // @see https://github.com/likec4/likec4/issues/1857
+  const extraPadding = 16
+  const width = diagram.bounds.width + padding * 2 + extraPadding,
+    height = diagram.bounds.height + padding * 2 + extraPadding
 
   return (
     <Box
