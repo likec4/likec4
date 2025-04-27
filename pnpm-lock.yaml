@@ -54,7 +54,7 @@ catalogs:
       specifier: ~4.19.3
       version: 4.19.3
     turbo:
-      specifier: ^2.5.1
+      specifier: ^2.5.2
       version: 2.5.2
     typescript:
       specifier: ^5.8.3
