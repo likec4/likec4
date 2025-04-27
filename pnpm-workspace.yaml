@@ -15,7 +15,7 @@ catalog:
 
 catalogs:
   utils:
-    remeda: ^2.21.2
+    remeda: ^2.21.3
     type-fest: "^4.39.1"
     fast-equals: "^5.2.2"
     "@react-hookz/web": "^25.1.1"
