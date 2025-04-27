@@ -123,7 +123,7 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^12.8.0
+      specifier: ^12.9.0
       version: 12.9.2
     nanostores:
       specifier: 1.0.1
