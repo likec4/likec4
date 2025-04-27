@@ -1,3 +1,27 @@
+# [1.30.0](https://github.com/likec4/likec4/compare/v1.29.1...v1.30.0) (2025-04-27)
+
+### 🚀 Features
+
+* **Local icons**  
+  ```zig
+  model {
+    pg = service 'PostgreSQL' {
+      style {
+        // local image, relative to current file
+        icon ../postgresql.svg
+      }
+    }
+  }
+  ```
+  Thanks, @kieronlanning, for the long-awaited feature, closes [#1439](https://github.com/likec4/likec4/issues/1439)
+
+
+### Bug Fixes
+
+* **cli:** export png fails due to chromiumSandbox ([20d7a49](https://github.com/likec4/likec4/commit/20d7a499368947da5a536c44d47b3c521cbd63f5)), closes [#1885](https://github.com/likec4/likec4/issues/1885)
+* extra padding to fix PNG export cropping issue ([ac14d1b](https://github.com/likec4/likec4/commit/ac14d1bb6d1a3316c45905937ca117edcfbd4daa)), closes [#1857](https://github.com/likec4/likec4/issues/1857)
+
+
 ## [1.29.1](https://github.com/likec4/likec4/compare/v1.29.0...v1.29.1) (2025-04-25)
 
 ### Improvements
