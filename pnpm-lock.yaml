@@ -164,8 +164,8 @@ catalogs:
       specifier: ^5.2.2
       version: 5.2.2
     fdir:
-      specifier: ^6.4.3
-      version: 6.4.3
+      specifier: ^6.4.4
+      version: 6.4.4
     json5:
       specifier: ^2.2.3
       version: 2.2.3
@@ -659,7 +659,7 @@ importers:
         version: 6.1.4
       fdir:
         specifier: catalog:utils
-        version: 6.4.3(picomatch@4.0.2)
+        version: 6.4.4(picomatch@4.0.2)
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.8)
@@ -865,7 +865,7 @@ importers:
         version: 9.5.2
       fdir:
         specifier: catalog:utils
-        version: 6.4.3(picomatch@4.0.2)
+        version: 6.4.4(picomatch@4.0.2)
       picomatch:
         specifier: catalog:utils
         version: 4.0.2
@@ -941,7 +941,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.4.3(picomatch@4.0.2)
+        version: 6.4.4(picomatch@4.0.2)
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1240,7 +1240,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.4.3(picomatch@4.0.2)
+        version: 6.4.4(picomatch@4.0.2)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -5284,6 +5284,14 @@ packages:
 
   fdir@6.4.3:
     resolution: {integrity: sha512-PMXmW2y1hDDfTSRc9gaXIuCCRpuoz3Kaz8cUelp3smouvfT632ozg2vrT6lJsHKKOF59YLbOGfAWGUcKEfRMQw==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
+  fdir@6.4.4:
+    resolution: {integrity: sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==}
     peerDependencies:
       picomatch: ^3 || ^4
     peerDependenciesMeta:
@@ -11294,7 +11302,7 @@ snapshots:
       '@rollup/pluginutils': 5.1.4(rollup@4.39.0)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.4.3(picomatch@4.0.2)
+      fdir: 6.4.4(picomatch@4.0.2)
       is-reference: 1.2.1
       magic-string: 0.30.17
       picomatch: 4.0.2
@@ -13619,6 +13627,10 @@ snapshots:
       reusify: 1.1.0
 
   fdir@6.4.3(picomatch@4.0.2):
+    optionalDependencies:
+      picomatch: 4.0.2
+
+  fdir@6.4.4(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
 
