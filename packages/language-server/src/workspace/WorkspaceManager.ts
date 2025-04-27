@@ -1,5 +1,5 @@
 import { hasAtLeast, invariant } from '@likec4/core'
-import type { FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
+import type { FileSelector, FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
@@ -79,7 +79,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected override includeEntry(
     _workspaceFolder: WorkspaceFolder,
     entry: FileSystemNode,
-    fileExtensions: string[],
+    selector: FileSelector,
   ): boolean {
     if (this.services.workspace.ProjectsManager.isConfigFile(entry)) {
       return false
@@ -87,7 +87,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     if (entry.isFile) {
       return !this.services.workspace.ProjectsManager.checkIfExcluded(entry.uri)
     }
-    return super.includeEntry(_workspaceFolder, entry, fileExtensions)
+    return super.includeEntry(_workspaceFolder, entry, selector)
   }
 
   public workspace() {
