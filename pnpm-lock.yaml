@@ -1380,8 +1380,8 @@ importers:
   packages/log:
     dependencies:
       '@logtape/logtape':
-        specifier: ^0.9.0
-        version: 0.9.0
+        specifier: ^0.9.1
+        version: 0.9.1
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -3009,8 +3009,8 @@ packages:
   '@kamilkisiela/fast-url-parser@1.1.4':
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
 
-  '@logtape/logtape@0.9.0':
-    resolution: {integrity: sha512-e4IlinGvjzp/+nSvsXB1OPSYNiuVEEJy8aMQqbveTcJoLVRsJK7nH0xVh/EdNTjRBoioJbUT/jzxaAifxf1VyA==}
+  '@logtape/logtape@0.9.1':
+    resolution: {integrity: sha512-L/MNHzc0BWpbb+PIAC9yAdqHDW1ZQrBSmOep/gbp/9DMeFcLvshlxJPH4+isjwueWt01b6jPWjT1PMbtiUPZlg==}
 
   '@mantine/colors-generator@7.17.4':
     resolution: {integrity: sha512-1KqfD0hnC76i43HnaAkSrT3szXC/0crfa450hx4cJqjBf5ZZ9pFWwB8qnoubtsmMpdRlHjDBhPRn/j22m1vpTg==}
@@ -10794,7 +10794,7 @@ snapshots:
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
 
-  '@logtape/logtape@0.9.0': {}
+  '@logtape/logtape@0.9.1': {}
 
   '@mantine/colors-generator@7.17.4(chroma-js@3.1.2)':
     dependencies:
