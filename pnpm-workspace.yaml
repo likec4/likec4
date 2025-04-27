@@ -71,8 +71,8 @@ catalogs:
     vite-tsconfig-paths: "^5.1.4"
     rollup: "^4.40.0"
   vitest:
-    vitest: "^3.1.1"
-    "@vitest/ui": "^3.1.1"
+    vitest: "^3.1.2"
+    "@vitest/ui": "^3.1.2"
   css:
     postcss: "^8.5.3"
     "@pandacss/dev": "^0.53.4"
