@@ -354,7 +354,7 @@ type AddDeploymentNodeHelper<T = unknown> = <const Id extends string>(
 ) => AddDeploymentNode<Id>
 
 export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
-  Types<any, any, any, any, any, any, infer Kinds extends string, any> ? {
+  Types<any, any, any, any, any, any, infer Kinds extends string, any, any> ? {
     [Kind in Kinds]: AddDeploymentNodeHelper<T['NewDeploymentNodeProps']>
   }
   : Invalid<'No Deployment Kinds'>

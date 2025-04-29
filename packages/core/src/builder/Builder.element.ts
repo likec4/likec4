@@ -1,7 +1,7 @@
 import type { AnyTypes, Types, TypesNested } from './_types'
 import type { ModelBuilder } from './Builder.model'
 
-type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer F, any, any, any, any, any, any>
+type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer F, any, any, any, any, any, any, any>
   ? TypesNested<
     `${P}.${Id}`,
     T['ElementKind'],
@@ -11,7 +11,8 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer 
     T['Tag'],
     T['MetadataKey'],
     T['DeploymentKind'],
-    T['DeploymentFqn']
+    T['DeploymentFqn'],
+    T['ActivityId']
   >
   : T extends AnyTypes ? TypesNested<
       Id,
@@ -22,12 +23,13 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer 
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
   : never
 
-type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F, any, any, any, any, any, any>
-  ? T extends TypesNested<infer P, any, any, any, any, any, any, any, any> ? TypesNested<
+type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F, any, any, any, any, any, any, any>
+  ? T extends TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
       T['ElementKind'],
       F,
@@ -36,7 +38,8 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
   : T extends AnyTypes ? Types<
       T['ElementKind'],
@@ -46,7 +49,8 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
   : never
   : never
@@ -61,29 +65,29 @@ export interface AddElement<Id extends string> {
 
   with<
     T extends AnyTypes,
-    A extends AnyTypes
+    A extends AnyTypes,
   >(
-    op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>
+    op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, A>>
 
   with<
     T extends AnyTypes,
     A extends AnyTypes,
-    B extends AnyTypes
+    B extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
-    op2: (input: ModelBuilder<A>) => ModelBuilder<B>
+    op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, B>>
 
   with<
     T extends AnyTypes,
     A extends AnyTypes,
     B extends AnyTypes,
-    C extends AnyTypes
+    C extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
-    op3: (input: ModelBuilder<B>) => ModelBuilder<C>
+    op3: (input: ModelBuilder<B>) => ModelBuilder<C>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, C>>
 
   with<
@@ -91,12 +95,12 @@ export interface AddElement<Id extends string> {
     A extends AnyTypes,
     B extends AnyTypes,
     C extends AnyTypes,
-    D extends AnyTypes
+    D extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
     op3: (input: ModelBuilder<B>) => ModelBuilder<C>,
-    op4: (input: ModelBuilder<C>) => ModelBuilder<D>
+    op4: (input: ModelBuilder<C>) => ModelBuilder<D>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, D>>
 
   with<
@@ -105,13 +109,13 @@ export interface AddElement<Id extends string> {
     B extends AnyTypes,
     C extends AnyTypes,
     D extends AnyTypes,
-    E extends AnyTypes
+    E extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
     op3: (input: ModelBuilder<B>) => ModelBuilder<C>,
     op4: (input: ModelBuilder<C>) => ModelBuilder<D>,
-    op5: (input: ModelBuilder<D>) => ModelBuilder<E>
+    op5: (input: ModelBuilder<D>) => ModelBuilder<E>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, E>>
 
   with<
@@ -121,14 +125,14 @@ export interface AddElement<Id extends string> {
     C extends AnyTypes,
     D extends AnyTypes,
     E extends AnyTypes,
-    F extends AnyTypes
+    F extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
     op3: (input: ModelBuilder<B>) => ModelBuilder<C>,
     op4: (input: ModelBuilder<C>) => ModelBuilder<D>,
     op5: (input: ModelBuilder<D>) => ModelBuilder<E>,
-    op6: (input: ModelBuilder<E>) => ModelBuilder<F>
+    op6: (input: ModelBuilder<E>) => ModelBuilder<F>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, F>>
 
   with<
@@ -139,7 +143,7 @@ export interface AddElement<Id extends string> {
     D extends AnyTypes,
     E extends AnyTypes,
     F extends AnyTypes,
-    G extends AnyTypes
+    G extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
@@ -147,7 +151,7 @@ export interface AddElement<Id extends string> {
     op4: (input: ModelBuilder<C>) => ModelBuilder<D>,
     op5: (input: ModelBuilder<D>) => ModelBuilder<E>,
     op6: (input: ModelBuilder<E>) => ModelBuilder<F>,
-    op7: (input: ModelBuilder<F>) => ModelBuilder<G>
+    op7: (input: ModelBuilder<F>) => ModelBuilder<G>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, G>>
 
   with<
@@ -159,7 +163,7 @@ export interface AddElement<Id extends string> {
     E extends AnyTypes,
     F extends AnyTypes,
     G extends AnyTypes,
-    H extends AnyTypes
+    H extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
@@ -168,7 +172,7 @@ export interface AddElement<Id extends string> {
     op5: (input: ModelBuilder<D>) => ModelBuilder<E>,
     op6: (input: ModelBuilder<E>) => ModelBuilder<F>,
     op7: (input: ModelBuilder<F>) => ModelBuilder<G>,
-    op8: (input: ModelBuilder<G>) => ModelBuilder<H>
+    op8: (input: ModelBuilder<G>) => ModelBuilder<H>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, H>>
 
   with<
@@ -181,7 +185,7 @@ export interface AddElement<Id extends string> {
     F extends AnyTypes,
     G extends AnyTypes,
     H extends AnyTypes,
-    I extends AnyTypes
+    I extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
@@ -191,7 +195,7 @@ export interface AddElement<Id extends string> {
     op6: (input: ModelBuilder<E>) => ModelBuilder<F>,
     op7: (input: ModelBuilder<F>) => ModelBuilder<G>,
     op8: (input: ModelBuilder<G>) => ModelBuilder<H>,
-    op9: (input: ModelBuilder<H>) => ModelBuilder<I>
+    op9: (input: ModelBuilder<H>) => ModelBuilder<I>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, I>>
 
   with<
@@ -205,7 +209,7 @@ export interface AddElement<Id extends string> {
     G extends AnyTypes,
     H extends AnyTypes,
     I extends AnyTypes,
-    J extends AnyTypes
+    J extends AnyTypes,
   >(
     op1: (input: ModelBuilder<ToNested<T, Id>>) => ModelBuilder<A>,
     op2: (input: ModelBuilder<A>) => ModelBuilder<B>,
@@ -216,6 +220,6 @@ export interface AddElement<Id extends string> {
     op7: (input: ModelBuilder<F>) => ModelBuilder<G>,
     op8: (input: ModelBuilder<G>) => ModelBuilder<H>,
     op9: (input: ModelBuilder<H>) => ModelBuilder<I>,
-    op10: (input: ModelBuilder<I>) => ModelBuilder<J>
+    op10: (input: ModelBuilder<I>) => ModelBuilder<J>,
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, J>>
 }

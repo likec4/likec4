@@ -143,7 +143,6 @@ test('Builder types - style 2', () => {
         ),
       )
     )
-
   expectTypeOf(m.Types.Fqn).toEqualTypeOf(
     '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
   )
@@ -153,6 +152,9 @@ test('Builder types - style 2', () => {
   expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf(
     '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
   )
+  expectTypeOf(m.Types.ActivityId).toEqualTypeOf(
+    '' as never,
+  )
 
   expectTypeOf(m.build()).toEqualTypeOf(
     {} as ParsedLikeC4ModelData<
@@ -161,13 +163,15 @@ test('Builder types - style 2', () => {
       'tag1' | 'tag2',
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
       'view' | 'view-of' | 'deployment',
-      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
+      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
+      never
     >,
   )
 
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
     {} as LikeC4Model.Computed<
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
+      never,
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
       'view' | 'view-of' | 'deployment'
     >,

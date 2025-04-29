@@ -119,6 +119,7 @@ export interface Types<
   MetadataKey extends string,
   DeploymentKind extends string,
   DeploymentFqn extends string,
+  ActivityId extends string,
 > {
   ElementKind: ElementKind
   Fqn: Fqn
@@ -128,6 +129,7 @@ export interface Types<
   MetadataKey: MetadataKey
   DeploymentKind: DeploymentKind
   DeploymentFqn: DeploymentFqn
+  ActivityId: ActivityId
 
   Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
   // Metadata: Metadata<MetadataKey>
@@ -152,6 +154,7 @@ export interface TypesNested<
   MetadataKey extends string,
   DeploymentKind extends string,
   DeploymentFqn extends string,
+  ActivityId extends string,
 > extends
   Types<
     ElementKind,
@@ -161,7 +164,8 @@ export interface TypesNested<
     Tag,
     MetadataKey,
     DeploymentKind,
-    DeploymentFqn
+    DeploymentFqn,
+    ActivityId
   >
 {
   Parent: Parent
@@ -175,10 +179,12 @@ export type AnyTypes = Types<
   any,
   any,
   any,
+  any,
   any
 >
 
 export type AnyTypesNested = TypesNested<
+  any,
   any,
   any,
   any,
@@ -199,11 +205,12 @@ export namespace Types {
       TupleToUnion<Spec['tags']>,
       TupleToUnion<Spec['metadataKeys']>,
       KeysOf<Spec['deployments']>,
+      never,
       never
     >
     : never
 
-  export type AddFqn<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, any>
+  export type AddFqn<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, any, any>
     ? TypesNested<
       P,
       T['ElementKind'],
@@ -213,7 +220,8 @@ export namespace Types {
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -223,12 +231,13 @@ export namespace Types {
         T['Tag'],
         T['MetadataKey'],
         T['DeploymentKind'],
-        T['DeploymentFqn']
+        T['DeploymentFqn'],
+        T['ActivityId']
       >
     : never
 
   export type AddDeploymentFqn<T, Id extends string> = T extends
-    TypesNested<infer P, any, any, any, any, any, any, any, any> ? TypesNested<
+    TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
       T['ElementKind'],
       T['Fqn'],
@@ -237,7 +246,8 @@ export namespace Types {
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      `${P}.${Id}` | T['DeploymentFqn']
+      `${P}.${Id}` | T['DeploymentFqn'],
+      T['ActivityId']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -247,12 +257,13 @@ export namespace Types {
         T['Tag'],
         T['MetadataKey'],
         T['DeploymentKind'],
-        Id | T['DeploymentFqn']
+        Id | T['DeploymentFqn'],
+        T['ActivityId']
       >
     : never
 
-  export type AddView<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, any>
-    ? TypesNested<
+  export type AddView<T, Id extends string> = T extends
+    TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
       T['ElementKind'],
       T['Fqn'],
@@ -261,7 +272,8 @@ export namespace Types {
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -271,7 +283,8 @@ export namespace Types {
         T['Tag'],
         T['MetadataKey'],
         T['DeploymentKind'],
-        T['DeploymentFqn']
+        T['DeploymentFqn'],
+        T['ActivityId']
       >
     : never
 
@@ -281,12 +294,14 @@ export namespace Types {
       T['Tag'],
       T['Fqn'],
       T['ViewId'],
-      T['DeploymentFqn']
+      T['DeploymentFqn'],
+      T['ActivityId']
     >
     : never
 
   export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
     T['Fqn'],
+    T['ActivityId'],
     T['DeploymentFqn'],
     T['ViewId']
   >

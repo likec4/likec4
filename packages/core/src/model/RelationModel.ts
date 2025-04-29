@@ -19,6 +19,13 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
+export namespace RelationshipModel {
+  export interface isActivity<M extends AnyAux> extends RelationshipModel<M> {
+    activityStep: ActivityStepModel<M>
+    activity: ActivityModel<M>
+  }
+}
+
 export class RelationshipModel<M extends AnyAux = AnyAux> {
   public readonly source: ElementModel<M>
   public readonly target: ElementModel<M>
@@ -32,6 +39,7 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   constructor(
     public readonly model: LikeC4Model<M>,
     public readonly $relationship: ModelRelation,
+    public readonly activityStep: ActivityStepModel<M> | null = null,
   ) {
     this.source = model.element($relationship.source)
     this.target = model.element($relationship.target)
@@ -40,7 +48,7 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   }
 
   public get activity(): ActivityModel<M> | null {
-    return null
+    return this.activityStep?.activity ?? null
   }
 
   get id(): M['RelationId'] {
@@ -48,6 +56,9 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   }
 
   get expression(): string {
+    if (this.activityStep) {
+      return this.activityStep.expression
+    }
     return `${this.source.id} -> ${this.target.id}`
   }
 
@@ -108,8 +119,8 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  public isActivityStep(): this is ActivityStepModel<M> {
-    return false
+  public isActivityStep(): this is RelationshipModel.isActivity<M> {
+    return this.activityStep !== null
   }
 
   public isDeploymentRelation(): this is DeploymentRelationModel<M> {

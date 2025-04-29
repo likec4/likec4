@@ -34,11 +34,13 @@ type WithViews<Id extends string, ViewType> = { views: Record<Id, ViewType> }
  */
 export interface Aux<
   Element extends string,
+  Activity extends string,
   Deployment extends string,
   View extends string,
   ViewType,
 > {
   Element: Element
+  Activity: Activity
   Deployment: Deployment
   View: View
 
@@ -72,6 +74,7 @@ export type AnyAux = Aux<
   string,
   string,
   string,
+  string,
   any
 >
 
@@ -84,6 +87,7 @@ export namespace Strict {
 export namespace Aux {
   export type FromParsed<M> = M extends ParsedLikeC4ModelData ? Aux<
       KeysOf<M['elements']>,
+      KeysOf<M['activities']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
       ComputedView<ViewId<KeysOf<M['views']>>, string>
@@ -92,6 +96,7 @@ export namespace Aux {
 
   export type FromModel<M> = M extends GenericLikeC4ModelData ? Aux<
       KeysOf<M['elements']>,
+      KeysOf<M['activities']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
       M extends LayoutedLikeC4ModelData ? DiagramView<ViewId<KeysOf<M['views']>>, string>
@@ -101,6 +106,7 @@ export namespace Aux {
 
   export type FromDump<M> = M extends LikeC4ModelDump ? Aux<
       KeysOf<M['elements']>,
+      KeysOf<M['activities']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
       DiagramView<ViewId<KeysOf<M['views']>>, string>

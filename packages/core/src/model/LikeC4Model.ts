@@ -50,8 +50,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   readonly #children = new DefaultMap<M['Element'], Set<ElementModel<M>>>(() => new Set())
 
   // Activities of the element
-  readonly #activities = new Map<M['Element'], ActivityModel<M>>()
-  readonly #elementActivities = new DefaultMap<M['Element'], Set<ActivityModel<M>>>(() => new Set())
+  readonly #activities = new Map<M['Activity'], ActivityModel<M>>()
+  readonly #activitySteps = new Map<M['Activity'], ActivityStepModel<M>[]>()
+  readonly #elementActivities = new DefaultMap<M['Element'], ActivityModel<M>[]>(() => [])
 
   readonly #rootElements = new Set<ElementModel<M>>()
 
@@ -146,11 +147,29 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
         }
       }
     }
+    // First we add all activities
     for (const activity of values($model.activities ?? {})) {
       const act = this.addActivity(activity)
       for (const tag of act.tags) {
         this.#allTags.get(tag).add(act)
       }
+    }
+    // Then we add all activity steps (as they may reference activities)
+    for (const activity of this.#activities.values()) {
+      const steps = [] as ActivityStepModel<M>[]
+      for (const step of activity.$activity.steps) {
+        const stepModel = new ActivityStepModel(
+          this,
+          step,
+          activity,
+        )
+        const el = this.addRelation(stepModel.relationship)
+        steps.push(stepModel)
+        for (const tag of stepModel.tags) {
+          this.#allTags.get(tag).add(el)
+        }
+      }
+      this.#activitySteps.set(activity.id, steps)
     }
 
     for (const relation of values($model.relations)) {
@@ -193,6 +212,18 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       el = elementFromActivityId(el)
     }
     return this.#elements.get(el) ?? null
+  }
+
+  public elementActivities(elementId: M['Element']): readonly ActivityModel<M>[] {
+    return this.#elementActivities.get(elementId)
+  }
+
+  public activity(activityId: M['Activity']): ActivityModel<M> {
+    return nonNullable(this.#activities.get(activityId), `Activity ${activityId} not found`)
+  }
+
+  public activitySteps(activityId: M['Activity']): readonly ActivityStepModel<M>[] {
+    return nonNullable(this.#activitySteps.get(activityId), `Activity ${activityId} not found`)
   }
 
   /**
@@ -252,23 +283,18 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    */
   public relationship(id: M['RelationId'], type: 'model'): RelationshipModel<M>
   public relationship(id: M['RelationId'], type: 'deployment'): DeploymentRelationModel<M>
-  public relationship(id: M['RelationId'], type: 'activity-step'): ActivityStepModel<M>
   public relationship(
     id: M['RelationId'],
-    type?: 'model' | 'deployment' | 'activity-step',
-  ): RelationshipModel<M> | DeploymentRelationModel<M> | ActivityStepModel<M>
+    type?: 'model' | 'deployment',
+  ): RelationshipModel<M> | DeploymentRelationModel<M>
   public relationship(
     id: M['RelationId'],
-    type: 'model' | 'deployment' | 'activity-step' | undefined,
-  ): RelationshipModel<M> | DeploymentRelationModel<M> | ActivityStepModel<M> {
+    type: 'model' | 'deployment' | undefined,
+  ): RelationshipModel<M> | DeploymentRelationModel<M> {
     if (type === 'deployment') {
       return this.deployment.relationship(id)
     }
     let model = this.#relations.get(id) ?? null
-    if (type === 'activity-step') {
-      invariant(model?.isActivityStep(), `Activity step ${id} not found`)
-      return model
-    }
     if (model || type === 'model') {
       return nonNullable(model, `Model relation ${id} not found`)
     }
@@ -276,7 +302,6 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return nonNullable(this.deployment.findRelationship(id), `No model/deployment relation ${id} not found`)
   }
 
-  public findRelationship(id: LiteralUnion<M['RelationId'], string>, type: 'activity-step'): ActivityStepModel<M> | null
   public findRelationship(id: LiteralUnion<M['RelationId'], string>, type: 'model'): RelationshipModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
@@ -284,20 +309,16 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   ): DeploymentRelationModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
-    type?: 'model' | 'deployment' | 'activity-step',
-  ): RelationshipModel<M> | DeploymentRelationModel<M> | ActivityStepModel<M> | null
+    type?: 'model' | 'deployment',
+  ): RelationshipModel<M> | DeploymentRelationModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
-    type: 'model' | 'deployment' | 'activity-step' | undefined,
-  ): RelationshipModel<M> | DeploymentRelationModel<M> | ActivityStepModel<M> | null {
+    type: 'model' | 'deployment' | undefined,
+  ): RelationshipModel<M> | DeploymentRelationModel<M> | null {
     if (type === 'deployment') {
       return this.deployment.findRelationship(id)
     }
     let model = this.#relations.get(id as M['RelationId']) ?? null
-    if (type === 'activity-step') {
-      invariant(!model || model.isActivityStep())
-      return model
-    }
     if (model || type === 'model') {
       return model
     }
@@ -342,8 +363,8 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
    * Returns all activities associated with the given element.
    */
-  public activities(element: M['ElementOrFqn']): ReadonlySet<ActivityModel<M>> {
-    const id = getId(element) as M['Fqn']
+  public activities(element: M['ElementOrFqn']): ReadonlyArray<ActivityModel<M>> {
+    const id = getId(element) as M['Element']
     return this.#elementActivities.get(id)
   }
 
@@ -533,18 +554,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       throw new Error(`Activity ${activity.id} already exists`)
     }
     this.#activities.set(activity.id, activity)
-    this.#elementActivities.get(el.id).add(activity)
-    for (const step of activityRaw.steps) {
-      const rel = new ActivityStepModel(
-        this,
-        step,
-        activity,
-      )
-      const el = this.addRelation(rel)
-      for (const tag of el.tags) {
-        this.#allTags.get(tag).add(el)
-      }
-    }
+    this.#elementActivities.get(el.id).push(activity)
     return activity
   }
 }
@@ -575,6 +585,7 @@ export namespace LikeC4Model {
   }) as LikeC4Model<AnyAux>
 
   export type Any = Aux<
+    string,
     string,
     string,
     string,
@@ -615,20 +626,23 @@ export namespace LikeC4Model {
 
   export type Typed<
     Elements extends string = string,
+    Activities extends string = string,
     Deployments extends string = string,
     Views extends string = string,
     ViewType = DiagramView<Views> | ComputedView<Views>,
-  > = Aux<Elements, Deployments, Views, ViewType>
+  > = Aux<Elements, Activities, Deployments, Views, ViewType>
 
   export type Computed<
     Elements extends string = string,
+    Activities extends string = string,
     Deployments extends string = string,
     Views extends string = string,
-  > = LikeC4Model<Typed<Elements, Deployments, Views, ComputedView<Views>>>
+  > = LikeC4Model<Typed<Elements, Activities, Deployments, Views, ComputedView<Views>>>
 
   export type Layouted<
     Elements extends string = string,
+    Activities extends string = string,
     Deployments extends string = string,
     Views extends string = string,
-  > = LikeC4Model<Typed<Elements, Deployments, Views, DiagramView<Views>>>
+  > = LikeC4Model<Typed<Elements, Activities, Deployments, Views, DiagramView<Views>>>
 }

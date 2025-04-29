@@ -80,12 +80,11 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     return isStepEdgeId(this.id)
   }
 
-  public relationships(type: 'activity-step'): IteratorLike<ActivityStepModel<M>>
   public relationships(type: 'model'): IteratorLike<RelationshipModel<M>>
   public relationships(type: 'deployment'): IteratorLike<DeploymentRelationModel<M>>
-  public relationships(type?: 'model' | 'deployment' | 'activity-step'): IteratorLike<LikeC4Model.AnyRelation<M>>
+  public relationships(type?: 'model' | 'deployment'): IteratorLike<LikeC4Model.AnyRelation<M>>
   public *relationships(
-    type: 'model' | 'deployment' | 'activity-step' | undefined,
+    type: 'model' | 'deployment' | undefined,
   ): IteratorLike<LikeC4Model.AnyRelation<M>> {
     for (const id of this.$edge.relations) {
       // if type is provided, then we need to filter relationships

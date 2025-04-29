@@ -2,7 +2,6 @@ import { invariant, nonNullable } from '@likec4/core'
 import { type Fqn, type ProjectId, ActivityId, AsFqn } from '@likec4/core/types'
 import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
 import {
-  type AstNode,
   type Stream,
   AstUtils,
   DocumentState,

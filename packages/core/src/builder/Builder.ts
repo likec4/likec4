@@ -4,6 +4,7 @@ import type { Writable } from 'type-fest'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import {
+  type Activity,
   type Color,
   type DeploymentRelation,
   type DeploymentView,
@@ -156,6 +157,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   } as ModelGlobals,
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
+  _activities = new Map<string, Activity>(),
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     elements: {
@@ -220,6 +222,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_globals),
         structuredClone(_deployments),
         structuredClone(_deploymentRelations),
+        structuredClone(_activities),
       )
     },
 
@@ -320,27 +323,15 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     },
     build: () => ({
       specification: toLikeC4Specification(),
-      elements: fromEntries(
-        structuredClone(
-          Array.from(_elements.entries()),
-        ),
-      ),
+      elements: structuredClone(_elements),
       relations: mapToObj(_relations, r => [r.id, structuredClone(r)]),
       globals: structuredClone(_globals),
       deployments: {
-        elements: fromEntries(
-          structuredClone(
-            Array.from(_deployments.entries()),
-          ),
-        ),
+        elements: structuredClone(_deployments),
         relations: mapToObj(_deploymentRelations, r => [r.id, structuredClone(r)]),
       },
-      views: fromEntries(
-        structuredClone(
-          Array.from(_views.entries()),
-        ),
-      ),
-      activities: {},
+      views: structuredClone(_views),
+      activities: structuredClone(_activities),
       imports: {},
     } as any),
     toLikeC4Model: () => {

@@ -260,7 +260,7 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.$model.deployment.instancesOf(this)
   }
 
-  public activities(): ReadonlySet<ActivityModel<M>> {
+  public activities(): ReadonlyArray<ActivityModel<M>> {
     return this.$model.activities(this)
   }
 }

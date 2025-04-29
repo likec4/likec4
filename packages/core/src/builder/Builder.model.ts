@@ -424,7 +424,7 @@ type AddElementHelper<T = unknown> = <const Id extends string>(
 ) => AddElement<Id>
 
 export type AddElementHelpers<T extends AnyTypes> = T extends
-  Types<infer Kinds extends string, any, any, any, any, any, any, any> ? {
+  Types<infer Kinds extends string, any, any, any, any, any, any, any, any> ? {
     [Kind in Kinds]: AddElementHelper<T['NewElementProps']>
   }
   : Invalid<'No Element Kinds'>

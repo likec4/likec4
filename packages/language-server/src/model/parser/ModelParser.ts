@@ -154,7 +154,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const steps = flatMap(astNode.body?.steps ?? [], step => {
         try {
-          return this.parseActivityStep(step)
+          return this.parseActivityStep(id, step)
         } catch (error) {
           logger.error('Failed to parse activity step', { error })
           return []
@@ -262,9 +262,9 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
     }
 
     parseActivityStep(
+      activityId: c4.ActivityId,
       astNode: ast.ActivityStep,
     ): ParsedAstActivityStep {
-      const activityId = this.resolveFqn(astNode.$container.$container)
       const isValid = this.isValid
       const target = this.parseFqnRef(astNode.target)
       invariant(

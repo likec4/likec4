@@ -40,19 +40,19 @@ export namespace ViewPredicate {
     | `${ElementExpr} ${'->' | '<->'} ${ElementExpr}`
 
   export type Expression<T extends AnyTypes> = T extends
-    Types<any, infer F extends string, any, any, any, any, any, any> ? AllExpression<ViewPredicate.ElementExpr<F>>
+    Types<any, infer F extends string, any, any, any, any, any, any, any> ? AllExpression<ViewPredicate.ElementExpr<F>>
     : never
 
   export type ConnectionExpression<T extends AnyTypes> = T extends
-    Types<any, infer F extends string, any, any, any, any, any, any> ? `${F} -> ${F}`
+    Types<any, infer F extends string, any, any, any, any, any, any, any> ? `${F} -> ${F}`
     : never
 
   export type DeploymentExpression<T extends AnyTypes> = T extends
-    Types<any, any, any, any, any, any, any, infer F extends string> ? AllExpression<ViewPredicate.ElementExpr<F>>
+    Types<any, any, any, any, any, any, any, infer F extends string, any> ? AllExpression<ViewPredicate.ElementExpr<F>>
     : never
 
   export type DeploymentConnectionExpression<T extends AnyTypes> = T extends
-    Types<any, any, any, any, any, any, any, infer F extends string> ? `${F} -> ${F}`
+    Types<any, any, any, any, any, any, any, infer F extends string, any> ? `${F} -> ${F}`
     : never
 
   export type WhereTag<Tag extends string> = `tag ${'is' | 'is not'} #${Tag}`

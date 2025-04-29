@@ -1,4 +1,5 @@
 import { first, isEmpty, last } from 'remeda'
+import { invariant, nonNullable } from '../errors'
 import { FqnRef } from '../types'
 import type { IteratorLike } from '../types/_common'
 import type { Activity, ActivityStep } from '../types/activity'
@@ -6,11 +7,12 @@ import {
   type Link,
 } from '../types/element'
 import {
+  type Tag,
   type Tag as C4Tag,
   elementFromActivityId,
 } from '../types/scalars'
 import { commonAncestor, hierarchyLevel } from '../utils'
-import type { ElementModel, ElementsIterator } from './ElementModel'
+import { type ElementModel, type ElementsIterator, isElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import { RelationshipModel } from './RelationModel'
 import type { AnyAux } from './types'
@@ -18,7 +20,7 @@ import type { AnyAux } from './types'
 export type ActivitiesIterator<M extends AnyAux> = IteratorLike<ActivityModel<M>>
 
 export class ActivityModel<M extends AnyAux = AnyAux> {
-  public readonly id: M['Fqn']
+  public readonly id: M['Activity']
   public readonly parent: ElementModel<M>
   // readonly _literalId: M['Element']
   public readonly hierarchyLevel: number
@@ -34,18 +36,7 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
     public readonly $activity: Activity,
   ) {
     this.id = this.$activity.id
-    // this._literalId = this.$activity.id
-    // const [projectId, fqn] = splitGlobalFqn(this.id)
-    // if (projectId) {
-    //   this.imported = {
-    //     from: projectId,
-    //     fqn,
-    //   }
     this.hierarchyLevel = hierarchyLevel(this.$activity.id) + 1
-    // } else {
-    //   this.imported = null
-    //   this.hierarchyLevel = hierarchyLevel(this.id)
-    // }
     this.parent = this.element
   }
 
@@ -73,8 +64,12 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
     return this.$activity.links ?? []
   }
 
+  get steps(): readonly ActivityStepModel<M>[] {
+    return this.$model.activitySteps(this.id)
+  }
+
   public isDescendantOf(another: ElementModel<M>): boolean {
-    return this.element.isDescendantOf(another)
+    return this.element === another || this.element.isDescendantOf(another)
   }
 
   /**
@@ -90,21 +85,10 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   /**
    * Returns the common ancestor of this element and another element.
    */
-  public commonAncestor(another: ElementModel<M>): ElementModel<M> | null {
-    const common = commonAncestor(this.id, another.id)
+  public commonAncestor(another: ElementModel<M> | ActivityModel<M>): ElementModel<M> | null {
+    const common = commonAncestor(this.id, isElementModel(another) ? another.id : another.element.id)
     return common ? this.$model.element(common) : null
   }
-
-  // /**
-  //  * Get all descendant elements (i.e. children, children’s children, etc.)
-  //  */
-  // public descendants(sort?: 'asc' | 'desc'): ElementsIterator<M> {
-  //   if (sort) {
-  //     const sorted = sortNaturalByFqn([...this.$model.descendants(this)], sort)
-  //     return sorted[Symbol.iterator]()
-  //   }
-  //   return this.$model.descendants(this)
-  // }
 
   /**
    * Get all sibling (i.e. same parent)
@@ -122,18 +106,6 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
     yield* this.element.ascendingSiblings()
     return
   }
-
-  // /**
-  //  * Resolve siblings of the element and its ancestors
-  //  *  (from root to closest)
-  //  */
-  // public *descendingSiblings(): ElementsIterator<M> {
-  //   for (const ancestor of [...this.ancestors()].reverse()) {
-  //     yield* ancestor.siblings()
-  //   }
-  //   yield* this.siblings()
-  //   return
-  // }
 
   // public incoming(filter: IncomingFilter = 'all'): RelationshipsIterator<M> {
   //   return this.$model.incoming(this, filter)
@@ -212,90 +184,103 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   // public deployments(): DeployedInstancesIterator<M> {
   //   return this.$model.deployment.instancesOf(this)
   // }
-
-  public *steps(): IteratorLike<ActivityStepModel<M>> {
-    for (const step of this.$activity.steps) {
-      yield this.$model.relationship(step.id, 'activity-step')
-    }
-    return
-  }
 }
 
 export function isActivityModel<M extends AnyAux = AnyAux>(element: any): element is ActivityModel<M> {
   return element instanceof ActivityModel
 }
 
-export class ActivityStepModel<M extends AnyAux = AnyAux> extends RelationshipModel<M> {
+export class ActivityStepModel<M extends AnyAux = AnyAux> {
+  public readonly id: M['RelationId']
   public readonly isBackward: boolean
   public readonly isFirstStep: boolean
   public readonly isLastStep: boolean
+  public readonly index: number
+
+  public readonly source: ActivityModel<M>
+  public readonly target: ActivityModel<M> | ElementModel<M>
+
+  /** `
+   * Relationship model for the activity step
+   * Takes into account the direction of the step
+   */
+  public readonly relationship: RelationshipModel<M>
 
   constructor(
     public readonly $model: LikeC4Model<M>,
     public readonly $activityStep: ActivityStep,
-    private _activity: ActivityModel<M>,
+    public readonly activity: ActivityModel<M>,
   ) {
-    super(
-      $model,
-      $activityStep.isBackward === true
-        ? {
+    this.id = this.$activityStep.id
+    this.source = activity
+    if (FqnRef.isActivityRef($activityStep.target)) {
+      this.target = this.$model.activity($activityStep.target.activity)
+    } else {
+      this.target = this.$model.element(FqnRef.toModelFqn($activityStep.target))
+    }
+
+    if ($activityStep.isBackward) {
+      this.relationship = new RelationshipModel(
+        this.$model,
+        {
           ...$activityStep,
           source: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)
             : FqnRef.toModelFqn($activityStep.target),
-          target: _activity.$activity.modelRef,
-        }
-        : {
+          target: activity.element.id,
+        },
+        this,
+      )
+    } else {
+      this.relationship = new RelationshipModel(
+        this.$model,
+        {
           ...$activityStep,
-          source: _activity.$activity.modelRef,
+          source: activity.element.id,
           target: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)
             : FqnRef.toModelFqn($activityStep.target),
         },
-    )
+        this,
+      )
+    }
 
     this.isBackward = $activityStep.isBackward === true
-    this.isFirstStep = first(_activity.$activity.steps)?.id === $activityStep.id
-    this.isLastStep = last(_activity.$activity.steps)?.id === $activityStep.id
+    this.isFirstStep = first(activity.$activity.steps)?.id === $activityStep.id
+    this.isLastStep = last(activity.$activity.steps)?.id === $activityStep.id
+    this.index = activity.$activity.steps.findIndex(s => s.id === $activityStep.id)
+    invariant(this.index >= 0, 'Activity step not found in activity')
   }
 
-  public override get title(): string | null {
+  get tags(): ReadonlyArray<Tag> {
+    return this.$activityStep.tags ?? []
+  }
+
+  get title(): string | null {
     if (isEmpty(this.$activityStep.title)) {
       return null
     }
     return this.$activityStep.title
   }
 
-  public override get activity(): ActivityModel<M> {
-    return this._activity
-  }
-
-  public override get expression(): string {
+  get expression(): string {
     if (this.$activityStep.isBackward) {
       return `${this.activity.id} <- ${FqnRef.toModelFqn(this.$activityStep.target)}`
     }
     return `${this.activity.id} -> ${FqnRef.toModelFqn(this.$activityStep.target)}`
   }
 
-  public override isActivityStep(): this is ActivityStepModel<M> {
-    return true
-  }
-
-  public next(): ActivityStepModel<M> | null {
-    const steps = this._activity.$activity.steps
-    const index = steps.findIndex(s => s.id === this.$activityStep.id)
-    if (index === -1 || index === steps.length - 1) {
+  get next(): ActivityStepModel<M> | null {
+    if (this.isLastStep) {
       return null
     }
-    return this.$model.relationship(steps[index + 1]!.id, 'activity-step')
+    return nonNullable(this.activity.steps[this.index + 1], 'Next activity step not found')
   }
 
-  public previous(): ActivityStepModel<M> | null {
-    const steps = this._activity.$activity.steps
-    const index = steps.findIndex(s => s.id === this.$activityStep.id)
-    if (index === -1 || index === 0) {
+  get previous(): ActivityStepModel<M> | null {
+    if (this.isFirstStep) {
       return null
     }
-    return this.$model.relationship(steps[index - 1]!.id, 'activity-step')
+    return nonNullable(this.activity.steps[this.index - 1], 'Previous activity step not found')
   }
 }

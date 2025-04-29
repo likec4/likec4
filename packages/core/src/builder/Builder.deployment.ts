@@ -2,7 +2,7 @@ import type { AnyTypes, Types, TypesNested } from './_types'
 import type { DeploymentModelBuilder } from './Builder.deploymentModel'
 import type { ModelBuilder } from './Builder.model'
 
-type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, infer F>
+type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, infer F, any>
   ? TypesNested<
     `${P}.${Id}`,
     T['ElementKind'],
@@ -12,7 +12,8 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, a
     T['Tag'],
     T['MetadataKey'],
     T['DeploymentKind'],
-    `${P}.${Id}` | F
+    `${P}.${Id}` | F,
+    T['ActivityId']
   >
   : T extends AnyTypes ? TypesNested<
       Id,
@@ -23,12 +24,13 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, a
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      Id | T['DeploymentFqn']
+      Id | T['DeploymentFqn'],
+      T['ActivityId']
     >
   : never
 
-type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, any, any, any, any, any, infer F>
-  ? T extends TypesNested<infer P, any, any, any, any, any, any, any, any> ? TypesNested<
+type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, any, any, any, any, any, infer F, any>
+  ? T extends TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
       T['ElementKind'],
       T['Fqn'],
@@ -37,7 +39,8 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, an
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      F
+      F,
+      T['ActivityId']
     >
   : T extends AnyTypes ? Types<
       T['ElementKind'],
@@ -47,7 +50,8 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, an
       T['Tag'],
       T['MetadataKey'],
       T['DeploymentKind'],
-      F
+      F,
+      T['ActivityId']
     >
   : never
   : never
