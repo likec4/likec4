@@ -1,5 +1,100 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Builder (style1) > should build activities 1`] = `
+{
+  "activities": {
+    "s1#A": {
+      "id": "s1#A",
+      "modelRef": "s1",
+      "name": "",
+      "steps": [],
+    },
+    "s2#B": {
+      "id": "s2#B",
+      "modelRef": "s2",
+      "name": "",
+      "steps": [],
+    },
+    "s2.c2#C": {
+      "id": "s2.c2#C",
+      "modelRef": "s2.c2",
+      "name": "",
+      "steps": [],
+    },
+  },
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "s1": {
+      "color": "primary",
+      "description": null,
+      "id": "s1",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "s1",
+    },
+    "s1.c1": {
+      "color": "primary",
+      "description": null,
+      "id": "s1.c1",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "c1",
+    },
+    "s2": {
+      "color": "primary",
+      "description": null,
+      "id": "s2",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "s2",
+    },
+    "s2.c2": {
+      "color": "primary",
+      "description": null,
+      "id": "s2.c2",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "c2",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "relations": {},
+  "specification": {
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": [],
+  },
+  "views": {},
+}
+`;
+
 exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 {
   "activities": {},

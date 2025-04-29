@@ -188,4 +188,36 @@ describe('Builder (style1)', () => {
       'node.b': expect.objectContaining({ id: 'node.b', element: 'a.b' }),
     })
   })
+
+  it('should build activities', () => {
+    const {
+      model: {
+        model,
+        component,
+        activity,
+        step,
+      },
+      builder,
+    } = Builder.forSpecification({
+      elements: {
+        component: {},
+      },
+    })
+
+    const b = builder.with(
+      model(
+        component('s1').with(
+          activity('A'),
+          component('c1'),
+        ),
+        component('s2').with(
+          activity('B'),
+          component('c2'),
+        ),
+        activity('s2.c2#C'),
+      ),
+    )
+
+    expect(b.build()).toMatchSnapshot()
+  })
 })

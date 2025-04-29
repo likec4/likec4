@@ -65,8 +65,12 @@ test('Builder types - style 1', () => {
         actor('bob'),
         system('cloud').with(
           component('backend').with(
-            activity({
-              name: 'B',
+            activity('B', {
+              '-> cloud.backend': 'arsars',
+              '<- alice': {
+                title: 'arsarsar',
+                tags: ['tag1'],
+              },
             }),
             component('api'),
             component('db'),
@@ -78,9 +82,15 @@ test('Builder types - style 1', () => {
             relTo('cloud.backend.api'),
           ),
         ),
-        activity({
-          name: 'cloudname',
-        }),
+        activity('cloud#SPA', [
+          step('-> cloud.backend'),
+          step('-> cloud.backend', 'arsars'),
+          '<- cloud.backend#B',
+          step('<- cloud.backend#B', {
+            title: 'arsarsar',
+            tags: ['tag1'],
+          }),
+        ]),
       ),
       deployment(
         env('prod').with(
@@ -188,7 +198,7 @@ test('Builder types - style 1', () => {
     '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
   )
   expectTypeOf(m.Types.Activity).toEqualTypeOf(
-    '' as 'cloud.backend#B' | 'cloud#A',
+    '' as 'cloud.backend#B' | 'cloud#SPA',
   )
 
   expectTypeOf(m.build()).toEqualTypeOf(
@@ -199,14 +209,14 @@ test('Builder types - style 1', () => {
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
       'view' | 'view-of' | 'deployment',
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-      'cloud.backend#B' | 'cloud#A'
+      'cloud.backend#B' | 'cloud#SPA'
     >,
   )
 
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
     {} as LikeC4Model.Computed<
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-      'cloud.backend#B' | 'cloud#A',
+      'cloud.backend#B' | 'cloud#SPA',
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
       'view' | 'view-of' | 'deployment'
     >,
