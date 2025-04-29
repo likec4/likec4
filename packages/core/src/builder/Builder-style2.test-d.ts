@@ -152,7 +152,7 @@ test('Builder types - style 2', () => {
   expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf(
     '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
   )
-  expectTypeOf(m.Types.ActivityId).toEqualTypeOf(
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
     '' as never,
   )
 

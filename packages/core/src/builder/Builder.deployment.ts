@@ -13,7 +13,7 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, a
     T['MetadataKey'],
     T['DeploymentKind'],
     `${P}.${Id}` | F,
-    T['ActivityId']
+    T['Activity']
   >
   : T extends AnyTypes ? TypesNested<
       Id,
@@ -25,7 +25,7 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, a
       T['MetadataKey'],
       T['DeploymentKind'],
       Id | T['DeploymentFqn'],
-      T['ActivityId']
+      T['Activity']
     >
   : never
 
@@ -40,7 +40,7 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, an
       T['MetadataKey'],
       T['DeploymentKind'],
       F,
-      T['ActivityId']
+      T['Activity']
     >
   : T extends AnyTypes ? Types<
       T['ElementKind'],
@@ -51,7 +51,7 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, an
       T['MetadataKey'],
       T['DeploymentKind'],
       F,
-      T['ActivityId']
+      T['Activity']
     >
   : never
   : never

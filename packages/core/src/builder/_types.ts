@@ -119,7 +119,7 @@ export interface Types<
   MetadataKey extends string,
   DeploymentKind extends string,
   DeploymentFqn extends string,
-  ActivityId extends string,
+  Activity extends string,
 > {
   ElementKind: ElementKind
   Fqn: Fqn
@@ -129,7 +129,7 @@ export interface Types<
   MetadataKey: MetadataKey
   DeploymentKind: DeploymentKind
   DeploymentFqn: DeploymentFqn
-  ActivityId: ActivityId
+  Activity: Activity
 
   Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
   // Metadata: Metadata<MetadataKey>
@@ -154,7 +154,7 @@ export interface TypesNested<
   MetadataKey extends string,
   DeploymentKind extends string,
   DeploymentFqn extends string,
-  ActivityId extends string,
+  Activity extends string,
 > extends
   Types<
     ElementKind,
@@ -165,7 +165,7 @@ export interface TypesNested<
     MetadataKey,
     DeploymentKind,
     DeploymentFqn,
-    ActivityId
+    Activity
   >
 {
   Parent: Parent
@@ -221,7 +221,7 @@ export namespace Types {
       T['MetadataKey'],
       T['DeploymentKind'],
       T['DeploymentFqn'],
-      T['ActivityId']
+      T['Activity']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -232,7 +232,7 @@ export namespace Types {
         T['MetadataKey'],
         T['DeploymentKind'],
         T['DeploymentFqn'],
-        T['ActivityId']
+        T['Activity']
       >
     : never
 
@@ -247,7 +247,7 @@ export namespace Types {
       T['MetadataKey'],
       T['DeploymentKind'],
       `${P}.${Id}` | T['DeploymentFqn'],
-      T['ActivityId']
+      T['Activity']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -258,7 +258,7 @@ export namespace Types {
         T['MetadataKey'],
         T['DeploymentKind'],
         Id | T['DeploymentFqn'],
-        T['ActivityId']
+        T['Activity']
       >
     : never
 
@@ -273,7 +273,7 @@ export namespace Types {
       T['MetadataKey'],
       T['DeploymentKind'],
       T['DeploymentFqn'],
-      T['ActivityId']
+      T['Activity']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -284,7 +284,7 @@ export namespace Types {
         T['MetadataKey'],
         T['DeploymentKind'],
         T['DeploymentFqn'],
-        T['ActivityId']
+        T['Activity']
       >
     : never
 
@@ -295,13 +295,13 @@ export namespace Types {
       T['Fqn'],
       T['ViewId'],
       T['DeploymentFqn'],
-      T['ActivityId']
+      T['Activity']
     >
     : never
 
   export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
     T['Fqn'],
-    T['ActivityId'],
+    T['Activity'],
     T['DeploymentFqn'],
     T['ViewId']
   >
