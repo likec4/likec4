@@ -10,6 +10,8 @@ test('Builder types - style 1', () => {
       actor,
       system,
       component,
+      activity,
+      step,
       relTo,
     },
     deployment: {
@@ -63,13 +65,22 @@ test('Builder types - style 1', () => {
         actor('bob'),
         system('cloud').with(
           component('backend').with(
+            activity({
+              name: 'B',
+            }),
             component('api'),
             component('db'),
           ),
           component('frontend').with(
+            // activity('A').with(
+            //   step('-> cloud.backend#B'),
+            // ),
             relTo('cloud.backend.api'),
           ),
         ),
+        activity({
+          name: 'cloudname',
+        }),
       ),
       deployment(
         env('prod').with(
@@ -177,7 +188,7 @@ test('Builder types - style 1', () => {
     '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
   )
   expectTypeOf(m.Types.Activity).toEqualTypeOf(
-    '' as never,
+    '' as 'cloud.backend#B' | 'cloud#A',
   )
 
   expectTypeOf(m.build()).toEqualTypeOf(
@@ -188,14 +199,14 @@ test('Builder types - style 1', () => {
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
       'view' | 'view-of' | 'deployment',
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-      never
+      'cloud.backend#B' | 'cloud#A'
     >,
   )
 
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
     {} as LikeC4Model.Computed<
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-      never,
+      'cloud.backend#B' | 'cloud#A',
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
       'view' | 'view-of' | 'deployment'
     >,

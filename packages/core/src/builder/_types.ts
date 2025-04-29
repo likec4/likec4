@@ -236,6 +236,32 @@ export namespace Types {
       >
     : never
 
+  export type AddActivity<T, Id extends string> = T extends
+    TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
+      P,
+      T['ElementKind'],
+      T['Fqn'],
+      T['ViewId'],
+      T['RelationshipKind'],
+      T['Tag'],
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn'],
+      `${P}#${Id}` | T['Activity']
+    >
+    : T extends AnyTypes ? Types<
+        T['ElementKind'],
+        T['Fqn'],
+        T['ViewId'],
+        T['RelationshipKind'],
+        T['Tag'],
+        T['MetadataKey'],
+        T['DeploymentKind'],
+        T['DeploymentFqn'],
+        Id | T['Activity']
+      >
+    : never
+
   export type AddDeploymentFqn<T, Id extends string> = T extends
     TypesNested<infer P, any, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
