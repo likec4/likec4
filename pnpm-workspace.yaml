@@ -75,8 +75,8 @@ catalogs:
     "@vitest/ui": "^3.1.2"
   css:
     postcss: "^8.5.3"
-    "@pandacss/dev": "^0.53.4"
-    "@pandacss/preset-panda": "^0.53.4"
+    "@pandacss/dev": "^0.53.6"
+    "@pandacss/preset-panda": "^0.53.6"
   vscode:
     vscode-jsonrpc: "8.2.0"
     vscode-languageclient: "9.0.1"
