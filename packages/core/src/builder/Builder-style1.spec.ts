@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { Builder } from './Builder'
 
 describe('Builder (style1)', () => {
-  it('should build nested elements and relTo', () => {
+  it('should build nested elements and relTo', ({ expect }) => {
     const {
       model: {
         model,
@@ -58,7 +58,7 @@ describe('Builder (style1)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
-  it('should build view ', () => {
+  it('should build view ', ({ expect }) => {
     const {
       model: {
         model,
@@ -102,7 +102,7 @@ describe('Builder (style1)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
-  it('should build viewOf ', () => {
+  it('should build viewOf ', ({ expect }) => {
     const {
       model: {
         model,
@@ -148,7 +148,7 @@ describe('Builder (style1)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
-  it('should fail on invalid instance ', () => {
+  it('should fail on invalid instance ', ({ expect }) => {
     const {
       model: $m,
       deployment: $d,
@@ -189,13 +189,12 @@ describe('Builder (style1)', () => {
     })
   })
 
-  it('should build activities', () => {
+  it('should build activities', ({ expect }) => {
     const {
       model: {
         model,
         component,
         activity,
-        step,
       },
       builder,
     } = Builder.forSpecification({
@@ -219,5 +218,109 @@ describe('Builder (style1)', () => {
     )
 
     expect(b.build()).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (array)', ({ expect }) => {
+    const {
+      model: {
+        model,
+        component,
+        activity,
+        step,
+      },
+      builder: b,
+    } = Builder.forSpecification({
+      elements: {
+        component: {},
+      },
+      relationships: {
+        async: {},
+      },
+    })
+
+    expect(
+      b.clone().with(
+        model(
+          component('s1').with(
+            component('c1'),
+          ),
+          component('s2').with(
+            component('c2'),
+          ),
+          activity('s2.c2#C', [
+            step('-> s1.c1'),
+            step('<- s1.c1'),
+          ]),
+        ),
+      ).build(),
+    ).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (string array)', ({ expect }) => {
+    const {
+      model: {
+        model,
+        component,
+        activity,
+        step,
+      },
+      builder: b,
+    } = Builder.forSpecification({
+      elements: {
+        component: {},
+      },
+      relationships: {
+        async: {},
+      },
+    })
+    expect(
+      b.clone().with(
+        model(
+          component('s1'),
+          component('s2').with(
+            activity('B'),
+          ),
+          activity('s1#A', [
+            '-> s2#B',
+          ]),
+        ),
+      ).build(),
+    ).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (object)', ({ expect }) => {
+    const {
+      model: {
+        model,
+        component,
+        activity,
+        step,
+      },
+      builder: b,
+    } = Builder.forSpecification({
+      elements: {
+        component: {},
+      },
+      relationships: {
+        async: {},
+      },
+    })
+    expect(
+      b.clone().with(
+        model(
+          component('s1'),
+          component('s2').with(
+            activity('B'),
+          ),
+          activity('s1#A', {
+            '-> s2#B': 'title1',
+            '<- s2#B': {
+              title: 'title2',
+              kind: 'async',
+            },
+          }),
+        ),
+      ).build(),
+    ).toMatchSnapshot()
   })
 })

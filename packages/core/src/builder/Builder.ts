@@ -395,52 +395,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     },
     helpers: () => ({
       model: {
-        model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
-          return (b: Builder<T>) => {
-            return ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
-          }
-        },
-        rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
-          return <T extends AnyTypes>(b: ModelBuilder<T>) => {
-            const {
-              title = '',
-              links: _links = [],
-              ...props
-            } = defu(
-              typeof _props === 'string' ? { title: _props } : { ..._props },
-              { title: null, links: null },
-            )
-            const links = mapLinks(_links)
-            b.__addRelation({
-              source: source as any,
-              target: target as any,
-              title,
-              ...(links && { links }),
-              ...props,
-            })
-            return b
-          }
-        },
-        relTo: (target, _props?) => {
-          return <T extends AnyTypes>(b: ModelBuilder<T>) => {
-            const {
-              title = '',
-              links: _links = [],
-              ...props
-            } = defu(
-              typeof _props === 'string' ? { title: _props } : { ..._props },
-              { title: null, links: null },
-            )
-            const links = mapLinks(_links)
-            b.__addSourcelessRelation({
-              target,
-              title,
-              ...(links && { links }),
-              ...props,
-            })
-            return b
-          }
-        },
         ...mapValues(
           spec.elements,
           ({ style: specStyle, ...spec }, kind) =>
@@ -510,6 +464,52 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return add
           },
         ) as AddElementHelpers<T>,
+        model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
+          return (b: Builder<T>) => {
+            return ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
+          }
+        },
+        rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
+          return <T extends AnyTypes>(b: ModelBuilder<T>) => {
+            const {
+              title = '',
+              links: _links = [],
+              ...props
+            } = defu(
+              typeof _props === 'string' ? { title: _props } : { ..._props },
+              { title: null, links: null },
+            )
+            const links = mapLinks(_links)
+            b.__addRelation({
+              source: source as any,
+              target: target as any,
+              title,
+              ...(links && { links }),
+              ...props,
+            })
+            return b
+          }
+        },
+        relTo: (target, _props?) => {
+          return <T extends AnyTypes>(b: ModelBuilder<T>) => {
+            const {
+              title = '',
+              links: _links = [],
+              ...props
+            } = defu(
+              typeof _props === 'string' ? { title: _props } : { ..._props },
+              { title: null, links: null },
+            )
+            const links = mapLinks(_links)
+            b.__addSourcelessRelation({
+              target,
+              title,
+              ...(links && { links }),
+              ...props,
+            })
+            return b
+          }
+        },
         activity: (
           name: string,
           _props?: string | StepOrActivityProps<T> | ActivitySteps<T>,
@@ -573,7 +573,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: `step_${activityId}_${activity.steps.length + 1}` as RelationId,
               })
 
-              return b
+              return stepBuilder
             }
 
             const stepsArr = isArray(steps)
