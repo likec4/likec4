@@ -276,7 +276,9 @@ test('Builder types - style 2 - activities', () => {
             component('api').with(
               activity('A', [
                 '-> bob',
-                // @ts-expect-error tom is not defined
+              ]),
+              // @ts-expect-error tom is not defined
+              activity('A', [
                 '-> tom',
               ]),
             ),

@@ -1,4 +1,4 @@
-import { entries, hasAtLeast, isArray, isFunction, isString, map, pipe } from 'remeda'
+import { hasAtLeast, isArray, isFunction, isString } from 'remeda'
 import type { IfNever } from 'type-fest'
 import { invariant, nonexhaustive } from '../errors'
 import { type RelationId, FqnRef } from '../types'
@@ -36,7 +36,6 @@ export type StepOrActivityProps<T extends AnyTypes> = {
 
 export type ActivityStepsArray<T extends AnyTypes> = Array<
   | ActivityStepExpr<T>
-  | [ActivityStepExpr<T>]
   | [ActivityStepExpr<T>, string | StepOrActivityProps<T>]
   | ((input: ActivityBuilder<T>) => ActivityBuilder<T>)
 >
@@ -47,24 +46,31 @@ export type ActivitySteps<T extends AnyTypes> =
     [key in ActivityStepExpr<T>]?: string | StepOrActivityProps<T>
   }
 
+export type ActivityProps<T extends AnyTypes> = {
+  title?: string
+  description?: string
+  technology?: string
+  kind?: T['RelationshipKind']
+  tags?: T['Tag'] | T['Tags']
+  steps?: ActivityStepsArray<T>
+}
+
 export function activity<T extends AnyTypes, Name extends string>(
   name: ValidActivityName<T, Name>,
 ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
 export function activity<T extends AnyTypes, const Name extends string>(
   name: ValidActivityName<T, Name>,
-  propsOrSteps: string | ActivitySteps<T>,
-): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+  steps: ActivityStepsArray<T>,
+): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
 export function activity<T extends AnyTypes, const Name extends string>(
   name: ValidActivityName<T, Name>,
-  props: string | StepOrActivityProps<T>,
-  steps: ActivitySteps<T>,
-): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+  props: ActivityProps<T>,
+): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
 export function activity(
-  ...args: [string] | [string, string | ActivitySteps<AnyTypes>] | [
-    string,
-    string | StepOrActivityProps<AnyTypes>,
-    ActivitySteps<AnyTypes>,
-  ]
+  ...args:
+    | [string]
+    | [string, ActivityStepsArray<AnyTypes>]
+    | [string, ActivityProps<AnyTypes>]
 ) {
   return <T extends AnyTypes>(b: ModelBuilder<T>): ModelBuilder<T> => {
     let activityId: ActivityId
@@ -87,50 +93,18 @@ export function activity(
       }
       case 2: {
         const [, arg2] = args
-        switch (true) {
-          case isString(arg2): {
-            props = {
-              title: arg2,
-            }
-            steps = []
-            break
-          }
-          case isArray(arg2): {
-            props = {}
-            steps = arg2
-            break
-          }
-          default: {
-            props = {}
-            steps = pipe(
-              arg2,
-              entries(),
-              map(([key, value]) =>
-                [key, value] as [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]
-              ),
-            )
-            break
-          }
+        if (isArray(arg2)) {
+          props = {}
+          steps = arg2
+          break
         }
+        const { steps: _steps = [], ...rest } = arg2
+        props = rest
+        steps = _steps
         break
       }
-      case 3: {
-        const [, arg2, arg3] = args
-        props = isString(arg2)
-          ? {
-            title: arg2,
-          }
-          : arg2
-        steps = isArray(arg3) ? arg3 : pipe(
-          arg3,
-          entries(),
-          map(([key, value]) => [key, value] as [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]),
-        )
-        break
-      }
-      default: {
+      default:
         nonexhaustive(args)
-      }
     }
 
     b.__addActivity({

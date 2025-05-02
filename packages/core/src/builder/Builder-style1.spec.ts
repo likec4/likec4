@@ -313,11 +313,13 @@ describe('Builder (style1)', () => {
             activity('B'),
           ),
           activity('s1#A', {
-            '-> s2#B': 'title1',
-            '<- s2#B': {
-              title: 'title2',
-              kind: 'async',
-            },
+            steps: [
+              ['-> s2#B', 'title1'],
+              ['<- s2#B', {
+                title: 'title2',
+                kind: 'async',
+              }],
+            ],
           }),
         ),
       ).build(),

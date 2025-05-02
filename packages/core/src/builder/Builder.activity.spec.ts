@@ -29,7 +29,7 @@ describe('Builder (activity)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
-  it('should build steps', () => {
+  it('should build steps 1', () => {
     const b = spec.clone()
       .model(({ actor, system, component, activity, step }, _) =>
         _(
@@ -48,6 +48,45 @@ describe('Builder (activity)', () => {
                 step('<- cloud.api#B'),
               ]),
             ),
+          ),
+        )
+      )
+    expect(b.build()).toMatchSnapshot()
+  })
+
+  it('should fail same hierarchy', () => {
+    expect(() => {
+      const b = spec.clone()
+        .model(({ system, component, activity, step }, _) =>
+          _(
+            system('cloud').with(
+              component('api').with(
+                activity('B', {
+                  steps: [
+                    step('<- cloud.api'),
+                  ],
+                }),
+              ),
+            ),
+          )
+        )
+    }).toThrowError('Invalid activity step between elements in the same hierarchy')
+  })
+
+  it('should build steps 2', () => {
+    const b = spec.clone()
+      .model(({ actor, system, component, activity, step }, _) =>
+        _(
+          actor('customer'),
+          system('cloud').with(
+            component('api'),
+          ),
+          activity('cloud.api#B'),
+          component('cloud.ui').with(
+            activity('C', [
+              step('-> cloud.api#B'),
+              step('<- cloud.api#B'),
+            ]),
           ),
         )
       )

@@ -192,3 +192,223 @@ exports[`Builder (activity) > should build steps 1`] = `
   "views": {},
 }
 `;
+
+exports[`Builder (activity) > should build steps 1 1`] = `
+{
+  "activities": {
+    "cloud.api#B": {
+      "id": "cloud.api#B",
+      "modelRef": "cloud.api",
+      "name": "B",
+      "steps": [
+        {
+          "id": "step_cloud.api#B_1",
+          "isBackward": false,
+          "target": {
+            "model": "customer",
+          },
+        },
+      ],
+    },
+    "cloud.ui#C": {
+      "id": "cloud.ui#C",
+      "modelRef": "cloud.ui",
+      "name": "C",
+      "steps": [
+        {
+          "id": "step_cloud.ui#C_1",
+          "isBackward": false,
+          "target": {
+            "activity": "cloud.api#B",
+          },
+        },
+        {
+          "id": "step_cloud.ui#C_2",
+          "isBackward": true,
+          "target": {
+            "activity": "cloud.api#B",
+          },
+        },
+      ],
+    },
+  },
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "cloud",
+    },
+    "cloud.api": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.api",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "api",
+    },
+    "cloud.ui": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.ui",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "ui",
+    },
+    "customer": {
+      "color": "primary",
+      "description": null,
+      "id": "customer",
+      "kind": "actor",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "relations": {},
+  "specification": {
+    "deployments": {},
+    "elements": {
+      "actor": {},
+      "component": {},
+      "system": {},
+    },
+    "relationships": {},
+    "tags": [],
+  },
+  "views": {},
+}
+`;
+
+exports[`Builder (activity) > should build steps 2 1`] = `
+{
+  "activities": {
+    "cloud.api#B": {
+      "id": "cloud.api#B",
+      "modelRef": "cloud.api",
+      "name": "B",
+      "steps": [],
+    },
+    "cloud.ui#C": {
+      "id": "cloud.ui#C",
+      "modelRef": "cloud.ui",
+      "name": "C",
+      "steps": [
+        {
+          "id": "step_cloud.ui#C_1",
+          "isBackward": false,
+          "target": {
+            "activity": "cloud.api#B",
+          },
+        },
+        {
+          "id": "step_cloud.ui#C_2",
+          "isBackward": true,
+          "target": {
+            "activity": "cloud.api#B",
+          },
+        },
+      ],
+    },
+  },
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "cloud",
+    },
+    "cloud.api": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.api",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "api",
+    },
+    "cloud.ui": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.ui",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "ui",
+    },
+    "customer": {
+      "color": "primary",
+      "description": null,
+      "id": "customer",
+      "kind": "actor",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "relations": {},
+  "specification": {
+    "deployments": {},
+    "elements": {
+      "actor": {},
+      "component": {},
+      "system": {},
+    },
+    "relationships": {},
+    "tags": [],
+  },
+  "views": {},
+}
+`;
