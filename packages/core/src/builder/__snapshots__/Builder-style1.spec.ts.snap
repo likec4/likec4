@@ -355,6 +355,54 @@ exports[`Builder (style1) > should build activities with steps (string array) 1`
 }
 `;
 
+exports[`Builder (style1) > should build activities with title 1`] = `
+{
+  "activities": {
+    "s1#A": {
+      "id": "s1#A",
+      "modelRef": "s1",
+      "name": "A",
+      "steps": [],
+      "title": "Title A",
+    },
+  },
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "s1": {
+      "color": "primary",
+      "description": null,
+      "id": "s1",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "s1",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "relations": {},
+  "specification": {
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": [],
+  },
+  "views": {},
+}
+`;
+
 exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 {
   "activities": {},

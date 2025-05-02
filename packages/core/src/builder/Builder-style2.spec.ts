@@ -104,4 +104,95 @@ describe('Builder (style 2)', () => {
       'node.ui': expect.objectContaining({ id: 'node.ui', element: 'cloud.ui' }),
     })
   })
+
+  it('should build activities', ({ expect }) => {
+    const b = spec.clone()
+      .model(_ =>
+        _.model(
+          _.component('s1').with(
+            _.activity('A'),
+            _.component('c1'),
+          ),
+          _.component('s2').with(
+            _.activity('B'),
+            _.component('c2'),
+          ),
+          _.activity('s2.c2#C'),
+        )
+      )
+
+    expect(b.build()).toMatchSnapshot()
+  })
+
+  it('should build activities with title', ({ expect }) => {
+    expect(
+      spec.clone()
+        .model(_ =>
+          _.model(
+            _.component('s1').with(
+              _.activity('A', {
+                title: 'Title A',
+              }),
+            ),
+          )
+        ).build(),
+    ).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (array)', ({ expect }) => {
+    expect(
+      spec.clone()
+        .model(_ =>
+          _.model(
+            _.component('s1').with(
+              _.component('c1'),
+            ),
+            _.component('s2').with(
+              _.component('c2'),
+            ),
+            _.activity('s2.c2#C', [
+              _.step('-> s1.c1'),
+              _.step('<- s1.c1'),
+            ]),
+          )
+        ).build(),
+    ).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (string array)', ({ expect }) => {
+    expect(
+      spec.clone().model(_ =>
+        _.model(
+          _.component('s1'),
+          _.component('s2').with(
+            _.activity('B'),
+          ),
+          _.activity('s1#A', [
+            '-> s2#B',
+          ]),
+        )
+      ).build(),
+    ).toMatchSnapshot()
+  })
+
+  it('should build activities with steps (object)', ({ expect }) => {
+    expect(
+      spec.clone().model(_ =>
+        _.model(
+          _.component('s1'),
+          _.component('s2').with(
+            _.activity('B'),
+          ),
+          _.activity('s1#A', {
+            steps: [
+              ['-> s2#B', 'title1'],
+              ['<- s2#B', {
+                title: 'title2',
+              }],
+            ],
+          }),
+        )
+      ).build(),
+    ).toMatchSnapshot()
+  })
 })

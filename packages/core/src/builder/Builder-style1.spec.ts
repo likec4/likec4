@@ -220,6 +220,32 @@ describe('Builder (style1)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
+  it('should build activities with title', ({ expect }) => {
+    const {
+      model: {
+        model,
+        component,
+        activity,
+      },
+      builder,
+    } = Builder.forSpecification({
+      elements: {
+        component: {},
+      },
+    })
+    expect(
+      builder.with(
+        model(
+          component('s1').with(
+            activity('A', {
+              title: 'Title A',
+            }),
+          ),
+        ),
+      ).build(),
+    ).toMatchSnapshot()
+  })
+
   it('should build activities with steps (array)', ({ expect }) => {
     const {
       model: {
