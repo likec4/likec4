@@ -222,3 +222,185 @@ test('Builder types - style 1', () => {
     >,
   )
 })
+
+test('should build activities', () => {
+  const {
+    model: {
+      model,
+      component,
+      activity,
+    },
+    builder,
+  } = Builder.forSpecification({
+    elements: {
+      component: {},
+    },
+  })
+
+  const m = builder.with(
+    model(
+      component('s1').with(
+        activity('A'),
+        component('c1'),
+      ),
+      component('s2').with(
+        activity('B'),
+        component('c2'),
+      ),
+      activity('s2.c2#C'),
+    ),
+  )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 's1' | 's2' | 's1.c1' | 's2.c2',
+  )
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as 's1#A' | 's2#B' | 's2.c2#C',
+  )
+
+  expectTypeOf(m.build()).toEqualTypeOf(
+    {} as ParsedLikeC4ModelData<
+      'component',
+      never,
+      never,
+      's1' | 's2' | 's1.c1' | 's2.c2',
+      never,
+      never,
+      's1#A' | 's2#B' | 's2.c2#C'
+    >,
+  )
+
+  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
+    {} as LikeC4Model.Computed<
+      's1' | 's2' | 's1.c1' | 's2.c2',
+      's1#A' | 's2#B' | 's2.c2#C',
+      never,
+      never
+    >,
+  )
+})
+
+test('should build activities with steps (array)', () => {
+  const {
+    model: {
+      model,
+      component,
+      activity,
+      step,
+    },
+    builder: b,
+  } = Builder.forSpecification({
+    elements: {
+      component: {},
+    },
+  })
+
+  const m = b.with(
+    model(
+      component('s1').with(
+        component('c1'),
+      ),
+      component('s2').with(
+        component('c2'),
+      ),
+      activity('s2.c2#C', [
+        step('-> s1.c1'),
+        step('<- s1.c1'),
+      ]),
+    ),
+  )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 's1' | 's2' | 's1.c1' | 's2.c2',
+  )
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as 's2.c2#C',
+  )
+
+  expectTypeOf(m.build()).toEqualTypeOf(
+    {} as ParsedLikeC4ModelData<
+      'component',
+      never,
+      never,
+      's1' | 's2' | 's1.c1' | 's2.c2',
+      never,
+      never,
+      's2.c2#C'
+    >,
+  )
+
+  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
+    {} as LikeC4Model.Computed<
+      's1' | 's2' | 's1.c1' | 's2.c2',
+      's2.c2#C',
+      never,
+      never
+    >,
+  )
+})
+
+test('should build activities with steps (object)', () => {
+  const {
+    model: {
+      model,
+      component,
+      activity,
+      step,
+    },
+    builder: b,
+  } = Builder.forSpecification({
+    elements: {
+      component: {},
+    },
+    relationships: {
+      async: {},
+    },
+  })
+
+  const m = b.with(
+    model(
+      component('s1'),
+      component('s2').with(
+        activity('B'),
+      ),
+      activity('s1#A', [
+        ['-> s2#B', 'title1'],
+        ['-> s2', {
+          title: 'title2',
+          kind: 'async',
+        }],
+        '<- s2',
+        // @ts-expect-error wrong target
+        '-> s4',
+      ]),
+    ),
+  )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 's1' | 's2',
+  )
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as 's1#A' | 's2#B',
+  )
+
+  expectTypeOf(m.build()).toEqualTypeOf(
+    {} as ParsedLikeC4ModelData<
+      'component',
+      'async',
+      never,
+      's1' | 's2',
+      never,
+      never,
+      's1#A' | 's2#B'
+    >,
+  )
+
+  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
+    {} as LikeC4Model.Computed<
+      's1' | 's2',
+      's1#A' | 's2#B',
+      never,
+      never
+    >,
+  )
+})

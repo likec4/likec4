@@ -197,6 +197,18 @@ export type AnyTypesNested = TypesNested<
 >
 
 export namespace Types {
+  export type Never = Types<
+    never,
+    never,
+    never,
+    never,
+    never,
+    never,
+    never,
+    never,
+    never
+  >
+
   export type FromSpecification<Spec> = Spec extends BuilderSpecification ? Types<
       KeysOf<Spec['elements']>,
       never,

@@ -1,6 +1,7 @@
 import { expectTypeOf, test } from 'vitest'
 import type { LikeC4Model } from '../model/LikeC4Model'
 import type { ParsedLikeC4ModelData } from '../types'
+import type { Invalid } from './_types'
 import { Builder } from './Builder'
 
 test('Builder types - style 2', () => {
@@ -175,5 +176,131 @@ test('Builder types - style 2', () => {
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
       'view' | 'view-of' | 'deployment'
     >,
+  )
+})
+
+test('Builder types - style 2 - fails', () => {
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {},
+      },
+    })
+    .model(({ actor, activity }, _) =>
+      _(
+        actor('alice'),
+        // @ts-expect-error invalid activity id
+        activity('B'),
+      )
+    )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 'alice',
+  )
+
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as Invalid<'Activity must be in format <fqn>#<name>'>,
+  )
+})
+
+test('Builder types - style 2 - fails 2', () => {
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {},
+      },
+    })
+    .model(({ actor, activity }, _) =>
+      _(
+        actor('alice'),
+        // @ts-expect-error invalid activity id
+        activity('#B'),
+      )
+    )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 'alice',
+  )
+
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as Invalid<'Activity is missing, must be in format <fqn>#<name>'>,
+  )
+})
+test('Builder types - style 2 - correct', () => {
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {},
+      },
+    })
+    .model(({ actor, activity }, _) =>
+      _(
+        actor('alice'),
+        activity('alice#B'),
+      )
+    )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 'alice',
+  )
+
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as 'alice#B',
+  )
+})
+
+test('Builder types - style 2 - activities', () => {
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {
+          style: {
+            shape: 'person',
+          },
+        },
+        system: {},
+        component: {},
+      },
+      relationships: {
+        like: {},
+        dislike: {},
+      },
+      tags: ['tag1', 'tag2', 'tag1'],
+    })
+    .model(({ actor, system, component, activity, step }, _) =>
+      _(
+        actor('alice'),
+        actor('bob'),
+        system('cloud').with(
+          component('backend').with(
+            component('api').with(
+              activity('A', [
+                '-> bob',
+                // @ts-expect-error tom is not defined
+                '-> tom',
+              ]),
+            ),
+            component('db'),
+          ),
+          component('frontend'),
+        ),
+        activity('alice#B'),
+        // @ts-expect-error invalid activity id
+        activity('B'),
+      )
+    )
+    .model((m, _) =>
+      _(
+        m.activity('bob#B', [
+          '-> alice#B',
+        ]),
+      )
+    )
+
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
+  )
+  expectTypeOf(m.Types.Activity).toEqualTypeOf(
+    '' as 'cloud.backend.api#A' | 'alice#B' | 'bob#B' | Invalid<'Activity must be in format <fqn>#<name>'>,
   )
 })

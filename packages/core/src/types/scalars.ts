@@ -14,11 +14,15 @@ export function ActivityId(parent: Fqn, name: string): ActivityId {
   return (parent + '#' + name) as ActivityId
 }
 export function isActivityId(id: string): id is ActivityId {
-  return id.includes('#')
+  return id.indexOf('#') > 0 && !id.endsWith('#')
 }
 export function elementFromActivityId(id: string): Fqn {
-  invariant(isActivityId(id), 'Expected ActivityId')
+  invariant(isActivityId(id), `Expected ActivityId: "${id}`)
   return id.slice(0, id.lastIndexOf('#')) as Fqn
+}
+export function activityNameFromId(id: ActivityId): string {
+  invariant(isActivityId(id), `Expected ActivityId: "${id}`)
+  return id.slice(id.lastIndexOf('#') + 1)
 }
 
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
@@ -29,7 +33,7 @@ export function AsFqn(name: string, parent?: Fqn | null): Fqn {
 
 export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
 export function GlobalFqn(projectId: ProjectId, name: string): GlobalFqn {
-  invariant(isTruthy(projectId), 'Project ID must start with @')
+  invariant(isTruthy(projectId), `Project ID must start with @: "${projectId}`)
   return '@' + projectId + '.' + name as GlobalFqn
 }
 
@@ -43,7 +47,7 @@ export function splitGlobalFqn<Id extends string>(fqn: Fqn<Id> | GlobalFqn<Id>):
   }
   const firstDot = fqn.indexOf('.')
   if (firstDot < 2) {
-    throw new Error('Invalid global FQN')
+    throw new Error(`Invalid global FQN: "${fqn}`)
   }
   const projectId = fqn.slice(1, firstDot) as ProjectId
   const name = fqn.slice(firstDot + 1) as Fqn<Id>

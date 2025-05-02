@@ -6,19 +6,19 @@ exports[`Builder (style1) > should build activities 1`] = `
     "s1#A": {
       "id": "s1#A",
       "modelRef": "s1",
-      "name": "",
+      "name": "A",
       "steps": [],
     },
     "s2#B": {
       "id": "s2#B",
       "modelRef": "s2",
-      "name": "",
+      "name": "B",
       "steps": [],
     },
     "s2.c2#C": {
       "id": "s2.c2#C",
       "modelRef": "s2.c2",
-      "name": "",
+      "name": "C",
       "steps": [],
     },
   },
@@ -101,8 +101,23 @@ exports[`Builder (style1) > should build activities with steps (array) 1`] = `
     "s2.c2#C": {
       "id": "s2.c2#C",
       "modelRef": "s2.c2",
-      "name": "",
-      "steps": [],
+      "name": "C",
+      "steps": [
+        {
+          "id": "step_s2.c2#C_1",
+          "isBackward": false,
+          "target": {
+            "model": "s1.c1",
+          },
+        },
+        {
+          "id": "step_s2.c2#C_2",
+          "isBackward": true,
+          "target": {
+            "model": "s1.c1",
+          },
+        },
+      ],
     },
   },
   "deployments": {
@@ -186,13 +201,31 @@ exports[`Builder (style1) > should build activities with steps (object) 1`] = `
     "s1#A": {
       "id": "s1#A",
       "modelRef": "s1",
-      "name": "",
-      "steps": [],
+      "name": "A",
+      "steps": [
+        {
+          "id": "step_s1#A_1",
+          "isBackward": false,
+          "target": {
+            "activity": "s2#B",
+          },
+          "title": "title1",
+        },
+        {
+          "id": "step_s1#A_2",
+          "isBackward": true,
+          "kind": "async",
+          "target": {
+            "activity": "s2#B",
+          },
+          "title": "title2",
+        },
+      ],
     },
     "s2#B": {
       "id": "s2#B",
       "modelRef": "s2",
-      "name": "",
+      "name": "B",
       "steps": [],
     },
   },
@@ -253,13 +286,21 @@ exports[`Builder (style1) > should build activities with steps (string array) 1`
     "s1#A": {
       "id": "s1#A",
       "modelRef": "s1",
-      "name": "",
-      "steps": [],
+      "name": "A",
+      "steps": [
+        {
+          "id": "step_s1#A_1",
+          "isBackward": false,
+          "target": {
+            "activity": "s2#B",
+          },
+        },
+      ],
     },
     "s2#B": {
       "id": "s2#B",
       "modelRef": "s2",
-      "name": "",
+      "name": "B",
       "steps": [],
     },
   },

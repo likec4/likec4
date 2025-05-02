@@ -1,13 +1,20 @@
-import type { Activity, Element, Fqn, ModelRelation } from '../types'
+import type { Activity, ActivityId, ActivityStep, Element, Fqn, ModelRelation } from '../types'
 import type { AnyTypes, AnyTypesNested, Invalid, Types, ValidId } from './_types'
 import { Builder } from './Builder'
-import type { AddActivityHelper, AddStepHelper } from './Builder.activity'
+import type { activity, step } from './Builder.activity'
 import type { AddElement } from './Builder.element'
 
 export interface ModelBuilder<T extends AnyTypes> extends Builder<T> {
   __addElement(element: Element): Builder<T>
   __addRelation(relation: Omit<ModelRelation, 'id'>): Builder<T>
   __addActivity(activity: Omit<Activity, 'steps' | 'modelRef'>): Builder<T>
+
+  __getElement(id: Fqn): Element
+  /**
+   * Returns activity with writable steps
+   */
+  __getActivity(id: ActivityId): Activity & { steps: ActivityStep[] }
+
   /**
    * Create a fully qualified name from an id (for nested models)
    */
@@ -433,8 +440,8 @@ export type AddElementHelpers<T extends AnyTypes> = T extends
 
 export type ModelHelpers<T extends AnyTypes> = AddElementHelpers<T> & {
   model: typeof model
-  activity: AddActivityHelper
-  step: AddStepHelper
+  activity: typeof activity
+  step: typeof step
   rel: RelationshipHelper<T['NewRelationshipProps']>
   relTo: NestedRelationshipHelper<T['NewRelationshipProps']>
 }

@@ -28,8 +28,8 @@ export interface Activity {
 export interface ActivityStep {
   readonly id: RelationId
   readonly isBackward?: boolean
-  readonly target: FqnRef
-  readonly title: string
+  readonly target: FqnRef.ModelRef | FqnRef.ActivityRef
+  readonly title?: string
   readonly description?: string
   readonly technology?: string
   readonly tags?: NonEmptyArray<Tag> | null

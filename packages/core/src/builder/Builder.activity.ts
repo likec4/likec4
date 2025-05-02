@@ -1,19 +1,27 @@
+import { entries, hasAtLeast, isArray, isFunction, isString, map, pipe } from 'remeda'
 import type { IfNever } from 'type-fest'
+import { invariant, nonexhaustive } from '../errors'
+import { type RelationId, FqnRef } from '../types'
+import type { ActivityStep } from '../types/activity'
+import { type ActivityId, type Fqn, activityNameFromId, isActivityId } from '../types/scalars'
+import { isSameHierarchy } from '../utils/fqn'
 import type { AnyTypes, Invalid, Types, TypesNested } from './_types'
-import type { Builder } from './Builder'
 import type { ModelBuilder } from './Builder.model'
 
-export interface ActivityBuilder<T extends AnyTypes> extends Builder<T> {
-  __addActivityStep(target: string, props?: StepOrActivityProps<T>): Builder<T>
+export interface ActivityBuilder<T extends AnyTypes> {
+  /**
+   * Add a step to activity
+   */
+  __addActivityStep(step: Omit<ActivityStep, 'id'>): ActivityBuilder<T>
 }
 
 type ValidActivityName<T, Name extends string> = T extends
   TypesNested<any, any, any, any, any, any, any, any, any, any> ? (
-      Name extends `${string}#${string}` ? Invalid<'Nested activity must not contain #'> : Name
+      Name extends `${string}#${string}` ? Invalid<`Activity name must not contain #`> : Name
     )
   : T extends Types<any, infer F, any, any, any, any, any, any, any> ?
-    (Name extends `${F}#` ? Invalid<'Activity name is missing, must be in format <fqn>#<name>'> :
-      (Name extends `${F}#${string}` ? Name : Invalid<'Activity must be in format <fqn>#<name>'>))
+    (Name extends `${F}#` | `#${string}` ? Invalid<`Activity is missing, must be in format <fqn>#<name>`> :
+      (Name extends `${F}#${string}` ? Name : Invalid<`Activity must be in format <fqn>#<name>`>))
   : never
 
 export type ActivityStepExpr<T extends AnyTypes> = `${'->' | '<-'} ${T['Fqn'] | T['Activity']}`
@@ -26,47 +34,226 @@ export type StepOrActivityProps<T extends AnyTypes> = {
   tags?: IfNever<T['Tag'], never, [T['Tag'], ...T['Tag'][]]>
 }
 
+export type ActivityStepsArray<T extends AnyTypes> = Array<
+  | ActivityStepExpr<T>
+  | [ActivityStepExpr<T>]
+  | [ActivityStepExpr<T>, string | StepOrActivityProps<T>]
+  | ((input: ActivityBuilder<T>) => ActivityBuilder<T>)
+>
+
 export type ActivitySteps<T extends AnyTypes> =
-  | Array<
-    | ActivityStepExpr<T>
-    | [ActivityStepExpr<T>]
-    | [ActivityStepExpr<T>, title: string]
-    | [ActivityStepExpr<T>, StepOrActivityProps<T>]
-    | ((input: ActivityBuilder<T>) => ActivityBuilder<T>)
-  >
+  | ActivityStepsArray<T>
   | {
     [key in ActivityStepExpr<T>]?: string | StepOrActivityProps<T>
   }
 
-export interface AddActivityHelper {
-  <const Name extends string, T extends AnyTypes>(
-    name: ValidActivityName<T, Name>,
-  ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+export function activity<T extends AnyTypes, Name extends string>(
+  name: ValidActivityName<T, Name>,
+): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
+export function activity<T extends AnyTypes, const Name extends string>(
+  name: ValidActivityName<T, Name>,
+  propsOrSteps: string | ActivitySteps<T>,
+): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+export function activity<T extends AnyTypes, const Name extends string>(
+  name: ValidActivityName<T, Name>,
+  props: string | StepOrActivityProps<T>,
+  steps: ActivitySteps<T>,
+): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+export function activity(
+  ...args: [string] | [string, string | ActivitySteps<AnyTypes>] | [
+    string,
+    string | StepOrActivityProps<AnyTypes>,
+    ActivitySteps<AnyTypes>,
+  ]
+) {
+  return <T extends AnyTypes>(b: ModelBuilder<T>): ModelBuilder<T> => {
+    let activityId: ActivityId
+    if (isActivityId(args[0])) {
+      activityId = args[0]
+    } else {
+      let parent = b.__fqn('') as string
+      parent = parent.substring(0, parent.length - 1)
+      activityId = `${parent}#${args[0]}` as ActivityId
+    }
 
-  <const Name extends string, T extends AnyTypes>(
-    name: ValidActivityName<T, Name>,
-    steps: ActivitySteps<T>,
-  ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+    let props: StepOrActivityProps<AnyTypes>
+    let steps: ActivityStepsArray<AnyTypes>
 
-  <const Name extends string, T extends AnyTypes>(
-    name: ValidActivityName<T, Name>,
-    props: string | StepOrActivityProps<T>,
-    steps: ActivitySteps<T>,
-  ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, Name>>
+    switch (args.length) {
+      case 1: {
+        props = {}
+        steps = []
+        break
+      }
+      case 2: {
+        const [, arg2] = args
+        switch (true) {
+          case isString(arg2): {
+            props = {
+              title: arg2,
+            }
+            steps = []
+            break
+          }
+          case isArray(arg2): {
+            props = {}
+            steps = arg2
+            break
+          }
+          default: {
+            props = {}
+            steps = pipe(
+              arg2,
+              entries(),
+              map(([key, value]) =>
+                [key, value] as [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]
+              ),
+            )
+            break
+          }
+        }
+        break
+      }
+      case 3: {
+        const [, arg2, arg3] = args
+        props = isString(arg2)
+          ? {
+            title: arg2,
+          }
+          : arg2
+        steps = isArray(arg3) ? arg3 : pipe(
+          arg3,
+          entries(),
+          map(([key, value]) => [key, value] as [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]),
+        )
+        break
+      }
+      default: {
+        nonexhaustive(args)
+      }
+    }
+
+    b.__addActivity({
+      name: activityNameFromId(activityId),
+      ...props,
+      id: activityId,
+    })
+
+    if (hasAtLeast(steps, 1)) {
+      const activityBuilder: ActivityBuilder<T> = {
+        __addActivityStep: (step) => {
+          const activity = b.__getActivity(activityId)
+          let targetFqn: T['Fqn']
+          switch (true) {
+            case FqnRef.isActivityRef(step.target): {
+              // Ensure target activity exists
+              const targetActivity = b.__getActivity(step.target.activity)
+              targetFqn = targetActivity.modelRef
+              break
+            }
+            case FqnRef.isModelRef(step.target): {
+              targetFqn = step.target.model
+              break
+            }
+            default: {
+              nonexhaustive(step.target)
+            }
+          }
+          // Ensure target element exists
+          invariant(b.__getElement(targetFqn))
+          invariant(
+            !isSameHierarchy(activity.modelRef, targetFqn),
+            `Invalid activity step between elements in the same hierarchy: "${activityId}", step: "${step}"`,
+          )
+          activity.steps.push({
+            ...step,
+            id: `step_${activityId}_${activity.steps.length + 1}` as RelationId,
+          })
+          return activityBuilder
+        },
+      }
+      for (const _step of steps) {
+        if (isFunction(_step)) {
+          _step(activityBuilder)
+          continue
+        }
+        let expr: ActivityStepExpr<AnyTypes>
+        let props: StepOrActivityProps<AnyTypes>
+        switch (true) {
+          case isString(_step): {
+            expr = _step
+            props = {}
+            break
+          }
+          case isArray(_step) && hasAtLeast(_step, 2): {
+            expr = _step[0]
+            props = isString(_step[1]) ? { title: _step[1] } : _step[1]
+            break
+          }
+          case isArray(_step) && hasAtLeast(_step, 1): {
+            expr = _step[0]
+            props = {}
+            break
+          }
+          default:
+            nonexhaustive(_step)
+        }
+        step(expr, props)(activityBuilder)
+      }
+    }
+
+    return b
+  }
 }
 
-export interface AddStepHelper {
-  <const T extends AnyTypes>(
-    to: `${'->' | '<-'} ${T['Fqn'] | T['Activity']}`,
-  ): (input: ActivityBuilder<T>) => ActivityBuilder<T>
+export function step<const T extends AnyTypes>(
+  to: ActivityStepExpr<T>,
+): (builder: ActivityBuilder<T>) => ActivityBuilder<T>
+export function step<const T extends AnyTypes>(
+  to: ActivityStepExpr<T>,
+  title: string,
+): (builder: ActivityBuilder<T>) => ActivityBuilder<T>
+export function step<const T extends AnyTypes>(
+  to: ActivityStepExpr<T>,
+  props: StepOrActivityProps<T>,
+): (builder: ActivityBuilder<T>) => ActivityBuilder<T>
+export function step(
+  ...args: [ActivityStepExpr<AnyTypes>] | [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]
+) {
+  return <T extends AnyTypes>(b: ActivityBuilder<T>): ActivityBuilder<T> => {
+    const expr = args[0]
+    let props: StepOrActivityProps<AnyTypes>
+    switch (args.length) {
+      case 1: {
+        props = {}
+        break
+      }
+      case 2: {
+        props = isString(args[1]) ? { title: args[1] } : args[1]
+        break
+      }
+      default:
+        nonexhaustive(args)
+    }
 
-  <const T extends AnyTypes>(
-    to: `${'->' | '<-'} ${T['Fqn'] | T['Activity']}`,
-    title: string,
-  ): (input: ActivityBuilder<T>) => ActivityBuilder<T>
+    const isBackward = expr.startsWith('<-')
+    const targetExpr = expr.substring(3)
+    let target: FqnRef.ActivityRef | FqnRef.ModelRef
+    if (isActivityId(targetExpr)) {
+      target = {
+        activity: targetExpr,
+      }
+    } else {
+      target = {
+        model: targetExpr as Fqn,
+      }
+    }
 
-  <const T extends AnyTypes>(
-    to: `${'->' | '<-'} ${T['Fqn'] | T['Activity']}`,
-    props: StepOrActivityProps<T>,
-  ): (input: ActivityBuilder<T>) => ActivityBuilder<T>
+    b.__addActivityStep({
+      ...props,
+      isBackward,
+      target,
+    })
+    return b
+  }
 }

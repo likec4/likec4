@@ -1,25 +1,20 @@
 import defu from 'defu'
 import {
-  entries,
   fromEntries,
   hasAtLeast,
-  isArray,
-  isDefined,
   isFunction,
   isNonNullish,
   isNullish,
-  isString,
   map,
   mapToObj,
   mapValues,
   pickBy,
 } from 'remeda'
 import type { Writable } from 'type-fest'
-import { invariant, nonexhaustive } from '../errors'
+import { invariant, nonNullable } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import {
   type Activity,
-  type ActivityId,
   type ActivityStep,
   type Color,
   type DeploymentRelation,
@@ -28,7 +23,6 @@ import {
   type ElementShape,
   type ElementView,
   type Fqn,
-  type FqnRef,
   type IconUrl,
   type LikeC4View,
   type Link,
@@ -41,12 +35,11 @@ import {
   DefaultThemeColor,
   DeploymentElement,
   elementFromActivityId,
-  isActivityId,
   isScopedElementView,
 } from '../types'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
-import type { ActivityBuilder, ActivityStepExpr, ActivitySteps, StepOrActivityProps } from './Builder.activity'
+import { type ActivityBuilder, activity, step } from './Builder.activity'
 import type { AddDeploymentNode } from './Builder.deployment'
 import type {
   AddDeploymentNodeHelpers,
@@ -55,7 +48,13 @@ import type {
   DeploymentModelBuilder,
 } from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
-import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
+import {
+  type AddElementHelpers,
+  type ModelBuilder,
+  type ModelBuilderFunction,
+  type ModelHelpers,
+  model,
+} from './Builder.model'
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
@@ -179,7 +178,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   } as ModelGlobals,
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
-  _activities = new Map<string, Activity>(),
+  // Activities with writable steps
+  _activities = new Map<string, Activity & { steps: ActivityStep[] }>(),
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     elements: {
@@ -349,13 +349,19 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       }
       const modelRef = elementFromActivityId(activity.id)
       const parent = _elements.get(modelRef)
-      invariant(parent, `Element with id "${activity.id}" not found`)
+      invariant(parent, `Parent element for activity "${activity.id}" not found`)
       _activities.set(activity.id, {
-        ...activity,
         modelRef,
         steps: [],
+        ...activity,
       })
       return self
+    },
+    __getActivity: (activityId) => {
+      return nonNullable(_activities.get(activityId), `Activity "${activityId}" not found`)
+    },
+    __getElement(id) {
+      return nonNullable(_elements.get(id), `Element "${id}" not found`)
     },
     __addActivityStep: () => {
       throw new Error('Can be called only in nested model')
@@ -464,11 +470,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return add
           },
         ) as AddElementHelpers<T>,
-        model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
-          return (b: Builder<T>) => {
-            return ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
-          }
-        },
+        model,
         rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
           return <T extends AnyTypes>(b: ModelBuilder<T>) => {
             const {
@@ -510,116 +512,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
-        activity: (
-          name: string,
-          _props?: string | StepOrActivityProps<T> | ActivitySteps<T>,
-          _steps?: ActivitySteps<T>,
-        ) => {
-          return <T extends AnyTypes>(b: ModelBuilder<T>) => {
-            let activityId: ActivityId
-            if (isActivityId(name)) {
-              activityId = name
-            } else {
-              let parent = b.__fqn('') as string
-              parent = parent.substring(0, parent.length - 1)
-              activityId = `${parent}#${name}` as ActivityId
-            }
-
-            let steps: ActivitySteps<T>
-            let props: StepOrActivityProps<T>
-            if (isDefined(_steps)) {
-              steps = _steps as ActivitySteps<T>
-              props = isString(_props) ? { title: _props } : _props as StepOrActivityProps<T>
-            } else if (isDefined(_props)) {
-              if (isString(_props)) {
-                throw new Error('Expected ActivitySteps')
-              }
-              props = {}
-              steps = _props as ActivitySteps<T>
-            } else {
-              props = {}
-              steps = []
-            }
-
-            const activity = {
-              id: activityId,
-              name: '',
-              ...props,
-              steps: [] as ActivityStep[],
-              modelRef: elementFromActivityId(activityId),
-            } satisfies Activity
-
-            b.__addActivity(activity)
-            let stepBuilder = b as any as ActivityBuilder<T>
-
-            stepBuilder.__addActivityStep = (step: string, _props?: StepOrActivityProps<T>) => {
-              const isBackward = step.startsWith('<-')
-              const props = typeof _props === 'string' ? { title: _props } : { title: '', ..._props }
-              const expr = step.substring(3)
-              let target: FqnRef
-              if (isActivityId(expr)) {
-                target = {
-                  activity: expr,
-                }
-              } else {
-                target = {
-                  model: expr as Fqn,
-                }
-              }
-              activity.steps.push({
-                ...props,
-                isBackward,
-                target,
-                id: `step_${activityId}_${activity.steps.length + 1}` as RelationId,
-              })
-
-              return stepBuilder
-            }
-
-            const stepsArr = isArray(steps)
-              ? steps
-              : entries(steps) as unknown as Array<[ActivityStepExpr<T>, string | StepOrActivityProps<T>]>
-
-            for (const step of stepsArr) {
-              switch (true) {
-                case isFunction(step): {
-                  stepBuilder = step(stepBuilder)
-                  break
-                }
-                case isArray(step) && hasAtLeast(step, 2): {
-                  const arg2 = isString(step[1]) ? { title: step[1] } : step[1]
-                  stepBuilder.__addActivityStep(step[0], arg2)
-                  break
-                }
-                case isArray(step): {
-                  stepBuilder.__addActivityStep(step[0])
-                  break
-                }
-                case isString(step): {
-                  stepBuilder.__addActivityStep(step)
-                  break
-                }
-                default: {
-                  nonexhaustive(step)
-                }
-              }
-            }
-            return b
-          }
-        },
-        step: (
-          stepExpr: ActivityStepExpr<T>,
-          _props?: string | StepOrActivityProps<T>,
-        ) => {
-          return (b: ActivityBuilder<T>) => {
-            if (isString(_props)) {
-              b.__addActivityStep(stepExpr, { title: _props })
-            } else {
-              b.__addActivityStep(stepExpr, _props ?? {})
-            }
-            return b
-          }
-        },
+        activity,
+        step,
       },
       views: {
         views: (...ops: ((b: ViewsBuilder<T>) => ViewsBuilder<T>)[]) => {
