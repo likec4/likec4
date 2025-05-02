@@ -21,7 +21,7 @@ import { withReadableEdges } from '../../utils/with-readable-edges'
 import { processPredicates as processPredicatesImpl } from '../compute'
 import { type Ctx, Memory } from '../memory'
 
-type ConnectionExpression<T extends AnyTypes> = `${T['Fqn']} -> ${T['Fqn']}`
+type ConnectionExpression<T extends AnyTypes> = `${T['Fqn'] | T['Activity']} -> ${T['Fqn'] | T['Activity']}`
 
 // type ConnectionsDeepMatcher<T extends AnyTypes> = {
 //   [K in `${T['Fqn']} -> ${T['Fqn']}`]?: {
@@ -54,12 +54,12 @@ export class TestHelper<T extends AnyTypes> {
   $style = viewhelpers.$style
 
   static from<const T extends AnyTypes>(builder: Builder<T>, expect = vitestExpect): TestHelper<T> {
-    return new TestHelper(builder, expect)
+    return new TestHelper(builder.clone(), expect)
   }
 
   constructor(
     private builder: Builder<T>,
-    private _expect: ExpectStatic,
+    public readonly _expect: ExpectStatic,
   ) {
     this.model = builder.toLikeC4Model() as Types.ToLikeC4Model<T>
   }
@@ -83,20 +83,23 @@ export class TestHelper<T extends AnyTypes> {
     return ProcessPredicates.executeWithScope(this, scope, ...rules)
   }
 
-  expectView(view: ComputedElementView) {
+  expectView(view: T['ViewId'] | ComputedElementView) {
+    let _view: ComputedElementView = isString(view)
+      ? withReadableEdges(this.model.view(view).$view as ComputedElementView, ' -> ')
+      : view
     return {
       toHave: (nodesAndEdges: { nodes: Array<T['Fqn']>; edges: Array<ConnectionExpression<T>> }) => {
         const actual = {
-          nodes: view.nodes.map(prop('id')),
-          edges: view.edges.map(prop('id')),
+          nodes: _view.nodes.map(prop('id')),
+          edges: _view.edges.map(prop('id')),
         }
         this._expect(actual).toEqual(nodesAndEdges)
       },
       toHaveNodes: <Id extends T['Fqn']>(...nodes: Id[]) => {
-        this._expect(view.nodes.map(prop('id'))).toEqual(nodes)
+        this._expect(_view.nodes.map(prop('id'))).toEqual(nodes)
       },
       toHaveEdges: <Id extends ConnectionExpression<T>>(...edges: Id[]) => {
-        this._expect(view.edges.map(prop('id'))).toEqual(edges)
+        this._expect(_view.edges.map(prop('id'))).toEqual(edges)
       },
     }
   }
@@ -209,6 +212,13 @@ class ProcessPredicates<T extends AnyTypes> {
 
   get connections() {
     return this.memory.connections.map(c => c.expression)
+  }
+
+  toHave(elementsAndConnections: { elements: Array<T['Fqn']>; connections: Array<ConnectionExpression<T>> }) {
+    this.t._expect({
+      elements: this.elements,
+      connections: this.connections,
+    }).toEqual(elementsAndConnections)
   }
 
   diff() {

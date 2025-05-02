@@ -1,5 +1,4 @@
 import { hasAtLeast, isArray, isFunction, isString } from 'remeda'
-import type { IfNever } from 'type-fest'
 import { invariant, nonexhaustive } from '../errors'
 import { type RelationId, FqnRef } from '../types'
 import type { ActivityStep } from '../types/activity'
@@ -31,7 +30,7 @@ export type StepOrActivityProps<T extends AnyTypes> = {
   description?: string
   technology?: string
   kind?: T['RelationshipKind']
-  tags?: IfNever<T['Tag'], never, [T['Tag'], ...T['Tag'][]]>
+  tags?: T['Tag'] | T['Tags']
 }
 
 export type ActivityStepsArray<T extends AnyTypes> = Array<
@@ -62,9 +61,9 @@ export function activity<T extends AnyTypes, const Name extends string>(
   name: ValidActivityName<T, Name>,
   steps: ActivityStepsArray<T>,
 ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
-export function activity<T extends AnyTypes, const Name extends string>(
+export function activity<T extends AnyTypes, const Name extends string, Props extends ActivityProps<T>>(
   name: ValidActivityName<T, Name>,
-  props: ActivityProps<T>,
+  props: Props,
 ): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddActivity<T, ValidActivityName<T, Name>>>
 export function activity(
   ...args:
@@ -105,6 +104,9 @@ export function activity(
       }
       default:
         nonexhaustive(args)
+    }
+    if (isString(props.tags)) {
+      props.tags = [props.tags]
     }
 
     b.__addActivity({
@@ -187,9 +189,9 @@ export function step<const T extends AnyTypes>(
   to: ActivityStepExpr<T>,
   title: string,
 ): (builder: ActivityBuilder<T>) => ActivityBuilder<T>
-export function step<const T extends AnyTypes>(
+export function step<const T extends AnyTypes, Props extends StepOrActivityProps<T>>(
   to: ActivityStepExpr<T>,
-  props: StepOrActivityProps<T>,
+  props: Props,
 ): (builder: ActivityBuilder<T>) => ActivityBuilder<T>
 export function step(
   ...args: [ActivityStepExpr<AnyTypes>] | [ActivityStepExpr<AnyTypes>, string | StepOrActivityProps<AnyTypes>]
@@ -222,7 +224,9 @@ export function step(
         model: targetExpr as Fqn,
       }
     }
-
+    if (isString(props.tags)) {
+      props.tags = [props.tags]
+    }
     b.__addActivityStep({
       ...props,
       isBackward,

@@ -54,6 +54,44 @@ describe('Builder (activity)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
+  it('should add steps', () => {
+    const b = spec.clone()
+      .model(({ actor, system, activity, step }, _) =>
+        _(
+          actor('customer').with(
+            activity('A'),
+          ),
+          system('cloud'),
+          activity('customer#A', {
+            steps: [
+              step('-> cloud'),
+            ],
+          }),
+          activity('customer#A', {
+            steps: [
+              step('<- cloud'),
+            ],
+          }),
+        )
+      )
+    expect(b.build().activities['customer#A'].steps).toMatchObject([
+      {
+        id: 'step_customer#A_1',
+        isBackward: false,
+        target: {
+          model: 'cloud',
+        },
+      },
+      {
+        id: 'step_customer#A_2',
+        isBackward: true,
+        target: {
+          model: 'cloud',
+        },
+      },
+    ])
+  })
+
   it('should fail same hierarchy', () => {
     expect(() => {
       const b = spec.clone()

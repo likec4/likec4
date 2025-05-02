@@ -5,7 +5,7 @@ import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { ModelLayer } from '../../../types/expression-v2-model'
 import { isSameHierarchy } from '../../../utils'
-import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
+import { ifilter, iflat, imap, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
@@ -23,13 +23,13 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelLayer.RelationE
       // This is a special case, we look for all relationships that satisfy the where clause
       // * -> * ; Empty memory; Where clause
       case sourceIsWildcard && targetIsWildcard && memory.isEmpty() && where !== NoWhere: {
-        const connections = pipe(
-          model.relationships(),
-          ifilter(where),
-          toArray(),
-          map(r => new ConnectionModel(r.source, r.target, new Set([r]))),
+        stage.addConnections(
+          pipe(
+            model.relationships(),
+            ifilter(where),
+            imap(r => new ConnectionModel(r.source, r.target, new Set([r]))),
+          ),
         )
-        stage.addConnections(connections)
         return stage
       }
 

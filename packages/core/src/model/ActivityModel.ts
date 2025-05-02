@@ -224,6 +224,7 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
         this.$model,
         {
           ...$activityStep,
+          title: $activityStep.title ?? '',
           source: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)
             : FqnRef.toModelFqn($activityStep.target),
@@ -236,6 +237,7 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
         this.$model,
         {
           ...$activityStep,
+          title: $activityStep.title ?? '',
           source: activity.element.id,
           target: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)

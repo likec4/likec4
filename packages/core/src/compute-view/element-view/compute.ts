@@ -13,7 +13,7 @@ import type {
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import { ModelLayer } from '../../types/expression-v2-model'
-import { sortParentsFirst } from '../../utils'
+import { ifilter, sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
@@ -89,7 +89,7 @@ function processRelationtPredicate(
     case ModelLayer.RelationExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterRelations = (relations: ReadonlySet<RelationshipModel>) => {
-        return new Set(filter([...relations], where))
+        return new Set(ifilter(relations, where))
       }
       const filterWhere = (connections: ReadonlyArray<Connection>) => {
         return pipe(

@@ -344,16 +344,15 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return self
     },
     __addActivity: (activity) => {
-      if (_activities.has(activity.id)) {
-        throw new Error(`Activity ${activity.id} already exists`)
-      }
+      const existing = _activities.get(activity.id)
       const modelRef = elementFromActivityId(activity.id)
       const parent = _elements.get(modelRef)
       invariant(parent, `Parent element for activity "${activity.id}" not found`)
       _activities.set(activity.id, {
-        modelRef,
-        steps: [],
+        ...existing,
         ...activity,
+        modelRef,
+        steps: existing?.steps ?? [],
       })
       return self
     },
