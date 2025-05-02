@@ -65,13 +65,13 @@ test('Builder types - style 1', () => {
         actor('bob'),
         system('cloud').with(
           component('backend').with(
-            activity('B', {
-              '-> cloud.backend': 'arsars',
-              '<- alice': {
+            activity('B', [
+              ['-> cloud.backend', 'arsars'],
+              ['<- alice', {
                 title: 'arsarsar',
                 tags: ['tag1'],
-              },
-            }),
+              }],
+            ]),
             component('api'),
             component('db'),
           ),
@@ -370,8 +370,10 @@ test('should build activities with steps (object)', () => {
           kind: 'async',
         }],
         '<- s2',
-        // @ts-expect-error wrong target
-        '-> s4',
+      ]),
+      // @ts-expect-error wrong target
+      activity('s1#B', [
+        '<- s4',
       ]),
     ),
   )
@@ -380,7 +382,7 @@ test('should build activities with steps (object)', () => {
     '' as 's1' | 's2',
   )
   expectTypeOf(m.Types.Activity).toEqualTypeOf(
-    '' as 's1#A' | 's2#B',
+    '' as 's1#A' | 's2#B' | 's1#B',
   )
 
   expectTypeOf(m.build()).toEqualTypeOf(
@@ -391,14 +393,14 @@ test('should build activities with steps (object)', () => {
       's1' | 's2',
       never,
       never,
-      's1#A' | 's2#B'
+      's1#A' | 's2#B' | 's1#B'
     >,
   )
 
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
     {} as LikeC4Model.Computed<
       's1' | 's2',
-      's1#A' | 's2#B',
+      's1#A' | 's1#B' | 's2#B',
       never,
       never
     >,
