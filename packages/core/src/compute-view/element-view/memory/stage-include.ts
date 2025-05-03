@@ -1,6 +1,6 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { ModelLayer } from '../../../types/expression-model'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'

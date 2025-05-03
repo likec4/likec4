@@ -16,7 +16,7 @@ import type {
   SpacingSize,
   TextSize,
 } from '../types'
-import type { ExpressionV2 } from '../types/expression-v2'
+import type { ExpressionV2 } from '../types/expression'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 

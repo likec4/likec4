@@ -1,6 +1,6 @@
 import type { NonEmptyArray } from './_common'
 import type { Link } from './element'
-import type { FqnRef } from './expression-v2'
+import type { FqnRef } from './expression'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { ActivityId, Fqn, Tag } from './scalars'
 import type { Color } from './theme'
@@ -28,7 +28,7 @@ export interface Activity {
 export interface ActivityStep {
   readonly id: RelationId
   readonly isBackward?: boolean
-  readonly target: FqnRef.ModelRef | FqnRef.ActivityRef
+  readonly target: FqnRef.ModelRef | FqnRef.ImportRef | FqnRef.ActivityRef
   readonly title?: string
   readonly description?: string
   readonly technology?: string

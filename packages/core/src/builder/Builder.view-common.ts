@@ -7,7 +7,7 @@ import {
   type ViewRuleStyle,
   type WhereOperator,
 } from '../types'
-import { ModelLayer } from '../types/expression-v2-model'
+import { ModelLayer } from '../types/expression-model'
 import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 

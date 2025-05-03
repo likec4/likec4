@@ -136,6 +136,7 @@ export namespace FqnExpr {
     elementKind: ElementKind
     isEqual: boolean
   }
+
   export function isElementKindExpr(expr: ExpressionV2): expr is ElementKindExpr {
     return 'elementKind' in expr && 'isEqual' in expr
   }
@@ -144,6 +145,7 @@ export namespace FqnExpr {
     elementTag: Tag
     isEqual: boolean
   }
+
   export function isElementTagExpr(expr: ExpressionV2): expr is ElementTagExpr {
     return 'elementTag' in expr && 'isEqual' in expr
   }

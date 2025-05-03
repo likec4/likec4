@@ -1,7 +1,7 @@
 import { nonNullable } from '../../../errors'
 import type { ConnectionModel } from '../../../model/connection'
 import type { ElementModel } from '../../../model/ElementModel'
-import type { ModelLayer } from '../../../types/expression-v2-model'
+import type { ModelLayer } from '../../../types/expression-model'
 import type { NodeId, ViewRuleGroup } from '../../../types/view'
 import { Stack } from '../../../utils/mnemonist'
 import { type ComputeCtx, type CtxElement, type MutableState, type StageExpression, AbstractMemory } from '../../memory'

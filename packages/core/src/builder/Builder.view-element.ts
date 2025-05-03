@@ -1,6 +1,6 @@
 import { isString } from 'remeda'
 import type { IsStringLiteral } from 'type-fest/source/is-literal'
-import { type ExpressionV2 } from '../types/expression-v2'
+import { type ExpressionV2 } from '../types/expression'
 import { type Fqn } from '../types/scalars'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'

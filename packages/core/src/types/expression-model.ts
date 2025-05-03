@@ -7,6 +7,9 @@ import { type Fqn, type IconUrl, type ProjectId, type Tag, ActivityId, GlobalFqn
 import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
+/**
+ * ModelLayer.FqnRef is same as FqnRef, but limited to model elements only
+ */
 export namespace ModelLayer {
   export namespace FqnRef {
     /**
@@ -77,6 +80,7 @@ export namespace ModelLayer {
       elementKind: ElementKind
       isEqual: boolean
     }
+
     export function isElementKindExpr(expr: Expression): expr is ElementKindExpr {
       return 'elementKind' in expr && 'isEqual' in expr
     }
@@ -85,6 +89,7 @@ export namespace ModelLayer {
       elementTag: Tag
       isEqual: boolean
     }
+
     export function isElementTagExpr(expr: Expression): expr is ElementTagExpr {
       return 'elementTag' in expr && 'isEqual' in expr
     }

@@ -9,7 +9,7 @@ import {
 } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { ModelLayer } from '../../../types/expression-model'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
 import { resolveAndIncludeFromMemory, resolveElements } from './_utils'

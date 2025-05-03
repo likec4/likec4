@@ -1,6 +1,6 @@
 import { filter } from 'remeda'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
-import type { ModelLayer } from '../../../types/expression-v2-model'
+import type { ModelLayer } from '../../../types/expression-model'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
 import { type PredicateExecutor, Memory } from '../_types'

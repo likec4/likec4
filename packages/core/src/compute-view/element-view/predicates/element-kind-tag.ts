@@ -1,5 +1,5 @@
 import { findConnectionsWithin } from '../../../model/connection/model'
-import type { ModelLayer } from '../../../types/expression-v2-model'
+import type { ModelLayer } from '../../../types/expression-model'
 import type { PredicateExecutor } from '../_types'
 import { resolveElements } from './_utils'
 

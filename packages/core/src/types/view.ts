@@ -8,8 +8,8 @@ import {
   type Link,
   ElementKind,
 } from './element'
-import type { ExpressionV2, FqnExpr } from './expression-v2'
-import type { ModelLayer } from './expression-v2-model'
+import type { ExpressionV2, FqnExpr } from './expression'
+import type { ModelLayer } from './expression-model'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Fqn, IconUrl, Tag } from './scalars'

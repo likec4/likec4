@@ -600,7 +600,6 @@ export namespace LikeC4Model {
   // Relationship in logical or deployment model
   export type AnyRelation<M extends AnyAux = Any> =
     | DeploymentRelationModel<M>
-    | ActivityStepModel<M>
     | RelationshipModel<M>
 
   export type View<

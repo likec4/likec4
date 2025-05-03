@@ -67,8 +67,8 @@ export type {
   ActivityStep,
 } from './activity'
 
-export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression-v2'
-export { ModelLayer } from './expression-v2-model'
+export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression'
+export { ModelLayer } from './expression-model'
 
 export type {
   GlobalDynamicPredicates,

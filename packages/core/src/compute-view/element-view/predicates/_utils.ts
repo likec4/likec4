@@ -1,7 +1,7 @@
 import { anyPass } from 'remeda'
 import { nonexhaustive } from '../../../errors'
 import type { LikeC4Model } from '../../../model/LikeC4Model'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { ModelLayer } from '../../../types/expression-model'
 import { isDescendantOf } from '../../../utils/fqn'
 import { ifilter, toArray } from '../../../utils/iterable'
 import type { Elem, Memory, PredicateCtx } from '../_types'

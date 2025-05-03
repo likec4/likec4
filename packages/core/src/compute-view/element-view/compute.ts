@@ -12,7 +12,7 @@ import type {
   ViewRule,
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
-import { ModelLayer } from '../../types/expression-v2-model'
+import { ModelLayer } from '../../types/expression-model'
 import { ifilter, sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
