@@ -94,7 +94,9 @@ export namespace FqnRef {
     if (isModelRef(ref)) {
       return ref.model
     }
-    throw new Error('Expected FqnRef.ModelRef or FqnRef.ImportRef')
+    throw new Error(
+      `Expected FqnRef.ActivityRef or FqnRef.ModelRef or FqnRef.ImportRef. received ${JSON.stringify(ref)}`,
+    )
   }
 }
 

@@ -6,7 +6,7 @@ import {
   DefaultScopeComputation,
   MultiMap,
 } from 'langium'
-import { entries, filter, flatMap, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
+import { filter, flatMap, forEachObj, groupBy, isNullish, isTruthy, pipe, values } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { type LikeC4LangiumDocument, ast } from '../ast'
 import { logWarnError } from '../logger'
@@ -25,8 +25,8 @@ function uniqueDescriptions(
   return pipe(
     descs,
     groupBy(desc => `${desc.type}.${desc.name}`),
-    entries(),
-    flatMap(([_, descs]) => descs.length === 1 ? descs : []),
+    values(),
+    flatMap(descs => descs.length === 1 ? descs : []),
   )
 }
 
@@ -48,7 +48,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         globals,
         likec4lib,
         deployments,
-        imports,
       } = document.parseResult.value
 
       // Process library

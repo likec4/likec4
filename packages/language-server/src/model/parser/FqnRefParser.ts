@@ -19,7 +19,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       )
       if (ast.isActivity(refValue)) {
         return {
-          activity: this.resolveFqn(refValue) as c4.ActivityId,
+          activity: this.resolveFqn(refValue),
         }
       }
       if (ast.isImported(refValue)) {

@@ -1,4 +1,4 @@
-import type { ProjectId } from '@likec4/core'
+import { type ProjectId, ifilter } from '@likec4/core'
 import { type AstNodeDescription, type LangiumDocument, type Stream, DefaultIndexManager, stream } from 'langium'
 import { CancellationToken } from 'vscode-jsonrpc'
 import type { LikeC4SharedServices } from '../module'
@@ -17,9 +17,11 @@ export class IndexManager extends DefaultIndexManager {
 
   projectElements(projectId: ProjectId, nodeType?: string, uris?: Set<string>): Stream<AstNodeDescription> {
     const projects = this.services.workspace.ProjectsManager
-    let documentUris = stream(this.symbolIndex.keys())
-    return documentUris
-      .filter(uri => projects.belongsTo(uri) === projectId && (!uris || uris.has(uri)))
-      .flatMap(uri => this.getFileDescriptions(uri, nodeType))
+    return stream(
+      ifilter(
+        this.symbolIndex.keys(),
+        uri => projects.belongsTo(uri) === projectId && (!uris || uris.has(uri)),
+      ),
+    ).flatMap(uri => this.getFileDescriptions(uri, nodeType))
   }
 }

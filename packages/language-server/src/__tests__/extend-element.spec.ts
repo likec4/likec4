@@ -46,4 +46,63 @@ model {
 
     expect(errors).toEqual([])
   })
+
+  it('parser smoke: extends with activity', async ({ expect }) => {
+    const { addDocument, validateAll, buildModel } = createTestServices()
+    await addDocument(document1)
+    await addDocument(`
+      model {
+        component system3
+        extend system.sub.sub1 {
+          activity A {
+            -> system3
+          }
+        }
+      }
+    `)
+    await addDocument(`
+      model {
+        extend system.sub {
+          component sub2
+        }
+        extend system2 {
+          activity B {
+            <- sub2
+          }
+        }
+      }
+    `)
+
+    const { errors } = await validateAll()
+    expect(errors).toEqual([])
+
+    const model = await buildModel()
+    expect(model.activities).toMatchObject({
+      'system.sub.sub1#A': {
+        id: 'system.sub.sub1#A',
+        modelRef: 'system.sub.sub1',
+        name: 'A',
+        steps: [{
+          id: expect.any(String),
+          target: {
+            model: 'system3',
+          },
+          title: '',
+        }],
+      },
+      'system2#B': {
+        id: 'system2#B',
+        modelRef: 'system2',
+        name: 'B',
+        steps: [{
+          id: expect.any(String),
+          isBackward: true,
+          target: {
+            model: 'system.sub.sub2',
+          },
+          title: '',
+        }],
+      },
+    })
+  })
 })

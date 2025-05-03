@@ -61,7 +61,23 @@ describe.concurrent('activities', () => {
           -> system2
         }
       }
-      component system2
+      component system2 {
+        activity Activity1 {
+          <- system1
+        }
+      }
+    }`
+
+  test('element with activity steps to nonexisting element').invalid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        activity Activity1 {
+          -> system2
+        }
+      }
     }`
 
   test('element with activity steps to another activity').valid`
@@ -77,5 +93,18 @@ describe.concurrent('activities', () => {
       component system2 {
         activity Activity1
       }
+    }`
+
+  test('element with activity steps to nonexisting activity').invalid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        activity Activity1 {
+          -> system2.Invalid
+        }
+      }
+      component system2
     }`
 })
