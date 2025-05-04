@@ -123,8 +123,8 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^12.9.0
-      version: 12.9.2
+      specifier: ^12.9.4
+      version: 12.9.4
     nanostores:
       specifier: 1.0.1
       version: 1.0.1
@@ -312,7 +312,7 @@ importers:
         version: 5.8.3
       vite:
         specifier: catalog:vite
-        version: 6.3.4(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+        version: 6.3.3(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vitest:
         specifier: catalog:vitest
         version: 3.1.2(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.2)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
@@ -535,7 +535,7 @@ importers:
         version: 9.4.1
       motion:
         specifier: catalog:react
-        version: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nanoid:
         specifier: ^5.1.5
         version: 5.1.5
@@ -746,7 +746,7 @@ importers:
         version: 5.2.2
       motion:
         specifier: catalog:react
-        version: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nanostores:
         specifier: catalog:react
         version: 1.0.1
@@ -1264,7 +1264,7 @@ importers:
         version: 3.0.1
       motion:
         specifier: catalog:react
-        version: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nano-spawn:
         specifier: ^0.2.0
         version: 0.2.0
@@ -5438,8 +5438,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@12.9.2:
-    resolution: {integrity: sha512-R0O3Jdqbfwywpm45obP+8sTgafmdEcUoShQTAV+rB5pi+Y1Px/FYL5qLLRe5tPtBdN1J4jos7M+xN2VV2oEAbQ==}
+  framer-motion@12.9.4:
+    resolution: {integrity: sha512-yaeGDmGQ3eCQEwZ95/pRQMaSh/Q4E2CK6JYOclG/PdjyQad0MULJ+JFVV8911Fl5a6tF6o0wgW8Dpl5Qx4Adjg==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.1.0
@@ -6608,14 +6608,14 @@ packages:
     resolution: {integrity: sha512-qDs/5M2687+C4tk3ARt+R9wcY295iRCQc3nT5/pl9/77G3aoHf3ORhG3t0RxvbkPYp9/FWC3JiK2AoZUDsMG4Q==}
     engines: {node: '>=18.19.0', npm: '>=10.2.3'}
 
-  motion-dom@12.9.1:
-    resolution: {integrity: sha512-xqXEwRLDYDTzOgXobSoWtytRtGlf7zdkRfFbrrdP7eojaGQZ5Go4OOKtgnx7uF8sAkfr1ZjMvbCJSCIT2h6fkQ==}
+  motion-dom@12.9.4:
+    resolution: {integrity: sha512-25TWkQPj5I18m+qVjXGtCsxboY11DaRC5HMjd29tHKExazW4Zf4XtAagBdLpyKsVuAxEQ6cx5/E4AB21PFpLnQ==}
 
-  motion-utils@12.8.3:
-    resolution: {integrity: sha512-GYVauZEbca8/zOhEiYOY9/uJeedYQld6co/GJFKOy//0c/4lDqk0zB549sBYqqV2iMuX+uHrY1E5zd8A2L+1Lw==}
+  motion-utils@12.9.4:
+    resolution: {integrity: sha512-BW3I65zeM76CMsfh3kHid9ansEJk9Qvl+K5cu4DVHKGsI52n76OJ4z2CUJUV+Mn3uEP9k1JJA3tClG0ggSrRcg==}
 
-  motion@12.9.2:
-    resolution: {integrity: sha512-2hwi4wlOpt/zDHcDZATL2FFhYgj2n6t5Hd0UT91swMup6dx6KpFRkTydYJkkV0PUImT1QfC+WT5d0eRekTKpcg==}
+  motion@12.9.4:
+    resolution: {integrity: sha512-ZMKNnhWylaIbtFmU+scDxdldk//3Rn/8B+dcDhIpGlixAl7yhiLx1WXyGD4TSJZf3sDU6yrnu3L3FWGFo4fTEQ==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.1.0
@@ -13809,10 +13809,10 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  framer-motion@12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      motion-dom: 12.9.1
-      motion-utils: 12.8.3
+      motion-dom: 12.9.4
+      motion-utils: 12.9.4
       tslib: 2.8.1
     optionalDependencies:
       react: 19.1.0
@@ -15373,15 +15373,15 @@ snapshots:
       vscode: '@codingame/monaco-vscode-extension-api@14.0.6'
       vscode-languageclient: 9.0.1
 
-  motion-dom@12.9.1:
+  motion-dom@12.9.4:
     dependencies:
-      motion-utils: 12.8.3
+      motion-utils: 12.9.4
 
-  motion-utils@12.8.3: {}
+  motion-utils@12.9.4: {}
 
-  motion@12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  motion@12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      framer-motion: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      framer-motion: 12.9.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.1.0
