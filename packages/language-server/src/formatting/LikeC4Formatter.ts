@@ -99,24 +99,24 @@ export class LikeC4Formatter extends AbstractFormatter {
       f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
     })
 
-    this.on(
-      node,
-      (n): n is ast.DynamicViewStep | ast.ActivityStep => ast.isDynamicViewStep(n) || ast.isActivityStep(n),
-      (n, f) => {
-        f.keywords('->', '<-').append(FormattingOptions.oneSpace)
+    this.on(node, ast.isDynamicViewStep, (n, f) => {
+      f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
 
-        const kind = f.property('kind')
-        kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
-        f.keywords(']->')
-          .prepend(FormattingOptions.noSpace)
-          .append(FormattingOptions.oneSpace)
-        f.keywords('-[')
-          .prepend(FormattingOptions.oneSpace)
-          .append(FormattingOptions.noSpace)
+      const kind = f.property('kind')
+      kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
+      f.keywords(']->')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
+      f.keywords('-[')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.noSpace)
 
-        f.properties('title').prepend(FormattingOptions.oneSpace)
-      },
-    )
+      f.properties('title').prepend(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isActivityStep, (n, f) => {
+      f.keywords('->', '<-').append(FormattingOptions.oneSpace)
+    })
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {
