@@ -9,7 +9,7 @@ import type {
 import type { Element, ElementKindSpecification, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
-import type { ActivityId, ProjectId, Tag } from './scalars'
+import type { ProjectId, Tag } from './scalars'
 import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**

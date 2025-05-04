@@ -77,7 +77,7 @@ model {
     expect(errors).toEqual([])
 
     const model = await buildModel()
-    expect(model.activities).toMatchObject({
+    expect(model.activities).toEqual({
       'system.sub.sub1#A': {
         id: 'system.sub.sub1#A',
         modelRef: 'system.sub.sub1',
@@ -87,7 +87,6 @@ model {
           target: {
             model: 'system3',
           },
-          title: '',
         }],
       },
       'system2#B': {
@@ -100,7 +99,6 @@ model {
           target: {
             model: 'system.sub.sub2',
           },
-          title: '',
         }],
       },
     })

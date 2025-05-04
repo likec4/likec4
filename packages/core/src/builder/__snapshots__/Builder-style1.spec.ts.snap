@@ -104,14 +104,14 @@ exports[`Builder (style1) > should build activities with steps (array) 1`] = `
       "name": "C",
       "steps": [
         {
-          "id": "step_s2.c2#C_1",
+          "id": "s2.c2#C_step1",
           "isBackward": false,
           "target": {
             "model": "s1.c1",
           },
         },
         {
-          "id": "step_s2.c2#C_2",
+          "id": "s2.c2#C_step2",
           "isBackward": true,
           "target": {
             "model": "s1.c1",
@@ -204,7 +204,7 @@ exports[`Builder (style1) > should build activities with steps (object) 1`] = `
       "name": "A",
       "steps": [
         {
-          "id": "step_s1#A_1",
+          "id": "s1#A_step1",
           "isBackward": false,
           "target": {
             "activity": "s2#B",
@@ -212,7 +212,7 @@ exports[`Builder (style1) > should build activities with steps (object) 1`] = `
           "title": "title1",
         },
         {
-          "id": "step_s1#A_2",
+          "id": "s1#A_step2",
           "isBackward": true,
           "kind": "async",
           "target": {
@@ -289,7 +289,7 @@ exports[`Builder (style1) > should build activities with steps (string array) 1`
       "name": "A",
       "steps": [
         {
-          "id": "step_s1#A_1",
+          "id": "s1#A_step1",
           "isBackward": false,
           "target": {
             "activity": "s2#B",

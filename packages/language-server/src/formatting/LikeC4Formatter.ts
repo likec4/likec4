@@ -26,6 +26,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     // Models
     this.formatElementDeclaration(node)
+    this.formatActivityDeclaration(node)
     this.formatRelation(node)
     this.formatMetadataProperty(node)
 
@@ -84,38 +85,38 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatRelation(node: AstNode) {
+    this.on(node, ast.isRelationLike, (n, f) => {
+      const sourceNodes = 'source' in n && n.source.$cstNode ? [n.source.$cstNode] : []
+
+      f.cst(sourceNodes).append(FormattingOptions.oneSpace)
+      f.keywords(']->').prepend(FormattingOptions.noSpace)
+      f.keywords('-[').append(FormattingOptions.noSpace)
+
+      f.nodes(...filter([
+        n.target,
+        n.tags,
+      ], isTruthy)).prepend(FormattingOptions.oneSpace)
+      f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+    })
+
     this.on(
       node,
-      (n): n is ast.RelationLike => ast.isRelationLike(n),
+      (n): n is ast.DynamicViewStep | ast.ActivityStep => ast.isDynamicViewStep(n) || ast.isActivityStep(n),
       (n, f) => {
-        const sourceNodes = 'source' in n && n.source.$cstNode ? [n.source.$cstNode] : []
+        f.keywords('->', '<-').append(FormattingOptions.oneSpace)
 
-        f.cst(sourceNodes).append(FormattingOptions.oneSpace)
-        f.keywords(']->').prepend(FormattingOptions.noSpace)
-        f.keywords('-[').append(FormattingOptions.noSpace)
+        const kind = f.property('kind')
+        kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
+        f.keywords(']->')
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+        f.keywords('-[')
+          .prepend(FormattingOptions.oneSpace)
+          .append(FormattingOptions.noSpace)
 
-        f.nodes(...filter([
-          n.target,
-          n.tags,
-        ], isTruthy)).prepend(FormattingOptions.oneSpace)
-        f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+        f.properties('title').prepend(FormattingOptions.oneSpace)
       },
     )
-
-    this.on(node, ast.isDynamicViewStep, (n, f) => {
-      f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
-
-      const kind = f.property('kind')
-      kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
-      f.keywords(']->')
-        .prepend(FormattingOptions.noSpace)
-        .append(FormattingOptions.oneSpace)
-      f.keywords('-[')
-        .prepend(FormattingOptions.oneSpace)
-        .append(FormattingOptions.noSpace)
-
-      f.properties('title').prepend(FormattingOptions.oneSpace)
-    })
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {
@@ -319,6 +320,15 @@ export class LikeC4Formatter extends AbstractFormatter {
       }
 
       f.properties('props').prepend(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatActivityDeclaration(node: AstNode) {
+    this.on(node, ast.isActivity, (n, f) => {
+      f.property('name').prepend(FormattingOptions.oneSpace)
+      if (n.title) {
+        f.property('title').prepend(FormattingOptions.oneSpace)
+      }
     })
   }
 

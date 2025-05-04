@@ -25,6 +25,7 @@ export function generateLikeC4Model(model: LikeC4Model) {
     export type LikeC4ModelTypes = typeof likeC4Model.Aux
     export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
     export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
+    export type LikeC4ActivityId = LikeC4ModelTypes['Activity']
     export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
 
     /* prettier-ignore-end */

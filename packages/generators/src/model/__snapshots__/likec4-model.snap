@@ -277,23 +277,17 @@ export const likeC4Model = LikeC4Model.fromDump({
     rel12: {
       id: 'rel12',
       source: 'cloud.backend.api',
-      target: 'aws.rds',
-      title: 'reads/writes',
-    },
-    rel13: {
-      id: 'rel13',
-      source: 'cloud.backend.api',
       target: 'email',
       title: 'sends emails',
     },
-    rel14: {
-      id: 'rel14',
+    rel13: {
+      id: 'rel13',
       source: 'cloud.media',
       target: 'aws.s3',
       title: 'uploads',
     },
-    rel15: {
-      id: 'rel15',
+    rel14: {
+      id: 'rel14',
       source: 'email',
       target: 'customer',
       title: 'sends emails',
@@ -418,7 +412,23 @@ export const likeC4Model = LikeC4Model.fromDump({
       },
     },
   },
-  activities: {},
+  activities: {
+    'cloud.backend.api#Fetch': {
+      name: 'Fetch',
+      id: 'cloud.backend.api#Fetch',
+      modelRef: 'cloud.backend.api',
+      steps: [
+        {
+          title: 'reads/writes',
+          isBackward: false,
+          target: {
+            model: 'aws.rds',
+          },
+          id: 'cloud.backend.api#Fetch_step1',
+        },
+      ],
+    },
+  },
   imports: {},
   __: 'computed',
   views: {
@@ -454,7 +464,7 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'customer',
           label: 'sends emails',
           relations: [
-            'rel15',
+            'rel14',
           ],
         },
         {
@@ -464,8 +474,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'aws',
           label: '[...]',
           relations: [
-            'rel12',
-            'rel14',
+            'cloud.backend.api#Fetch_step1',
+            'rel13',
           ],
         },
         {
@@ -475,7 +485,7 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'email',
           label: 'sends emails',
           relations: [
-            'rel13',
+            'rel12',
           ],
         },
       ],
@@ -610,7 +620,7 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'aws',
           label: 'reads/writes',
           relations: [
-            'rel12',
+            'cloud.backend.api#Fetch_step1',
           ],
         },
         {
@@ -620,7 +630,7 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'email',
           label: 'sends emails',
           relations: [
-            'rel13',
+            'rel12',
           ],
         },
         {
@@ -630,7 +640,7 @@ export const likeC4Model = LikeC4Model.fromDump({
           target: 'aws',
           label: 'uploads',
           relations: [
-            'rel14',
+            'rel13',
           ],
         },
         {
@@ -986,6 +996,7 @@ export const likeC4Model = LikeC4Model.fromDump({
 export type LikeC4ModelTypes = typeof likeC4Model.Aux
 export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
 export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
+export type LikeC4ActivityId = LikeC4ModelTypes['Activity']
 export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
 
 /* prettier-ignore-end */

@@ -74,16 +74,16 @@ describe('Builder (activity)', () => {
           }),
         )
       )
-    expect(b.build().activities['customer#A'].steps).toMatchObject([
+    expect(b.build().activities['customer#A'].steps).toEqual([
       {
-        id: 'step_customer#A_1',
+        id: 'customer#A_step1',
         isBackward: false,
         target: {
           model: 'cloud',
         },
       },
       {
-        id: 'step_customer#A_2',
+        id: 'customer#A_step2',
         isBackward: true,
         target: {
           model: 'cloud',

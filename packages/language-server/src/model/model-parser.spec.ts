@@ -117,6 +117,92 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
       ])
     })
+
+    it('parses activity', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element e
+          tag next
+        }
+        model {
+          e element1 {
+            activity A {
+              #next
+              title "Activity A"
+              description "Description of Activity A"
+            }
+            activity B {
+              technology "GraphQL"
+            }
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Activities).toEqual([
+        {
+          astPath: expect.any(String),
+          description: 'Description of Activity A',
+          id: 'element1#A',
+          name: 'A',
+          steps: [],
+          tags: [
+            'next',
+          ],
+          title: 'Activity A',
+        },
+        {
+          astPath: expect.any(String),
+          id: 'element1#B',
+          name: 'B',
+          steps: [],
+          technology: 'GraphQL',
+        },
+      ])
+    })
+
+    it('parses activity steps', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+        }
+        model {
+          element e1 {
+            activity A {
+              -> e2 "step Title" {
+                style {
+                  color red
+                }
+              }
+              <- e2 {
+                title "Backward"
+              }
+            }
+          }
+          element e2
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Activities).toEqual([{
+        astPath: expect.any(String),
+        id: 'e1#A',
+        name: 'A',
+        steps: [{
+          astPath: expect.any(String),
+          id: expect.any(String),
+          title: 'step Title',
+          target: { model: 'e2' },
+          color: 'red',
+        }, {
+          astPath: expect.any(String),
+          id: expect.any(String),
+          isBackward: true,
+          target: { model: 'e2' },
+          title: 'Backward',
+        }],
+      }])
+    })
   })
 
   describe('parses relation predicate', () => {

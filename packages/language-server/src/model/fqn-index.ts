@@ -274,7 +274,7 @@ export class FqnIndex<AstNd = ast.Element | ast.Activity> extends ADisposable {
   }
 }
 
-function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
+function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>): AstNodeDescriptionWithFqn[] {
   return [...multimap.associations()]
     .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
 }

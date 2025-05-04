@@ -2,7 +2,19 @@ import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
-import { filter, first, flatMap, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import {
+  filter,
+  first,
+  flatMap,
+  fromEntries,
+  isDefined,
+  isEmpty,
+  isNonNullish,
+  isTruthy,
+  map,
+  mapToObj,
+  pipe,
+} from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstActivity,
@@ -13,6 +25,7 @@ import {
   ast,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
+import { type ElementStringProperty, type RelationStringProperty } from '../../generated/ast'
 import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
 import { removeIndent, toSingleLine } from './Base'
@@ -28,7 +41,7 @@ function* streamModel(
   const traverseStack = LinkedList.from<ast.Element | ast.ExtendElement | ast.Relation | ast.Activity>(
     doc.parseResult.value.models.flatMap(m => m.elements),
   )
-  const relations = [] as Array<ast.Relation | ast.Activity>
+  const relations = new LinkedList<ast.Relation | ast.Activity>()
   let el
   while ((el = traverseStack.shift())) {
     if (ast.isRelation(el) || ast.isActivity(el)) {
@@ -52,21 +65,19 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const doc = this.doc
       for (const el of streamModel(doc)) {
         try {
+          if (!this.isValid(el)) {
+            continue
+          }
           if (ast.isElement(el)) {
             doc.c4Elements.push(this.parseElement(el))
             continue
           }
           if (ast.isRelation(el)) {
-            if (this.isValid(el)) {
-              doc.c4Relations.push(this.parseRelation(el))
-            }
+            doc.c4Relations.push(this.parseRelation(el))
             continue
           }
           if (ast.isActivity(el)) {
-            const parsed = this.parseActivity(el)
-            if (parsed) {
-              doc.c4Activities.push(parsed)
-            }
+            doc.c4Activities.push(this.parseActivity(el))
             continue
           }
           if (ast.isExtendElement(el)) {
@@ -103,10 +114,12 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const bodyProps = pipe(
         astNode.body?.props ?? [],
-        filter(isValid),
         filter(ast.isElementStringProperty),
+        filter(p => isValid(p) && isNonNullish(p.value)),
         mapToObj(p => [p.key, p.value || undefined]),
-      )
+      ) as {
+        [key in ElementStringProperty['key']]?: string
+      }
 
       title = removeIndent(title ?? bodyProps.title)
       description = removeIndent(bodyProps.description ?? description)
@@ -115,42 +128,26 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const links = this.parseLinks(astNode.body)
 
       return {
-        id,
-        kind,
         astPath,
-        title: title ?? astNode.name,
         ...(metadata && { metadata }),
         ...(tags && { tags }),
         ...(links && { links }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
         style,
+        title: title ?? astNode.name,
+        kind,
+        id,
       }
     }
 
     parseActivity(astNode: ast.Activity): ParsedAstActivity {
       const id = this.resolveFqn(astNode)
       const astPath = this.getAstNodePath(astNode)
-      const tags = this.parseTags(astNode.body)
-      const links = this.parseLinks(astNode.body)
-      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value || undefined],
-      )
+      let { title, style, ...rest } = this.parseRelationProperties(astNode.body)
 
-      const navigateTo = pipe(
-        astNode.body?.props ?? [],
-        filter(ast.isRelationNavigateToProperty),
-        map(p => p.value.view.ref?.name),
-        filter(isTruthy),
-        first(),
-      )
-
-      const title = removeIndent(bodyProps.title) ?? ''
-      const description = removeIndent(bodyProps.description)
-      const technology = removeIndent(bodyProps.technology)
+      title = removeIndent(astNode.title) ?? title
 
       const steps = flatMap(astNode.body?.steps ?? [], step => {
         try {
@@ -161,17 +158,12 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         }
       })
       return {
-        id,
+        steps,
+        ...rest,
+        ...(isTruthy(title) && { title }),
         astPath,
         name: astNode.name,
-        ...(isTruthy(title) && { title }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
-        ...(metadata && { metadata }),
-        ...(tags && { tags }),
-        ...(links && { links }),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
-        steps,
+        id,
       }
     }
 
@@ -213,56 +205,39 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const isValid = this.isValid
       const source = this._resolveRelationSource(astNode)
       const target = this.parseFqnRef(astNode.target)
-      invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
+      invariant(
+        FqnRef.isModelRef(target) || FqnRef.isImportRef(target) || FqnRef.isActivityRef(target),
+        'Target must be a model reference',
+      )
 
-      const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body)
-      const links = this.parseLinks(astNode.body)
       const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
-      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
+      let { title, technology, tags, style, ...rest } = this.parseRelationProperties(astNode.body)
+      tags = this.parseTags(astNode) ?? tags
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value],
-      )
+      title = removeIndent(astNode.title) ?? title ?? ''
+      technology = toSingleLine(astNode.technology) ?? technology
 
-      const navigateTo = pipe(
-        astNode.body?.props ?? [],
-        filter(ast.isRelationNavigateToProperty),
-        map(p => p.value.view.ref?.name),
-        filter(isTruthy),
-        first(),
-      )
-
-      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
-
-      const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
         astPath,
         source.model,
-        target.model,
+        FqnRef.toModelFqn(target),
       ) as c4.RelationId
       return {
-        id,
-        astPath,
-        source,
-        target,
-        title,
-        ...(metadata && { metadata }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
         ...(kind && { kind }),
         ...(tags && { tags }),
-        ...(links && { links }),
-        ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
+        ...(isTruthy(technology) && { technology }),
+        ...rest,
+        ...style,
+        astPath,
+        title,
+        target,
+        source,
+        id,
       }
     }
 
     parseActivityStep(astNode: ast.ActivityStep): ParsedAstActivityStep {
-      const isValid = this.isValid
       const activityId = this.resolveFqn(astNode.$container.$container)
       const target = this.parseFqnRef(astNode.target)
       invariant(
@@ -270,48 +245,82 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         'Target must be a model reference',
       )
 
-      const tags = this.parseTags(astNode.body)
-      const links = this.parseLinks(astNode.body)
       const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
-      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+      let { title, technology, tags, style, ...rest } = this.parseRelationProperties(astNode.body)
+      tags = this.parseTags(astNode) ?? tags
+
+      title = removeIndent(astNode.title) ?? title ?? ''
+      technology = toSingleLine(astNode.technology) ?? technology
+
       const astPath = this.getAstNodePath(astNode)
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value],
+      title = removeIndent(astNode.title) ?? title
+
+      const id = stringHash(
+        activityId,
+        astPath,
+        FqnRef.toModelFqn(target),
+      ) as c4.RelationId
+      return {
+        ...(astNode.isBackward && { isBackward: astNode.isBackward }),
+        ...rest,
+        ...style,
+        ...(isTruthy(technology) && { technology }),
+        ...(tags && { tags }),
+        ...(isTruthy(title) && { title }),
+        ...(kind && { kind }),
+        target,
+        astPath,
+        id,
+      }
+    }
+
+    parseRelationProperties(body?: ast.ActivityBody | ast.RelationBody): {
+      style: {
+        tail?: c4.RelationshipArrowType
+        head?: c4.RelationshipArrowType
+        line?: c4.RelationshipLineType
+        color?: c4.Color
+      }
+      description?: string
+      technology?: string
+      title?: string
+      metadata?: { [key: string]: string }
+      links?: c4.NonEmptyArray<c4.Link>
+      tags?: c4.NonEmptyArray<c4.Tag>
+      navigateTo?: c4.ViewId
+    } {
+      const allProps = body?.props ?? []
+      const props = pipe(
+        allProps,
+        filter(ast.isRelationStringProperty),
+        filter(p => this.isValid(p)),
+        map(p => [p.key, removeIndent(p.value)] as [RelationStringProperty['key'], string]),
+        filter(([_, value]) => isTruthy(value)),
+        fromEntries(),
       )
 
       const navigateTo = pipe(
-        astNode.body?.props ?? [],
+        allProps,
         filter(ast.isRelationNavigateToProperty),
         map(p => p.value.view.ref?.name),
         filter(isTruthy),
         first(),
-      )
+      ) as c4.ViewId | undefined
 
-      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(bodyProps.description)
-      const technology = removeIndent(bodyProps.technology)
+      const tags = this.parseTags(body)
+      const links = this.parseLinks(body)
+      const metadata = this.getMetadata(allProps.find(ast.isMetadataProperty))
 
-      const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
-      const id = stringHash(
-        activityId,
-        (astNode.$containerIndex ?? 0).toString(),
-      ) as c4.RelationId
+      const style = toRelationshipStyleExcludeDefaults(allProps.find(ast.isRelationStyleProperty)?.props, this.isValid)
+
       return {
-        id,
-        astPath,
-        ...(astNode.isBackward && { isBackward: astNode.isBackward }),
-        target,
-        title,
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
-        ...(kind && { kind }),
+        style,
+        ...props,
+        ...(navigateTo && { navigateTo }),
         ...(tags && { tags }),
-        ...(metadata && { metadata }),
         ...(links && { links }),
-        ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
+        ...(metadata && { metadata }),
       }
     }
   }

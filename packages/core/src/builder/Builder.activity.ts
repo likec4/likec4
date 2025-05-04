@@ -143,7 +143,7 @@ export function activity(
           )
           activity.steps.push({
             ...step,
-            id: `step_${activityId}_${activity.steps.length + 1}` as RelationId,
+            id: `${activityId}_step${activity.steps.length + 1}` as RelationId,
           })
           return activityBuilder
         },

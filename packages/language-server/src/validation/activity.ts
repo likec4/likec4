@@ -1,7 +1,8 @@
+import { elementFromActivityId, FqnRef, isSameHierarchy } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
-import { projectIdFrom } from '../utils'
+import { projectIdFrom, safeCall } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -52,6 +53,38 @@ export const checkActivity = (services: LikeC4Services): ValidationCheck<ast.Act
           },
         },
       )
+    }
+  })
+}
+
+export const checkActivityStep = (services: LikeC4Services): ValidationCheck<ast.ActivityStep> => {
+  const fqnIndex = services.likec4.FqnIndex
+  const modelParser = services.likec4.ModelParser
+
+  return tryOrLog((el, accept) => {
+    const activityId = safeCall(() => fqnIndex.getFqn(el.$container.$container))
+    if (!activityId) {
+      accept('error', 'Source of activity step not resolved', {
+        node: el,
+      })
+      return
+    }
+    const sourceFqn = elementFromActivityId(activityId)
+    const parser = modelParser.forDocument(AstUtils.getDocument(el))
+    const target = safeCall(() => parser.parseFqnRef(el.target))
+    if (!target) {
+      accept('error', 'Target not resolved', {
+        node: el,
+        property: 'target',
+      })
+      return
+    }
+    const targetFqn = FqnRef.toModelFqn(target)
+    if (isSameHierarchy(sourceFqn, targetFqn)) {
+      accept('error', 'Invalid parent-child relationship', {
+        node: el,
+        property: 'target',
+      })
     }
   })
 }

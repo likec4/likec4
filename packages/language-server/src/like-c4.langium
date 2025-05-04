@@ -20,15 +20,21 @@ LikeC4Lib:
     '}'
   '}';
 
-LibIcon: name=IconId;
+LibIcon:
+  name=IconId;
 
 // Specification -------------------------------------
 
-ElementKind: name=Id;
-Tag: name=Id;
-RelationshipKind: name=Id;
-CustomColor: name=CustomColorId;
-DeploymentNodeKind: name=Id;
+ElementKind:
+  name=Id;
+Tag:
+  name=Id;
+RelationshipKind:
+  name=Id;
+CustomColor:
+  name=CustomColorId;
+DeploymentNodeKind:
+  name=Id;
 
 SpecificationRule:
   name='specification' '{'
@@ -119,7 +125,8 @@ Element:
   body=ElementBody?
 ;
 
-ElementBody: '{'
+ElementBody:
+  '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
@@ -144,7 +151,8 @@ ExtendElement:
   'extend' element=StrictFqnElementRef body=ExtendElementBody
 ;
 
-ExtendElementBody:  '{'
+ExtendElementBody:
+  '{'
   tags=Tags?
   props+=ExtendElementProperty*
 
@@ -176,7 +184,8 @@ type Referenceable = DeploymentNode | DeployedInstance | Element | Imported | Ac
 //  - If parent is DeployedInstance, then it can reference  nested  Element
 //  - If parent is Element, then it can reference  nested  Element
 //  Mix of DeploymentRef and ElementRef
-FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+FqnRef:
+  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 
 // Strict reference allows only direct children of parent
@@ -199,7 +208,8 @@ Relation<isExplicit>:
   body=RelationBody?
 ;
 
-RelationBody: '{'
+RelationBody:
+  '{'
   tags=Tags?
   props+=RelationProperty*
 '}'
@@ -226,7 +236,8 @@ MetadataProperty:
   'metadata' MetadataBody
 ;
 
-MetadataBody: '{'
+MetadataBody:
+  '{'
   props+=(MetadataAttribute)*
 '}'
 ;
@@ -240,16 +251,23 @@ MetadataAttribute:
 Activity:
   'activity'
   name=Id
+  title=String?
   body=ActivityBody?;
 
-ActivityBody: '{'
+ActivityBody:
+  '{'
   tags=Tags?
   props+=RelationProperty*
   steps+=ActivityStep*
 '}';
 
 ActivityStep:
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
+  (
+    isBackward?='<-' |
+    kind=[RelationshipKind:DotId] |
+    '-[' kind=[RelationshipKind] ']->' |
+    '->'
+  )
   target=FqnRef
   (
     title=String
@@ -298,14 +316,16 @@ ElementViewRef:
 DynamicViewRef:
   view=[DynamicView];
 
-ElementViewBody: '{'
+ElementViewBody:
+  '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=ViewRule*
 '}'
 ;
 
-DynamicViewBody: '{'
+DynamicViewBody:
+  '{'
   tags=Tags?
   props+=ViewProperty*
   (
@@ -324,8 +344,7 @@ type StringProperty =
   SpecificationElementStringProperty |
   SpecificationRelationshipStringProperty |
   NotationProperty |
-  NotesProperty
-;
+  NotesProperty;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
@@ -422,7 +441,8 @@ NotesProperty:
   key='notes' ':'? value=String ';'?
 ;
 
-CustomElementProperties: '{'
+CustomElementProperties:
+  '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
@@ -432,7 +452,8 @@ CustomElementProperties: '{'
 '}'
 ;
 
-CustomRelationProperties: '{'
+CustomRelationProperties:
+  '{'
   props+=(
     RelationNavigateToProperty |
     RelationStringProperty |
@@ -591,7 +612,8 @@ DeploymentNode:
   body=DeploymentNodeBody?
 ;
 
-DeploymentNodeBody: '{'
+DeploymentNodeBody:
+  '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
@@ -610,7 +632,8 @@ DeployedInstance:
   ';'?
 ;
 
-DeployedInstanceBody: '{'
+DeployedInstanceBody:
+  '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
@@ -622,7 +645,8 @@ ExtendDeployment:
   'extend' deploymentNode=StrictFqnRef body=ExtendDeploymentBody
 ;
 
-ExtendDeploymentBody:  '{'
+ExtendDeploymentBody:
+  '{'
   tags=Tags?
   props+=ExtendElementProperty*
 
@@ -647,7 +671,8 @@ DeploymentRelation<isExplicit>:
   body=DeploymentRelationBody?
 ;
 
-DeploymentRelationBody: '{'
+DeploymentRelationBody:
+  '{'
   tags=Tags?
   props+=RelationProperty*
 '}'
@@ -657,7 +682,8 @@ DeploymentView:
   'deployment' 'view' name=Id body=DeploymentViewBody?
 ;
 
-DeploymentViewBody: '{'
+DeploymentViewBody:
+  '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=DeploymentViewRule*
@@ -797,7 +823,8 @@ ArrowProperty:
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
-Boolean returns boolean: 'true' | 'false';
+Boolean returns boolean:
+  'true' | 'false';
 
 LineOptions returns string:
   'solid' |

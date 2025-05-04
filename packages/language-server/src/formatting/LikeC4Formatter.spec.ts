@@ -133,6 +133,40 @@ model {
     )
 
     it(
+      'formats activities',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+model {
+  system    sys1  {    activity   A1    "title"{    ->   sys2       "title2" <-    sys2} }
+  system    sys2 {    activity   A2    "title" { ->  sys1  "title3" { technology : 'tech2' style  {  color   red } }} }
+}`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          model {
+            system sys1 {
+              activity A1 "title" {
+                -> sys2 "title2"
+                <- sys2
+              }
+            }
+            system sys2 {
+              activity A2 "title" {
+                -> sys1 "title3" {
+                  technology: 'tech2'
+                  style {
+                    color red
+                  }
+                }
+              }
+            }
+          }"
+        `),
+    )
+
+    it(
       'formats metadata',
       async ({ expect }) =>
         expect(

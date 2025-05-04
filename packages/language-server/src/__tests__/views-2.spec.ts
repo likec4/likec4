@@ -128,6 +128,12 @@ describe.concurrent('views2', () => {
         include api
       }
     `)
+    // resolve from system.backend
+    await valid(`
+      view of system.backend.api {
+        include backend.model
+      }
+    `)
   })
 
   it('view properties', async ctx => {

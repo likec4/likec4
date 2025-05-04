@@ -4,7 +4,6 @@ import {
   type ViewId,
   computeColorValues,
   DeploymentElement,
-  isActivityId,
   isGlobalFqn,
   parentFqn,
   sortByFqnHierarchically,
@@ -24,7 +23,6 @@ import {
   prop,
   reduce,
 } from 'remeda'
-import type { Writable } from 'type-fest'
 import type {
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
@@ -87,13 +85,10 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
       map(d.c4Activities, parsed => {
         const activity = c4Specification.toModelActivity(parsed)
         const parent = activity ? elements[activity.modelRef] : null
-        if (!parent || !activity) {
-          logger.debug`No parent found for activity ${parsed.id}`
+        if (!parent) {
+          logger.warn`No parent found for activity ${parsed.id}`
           return null
         }
-        // ;(parent as Writable<typeof parent>).activities ??= []
-        // parent.activities?.push(activity.id)
-
         return activity
       })
     ),
@@ -111,14 +106,14 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
         !isGlobalFqn(rel.source) && isNullish(elements[rel.source]) &&
         isNullish(activities[rel.source as c4.ActivityId])
       ) {
-        logger.debug`Invalid relation ${rel.id}, source: ${rel.source} not found`
+        logger.warn`Invalid relation ${rel.id} (${rel.source} -> ${rel.target}), source: ${rel.source} not found`
         return false
       }
       if (
         !isGlobalFqn(rel.target) && isNullish(elements[rel.target]) &&
         isNullish(activities[rel.target as c4.ActivityId])
       ) {
-        logger.debug`Invalid relation ${rel.id}, target: ${rel.target} not found`
+        logger.warn`Invalid relation ${rel.id} (${rel.source} -> ${rel.target}), target: ${rel.target} not found`
         return false
       }
       return true

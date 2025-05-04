@@ -120,7 +120,7 @@ export interface ParsedAstActivityStep {
   target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef | c4.FqnRef.ActivityRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
-  title: string
+  title?: string
   description?: string
   technology?: string
   color?: c4.Color
@@ -381,13 +381,18 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
 export function toRelationshipStyleExcludeDefaults(
   props: ast.SpecificationRelationshipKind['props'] | undefined,
   isValid: IsValidFn,
-) {
+): {
+  color?: c4.Color
+  line?: c4.RelationshipLineType
+  head?: c4.RelationshipArrowType
+  tail?: c4.RelationshipArrowType
+} {
   const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty), isValid)
   return {
-    ...(color && color !== DefaultRelationshipColor ? { color } : {}),
-    ...(line && line !== DefaultLineStyle ? { line } : {}),
-    ...(head && head !== DefaultArrowType ? { head } : {}),
     ...(tail ? { tail } : {}),
+    ...(head && head !== DefaultArrowType ? { head } : {}),
+    ...(line && line !== DefaultLineStyle ? { line } : {}),
+    ...(color && color !== DefaultRelationshipColor ? { color } : {}),
   }
 }
 
@@ -480,6 +485,7 @@ const _isModel = (astNode: AstNode) => {
   return ast.isModel(astNode) ||
     ast.isElementBody(astNode) ||
     ast.isExtendElementBody(astNode) ||
+    ast.isElementView(astNode) ||
     ast.isElementViewBody(astNode) ||
     ast.isDynamicViewBody(astNode) ||
     ast.isElementRef(astNode)

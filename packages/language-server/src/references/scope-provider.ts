@@ -118,6 +118,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         yield viewOf.modelElement.value.$nodeDescription
       }
       yield* this.genUniqueDescedants(() => elementRef(viewOf))
+
+      // Add elements from FQN, i.e for "com.example.element"
+      // we add "element", "example", "com"
+      let parent = viewOf.modelElement.parent
+      while (parent?.value.$nodeDescription) {
+        yield parent.value.$nodeDescription
+        parent = parent.parent
+      }
       return
     }
 

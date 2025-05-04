@@ -142,7 +142,7 @@ export class MergedSpecification {
     steps,
     name,
     ...model
-  }: ParsedAstActivity): c4.Activity | null => {
+  }: ParsedAstActivity): c4.Activity => {
     const modelRef = elementFromActivityId(id)
     return {
       ...model,
@@ -155,22 +155,21 @@ export class MergedSpecification {
 
   toModelActivityStep = ({
     astPath,
-    id,
     kind,
     ...model
   }: ParsedAstActivityStep): c4.ActivityStep => {
-    if (isNonNullish(kind) && this.specs.relationships[kind]) {
-      return {
-        ...this.specs.relationships[kind],
-        ...model,
-        kind,
-        id,
-      } satisfies c4.ActivityStep
+    if (isNonNullish(kind)) {
+      if (this.specs.relationships[kind]) {
+        return {
+          ...this.specs.relationships[kind],
+          kind,
+          ...model,
+        }
+      } else {
+        logger.warn`No relationship kind ${kind} found for ${astPath} (activity step)`
+      }
     }
-    return {
-      ...model,
-      id,
-    }
+    return model
   }
 
   /**
@@ -181,30 +180,28 @@ export class MergedSpecification {
     source: sourceFqnRef,
     target: targetFqnRef,
     kind,
-    links,
-    id,
     ...model
-  }: ParsedAstRelation): c4.ModelRelation | null => {
+  }: ParsedAstRelation): c4.ModelRelation => {
     const target = FqnRef.toModelFqn(targetFqnRef)
     const source = FqnRef.toModelFqn(sourceFqnRef)
-    if (isNonNullish(kind) && this.specs.relationships[kind]) {
-      return {
-        ...this.specs.relationships[kind],
-        ...model,
-        ...(links && { links }),
-        source,
-        target,
-        kind,
-        id,
-      } satisfies c4.ModelRelation
+    if (isNonNullish(kind)) {
+      if (this.specs.relationships[kind]) {
+        return {
+          ...this.specs.relationships[kind],
+          ...model,
+          source,
+          target,
+          kind,
+        }
+      } else {
+        logger.warn`No relationship kind ${kind} found for ${astPath} (${source} -> ${target})`
+      }
     }
     return {
-      ...(links && { links }),
       ...model,
       source,
       target,
-      id,
-    } satisfies c4.ModelRelation
+    }
   }
 
   /**
@@ -259,7 +256,7 @@ export class MergedSpecification {
     links,
     id,
     ...model
-  }: ParsedAstDeploymentRelation): c4.DeploymentRelation | null => {
+  }: ParsedAstDeploymentRelation): c4.DeploymentRelation => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],

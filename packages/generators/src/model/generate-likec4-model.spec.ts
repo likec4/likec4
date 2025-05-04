@@ -12,6 +12,8 @@ const {
     system,
     component,
     webapp,
+    activity,
+    step,
     mobile,
     ...$m
   },
@@ -87,6 +89,11 @@ const builder = b
         }),
       ),
       system('email'),
+      activity('cloud.backend.api#Fetch', {
+        steps: [
+          step('-> aws.rds', 'reads/writes'),
+        ],
+      }),
     ),
     model(
       $m.rel('customer', 'cloud', 'uses services'),
@@ -100,7 +107,6 @@ const builder = b
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
-      $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
       $m.rel('cloud.backend.api', 'email', 'sends emails'),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
       $m.rel('email', 'customer', 'sends emails'),
