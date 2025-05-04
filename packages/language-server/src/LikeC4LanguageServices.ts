@@ -177,6 +177,8 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     switch (true) {
       case 'element' in params:
         return this.services.likec4.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
+      case 'activity' in params:
+        return this.services.likec4.ModelLocator.locateActivity(params.activity, params.projectId as ProjectId)
       case 'relation' in params:
         return this.services.likec4.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
       case 'view' in params:
