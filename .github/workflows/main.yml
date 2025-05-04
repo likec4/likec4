@@ -17,71 +17,43 @@ permissions:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  DO_NOT_TRACK: "1"
 
 jobs:
-  build:
-    name: 🛠️ build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    concurrency:
-      group: ${{ github.workflow }}-update-cache
-      cancel-in-progress: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ generate
-        run: pnpm generate
-
-      - name: ʦ typecheck
-        run: pnpm ci:typecheck
-
-      - name: ⚙️ build
-        run: pnpm ci:build
-
-      - name: 🔬 test
-        env:
-          NODE_ENV: test
-        run: pnpm ci:test
-
-      - name: ʦ typecheck apps
-        run:
-          pnpm turbo run typecheck --filter='./apps/*'
+  checks:
+    uses: ./.github/workflows/checks.yaml
+    secrets: inherit
 
   release:
     name: 📦 release
     uses: ./.github/workflows/release.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
-    needs: build
+    needs: checks
     concurrency:
       group: ${{ github.workflow }}-release
     secrets: inherit
 
   vscode:
+    name: 📦 vscode
     uses: ./.github/workflows/vscode.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
-    needs: build
+    needs: checks
     concurrency:
       group: ${{ github.workflow }}-vscode
     secrets: inherit
 
-  playground:
-    needs: build
-    name: playground.likec4.dev
+  deploy-playground:
+    needs: checks
+    name: deploy
     uses: ./.github/workflows/playground.yaml
     secrets: inherit
+    with:
+      environment: "${{ contains(github.event.head_commit.message, 'chore: release') && 'production' || 'preview' }}"
 
-  docs:
-    needs: build
-    name: docs.likec4.dev
+  deploy-docs:
+    needs: checks
+    name: deploy
     uses: ./.github/workflows/docs.yaml
     secrets: inherit
-
-  e2e:
-    uses: ./.github/workflows/e2e.yaml
-    needs: build
-    secrets: inherit
+    with:
+      environment: "${{ contains(github.event.head_commit.message, 'chore: release') && 'production' || 'preview' }}"

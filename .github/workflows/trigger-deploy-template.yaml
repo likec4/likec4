@@ -9,6 +9,7 @@ jobs:
   trigger-deploy-template:
     name: trigger deploy template
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'likec4' }}
     steps:
       - uses: wow-actions/use-app-token@9e8487c993ab4085b2dd8cb90ab446b6a18cf834 # v2
         with:
