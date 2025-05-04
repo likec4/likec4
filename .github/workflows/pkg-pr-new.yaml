@@ -6,6 +6,7 @@ on:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  DO_NOT_TRACK: "1"
 
 jobs:
   publish:

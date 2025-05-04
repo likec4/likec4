@@ -13,98 +13,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_ENV: production
-  FORCE_COLOR: true
-
 jobs:
-  check-types:
+  checks:
     # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
         github.event_name == 'push' || github.event.pull_request.head.repo.fork
       )
-    name: ʦ typescript
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ generate
-        run: pnpm generate
-
-      - name: ʦ typecheck
-        run: pnpm ci:typecheck
-
-  check-build:
-    # If on pull request, run only if coming from forked repos
-    if: |
-      !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' || github.event.pull_request.head.repo.fork
-      )
-    name: 🛠️ build
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ build
-        run: pnpm ci:build
-
-      - name: 🔬 test
-        env:
-          NODE_ENV: test
-        run: pnpm ci:test
-
-  check-playground:
-    name: 🛝 build playground
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    needs: check-types
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ʦ typecheck
-        run: |
-          pnpm turbo run typecheck --filter='@likec4/playground'
-
-      - name: ⚙️ build
-        run: |
-          pnpm turbo run build --filter='@likec4/playground'
-
-  check-docs-astro:
-    name: 📖 build docs
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    needs:
-      - check-build
-      - check-types
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ʦ typecheck
-        run: |
-          pnpm turbo run typecheck --filter='@likec4/docs-astro'
-
-      - name: ⚙️ build
-        run: |
-          pnpm turbo run build --filter='@likec4/docs-astro'
-
-  check-e2e:
-    uses: ./.github/workflows/e2e.yaml
-    needs:
-      - check-build
-      - check-types
+    uses: ./.github/workflows/checks.yaml
     secrets: inherit

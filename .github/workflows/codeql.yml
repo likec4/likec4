@@ -9,7 +9,7 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: codeql js/ts
+name: codeql
 
 on:
   pull_request:
@@ -19,12 +19,6 @@ on:
 
 jobs:
   analyze:
-    # If on pull request, run only if coming from forked repos
-    if: |
-      !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'schedule' ||
-        github.event.pull_request.head.repo.fork
-      )
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
@@ -49,11 +43,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@v4
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@28deaeda66b76a05916b6923827895f2b14ab387 # v3
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -79,6 +73,6 @@ jobs:
       #     ./location_of_script_within_repo/buildscript.sh
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@28deaeda66b76a05916b6923827895f2b14ab387 # v3
+        uses: github/codeql-action/analyze@v3
         with:
           category: '/language:${{matrix.language}}'

@@ -1,7 +1,6 @@
 name: preview comment
 
 on:
-  workflow_dispatch:
   issue_comment:
     types: [created]
 
@@ -12,6 +11,7 @@ defaults:
 env:
   NODE_ENV: production
   FORCE_COLOR: 1
+  DO_NOT_TRACK: "1"
 
 jobs:
   preview-playground:
@@ -61,7 +61,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}

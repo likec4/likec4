@@ -2,14 +2,16 @@ name: docs
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        default: "preview"
+        required: true
+        type: string
     # Map the workflow outputs to job outputs
     outputs:
-      preview_url:
-        description: "deployment url for preview"
-        value: ${{ jobs.deploy-docs-preview.outputs.url }}
-      production_url:
-        description: "deployment url for production"
-        value: ${{ jobs.deploy-docs-prod.outputs.url }}
+      docs_url:
+        description: "docs url"
+        value: ${{ jobs.deploy-docs.outputs.url }}
   workflow_dispatch:
     inputs:
       environment:
@@ -30,6 +32,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  DO_NOT_TRACK: "1"
   FORCE_COLOR: true
 
 concurrency:
@@ -37,114 +40,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-docs:
-    name: build
+  deploy-docs:
+    name: deploy docs
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ github.repository_owner == 'likec4' }}
+    environment:
+      name: "docs-${{ inputs.environment }}"
+      url: "${{ inputs.env == 'production' && 'https://likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
+    outputs:
+      url: "${{ inputs.env == 'production' && 'https://likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
+      - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
-
-      - name: ʦ typecheck
-        run: |
-          pnpm turbo run typecheck --filter='@likec4/docs-astro'
 
       - name: ⚙️ build
         run: |
           pnpm turbo run build --filter='@likec4/docs-astro'
 
-      - name: upload a build artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: docs-astro
           if-no-files-found: error
           retention-days: 5
           path: apps/docs/dist/
 
-  deploy-docs-preview:
-    # Deploy to Preview
-    if: "inputs.environment == 'preview' || github.event_name != 'workflow_dispatch'"
-    name: deploy preview
-    runs-on: ubuntu-latest
-    needs: build-docs
-    timeout-minutes: 10
-    environment:
-      name: "docs-preview"
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    outputs:
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: 🛠️ Setup node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: "pnpm"
-
-      - name: download artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: docs-astro
-          path: apps/docs/dist/
-
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch preview
-          workingDirectory: apps/docs
-          packageManager: pnpm
-
-  deploy-docs-prod:
-    if: "inputs.environment == 'production' || (github.event_name != 'workflow_dispatch' && contains(github.event.head_commit.message, 'chore: release'))"
-    name: deploy prod
-    runs-on: ubuntu-latest
-    needs: build-docs
-    timeout-minutes: 10
-    environment:
-      name: "docs-prod"
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    outputs:
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: 🛠️ Setup node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: "pnpm"
-
-      - name: download artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: docs-astro
-          path: apps/docs/dist/
-
-      - id: cloudflare
-        name: publish to cloudflare
-        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch main
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: "pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch ${{ inputs.env == 'production' && 'main' || 'preview' }}"
           workingDirectory: apps/docs
           packageManager: pnpm

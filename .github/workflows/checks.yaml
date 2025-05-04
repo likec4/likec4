@@ -1,19 +1,93 @@
-name: e2e
+name: checks
 
 on:
   workflow_call:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: "production"
   FORCE_COLOR: true
   DO_NOT_TRACK: "1"
 
 jobs:
-  e2e-tests:
+  check-types:
+    name: ʦ typescript
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ⚙️ generate
+        run: pnpm generate
+
+      - name: ʦ typecheck
+        run: pnpm ci:typecheck
+
+  check-build:
+    name: 🛠️ build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ⚙️ build
+        run: pnpm ci:build
+
+  check-tests:
+    name: 🔬 tests
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ⚙️ generate
+        run: pnpm generate
+
+      - name: 🔬 test
+        env:
+          NODE_ENV: test
+        run: pnpm ci:test
+
+  check-docs-astro:
+    name: 📖 docs
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    needs:
+      - check-build
+      - check-types
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ʦ typecheck
+        run: |
+          pnpm turbo run typecheck --filter='@likec4/docs-astro'
+
+      - name: ⚙️ build
+        run: |
+          pnpm turbo run build --filter='@likec4/docs-astro'
+
+  check-e2e-tests:
+    name: 🔬 e2e tests
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    needs:
+      - check-build
+      - check-types
+      - check-tests
+    steps:
+      - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -36,7 +110,7 @@ jobs:
         run: pnpm test
 
       - id: cloudflare
-        if: ${{ failure() }}
+        if: ${{ failure() && github.repository_owner == 'likec4' }}
         name: ⚙️ publish playwright-report
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
         with:
@@ -47,7 +121,7 @@ jobs:
           packageManager: pnpm
 
       - name: print url to published report
-        if: ${{ failure() }}
+        if: ${{ failure() && github.repository_owner == 'likec4' }}
         run: |
           echo "::warning::Report published at ${{ steps.cloudflare.outputs.deployment-url }}"
 
@@ -59,11 +133,16 @@ jobs:
           compression-level: 9
           retention-days: 5
 
-  e2e-typecheck:
+  check-e2e-types:
+    name: 🔬 e2e types
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    needs:
+      - check-build
+      - check-types
+      - check-tests
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

@@ -13,6 +13,7 @@ permissions:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  DO_NOT_TRACK: "1"
 
 jobs:
   publish-release:
@@ -27,7 +28,7 @@ jobs:
           app_id: ${{ secrets.BOT_APP_ID }}
           private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ env.BOT_TOKEN }}
           fetch-depth: 0
