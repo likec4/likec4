@@ -2,9 +2,8 @@ import type * as c4 from '@likec4/core'
 import {
   type ViewId,
   isScopedElementView,
-  LikeC4Model,
-  sortParentsFirst,
 } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {

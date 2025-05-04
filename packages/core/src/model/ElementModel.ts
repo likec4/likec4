@@ -264,7 +264,3 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.$model.activities(this)
   }
 }
-
-export function isElementModel<M extends AnyAux = AnyAux>(element: any): element is ElementModel<M> {
-  return element instanceof ElementModel
-}

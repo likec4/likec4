@@ -1,8 +1,8 @@
 import {
-  type LikeC4Model,
   type Tag,
   isDeploymentView,
 } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import {

@@ -1,11 +1,11 @@
 import {
   type DiagramEdge,
   type EdgeId,
-  type LikeC4Model,
   type NodeId,
   DiagramNode,
   nameFromFqn,
 } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
 import {
   type StackProps,

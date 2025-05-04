@@ -11,24 +11,6 @@ export {
   nonNullable,
 } from './errors'
 
-export {
-  type AnyAux,
-  type Aux,
-  Connection,
-  ConnectionModel,
-  DeployedInstanceModel,
-  DeploymentConnectionModel,
-  type DeploymentElementModel,
-  DeploymentNodeModel,
-  DeploymentRelationModel,
-  EdgeModel,
-  ElementModel,
-  LikeC4DeploymentModel,
-  LikeC4Model,
-  LikeC4ViewModel,
-  NodeModel,
-  RelationshipModel,
-} from './model'
 export * from './types'
 
 export * from './utils'

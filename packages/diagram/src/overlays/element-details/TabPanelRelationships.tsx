@@ -1,4 +1,5 @@
-import { type LikeC4Model, nameFromFqn } from '@likec4/core'
+import { nameFromFqn } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { ActionIcon, Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'

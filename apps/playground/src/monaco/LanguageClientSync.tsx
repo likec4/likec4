@@ -2,7 +2,6 @@ import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
 import { type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
 import {
   BuildDocuments,
   ChangeView,
@@ -21,6 +20,7 @@ import { funnel, isString } from 'remeda'
 import { type CustomWrapperConfig, loadLikeC4Worker } from './config'
 import { cleanDisposables, createMemoryFileSystem, setActiveEditor } from './utils'
 
+import { LikeC4Model } from '@likec4/core/model'
 import type { Location } from 'vscode-languageserver-types'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')

@@ -12,7 +12,8 @@ import {
   elementFromActivityId,
 } from '../types/scalars'
 import { commonAncestor, hierarchyLevel } from '../utils'
-import { type ElementModel, type ElementsIterator, isElementModel } from './ElementModel'
+import { type ElementModel, type ElementsIterator } from './ElementModel'
+import { isElementModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
 import { RelationshipModel } from './RelationModel'
 import type { AnyAux } from './types'
@@ -184,10 +185,6 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   // public deployments(): DeployedInstancesIterator<M> {
   //   return this.$model.deployment.instancesOf(this)
   // }
-}
-
-export function isActivityModel<M extends AnyAux = AnyAux>(element: any): element is ActivityModel<M> {
-  return element instanceof ActivityModel
 }
 
 export class ActivityStepModel<M extends AnyAux = AnyAux> {

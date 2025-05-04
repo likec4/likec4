@@ -9,7 +9,9 @@ model {
         #deprecated
         description "Description of Legacy Backend Services"
 
-        -> amazon.pg.tblUsers 'reads/writes'
+        activity FetchUsers {
+          -> amazon.pg.tblUsers 'reads/writes'
+        }
       }
     }
   }

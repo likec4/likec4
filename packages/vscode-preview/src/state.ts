@@ -4,8 +4,8 @@ import {
   type ProjectId,
   type ViewId,
   DiagramNode,
-  LikeC4Model,
 } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'

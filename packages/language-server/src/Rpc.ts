@@ -6,9 +6,9 @@ import {
   type DiagramView,
   type LayoutedLikeC4ModelData,
   type ProjectId,
-  LikeC4Model,
   nonexhaustive,
 } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import {

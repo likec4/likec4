@@ -1,12 +1,13 @@
 import { filter, isArray, map, pick, pipe } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import { type DeploymentConnectionModel, ElementModel, isDeployedInstance, isDeploymentNode } from '../../../model'
+import type { DeploymentConnectionModel } from '../../../model/connection/deployment/DeploymentConnectionModel'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
   DeploymentRelationModel,
 } from '../../../model/DeploymentElementModel'
-import { isElementModel } from '../../../model/ElementModel'
+import type { ElementModel } from '../../../model/ElementModel'
+import { isDeployedInstance, isDeploymentNode, isElementModel } from '../../../model/guards'
 import { isDeploymentElementModel, isNestedElementOfDeployedInstanceModel } from '../../../model/guards'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'

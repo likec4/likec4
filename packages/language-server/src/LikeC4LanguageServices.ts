@@ -1,4 +1,5 @@
-import { type DiagramView, type NonEmptyArray, type ProjectId, LikeC4Model, nonexhaustive } from '@likec4/core'
+import { type DiagramView, type NonEmptyArray, type ProjectId, nonexhaustive } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { URI } from 'langium'
 import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'

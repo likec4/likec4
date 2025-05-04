@@ -6,9 +6,11 @@ model {
       link https://github.com/likec4/template 'Repository'
     }
     -> boutique.frontend.catalogue 'browses products'
-    -> boutique.frontend.checkout 'buys products' {
-      navigateTo place-order
-      link https://github.com/likec4/template/issues 'Issues'
+    activity Buy {
+      -> boutique.checkout.Checkout 'buys products' {
+        navigateTo place-order
+        link https://github.com/likec4/template/issues 'Issues'
+      }
     }
     -> boutique.frontend.profile 'manages account and reviews history'
   }
@@ -27,7 +29,9 @@ model {
     email = service 'Email Service' {
       description 'Sends emails to customers using templates and customer data.'
 
-      -> email-provider 'delegates email sending'
+      activity SendEmail {
+        -> email-provider 'delegates email sending'
+      }
     }
 
     checkout = service 'Checkout Service' {
@@ -37,17 +41,19 @@ model {
       link https://github.com/likec4/template 'Repository'
       metadata {
         npm '@boutique/checkout'
-        version: '1.0.0'
+        version : '1.0.0'
       }
 
-      -> payments.processor 'sends payment request' {
-        navigateTo place-order
+      activity Checkout {
+        -> payments.processor 'sends payment request' {
+          navigateTo place-order
+        }
+        -> shipping 'sends checkout data' {
+          navigateTo order-fulfillment
+        }
+        -> email 'sends order confirmation'
+        -> actionLog 'sends activity data' #v2 #next
       }
-      -> shipping 'sends checkout data' {
-        navigateTo order-fulfillment
-      }
-      -> email 'sends order confirmation'
-      -> actionLog 'sends activity data' #v2 #next
     }
 
     cart = service 'Cart Service' {
@@ -63,7 +69,7 @@ model {
         link https://github.com/likec4/template 'Repository'
         metadata {
           npm '@boutique/cart-api'
-          version : '1.0.0'
+          version: '1.0.0'
         }
       }
 

@@ -12,7 +12,7 @@ views {
         The customer interacts with the web application to place an order.
       '
     }
-    payment-gateway <- boutique 'initiates payment' {
+    boutique -> payment-gateway 'initiates payment' {
       notes '
         Payment service initiates payment processing, which may take a few seconds to a few minutes.
       '

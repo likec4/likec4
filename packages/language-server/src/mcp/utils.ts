@@ -1,4 +1,5 @@
-import { type LikeC4Model, type ProjectId, imap, toArray } from '@likec4/core'
+import { type ProjectId, imap, toArray } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
 
 export function elementResource(

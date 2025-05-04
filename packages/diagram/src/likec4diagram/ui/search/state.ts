@@ -1,6 +1,6 @@
-import { type Fqn, type LikeC4Model, type ViewId, DiagramNode } from '@likec4/core'
+import { type Fqn, type ViewId, DiagramNode } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { createSafeContext } from '@mantine/core'
-import { useCallbackRef } from '@mantine/hooks'
 import { useStore } from '@nanostores/react'
 import { atom, computed, onMount } from 'nanostores'
 import { useCallback, useDeferredValue } from 'react'

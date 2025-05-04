@@ -1,3 +1,4 @@
+export { ActivityModel, ActivityStepModel } from './ActivityModel'
 export { ElementModel } from './ElementModel'
 export { LikeC4Model } from './LikeC4Model'
 export { RelationshipModel } from './RelationModel'
@@ -39,9 +40,13 @@ export { NodeModel } from './view/NodeModel'
 export type {
   AnyAux,
   Aux,
+  IncomingFilter,
+  OutgoingFilter,
 } from './types'
 
 export {
+  isActivityModel,
   isDeployedInstance,
   isDeploymentNode,
+  isElementModel,
 } from './guards'
