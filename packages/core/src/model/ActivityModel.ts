@@ -111,14 +111,15 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   // public incoming(filter: IncomingFilter = 'all'): RelationshipsIterator<M> {
   //   return this.$model.incoming(this, filter)
   // }
-  // public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<M> {
-  //   const unique = new Set<M['Fqn']>()
-  //   for (const r of this.incoming(filter)) {
-  //     if (unique.has(r.source.id)) {
+  // public *incomers(): IteratorLike<ActivityModel<M> | ElementModel<M>> {
+  //   const unique = new Set<M['Fqn'] | M['Activity']>()
+  //   for (const s of this.steps) {
+  //     const target = s.target
+  //     if (unique.has(target.id) || s.) {
   //       continue
   //     }
-  //     unique.add(r.source.id)
-  //     yield r.source
+  //     unique.add(target.id)
+  //     yield target
   //   }
   //   return
   // }
@@ -221,7 +222,7 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
         this.$model,
         {
           ...$activityStep,
-          title: $activityStep.title ?? '',
+          title: $activityStep.title ?? activity.title,
           source: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)
             : FqnRef.toModelFqn($activityStep.target),
@@ -234,7 +235,7 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
         this.$model,
         {
           ...$activityStep,
-          title: $activityStep.title ?? '',
+          title: $activityStep.title ?? activity.title,
           source: activity.element.id,
           target: FqnRef.isActivityRef($activityStep.target)
             ? elementFromActivityId($activityStep.target.activity)

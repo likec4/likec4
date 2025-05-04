@@ -193,6 +193,8 @@ export class Rpc extends ADisposable {
             return modelLocator.locateElement(params.element, params.projectId as ProjectId)
           case 'relation' in params:
             return modelLocator.locateRelation(params.relation, params.projectId as ProjectId)
+          case 'activity' in params:
+            return modelLocator.locateActivity(params.activity, params.projectId as ProjectId)
           case 'view' in params:
             return modelLocator.locateView(params.view, params.projectId as ProjectId)
           case 'deployment' in params:

@@ -324,6 +324,57 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       expectedItems: ['notunique', 'unique'],
     })
   })
+
+  it('should suggest activities', async ({ expect }) => {
+    const text = `
+      specification {
+        element actor
+        element system
+        relationship uses
+      }
+      model {
+        actor customer {
+          -> sys1.<|>
+          -> sys2.<|>
+        }
+        system sys1 {
+          activity Load {
+            -> sys2.<|>
+          }
+        }
+        system sys2 {
+          activity A2
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: [
+        'Load',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'A2',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'A2',
+      ],
+      disposeAfterCheck: true,
+    })
+  })
+
   it('should suggest nested elements inside view predicates', async ({ expect }) => {
     const text = `
       specification {

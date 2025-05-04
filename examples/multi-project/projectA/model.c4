@@ -68,9 +68,10 @@ views {
     group 'External' {
       color green
       opacity 100%
-      include customer with {
-        color green
-      }
+      include
+        customer with {
+          color green
+        }
     }
 
 
@@ -92,8 +93,8 @@ views {
     style supportUser {
       color indigo
     }
-  	autoLayout BottomTop
-	}
+    autoLayout BottomTop
+  }
 
   dynamic view dynamic-view-1 {
     title 'Dynamic View Example'
@@ -139,22 +140,20 @@ views {
   dynamic view cloud-to-amazon {
     title 'Cloud to amazon'
 
-    next.backend -> next.events {
-      notes "
-      - Backend triggers EventManager
-      - These calls enriched with data before publishing
-      "
-    }
-
     parallel {
-      next.events -> amazon.sqs
+      next.backend -> next.events {
+        notes "
+          - Backend triggers EventManager
+          - These calls enriched with data before publishing
+        "
+      }
       next.backend -> amazon.aurora
-      ui.supportPanel -> amazon.aurora
     }
+    next.events -> amazon.sqs
 
-    include next, ui, amazon
+    include next, amazon
 
-    style next, ui, amazon {
+    style next, amazon {
       opacity 40%
     }
 

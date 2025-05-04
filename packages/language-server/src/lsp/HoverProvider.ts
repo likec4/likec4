@@ -1,4 +1,4 @@
-import { FqnRef } from '@likec4/core'
+import { elementFromActivityId, FqnRef } from '@likec4/core'
 import { type AstNode, type MaybePromise, AstUtils } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
 import type { Hover } from 'vscode-languageserver-types'
@@ -89,6 +89,28 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
         contents: {
           kind: 'markdown',
           value: lines.join('\n'),
+        },
+      }
+    }
+
+    if (ast.isActivity(node)) {
+      const el = this.locator.getParsedActivity(node)
+      if (!el) {
+        return
+      }
+      const lines = [
+        'element',
+        '`' + elementFromActivityId(el.id) + '`',
+        'activity',
+        '`' + el.name + '`',
+      ]
+      if (el.title && el.title !== el.name) {
+        lines.push(`### ${el.title}`)
+      }
+      return {
+        contents: {
+          kind: 'markdown',
+          value: lines.join('  \n'),
         },
       }
     }

@@ -93,7 +93,7 @@ describe.concurrent('activityChecks', () => {
     ])
   })
 
-  it('should not report invalid parent-child relationship (reference to Activity)', async ({ expect }) => {
+  it('should report self reference', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -103,7 +103,29 @@ describe.concurrent('activityChecks', () => {
         component c1 {
           component c2 {
             activity Activity1 {
-              -> c2.Activity2
+              -> Activity1
+            }
+          }
+        }
+      }
+    `)
+    expect.soft(diagnostics).toHaveLength(1)
+    expect(diagnostics).toMatchObject([
+      { severity: 1, message: 'Invalid self-reference' },
+    ])
+  })
+
+  it('should not report reference to another activity within the same element', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          component c2 {
+            activity Activity1 {
+              -> Activity2
             }
             activity Activity2
           }

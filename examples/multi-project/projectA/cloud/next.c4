@@ -44,16 +44,18 @@ model {
         description '
           Returns the account of the authenticated user
         '
-
-        -> backend 'reads'
+        activity LoadProfile "Loads profile" {
+          -> backend 'reads'
+        }
       }
       gqlMutation updateAccount {
         description '
           If requested by customer, updates only its own account
           Support user updates any account
         '
-
-        -> backend 'writes'
+        activity UpdateProfile {
+          -> backend 'writes'
+        }
       }
     }
 
@@ -63,15 +65,18 @@ model {
     backend -> cloud.legacy.backend.services 'calls legacy'
 
     events = component 'Events Manager' {
-      -> amazon.queue1 {
-        title 'publishes events'
-        technology 'JSON'
-        navigateTo cloud-to-amazon
-      }
-      -> amazon.queue2 {
-        title 'publishes events'
-        technology 'proto'
-        navigateTo cloud-to-amazon
+      activity PublishEvents {
+        -> amazon.queue1 {
+          title 'publishes events'
+          technology 'JSON'
+          navigateTo cloud-to-amazon
+        }
+
+        -> amazon.queue2 {
+          title 'publishes events'
+          technology 'proto'
+          navigateTo cloud-to-amazon
+        }
       }
     }
     events -> amazon.sqs 'publishes events' {
@@ -95,11 +100,11 @@ views {
     }
 
     include
-        amazon._,
-        cloud.* -> amazon.* with {
-          color indigo
-          line solid
-        }
+      amazon._,
+      cloud.* -> amazon.* with {
+        color indigo
+        line solid
+      }
 
     exclude
       cloud.ui -> amazon

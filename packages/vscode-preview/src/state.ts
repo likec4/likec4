@@ -56,6 +56,11 @@ export const $viewId = atom(viewId)
 export const $projectId = atom(projectId)
 
 export const changeViewId = (viewId: ViewId, projectId?: ProjectId) => {
+  projectId = projectId ?? $projectId.get()
+  if ($projectId.get() !== projectId) {
+    $projectId.set(projectId)
+    fetchComputedModel()
+  }
   const diagramState = $likeC4Diagrams.get()[viewId]
   if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {
@@ -70,11 +75,6 @@ export const changeViewId = (viewId: ViewId, projectId?: ProjectId) => {
     })
   }
   $viewId.set(viewId)
-  projectId = projectId ?? $projectId.get()
-  if ($projectId.get() !== projectId) {
-    $projectId.set(projectId)
-    fetchComputedModel()
-  }
   saveVscodeState({ viewId, projectId })
 }
 

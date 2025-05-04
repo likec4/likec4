@@ -37,12 +37,22 @@ export const ExtensionApi = {
 
 export function getVscodeState(): VscodeState {
   const state = vscode.getState()
+  const initialState: VscodeState = {
+    viewId: __VIEW_ID as ViewId,
+    projectId: __PROJECT_ID as ProjectId,
+    view: null,
+    nodesDraggable: __INTERNAL_STATE?.nodesDraggable ?? true,
+    edgesEditable: __INTERNAL_STATE?.edgesEditable ?? true,
+  }
+  if (!state || state.viewId !== initialState.viewId || state.projectId !== initialState.projectId) {
+    return initialState
+  }
   return {
-    viewId: state?.viewId ?? __VIEW_ID as ViewId,
-    projectId: state?.projectId ?? __PROJECT_ID as ProjectId,
-    view: state?.view ?? null,
-    nodesDraggable: state?.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
-    edgesEditable: state?.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true,
+    viewId: state.viewId ?? __VIEW_ID as ViewId,
+    projectId: state.projectId ?? __PROJECT_ID as ProjectId,
+    view: state.view ?? null,
+    nodesDraggable: state.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
+    edgesEditable: state.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true,
   }
 }
 

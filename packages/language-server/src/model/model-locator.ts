@@ -1,10 +1,10 @@
 import type * as c4 from '@likec4/core'
-import { splitGlobalFqn } from '@likec4/core'
+import { invariant, splitGlobalFqn } from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import { isString } from 'remeda'
 import type { Location } from 'vscode-languageserver-types'
-import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
+import type { ParsedAstActivity, ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
@@ -66,6 +66,35 @@ export class LikeC4ModelLocator {
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
+  public getParsedActivity(
+    ...args: [ast.Activity] | [c4.ActivityId] | [c4.ActivityId, c4.ProjectId]
+  ): ParsedAstActivity | null {
+    if (args.length === 1 && ast.isActivity(args[0])) {
+      const activity = args[0]
+      const doc = this.parser.parse(getDocument(activity))
+      const activityId = this.fqnIndex.getFqn(activity)
+      return doc.c4Activities.find(a => a.id === activityId) ?? null
+    }
+    let activityId
+    let projectId
+    if (args.length === 2) {
+      activityId = args[0]
+      projectId = args[1]
+    } else {
+      invariant(isString(args[0]))
+      activityId = args[0]
+      projectId = this.projects.ensureProjectId()
+    }
+
+    const entry = this.fqnIndex.byFqn(projectId, activityId).head()
+    const doc = entry ? this.langiumDocuments.getDocument(entry.documentUri) : null
+    const parsed = doc ? this.parser.parse(doc) : null
+    if (!parsed) {
+      return null
+    }
+    return parsed.c4Activities.find(a => a.id === activityId) ?? null
+  }
+
   public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
     let [_projectId, _fqn] = splitGlobalFqn(fqn)
     _projectId ??= this.projects.ensureProjectId(projectId)
@@ -78,6 +107,10 @@ export class LikeC4ModelLocator {
       uri: entry.documentUri.toString(),
       range: docsegment.range,
     }
+  }
+
+  public locateActivity(fqn: c4.ActivityId, projectId?: c4.ProjectId | undefined): Location | null {
+    return this.locateElement(fqn, projectId)
   }
 
   public locateDeploymentElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {

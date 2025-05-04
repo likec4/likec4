@@ -1,4 +1,5 @@
 import type {
+  ActivityId,
   ComputedLikeC4ModelData,
   ComputedView,
   DiagramView,
@@ -7,6 +8,7 @@ import type {
   NonEmptyArray,
   ProjectId,
   RelationId,
+  StepEdgeId,
   ViewChange,
   ViewId,
 } from '@likec4/core'
@@ -175,12 +177,17 @@ export namespace Locate {
       relation: RelationId
     }
     | {
+      projectId?: string | undefined
+      activity: ActivityId
+    }
+    | {
       deployment: Fqn
       projectId?: string | undefined
       property?: string
     }
     | {
       view: ViewId
+      step?: StepEdgeId
       projectId?: string | undefined
     }
   export type Res = Location | null

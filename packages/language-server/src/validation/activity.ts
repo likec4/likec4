@@ -80,6 +80,13 @@ export const checkActivityStep = (services: LikeC4Services): ValidationCheck<ast
       return
     }
     const targetFqn = FqnRef.toModelFqn(target)
+    if (targetFqn === activityId) {
+      accept('error', 'Invalid self-reference', {
+        node: el,
+        property: 'target',
+      })
+      return
+    }
     if (isSameHierarchy(sourceFqn, targetFqn)) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,

@@ -3,6 +3,7 @@ import { IconRenderer } from '@likec4/icons/all'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
+import { first } from 'remeda'
 import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
 import { changeViewId, refetchCurrentDiagram, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
@@ -104,6 +105,12 @@ export default function App() {
             setLastClickedNode()
             event.stopPropagation()
             event.preventDefault()
+          }}
+          onEdgeClick={edge => {
+            const relation = first(edge.relations ?? [])
+            if (relation) {
+              extensionApi.locate({ relation })
+            }
           }}
           onEdgeContextMenu={(edge, event) => {
             setLastClickedNode()

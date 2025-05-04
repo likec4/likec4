@@ -483,7 +483,8 @@ export function getViewRulePredicateContainer<T extends AstNode>(el: T):
 
 const _isModel = (astNode: AstNode) => {
   return ast.isModel(astNode) ||
-    ast.isElementBody(astNode) ||
+    ast.isElement(astNode) ||
+    ast.isActivity(astNode) ||
     ast.isExtendElementBody(astNode) ||
     ast.isElementView(astNode) ||
     ast.isElementViewBody(astNode) ||

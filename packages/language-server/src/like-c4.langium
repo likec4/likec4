@@ -176,7 +176,7 @@ StrictFqnElementRef:
   el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 
-type ModelReferenceable = Element | Imported;
+type ModelReferenceable = Element | Imported | Activity;
 type Referenceable = DeploymentNode | DeployedInstance | Element | Imported | Activity;
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
@@ -187,7 +187,6 @@ type Referenceable = DeploymentNode | DeployedInstance | Element | Imported | Ac
 FqnRef:
   value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
-
 // Strict reference allows only direct children of parent
 StrictFqnRef:
   value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
@@ -195,9 +194,9 @@ StrictFqnRef:
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   (
-    kind=[RelationshipKind:DotId] |
+    '->' |
     '-[' kind=[RelationshipKind] ']->' |
-    '->'
+    kind=[RelationshipKind:DotId]
   )
   target=FqnRef
   (
@@ -264,9 +263,8 @@ ActivityBody:
 ActivityStep:
   (
     isBackward?='<-' |
-    kind=[RelationshipKind:DotId] |
-    '-[' kind=[RelationshipKind] ']->' |
-    '->'
+    '->' |
+    '-[' kind=[RelationshipKind:Id] ']->'
   )
   target=FqnRef
   (
@@ -852,6 +850,9 @@ ElementShape returns string:
 Participant returns string:
   'source' | 'target';
 
+// DotId returns string:
+//   DotIdTerminal;
+
 CustomColorValue returns string:
   Hash (Id | Hex | Number);
 
@@ -863,9 +864,6 @@ Uri returns string:
 
 TagId returns string:
   Hash Id;
-
-DotId returns string:
-  Dot Id;
 
 CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
@@ -927,6 +925,7 @@ terminal String: /"[^"]*"|'[^']*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal DotId:  /(?<=\s)\.[_]*[a-zA-Z][-\w]*/;
 terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
 terminal Number returns number: /\b\d+\b/;
 terminal Hex: /\b[a-zA-Z0-9]+\b/;

@@ -41,7 +41,7 @@ model {
       link https://github.com/likec4/template 'Repository'
       metadata {
         npm '@boutique/checkout'
-        version : '1.0.0'
+        version: '1.0.0'
       }
 
       activity Checkout {
@@ -69,7 +69,7 @@ model {
         link https://github.com/likec4/template 'Repository'
         metadata {
           npm '@boutique/cart-api'
-          version: '1.0.0'
+          version : '1.0.0'
         }
       }
 

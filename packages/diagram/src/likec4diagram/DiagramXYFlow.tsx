@@ -137,12 +137,22 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.nodeClick', node })
-        onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
+        if (onNodeClick) {
+          const _node = diagram.findDiagramNode(node.id as NodeId)
+          if (_node) {
+            onNodeClick(_node, e)
+          }
+        }
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeClick', edge })
-        onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
+        if (onEdgeClick) {
+          const _edge = diagram.findDiagramEdge(edge.id as EdgeId)
+          if (_edge) {
+            onEdgeClick(_edge, e)
+          }
+        }
       })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()
@@ -187,18 +197,22 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
         diagram.send({ type: 'xyflow.init', instance })
       })}
       onNodeContextMenu={useCallbackRef((event, node) => {
-        const diagramNode = nonNullable(
-          diagram.findDiagramNode(node.id as NodeId),
-          `diagramNode ${node.id} not found`,
-        )
-        onNodeContextMenu?.(diagramNode, event)
+        if (onNodeContextMenu) {
+          const diagramNode = nonNullable(
+            diagram.findDiagramNode(node.id as NodeId),
+            `diagramNode ${node.id} not found`,
+          )
+          onNodeContextMenu(diagramNode, event)
+        }
       })}
       onEdgeContextMenu={useCallbackRef((event, edge) => {
-        const diagramEdge = nonNullable(
-          diagram.findDiagramEdge(edge.id as EdgeId),
-          `diagramEdge ${edge.id} not found`,
-        )
-        onEdgeContextMenu?.(diagramEdge, event)
+        if (onEdgeContextMenu) {
+          const diagramEdge = nonNullable(
+            diagram.findDiagramEdge(edge.id as EdgeId),
+            `diagramEdge ${edge.id} not found`,
+          )
+          onEdgeContextMenu(diagramEdge, event)
+        }
       })}
       onPaneContextMenu={useCallbackRef((event) => {
         onCanvasContextMenu?.(event as any)

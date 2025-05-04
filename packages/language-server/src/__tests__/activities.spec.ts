@@ -95,6 +95,50 @@ describe.concurrent('activities', () => {
       }
     }`
 
+  test('element with activity steps to activity within same element').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        activity Activity1 {
+          -> Activity2
+        }
+        activity Activity2
+      }
+      component system2 {
+        activity Activity2
+      }
+    }`
+
+  test('element with activity steps to activity within same element only (1)').invalid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        activity Activity1
+      }
+      component system2 {
+        -> Activity1
+      }
+    }`
+
+  test('element with activity steps to activity within same element only (2)').invalid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        activity Activity1
+      }
+      component system2 {
+        activity B
+          -> Activity1
+        }
+      }
+    }`
+
   test('element with activity steps to nonexisting activity').invalid`
     specification {
       element component

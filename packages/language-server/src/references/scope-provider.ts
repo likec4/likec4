@@ -7,12 +7,10 @@ import {
   type Stream,
   AstUtils,
   DefaultScopeProvider,
-  DONE_RESULT,
   EMPTY_SCOPE,
   EMPTY_STREAM,
   MapScope,
   stream,
-  StreamImpl,
   StreamScope,
 } from 'langium'
 import { ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
@@ -201,7 +199,11 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     container: ast.FqnRef,
     context: ReferenceInfo,
   ): Generator<AstNodeDescription> {
-    if (
+    if (AstUtils.hasContainerOfType(container, ast.isActivity)) {
+      // Inside activity scope we need to resolve elements and activities
+      yield* this.computeScope(projectId, context, ast.Element)
+      yield* this.computeScope(projectId, context, ast.Activity)
+    } else if (
       AstUtils.hasContainerOfType(container, ast.isElementRef) ||
       isFqnRefInsideModel(container)
     ) {
@@ -247,6 +249,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     referenceType = this.reflection.getReferenceType(context),
   ): Generator<AstNodeDescription> {
     const isElementReference = this.reflection.isSubtype(referenceType, ast.Element)
+    const isActivityReference = this.reflection.isSubtype(referenceType, ast.Activity)
     const isDeploymentReference = this.reflection.isSubtype(referenceType, ast.DeploymentElement)
 
     const doc = getDocument(context.container)
@@ -268,7 +271,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       if (isDeploymentReference && ast.isExtendDeploymentBody(container)) {
         yield* this.genScopeExtendDeployment(container.$container)
       }
-      if (isElementReference && ast.isExtendElementBody(container)) {
+      if ((isElementReference || isActivityReference) && ast.isExtendElementBody(container)) {
         yield* this.genScopeExtendElement(container.$container)
       }
       if (isElementReference && ast.isElementViewBody(container)) {
@@ -303,19 +306,4 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const projectId = projectIdFrom(context.container)
     return this.getProjectScope(projectId, referenceType, context)
   }
-}
-
-function lazyStream<T>(fn: () => Stream<T>): Stream<T> {
-  return new StreamImpl(
-    () => {
-      return fn().iterator()
-      // return null
-    },
-    iterator => {
-      if (iterator) {
-        return iterator.next()
-      }
-      return DONE_RESULT
-    },
-  )
 }

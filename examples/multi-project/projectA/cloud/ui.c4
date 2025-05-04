@@ -8,10 +8,15 @@ model {
       style {
         shape browser
       }
-    }
 
-    dashboard -> cloud.graphql.myAccount "fetches via GraphQL"
-    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"
+      activity LoadProfile {
+        -> cloud.graphql.myAccount.LoadProfile "fetches via GraphQL"
+      }
+
+      activity UpdateProfile {
+        -> cloud.graphql.updateAccount.UpdateProfile "mutates via GraphQL"
+      }
+    }
 
     dashboard -> cloud.legacy.services "fetches via REST"
 
@@ -23,8 +28,14 @@ model {
       '
       link /view/mobile 'view'
 
-      .requests cloud.graphql.myAccount "fetches via GraphQL"
-      .uses cloud.graphql.updateAccount "mutates via GraphQL"
+      activity LoadProfile {
+        -[requests]-> cloud.graphql.myAccount "fetches via GraphQL"
+      }
+
+      activity UpdateProfile {
+        -[requests]-> cloud.graphql.updateAccount "mutates via GraphQL"
+      }
+
       .uses cloud.legacy.services "fetches via REST"
     }
 
