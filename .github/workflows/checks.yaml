@@ -64,6 +64,7 @@ jobs:
     needs:
       - check-build
       - check-types
+      - check-tests
     steps:
       - uses: actions/checkout@v4
 
