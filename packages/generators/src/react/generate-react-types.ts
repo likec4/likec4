@@ -29,6 +29,8 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
   })
   const deploymentFqns = sortNaturalByFqn([...model.deployment.elements()]).map((e) => e.id)
 
+  const activityIds = model.activities().map((e) => e.id)
+
   const {
     viewIds,
   } = [...model.views()].reduce((acc, d) => {
@@ -64,6 +66,9 @@ import type {
 type LikeC4ElementId =
 ${toUnion(fqns)}
 
+type LikeC4ActivityId =
+${toUnion(activityIds)}
+
 type LikeC4DeploymentId =
 ${toUnion(deploymentFqns)}
 
@@ -78,7 +83,7 @@ ${toUnion(new Set(tags))}
 
 declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
 
-type Aux = GenericLikeC4Model.Typed<LikeC4ElementId, LikeC4DeploymentId, LikeC4ViewId, DiagramView<LikeC4ViewId>>;
+type Aux = GenericLikeC4Model.Typed<LikeC4ElementId, LikeC4ActivityId, LikeC4DeploymentId, LikeC4ViewId, DiagramView<LikeC4ViewId>>;
 type LikeC4Model = GenericLikeC4Model<Aux>;
 type LikeC4ViewModel = GenericLikeC4Model.View<Aux>;
 
@@ -105,6 +110,7 @@ declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
 
 export {
   type LikeC4ElementId,
+  type LikeC4ActivityId,
   type LikeC4DeploymentId,
   type LikeC4ViewId,
   type LikeC4Tag,

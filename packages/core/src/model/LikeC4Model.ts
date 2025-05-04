@@ -214,10 +214,6 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return this.#elements.get(el) ?? null
   }
 
-  public elementActivities(elementId: M['Element']): readonly ActivityModel<M>[] {
-    return this.#elementActivities.get(elementId)
-  }
-
   public activity(activityId: M['Activity']): ActivityModel<M> {
     return nonNullable(this.#activities.get(activityId), `Activity ${activityId} not found`)
   }
@@ -362,8 +358,12 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   /**
    * Returns all activities associated with the given element.
+   * If no element is provided, returns all activities in the model.
    */
-  public activities(element: M['ElementOrFqn']): ReadonlyArray<ActivityModel<M>> {
+  public activities(element?: M['ElementOrFqn']): ReadonlyArray<ActivityModel<M>> {
+    if (!element) {
+      return [...this.#activities.values()]
+    }
     const id = getId(element) as M['Element']
     return this.#elementActivities.get(id)
   }
