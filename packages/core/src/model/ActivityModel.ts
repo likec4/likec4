@@ -29,7 +29,7 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   // readonly imported: null | {
   //   from: ProjectId
   //   fqn: string
-  // }
+  // }`
 
   constructor(
     public readonly $model: LikeC4Model<M>,

@@ -56,7 +56,7 @@ declare module 'likec4:react' {
   import type { JSX, PropsWithChildren } from 'react'
 
   // This will be used later for augmenting the types
-  interface Types extends Aux<string, string, string, DiagramView> {
+  interface Types extends Aux<string, string, string, string, DiagramView> {
   }
 
   export type LikeC4ViewId = Types['View']
@@ -117,7 +117,7 @@ declare module 'likec4:react/*' {
   import type { JSX, PropsWithChildren } from 'react'
 
   // This will be used later for augmenting the types
-  interface Types extends Aux<string, string, string, DiagramView> {
+  interface Types extends Aux<string, string, string, string, DiagramView> {
   }
 
   export type LikeC4ViewId = Types['View']

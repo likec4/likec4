@@ -1,11 +1,11 @@
 import { map, prop } from 'remeda'
-import { describe, expect, it } from 'vitest'
-import { computed, model, type TestFqn } from './__test__/fixture'
+import { describe, it } from 'vitest'
+import { type TestFqn, computed, model } from './__test__/fixture'
 
 describe('LikeC4Model', () => {
   const els = computed.elements
 
-  it('roots', () => {
+  it('roots', ({ expect }) => {
     expect([...model.roots()].map(prop('id'))).toEqual([
       'customer',
       'cloud',
@@ -14,7 +14,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('parent and children', () => {
+  it('parent and children', ({ expect }) => {
     const el = model.element('cloud.backend.api')
     const parent = el.parent!
     expect(parent.id).toEqual('cloud.backend')
@@ -28,7 +28,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('ancestors in right order', () => {
+  it('ancestors in right order', ({ expect }) => {
     const ancestors = [...model.element('cloud.frontend.dashboard').ancestors()]
     expect(ancestors).toHaveLength(2)
     expect(ancestors[0]).toMatchObject({
@@ -41,7 +41,7 @@ describe('LikeC4Model', () => {
     })
   })
 
-  it('siblings of root', () => {
+  it('siblings of root', ({ expect }) => {
     const siblings = [...model.element('cloud').siblings()]
     expect(siblings.map(prop('id'))).toEqual([
       'customer',
@@ -50,7 +50,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('siblings of nested', () => {
+  it('siblings of nested', ({ expect }) => {
     const siblings = [...model.element('cloud.backend').siblings()]
     expect(siblings.map(prop('id'))).toEqual([
       'cloud.frontend',
@@ -59,7 +59,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('ascendingSiblings', () => {
+  it('ascendingSiblings', ({ expect }) => {
     const siblings = [...model.element('cloud.backend.graphql').ascendingSiblings()]
     expect(siblings.map(prop('id'))).toEqual([
       'cloud.backend.api',
@@ -72,7 +72,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('descendants in right order', () => {
+  it('descendants in right order', ({ expect }) => {
     const descendants = [...model.element('cloud').descendants()].map(prop('id'))
     expect(descendants).toEqual([
       'cloud.frontend',
@@ -86,7 +86,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('filter incoming: direct', () => {
+  it('filter incoming: direct', ({ expect }) => {
     const incoming = [...model.element('cloud').incoming('direct')].map(r => r.expression)
     expect(incoming).toEqual([
       'customer -> cloud',
@@ -97,7 +97,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('filter incoming: to-descendants', () => {
+  it('filter incoming: to-descendants', ({ expect }) => {
     const incoming = [...model.element('cloud').incoming('to-descendants')].map(r => r.expression)
     expect(incoming).toEqual([
       'customer -> cloud.frontend.mobile',
@@ -105,7 +105,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('filter outgoing: direct', () => {
+  it('filter outgoing: direct', ({ expect }) => {
     const frontend = model.element('cloud.frontend')
     let outgoing = [...frontend.outgoing()].map(r => r.expression)
     expect(outgoing).toEqual([
@@ -134,7 +134,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('unique incomers', () => {
+  it('unique incomers', ({ expect }) => {
     const incoming = [...model.element('cloud').incoming()].map(prop('expression'))
     expect(incoming).toEqual([
       'customer -> cloud',
@@ -147,7 +147,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('unique outgoers', () => {
+  it('unique outgoers', ({ expect }) => {
     const outgoing = [...model.element('cloud.frontend').outgoing()].map(r => `${r.source.id}:${r.target.id}`)
     expect(outgoing).toEqual([
       'cloud.frontend.dashboard:cloud.auth',
@@ -167,7 +167,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('views with element', () => {
+  it('views with element', ({ expect }) => {
     const views = (id: TestFqn) => [...model.element(id).views()].map(prop('id'))
 
     expect.soft(views('cloud')).toEqual([

@@ -44,6 +44,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return SymbolKind.EnumMember
 
       case hasType(
+        ast.Activity,
         ast.RelationshipKind,
         ast.SpecificationRelationshipKind,
       ):
@@ -103,6 +104,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return CompletionItemKind.EnumMember
 
       case hasType(
+        ast.Activity,
         ast.RelationshipKind,
         ast.SpecificationRelationshipKind,
       ):

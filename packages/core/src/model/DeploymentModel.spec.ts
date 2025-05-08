@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { Builder } from '../builder'
 
 describe('LikeC4DeploymentModel', () => {
@@ -59,19 +59,19 @@ describe('LikeC4DeploymentModel', () => {
     .toLikeC4Model()
   const d = model.deployment
 
-  it('roots', () => {
+  it('roots', ({ expect }) => {
     expect(d.roots()).to.have.same.members([
       d.element('customer'),
       d.element('prod'),
     ])
   })
 
-  it('instance ref', () => {
+  it('instance ref', ({ expect }) => {
     const el = d.instance('prod.z1.ui')
     expect(el.element).toBe(model.element('cloud.ui'))
   })
 
-  it('parent and children', () => {
+  it('parent and children', ({ expect }) => {
     const el = d.instance('prod.z1.ui')
     expect(el.parent).toBe(d.node('prod.z1'))
     expect(el.parent.children()).to.have.same.members([
@@ -80,14 +80,14 @@ describe('LikeC4DeploymentModel', () => {
     ])
   })
 
-  it('element deployments', () => {
+  it('element deployments', ({ expect }) => {
     expect(model.element('cloud.ui').deployments()).to.have.same.members([
       d.instance('prod.z1.ui'),
       d.instance('prod.z2.ui'),
     ])
   })
 
-  it('views with instance', () => {
+  it('views with instance', ({ expect }) => {
     const [view] = [...model.deployment.instance('customer.customer').views()]
     expect(view).toBeDefined()
     // View includes parent of the instance, not the instance itself

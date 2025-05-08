@@ -163,8 +163,8 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
           step,
           activity,
         )
-        const el = this.addRelation(stepModel.relationship)
         steps.push(stepModel)
+        const el = this.addRelation(stepModel.relationship)
         for (const tag of stepModel.tags) {
           const set = this.#allTags.get(tag)
           set.add(el)
@@ -550,11 +550,12 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   }
 
   private addActivity(activityRaw: Activity): ActivityModel<M> {
-    const el = this.element(activityRaw.modelRef)
-    const activity = new ActivityModel(this, el, activityRaw)
-    if (this.#activities.has(activity.id)) {
-      throw new Error(`Activity ${activity.id} already exists`)
+    const el = this.findElement(activityRaw.modelRef)
+    invariant(el, `Parent element for activity ${activityRaw.id} not found`)
+    if (this.#activities.has(activityRaw.id)) {
+      throw new Error(`Activity ${activityRaw.id} already exists`)
     }
+    const activity = new ActivityModel(this, el, activityRaw)
     this.#activities.set(activity.id, activity)
     this.#elementActivities.get(el.id).push(activity)
     return activity

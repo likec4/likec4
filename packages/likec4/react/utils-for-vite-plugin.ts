@@ -6,13 +6,13 @@ import { useStore } from './nanostores'
 import { type Atom, type WritableAtom, computed } from './nanostores'
 
 // This is a workaround to avoid type errors in the Vite plugin
-export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
+export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>): {
   updateModel: (data: LayoutedLikeC4ModelData) => void
   $likec4model: Atom<LikeC4Model.Layouted>
   useLikeC4Model: () => LikeC4Model.Layouted
   useLikeC4Views: () => ReadonlyArray<DiagramView>
   useLikeC4View: (viewId: string) => DiagramView | null
-} => {
+} {
   const $likec4model: Atom<LikeC4Model.Layouted> = computed($atom, (data) => createLikeC4Model(data))
 
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
