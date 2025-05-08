@@ -51,7 +51,7 @@ catalogs:
     clsx: "^2.1.1"
     nanostores: "1.0.1"
     "@nanostores/react": "1.0.0"
-    motion: "^12.9.0"
+    motion: "^12.9.4"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
