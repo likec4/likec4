@@ -33,6 +33,7 @@ const ModelSchema = v.object({
   relations: RecordAny,
   globals: RecordAny,
   views: RecordAny,
+  activities: RecordAny,
   deployments: v.object({
     elements: RecordAny,
     relations: RecordAny,
