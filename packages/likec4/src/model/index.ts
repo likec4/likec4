@@ -8,6 +8,8 @@ export function createLikeC4Model(model: any): LikeC4Model.Layouted {
 }
 
 export {
+  ActivityModel,
+  ActivityStepModel,
   type AnyAux,
   type Aux,
   Connection,
@@ -27,7 +29,12 @@ export {
   hasSameSource,
   hasSameSourceTarget,
   hasSameTarget,
+  type IncomingFilter,
+  isActivityModel,
   isAnyInOut,
+  isDeployedInstance,
+  isDeploymentNode,
+  isElementModel,
   isIncoming,
   isNestedConnection,
   isOutgoing,
@@ -37,6 +44,7 @@ export {
   mergeConnections,
   modelConnection,
   NodeModel,
+  type OutgoingFilter,
   RelationshipModel,
   sortConnectionsByBoundaryHierarchy,
   sortDeepestFirst,
@@ -46,10 +54,15 @@ export {
   ComputedNode,
   ComputedView,
   DiagramNode,
+  FqnExpr,
+  FqnRef,
 } from '@likec4/core'
 
 export type {
   AbstractRelation,
+  Activity,
+  ActivityId,
+  ActivityStep,
   AutoLayoutDirection,
   BBox,
   Color,
