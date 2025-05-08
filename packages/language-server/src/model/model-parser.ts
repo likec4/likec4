@@ -11,7 +11,7 @@ import type { LikeC4Services } from '../module'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
-import { ExpressionV2Parser } from './parser/FqnRefParser'
+import { ExpressionParser } from './parser/FqnRefParser'
 import { GlobalsParser } from './parser/GlobalsParser'
 import { ImportsParser } from './parser/ImportsParser'
 import { ModelParser } from './parser/ModelParser'
@@ -23,7 +23,7 @@ export type ModelParsedListener = () => void
 
 const DocumentParserFromMixins = pipe(
   BaseParser,
-  ExpressionV2Parser,
+  ExpressionParser,
   ImportsParser,
   ModelParser,
   DeploymentModelParser,

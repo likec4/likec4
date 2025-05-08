@@ -7,11 +7,11 @@ import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
-import type { WithExpressionV2 } from './FqnRefParser'
+import type { WithExpression } from './FqnRefParser'
 
 export type WithDeploymentView = ReturnType<typeof DeploymentViewParser>
 
-export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploymentModel>(B: TBase) {
+export function DeploymentViewParser<TBase extends WithExpression & WithDeploymentModel>(B: TBase) {
   return class DeploymentViewParser extends B {
     parseDeploymentView(
       astNode: ast.DeploymentView,
@@ -74,13 +74,13 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
     }
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
-      const exprs = [] as c4.ExpressionV2[]
+      const exprs = [] as c4.Expression[]
       let iterator: ast.Expressions | undefined = astRule.expr
       while (iterator) {
         try {
           const expr = iterator.value
           if (isNonNullish(expr) && this.isValid(expr)) {
-            exprs.unshift(this.parseExpressionV2(expr))
+            exprs.unshift(this.parseExpression(expr))
           }
         } catch (e) {
           logWarnError(e)

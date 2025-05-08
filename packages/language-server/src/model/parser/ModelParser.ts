@@ -29,7 +29,7 @@ import { type ElementStringProperty, type RelationStringProperty } from '../../g
 import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
 import { removeIndent, toSingleLine } from './Base'
-import type { WithExpressionV2 } from './FqnRefParser'
+import type { WithExpression } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
 
@@ -59,7 +59,7 @@ function* streamModel(
   return
 }
 
-export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
+export function ModelParser<TBase extends WithExpression>(B: TBase) {
   return class ModelParser extends B {
     parseModel() {
       const doc = this.doc
@@ -190,6 +190,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
     _resolveRelationSource(node: ast.Relation): FqnRef.ModelRef | FqnRef.ImportRef {
       if (isDefined(node.source)) {
         const source = this.parseFqnRef(node.source)
+        invariant(!FqnRef.isActivityRef(source), 'Relation source must not be an activity')
         invariant(FqnRef.isModelRef(source) || FqnRef.isImportRef(source), 'Relation source must be a model reference')
         return source
       }

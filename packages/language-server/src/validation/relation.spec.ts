@@ -1,8 +1,8 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('relationChecks', () => {
-  it('should not report invalid relations', async ({ expect }) => {
+  it('should not report valid relations', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -23,6 +23,43 @@ describe.concurrent('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
+  it('should not report valid relations with activities', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          component c2 {
+            activity A {}
+          }
+        }
+        component c3 {
+          this -> c2.A
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+  })
+
+  it('should report invalid relation if source is activity', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          activity A {}
+        }
+        component c2 {}
+        c1.A -> c2
+      }
+    `)
+    expect(errors).to.include.members(['Source must not be an activity'])
+  })
+
   it('should report invalid relation of target', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
@@ -33,6 +70,23 @@ describe.concurrent('relationChecks', () => {
         component c1 {
         }
         c1 -> c2
+      }
+    `)
+    expect(errors).to.include.members(['Target not resolved'])
+  })
+
+  it('should report invalid relation of target activity', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+        }
+        component c2 {
+        }
+        c1 -> c2.A
       }
     `)
     expect(errors).to.include.members(['Target not resolved'])

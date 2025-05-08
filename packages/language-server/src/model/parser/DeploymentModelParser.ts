@@ -13,7 +13,7 @@ import { logWarnError } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
 import { removeIndent, toSingleLine } from './Base'
-import type { WithExpressionV2 } from './FqnRefParser'
+import type { WithExpression } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 
@@ -39,7 +39,7 @@ function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
   return
 }
 
-export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) {
+export function DeploymentModelParser<TBase extends WithExpression>(B: TBase) {
   return class DeploymentModelParser extends B {
     parseDeployment() {
       const doc = this.doc

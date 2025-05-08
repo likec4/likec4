@@ -1,19 +1,14 @@
 import type * as c4 from '@likec4/core'
-import { invariant, nonexhaustive } from '@likec4/core'
-import { isBoolean, isDefined, isTruthy } from 'remeda'
-import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
-import { logWarnError } from '../../logger'
-import { elementRef } from '../../utils/elementRef'
-import { parseWhereClause } from '../model-parser-where'
-import { type Base, removeIndent } from './Base'
-import type { WithExpressionV2 } from './FqnRefParser'
+import { nonexhaustive } from '@likec4/core'
+import { ast } from '../../ast'
+import type { WithExpression } from './FqnRefParser'
 
 export type WithPredicates = ReturnType<typeof PredicatesParser>
 
-export function PredicatesParser<TBase extends WithExpressionV2>(B: TBase) {
+export function PredicatesParser<TBase extends WithExpression>(B: TBase) {
   return class PredicatesParser extends B {
     parsePredicate(astNode: ast.ExpressionV2): c4.ModelLayer.Expression {
-      return this.parseExpressionV2(astNode) as c4.ModelLayer.Expression
+      return this.parseExpression(astNode) as c4.ModelLayer.Expression
     }
 
     parseElementPredicate(astNode: ast.FqnExprOrWith): c4.ModelLayer.AnyFqnExpr {

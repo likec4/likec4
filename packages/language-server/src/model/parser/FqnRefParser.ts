@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -8,10 +8,10 @@ import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
 
-export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
+export type WithExpression = ReturnType<typeof ExpressionParser>
 
-export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
-  return class ExpressionV2Parser extends B {
+export function ExpressionParser<TBase extends Base>(B: TBase) {
+  return class ExpressionParser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value?.ref,
@@ -64,7 +64,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       nonexhaustive(refValue)
     }
 
-    parseExpressionV2(astNode: ast.ExpressionV2): c4.ExpressionV2 {
+    parseExpression(astNode: ast.ExpressionV2): c4.Expression {
       if (ast.isFqnExprOrWith(astNode)) {
         return this.parseFqnExprOrWith(astNode)
       }
