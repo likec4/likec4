@@ -67,7 +67,7 @@ export type {
   ActivityStep,
 } from './activity'
 
-export { ExpressionV2, FqnExpr, FqnRef, RelationExpr } from './expression'
+export { Expression, FqnExpr, FqnRef, RelationExpr } from './expression'
 export { ModelLayer } from './expression-model'
 
 export type {

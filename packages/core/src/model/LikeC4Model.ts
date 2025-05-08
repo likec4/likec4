@@ -71,7 +71,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   readonly #allTags = new DefaultMap<
     C4Tag,
-    Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M> | ActivityModel<M>>
+    Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M> | ActivityModel<M> | ActivityStepModel<M>>
   >(() => new Set())
 
   public readonly deployment: LikeC4DeploymentModel<M>
@@ -166,7 +166,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
         const el = this.addRelation(stepModel.relationship)
         steps.push(stepModel)
         for (const tag of stepModel.tags) {
-          this.#allTags.get(tag).add(el)
+          const set = this.#allTags.get(tag)
+          set.add(el)
+          set.add(stepModel)
         }
       }
       this.#activitySteps.set(activity.id, steps)

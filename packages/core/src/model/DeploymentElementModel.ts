@@ -548,6 +548,14 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
     return this.$relationship.line ?? DefaultLineStyle
   }
 
+  get activity(): null {
+    return null
+  }
+
+  get activityStep(): null {
+    return null
+  }
+
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
     for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
@@ -555,6 +563,10 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
       }
     }
     return
+  }
+
+  public isActivityStep(): this is RelationshipModel.IsActivity<M> {
+    return false
   }
 
   public isDeploymentRelation(): this is DeploymentRelationModel<M> {

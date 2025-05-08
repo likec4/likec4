@@ -17,13 +17,13 @@ import { isElementModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
 import { RelationshipModel } from './RelationModel'
 import type { AnyAux } from './types'
+import type { ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ActivitiesIterator<M extends AnyAux> = IteratorLike<ActivityModel<M>>
 
 export class ActivityModel<M extends AnyAux = AnyAux> {
   public readonly id: M['Activity']
   public readonly parent: ElementModel<M>
-  // readonly _literalId: M['Element']
   public readonly hierarchyLevel: number
 
   // readonly imported: null | {
@@ -151,41 +151,17 @@ export class ActivityModel<M extends AnyAux = AnyAux> {
   //   return this.cachedIncoming
   // }
 
-  // /**
-  //  * Iterate over all views that include this element.
-  //  */
-  // public *views(): ViewsIterator<M> {
-  //   for (const view of this.$model.views()) {
-  //     if (view.includesElement(this.id)) {
-  //       yield view
-  //     }
-  //   }
-  //   return
-  // }
-
-  // /**
-  //  * Iterate over all views that scope this element.
-  //  * It is possible that element is not included in the view.
-  //  */
-  // public *scopedViews(): ViewsIterator<M> {
-  //   for (const vm of this.$model.views()) {
-  //     if (vm.isElementView() && vm.$view.viewOf === this.id) {
-  //       yield vm
-  //     }
-  //   }
-  //   return
-  // }
-
-  // /**
-  //  * @returns true if the element is deployed
-  //  */
-  // public isDeployed(): boolean {
-  //   return isTruthy(this.deployments().next().value)
-  // }
-
-  // public deployments(): DeployedInstancesIterator<M> {
-  //   return this.$model.deployment.instancesOf(this)
-  // }
+  /**
+   * Iterate over all views that include this activity.
+   */
+  public *views(): ViewsIterator<M> {
+    for (const view of this.$model.views()) {
+      if (view.includesActivity(this.id)) {
+        yield view
+      }
+    }
+    return
+  }
 }
 
 export class ActivityStepModel<M extends AnyAux = AnyAux> {
@@ -270,6 +246,18 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
     return `${this.activity.id} -> ${FqnRef.toModelFqn(this.$activityStep.target)}`
   }
 
+  get description(): string | null {
+    return this.$activityStep.description ?? null
+  }
+
+  get technology(): string | null {
+    return this.$activityStep.technology ?? null
+  }
+
+  get links(): ReadonlyArray<Link> {
+    return this.$activityStep.links ?? []
+  }
+
   get next(): ActivityStepModel<M> | null {
     if (this.isLastStep) {
       return null
@@ -282,5 +270,17 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
       return null
     }
     return nonNullable(this.activity.steps[this.index - 1], 'Previous activity step not found')
+  }
+
+  /**
+   * Iterate over all views that include this activity step
+   */
+  public *views(): ViewsIterator<M> {
+    for (const view of this.$model.views()) {
+      if (view.includesRelation(this.relationship.id)) {
+        yield view
+      }
+    }
+    return
   }
 }

@@ -8,7 +8,7 @@ import {
   type Link,
   ElementKind,
 } from './element'
-import type { ExpressionV2, FqnExpr } from './expression'
+import type { Expression, FqnExpr } from './expression'
 import type { ModelLayer } from './expression-model'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
@@ -225,12 +225,12 @@ export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
 export type DeploymentViewRulePredicate =
   | {
-    include: ExpressionV2[]
+    include: Expression[]
     exclude?: never
   }
   | {
     include?: never
-    exclude: ExpressionV2[]
+    exclude: Expression[]
   }
 export type DeploymentViewRuleStyle = {
   targets: FqnExpr[]

@@ -20,7 +20,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
 export namespace RelationshipModel {
-  export interface isActivity<M extends AnyAux> extends RelationshipModel<M> {
+  export interface IsActivity<M extends AnyAux> extends RelationshipModel<M> {
     activityStep: ActivityStepModel<M>
     activity: ActivityModel<M>
   }
@@ -119,7 +119,7 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  public isActivityStep(): this is RelationshipModel.isActivity<M> {
+  public isActivityStep(): this is RelationshipModel.IsActivity<M> {
     return this.activityStep !== null
   }
 

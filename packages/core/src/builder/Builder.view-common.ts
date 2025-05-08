@@ -2,7 +2,7 @@ import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
   type AutoLayoutDirection,
-  type ExpressionV2,
+  type Expression,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
@@ -212,7 +212,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
-    let expr = b.$expr(args[0]) as ExpressionV2
+    let expr = b.$expr(args[0]) as Expression
     if (args.length === 2 && args[1].where) {
       const condition = parseWhere(args[1].where)
       expr = {

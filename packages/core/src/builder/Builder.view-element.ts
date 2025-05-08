@@ -1,6 +1,6 @@
 import { isString } from 'remeda'
 import type { IsStringLiteral } from 'type-fest/source/is-literal'
-import { type ExpressionV2 } from '../types/expression'
+import { type Expression } from '../types/expression'
 import { type Fqn } from '../types/scalars'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
@@ -126,15 +126,15 @@ export interface TypedAddViewOfHelper<A extends AnyTypes> {
   }
 }
 // To hook types
-const asTypedExpr = (expr: ExpressionV2): ExpressionV2 => {
-  return expr as ExpressionV2
+const asTypedExpr = (expr: Expression): Expression => {
+  return expr as Expression
 }
 
 export function $expr<Types extends AnyTypes>(
-  expr: ViewPredicate.Expression<Types> | ExpressionV2,
-): ExpressionV2 {
+  expr: ViewPredicate.Expression<Types> | Expression,
+): Expression {
   if (!isString(expr)) {
-    return expr as ExpressionV2
+    return expr as Expression
   }
   if (expr === '*') {
     return asTypedExpr({ wildcard: true })

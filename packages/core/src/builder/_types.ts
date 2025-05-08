@@ -16,7 +16,7 @@ import type {
   SpacingSize,
   TextSize,
 } from '../types'
-import type { ExpressionV2 } from '../types/expression'
+import type { Expression } from '../types/expression'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
@@ -344,7 +344,7 @@ export namespace Types {
     T['ViewId']
   >
 
-  export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
+  export type ToExpression<T> = T extends AnyTypes ? Expression<T['DeploymentFqn'], T['Fqn']> : never
 
   export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
 

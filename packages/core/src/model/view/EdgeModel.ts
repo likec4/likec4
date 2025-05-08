@@ -1,5 +1,3 @@
-import { isNonNullish } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
 import {
   type Color,
   type ComputedDynamicView,
@@ -13,7 +11,6 @@ import {
   extractStep,
   isStepEdgeId,
 } from '../../types'
-import type { ActivityStepModel } from '../ActivityModel'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import type { RelationshipModel } from '../RelationModel'

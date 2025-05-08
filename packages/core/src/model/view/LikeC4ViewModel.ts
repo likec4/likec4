@@ -32,6 +32,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   readonly #includeElements = new Set<M['Element']>()
   readonly #includeDeployments = new Set<M['Deployment']>()
   readonly #includeRelations = new Set<M['RelationId']>()
+  readonly #includeActivities = new Set<M['Activity']>()
   readonly #allTags = new DefaultMap((_key: Tag) => new Set<NodeModel<M, V> | EdgeModel<M, V>>())
 
   constructor(
@@ -65,8 +66,12 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
       for (const tag of edgeModel.tags) {
         this.#allTags.get(tag).add(edgeModel)
       }
-      for (const rel of edge.relations) {
-        this.#includeRelations.add(rel)
+      for (const relId of edge.relations) {
+        this.#includeRelations.add(relId)
+        const rel = this.$model.findRelationship(relId)
+        if (rel?.isActivityStep()) {
+          this.#includeActivities.add(rel.activity.id)
+        }
       }
       this.#edges.set(edge.id, edgeModel)
     }
@@ -205,6 +210,10 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
 
   public includesRelation(relationId: M['RelationId']): boolean {
     return this.#includeRelations.has(relationId)
+  }
+
+  public includesActivity(activityId: M['Activity']): boolean {
+    return this.#includeActivities.has(activityId)
   }
 
   /**
