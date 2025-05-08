@@ -1,4 +1,4 @@
-import { first, isEmpty, last } from 'remeda'
+import { first, isEmpty, last, unique } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import { FqnRef } from '../types'
 import type { IteratorLike } from '../types/_common'
@@ -174,6 +174,8 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
   public readonly source: ActivityModel<M>
   public readonly target: ActivityModel<M> | ElementModel<M>
 
+  public readonly tags: ReadonlyArray<Tag>
+
   /** `
    * Relationship model for the activity step
    * Takes into account the direction of the step
@@ -192,6 +194,12 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
     } else {
       this.target = this.$model.element(FqnRef.toModelFqn($activityStep.target))
     }
+
+    // Inherit tags from activity
+    this.tags = unique([
+      ...this.activity.tags,
+      ...($activityStep.tags ?? []),
+    ])
 
     if ($activityStep.isBackward) {
       this.relationship = new RelationshipModel(
@@ -226,10 +234,6 @@ export class ActivityStepModel<M extends AnyAux = AnyAux> {
     this.isLastStep = last(activity.$activity.steps)?.id === $activityStep.id
     this.index = activity.$activity.steps.findIndex(s => s.id === $activityStep.id)
     invariant(this.index >= 0, 'Activity step not found in activity')
-  }
-
-  get tags(): ReadonlyArray<Tag> {
-    return this.$activityStep.tags ?? []
   }
 
   get title(): string | null {

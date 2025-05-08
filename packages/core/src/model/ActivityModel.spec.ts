@@ -1,4 +1,4 @@
-import { map, prop } from 'remeda'
+import { map, mapToObj, pipe, prop } from 'remeda'
 import { describe, it } from 'vitest'
 import { Builder } from '../builder'
 
@@ -8,6 +8,7 @@ describe('LikeC4 ActivityModel', () => {
       elements: {
         el: {},
       },
+      tags: ['t1', 't2'],
     })
     .model(({ el, activity }, _) =>
       _(
@@ -62,5 +63,50 @@ describe('LikeC4 ActivityModel', () => {
     expect(map([...m.incoming('infra')], o => o.source.id)).toEqual([
       'cloud.backend',
     ])
+  })
+
+  it('should inherit tags', ({ expect }) => {
+    const m = b
+      .clone()
+      .model(({ activity, step }, _) =>
+        _(
+          activity('customer#A', {
+            tags: ['t1'],
+            steps: [
+              '-> cloud.ui#B',
+            ],
+          }),
+          activity('cloud.ui#B', {
+            steps: [
+              step('-> infra.db', {
+                tags: ['t1'],
+              }),
+              step('-> cloud.backend', {
+                tags: ['t2'],
+              }),
+            ],
+          }),
+          activity('cloud.backend#C', {
+            tags: ['t1'],
+            steps: [
+              step('-> infra.db', {
+                tags: ['t2'],
+              }),
+            ],
+          }),
+        )
+      )
+      .toLikeC4Model()
+    expect(
+      pipe(
+        [...m.relationships()],
+        mapToObj(r => [r.expression, r.tags]),
+      ),
+    ).toEqual({
+      'customer#A -> cloud.ui#B': ['t1'],
+      'cloud.ui#B -> infra.db': ['t1'],
+      'cloud.ui#B -> cloud.backend': ['t2'],
+      'cloud.backend#C -> infra.db': ['t1', 't2'],
+    })
   })
 })

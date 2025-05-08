@@ -88,6 +88,9 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   }
 
   get tags(): ReadonlyArray<Tag> {
+    if (this.activityStep) {
+      return this.activityStep.tags
+    }
     return this.$relationship.tags ?? []
   }
 
