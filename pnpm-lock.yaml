@@ -312,7 +312,7 @@ importers:
         version: 5.8.3
       vite:
         specifier: catalog:vite
-        version: 6.3.4(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+        version: 6.3.3(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vitest:
         specifier: catalog:vitest
         version: 3.1.2(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.2)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
@@ -1106,7 +1106,7 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       playwright:
-        specifier: ^1.51.1
+        specifier: ^1.52.0
         version: 1.52.0
       rollup:
         specifier: catalog:vite
