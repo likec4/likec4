@@ -23,6 +23,9 @@ jobs:
   checks:
     uses: ./.github/workflows/checks.yaml
     secrets: inherit
+    concurrency:
+      group: ${{ github.workflow }}-checks-${{ github.ref }}
+      cancel-in-progress: true
 
   release:
     name: 📦 release
