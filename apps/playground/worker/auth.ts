@@ -48,7 +48,7 @@ export const cookieSessionMiddleware = factory.createMiddleware(async (c, next) 
     encryptionKey = 'VFRAdSem81cuALVeOMC4PJyLXf30tckV'
   }
 
-  const m = sessionMiddleware({
+  return await sessionMiddleware({
     store,
     sessionCookieName: 'lkc4.plgrnd',
     encryptionKey,
@@ -58,14 +58,26 @@ export const cookieSessionMiddleware = factory.createMiddleware(async (c, next) 
       sameSite: 'Lax',
       path: '/',
       httpOnly: true,
+      secure: !import.meta.env.DEV,
     },
-  })
+  })(c, next)
+})
 
-  return m(c, next)
+const githubAuthMiddleware = factory.createMiddleware(async (c, next) => {
+  // const [client_id, client_secret] = await Promise.all([
+  //   c.env.OAUTH_GITHUB_ID.get(),
+  //   c.env.OAUTH_GITHUB_SECRET.get(),
+  // ])
+  return await githubAuth({
+    client_id: c.env.OAUTH_GITHUB_ID,
+    client_secret: c.env.OAUTH_GITHUB_SECRET,
+    oauthApp: true,
+    scope: ['user:email'],
+  })(c, next)
 })
 
 export const auth = factory.createApp()
-  .use('/github', githubAuth({}))
+  .use('/github', githubAuthMiddleware)
   .get('/github', c => {
     const session = c.get('session')
     const user = c.get('user-github')
@@ -89,7 +101,18 @@ export const auth = factory.createApp()
     return c.redirect('/redirect-after-auth')
   })
   .get('/me', c => {
-    return c.json({ session: readUserSession(c) })
+    const session = readUserSession(c)
+    return c.json({
+      // Exclude email from response
+      session: session
+        ? {
+          userId: session.userId,
+          login: session.login,
+          name: session.name,
+          avatarUrl: session.avatarUrl,
+        }
+        : null,
+    })
   })
   .get('/forget-me', c => {
     c.get('session').deleteSession()
