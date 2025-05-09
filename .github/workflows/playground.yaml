@@ -48,9 +48,9 @@ jobs:
     if: ${{ github.repository_owner == 'likec4' }}
     environment:
       name: "playground-${{ inputs.environment }}"
-      url: "${{ inputs.env == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
+      url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     outputs:
-      url: "${{ inputs.env == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
+      url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     steps:
       - uses: actions/checkout@v4
 
@@ -68,6 +68,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: "${{ inputs.env == 'production' && 'deploy -c dist/playground/wrangler.json' || 'versions upload -c dist/playground/wrangler.json' }}"
+          command: "${{ inputs.environment == 'production' && 'deploy -c dist/playground/wrangler.json' || 'versions upload -c dist/playground/wrangler.json' }}"
           workingDirectory: apps/playground
           packageManager: pnpm
