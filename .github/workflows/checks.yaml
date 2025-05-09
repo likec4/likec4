@@ -13,7 +13,7 @@ jobs:
   check-types:
     name: ʦ typescript
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +29,7 @@ jobs:
   check-build:
     name: 🛠️ build
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +42,7 @@ jobs:
   check-tests:
     name: 🔬 tests
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -60,7 +60,7 @@ jobs:
   check-docs-astro:
     name: 📖 docs
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
@@ -82,7 +82,7 @@ jobs:
   check-e2e-tests:
     name: 🔬 e2e tests
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
@@ -137,7 +137,7 @@ jobs:
   check-e2e-types:
     name: 🔬 e2e types
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
