@@ -9,6 +9,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: production
   FORCE_COLOR: true
   DO_NOT_TRACK: "1"
 
