@@ -1,10 +1,12 @@
 import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
-import { type AnyEventObject, type NonReducibleUnknown, fromCallback } from 'xstate'
+import { type AnyEventObject, type CallbackActorLogic, type NonReducibleUnknown, fromCallback } from 'xstate'
 
 export type HotKeyEvent = { type: 'key.esc' | `key.arrow.${'left' | 'right'}` }
 
-export const hotkeyActorLogic = fromCallback<AnyEventObject, NonReducibleUnknown, HotKeyEvent>(({ sendBack }: {
+export interface HotkeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, HotKeyEvent> {}
+
+export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
 }) => {
   const escHandler = getHotkeyHandler([

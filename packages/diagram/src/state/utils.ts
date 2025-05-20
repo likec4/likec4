@@ -1,4 +1,4 @@
-import type { BBox, XYPoint } from '@likec4/core'
+import type { BBox, DiagramEdge, DiagramNode, XYPoint } from '@likec4/core/types'
 import type { ActorSystem } from 'xstate'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
 import type { Context } from './diagram-machine'
@@ -15,11 +15,11 @@ export function typedSystem(system: ActorSystem<any>) {
   }
 }
 
-export function findDiagramNode(ctx: Context, xynodeId: string) {
+export function findDiagramNode(ctx: Context, xynodeId: string): DiagramNode | null {
   return ctx.view.nodes.find(n => n.id === xynodeId) ?? null
 }
 
-export function findDiagramEdge(ctx: Context, xyedgeId: string) {
+export function findDiagramEdge(ctx: Context, xyedgeId: string): DiagramEdge | null {
   return ctx.view.edges.find(e => e.id === xyedgeId) ?? null
 }
 

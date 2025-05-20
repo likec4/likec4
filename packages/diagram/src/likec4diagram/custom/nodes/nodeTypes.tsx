@@ -4,7 +4,6 @@ import {
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
-  customNode,
   DefaultHandles,
   ElementDetailsButton,
   ElementNodeContainer,
@@ -15,6 +14,7 @@ import { IfEnabled, IfNotEnabled, useEnabledFeature } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
+import { customDiagramNode } from './customNode'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
@@ -36,9 +36,9 @@ const ElementDetailsButtonWithHandler = ({ fqn, ...props }: NodeProps<Types.Node
   )
 }
 
-export const ElementNode = customNode<Types.ElementNodeData>((props) => (
+export const ElementNode = customDiagramNode<'element'>(({ nodeProps: props }) => (
   <ElementNodeContainer nodeProps={props}>
-    <ElementShape {...props} isMultiple={props.data.isMultiple} />
+    <ElementShape {...props} />
     <ElementTitle {...props} />
     <ElementActions {...props} />
     <ElementDetailsButtonWithHandler
@@ -50,10 +50,11 @@ export const ElementNode = customNode<Types.ElementNodeData>((props) => (
     <DefaultHandles />
   </ElementNodeContainer>
 ))
+ElementNode.displayName = 'ElementNode'
 
-export const DeploymentNode = customNode<Types.DeploymentElementNodeData>((props) => (
+export const DeploymentNode = customDiagramNode<'deployment'>(({ nodeProps: props }) => (
   <ElementNodeContainer nodeProps={props}>
-    <ElementShape {...props} isMultiple={props.data.isMultiple} />
+    <ElementShape {...props} />
     <ElementTitle {...props} />
     <DeploymentElementActions {...props} />
     {!!props.data.modelFqn && (
@@ -67,9 +68,11 @@ export const DeploymentNode = customNode<Types.DeploymentElementNodeData>((props
     <DefaultHandles />
   </ElementNodeContainer>
 ))
+DeploymentNode.displayName = 'DeploymentNode'
 
-export const CompoundElementNode = customNode<Types.CompoundElementNodeData>((props) => {
+export const CompoundElementNode = customDiagramNode<'compound-element'>(({ nodeProps: props }) => {
   const diagram = useDiagram()
+
   return (
     <CompoundNodeContainer nodeProps={props}>
       <CompoundTitle {...props} />
@@ -89,8 +92,9 @@ export const CompoundElementNode = customNode<Types.CompoundElementNodeData>((pr
     </CompoundNodeContainer>
   )
 })
+CompoundElementNode.displayName = 'CompoundElementNode'
 
-export const CompoundDeploymentNode = customNode<Types.CompoundDeploymentNodeData>((props) => (
+export const CompoundDeploymentNode = customDiagramNode<'compound-deployment'>(({ nodeProps: props }) => (
   <CompoundNodeContainer nodeProps={props}>
     <CompoundTitle {...props} />
     <CompoundActions {...props} />
@@ -100,10 +104,12 @@ export const CompoundDeploymentNode = customNode<Types.CompoundDeploymentNodeDat
     <DefaultHandles />
   </CompoundNodeContainer>
 ))
+CompoundDeploymentNode.displayName = 'CompoundDeploymentNode'
 
-export const ViewGroupNode = customNode<Types.ViewGroupNodeData>((props) => (
+export const ViewGroupNode = customDiagramNode<'view-group'>(({ nodeProps: props }) => (
   <CompoundNodeContainer nodeProps={props}>
     <CompoundTitle {...props} />
     <DefaultHandles />
   </CompoundNodeContainer>
 ))
+ViewGroupNode.displayName = 'ViewGroupNode'

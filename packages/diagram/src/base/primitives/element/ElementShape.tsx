@@ -1,4 +1,4 @@
-import { type DiagramNode, type ElementShape, nonexhaustive } from '@likec4/core'
+import { type ElementShape, type ElementStyle, nonexhaustive } from '@likec4/core'
 import clsx from 'clsx'
 import { toDomPrecision } from '../../../utils/xyflow'
 import * as css from './ElementShape.css'
@@ -157,19 +157,19 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
   }
 }
 
-type Data = Pick<
-  DiagramNode,
-  | 'shape'
-  | 'width'
-  | 'height'
->
+type Data = {
+  shape: ElementShape
+  width: number
+  height: number
+  style?: ElementStyle
+}
 
 // type ElementShapePrimitiveProps = NodeProps<Data> & {
 type ElementShapePrimitiveProps = {
   data: Data
   width?: number
   height?: number
-  isMultiple?: boolean | undefined
+  // isMultiple?: boolean | undefined
   /**
    * @default true
    */
@@ -177,10 +177,11 @@ type ElementShapePrimitiveProps = {
 }
 
 export function ElementShape(
-  { data, width, height, isMultiple = false, withSelectedIndicator = true }: ElementShapePrimitiveProps,
+  { data, width, height, withSelectedIndicator = true }: ElementShapePrimitiveProps,
 ) {
   let w = !!width && width > 10 ? width : data.width
   let h = !!height && height > 10 ? height : data.height
+  const isMultiple = data.style?.multiple ?? false
   return (
     <>
       {isMultiple && (
