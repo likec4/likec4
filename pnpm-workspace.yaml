@@ -12,6 +12,7 @@ catalog:
   unbuild: "^3.5.0"
   turbo: "^2.5.2"
   tsx: "~4.19.3"
+  zx: "^8.5.4"
 
 catalogs:
   utils:
@@ -65,11 +66,11 @@ catalogs:
     "@mantine/colors-generator": "7.17.5"
   vite:
     "@vitejs/plugin-react": "^4.4.1"
-    vite: "^6.3.3"
-    vite-plugin-dts: "^4.5.3"
+    vite: "^6.3.5"
+    vite-plugin-dts: "^4.5.4"
     vite-plugin-node-polyfills: "^0.23.0"
     vite-tsconfig-paths: "^5.1.4"
-    rollup: "^4.40.0"
+    rollup: "^4.41.0"
   vitest:
     vitest: "^3.1.2"
     "@vitest/ui": "^3.1.2"
