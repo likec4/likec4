@@ -30,7 +30,8 @@
         "@likec4/core#build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "panda.buildinfo.json"
       ],
       "outputLogs": "new-only"
     },

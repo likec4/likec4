@@ -14,6 +14,7 @@
     "dist",
     "bundle",
     "src",
+    "panda.buildinfo.json",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
   ],
@@ -36,8 +37,10 @@
         "default": "./bundle/index.js"
       }
     },
+    "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json",
+    "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
   "packageManager": "pnpm@10.9.0",
@@ -45,7 +48,7 @@
     "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
-    "build:bundle": "vite build -c vite-bundle.config.ts",
+    "build:bundle": "vite build -m bundle",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate"
