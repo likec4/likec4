@@ -67,7 +67,7 @@ specification {
 
 Custom colors could be defined to extend built in themes. Being defined in specification they could be used later along with the theme colors.
 
-Note: Only a base color with a 3-character hex code is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
+Note: Only a base color with a 3 or 6-character hex code is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
 
 ```likec4
 specification {
@@ -81,16 +81,3 @@ specification {
   }
 }
 ``` 
-
-{/*
-
-#### Color
-Any color defined in [styling](./styling).
-
-#### Line
-Valid options for `line` are: `solid`, `dashed`, `dotted`.
-
-#### Arrowhead / Arrowtail
-Valid options for `head` and `tail` are: `normal`, `onormal`, `diamond`, `odiamond`, `crow`, `vee`, `open`, `none`.
-Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.
- */}
