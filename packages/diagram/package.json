@@ -37,6 +37,14 @@
         "default": "./bundle/index.js"
       }
     },
+    "./primitives": {
+      "sources": "./src/base/primitives/index.ts",
+      "default": {
+        "types": "./dist/base/primitives/index.d.ts",
+        "import": "./dist/base/primitives/index.js",
+        "default": "./dist/base/primitives/index.js"
+      }
+    },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json",
