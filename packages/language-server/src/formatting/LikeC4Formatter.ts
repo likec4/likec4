@@ -1,8 +1,16 @@
-import { type AstNode, type CompositeCstNode, GrammarUtils } from 'langium'
-import { type NodeFormatter, AbstractFormatter, Formatting } from 'langium/lsp'
+import { nonexhaustive } from '@likec4/core'
+import { type AstNode, type CompositeCstNode, type LangiumDocument, GrammarUtils } from 'langium'
+import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } from 'langium/lsp'
 import { filter, isTruthy } from 'remeda'
+import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
+import type { LikeC4Services } from '../module'
 import * as utils from './utils'
+
+type QuoteStyle = 'single' | 'double' | 'ignore' | 'auto'
+interface LikeC4FormatterOptions {
+  quoteStyle: QuoteStyle
+}
 
 const FormattingOptions = {
   newLine: Formatting.newLine({ allowMore: true }),
@@ -12,11 +20,43 @@ const FormattingOptions = {
   noIndent: Formatting.noIndent(),
 }
 type Predicate<T extends AstNode> = (x: unknown) => x is T
+type ExtendedFormattingCommandType = 'normalizeQuotes'
+interface ExtendedFormattingCommand {
+  type: ExtendedFormattingCommandType
+  region: FormattingRegion
+}
 
 export class LikeC4Formatter extends AbstractFormatter {
+  protected options: LikeC4FormatterOptions = {
+    quoteStyle: 'auto',
+  }
+  extendedFormattingCommands: ExtendedFormattingCommand[] = []
+
+  constructor(services: LikeC4Services) {
+    super()
+
+    services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate(update =>
+      this.onConfigurationUpdate(update.configuration.formatting)
+    )
+  }
+
+  protected override doDocumentFormat(
+    document: LangiumDocument,
+    options: LSFormattingOptions,
+    range?: Range,
+  ): TextEdit[] {
+    this.extendedFormattingCommands = []
+    const edits = super.doDocumentFormat(document, options, range)
+
+    this.doExtendedFormatting(edits)
+
+    return edits
+  }
+
   protected format(node: AstNode): void {
     this.removeIndentFromTopLevelStatements(node)
     this.indentContentInBraces(node)
+    this.normalizeQuotes(node)
 
     // Specification
     this.formatSpecificationRule(node)
@@ -568,5 +608,85 @@ export class LikeC4Formatter extends AbstractFormatter {
     format && formatter && format(node as T, formatter)
 
     return formatter
+  }
+
+  private doExtendedFormatting(edits: TextEdit[]): void {
+    const quotesNormalizer = this.quotesNormalizerFactory(this.extendedFormattingCommands)
+
+    for (let command of this.extendedFormattingCommands) {
+      switch (command.type) {
+        case 'normalizeQuotes':
+          quotesNormalizer(command, edits)
+          break
+
+        default:
+          nonexhaustive(command.type)
+      }
+    }
+  }
+
+  protected normalizeQuotes(node: AstNode) {
+    if (this.options.quoteStyle === 'ignore') {
+      return
+    }
+
+    let region = null
+    region = region ?? this.on(node, ast.isStringProperty)
+      ?.property('value')
+    region = region ?? this.on(node, ast.isElement)
+      ?.properties('props')
+    region = region ?? this.on(node, ast.isImportsFromPoject)
+      ?.properties('project')
+    region = region ?? this.on(node, ast.isRelation)
+      ?.properties('title', 'technology')
+    region = region ?? this.on(node, ast.isViewRuleGroup)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDynamicViewStep)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeploymentNode)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeployedInstance)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeploymentRelation)
+      ?.properties('title', 'technology')
+    region = region ?? this.on(node, ast.isLinkProperty)
+      ?.properties('title')
+
+    if (region) {
+      this.extendedFormattingCommands.push({ type: 'normalizeQuotes', region })
+    }
+  }
+
+  private quotesNormalizerFactory(commands: ExtendedFormattingCommand[]) {
+    const quoteStyle = this.options.quoteStyle != 'auto'
+      ? this.options.quoteStyle
+      : this.getAutoQuoteStyle(commands)
+
+    return (command: ExtendedFormattingCommand, edits: TextEdit[]) => {
+      const quotesToReplace = quoteStyle === 'single' ? '"' : '\''
+      const quotesToInsert = quoteStyle === 'single' ? '\'' : '"'
+
+      const newEdits = command.region.nodes.map(node => ({
+        range: node.range,
+        newText: node.text.replaceAll(quotesToReplace, quotesToInsert),
+      }))
+
+      edits.push(...newEdits)
+    }
+  }
+
+  private getAutoQuoteStyle(commands: ExtendedFormattingCommand[]): QuoteStyle {
+    const nodes = commands.flatMap(x => x.region.nodes)
+    const doubleQuotesCount = nodes.filter(x => x.text[0] == '"').length
+    return doubleQuotesCount * 2 >= nodes.length ? 'double' : 'single'
+  }
+
+  private onConfigurationUpdate(options: LikeC4FormatterOptions) {
+    this.options = {
+      ...this.options,
+      ...options ?? {
+        quoteStyle: 'auto',
+      },
+    }
   }
 }

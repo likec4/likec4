@@ -1679,6 +1679,42 @@ model {
         ),
     )
 
+    it(
+      'normalize quotes',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+  model {
+    component user "some title" "description"
+    component user2 {
+      description "some"
+    }
+  }
+  views {
+    view index {
+      include *
+    }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+          "
+          model {
+            component user 'some title' 'description'
+            component user2 {
+              description 'some'
+            }
+          }
+          views {
+            view index {
+              include *
+            }
+          }"
+        `,
+        ),
+    )
+
     it('is idempotent', async ({ expect }) => {
       const source = `
   specification {
