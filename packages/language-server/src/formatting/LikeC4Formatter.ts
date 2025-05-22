@@ -58,6 +58,9 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.indentContentInBraces(node)
     this.normalizeQuotes(node)
 
+    // Imports
+    this.formatImports(node)
+
     // Specification
     this.formatSpecificationRule(node)
 
@@ -66,6 +69,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     // Models
     this.formatElementDeclaration(node)
+    this.formatExtendElement(node)
     this.formatRelation(node)
     this.formatMetadataProperty(node)
 
@@ -73,6 +77,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatDeploymentNodeDeclaration(node)
     this.formatDeployedInstance(node)
     this.formatDeploymentRelation(node)
+    this.formatExtendDeployment(node)
 
     // Views
     this.formatView(node)
@@ -120,6 +125,12 @@ export class LikeC4Formatter extends AbstractFormatter {
         n.tags,
       ], isTruthy)).prepend(FormattingOptions.oneSpace)
       f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatExtendDeployment(node: AstNode) {
+    this.on(node, ast.isExtendDeployment, (n, f) => {
+      f.keywords('extend').append(FormattingOptions.oneSpace)
     })
   }
 
@@ -199,6 +210,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isDeploymentNodeBody(node)
       || ast.isDeploymentRelationBody(node)
       || ast.isDeployedInstanceBody(node)
+      || ast.isExtendDeploymentBody(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const openBrace = formatter.keywords('{')
@@ -251,6 +263,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isRelationStringProperty(node)
       || ast.isViewStringProperty(node)
       || ast.isNotationProperty(node)
+      || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
       || ast.isSpecificationRelationshipStringProperty(node)
       || ast.isColorProperty(node)
@@ -272,6 +285,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'description',
         'technology',
         'notation',
+        'notes',
         'color',
         'line',
         'head',
@@ -361,6 +375,12 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
   }
 
+  protected formatExtendElement(node: AstNode) {
+    this.on(node, ast.isExtendElement, (n, f) => {
+      f.keywords('extend').append(FormattingOptions.oneSpace)
+    })
+  }
+
   protected formatGlobals(node: AstNode) {
     this.on(node, ast.isGlobalStyle, (n, f) => {
       f.keyword('style').append(FormattingOptions.oneSpace)
@@ -377,6 +397,18 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     this.on(node, ast.isGlobalDynamicPredicateGroup, (n, f) => {
       f.keyword('dynamicPredicateGroup').append(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatImports(node: AstNode) {
+    this.on(node, ast.isImportsFromPoject, (n, f) => {
+      f.keyword('import').append(FormattingOptions.oneSpace)
+      f.keywords('{', '}', 'from').surround(FormattingOptions.oneSpace)
+    })
+    this.on(node, ast.isImported, (n, f) => {
+      f.keywords(',')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
     })
   }
 

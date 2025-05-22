@@ -28,6 +28,9 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     if (isInitialized) return
     isInitialized = true
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      services.shared.workspace.ConfigurationProvider.updateConfiguration({
+        settings: { likec4: { formatting: { quoteStyle: 'single' } } },
+      })
       services.shared.workspace.WorkspaceManager.initialize({
         capabilities: {},
         processId: null,
