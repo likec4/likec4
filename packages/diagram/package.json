@@ -59,7 +59,7 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
     "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",

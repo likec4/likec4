@@ -212,5 +212,5 @@
     "wireit": "catalog:",
     "yargs": "17.7.2"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }
