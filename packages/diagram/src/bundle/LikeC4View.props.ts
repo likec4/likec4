@@ -1,6 +1,6 @@
 import type { WhereOperator } from '@likec4/core'
 import type { CSSProperties } from 'react'
-import type { ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
+import type { CustomNodes, ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
 
 export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   /**
@@ -147,6 +147,11 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   /** Function to generate nonce attribute added to all generated `<style />` tags */
   styleNonce?: string | (() => string) | undefined
+
+  /**
+   * Override node renderers
+   */
+  customNodes?: CustomNodes | undefined
 
   /**
    * Render custom icon for a node

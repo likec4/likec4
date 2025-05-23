@@ -1,29 +1,32 @@
-import { type Fqn, type NodeId } from '@likec4/core'
+import { type NodeId } from '@likec4/core'
 import type { NodeProps } from '../../../base'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
+  customNode,
   DefaultHandles,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTitle,
 } from '../../../base/primitives'
-import { IfEnabled, IfNotEnabled, useEnabledFeature } from '../../../context'
+import { IfEnabled, IfNotReadOnly, useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
-import { customDiagramNode } from './customNode'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
-const ElementDetailsButtonWithHandler = ({ fqn, ...props }: NodeProps<Types.NodeData> & { fqn: Fqn }) => {
-  const { enableElementDetails } = useEnabledFeature('ElementDetails')
+export function ElementDetailsButtonWithHandler(
+  props: NodeProps<Types.ElementNodeData | Types.DeploymentElementNodeData>,
+) {
+  const { enableElementDetails } = useEnabledFeatures()
   const diagram = useDiagram()
+  const fqn = props.data.modelFqn
 
-  if (!enableElementDetails) return null
+  if (!enableElementDetails || !fqn) return null
 
   return (
     <ElementDetailsButton
@@ -31,46 +34,39 @@ const ElementDetailsButtonWithHandler = ({ fqn, ...props }: NodeProps<Types.Node
       onClick={e => {
         e.stopPropagation()
         diagram.openElementDetails(fqn, props.id as NodeId)
-      }}
-    />
+      }} />
   )
 }
 
-export const ElementNode = customDiagramNode<'element'>(({ nodeProps: props }) => (
+export const ElementNode = customNode<Types.ElementNodeData, 'element'>((props) => (
   <ElementNodeContainer nodeProps={props}>
     <ElementShape {...props} />
     <ElementTitle {...props} />
     <ElementActions {...props} />
-    <ElementDetailsButtonWithHandler
-      fqn={props.data.modelFqn}
-      {...props} />
-    <IfNotEnabled feature="ReadOnly">
+    <ElementDetailsButtonWithHandler {...props} />
+    <IfNotReadOnly>
       <ElementToolbar {...props} />
-    </IfNotEnabled>
+    </IfNotReadOnly>
     <DefaultHandles />
   </ElementNodeContainer>
 ))
 ElementNode.displayName = 'ElementNode'
 
-export const DeploymentNode = customDiagramNode<'deployment'>(({ nodeProps: props }) => (
+export const DeploymentNode = customNode<Types.DeploymentElementNodeData, 'deployment'>((props) => (
   <ElementNodeContainer nodeProps={props}>
     <ElementShape {...props} />
     <ElementTitle {...props} />
     <DeploymentElementActions {...props} />
-    {!!props.data.modelFqn && (
-      <ElementDetailsButtonWithHandler
-        fqn={props.data.modelFqn}
-        {...props} />
-    )}
-    <IfNotEnabled feature="ReadOnly">
+    <ElementDetailsButtonWithHandler {...props} />
+    <IfNotReadOnly>
       <DeploymentElementToolbar {...props} />
-    </IfNotEnabled>
+    </IfNotReadOnly>
     <DefaultHandles />
   </ElementNodeContainer>
 ))
 DeploymentNode.displayName = 'DeploymentNode'
 
-export const CompoundElementNode = customDiagramNode<'compound-element'>(({ nodeProps: props }) => {
+export const CompoundElementNode = customNode<Types.CompoundElementNodeData, 'compound-element'>((props) => {
   const diagram = useDiagram()
 
   return (
@@ -85,28 +81,28 @@ export const CompoundElementNode = customDiagramNode<'compound-element'>(({ node
             diagram.openElementDetails(props.data.modelFqn, props.id as NodeId)
           }} />
       </IfEnabled>
-      <IfNotEnabled feature="ReadOnly">
+      <IfNotReadOnly>
         <CompoundElementToolbar {...props} />
-      </IfNotEnabled>
+      </IfNotReadOnly>
       <DefaultHandles />
     </CompoundNodeContainer>
   )
 })
 CompoundElementNode.displayName = 'CompoundElementNode'
 
-export const CompoundDeploymentNode = customDiagramNode<'compound-deployment'>(({ nodeProps: props }) => (
+export const CompoundDeploymentNode = customNode<Types.CompoundDeploymentNodeData, 'compound-deployment'>((props) => (
   <CompoundNodeContainer nodeProps={props}>
     <CompoundTitle {...props} />
     <CompoundActions {...props} />
-    <IfNotEnabled feature="ReadOnly">
+    <IfNotReadOnly>
       <CompoundDeploymentToolbar {...props} />
-    </IfNotEnabled>
+    </IfNotReadOnly>
     <DefaultHandles />
   </CompoundNodeContainer>
 ))
 CompoundDeploymentNode.displayName = 'CompoundDeploymentNode'
 
-export const ViewGroupNode = customDiagramNode<'view-group'>(({ nodeProps: props }) => (
+export const ViewGroupNode = customNode<Types.ViewGroupNodeData, 'view-group'>((props) => (
   <CompoundNodeContainer nodeProps={props}>
     <CompoundTitle {...props} />
     <DefaultHandles />

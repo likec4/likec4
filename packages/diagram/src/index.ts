@@ -12,12 +12,20 @@ export {
 
 export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
+export {
+  useCurrentViewId,
+  useLikeC4ViewModel,
+} from './hooks/useCurrentViewId'
+export {
+  useDiagram,
+  useDiagramContext,
+} from './hooks/useDiagram'
 export { useSetState } from './hooks/useSetState'
 export { useUpdateEffect } from './hooks/useUpdateEffect'
-// export { vars, xyvars } from './theme-vars'
 
 export type {
   ChangeEvent,
+  CustomNodes,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   LikeC4ColorScheme,

@@ -2,13 +2,13 @@ import type { NodeId } from '@likec4/core'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
-import { useEnabledFeature } from '../../../context'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
-  const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeature('RelationshipBrowser', 'NavigateTo')
+  const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
 
   const buttons = [] as ElementActionButtons.Item[]
@@ -44,7 +44,7 @@ export const ElementActions = (props: ElementActionsProps) => {
 
 type DeploymentElementActionsProps = NodeProps<Types.DeploymentElementNodeData>
 export const DeploymentElementActions = (props: DeploymentElementActionsProps) => {
-  const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeature('NavigateTo', 'RelationshipBrowser')
+  const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
 
   const buttons = [] as ElementActionButtons.Item[]

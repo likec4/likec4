@@ -11,8 +11,9 @@ import type {
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
+import type { CustomNodes } from './likec4diagram/custom/types'
 
-export type { WhereOperator }
+export type { CustomNodes, WhereOperator }
 
 export type DiagramNodeWithNavigate<ID = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ID
@@ -231,6 +232,11 @@ export interface LikeC4DiagramProperties {
    * Override ReactFlow props
    */
   reactFlowProps?: OverrideReactFlowProps | undefined
+
+  /**
+   * Override node renderers
+   */
+  customNodes?: CustomNodes | undefined
 }
 
 export type OpenSourceParams =

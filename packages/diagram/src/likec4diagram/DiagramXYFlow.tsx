@@ -1,6 +1,7 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
+import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
@@ -10,7 +11,7 @@ import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
-import { edgeTypes, nodeTypes } from './custom'
+import { edgeTypes, nodeTypes as defaultNodeTypes } from './custom'
 import { DiagramUI } from './DiagramUI'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -50,6 +51,7 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
     | 'nodesDraggable'
     | 'nodesSelectable'
     | 'reactFlowProps'
+    | 'customNodes'
   >
 >
 
@@ -57,7 +59,8 @@ const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =
   a.nodesDraggable === b.nodesDraggable &&
   a.nodesSelectable === b.nodesSelectable &&
   deepEqual(a.background, b.background) &&
-  deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {})
+  deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {}) &&
+  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {})
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   background = 'dots',
@@ -65,6 +68,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   nodesSelectable = false,
   reactFlowProps = {},
   children,
+  customNodes = {},
 }) => {
   const diagram = useDiagram()
   const {
@@ -118,6 +122,19 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
       diagram.send({ type: 'xyflow.resized' })
     })
 
+  const nodeTypes = useCustomCompareMemo(
+    () => {
+      return {
+        element: customNodes.element ?? defaultNodeTypes.element,
+        deployment: customNodes.deployment ?? defaultNodeTypes.deployment,
+        'compound-element': customNodes.compoundElement ?? defaultNodeTypes['compound-element'],
+        'compound-deployment': customNodes.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
+        'view-group': customNodes.viewGroup ?? defaultNodeTypes['view-group'],
+      } satisfies { [key in Types.Node['type']]: any }
+    },
+    [customNodes],
+    shallowEqual,
+  )
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
       nodes={nodes}

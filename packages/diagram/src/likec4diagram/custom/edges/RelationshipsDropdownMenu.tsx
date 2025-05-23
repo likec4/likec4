@@ -28,7 +28,7 @@ import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, memo, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../../components/Link'
-import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
+import { IfEnabled, useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useLikeC4Model } from '../../../likec4model'
@@ -188,7 +188,7 @@ const Relationship = forwardRef<
   ...props
 }, ref) => {
   const diagram = useDiagram()
-  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const { enableNavigateTo } = useEnabledFeatures()
   const { onOpenSource } = useDiagramEventHandlers()
   const viewId = diagram.currentView.id
 

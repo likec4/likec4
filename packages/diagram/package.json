@@ -45,6 +45,14 @@
         "default": "./dist/base/primitives/index.js"
       }
     },
+    "./custom": {
+      "sources": "./src/custom/index.ts",
+      "default": {
+        "types": "./dist/custom/index.d.ts",
+        "import": "./dist/custom/index.js",
+        "default": "./dist/custom/index.js"
+      }
+    },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json",

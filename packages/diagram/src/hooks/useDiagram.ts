@@ -29,6 +29,10 @@ import { useDiagramActorRef } from './safeContext'
 
 export { useDiagramActorRef }
 
+/**
+ * Diagram API
+ * Mostly for internal use
+ */
 export function useDiagram() {
   const actor = useDiagramActorRef()
   return useMemo(() => ({
@@ -166,6 +170,9 @@ export function useDiagramSyncLayoutState<T = unknown>(
   return useXstateSelector(syncLayoutActorRef, useCallbackRef(selector), compare)
 }
 
+/**
+ * Read diagram context
+ */
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,

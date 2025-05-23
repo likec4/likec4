@@ -16,15 +16,15 @@ import * as styles from './ElementNodeContainer.css'
 export type RequiredData = {
   color: Color
   shape: ElementShape
-  style: ElementStyle
+  style?: ElementStyle
 }
 
 export type ElementNodeContainerProps =
   & {
     nodeProps: NodeProps<RequiredData>
     children?: ReactNode | undefined
-    className?: string
-    style?: CSSProperties
+    className?: string | undefined
+    style?: CSSProperties | undefined
     [key: `data-${string}`]: string | undefined
   }
   & LayoutProps
@@ -82,7 +82,7 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
     size,
     padding,
     textSize,
-  } = nodeSizes(data.style)
+  } = nodeSizes(data.style ?? {})
 
   return (
     <m.div
@@ -94,6 +94,7 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
         styles.container,
         'group',
         'likec4-element-node',
+        className,
       )}
       initial={false}
       {...selectable && {

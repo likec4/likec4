@@ -9,14 +9,14 @@ import {
   EdgeLabelContainer,
   EdgePath,
 } from '../../../base/primitives'
-import { useEnabledFeature } from '../../../context'
+import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { useRelationshipsBrowser } from '../hooks'
 
 export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
   const browser = useRelationshipsBrowser()
-  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const { enableNavigateTo } = useEnabledFeatures()
   const {
     id,
     data: {

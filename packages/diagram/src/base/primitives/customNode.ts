@@ -18,8 +18,8 @@ export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData
   && eq(prev.data, next.data)
 )
 
-export function customNode<P extends Record<string, unknown> = Base.NodeData>(
-  Node: FunctionComponent<NodeProps<P>>,
-): FunctionComponent<NodeProps<P>> {
+export function customNode<P extends Record<string, unknown> = {}, NodeType extends string = string>(
+  Node: FunctionComponent<NodeProps<P, NodeType>>,
+) {
   return memo(Node, nodePropsEqual)
 }
