@@ -148,17 +148,6 @@ export const viewButtonTitle = css({
   fontWeight: 500,
   lineHeight: '1.4',
 })
-// globalStyle(`${viewButton} .tabler-icon`, {
-//   width: '85%',
-// })
-// globalStyle(`${viewButton} .tabler-icon`, {
-//   width: '85%',
-//   opacity: 0.75
-// })
-
-// globalStyle(`${whereLight} ${viewButton} .mantine-Button-label`, {
-//   color: mantine.colors.dark[3]
-// })
 
 export const tabsRoot = css({
   flex: 1,
