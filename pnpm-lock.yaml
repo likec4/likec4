@@ -708,6 +708,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../../styled-system/preset
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
@@ -738,9 +741,6 @@ importers:
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
-      clsx:
-        specifier: catalog:react
-        version: 2.1.1
       d3-shape:
         specifier: ^3.2.0
         version: 3.2.0
@@ -1717,25 +1717,25 @@ importers:
 
   styled-system/styles:
     dependencies:
+      '@likec4/style-preset':
+        specifier: workspace:*
+        version: link:../preset
+      '@pandabox/panda-plugins':
+        specifier: ^0.0.8
+        version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.1
         version: 0.2.1(@pandacss/config@0.53.6)(@pandacss/core@0.53.6)(@pandacss/node@0.53.6(typescript@5.8.3))(esbuild@0.25.4)(typescript@5.8.3)(vite@6.3.5(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.2)(tsx@4.19.3)(yaml@2.7.0))
+      '@pandabox/utils':
+        specifier: ^0.0.5
+        version: 0.0.5
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.6(typescript@5.8.3)
     devDependencies:
-      '@likec4/style-preset':
-        specifier: workspace:*
-        version: link:../preset
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
-      '@pandabox/panda-plugins':
-        specifier: ^0.0.8
-        version: 0.0.8
-      '@pandabox/utils':
-        specifier: ^0.0.5
-        version: 0.0.5
       '@types/react':
         specifier: ^19.1.2
         version: 19.1.5
@@ -1748,12 +1748,6 @@ importers:
       postcss:
         specifier: catalog:css
         version: 8.5.3
-      remeda:
-        specifier: catalog:utils
-        version: 2.21.3
-      std-env:
-        specifier: catalog:utils
-        version: 3.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
