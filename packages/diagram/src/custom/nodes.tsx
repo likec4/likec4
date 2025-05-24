@@ -1,4 +1,4 @@
-import type { AnyAux, NodeModel } from '@likec4/core/model'
+import type { AnyAux, DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
@@ -30,6 +30,10 @@ export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
  * Node that will be used to render the element from the model.
  * It is a leaf node, i.e. it does not have children.
  *
+ * Custom node renderer receives these props:
+ * - `nodeProps`: props from XYFlow
+ * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
+ *
  * @example
  * ```tsx
  * import {
@@ -48,8 +52,18 @@ export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
  *   <ElementNodeContainer nodeProps={nodeProps}>
  *     <ElementShape {...nodeProps} />
  *     <ElementTitle {...nodeProps} />
- *     <ElementActions {...nodeProps} />
+ *     <ElementActions
+ *       {...nodeProps}
+ *       extraButtons={[
+ *         {
+ *           key: 'plus',
+ *           icon: <IconPlus />,
+ *           onClick: () => console.log('extra'),
+ *         },
+ *       ]}
+ *     />
  *     <ElementDetailsButtonWithHandler {...nodeProps} />
+ *     {nodeModel.element.getMetadata('your-attr') === 'value' && <YourComponent />}
  *     <IfNotReadOnly>
  *       <ElementToolbar {...nodeProps} />
  *     </IfNotReadOnly>
@@ -67,6 +81,11 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
 /**
  * Node that will be used to render the element from deployment model.
  * It is a leaf node, i.e. it does not have children.
+ * Can be {@link DeploymentNodeModel} or {@link DeployedInstanceModel}.
+ *
+ * Custom node renderer receives these props:
+ * - `nodeProps`: props from XYFlow
+ * - `nodeModel`: {@link NodeModel.WithDeploymentElement}
  *
  * @example
  * ```tsx
@@ -86,7 +105,16 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  *   <ElementNodeContainer nodeProps={nodeProps}>
  *     <ElementShape {...nodeProps} />
  *     <ElementTitle {...nodeProps} />
- *     <DeploymentElementActions {...nodeProps} />
+ *     <DeploymentElementActions
+ *       {...nodeProps}
+ *       extraButtons={[
+ *         {
+ *           key: 'plus',
+ *           icon: <IconPlus />,
+ *           onClick: () => console.log('extra'),
+ *         },
+ *       ]}
+ *     />
  *     <ElementDetailsButtonWithHandler {...nodeProps} />
  *     <IfNotReadOnly>
  *       <DeploymentElementToolbar {...nodeProps} />
@@ -105,6 +133,10 @@ export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
 /**
  * Node that will be used to render the compound element from the model.
  * It is a container node, i.e. it has children.
+ *
+ * Custom node renderer receives these props:
+ * - `nodeProps`: props from XYFlow
+ * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
  *
  * @example
  * ```tsx
@@ -144,6 +176,10 @@ export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  * Node that will be used to render the compound from the deployment model.
  * It is a container node, i.e. it has children.
  *
+ * Custom node renderer receives these props:
+ * - `nodeProps`: props from XYFlow
+ * - `nodeModel`: LikeC4 {@link NodeModel.WithDeploymentElement}
+ *
  * @example
  * ```tsx
  * import {
@@ -174,6 +210,10 @@ export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
 }
 /**
  * Node that will be used to render the view group from the model.
+ *
+ * Custom node renderer receives these props:
+ * - `nodeProps`: props from XYFlow
+ * - `nodeModel`: LikeC4 {@link NodeModel.IsGroup}
  *
  * @example
  * ```tsx

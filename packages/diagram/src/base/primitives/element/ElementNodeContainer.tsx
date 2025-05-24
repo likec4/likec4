@@ -53,6 +53,10 @@ export function nodeSizes({
   }
 }
 
+/**
+ * Top-level primitive to compose leaf nodes renderers.
+ * This container provides the state via data-* attributes
+ */
 export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContainerProps>(({
   nodeProps: {
     selected = false,

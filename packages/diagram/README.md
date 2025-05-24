@@ -2,7 +2,7 @@
 
 [docs](https://likec4.dev/tooling/code-generation/react/) | [demo](https://template.likec4.dev/view/index/)
 
-React components to render diagrams.
+A React component library for rendering software architecture diagrams.\
 Although you can use them directly, it is recommended to use [likec4](../likec4/) CLI to generate components from LikeC4 sources.
 
 Install:
@@ -10,6 +10,19 @@ Install:
 ```bash
 pnpm add @likec4/diagram
 ```
+
+## Table of Contents
+
+- [Bundled Version](#bundled-version)
+  - [LikeC4View](#likec4view)
+  - [ReactLikeC4](#reactlikec4)
+- [Library Version](#library-version)
+  - [With Bundled Styles](#with-bundled-styles)
+  - [With PandaCSS](#with-pandacss)
+  - [Usage](#usage)
+- [Customization](#customization)
+  - [Node renderer](#custom-node-renderer)
+  - [Styles](#custom-styles)
 
 ## Bundled version
 
@@ -145,7 +158,7 @@ Here are the options:
    ```
 
    > [!NOTE]
-   > This CSS loads from FontSource
+   > This stylesheet loads font from FontSource
 
 ### With PandaCSS
 
@@ -221,8 +234,6 @@ function App() {
 }
 ```
 
-## Extend diagram
-
 You can render any component inside `LikeC4Diagram`:
 
 ```tsx
@@ -256,9 +267,9 @@ function App() {
 
 ## Customization
 
-### Nodes
+### Custom node renderer
 
-You can provide a custom node renderer to render your own component. Besides all the primitives are available, you can also use them as a base.
+You can provide custom node renderers.
 
 ```tsx
 import { LikeC4Diagram } from '@likec4/diagram'
@@ -274,13 +285,23 @@ import {
   ElementToolbar,
   IfNotReadOnly,
 } from '@likec4/diagram/custom'
+import { IconPlus } from '@tabler/icons-react'
 
-const customNodes: CustomNodes = {
-  elementNode: elementNode(({ nodeProps, nodeModel }) => (
+const customNodes = {
+  element: elementNode(({ nodeProps, nodeModel }) => (
     <ElementNodeContainer nodeProps={nodeProps}>
       <ElementShape {...nodeProps} />
       <ElementTitle {...nodeProps} />
-      <ElementActions {...nodeProps} />
+      <ElementActions
+        {...nodeProps}
+        extraButtons={[
+          {
+            key: 'plus',
+            icon: <IconPlus />,
+            onClick: () => console.log('extra'),
+          },
+        ]}
+      />
       {nodeModel.element.getMetadata('your-attr') === 'value' && <YourComponent />}
     </ElementNodeContainer>
   )),
@@ -296,9 +317,13 @@ function App() {
 }
 ```
 
+You can compose custom nodes renderers from provided primitives.\
 See [custom nodes](../src/custom/nodes.tsx) for more examples.
 
-### Styles
+> [!IMPORTANT]
+> Try to keep node renderers referentially stable.
+
+### Custom styles
 
 LikeC4Diagram uses [PandaCSS](https://panda-css.com) for styling. You can use it to customize the styles.
 

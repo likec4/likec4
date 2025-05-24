@@ -1,4 +1,4 @@
-import type { NodeId } from '@likec4/core'
+import { type NodeId, hasAtLeast } from '@likec4/core'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { ElementActionButtons } from '../../../base/primitives'
@@ -7,12 +7,39 @@ import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
-type ElementActionsProps = NodeProps<Types.ElementNodeData>
-export const ElementActions = (props: ElementActionsProps) => {
+type WithExtraButtons = {
+  /**
+   * Add extra action buttons
+   * @example
+   * ```tsx
+   * <ElementActions
+   *   extraButtons={[
+   *     {
+   *       key: 'extra',
+   *       icon: <IconZoomScan />,
+   *       onClick: (e) => {
+   *         e.stopPropagation()
+   *         console.log('extra action clicked')
+   *       },
+   *       },
+   *     },
+   *   ]}
+   * />
+   * ```
+   */
+  extraButtons?: ElementActionButtons.Item[]
+}
+
+export type ElementActionsProps = NodeProps<Types.ElementNodeData> & WithExtraButtons
+
+export const ElementActions = ({
+  extraButtons,
+  ...props
+}: ElementActionsProps) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
   const { navigateTo, modelFqn } = props.data
-  const buttons = useMemo(() => {
+  let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
 
     if (navigateTo && enableNavigateTo) {
@@ -38,21 +65,24 @@ export const ElementActions = (props: ElementActionsProps) => {
     return buttons
   }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.id])
 
-  return (
-    <ElementActionButtons
-      buttons={buttons}
-      {...props}
-    />
-  )
+  if (extraButtons && hasAtLeast(extraButtons, 1)) {
+    buttons = [...buttons, ...extraButtons]
+  }
+
+  // Spread all ReactFlow node props and override buttons with our computed buttons
+  return <ElementActionButtons {...props} buttons={buttons} />
 }
 
-type DeploymentElementActionsProps = NodeProps<Types.DeploymentElementNodeData>
-export const DeploymentElementActions = (props: DeploymentElementActionsProps) => {
+export type DeploymentElementActionsProps = NodeProps<Types.DeploymentElementNodeData> & WithExtraButtons
+export const DeploymentElementActions = ({
+  extraButtons,
+  ...props
+}: DeploymentElementActionsProps) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
   const { navigateTo, modelFqn } = props.data
 
-  const buttons = useMemo(() => {
+  let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
 
     if (navigateTo && enableNavigateTo) {
@@ -78,5 +108,10 @@ export const DeploymentElementActions = (props: DeploymentElementActionsProps) =
     return buttons
   }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.id])
 
-  return <ElementActionButtons buttons={buttons} {...props} />
+  if (extraButtons && hasAtLeast(extraButtons, 1)) {
+    buttons = [...buttons, ...extraButtons]
+  }
+
+  // Spread all ReactFlow node props and override buttons with our computed buttons
+  return <ElementActionButtons {...props} buttons={buttons} />
 }
