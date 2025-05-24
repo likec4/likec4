@@ -32,22 +32,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./bundle": {
-      "sources": "./src/bundle/index.ts",
-      "default": {
-        "types": "./dist/bundle/index.d.ts",
-        "import": "./bundle/index.js",
-        "default": "./bundle/index.js"
-      }
-    },
-    "./primitives": {
-      "sources": "./src/base/primitives/index.ts",
-      "default": {
-        "types": "./dist/base/primitives/index.d.ts",
-        "import": "./dist/base/primitives/index.js",
-        "default": "./dist/base/primitives/index.js"
-      }
-    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -56,6 +40,23 @@
         "default": "./dist/custom/index.js"
       }
     },
+    "./bundle/custom": {
+      "sources": "./src/bundle/custom.ts",
+      "default": {
+        "types": "./dist/bundle/custom.d.ts",
+        "import": "./bundle/custom.js",
+        "default": "./bundle/custom.js"
+      }
+    },
+    "./bundle": {
+      "sources": "./src/bundle/index.ts",
+      "default": {
+        "types": "./dist/bundle/index.d.ts",
+        "import": "./bundle/index.js",
+        "default": "./bundle/index.js"
+      }
+    },
+
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles-min.css": "./dist/styles-min.css",
     "./styles-font.css": "./dist/styles-font.css",

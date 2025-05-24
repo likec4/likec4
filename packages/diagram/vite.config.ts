@@ -144,11 +144,19 @@ const bundleConfig = defineConfig({
     cssMinify: true,
     target: 'esnext',
     lib: {
-      entry: 'src/bundle/index.ts',
+      entry: {
+        index: 'src/bundle/index.ts',
+        custom: 'src/bundle/custom.ts',
+      },
       formats: ['es'],
-      fileName: 'index',
+      fileName(_format, entryName) {
+        return `${entryName}.js`
+      },
     },
     rollupOptions: {
+      output: {
+        chunkFileNames: 'chunk-[hash].js',
+      },
       treeshake: {
         preset: 'recommended',
       },

@@ -34,7 +34,3 @@ export {
 export {
   useMantinePortalProps,
 } from '../hooks/useMantinePortalProps'
-
-export {
-  useSetState,
-} from '../hooks/useSetState'
