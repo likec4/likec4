@@ -132,3 +132,5 @@ export default definePreset({
 
   theme,
 })
+
+export { theme }

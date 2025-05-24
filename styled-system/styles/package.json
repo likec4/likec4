@@ -66,18 +66,16 @@
   },
   "dependencies": {
     "@pandacss/dev": "catalog:css",
-    "@pandabox/unplugin": "^0.2.1"
-  },
-  "devDependencies": {
+    "@pandabox/unplugin": "^0.2.1",
     "@pandabox/utils": "^0.0.5",
     "@likec4/style-preset": "workspace:*",
+    "@pandabox/panda-plugins": "^0.0.8"
+  },
+  "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@pandabox/panda-plugins": "^0.0.8",
-    "std-env": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "postcss": "catalog:css",
-    "remeda": "catalog:utils",
     "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",
     "typescript": "catalog:"
