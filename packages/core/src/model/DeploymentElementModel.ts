@@ -211,6 +211,15 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
     )
     return this.cachedIncoming
   }
+
+  public getMetadata(): Record<string, string>
+  public getMetadata(field: string): string | undefined
+  public getMetadata(field?: string) {
+    if (field) {
+      return this.$node.metadata?.[field]
+    }
+    return this.$node.metadata ?? {}
+  }
 }
 
 export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends AbstractDeploymentElementModel<M> {
@@ -559,6 +568,15 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
 
   public isDeploymentRelation(): this is DeploymentRelationModel<M> {
     return true
+  }
+
+  public getMetadata(): Record<string, string>
+  public getMetadata(field: string): string | undefined
+  public getMetadata(field?: string) {
+    if (field) {
+      return this.$relationship.metadata?.[field]
+    }
+    return this.$relationship.metadata ?? {}
   }
 }
 
