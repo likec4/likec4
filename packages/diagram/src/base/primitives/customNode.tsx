@@ -1,6 +1,7 @@
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
 import type { Base, NodeProps } from '../types'
+import { DefaultHandles } from './NodeHandles'
 
 export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData>(
   prev: NodeProps<P>,
@@ -21,5 +22,12 @@ export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData
 export function customNode<P extends Record<string, unknown> = {}, NodeType extends string = string>(
   Node: FunctionComponent<NodeProps<P, NodeType>>,
 ) {
-  return memo(Node, nodePropsEqual)
+  const NodeComponent = memo((props: NodeProps<P, NodeType>) => (
+    <>
+      <Node {...props} />
+      <DefaultHandles />
+    </>
+  ), nodePropsEqual)
+  NodeComponent.displayName = 'Node'
+  return NodeComponent
 }

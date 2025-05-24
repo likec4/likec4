@@ -1,4 +1,5 @@
 import type { ElementShape } from '@likec4/core'
+import { cx as clsx } from '@likec4/styles/css'
 import {
   type Icon,
   type IconProps,
@@ -9,7 +10,6 @@ import {
   IconReorder,
   IconUser,
 } from '@tabler/icons-react'
-import clsx from 'clsx'
 import {
   type ForwardRefExoticComponent,
   type PropsWithChildren,

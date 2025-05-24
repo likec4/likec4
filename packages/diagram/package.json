@@ -10,6 +10,9 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/diagram"
   },
+  "sponsor": {
+    "url": "https://github.com/sponsors/davydkov"
+  },
   "files": [
     "dist",
     "bundle",
@@ -54,6 +57,9 @@
       }
     },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
+    "./styles-min.css": "./dist/styles-min.css",
+    "./styles-font.css": "./dist/styles-font.css",
+    "./styles-xyflow.css": "./dist/styles-xyflow.css",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json",
     "./src": "./src/index.ts",
@@ -73,6 +79,7 @@
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
@@ -82,7 +89,6 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
-    "clsx": "catalog:react",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
     "motion": "catalog:react",

@@ -37,6 +37,8 @@ export type {
   OnNavigateTo,
   OnNodeClick,
   OpenSourceParams,
+  PaddingUnit,
+  PaddingWithUnit,
   WhereOperator,
 } from './LikeC4Diagram.props'
 

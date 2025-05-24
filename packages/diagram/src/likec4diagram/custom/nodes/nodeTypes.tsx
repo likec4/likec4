@@ -38,6 +38,25 @@ export function ElementDetailsButtonWithHandler(
   )
 }
 
+export function CompoundDetailsButtonWithHandler(
+  props: NodeProps<Types.CompoundElementNodeData | Types.CompoundDeploymentNodeData>,
+) {
+  const { enableElementDetails } = useEnabledFeatures()
+  const diagram = useDiagram()
+  const fqn = props.data.modelFqn
+
+  if (!enableElementDetails || !fqn) return null
+
+  return (
+    <CompoundDetailsButton
+      {...props}
+      onClick={e => {
+        e.stopPropagation()
+        diagram.openElementDetails(fqn, props.id as NodeId)
+      }} />
+  )
+}
+
 export const ElementNode = customNode<Types.ElementNodeData, 'element'>((props) => (
   <ElementNodeContainer nodeProps={props}>
     <ElementShape {...props} />
@@ -74,12 +93,7 @@ export const CompoundElementNode = customNode<Types.CompoundElementNodeData, 'co
       <CompoundTitle {...props} />
       <CompoundActions {...props} />
       <IfEnabled feature="ElementDetails">
-        <CompoundDetailsButton
-          {...props}
-          onClick={e => {
-            e.stopPropagation()
-            diagram.openElementDetails(props.data.modelFqn, props.id as NodeId)
-          }} />
+        <CompoundDetailsButtonWithHandler {...props} />
       </IfEnabled>
       <IfNotReadOnly>
         <CompoundElementToolbar {...props} />

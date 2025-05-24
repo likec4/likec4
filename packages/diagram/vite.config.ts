@@ -65,6 +65,10 @@ const defaultConfig = defineConfig({
       input: [
         'src/index.ts',
         'src/bundle/index.ts',
+        'src/styles.css',
+        'src/styles-font.css',
+        'src/styles-min.css',
+        'src/styles-xyflow.css',
       ],
       experimentalLogSideEffects: true,
       external: [
@@ -172,7 +176,39 @@ const bundleConfig = defineConfig({
   ],
 })
 
+const stylesConfig = defineConfig({
+  build: {
+    outDir: 'dist',
+    emptyOutDir: false,
+    cssCodeSplit: true,
+    cssMinify: true,
+    lib: {
+      name: 'styles',
+      entry: 'src/styles.css',
+      formats: ['es'],
+    },
+    rollupOptions: {
+      input: {
+        styles: 'src/styles.css',
+        'styles-min': 'src/styles-min.css',
+        'styles-font': 'src/styles-font.css',
+        'styles-xyflow': 'src/styles-xyflow.css',
+      },
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [
+        pandacss(),
+      ],
+    },
+  },
+})
+
 export default defineConfig(({ mode }) => {
+  if (mode === 'css') {
+    return stylesConfig
+  }
   if (mode === 'bundle') {
     return bundleConfig
   }

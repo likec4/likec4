@@ -1,3 +1,4 @@
+import { cx as clsx } from '@likec4/styles/css'
 import { Badge, Box, Button, ButtonGroup } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
@@ -5,7 +6,6 @@ import {
   IconPlayerSkipForwardFilled,
   IconPlayerStopFilled,
 } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { AnimatePresence, m } from 'motion/react'
 import { isNonNull, isTruthy } from 'remeda'
 import { useXYStore } from '../../../hooks'

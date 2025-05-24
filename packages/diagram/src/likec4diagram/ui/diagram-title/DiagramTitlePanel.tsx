@@ -1,7 +1,7 @@
+import { cx as clsx } from '@likec4/styles/css'
 import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { AnimatePresence, m } from 'motion/react'
 import { Link } from '../../../components/Link'
 import { useDiagramContext } from '../../../hooks/useDiagram'

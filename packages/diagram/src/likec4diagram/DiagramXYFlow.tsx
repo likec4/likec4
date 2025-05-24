@@ -8,10 +8,11 @@ import { type PropsWithChildren, memo } from 'react'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
+import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
-import { edgeTypes, nodeTypes as defaultNodeTypes } from './custom'
+import { BuiltinNodes as defaultNodeTypes, edgeTypes } from './custom'
 import { DiagramUI } from './DiagramUI'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -60,7 +61,8 @@ const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =
   a.nodesSelectable === b.nodesSelectable &&
   deepEqual(a.background, b.background) &&
   deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {}) &&
-  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {})
+  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {}) &&
+  a.children == b.children
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   background = 'dots',
@@ -68,7 +70,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   nodesSelectable = false,
   reactFlowProps = {},
   children,
-  customNodes = {},
+  customNodes,
 }) => {
   const diagram = useDiagram()
   const {
@@ -125,16 +127,21 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   const nodeTypes = useCustomCompareMemo(
     () => {
       return {
-        element: customNodes.element ?? defaultNodeTypes.element,
-        deployment: customNodes.deployment ?? defaultNodeTypes.deployment,
-        'compound-element': customNodes.compoundElement ?? defaultNodeTypes['compound-element'],
-        'compound-deployment': customNodes.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
-        'view-group': customNodes.viewGroup ?? defaultNodeTypes['view-group'],
+        element: customNodes?.element ?? defaultNodeTypes.element,
+        deployment: customNodes?.deployment ?? defaultNodeTypes.deployment,
+        'compound-element': customNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
+        'compound-deployment': customNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
+        'view-group': customNodes?.viewGroup ?? defaultNodeTypes['view-group'],
       } satisfies { [key in Types.Node['type']]: any }
     },
     [customNodes],
     shallowEqual,
   )
+
+  useUpdateEffect(() => {
+    console.warn('customNodes changed - this might degrade performance')
+  }, [customNodes])
+
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
       nodes={nodes}

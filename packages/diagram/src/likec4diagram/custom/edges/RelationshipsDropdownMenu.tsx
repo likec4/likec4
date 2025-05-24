@@ -62,11 +62,13 @@ export const RelationshipsDropdownMenu = memo((
     disabled?: boolean | undefined
   }>,
 ) => {
-  const { diagramEdge, sourceNode, targetNode } = useDiagramContext(ctx => ({
-    diagramEdge: findDiagramEdge(ctx, edgeId),
-    sourceNode: findDiagramNode(ctx, source),
-    targetNode: findDiagramNode(ctx, target),
-  }))
+  const { diagramEdge, sourceNode, targetNode } = useDiagramContext(
+    useCallback(ctx => ({
+      diagramEdge: findDiagramEdge(ctx, edgeId),
+      sourceNode: findDiagramNode(ctx, source),
+      targetNode: findDiagramNode(ctx, target),
+    }), [edgeId, source, target]),
+  )
   const likec4model = useLikeC4Model(true)
   const diagram = useDiagram()
 

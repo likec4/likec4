@@ -11,7 +11,7 @@ import type {
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
-import type { CustomNodes } from './likec4diagram/custom/types'
+import type { CustomNodes } from './custom/nodes'
 
 export type { CustomNodes, WhereOperator }
 

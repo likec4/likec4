@@ -1,5 +1,6 @@
 export {
   custom,
+  type ElementIconRenderer,
   LikeC4ModelProvider,
   LikeC4View,
   type LikeC4ViewProps,

@@ -77,6 +77,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   styleNonce,
   style,
   reactFlowProps = {},
+  customNodes,
   ...props
 }) => {
   const likec4model = useLikeC4Model(true, 'layouted')
@@ -152,6 +153,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
               onNodeClick: () => onNavigateTo(view.id),
             }}
             reactFlowProps={reactFlowProps}
+            customNodes={customNodes}
             {...props}
           />
           {browserView && (
@@ -170,6 +172,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                 readonly
                 fitView
                 fitViewPadding={'16px'}
+                customNodes={customNodes}
                 {...props}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&
