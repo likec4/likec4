@@ -166,6 +166,17 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
+        },
+        "likec4.formatting.quoteStyle": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "single",
+            "double",
+            "ignore"
+          ],
+          "default": "auto",
+          "description": "Default quote style to use for the LikeC4 formatter. If `ignore`, the formatter will not change the quote style. If `auto`, the formatter will use the quote style of the file it is formatting."          
         }
       }
     },
