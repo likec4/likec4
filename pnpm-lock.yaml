@@ -1317,7 +1317,7 @@ importers:
         specifier: catalog:utils
         version: 2.21.3
       semver:
-        specifier: ^7.7.1
+        specifier: ^7.7.2
         version: 7.7.2
       std-env:
         specifier: catalog:utils

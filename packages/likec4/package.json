@@ -191,7 +191,7 @@
     "react-resizable-panels": "^3.0.2",
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
-    "semver": "^7.7.1",
+    "semver": "^7.7.2",
     "std-env": "catalog:utils",
     "strip-indent": "^4.0.0",
     "terser": "^5.39.0",
