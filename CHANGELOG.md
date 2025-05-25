@@ -1,3 +1,23 @@
+# [1.31.0](https://github.com/likec4/likec4/compare/v1.30.0...v1.31.0) (2025-05-25)
+
+
+### Bug Fixes
+
+* **deps:** security update vite to v6.3.4 ([#1917](https://github.com/likec4/likec4/issues/1917)) ([8921177](https://github.com/likec4/likec4/commit/8921177a4882a243cf61d5fc07f9b14105ffa106))
+* **deps:** update dependency @cloudflare/vite-plugin to v1.0.10 ([#1870](https://github.com/likec4/likec4/issues/1870)) ([c0ed0c1](https://github.com/likec4/likec4/commit/c0ed0c17fb371114f56d6c069986649054ea8bd0))
+* **deps:** update dependency @cloudflare/vite-plugin to v1.1.0 ([#1914](https://github.com/likec4/likec4/issues/1914)) ([b48cd55](https://github.com/likec4/likec4/commit/b48cd5592faf1357c6e553378756ca2426693a93))
+* **deps:** update dependency @logtape/logtape to ^0.9.1 ([#1897](https://github.com/likec4/likec4/issues/1897)) ([7ef68b6](https://github.com/likec4/likec4/commit/7ef68b6171017e9ae9575c553bf2b16df20a2a14))
+* **deps:** update dependency playwright to ^1.52.0 ([#1908](https://github.com/likec4/likec4/issues/1908)) ([71cdce1](https://github.com/likec4/likec4/commit/71cdce14b79f140116549739c775b188cf68bbc2))
+* **deps:** update dependency react-resizable-panels to ^2.1.8 ([#1898](https://github.com/likec4/likec4/issues/1898)) ([3d85ec7](https://github.com/likec4/likec4/commit/3d85ec713490eb47a071dadd58937ba27cd4a003))
+
+
+### Features
+
+* **diagram:** custom node renderers ([#1949](https://github.com/likec4/likec4/issues/1949)) ([6b7ed6a](https://github.com/likec4/likec4/commit/6b7ed6a348d2f0d1396f2c1b62a7f6dcd4804d5c))
+* **lsp:** Quotes normalization ([#1944](https://github.com/likec4/likec4/issues/1944)) ([892f03f](https://github.com/likec4/likec4/commit/892f03f180796de515cead5e14067449787e20d6)), closes [#1772](https://github.com/likec4/likec4/issues/1772)
+
+
+
 # [1.30.0](https://github.com/likec4/likec4/compare/v1.29.1...v1.30.0) (2025-04-27)
 
 ### 🚀 Features
