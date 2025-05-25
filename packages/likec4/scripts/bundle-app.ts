@@ -42,13 +42,7 @@ export async function bundleApp() {
     esbuild: {
       jsxDev: false,
       minifyIdentifiers: false,
-      tsconfigRaw: {
-        compilerOptions: {
-          useDefineForClassFields: true,
-          verbatimModuleSyntax: true,
-          jsx: 'react-jsx',
-        },
-      },
+      tsconfigRaw: tsconfig,
     },
     build: {
       modulePreload: false,

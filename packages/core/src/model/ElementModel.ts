@@ -8,9 +8,9 @@ import {
   type ElementStyle,
   type Link,
   DefaultElementShape,
+  DefaultShapeSize,
   DefaultThemeColor,
 } from '../types/element'
-import { DefaultShapeSize } from '../types/element'
 import {
   type IconUrl,
   type ProjectId,
@@ -257,6 +257,15 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   public deployments(): DeployedInstancesIterator<M> {
     return this.$model.deployment.instancesOf(this)
+  }
+
+  public getMetadata(): Record<string, string>
+  public getMetadata(field: string): string | undefined
+  public getMetadata(field?: string) {
+    if (field) {
+      return this.$element.metadata?.[field]
+    }
+    return this.$element.metadata ?? {}
   }
 }
 

@@ -1,16 +1,18 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
+import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, memo } from 'react'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
+import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
-import { edgeTypes, nodeTypes } from './custom'
+import { BuiltinNodes as defaultNodeTypes, edgeTypes } from './custom'
 import { DiagramUI } from './DiagramUI'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -50,14 +52,17 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
     | 'nodesDraggable'
     | 'nodesSelectable'
     | 'reactFlowProps'
+    | 'renderNodes'
   >
 >
 
 const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =>
-  a.nodesDraggable === b.nodesDraggable &&
-  a.nodesSelectable === b.nodesSelectable &&
+  a.nodesDraggable == b.nodesDraggable &&
+  a.nodesSelectable == b.nodesSelectable &&
+  a.children == b.children &&
   deepEqual(a.background, b.background) &&
-  deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {})
+  deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {}) &&
+  shallowEqual(a.renderNodes ?? {}, b.renderNodes ?? {})
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   background = 'dots',
@@ -65,6 +70,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   nodesSelectable = false,
   reactFlowProps = {},
   children,
+  renderNodes,
 }) => {
   const diagram = useDiagram()
   const {
@@ -116,7 +122,24 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     }),
     onViewportResize = useCallbackRef(() => {
       diagram.send({ type: 'xyflow.resized' })
-    })
+    }),
+    nodeTypes = useCustomCompareMemo(
+      () => {
+        return {
+          element: renderNodes?.element ?? defaultNodeTypes.element,
+          deployment: renderNodes?.deployment ?? defaultNodeTypes.deployment,
+          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
+          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
+          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes['view-group'],
+        } satisfies { [key in Types.Node['type']]: any }
+      },
+      [renderNodes],
+      shallowEqual,
+    )
+
+  useUpdateEffect(() => {
+    console.warn('renderNodes changed - this might degrade performance')
+  }, [renderNodes])
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>

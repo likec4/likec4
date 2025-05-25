@@ -5,9 +5,8 @@ import {
   isAncestor,
   nameFromFqn,
   sortParentsFirst,
-  toArray,
 } from '@likec4/core'
-import { cx } from '@likec4/styles/css'
+import { cx, cx as clsx } from '@likec4/styles/css'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
@@ -22,10 +21,9 @@ import {
 } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
-import clsx from 'clsx'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, useCallback, useEffect, useMemo } from 'react'
-import { first, indexBy, isEmpty, only, partition, pipe, prop, reduce } from 'remeda'
+import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'

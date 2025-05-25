@@ -59,6 +59,7 @@ export function LikeC4Diagram({
   renderControls,
   where,
   reactFlowProps = {},
+  renderNodes,
   children,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
@@ -149,6 +150,7 @@ export function LikeC4Diagram({
                           nodesSelectable={nodesSelectable}
                           background={background}
                           reactFlowProps={reactFlowProps}
+                          renderNodes={renderNodes}
                         >
                           {children}
                         </LikeC4DiagramXYFlow>

@@ -15,5 +15,13 @@
   "include": [
     "worker-configuration.d.ts",
     "worker"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core/tsconfig.json"
+    },
+    {
+      "path": "../../packages/language-server/tsconfig.json"
+    }
   ]
 }

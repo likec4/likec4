@@ -106,4 +106,13 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   public isDeploymentRelation(): this is DeploymentRelationModel<M> {
     return false
   }
+
+  public getMetadata(): Record<string, string>
+  public getMetadata(field: string): string | undefined
+  public getMetadata(field?: string) {
+    if (field) {
+      return this.$relationship.metadata?.[field]
+    }
+    return this.$relationship.metadata ?? {}
+  }
 }

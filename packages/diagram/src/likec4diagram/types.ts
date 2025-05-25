@@ -1,8 +1,7 @@
 import type { DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
-import type { Base } from '../base'
-import type { ReactFlowEdge, ReactFlowNode } from '../base/types'
+import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
 
 type NonOptional<T extends object> = Simplify<
   & {
@@ -14,7 +13,8 @@ type NonOptional<T extends object> = Simplify<
 >
 
 export namespace Types {
-  export type LeafNodeData = Base.NodeData<
+  export type LeafNodeData =
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -32,10 +32,13 @@ export namespace Types {
       >
     >
     & {
+      /**
+       * View this node belongs to
+       */
+      viewId: ViewId
       isMultiple?: boolean | undefined
       icon: string | null
     }
-  >
 
   /**
    * Represents element from logical model
@@ -61,7 +64,8 @@ export namespace Types {
       modelFqn: Fqn | null
     }
 
-  export type CompoundNodeData = Base.NodeData<
+  export type CompoundNodeData =
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -74,10 +78,13 @@ export namespace Types {
       >
     >
     & {
+      /**
+       * View this node belongs to
+       */
+      viewId: ViewId
       depth: number
       icon?: IconUrl
     }
-  >
 
   export type CompoundElementNodeData = CompoundNodeData & {
     modelFqn: Fqn
@@ -116,8 +123,9 @@ export namespace Types {
 
   export type NodeData = Node['data']
 
-  export type RelationshipEdgeData = Base.EdgeData<
-    NonOptional<
+  export type RelationshipEdgeData = Simplify<
+    & Base.EdgeData
+    & NonOptional<
       Pick<
         DiagramEdge,
         | 'id'
@@ -133,7 +141,8 @@ export namespace Types {
         | 'navigateTo'
         | 'notes'
       >
-    > & {
+    >
+    & {
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
     }
@@ -142,4 +151,5 @@ export namespace Types {
   export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
 
   export type Edge = RelationshipEdge
+  export type EdgeData = RelationshipEdgeData
 }

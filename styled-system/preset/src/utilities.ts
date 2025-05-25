@@ -1,15 +1,13 @@
 import { type Config, defineUtility } from '@pandacss/dev'
 import { compoundColors, themeColors } from './generated'
 
-type ExtendableConditions = NonNullable<Config['conditions']>
-
 const colorPaletteValues = [
   ...themeColors,
   ...compoundColors,
 ]
 type Likec4ColorPalette = typeof colorPaletteValues[number]
 
-export const likec4Palette = defineUtility({
+const likec4Palette = defineUtility({
   values: colorPaletteValues,
   className: 'likec4-palette',
   // @ts-expect-error
@@ -40,7 +38,7 @@ export const likec4Palette = defineUtility({
   },
 })
 
-export const likec4RelationPalette = defineUtility({
+const likec4RelationPalette = defineUtility({
   values: themeColors,
   className: 'likec4-relation-color',
   transform(value, { token, raw }) {
@@ -57,3 +55,26 @@ export const likec4RelationPalette = defineUtility({
     }
   },
 })
+
+type ExtendableUtilityConfig = NonNullable<Config['utilities']>
+
+export const utilities: ExtendableUtilityConfig = {
+  extend: {
+    transition: {
+      values: ['fast'],
+      className: 'transition-fast',
+      transform(value, { token }) {
+        if (value !== 'fast') {
+          return {
+            transition: value,
+          }
+        }
+        return {
+          transition: `all ${token('durations.fast')}  ${token('easings.inOut')}`,
+        }
+      },
+    },
+    likec4Palette,
+    likec4RelationPalette,
+  },
+}

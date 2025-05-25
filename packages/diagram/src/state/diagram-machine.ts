@@ -26,6 +26,7 @@ import {
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
+import type { PartialDeep } from 'type-fest'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -69,7 +70,7 @@ import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import { findDiagramNode, focusedBounds, typedSystem } from './utils'
 
-type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
 export interface NavigationHistory {
   history: ReadonlyArray<{
@@ -89,7 +90,7 @@ export interface Input {
   nodesSelectable: boolean
 }
 
-type ToggledFeatures = Partial<EnabledFeatures>
+export type ToggledFeatures = Partial<EnabledFeatures>
 
 export interface Context extends Input {
   xynodes: Types.Node[]
@@ -150,8 +151,8 @@ export type Events =
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge }
-  | { type: 'update.nodeData'; nodeId: NodeId; data: Partial<Types.NodeData> }
-  | { type: 'update.edgeData'; edgeId: EdgeId; data: Partial<Types.Edge['data']> }
+  | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
+  | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore'>> }
   | { type: 'update.features'; features: EnabledFeatures }
@@ -179,7 +180,7 @@ export type Events =
 export type ActionArg = { context: Context; event: Events }
 
 // TODO: naming convention for actors
-export const diagramMachine = setup({
+const _diagramMachine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -1120,6 +1121,10 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   return { fromNode, toNode }
 }
 
-export type DiagramMachineLogic = ActorLogicFrom<typeof diagramMachine>
-// export type MachineSnapshot = SnapshotFrom<Machine>
-// export type LikeC4ViewActorRef = ActorRefFromLogic<Machine>
+/**
+ * Here is a trick to reduce inference types
+ */
+type InferredDiagramMachine = typeof _diagramMachine
+export interface DiagramMachine extends InferredDiagramMachine {}
+export const diagramMachine: DiagramMachine = _diagramMachine
+export interface DiagramMachineLogic extends ActorLogicFrom<DiagramMachine> {}

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -43,7 +43,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
@@ -59,8 +59,8 @@
     "graphology-types": "^0.24.8",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
-    "nano-spawn": "^0.2.0",
-    "p-limit": "^6.2.0",
+    "nano-spawn": "catalog:utils",
+    "p-limit": "catalog:utils",
     "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
@@ -77,5 +77,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

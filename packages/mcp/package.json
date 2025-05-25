@@ -1,7 +1,7 @@
 {
   "name": "@likec4/mcp",
   "license": "MIT",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -25,7 +25,7 @@
     "server"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "wireit",
     "inspector": "wireit"
   },
@@ -68,5 +68,5 @@
     "zod": "catalog:utils",
     "wireit": "catalog:"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

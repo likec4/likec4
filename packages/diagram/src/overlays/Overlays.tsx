@@ -77,7 +77,7 @@ const compareSelectOverlays = <T extends ReturnType<typeof selectOverlays>>(a: T
   })
 }
 
-export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: OverlaysActorRef }) => {
+export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActorRef }) {
   const xyflowDomNode = useXYStore(s => s.domNode)
   const xyflowRendererDom = useMemo(() => xyflowDomNode?.querySelector('.react-flow__renderer') ?? null, [
     xyflowDomNode,
@@ -145,5 +145,4 @@ export const Overlays = memo(({ overlaysActorRef }: { overlaysActorRef: Overlays
       </ErrorBoundary>
     </DiagramFeatures.Overlays>
   )
-})
-Overlays.displayName = 'Overlays'
+}

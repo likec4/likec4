@@ -8,6 +8,8 @@
 .pnpm-store/
 .wireit
 
+panda.buildinfo.json
+
 apps/*/dist
 apps/*/lib
 apps/*/styled-system

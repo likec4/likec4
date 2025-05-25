@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -29,7 +29,7 @@
     "vscode:prepublish": "tsx --conditions=sources scripts/prepublish.mts",
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsx --conditions=sources scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
@@ -166,6 +166,17 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
+        },
+        "likec4.formatting.quoteStyle": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "single",
+            "double",
+            "ignore"
+          ],
+          "default": "auto",
+          "description": "Default quote style to use for the LikeC4 formatter. If `ignore`, the formatter will not change the quote style. If `auto`, the formatter will use the quote style of the file it is formatting."
         }
       }
     },
@@ -251,18 +262,18 @@
     "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
-    "@vscode/extension-telemetry": "^0.9.8",
+    "@vscode/extension-telemetry": "^0.9.9",
     "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "@valibot/to-json-schema": "catalog:utils",
     "esm-env": "catalog:utils",
-    "execa": "^9.5.2",
+    "execa": "^9.5.3",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
-    "reactive-vscode": "^0.2.14",
+    "reactive-vscode": "^0.2.17",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "tslib": "^2.8.1",
@@ -280,5 +291,5 @@
     "vscode-messenger-common": "^0.5.1",
     "vscode-uri": "catalog:vscode"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

@@ -5,19 +5,20 @@ Shared utilities for [PandaCSS](https://panda-css.com/)
 ## Usage
 
 ```bash
-pnpm add -D @likec4/style-preset @likec4/styles @pandacss/dev
+pnpm add -D @likec4/styles @pandacss/dev
 ```
 
 Configure your `panda.config.ts`:
 
 ```ts
+import likec4preset from '@likec4/styles/preset'
 import { defineConfig } from '@pandacss/dev'
 
 export default defineConfig({
   // Whether to use css reset
   importMap: '@likec4/styles',
   presets: [
-    '@likec4/style-preset',
+    likec4preset,
   ],
   jsxFramework: 'react',
   include: [

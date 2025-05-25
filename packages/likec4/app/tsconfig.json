@@ -28,6 +28,9 @@
   "references": [
     {
       "path": "../tsconfig.react.json"
+    },
+    {
+      "path": "../../diagram/tsconfig.json"
     }
   ]
 }

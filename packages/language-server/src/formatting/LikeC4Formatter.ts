@@ -1,8 +1,16 @@
-import { type AstNode, type CompositeCstNode, GrammarUtils } from 'langium'
-import { type NodeFormatter, AbstractFormatter, Formatting } from 'langium/lsp'
+import { nonexhaustive } from '@likec4/core'
+import { type AstNode, type CompositeCstNode, type LangiumDocument, GrammarUtils } from 'langium'
+import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } from 'langium/lsp'
 import { filter, isTruthy } from 'remeda'
+import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
+import type { LikeC4Services } from '../module'
 import * as utils from './utils'
+
+type QuoteStyle = 'single' | 'double' | 'ignore' | 'auto'
+interface LikeC4FormatterOptions {
+  quoteStyle: QuoteStyle
+}
 
 const FormattingOptions = {
   newLine: Formatting.newLine({ allowMore: true }),
@@ -12,11 +20,46 @@ const FormattingOptions = {
   noIndent: Formatting.noIndent(),
 }
 type Predicate<T extends AstNode> = (x: unknown) => x is T
+type ExtendedFormattingCommandType = 'normalizeQuotes'
+interface ExtendedFormattingCommand {
+  type: ExtendedFormattingCommandType
+  region: FormattingRegion
+}
 
 export class LikeC4Formatter extends AbstractFormatter {
+  protected options: LikeC4FormatterOptions = {
+    quoteStyle: 'auto',
+  }
+  extendedFormattingCommands: ExtendedFormattingCommand[] = []
+
+  constructor(services: LikeC4Services) {
+    super()
+
+    services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate(update =>
+      this.onConfigurationUpdate(update.configuration.formatting)
+    )
+  }
+
+  protected override doDocumentFormat(
+    document: LangiumDocument,
+    options: LSFormattingOptions,
+    range?: Range,
+  ): TextEdit[] {
+    this.extendedFormattingCommands = []
+    const edits = super.doDocumentFormat(document, options, range)
+
+    this.doExtendedFormatting(edits)
+
+    return edits
+  }
+
   protected format(node: AstNode): void {
     this.removeIndentFromTopLevelStatements(node)
     this.indentContentInBraces(node)
+    this.normalizeQuotes(node)
+
+    // Imports
+    this.formatImports(node)
 
     // Specification
     this.formatSpecificationRule(node)
@@ -26,6 +69,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     // Models
     this.formatElementDeclaration(node)
+    this.formatExtendElement(node)
     this.formatRelation(node)
     this.formatMetadataProperty(node)
 
@@ -33,6 +77,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatDeploymentNodeDeclaration(node)
     this.formatDeployedInstance(node)
     this.formatDeploymentRelation(node)
+    this.formatExtendDeployment(node)
 
     // Views
     this.formatView(node)
@@ -80,6 +125,12 @@ export class LikeC4Formatter extends AbstractFormatter {
         n.tags,
       ], isTruthy)).prepend(FormattingOptions.oneSpace)
       f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatExtendDeployment(node: AstNode) {
+    this.on(node, ast.isExtendDeployment, (n, f) => {
+      f.keywords('extend').append(FormattingOptions.oneSpace)
     })
   }
 
@@ -159,6 +210,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isDeploymentNodeBody(node)
       || ast.isDeploymentRelationBody(node)
       || ast.isDeployedInstanceBody(node)
+      || ast.isExtendDeploymentBody(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const openBrace = formatter.keywords('{')
@@ -211,6 +263,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isRelationStringProperty(node)
       || ast.isViewStringProperty(node)
       || ast.isNotationProperty(node)
+      || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
       || ast.isSpecificationRelationshipStringProperty(node)
       || ast.isColorProperty(node)
@@ -232,6 +285,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'description',
         'technology',
         'notation',
+        'notes',
         'color',
         'line',
         'head',
@@ -321,6 +375,12 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
   }
 
+  protected formatExtendElement(node: AstNode) {
+    this.on(node, ast.isExtendElement, (n, f) => {
+      f.keywords('extend').append(FormattingOptions.oneSpace)
+    })
+  }
+
   protected formatGlobals(node: AstNode) {
     this.on(node, ast.isGlobalStyle, (n, f) => {
       f.keyword('style').append(FormattingOptions.oneSpace)
@@ -337,6 +397,18 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     this.on(node, ast.isGlobalDynamicPredicateGroup, (n, f) => {
       f.keyword('dynamicPredicateGroup').append(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatImports(node: AstNode) {
+    this.on(node, ast.isImportsFromPoject, (n, f) => {
+      f.keyword('import').append(FormattingOptions.oneSpace)
+      f.keywords('{', '}', 'from').surround(FormattingOptions.oneSpace)
+    })
+    this.on(node, ast.isImported, (n, f) => {
+      f.keywords(',')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
     })
   }
 
@@ -568,5 +640,85 @@ export class LikeC4Formatter extends AbstractFormatter {
     format && formatter && format(node as T, formatter)
 
     return formatter
+  }
+
+  private doExtendedFormatting(edits: TextEdit[]): void {
+    const quotesNormalizer = this.quotesNormalizerFactory(this.extendedFormattingCommands)
+
+    for (let command of this.extendedFormattingCommands) {
+      switch (command.type) {
+        case 'normalizeQuotes':
+          quotesNormalizer(command, edits)
+          break
+
+        default:
+          nonexhaustive(command.type)
+      }
+    }
+  }
+
+  protected normalizeQuotes(node: AstNode) {
+    if (this.options.quoteStyle === 'ignore') {
+      return
+    }
+
+    let region = null
+    region = region ?? this.on(node, ast.isStringProperty)
+      ?.property('value')
+    region = region ?? this.on(node, ast.isElement)
+      ?.properties('props')
+    region = region ?? this.on(node, ast.isImportsFromPoject)
+      ?.properties('project')
+    region = region ?? this.on(node, ast.isRelation)
+      ?.properties('title', 'technology')
+    region = region ?? this.on(node, ast.isViewRuleGroup)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDynamicViewStep)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeploymentNode)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeployedInstance)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeploymentRelation)
+      ?.properties('title', 'technology')
+    region = region ?? this.on(node, ast.isLinkProperty)
+      ?.properties('title')
+
+    if (region) {
+      this.extendedFormattingCommands.push({ type: 'normalizeQuotes', region })
+    }
+  }
+
+  private quotesNormalizerFactory(commands: ExtendedFormattingCommand[]) {
+    const quoteStyle = this.options.quoteStyle != 'auto'
+      ? this.options.quoteStyle
+      : this.getAutoQuoteStyle(commands)
+
+    return (command: ExtendedFormattingCommand, edits: TextEdit[]) => {
+      const quotesToReplace = quoteStyle === 'single' ? '"' : '\''
+      const quotesToInsert = quoteStyle === 'single' ? '\'' : '"'
+
+      const newEdits = command.region.nodes.map(node => ({
+        range: node.range,
+        newText: node.text.replaceAll(quotesToReplace, quotesToInsert),
+      }))
+
+      edits.push(...newEdits)
+    }
+  }
+
+  private getAutoQuoteStyle(commands: ExtendedFormattingCommand[]): QuoteStyle {
+    const nodes = commands.flatMap(x => x.region.nodes)
+    const doubleQuotesCount = nodes.filter(x => x.text[0] == '"').length
+    return doubleQuotesCount * 2 >= nodes.length ? 'double' : 'single'
+  }
+
+  private onConfigurationUpdate(options: LikeC4FormatterOptions) {
+    this.options = {
+      ...this.options,
+      ...options ?? {
+        quoteStyle: 'auto',
+      },
+    }
   }
 }

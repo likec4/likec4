@@ -1,14 +1,14 @@
-import { createOptionalContext, createSafeContext } from '@mantine/core'
+import { createSafeContext } from '@mantine/core'
 import { useStore } from '@nanostores/react'
 import { type WritableAtom, atom } from 'nanostores'
-import { type PropsWithChildren, useRef } from 'react'
+import { type PropsWithChildren, createContext, useContext, useRef } from 'react'
 
-const [ReduceGraphicsModeCtx, useReducedGraphics] = createOptionalContext<boolean>()
+const ReduceGraphicsModeCtx = createContext<boolean | null>(null)
 /**
  * Hook to determine if reduced graphics mode is enabled.
  */
 export function useIsReducedGraphics() {
-  const isReduced = useReducedGraphics()
+  const isReduced = useContext(ReduceGraphicsModeCtx)
   if (isReduced === null) {
     console.warn('ReduceGraphicsMode is not provided')
   }
@@ -30,9 +30,9 @@ export function ReduceGraphicsContext({ reduceGraphics, children }: PropsWithChi
   }
   return (
     <PanningAtomSafeCtx value={$isPanningRef.current}>
-      <ReduceGraphicsModeCtx value={reduceGraphics}>
+      <ReduceGraphicsModeCtx.Provider value={reduceGraphics}>
         {children}
-      </ReduceGraphicsModeCtx>
+      </ReduceGraphicsModeCtx.Provider>
     </PanningAtomSafeCtx>
   )
 }

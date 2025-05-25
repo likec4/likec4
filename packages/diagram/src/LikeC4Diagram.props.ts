@@ -11,8 +11,9 @@ import type {
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
+import type { CustomNodes } from './custom/customNodes'
 
-export type { WhereOperator }
+export type { CustomNodes, WhereOperator }
 
 export type DiagramNodeWithNavigate<ID = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ID
@@ -221,6 +222,11 @@ export interface LikeC4DiagramProperties {
    * Customize layout of the controls on the top left
    */
   renderControls?: ControlsCustomLayout | undefined
+
+  /**
+   * Override node renderers
+   */
+  renderNodes?: CustomNodes | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges

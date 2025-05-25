@@ -1,0 +1,447 @@
+---
+title: React Components
+description: How to use LikeC4 React Library
+head:
+  - tag: title
+    content: React components | LikeC4
+sidebar:
+  label: LikeC4 React
+  order: 4
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6    
+---
+
+import { Tabs, TabItem as Tab, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/%40likec4%2Fdiagram" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
+
+LikeC4 React library is available to embed diagrams into your applications.  
+Although you can use it directly, consider [Vite Plugin](/tooling/vite-plugin/)
+or [CLI](/tooling/code-generation/react/) for smoother development experience.
+
+## Usage
+
+You must have `react` and `react-dom` installed.  
+Add [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) and [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram):
+
+<PackageManagers
+    pkg="@likec4/core @likec4/diagram"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+LikeC4 React library can be used in two ways.
+
+
+### Bundled
+
+This is the easiest way to use the library.
+Diagram renders inside shadow DOM, already includes all the dependencies and takes care of the styling.
+
+#### LikeC4ModelProvider
+
+Diagram requires instance of `LikeC4Model` to render.  
+You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.
+
+
+<Tabs>
+ <Tab label='Model from builder'>    
+    ```tsx copy collapse={6-51}
+    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+    import { Builder } from "@likec4/core/builder"
+
+    const likec4model = Builder
+      .specification({
+        elements: {
+          actor: {
+            style: {
+              shape: 'person',
+            },
+          },
+          system: {},
+          component: {},
+        },
+        relationships: {
+          likes: {},
+        },
+        tags: ['tag1', 'tag2', 'tag1'],
+      })
+      .model(({ actor, system, component, relTo, rel }, _) =>
+        _(
+          actor('alice'),
+          actor('bob'),
+          rel('alice', 'bob', {
+            tags: ['tag1'], // you get code completion for tags
+            kind: 'likes',  // code completion for kind
+          }),
+          system('cloud', { tags: ['tag1', 'tag2'] }).with(
+            component('backend').with(
+              component('api'),
+              component('db'),
+              // code completion for relationships
+              rel('cloud.backend.api', 'cloud.backend.db')
+            ),
+            component('frontend').with(
+              relTo('cloud.backend.api')
+            ),
+          ),
+        )
+      )    
+      .views(({ view, viewOf, $include, $style }, _) =>
+        _(
+          view('index', 'Index').with(
+            $include('cloud.*'),
+          ),
+          viewOf('ui', 'cloud.ui').with(
+            $include('* -> cloud.**'),
+            $style('cloud.ui', { color: 'red' }),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    function App() {
+      return (
+        <LikeC4ModelProvider model={likec4model}>
+          {/* ... */}
+        </LikeC4ModelProvider>
+      )
+    }      
+    ```
+  </Tab>
+
+  <Tab label='From dump'>
+    Prepare model with [export](/tooling/cli/#export-to-json):
+
+    ```sh
+    likec4 export json -o ./src/likec4-dump.json
+    ```
+
+    Then import it:
+
+    ```tsx copy
+    import { LikeC4Model } from '@likec4/core/model'
+    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+    import dump from './likec4-dump.json' with { type: 'json' }
+
+    const likec4model = LikeC4Model.fromDump(dump)
+
+    function App() {
+      return (
+        <LikeC4ModelProvider model={likec4model}>
+          {/* ... */}
+        </LikeC4ModelProvider>
+      )
+    }
+    ```
+  </Tab>
+</Tabs>
+
+#### LikeC4View
+
+```tsx
+import { LikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <LikeC4View
+        viewId="index1"
+        onNodeClick={(nodeId) => console.log(nodeId)}
+      />
+
+      <LikeC4View viewId="index2" />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts) for available props.
+
+#### ReactLikeC4
+
+`LikeC4View` renders views from your model, and allows exploring in the popup browser.
+Component works in most use-cases, but if you need more - use `ReactLikeC4`:
+
+```tsx
+import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+
+function App() {
+  const [viewId, setViewId] = useState('index')
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <ReactLikeC4
+        viewId={viewId}
+        pannable
+        zoomable={false}
+        keepAspectRatio
+        showNavigationButtons
+        enableDynamicViewWalkthrough={false}
+        enableElementDetails
+        enableRelationshipDetails
+        showDiagramTitle={false}
+        onNavigateTo={setViewId}
+        onNodeClick={...}
+      />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+#### Icons
+
+If you use built-in icons, install [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons) and:
+
+```tsx
+import { type ElementIconRenderer, LikeC4, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
+import { lazy, Suspense } from 'react'
+
+// Better to lazy load icons, bundle is quite large at the moment
+const Icon = lazy(async () => {
+  const { IconRenderer } = await import('@likec4/icons/all')
+  return { default: IconRenderer }
+})
+
+const IconRenderer: ElementIconRenderer = (props) => (
+  <Suspense>
+    <Icon {...props} />
+  </Suspense>
+)
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <LikeC4View
+        viewId="index1"
+        renderIcon={IconRenderer}
+      />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+### Library
+
+If you want to use package as a library with your bundler, you have to take care of CSS.
+
+Library uses [Mantine](https://mantine.dev). If you already use it and have `MantineProvider` on the scope - LikeC4 diagramr will use it.
+Otherwise, it will wrap itself with `MantineProvider`.  
+Even if you are not using Mantine in your app, its styles are required for the diagrams to work (don't worry, Mantine is tree-shakable).
+
+Here are the options:
+
+#### With bundled styles
+
+1. Import all styles
+
+   ```css
+   @import '@likec4/diagram/styles.css'
+   ```
+
+   This includes all styles, including [Mantine](https://mantine.dev) styles.
+
+2. If you are using Mantine
+
+   ```css
+   @layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+   @import "@mantine/core/styles.layer.css";
+   @import "@likec4/diagram/styles-min.css";
+   ```
+
+   :::caution
+   Order of layers is important, make sure `mantine` layer is before `xyflow`, and `xyflow` is before `tokens`.
+   :::
+
+3. Font.\
+   LikeC4Diagram uses [`IBM Plex Sans`](https://fontsource.org/fonts/ibm-plex-sans) by default.\
+   You can bundle it, or import from [fontsource](https://fontsource.org/fonts/ibm-plex-sans), any other CDN or:
+
+   ```css
+   @import '@likec4/diagram/styles-font.css'
+   ```
+
+    You can override the font, this is explained later.
+
+   
+#### With PandaCSS
+
+Check [PandaCSS](https://panda-css.com) docs for full setup instructions.  
+LikeC4 provides preset.
+
+<PackageManagers
+    pkg="@likec4/styles"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+Configure your `panda.config.ts`:
+
+```ts
+import likec4preset from '@likec4/styles/preset'
+import { defineConfig } from '@pandacss/dev'
+
+export default defineConfig({
+  include: [
+    'src/**/*.{ts,tsx}',
+    // Include likec4 diagram source code to get the styles
+    './node_modules/@likec4/diagram/panda.buildinfo.json',
+  ],
+  importMap: [
+    '@likec4/styles',
+  ],
+  presets: [
+    likec4preset,
+  ],
+  theme: {
+    extend: {
+      // Here you can override/extend the theme
+    },
+  },
+})
+```
+
+You global CSS should look like this:
+
+```css
+@layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+@import "@mantine/core/styles.layer.css";
+@import "@likec4/diagram/styles-xyflow.css";
+@import "@likec4/diagram/styles-font.css";
+```
+
+#### Usage
+
+Same as [ReactLikeC4](#reactlikec4), but import from `@likec4/diagram`
+and you have to provide instance of `DiagramView`:
+
+```tsx
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+
+function LikeC4View({viewId}: {viewId: string}) {
+  const model = useLikeC4Model(true).findView(viewId)
+  if (!model?.isDiagram()) {
+    throw new Error('View not found')
+  }
+  return (
+    <LikeC4Diagram
+      view={model.$view} 
+      readOnly
+      pannable
+      zoomable={false}
+      keepAspectRatio
+      showNavigationButtons
+      enableDynamicViewWalkthrough={false}
+      enableElementDetails
+      enableRelationshipDetails
+      showDiagramTitle={false}
+    />
+  )
+}
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <LikeC4View viewId="index" />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+## Customization
+
+You can render any component inside `LikeC4Diagram` (or `LikeC4View`/`ReactLikeC4` if you are using bundle):
+
+```tsx
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+import { Panel, ViewportPortal } from '@xyflow/react'
+
+function App() {
+  return (
+    <LikeC4Diagram>
+      <YourComponent />
+
+      {/* You can use components from xyflow  */}
+      <Panel position="top">
+        <p>Your component as a panel</p>
+        <a href="https://reactflow.dev/examples">Check examples</a>
+      </Panel>
+
+      <ViewportPortal>
+        <div
+          style={{
+            transform: 'translate(100px, 100px)',
+            position: 'absolute',
+          }}>
+          This div is positioned at [100, 100] on the diagram canvas
+        </div>
+      </ViewportPortal>
+    </LikeC4Diagram>
+  )
+}
+```
+
+### Custom node renderers
+
+LikeC4Diagram can use custom node renderers.\
+Compose custom nodes renderers using primitives from `@likec4/diagram/custom` (or `@likec4/diagram/bundle/custom` for the bundled version).\
+See [customNodes.tsx](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.tsx) for examples.
+
+```tsx
+import { LikeC4Diagram } from '@likec4/diagram'
+import {
+  ElementActions,
+  ElementDetailsButtonWithHandler,
+  elementNode,
+  ElementNodeContainer,
+  ElementShape,
+  ElementTitle,
+  ElementToolbar,
+  IfNotReadOnly,
+} from '@likec4/diagram/custom'
+import { IconPlus } from '@tabler/icons-react'
+
+const customNodes = {
+  element: elementNode(({ nodeProps, nodeModel }) => (
+    <ElementNodeContainer nodeProps={nodeProps}>
+      <ElementShape {...nodeProps} />
+      <ElementTitle {...nodeProps} />
+      {/* Add extra buttons */}
+      <ElementActions
+        {...nodeProps}
+        extraButtons={[
+          {
+            key: 'plus',
+            icon: <IconPlus />,
+            onClick: () => console.log('extra'),
+          },
+        ]}
+      />
+      {/* Add extra info */}
+      <div style={{ position: 'absolute', bottom: 0 }}>
+        {nodeModel.element.getMetadata('your-attr')}
+      </div>
+    </ElementNodeContainer>
+  )),
+}
+
+function App() {
+  return (
+    <LikeC4Diagram
+      view={view}
+      renderNodes={customNodes}
+    />
+  )
+}
+```
+
+### Custom styles
+
+LikeC4Diagram uses [PandaCSS](https://panda-css.com) for styling. You can use it to customize the styles.
+
+TODO: add example

@@ -1,19 +1,25 @@
-import type { ActorRefFromLogic, ActorSystem, SnapshotFrom } from 'xstate'
+import type { ActorRefFromLogic, ActorSystem, EventFromLogic, SnapshotFrom } from 'xstate'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
 import type { DiagramMachineLogic } from './diagram-machine'
 import type { SyncLayoutActorLogic } from './syncManualLayoutActor'
 
 export type System = ActorSystem<{
   actors: {
-    diagram: DiagramActorRef
+    diagram: ActorRefFromLogic<DiagramMachineLogic>
     overlays: OverlaysActorRef
   }
 }>
 
-export type DiagramActorRef = Omit<ActorRefFromLogic<DiagramMachineLogic>, 'system'> & {
+export interface DiagramActorRef extends ActorRefFromLogic<DiagramMachineLogic> {
   system: System
 }
+
+// export type DiagramActorRef = Omit<ActorRefFromLogic<DiagramMachineLogic>, 'system'> & {
+//   system: System
+// }
 export type DiagramActorSnapshot = SnapshotFrom<DiagramMachineLogic>
+
+export type DiagramActorEvent = EventFromLogic<DiagramMachineLogic>
 
 export type { Context as DiagramContext } from './diagram-machine'
 

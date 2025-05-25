@@ -1,9 +1,9 @@
+import { LikeC4Model } from '@likec4/core/model'
+import { type DiagramView, type LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
-import { type DiagramView, type LayoutedLikeC4ModelData, type LikeC4Model, createLikeC4Model } from 'likec4/model'
 import { useMemo } from 'react'
 import { mapValues } from 'remeda'
-import { useStore } from './nanostores'
-import { type Atom, type WritableAtom, computed } from './nanostores'
+import { type Atom, type WritableAtom, computed, useStore } from './nanostores'
 
 // This is a workaround to avoid type errors in the Vite plugin
 export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
@@ -13,7 +13,7 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
   useLikeC4Views: () => ReadonlyArray<DiagramView>
   useLikeC4View: (viewId: string) => DiagramView | null
 } => {
-  const $likec4model: Atom<LikeC4Model.Layouted> = computed($atom, (data) => createLikeC4Model(data))
+  const $likec4model: Atom<LikeC4Model.Layouted> = computed($atom, (data) => LikeC4Model.create(data))
 
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
     $likec4model,

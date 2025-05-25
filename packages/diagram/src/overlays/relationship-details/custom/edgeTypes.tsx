@@ -7,12 +7,12 @@ import {
   EdgeLabelContainer,
   EdgePath,
 } from '../../../base/primitives'
-import { useEnabledFeature } from '../../../context'
+import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
 export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeData>((props) => {
-  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const { enableNavigateTo } = useEnabledFeatures()
   const {
     sourceX,
     targetY,

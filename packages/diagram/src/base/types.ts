@@ -40,8 +40,8 @@ export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = Optio
 /**
  * ReactFlow Custom Node properties with BaseNodeData at least
  */
-export type NodeProps<T extends Record<string, unknown> = {}> = ReactFlowNodeProps<
-  RFNode<Base.NodeData & T, any>
+export type NodeProps<T extends Record<string, unknown> = {}, NodeType extends string = string> = ReactFlowNodeProps<
+  RFNode<Base.NodeData & T, NodeType>
 >
 
 /**
@@ -68,41 +68,36 @@ export namespace Base {
   // 'immediate' means that the node is dimmed without delay
   export type Dimmed = 'immediate' | boolean
 
-  export type NodeData<Data extends Record<string, unknown> = {}> = Simplify<
-    Data & {
-      /**
-       * Whether the cursor is hovering over the node
-       */
-      hovered?: boolean
-      /**
-       * Whether the node is dimmed
-       * 'immediate' means that the node is dimmed without delay
-       */
-      dimmed?: Dimmed
-    }
-  >
-
+  export type NodeData = {
+    /**
+     * Whether the cursor is hovering over the node
+     */
+    hovered?: boolean
+    /**
+     * Whether the node is dimmed
+     * 'immediate' means that the node is dimmed without delay
+     */
+    dimmed?: Dimmed
+  }
   export type Node = RFNode<NodeData>
 
   export type NodeProps = ReactFlowNodeProps<RFNode<Base.NodeData, any>>
 
-  export type EdgeData<Data extends Record<string, unknown> = {}> = Simplify<
-    Data & {
-      /**
-       * Whether the cursor is hovering over the edge
-       */
-      hovered?: boolean
-      /**
-       * Whether the edge is active (animated and highlighted)
-       */
-      active?: boolean
-      /**
-       * Whether the edge is dimmed
-       * 'immediate' means that the edge is dimmed without delay
-       */
-      dimmed?: Dimmed
-    }
-  >
+  export type EdgeData = {
+    /**
+     * Whether the cursor is hovering over the edge
+     */
+    hovered?: boolean
+    /**
+     * Whether the edge is active (animated and highlighted)
+     */
+    active?: boolean
+    /**
+     * Whether the edge is dimmed
+     * 'immediate' means that the edge is dimmed without delay
+     */
+    dimmed?: Dimmed
+  }
 
   // export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
   export type Edge = SetRequired<RFEdge<EdgeData>, 'data'>

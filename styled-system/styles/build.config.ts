@@ -15,8 +15,13 @@ export default defineBuildConfig({
   },
   rollup: {
     inlineDependencies: true,
-    resolve: {
-      exportConditions: ['sources'],
+    dts: {
+      compilerOptions: {
+        baseUrl: '.',
+        paths: {
+          '@likec4/style-preset/src': ['../style-preset/src/index.ts'],
+        },
+      },
     },
   },
   hooks: {
