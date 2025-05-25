@@ -7,6 +7,7 @@
     "typecheck": {
       "dependsOn": [
         "@likec4/styles#generate",
+        "@likec4/core#typecheck",
         "topo"
       ],
       "outputs": [

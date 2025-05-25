@@ -89,7 +89,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
     "pregenerate": "rm -f src/generated/*",

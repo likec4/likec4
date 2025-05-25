@@ -94,9 +94,8 @@
     },
     "typecheck": {
       "dependsOn": [
-        "^generate",
-        "generate",
-        "topo"
+        "^typecheck",
+        "generate"
       ],
       "outputs": [
         "lib/**"

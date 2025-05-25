@@ -13,6 +13,18 @@
       ],
       "outputLogs": "new-only"
     },
+    "typecheck": {
+      "dependsOn": [
+        "@likec4/core#typecheck",
+        "@likec4/language-server#typecheck",
+        "generate",
+        "topo"
+      ],
+      "outputs": [
+        "lib/**"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
         "generate",
