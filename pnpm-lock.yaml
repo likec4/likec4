@@ -77,8 +77,8 @@ catalogs:
       version: 1.7.0
   hono:
     hono:
-      specifier: ^4.7.9
-      version: 4.7.9
+      specifier: ^4.7.10
+      version: 4.7.10
     hono-sessions:
       specifier: ^0.7.2
       version: 0.7.2
@@ -424,10 +424,10 @@ importers:
         version: 14.0.6
       '@hono/oauth-providers':
         specifier: ^0.7.1
-        version: 0.7.1(hono@4.7.9)
+        version: 0.7.1(hono@4.7.10)
       '@hono/valibot-validator':
         specifier: ^0.5.2
-        version: 0.5.2(hono@4.7.9)(valibot@1.0.0(typescript@5.8.3))
+        version: 0.5.2(hono@4.7.10)(valibot@1.0.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
@@ -523,7 +523,7 @@ importers:
         version: 5.2.2
       hono:
         specifier: catalog:hono
-        version: 4.7.9
+        version: 4.7.10
       hono-sessions:
         specifier: catalog:hono
         version: 0.7.2
@@ -5672,8 +5672,8 @@ packages:
   hono-sessions@0.7.2:
     resolution: {integrity: sha512-QuoDqovzibnIYK0E3G7Pfoe63mYsyY8WgR1wmAuRDWpxpIglDVxShBn4VveFC+VGZummY407XeImoJhUpGcJMg==}
 
-  hono@4.7.9:
-    resolution: {integrity: sha512-/EsCoR5h7N4yu01TDu9GMCCJa6ZLk5ZJIWFFGNawAXmd1Tp53+Wir4xm0D2X19bbykWUlzQG0+BvPAji6p9E8Q==}
+  hono@4.7.10:
+    resolution: {integrity: sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -10580,13 +10580,13 @@ snapshots:
       cac: 6.7.14
       mime-types: 2.1.35
 
-  '@hono/oauth-providers@0.7.1(hono@4.7.9)':
+  '@hono/oauth-providers@0.7.1(hono@4.7.10)':
     dependencies:
-      hono: 4.7.9
+      hono: 4.7.10
 
-  '@hono/valibot-validator@0.5.2(hono@4.7.9)(valibot@1.0.0(typescript@5.8.3))':
+  '@hono/valibot-validator@0.5.2(hono@4.7.10)(valibot@1.0.0(typescript@5.8.3))':
     dependencies:
-      hono: 4.7.9
+      hono: 4.7.10
       valibot: 1.0.0(typescript@5.8.3)
 
   '@hpcc-js/wasm-graphviz@1.7.0': {}
@@ -14166,10 +14166,10 @@ snapshots:
 
   hono-sessions@0.7.2:
     dependencies:
-      hono: 4.7.9
+      hono: 4.7.10
       iron-webcrypto: 1.2.1
 
-  hono@4.7.9: {}
+  hono@4.7.10: {}
 
   hookable@5.5.3: {}
 
