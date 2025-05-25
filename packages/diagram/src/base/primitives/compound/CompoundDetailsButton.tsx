@@ -4,14 +4,17 @@ import { ActionIcon, Box } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { Simplify } from 'type-fest'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import { compoundActionBtn } from './actionbtns.css'
 
-type CompoundDetailsButtonProps = NodeProps & {
-  icon?: React.ReactNode
-  onClick: (e: React.MouseEvent) => void
-}
+type CompoundDetailsButtonProps = Simplify<
+  NodeProps<{}> & {
+    icon?: React.ReactNode
+    onClick: (e: React.MouseEvent) => void
+  }
+>
 
 export function CompoundDetailsButton({
   data: {

@@ -1,6 +1,5 @@
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
-import * as m from 'motion/react-m'
 import type { NodeProps } from '../../../base'
 import {
   CompoundNodeContainer,
@@ -34,7 +33,7 @@ const ElementDetailsButtonWithHandler = (
 
 export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
   return (
-    <ElementNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
+    <ElementNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
       <ElementShape {...props} />
       <ElementTitle {...props} />
       <ElementDetailsButtonWithHandler {...props} />

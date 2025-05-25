@@ -8,6 +8,7 @@ import type {
   RelationshipLineType,
   ViewId,
 } from '@likec4/core'
+import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipsBrowserTypes {
@@ -21,7 +22,8 @@ export namespace RelationshipsBrowserTypes {
     out: string[]
   }
 
-  export type ElementNodeData = Base.NodeData<
+  export type ElementNodeData = Simplify<
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -45,7 +47,8 @@ export namespace RelationshipsBrowserTypes {
     }
   >
 
-  export type CompoundNodeData = Base.NodeData<
+  export type CompoundNodeData = Simplify<
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -71,9 +74,7 @@ export namespace RelationshipsBrowserTypes {
 
   // export type NonEmptyNode = ElementNode | CompoundNode
 
-  export type EmptyNodeData = Base.NodeData<{
-    column: Column
-  }>
+  export type EmptyNodeData = Base.NodeData & { column: Column }
 
   export type EmptyNode = ReactFlowNode<EmptyNodeData, 'empty'>
 
@@ -82,16 +83,18 @@ export namespace RelationshipsBrowserTypes {
 
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
-  export type EdgeData = Base.EdgeData<{
-    sourceFqn: Fqn
-    targetFqn: Fqn
-    relations: NonEmptyArray<RelationId>
-    color: Color | undefined
-    label: string | null
-    navigateTo: ViewId | null
-    line: RelationshipLineType
-    existsInCurrentView: boolean
-  }>
+  export type EdgeData = Simplify<
+    Base.EdgeData & {
+      sourceFqn: Fqn
+      targetFqn: Fqn
+      relations: NonEmptyArray<RelationId>
+      color: Color | undefined
+      label: string | null
+      navigateTo: ViewId | null
+      line: RelationshipLineType
+      existsInCurrentView: boolean
+    }
+  >
 
   export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
 }

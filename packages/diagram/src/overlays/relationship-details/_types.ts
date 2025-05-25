@@ -1,4 +1,5 @@
 import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
+import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipDetailsTypes {
@@ -11,7 +12,8 @@ export namespace RelationshipDetailsTypes {
     out: string[]
   }
 
-  export type ElementNodeData = Base.NodeData<
+  export type ElementNodeData =
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -32,9 +34,9 @@ export namespace RelationshipDetailsTypes {
       icon: IconUrl
       ports: Ports
     }
-  >
 
-  export type CompoundNodeData = Base.NodeData<
+  export type CompoundNodeData =
+    & Base.NodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -50,7 +52,6 @@ export namespace RelationshipDetailsTypes {
       icon?: IconUrl
       ports: Ports
     }
-  >
 
   export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
 
@@ -61,15 +62,17 @@ export namespace RelationshipDetailsTypes {
 
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
-  export type EdgeData = Base.EdgeData<{
-    relationId: RelationId
-    color: Color | undefined
-    label: string | null
-    technology?: string | undefined
-    description?: string | undefined
-    navigateTo: ViewId | null
-    line: RelationshipLineType
-  }>
+  export type EdgeData = Simplify<
+    Base.EdgeData & {
+      relationId: RelationId
+      color: Color | undefined
+      label: string | null
+      technology?: string | undefined
+      description?: string | undefined
+      navigateTo: ViewId | null
+      line: RelationshipLineType
+    }
+  >
 
   export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
 }

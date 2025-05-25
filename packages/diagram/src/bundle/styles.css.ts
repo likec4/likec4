@@ -10,8 +10,8 @@ import {
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
+import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
-import fontsCss from './font.css?inline'
 
 export const DefaultTheme = createTheme({
   autoContrast: true,

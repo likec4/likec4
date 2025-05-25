@@ -6,6 +6,7 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "*.mts",
@@ -64,23 +65,22 @@
     },
     "./dev": "./dev.ts"
   },
-  "dependencies": {
-    "@pandacss/dev": "catalog:css",
-    "@pandabox/unplugin": "^0.2.1"
+  "peerDependencies": {
+    "@pandacss/dev": "catalog:css"
   },
   "devDependencies": {
-    "@pandabox/utils": "^0.0.5",
     "@likec4/style-preset": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
-    "std-env": "catalog:utils",
+    "@pandabox/utils": "^0.0.5",
+    "@pandabox/unplugin": "^0.2.1",
+    "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@pandacss/dev": "catalog:css",
     "postcss": "catalog:css",
-    "remeda": "catalog:utils",
-    "nano-spawn": "^0.2.0",
+    "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

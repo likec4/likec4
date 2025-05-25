@@ -215,16 +215,19 @@ export function ElementDetailsCard({
     }
   }, 20)
 
+  /**
+   * This delay improves "enter" animations,
+   * if  current tab is "Relationships"
+   */
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 150)
+  }, 200)
 
   return (
     <m.dialog
       ref={ref}
       className={cx(styles.dialog, RemoveScroll.classNames.fullWidth)}
       layout
-      layoutRoot
       initial={{
         [styles.backdropBlur]: '0px',
         [styles.backdropOpacity]: '5%',
@@ -255,14 +258,15 @@ export function ElementDetailsCard({
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
         <Card
+          shadow="md"
+          component={m.div}
+          layout
+          layoutRoot
           drag
+          dragControls={controls}
           dragElastic={0}
           dragMomentum={false}
           dragListener={false}
-          dragControls={controls}
-          withBorder
-          shadow="md"
-          component={m.div}
           className={cx(
             css({
               likec4Palette: nodeModel?.color ?? elementModel.color,
@@ -296,13 +300,11 @@ export function ElementDetailsCard({
             width: width as any,
             height: height as any,
           }}>
-          <Box
-            className={styles.cardHeader}
-            onPointerDown={e => controls.start(e)}>
+          <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
             <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
               <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
                 {elementIcon}
-                <Box>
+                <div>
                   <Text
                     component={'div'}
                     className={styles.title}>
@@ -313,7 +315,7 @@ export function ElementDetailsCard({
                       {notation}
                     </Text>
                   )}
-                </Box>
+                </div>
               </Group>
               <CloseButton
                 size={'lg'}
@@ -323,11 +325,11 @@ export function ElementDetailsCard({
                 }} />
             </Group>
             <Group align="baseline" gap={'sm'} wrap="nowrap">
-              <Box>
+              <div>
                 <SmallLabel>kind</SmallLabel>
                 <Badge radius={'sm'} size="sm" fw={600} color="gray">{elementModel.kind}</Badge>
-              </Box>
-              <Box flex={1}>
+              </div>
+              <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
                 <Flex gap={4} flex={1} mt={6}>
                   {elementModel.tags.map((tag) => (
@@ -335,7 +337,7 @@ export function ElementDetailsCard({
                   ))}
                   {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                 </Flex>
-              </Box>
+              </div>
               <ActionIconGroup
                 style={{
                   alignSelf: 'flex-end',
@@ -384,7 +386,7 @@ export function ElementDetailsCard({
                 )}
               </ActionIconGroup>
             </Group>
-          </Box>
+          </div>
           <Tabs
             value={activeTab}
             onChange={v => setActiveTab(v as any)}

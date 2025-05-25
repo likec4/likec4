@@ -7,7 +7,6 @@ import {
   type ActorRefFrom,
   type SnapshotFrom,
   assertEvent,
-  assign,
   enqueueActions,
   fromCallback,
   setup,
@@ -59,7 +58,7 @@ const hotkeyLogic = fromCallback(({ sendBack }: {
   }
 })
 
-export const overlaysActorLogic = setup({
+const _overlaysActorLogic = setup({
   types: {
     context: {} as OverlaysContext,
     events: {} as OverlayActorEvent,
@@ -278,6 +277,8 @@ export const overlaysActorLogic = setup({
   ],
 })
 
-export interface OverlaysActorLogic extends ActorLogicFrom<typeof overlaysActorLogic> {}
+export interface OverlaysActorLogic extends ActorLogicFrom<typeof _overlaysActorLogic> {}
+export const overlaysActorLogic: OverlaysActorLogic = _overlaysActorLogic
+
 export type OverlaysActorSnapshot = SnapshotFrom<OverlaysActorLogic>
 export interface OverlaysActorRef extends ActorRefFrom<OverlaysActorLogic> {}

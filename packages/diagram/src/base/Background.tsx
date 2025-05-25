@@ -1,14 +1,10 @@
 import { nonexhaustive } from '@likec4/core'
 import { type BackgroundProps, Background as XYFlowBackground, BackgroundVariant } from '@xyflow/react'
-import type { OverrideProperties } from 'type-fest'
 
 export type XYBackgroundVariant = 'dots' | 'lines' | 'cross'
 export type XYBackground =
   | XYBackgroundVariant
   | BackgroundProps
-// | OverrideProperties<BackgroundProps, {
-//   variant: XYBackgroundVariant
-// }>
 
 export type XYBackgroundProps = {
   background: XYBackground

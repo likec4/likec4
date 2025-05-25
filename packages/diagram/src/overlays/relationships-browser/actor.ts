@@ -186,7 +186,7 @@ export type Input = {
   // parentRef?: AnyActorRef| null
 }
 
-export type Context = Readonly<{
+export interface Context {
   subject: Fqn
   viewId: ViewId | null
   scope: 'global' | 'view'
@@ -200,7 +200,7 @@ export type Context = Readonly<{
   navigateFromNode: string | null
   xynodes: RelationshipsBrowserTypes.Node[]
   xyedges: RelationshipsBrowserTypes.Edge[]
-}>
+}
 
 export type Events =
   | { type: 'xyflow.init'; instance: XYFLowInstance; store: XYStoreApi }

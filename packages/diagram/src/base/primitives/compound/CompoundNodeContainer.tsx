@@ -1,4 +1,4 @@
-import type { DiagramNode } from '@likec4/core'
+import type { Color, ElementStyle } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { type HTMLMotionProps, m } from 'motion/react'
 import { type PropsWithChildren } from 'react'
@@ -7,12 +7,11 @@ import { useIsReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as styles from './CompoundNodeContainer.css'
 
-type RequiredData = Pick<
-  DiagramNode,
-  | 'color'
-  | 'depth'
-  | 'style'
->
+export type RequiredData = {
+  color: Color
+  depth: number
+  style: ElementStyle
+}
 
 type CompoundNodeContainerProps =
   & Omit<HTMLMotionProps<'div'>, 'children'>
@@ -29,6 +28,7 @@ export function CompoundNodeContainer({
       ...data
     },
   },
+  className,
   children,
   style,
   ...rest
@@ -67,6 +67,7 @@ export function CompoundNodeContainer({
         }),
         classes.root,
         'likec4-compound-node',
+        className,
       )}
       initial={false}
       data-likec4-hovered={isHovered}

@@ -1,13 +1,23 @@
-import { MantineContext } from '@mantine/core'
-import { type PropsWithChildren, useContext } from 'react'
+import { MantineContext, MantineProvider } from '@mantine/core'
+import { type PropsWithChildren, useContext, useEffect } from 'react'
 
 type EnsureMantineProps = PropsWithChildren<{}>
 
 export function EnsureMantine({ children }: EnsureMantineProps) {
   const mantineCtx = useContext(MantineContext)
 
+  useEffect(() => {
+    if (!mantineCtx) {
+      console.warn('LikeC4Diagram must be a child of MantineProvider')
+    }
+  }, [])
+
   if (!mantineCtx) {
-    throw new Error('LikeC4Diagram must be a child of MantineProvider')
+    return (
+      <MantineProvider>
+        {children}
+      </MantineProvider>
+    )
   }
 
   return <>{children}</>

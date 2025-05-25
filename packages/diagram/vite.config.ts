@@ -1,6 +1,7 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { spawnSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
@@ -48,6 +49,13 @@ const defaultConfig = defineConfig({
       ],
     },
   },
+  esbuild: {
+    jsxDev: false,
+    minifyIdentifiers: false,
+    minifyWhitespace: true,
+    minifySyntax: true,
+    tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
+  },
   build: {
     emptyOutDir: true,
     cssCodeSplit: true,
@@ -65,6 +73,10 @@ const defaultConfig = defineConfig({
       input: [
         'src/index.ts',
         'src/bundle/index.ts',
+        'src/styles.css',
+        'src/styles-font.css',
+        'src/styles-min.css',
+        'src/styles-xyflow.css',
       ],
       experimentalLogSideEffects: true,
       external: [
@@ -132,6 +144,7 @@ const bundleConfig = defineConfig({
     minifyIdentifiers: false,
     minifyWhitespace: true,
     minifySyntax: true,
+    tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
   },
   build: {
     outDir: 'bundle',
@@ -140,11 +153,19 @@ const bundleConfig = defineConfig({
     cssMinify: true,
     target: 'esnext',
     lib: {
-      entry: 'src/bundle/index.ts',
+      entry: {
+        index: 'src/bundle/index.ts',
+        custom: 'src/bundle/custom.ts',
+      },
       formats: ['es'],
-      fileName: 'index',
+      fileName(_format, entryName) {
+        return `${entryName}.js`
+      },
     },
     rollupOptions: {
+      output: {
+        chunkFileNames: 'chunk-[hash].js',
+      },
       treeshake: {
         preset: 'recommended',
       },
@@ -172,7 +193,39 @@ const bundleConfig = defineConfig({
   ],
 })
 
+const stylesConfig = defineConfig({
+  build: {
+    outDir: 'dist',
+    emptyOutDir: false,
+    cssCodeSplit: true,
+    cssMinify: true,
+    lib: {
+      name: 'styles',
+      entry: 'src/styles.css',
+      formats: ['es'],
+    },
+    rollupOptions: {
+      input: {
+        styles: 'src/styles.css',
+        'styles-min': 'src/styles-min.css',
+        'styles-font': 'src/styles-font.css',
+        'styles-xyflow': 'src/styles-xyflow.css',
+      },
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [
+        pandacss(),
+      ],
+    },
+  },
+})
+
 export default defineConfig(({ mode }) => {
+  if (mode === 'css') {
+    return stylesConfig
+  }
   if (mode === 'bundle') {
     return bundleConfig
   }

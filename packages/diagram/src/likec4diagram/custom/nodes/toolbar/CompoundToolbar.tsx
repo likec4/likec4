@@ -2,7 +2,7 @@ import { type BorderStyle } from '@likec4/core'
 import { Box, SegmentedControl } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import type { NodeProps } from '../../../../base/types'
-import { useEnabledFeature } from '../../../../context'
+import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import type { Types } from '../../../types'
 import type { OnStyleChange } from './_shared'
 import { BrowseRelationshipsButton, GoToSourceButton, useHandlers } from './_shared'
@@ -11,7 +11,7 @@ import { Toolbar } from './Toolbar'
 
 type CompoundElementToolbarProps = NodeProps<Types.CompoundElementNodeData>
 export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
-  const { enableVscode, enableRelationshipBrowser } = useEnabledFeature('RelationshipBrowser', 'Vscode')
+  const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {
       style,
@@ -20,7 +20,6 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
   } = props
 
   const { elementColor, onColorPreview, onChange } = useHandlers(modelFqn, props)
-
   return (
     <Toolbar
       nodeProps={props}
@@ -46,7 +45,7 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
 
 type CompoundDeploymentToolbarProps = NodeProps<Types.CompoundDeploymentNodeData>
 export function CompoundDeploymentToolbar(props: CompoundDeploymentToolbarProps) {
-  const { enableVscode, enableRelationshipBrowser } = useEnabledFeature('RelationshipBrowser', 'Vscode')
+  const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {
       deploymentFqn,

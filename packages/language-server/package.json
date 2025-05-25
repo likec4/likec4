@@ -89,7 +89,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
     "pregenerate": "rm -f src/generated/*",
@@ -152,5 +152,5 @@
     "vscode-languageserver-types": "catalog:vscode",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

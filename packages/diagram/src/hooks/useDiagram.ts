@@ -1,4 +1,13 @@
-import { type DiagramView, type EdgeId, type ElementNotation, type Fqn, type NodeId, type ViewId } from '@likec4/core'
+import {
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  type EdgeId,
+  type ElementNotation,
+  type Fqn,
+  type NodeId,
+  type ViewId,
+} from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
@@ -8,17 +17,27 @@ import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import type { AlignmentMode } from '../state/aligners'
-import type { DiagramActorSnapshot, DiagramContext, SyncLayoutActorRef, SyncLayoutActorSnapshot } from '../state/types'
+import type {
+  DiagramActorEvent,
+  DiagramActorSnapshot,
+  DiagramContext,
+  SyncLayoutActorRef,
+  SyncLayoutActorSnapshot,
+} from '../state/types'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { useDiagramActorRef } from './safeContext'
 
 export { useDiagramActorRef }
 
+/**
+ * Diagram API
+ * Mostly for internal use
+ */
 export function useDiagram() {
   const actor = useDiagramActorRef()
   return useMemo(() => ({
     actor,
-    send: actor.send,
+    send: (event: DiagramActorEvent) => actor.send(event),
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
       actor.send({
         type: 'navigate.to',
@@ -52,11 +71,10 @@ export function useDiagram() {
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
-    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.Edge['data']>) => {
+    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
       actor.send({
         type: 'update.edgeData',
         edgeId,
-        // @ts-expect-error TODO: fix this
         data,
       })
     },
@@ -93,21 +111,21 @@ export function useDiagram() {
     /**
      * @warning Do not use in render phase
      */
-    getSnapshot: () => actor.getSnapshot(),
+    getSnapshot: (): DiagramActorSnapshot => actor.getSnapshot(),
     /**
      * @warning Do not use in render phase
      */
-    getContext: () => actor.getSnapshot().context,
+    getContext: (): DiagramContext => actor.getSnapshot().context,
     /**
      * @warning Do not use in render phase
      */
-    findDiagramNode: (xynodeId: string) => {
+    findDiagramNode: (xynodeId: string): DiagramNode | null => {
       return findDiagramNode(actor.getSnapshot().context, xynodeId)
     },
     /**
      * @warning Do not use in render phase
      */
-    findDiagramEdge: (xyedgeId: string) => {
+    findDiagramEdge: (xyedgeId: string): DiagramEdge | null => {
       return findDiagramEdge(actor.getSnapshot().context, xyedgeId)
     },
 
@@ -152,6 +170,9 @@ export function useDiagramSyncLayoutState<T = unknown>(
   return useXstateSelector(syncLayoutActorRef, useCallbackRef(selector), compare)
 }
 
+/**
+ * Read diagram context
+ */
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,

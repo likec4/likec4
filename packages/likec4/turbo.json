@@ -36,7 +36,8 @@
       "dependsOn": [
         "generate:app",
         "generate:icons"
-      ]
+      ],
+      "outputs": []
     },
     "build-react": {
       "dependsOn": [
@@ -56,7 +57,7 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/diagram#generate"
+        "@likec4/styles#build"
       ],
       "outputs": [
         "__app__/**"
@@ -88,17 +89,6 @@
         "!dev/**",
         "!test/**",
         "!tsconfig.react*.json"
-      ],
-      "outputLogs": "new-only"
-    },
-    "typecheck": {
-      "dependsOn": [
-        "^generate",
-        "generate",
-        "topo"
-      ],
-      "outputs": [
-        "lib/**"
       ],
       "outputLogs": "new-only"
     },

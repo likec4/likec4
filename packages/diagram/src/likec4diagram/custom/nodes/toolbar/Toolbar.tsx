@@ -1,15 +1,16 @@
-import { Box, Group, Paper, Stack, Text, Tooltip } from '@mantine/core'
+import { cx as clsx } from '@likec4/styles/css'
+import { Box, Group, Paper, Stack, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
-import clsx from 'clsx'
 import type { ReactNode } from 'react'
-import type { Base } from '../../../../base'
+import type { NodeProps } from '../../../../base/types'
 import { useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
+import type { Types } from '../../../types'
 import * as styles from './styles.css'
 
 export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
-  nodeProps: Base.NodeProps
+  nodeProps: NodeProps<Types.NodeData>
   title: ReactNode
 }
 

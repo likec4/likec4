@@ -4,7 +4,6 @@ export {
   DiagramFeatures,
   IfEnabled,
   IfNotEnabled,
-  useEnabledFeature,
   useEnabledFeatures,
 } from './DiagramFeatures'
 export type { EnabledFeatures } from './DiagramFeatures'

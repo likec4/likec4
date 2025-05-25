@@ -15,15 +15,14 @@ export function ViewReact() {
   const view = useCurrentDiagram()
 
   const onNavigateTo = useCallbackRef((viewId: ViewId) => {
-    const loc = router.buildLocation({
-      to: '.',
+    router.buildAndCommitLocation({
+      viewTransition: false,
       params: (current: any) => ({
         ...current,
         viewId,
       }),
       search: true,
     })
-    router.commitLocation(loc)
   })
 
   const title = view ? (view.title ?? view.id) : `${viewId} not found`

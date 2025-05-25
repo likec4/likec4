@@ -14,5 +14,10 @@
   ],
   "exclude": [
     "src/bundle/react-dom-server-mock.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
   ]
 }

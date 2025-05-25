@@ -25,7 +25,7 @@
     "server"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "wireit",
     "inspector": "wireit"
   },
@@ -68,5 +68,5 @@
     "zod": "catalog:utils",
     "wireit": "catalog:"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.11.0"
 }

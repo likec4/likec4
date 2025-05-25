@@ -1,13 +1,10 @@
 import { definePreset } from '@pandacss/dev'
 import { conditions } from './conditions'
+import { nodeOrEdge, root, rootNotReduced } from './const'
 import { compoundColors, globalCss, themeColors } from './generated'
+import { patterns } from './patterns'
 import { theme } from './theme'
-import { likec4Palette, likec4RelationPalette } from './utilities'
-
-const root = '.likec4-root'
-const rootNotReduced = `${root}:not([data-likec4-reduced-graphics])`
-
-const nodeOrEdge = `:where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container)`
+import { utilities } from './utilities'
 
 export default definePreset({
   name: 'likec4',
@@ -108,27 +105,9 @@ export default definePreset({
   },
 
   conditions,
-
-  utilities: {
-    extend: {
-      transition: {
-        values: ['fast'],
-        className: 'transition-fast',
-        transform(value, { token }) {
-          if (value !== 'fast') {
-            return {
-              transition: value,
-            }
-          }
-          return {
-            transition: `all ${token('durations.fast')}  ${token('easings.inOut')}`,
-          }
-        },
-      },
-      likec4Palette,
-      likec4RelationPalette,
-    },
-  },
-
+  patterns,
+  utilities,
   theme,
 })
+
+export { theme }

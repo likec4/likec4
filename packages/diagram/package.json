@@ -10,6 +10,9 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/diagram"
   },
+  "sponsor": {
+    "url": "https://github.com/sponsors/davydkov"
+  },
   "files": [
     "dist",
     "bundle",
@@ -29,6 +32,22 @@
         "default": "./dist/index.js"
       }
     },
+    "./custom": {
+      "sources": "./src/custom/index.ts",
+      "default": {
+        "types": "./dist/custom/index.d.ts",
+        "import": "./dist/custom/index.js",
+        "default": "./dist/custom/index.js"
+      }
+    },
+    "./bundle/custom": {
+      "sources": "./src/bundle/custom.ts",
+      "default": {
+        "types": "./dist/bundle/custom.d.ts",
+        "import": "./bundle/custom.js",
+        "default": "./bundle/custom.js"
+      }
+    },
     "./bundle": {
       "sources": "./src/bundle/index.ts",
       "default": {
@@ -38,17 +57,20 @@
       }
     },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
+    "./styles-min.css": "./dist/styles-min.css",
+    "./styles-font.css": "./dist/styles-font.css",
+    "./styles-xyflow.css": "./dist/styles-xyflow.css",
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json",
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -m bundle",
+    "build": "echo \"use pnpm turbo run build\" || true",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate"
@@ -57,6 +79,7 @@
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
@@ -66,7 +89,6 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
-    "clsx": "catalog:react",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
     "motion": "catalog:react",

@@ -34,10 +34,10 @@ export function DiagramActorProvider({
     diagramMachine.provide({
       actions: {
         'trigger:NavigateTo': ((_, { viewId }) => {
-          // this delay allows tap animations to finish
+          // Slightly defer callback for better responsiveness
           setTimeout(() => {
             handlersRef.current.onNavigateTo?.(viewId as ViewId)
-          }, 30)
+          }, 50)
         }),
 
         'trigger:OnChange': ((_, params) => {

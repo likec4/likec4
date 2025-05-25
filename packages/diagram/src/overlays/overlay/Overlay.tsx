@@ -1,6 +1,5 @@
 import { cx } from '@likec4/styles/css'
 import {
-  Box,
   RemoveScroll,
 } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
@@ -10,7 +9,7 @@ import { type PropsWithChildren, forwardRef, useEffect, useRef, useState } from 
 import { stopPropagation } from '../../utils'
 import { backdropBlur, backdropOpacity, level as cssVarLevel, overlay as overlayCVA } from './Overlay.css'
 
-type OverlayProps = PropsWithChildren<{
+export type OverlayProps = PropsWithChildren<{
   overlayLevel?: number
   className?: string
   classes?: {
@@ -128,9 +127,9 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       {...rest}
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
-        <Box className={cx(styles.body, 'overlay-body', classes?.body)}>
+        <div className={cx(styles.body, 'overlay-body', classes?.body)}>
           {opened && <>{children}</>}
-        </Box>
+        </div>
       </RemoveScroll>
     </m.dialog>
   )

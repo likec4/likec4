@@ -1,3 +1,4 @@
+import { cx } from '@likec4/styles/css'
 import {
   type ElementProps,
   type UnstyledButtonProps,
@@ -7,7 +8,6 @@ import {
 } from '@mantine/core'
 import { IconSearch } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
-import cx from 'clsx'
 import * as classes from './SearchControl.css'
 
 interface SearchControlProps extends UnstyledButtonProps, ElementProps<'button'> {}

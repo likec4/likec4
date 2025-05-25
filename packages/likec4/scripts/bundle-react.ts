@@ -1,3 +1,4 @@
+import packageJson from '@likec4/core/package.json'
 import { consola } from 'consola'
 import { generateDtsBundle } from 'dts-bundle-generator'
 import { build, formatMessagesSync } from 'esbuild'
@@ -5,6 +6,9 @@ import { writeFile } from 'node:fs/promises'
 import { isProduction } from 'std-env'
 
 try {
+  const coreExports = Object
+    .keys(packageJson.exports)
+    .map((key) => `@likec4/core${key.slice(1)}`)
   consola.start('Bundle react')
   const { errors, warnings } = await build({
     entryPoints: [
@@ -25,7 +29,7 @@ try {
       'react/jsx-runtime',
       'react/jsx-dev-runtime',
       'react-dom/client',
-      '@likec4/core',
+      ...coreExports,
       'likec4/model',
     ],
     minify: isProduction,

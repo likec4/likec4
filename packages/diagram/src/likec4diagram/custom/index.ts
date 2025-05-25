@@ -6,9 +6,9 @@ import {
   DeploymentNode,
   ElementNode,
   ViewGroupNode,
-} from './nodes/nodeTypes'
+} from './nodes/nodes'
 
-export const nodeTypes = {
+export const BuiltinNodes = {
   element: ElementNode,
   deployment: DeploymentNode,
   'compound-element': CompoundElementNode,
