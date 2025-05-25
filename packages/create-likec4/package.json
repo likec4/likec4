@@ -32,7 +32,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.30",
     "@types/prompts": "^2.4.8",
-    "execa": "^9.5.2",
+    "execa": "^9.5.3",
     "prompts": "^2.4.2",
     "tsx": "catalog:",
     "typescript": "catalog:",
