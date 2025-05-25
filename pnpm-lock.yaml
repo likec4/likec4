@@ -558,7 +558,7 @@ importers:
         specifier: catalog:react
         version: 5.0.0(react@19.1.0)
       react-resizable-panels:
-        specifier: ^2.1.8
+        specifier: ^2.1.9
         version: 2.1.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       remeda:
         specifier: catalog:utils

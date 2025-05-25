@@ -139,7 +139,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^2.1.8",
+    "react-resizable-panels": "^2.1.9",
     "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
     "tsx": "catalog:",
