@@ -8,7 +8,7 @@ catalog:
   typescript: "^5.8.3"
   wireit: "^0.14.12"
   wrangler: "4.13.1"
-  "@types/node": "^20.17.30"
+  "@types/node": "^20.17.50"
   unbuild: "^3.5.0"
   turbo: "^2.5.2"
   tsx: "~4.19.3"
