@@ -20,7 +20,6 @@ export function readUserSession(c: HonoContext): UserSession | null {
     invariant(userId, 'user id is missing in session')
     invariant(login, 'login is missing in session')
     invariant(name, 'name is missing in session')
-    session.updateAccess()
     return {
       userId,
       login,
