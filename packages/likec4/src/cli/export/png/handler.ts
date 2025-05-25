@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, type NonEmptyArray, hasAtLeast } from '@likec4/core'
 import { hrtime } from 'node:process'
+import picomatch from 'picomatch'
 import { chromium } from 'playwright'
 import k from 'tinyrainbow'
+import { joinURL, withTrailingSlash } from 'ufo'
 import type { ViteDevServer } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
 import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
@@ -33,6 +35,11 @@ type HandlerParams = {
   timeoutMs?: number
   maxAttempts?: number
   ignore?: boolean
+  filter?: string[] | undefined
+  /**
+   * Enable/disable chromium sandbox
+   */
+  chromiumSandbox?: boolean
 }
 
 export async function exportViewsToPNG(
@@ -45,6 +52,7 @@ export async function exportViewsToPNG(
     output,
     outputType = 'relative',
     maxAttempts = 3,
+    chromiumSandbox = false,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -54,19 +62,19 @@ export async function exportViewsToPNG(
     output: string
     outputType?: 'relative' | 'flat'
     maxAttempts?: number
+    chromiumSandbox?: boolean
   },
 ) {
-  logger.info(`${k.cyan('export output')} ${k.dim(output)}`)
-  logger.info(`${k.cyan('from server')} ${k.dim(serverUrl)}`)
+  logger.info(`${k.dim('output')} ${output}`)
+  logger.info(`${k.dim('base url')} ${serverUrl}\n`)
 
   const chromePath = chromium.executablePath()
-  logger.info(k.cyan('Start chromium'))
-  logger.info(k.dim(chromePath))
+  logger.info(k.cyan('Start chromium') + ' ' + k.dim(chromePath))
   const browser = await chromium.launch({
-    chromiumSandbox: true,
+    chromiumSandbox,
     headless: true,
   })
-  logger.info(k.cyan(`Color scheme: `) + theme)
+  logger.info(k.cyan(`Color scheme: `) + theme + '\n')
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
     colorScheme: theme,
@@ -105,24 +113,22 @@ export async function pngHandler({
   ignore = false,
   timeoutMs = 10_000,
   maxAttempts = 3,
+  filter,
+  chromiumSandbox = false,
 }: HandlerParams) {
-  const logger = createLikeC4Logger('c4:export')
+  const logger = createLikeC4Logger('export')
   const startTakeScreenshot = hrtime()
 
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
   })
-  languageServices.ensureSingleProject()
 
   output ??= languageServices.workspace
-
-  const views = await languageServices.diagrams()
-  if (!hasAtLeast(views, 1)) {
-    logger.warn('no views found')
-    throw new Error('no views found')
-  }
   let server: ViteDevServer | undefined
+
+  const projects = languageServices.languageServices.projects()
+
   if (!serverUrl) {
     logger.info(k.cyan(`start preview server`))
     server = await viteDev({
@@ -138,21 +144,51 @@ export async function pngHandler({
       throw new Error('Vite server is not ready, no resolvedUrls')
     }
   }
-  try {
+
+  for (const project of projects) {
+    if (projects.length > 1) {
+      logger.info(k.dim('---------'))
+      logger.info(`${k.dim('project:')} ${project.id}`)
+      logger.info(`${k.dim('folder:')} ${project.folder.fsPath}`)
+    }
+    let views = await languageServices.diagrams(project.id)
+
+    if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
+      const matcher = picomatch(filter)
+      logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
+      views = views.filter(v => {
+        if (matcher(v.id)) {
+          logger.info(`${k.green('include')} ${v.id} ✅`)
+          return true
+        }
+        logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
+        return false
+      })
+    }
+
+    if (!hasAtLeast(views, 1)) {
+      logger.warn('no views found')
+      continue
+    }
+
+    let _serverUrl = projects.length > 1 ? withTrailingSlash(joinURL(serverUrl, 'project', project.id)) : serverUrl
+    let _output = projects.length > 1 ? joinURL(output, project.id) : output
+
     const succeed = await exportViewsToPNG({
       logger,
-      serverUrl,
+      serverUrl: _serverUrl,
       theme,
       timeoutMs,
       views,
-      output,
+      output: _output,
       outputType,
       maxAttempts,
+      chromiumSandbox,
     })
     const { pretty } = inMillis(startTakeScreenshot)
 
     if (succeed.length > 0) {
-      logger.info(k.green(`exported ${succeed.length} views in ${pretty}`))
+      logger.info(k.green(`exported ${succeed.length} views in ${pretty}`) + '\n')
     }
     if (succeed.length !== views.length) {
       if (ignore && succeed.length > 0) {
@@ -167,12 +203,12 @@ export async function pngHandler({
     if (succeed.length !== views.length && (succeed.length === 0 || !ignore)) {
       throw new Error(`Failed ${views.length - succeed.length} out of ${views.length} views`)
     }
-  } finally {
-    if (server) {
-      logger.info(k.cyan(`stop server`))
-      await server.close().catch(e => {
-        logger.error(e)
-      })
-    }
+  }
+
+  if (server) {
+    logger.info(k.cyan(`stop server`))
+    await server.close().catch(e => {
+      logger.error(e)
+    })
   }
 }

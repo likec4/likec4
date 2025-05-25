@@ -9,21 +9,18 @@ permissions:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: production
   FORCE_COLOR: true
+  DO_NOT_TRACK: "1"
 
 jobs:
   publish-vscode:
     name: publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
-    # if triggered by workflow_dispatch or
-    # by workflow_call on main with a commit message containing "chore: release"
-    if: |
-      github.event_name == 'workflow_dispatch' || (
-        contains(github.event.head_commit.message, 'chore: release')
-      )
+    if: ${{ github.repository_owner == 'likec4' }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -36,7 +33,7 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: upload a build artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@v4
         with:
           name: vscode-extension-vsix
           if-no-files-found: error

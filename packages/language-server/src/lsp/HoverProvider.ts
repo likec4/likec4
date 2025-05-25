@@ -49,7 +49,7 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
         ? [instance.element.project, instance.element.model]
         : [doc.likec4ProjectId, instance.element.model]
       const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
-      const lines = [instance.id + '  ', `instance of \`${instance.element}\``]
+      const lines = [instance.id + '  ', `instance of \`${FqnRef.toModelFqn(instance.element)}\``]
       if (el) {
         lines.push(`### ${el.title}`, 'element kind `' + el.kind + '` ')
       }

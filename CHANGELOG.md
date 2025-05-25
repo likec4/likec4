@@ -1,3 +1,116 @@
+# [1.31.0](https://github.com/likec4/likec4/compare/v1.30.0...v1.31.0) (2025-05-25)
+
+### 🚀 Features
+
+* **Custom renderers**  
+  More customization coming, you can control how elements are rendered, add your action buttons or extra details:
+  ```tsx
+  import { LikeC4Diagram } from '@likec4/diagram'
+  import {
+    ElementActions,
+    ElementDetailsButtonWithHandler,
+    elementNode,
+    ElementNodeContainer,
+    ElementShape,
+    ElementTitle,
+    ElementToolbar,
+    IfNotReadOnly,
+  } from '@likec4/diagram/custom'
+  import { IconPlus } from '@tabler/icons-react'
+  
+  const customNodes = {
+    element: elementNode(({ nodeProps, nodeModel }) => (
+      <ElementNodeContainer nodeProps={nodeProps}>
+        <ElementShape {...nodeProps} />
+        <ElementTitle {...nodeProps} />
+        {/* Add extra buttons */}
+        <ElementActions
+          {...nodeProps}
+          extraButtons={[
+            {
+              key: 'plus',
+              icon: <IconPlus />,
+              onClick: () => console.log('extra'),
+            },
+          ]}
+        />
+        {/* Add extra info */}
+        <div style={{ position: 'absolute', bottom: 0 }}>
+          {nodeModel.element.getMetadata('your-attr')}
+        </div>
+      </ElementNodeContainer>
+    )),
+  }
+  
+  function App() {
+    return (
+      <LikeC4Diagram
+        view={view}
+        renderNodes={customNodes}
+      />
+    )
+  }
+  ```
+  [📖 Documentation](https://likec4.dev/tooling/react/)
+    
+* **Quotes Formatting**  
+  VSCode extension allows to configure preferred quote style.  
+  (thanks @pavelpykhtin, closes [#1772](https://github.com/likec4/likec4/issues/1772))
+
+
+# [1.30.0](https://github.com/likec4/likec4/compare/v1.29.1...v1.30.0) (2025-04-27)
+
+### 🚀 Features
+
+* **Local icons**  
+  ```zig
+  model {
+    pg = service 'PostgreSQL' {
+      style {
+        // local image, relative to current file
+        icon ../postgresql.svg
+      }
+    }
+  }
+  ```
+  Thanks, @kieronlanning, for the long-awaited feature, closes [#1439](https://github.com/likec4/likec4/issues/1439)
+
+
+### Bug Fixes
+
+* **cli:** export png fails due to chromiumSandbox ([20d7a49](https://github.com/likec4/likec4/commit/20d7a499368947da5a536c44d47b3c521cbd63f5)), closes [#1885](https://github.com/likec4/likec4/issues/1885)
+* extra padding to fix PNG export cropping issue ([ac14d1b](https://github.com/likec4/likec4/commit/ac14d1bb6d1a3316c45905937ca117edcfbd4daa)), closes [#1857](https://github.com/likec4/likec4/issues/1857)
+
+
+## [1.29.1](https://github.com/likec4/likec4/compare/v1.29.0...v1.29.1) (2025-04-25)
+
+### Improvements
+* dynamic document title, closes [#1875](https://github.com/likec4/likec4/issues/1875)
+
+### Bug Fixes
+
+* **dsl:** 'none' icon value does not have any effect ([ef6d33e](https://github.com/likec4/likec4/commit/ef6d33e65de3bdacb59563036432482190071804))
+* **cli:** build multi-projects ([3554f59](https://github.com/likec4/likec4/commit/3554f590fb5c7591d18f3987f18f73871032b19e))
+* **cli:** export multi-projects ([ccb2347](https://github.com/likec4/likec4/commit/ccb2347c17131cbbc1b34eb3889f716f2a404efd))
+
+# [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
+
+### 🚀 Features
+
+* **MCP Server**  
+  [📖 Documentation](https://likec4.dev/tools/mcp/)
+  
+* Filter option to `export` command for selective view export by ID  
+  ```sh
+  likec4 export png --filter="team1*" --filter="index" .
+  ```
+
+### Bug Fixes
+
+* **diagram:** use Context.Provider instead of bare Context for react 18 compatibility, closes [#1858](https://github.com/likec4/likec4/issues/1858)
+* **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio`
+
+
 ## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
 
 ### Bug Fixes

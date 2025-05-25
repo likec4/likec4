@@ -15,9 +15,8 @@
     },
     "build": {
       "dependsOn": [
-        "^generate",
         "generate",
-        "topo",
+        "@likec4/language-server#build",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [

@@ -6,7 +6,7 @@ on:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
-  HUSKY: "0"
+  DO_NOT_TRACK: "1"
 
 permissions:
   pull-requests: write
@@ -14,8 +14,9 @@ permissions:
 
 jobs:
   update-screenshots:
+    name: create pull request
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
         with:

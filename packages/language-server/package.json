@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -20,7 +20,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=20.19.1"
   },
   "engineStrict": true,
   "type": "module",
@@ -89,7 +89,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
     "pregenerate": "rm -f src/generated/*",
@@ -115,10 +115,14 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:mcp",
+    "express": "^5.1.0",
     "@msgpack/msgpack": "^3.1.1",
     "@smithy/util-base64": "^4.0.0",
+    "@types/express": "^5.0.2",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
+    "picomatch": "catalog:utils",
     "@types/which": "^3.0.4",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
@@ -130,7 +134,6 @@
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
-    "picomatch": "catalog:utils",
     "p-timeout": "catalog:utils",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
@@ -142,11 +145,12 @@
     "ufo": "^1.6.1",
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
+    "zod": "catalog:utils",
     "vitest": "catalog:vitest",
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
     "which": "^5.0.0"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.11.0"
 }

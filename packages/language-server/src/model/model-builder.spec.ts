@@ -1066,7 +1066,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView).toHaveProperty('customColorDefinitions', {
       'custom-color1': {
         elements: {
-          fill: '#ff09ff',
+          fill: '#ff00ff',
           hiContrast: '#ffe8ff',
           loContrast: '#ffceff',
           stroke: '#e400e4',
@@ -1079,7 +1079,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
       'custom-color2': {
         elements: {
-          fill: '#ffff09',
+          fill: '#ffff00',
           hiContrast: '#ffffe1',
           loContrast: '#ffffcc',
           stroke: '#e3e300',

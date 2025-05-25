@@ -11,7 +11,7 @@
     "types": [
       "react",
       "node"
-    ]
+    ],
   },
   "include": [
     "*.ts",

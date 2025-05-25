@@ -1,13 +1,13 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "!dist/src",
+    "src",
     "!**/__fixtures__/",
     "!**/*.spec.*",
     "!**/*.snap",
@@ -21,16 +21,30 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts"
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./graphviz/binary": {
+      "sources": "./src/graphviz/binary/index.ts",
+      "default": {
+        "types": "./dist/graphviz/binary/index.d.ts",
+        "import": "./dist/graphviz/binary/index.js",
+        "default": "./dist/graphviz/binary/index.js"
+      }
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc --outDir dist",
+    "typecheck": "tsc -b --verbose",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
@@ -45,8 +59,8 @@
     "graphology-types": "^0.24.8",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
-    "nano-spawn": "^0.2.0",
-    "p-limit": "^6.2.0",
+    "nano-spawn": "catalog:utils",
+    "p-limit": "catalog:utils",
     "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
@@ -63,5 +77,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.11.0"
 }

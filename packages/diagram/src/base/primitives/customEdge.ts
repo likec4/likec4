@@ -13,6 +13,7 @@ export const edgePropsEqual = <P extends Record<string, unknown> = Base.EdgeData
 ) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
+  && eq(prev.animated ?? false, next.animated ?? false)
   && eq(prev.source, next.source)
   && eq(prev.sourceHandleId ?? null, next.sourceHandleId ?? null)
   && eq(prev.sourcePosition, next.sourcePosition)
@@ -28,6 +29,6 @@ export const edgePropsEqual = <P extends Record<string, unknown> = Base.EdgeData
 
 export function customEdge<P extends Record<string, unknown> = Base.NodeData>(
   Edge: FunctionComponent<EdgeProps<P>>,
-) {
+): FunctionComponent<EdgeProps<P>> {
   return memo(Edge, edgePropsEqual)
 }

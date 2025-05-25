@@ -15,7 +15,6 @@ import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
-import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
 import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
@@ -60,6 +59,7 @@ export function LikeC4Diagram({
   renderControls,
   where,
   reactFlowProps = {},
+  renderNodes,
   children,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
@@ -150,6 +150,7 @@ export function LikeC4Diagram({
                           nodesSelectable={nodesSelectable}
                           background={background}
                           reactFlowProps={reactFlowProps}
+                          renderNodes={renderNodes}
                         >
                           {children}
                         </LikeC4DiagramXYFlow>

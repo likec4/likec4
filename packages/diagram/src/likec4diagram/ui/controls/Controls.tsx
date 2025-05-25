@@ -1,6 +1,6 @@
+import { cx } from '@likec4/styles/css'
 import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core'
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
-import { clsx } from 'clsx'
 import { LayoutGroup, m } from 'motion/react'
 import { memo } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
@@ -42,7 +42,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
       translateY: -10,
     }}
     align="flex-start"
-    className={clsx(
+    className={cx(
       'react-flow__panel',
       css.panel,
       'likec4-top-left-panel',
@@ -53,7 +53,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
     <Stack align="flex-start" gap="xs">
       <LayoutGroup>
         <Group
-          className={clsx(css.navigationButtons, 'likec4-navigation-webview')}
+          className={cx(css.navigationButtons, 'likec4-navigation-webview')}
           gap={'xs'}>
           {burgerMenu}
           {navigationButtons}

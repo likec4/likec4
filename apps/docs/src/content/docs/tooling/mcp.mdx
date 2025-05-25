@@ -1,0 +1,113 @@
+---
+title: MCP Server
+description: How to setup and use LikeC4 MCP Server with LLMs
+head:
+  - tag: title
+    content: MCP Server | LikeC4
+sidebar:
+  order: 5
+---
+
+import { Aside, CardGrid, LinkCard, TabItem as Tab, Tabs } from '@astrojs/starlight/components';
+
+LikeC4 <a href="https://modelcontextprotocol.io" target="_blank">MCP Server</a> provides knowledge of your LikeC4 model to LLMs.  
+This enables you to query your model in natural language:
+
+> _"Lookup LikeC4 model and list all incoming relationships of the backend api"_
+
+> _"What elements from the inside of the 'Backend' have relations with the legacy database"_
+
+> _"List all elements tagged 'legacy' from team1 project"_
+
+> _"What technologies are used for ui (consider all elements with browser shape)"_
+
+## Usage
+
+Two options are available:
+- Use extension's built-in MCP Server (recommended)
+- Use `@likec4/mcp` package
+
+### Using extension
+
+When [LikeC4 extension](/tooling/vscode) is installed, MCP Server can be enabled from the extension <a href="vscode://settings/likec4.mcp.enabled" target="_blank">settings</a>.
+
+To configure MCP Server:
+
+<Tabs syncKey="label">
+  <Tab label='VSCode'>
+    Create `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "likec4": {
+          "type": "sse",
+          "url": "http://localhost:33335/sse"
+        }
+      }
+    }
+    ```  
+  </Tab>
+  <Tab label='Cursor'>
+    
+    Create `.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "url": "http://localhost:33335/sse"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab label='Windsurf'>
+
+    See [Windsurf documentation](https://docs.windsurf.com/windsurf/mcp) for details:
+
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "serverUrl": "http://localhost:33335/sse"      
+        }
+      }
+    }
+    ```    
+  </Tab>
+</Tabs>
+
+You can change port in the settings.
+
+:::note
+MCP Server is unavailable if extension is not active.  
+Extension activates when you open LikeC4 source file.
+:::
+
+### Using package
+
+Example configuration:
+
+```json
+{
+  "mcpServers": {
+    "likec4": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@likec4/mcp"
+      ],
+      "env": {
+        "LIKEC4_WORKSPACE": "${workspaceFolder}"
+      }
+    }
+  }
+}
+```
+<Aside type="caution" title="Limitation">
+Current implementation of `@likec4/mcp` parses LikeC4 model during initialization, keeps snapshot in the memory and does not watch for changes.  
+You need to restart the server to pick up changes.
+
+Extension's built-in MCP Server does not have this limitation, it always provides the current state.
+</Aside>

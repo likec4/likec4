@@ -8,11 +8,9 @@ import {
   ScrollAreaAutosize,
   Text,
   ThemeIcon,
-  useComputedColorScheme,
 } from '@mantine/core'
 import { IconArrowRight, IconSelector } from '@tabler/icons-react'
 import { useRef } from 'react'
-import { useMantinePortalProps } from '../../hooks'
 import { useRelationshipDetails } from './hooks'
 import * as css from './SelectEdge.css'
 

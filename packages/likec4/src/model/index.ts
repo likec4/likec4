@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 
 /**
  * Used by vite plugin to generate `virtual:likec4/model`
@@ -28,6 +28,8 @@ export {
   hasSameSourceTarget,
   hasSameTarget,
   isAnyInOut,
+  isDeployedInstance,
+  isDeploymentNode,
   isIncoming,
   isNestedConnection,
   isOutgoing,
@@ -46,10 +48,15 @@ export {
   ComputedNode,
   ComputedView,
   DiagramNode,
-} from '@likec4/core'
+  isDeploymentView,
+  isElementView,
+  isScopedElementView,
+  isStepEdgeId,
+} from '@likec4/core/types'
 
 export type {
   AbstractRelation,
+  AnyParsedLikeC4ModelData,
   AutoLayoutDirection,
   BBox,
   Color,
@@ -87,4 +94,4 @@ export type {
   ViewId,
   WhereOperator,
   XYPoint,
-} from '@likec4/core'
+} from '@likec4/core/types'

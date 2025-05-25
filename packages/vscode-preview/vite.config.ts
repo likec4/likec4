@@ -1,5 +1,6 @@
 import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => {
     esbuild: {
       jsx: 'automatic',
       jsxDev: false,
+      tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
     },
     css: {
       postcss: {

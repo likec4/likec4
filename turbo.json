@@ -1,7 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
-    "NODE_ENV"
+    "NODE_ENV",
+    "CLOUDFLARE_ENV"
   ],
   "globalDependencies": [
     ".tool-versions",
@@ -16,16 +17,10 @@
       ],
       "outputLogs": "new-only"
     },
-    "topo": {
-      "dependsOn": [
-        "^topo"
-      ]
-    },
     "typecheck": {
       "dependsOn": [
-        "^generate",
-        "generate",
-        "topo"
+        "^typecheck",
+        "generate"
       ],
       "outputs": [
         "lib/**",
@@ -36,8 +31,7 @@
     "build": {
       "dependsOn": [
         "^generate",
-        "generate",
-        "topo"
+        "generate"
       ],
       "outputs": [
         "dist/**"

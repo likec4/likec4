@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -11,7 +11,7 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
@@ -87,7 +87,8 @@
         "default": "./dist/types/index.mjs"
       }
     },
-    "./src": "./src/index.ts"
+    "./src": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -118,5 +119,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.11.0"
 }

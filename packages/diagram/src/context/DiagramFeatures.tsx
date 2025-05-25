@@ -123,12 +123,6 @@ DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {
   )
 }
 
-export function useEnabledFeature<F extends NonEmptyArray<FeatureName>>(
-  ...names: F
-): { [P in `enable${F[number]}`]: boolean } {
-  return pick(useContext(DiagramFeaturesContext), map(names, (name) => `enable${name}` as const))
-}
-
 export function useEnabledFeatures(): EnabledFeatures {
   return useContext(DiagramFeaturesContext)
 }
@@ -138,7 +132,7 @@ export function IfEnabled({
   children,
   and = true,
 }: PropsWithChildren<{ feature: FeatureName; and?: boolean }>) {
-  const enabled = useEnabledFeature(feature)[`enable${feature}`] === true
+  const enabled = useEnabledFeatures()[`enable${feature}`] === true
   return enabled && and ? <>{children}</> : null
 }
 
@@ -146,6 +140,16 @@ export function IfNotEnabled({
   feature,
   children,
 }: PropsWithChildren<{ feature: FeatureName }>) {
-  const notEnabled = useEnabledFeature(feature)[`enable${feature}`] !== true
+  const notEnabled = useEnabledFeatures()[`enable${feature}`] !== true
   return notEnabled ? <>{children}</> : null
+}
+
+export function IfNotReadOnly({
+  children,
+}: PropsWithChildren) {
+  const isReadOnly = useEnabledFeatures()[`enableReadOnly`] === true
+  if (isReadOnly) {
+    return null
+  }
+  return <>{children}</>
 }

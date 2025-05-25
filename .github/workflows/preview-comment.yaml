@@ -1,7 +1,6 @@
 name: preview comment
 
 on:
-  workflow_dispatch:
   issue_comment:
     types: [created]
 
@@ -12,12 +11,13 @@ defaults:
 env:
   NODE_ENV: production
   FORCE_COLOR: 1
+  DO_NOT_TRACK: "1"
 
 jobs:
   preview-playground:
     name: deploy playground preview
     if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground')) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       id-token: write
@@ -61,7 +61,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -97,7 +97,7 @@ jobs:
   preview-docs:
     name: deploy docs preview
     if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       id-token: write
@@ -136,8 +136,9 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ build
+        working-directory: apps/docs
         run: |
-          pnpm turbo run build --filter='@likec4/playground'
+          pnpm turbo run build
 
       - id: cloudflare
         name: publish to cloudflare

@@ -6,17 +6,18 @@ packages:
 
 catalog:
   typescript: "^5.8.3"
-  wireit: "^0.14.11"
-  wrangler: "4.9.1"
+  wireit: "^0.14.12"
+  wrangler: "^4.16.1"
   "@types/node": "^20.17.30"
   unbuild: "^3.5.0"
-  turbo: "^2.5.0"
-  tsx: "~4.19.3"
+  turbo: "^2.5.3"
+  tsx: "~4.19.4"
+  zx: "^8.5.4"
 
 catalogs:
   utils:
-    remeda: ^2.21.2
-    type-fest: "^4.39.1"
+    remeda: ^2.21.3
+    type-fest: "^4.41.0"
     fast-equals: "^5.2.2"
     "@react-hookz/web": "^25.1.1"
     std-env: "^3.9.0"
@@ -27,52 +28,57 @@ catalogs:
     esm-env: "^1.2.2"
     json5: "^2.2.3"
     object-hash: "^3.0.0"
+    nano-spawn: "^1.0.2"
     picomatch: "^4.0.2"
     "@types/picomatch": "^4.0.0"
     p-timeout: "^6.1.4"
     p-debounce: "^4.0.0"
     p-queue: "^8.1.0"
-    fdir: "^6.4.3"
+    p-limit: "^6.2.0"
+    fdir: "^6.4.4"
+    package-manager-detector: "^1.2.0"
+    ufo: "^1.6.1"
+    zod: "^3.24.3"
   esbuild:
-    esbuild: "^0.25.2"
+    esbuild: "^0.25.4"
     esbuild-node-externals: "^1.18.0"
     esbuild-plugins-node-modules-polyfill: "^1.7.0"
   react:
-    react: ^19.0.0
-    react-dom: ^19.0.0
-    "@types/react": ^19.0.12
-    "@types/react-dom": ^19.0.4
+    react: ^19.1.0
+    react-dom: ^19.1.0
+    "@types/react": ^19.1.5
+    "@types/react-dom": ^19.1.5
     react-error-boundary: "^5.0.0"
     "@tabler/icons-react": "3.31.0"
     clsx: "^2.1.1"
-    nanostores: "0.11.4"
-    "@nanostores/react": "0.8.4"
-    motion: "^12.6.3"
+    nanostores: "1.0.1"
+    "@nanostores/react": "1.0.0"
+    motion: "^12.12.2"
   router:
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": "7.17.4"
-    "@mantine/hooks": "7.17.4"
-    "@mantine/vanilla-extract": "7.17.4"
-    "@mantine/modals": "7.17.4"
-    "@mantine/notifications": "7.17.4"
-    "@mantine/colors-generator": "7.17.4"
+    "@mantine/core": "8.0.1"
+    "@mantine/hooks": "8.0.1"
+    "@mantine/vanilla-extract": "8.0.1"
+    "@mantine/modals": "8.0.1"
+    "@mantine/notifications": "8.0.1"
+    "@mantine/colors-generator": "8.0.1"
   vite:
-    "@vitejs/plugin-react": "^4.3.4"
-    vite: "^6.2.5"
-    vite-plugin-dts: "^4.5.3"
+    "@vitejs/plugin-react": "^4.5.0"
+    vite: "^6.3.5"
+    vite-plugin-dts: "^4.5.4"
     vite-plugin-node-polyfills: "^0.23.0"
     vite-tsconfig-paths: "^5.1.4"
-    rollup: "^4.39.0"
+    rollup: "^4.41.0"
   vitest:
-    vitest: "^3.1.1"
-    "@vitest/ui": "^3.1.1"
+    vitest: "^3.1.4"
+    "@vitest/ui": "^3.1.4"
   css:
     postcss: "^8.5.3"
-    "@pandacss/dev": "^0.53.3"
-    "@pandacss/preset-panda": "^0.53.3"
+    "@pandacss/dev": "^0.53.6"
+    "@pandacss/preset-panda": "^0.53.6"
   vscode:
     vscode-jsonrpc: "8.2.0"
     vscode-languageclient: "9.0.1"
@@ -84,24 +90,31 @@ catalogs:
     vscode-textmate: "9.2.0"
     "@types/vscode": "^1.84.0"
   xyflow:
-    "@xyflow/react": "^12.5.5"
-    "@xyflow/system": "^0.0.55"
+    "@xyflow/react": "^12.6.4"
+    "@xyflow/system": "^0.0.61"
   langium:
-    langium: "3.4.0"
-    langium-cli: "3.4.0"
+    langium: "3.5.0"
+    langium-cli: "3.5.0"
 
   astro:
     "@astrojs/check": "^0.9.4"
-    "@astrojs/react": "4.2.3"
-    "@astrojs/starlight": "0.33.0"
-    "@expressive-code/plugin-collapsible-sections": "^0.40.2"
-    "@expressive-code/plugin-line-numbers": "^0.40.2"
-    astro: "5.6.1"
+    "@astrojs/react": "4.3.0"
+    "@astrojs/starlight": "0.34.3"
+    "@expressive-code/plugin-collapsible-sections": "^0.41.2"
+    "@expressive-code/plugin-line-numbers": "^0.41.2"
+    astro: "5.8.0"
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
-    starlight-links-validator: "^0.15.1"
-    starlight-package-managers: "^0.10.0"
-    shiki: "^3.2.1"
+    starlight-links-validator: "^0.16.0"
+    starlight-package-managers: "^0.11.0"
+    shiki: "^3.3.0"
+
+  mcp:
+    "@modelcontextprotocol/sdk": "^1.10.2"
+  hono:
+    hono: "^4.7.10"
+    hono-sessions: "^0.7.2"
+    "@hono/node-server": "^1.14.2"
 
 onlyBuiltDependencies:
   - dprint

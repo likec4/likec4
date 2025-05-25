@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "private": true,
   "scripts": {
     "generate": "wireit",
@@ -8,13 +8,20 @@
     "typecheck": "tsc --build --verbose",
     "build": "vite build",
     "preview": "vite preview",
-    "wrangler:deploy": "wireit",
-    "wrangler:preview": "wireit",
-    "deploy:prod": "wireit"
+    "wrangler:deploy": "wrangler deploy -c dist/playground/wrangler.json",
+    "wrangler:preview": "wrangler versions upload -c dist/playground/wrangler.json",
+    "deploy:prod": "wireit",
+    "deploy:preview": "wireit"
   },
   "wireit": {
     "generate-tsr": {
-      "command": "tsr generate"
+      "command": "tsr generate",
+      "files": [
+        "src/routes/**/*.tsx"
+      ],
+      "output": [
+        "src/routeTree.gen.ts"
+      ]
     },
     "generate-wrangler": {
       "command": "wrangler types",
@@ -33,10 +40,10 @@
       ]
     },
     "dev": {
-      "command": "vite dev",
       "dependencies": [
         "generate"
-      ]
+      ],
+      "command": "vite dev"
     },
     "build-with-turbo": {
       "command": "turbo run build"
@@ -51,17 +58,21 @@
       "dependencies": [
         "build-with-turbo"
       ],
-      "command": "wrangler deploy -e production -c dist/playground/wrangler.json",
+      "command": "wrangler deploy -c dist/playground/wrangler.json",
       "env": {
         "NODE_ENV": "production",
         "CLOUDFLARE_ENV": "production"
       }
     },
-    "wrangler:deploy": {
-      "command": "wrangler deploy -c dist/playground/wrangler.json"
-    },
-    "wrangler:preview": {
-      "command": "wrangler versions upload -c dist/playground/wrangler.json"
+    "deploy:preview": {
+      "dependencies": [
+        "build-with-turbo"
+      ],
+      "command": "wrangler versions upload -c dist/playground/wrangler.json",
+      "env": {
+        "NODE_ENV": "production",
+        "CLOUDFLARE_ENV": "production"
+      }
     }
   },
   "imports": {
@@ -70,9 +81,9 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@10.11.0",
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.0.4",
+    "@cloudflare/vite-plugin": "1.1.0",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
     "@codingame/monaco-vscode-editor-api": "14.0.6",
     "@codingame/monaco-vscode-editor-service-override": "14.0.6",
@@ -117,8 +128,9 @@
     "date-fns": "^4.1.0",
     "elkjs": "^0.10.0",
     "fast-equals": "catalog:utils",
-    "hono": "^4.7.6",
-    "hono-sessions": "^0.7.2",
+    "motion": "catalog:react",
+    "hono": "catalog:hono",
+    "hono-sessions": "catalog:hono",
     "langium": "catalog:langium",
     "monaco-editor-wrapper": "6.5.0",
     "monaco-languageclient": "9.4.1",
@@ -129,7 +141,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^2.1.7",
+    "react-resizable-panels": "^3.0.2",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "strip-indent": "^4.0.0",

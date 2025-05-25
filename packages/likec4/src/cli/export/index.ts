@@ -29,38 +29,51 @@ export const exportCmd = {
             .option('flat', {
               boolean: true,
               type: 'boolean',
-              desc: 'ignore sources structure and export all PNGs in output directory',
+              desc: 'flatten all images in output directory ignoring sources structure',
             })
             .option('use-dot', useDotBin)
             .options({
+              'filter': {
+                alias: 'f',
+                array: true,
+                string: true,
+                desc: 'include views with ids matching given patterns\nmultiple patterns are combined with OR',
+              },
               'ignore': {
                 boolean: true,
                 alias: 'i',
-                desc: 'continue if some views failed to export',
+                desc: 'continue if export fails for some views',
               },
               timeout: {
                 type: 'number',
                 alias: 't',
-                desc: '(sec) timeout for playwright ',
+                desc: 'timeout for playwright',
                 default: 10,
               },
               'max-attempts': {
                 type: 'number',
-                describe: '',
-                desc: '(number) max attempts to export failing view',
+                desc: 'max attempts to export failing view, 1 means no retry',
                 default: 3,
               },
               'server-url': {
                 type: 'string',
                 desc: 'use this url instead of starting new likec4 server',
               },
+              'chromium-sandbox': {
+                boolean: true,
+                desc: 'enable/disable chromium sandbox\nsee Playwright docs',
+                default: false,
+              },
             })
             .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
     ${k.gray('Search for likec4 files in current directory and output PNG next to sources')}
 
-  ${k.green('$0 export png --theme dark -o ./png src/likec4 ')}
+  ${k.green('$0 export png --theme dark -o ./png src/likec4')}
     ${k.gray('Search for likec4 files in src/likec4 and output PNG with dark theme to png folder')}
+
+  ${k.green('$0 export png -f "team1*" -f "team2*" --flat -o ./png src/likec4')}
+    ${k.gray('Export views matching team1* or team2* only')}
 `),
         handler: async args => {
           // args.
@@ -77,6 +90,8 @@ export const exportCmd = {
             outputType: args.flat ? 'flat' : 'relative',
             serverUrl: args.serverUrl,
             theme: args.theme ?? 'light',
+            filter: args.filter,
+            chromiumSandbox: args['chromium-sandbox'],
           })
         },
       })

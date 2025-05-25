@@ -15,5 +15,10 @@
   },
   "files": [
     "protocol.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
   ]
 }

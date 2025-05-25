@@ -2,6 +2,27 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('formating', () => {
+  describe('formats imports', () => {
+    it(
+      'formats import rules',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+import   sys1   from    'another project'
+import   {sys2    ,      sys3   ,
+sys4    }   from    'another project'
+`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          import sys1 from 'another project'
+          import { sys2, sys3, sys4 } from 'another project'
+          "
+        `),
+    )
+  })
+
   describe('formats specification', () => {
     it(
       'formats specification rules',
@@ -133,6 +154,40 @@ model {
     )
 
     it(
+      'formats element extend',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+model {
+  extend    sys1.sys2   {
+    #tag1   ,   #tag2
+    link   http://example.com    'extended link'
+    metadata    {
+      prop1    'some'
+      prop2'other'
+      prop3  :    'another'   ;
+    }
+  }
+}`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          model {
+            extend sys1.sys2 {
+              #tag1, #tag2
+              link http://example.com 'extended link'
+              metadata {
+                prop1 'some'
+                prop2 'other'
+                prop3: 'another';
+              }
+            }
+          }"
+        `),
+    )
+
+    it(
       'formats metadata',
       async ({ expect }) =>
         expect(
@@ -229,6 +284,48 @@ model {
               instanceOf test
             }
             node zone2 'zone2' {
+              cluster = node {
+              }
+            }
+          }"
+        `),
+    )
+
+    it(
+      'formats deployment extends',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+  deployment{
+  extend   zone1    {
+  #tag1 ,  #tag2
+  link   http://example.com    'extended link'
+  metadata    {
+  prop1    'some'
+  prop2'other'
+  prop3  :    'another'   ;
+  }
+
+  instanceOf    test
+  cluster=node{
+  }
+  }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          deployment {
+            extend zone1 {
+              #tag1, #tag2
+              link http://example.com 'extended link'
+              metadata {
+                prop1 'some'
+                prop2 'other'
+                prop3: 'another';
+              }
+
+              instanceOf test
               cluster = node {
               }
             }
@@ -746,7 +843,7 @@ views {
           "
           views {
             view {
-              group "group1" {
+              group 'group1' {
                 color red
                 border solid
                 opacity 10%
@@ -754,12 +851,12 @@ views {
                 }
                 include * where tag = #test with {
                 }
-                group "nested-group" {
+                group 'nested-group' {
                 }
               }
             }
             view {
-              group "group3" {
+              group 'group3' {
                 color: red;
                 border: solid;
                 opacity: 10%;
@@ -1059,6 +1156,7 @@ model {
         line  solid
         head    normal
         tail  normal
+        notes   'test'
       }
       style * {
         color     primary
@@ -1129,6 +1227,7 @@ model {
                   line solid
                   head normal
                   tail normal
+                  notes 'test'
                 }
               style * {
                 color primary
@@ -1186,6 +1285,7 @@ model {
       }
       include * -> * with {
         notation  :'test'   ;
+        notes    :    'test'   ;
         title  :'test'   ;
         description  :    'test'   ;
         technology  :    'test'   ;
@@ -1235,6 +1335,7 @@ model {
               include
                 * -> * with {
                   notation: 'test';
+                  notes: 'test';
                   title: 'test';
                   description: 'test';
                   technology: 'test';
@@ -1674,6 +1775,42 @@ model {
               metadata
             }
 
+          }"
+        `,
+        ),
+    )
+
+    it(
+      'normalize quotes',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+  model {
+    component user "some title" "description"
+    component user2 {
+      description "some"
+    }
+  }
+  views {
+    view index {
+      include *
+    }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+          "
+          model {
+            component user 'some title' 'description'
+            component user2 {
+              description 'some'
+            }
+          }
+          views {
+            view index {
+              include *
+            }
           }"
         `,
         ),

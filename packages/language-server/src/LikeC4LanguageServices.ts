@@ -1,4 +1,5 @@
-import { type DiagramView, type NonEmptyArray, type ProjectId, LikeC4Model } from '@likec4/core'
+import { type DiagramView, type NonEmptyArray, type ProjectId, nonexhaustive } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { URI } from 'langium'
 import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
@@ -7,6 +8,7 @@ import type { ProjectConfig } from './config'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4Services } from './module'
+import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/likec4-views'
 import { ProjectsManager } from './workspace'
 
@@ -16,6 +18,8 @@ export interface LikeC4LanguageServices {
   readonly views: LikeC4Views
   readonly builder: LikeC4ModelBuilder
   readonly workspaceUri: URI
+  readonly projectsManager: ProjectsManager
+
   projects(): NonEmptyArray<{
     id: ProjectId
     folder: URI
@@ -32,6 +36,8 @@ export interface LikeC4LanguageServices {
     sourceFsPath: string
   }>
   notifyUpdate(update: { changed?: string; removed?: string }): Promise<boolean>
+
+  locate(params: Locate.Params): Locate.Res
 }
 
 /**
@@ -41,7 +47,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   public readonly views: LikeC4Views
   public readonly builder: LikeC4ModelBuilder
 
-  private projectsManager: ProjectsManager
+  public readonly projectsManager: ProjectsManager
 
   constructor(private services: LikeC4Services) {
     this.views = services.likec4.Views
@@ -164,6 +170,24 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     } catch (e) {
       logger.error(loggable(e))
       return false
+    }
+  }
+
+  locate(params: Locate.Params): Locate.Res {
+    switch (true) {
+      case 'element' in params:
+        return this.services.likec4.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
+      case 'relation' in params:
+        return this.services.likec4.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
+      case 'view' in params:
+        return this.services.likec4.ModelLocator.locateView(params.view, params.projectId as ProjectId)
+      case 'deployment' in params:
+        return this.services.likec4.ModelLocator.locateDeploymentElement(
+          params.deployment,
+          params.projectId as ProjectId,
+        )
+      default:
+        nonexhaustive(params)
     }
   }
 }

@@ -145,4 +145,4 @@ function ReactLikeC4Inner({
     </>
   )
 }
-ReactLikeC4.displayName = 'GenericReactLikeC4'
+ReactLikeC4.displayName = 'ReactLikeC4'

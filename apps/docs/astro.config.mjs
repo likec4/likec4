@@ -82,8 +82,24 @@ export default defineConfig({
               link: 'https://github.com/likec4/likec4/releases',
               attrs: {
                 target: '_blank',
-                style: 'font-weight: 500; font-size: var(--sl-text-sm)',
+                style: 'font-size: var(--sl-text-sm)',
                 rel: 'noopener',
+              },
+            },
+            {
+              label: 'llms.txt',
+              link: `/llms.txt`,
+              attrs: {
+                target: '_blank',
+                style: 'font-size: var(--sl-text-xs)',
+              },
+            },
+            {
+              label: 'llms-full.txt',
+              link: `/llms-full.txt`,
+              attrs: {
+                target: '_blank',
+                style: 'font-size: var(--sl-text-xs)',
               },
             },
           ],

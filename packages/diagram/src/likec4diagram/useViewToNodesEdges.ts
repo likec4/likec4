@@ -111,6 +111,7 @@ function viewToNodesEdge(opts: {
     } satisfies Omit<Types.Node, 'data' | 'type'>
 
     const compoundData = {
+      viewId: view.id,
       id: node.id,
       title: node.title,
       color: node.color,
@@ -122,6 +123,7 @@ function viewToNodesEdge(opts: {
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
+      viewId: view.id,
       id: node.id,
       title: node.title,
       technology: node.technology,

@@ -2,14 +2,16 @@ name: playground
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        default: "preview"
+        required: true
+        type: string
     # Map the workflow outputs to job outputs
     outputs:
-      preview_url:
-        description: "deployment url for preview"
-        value: ${{ jobs.deploy-playground-preview.outputs.url }}
-      production_url:
-        description: "deployment url for production"
-        value: ${{ jobs.deploy-playground-prod.outputs.url }}
+      playground_url:
+        description: "playground url"
+        value: ${{ jobs.deploy-playground.outputs.url }}
   workflow_dispatch:
     inputs:
       environment:
@@ -31,29 +33,26 @@ permissions:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  DO_NOT_TRACK: "1"
+  CLOUDFLARE_ENV: "production"
 
 concurrency:
   group: playground-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  deploy-playground-preview:
-    # Deploy to Preview
-    # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
-    # - we are in workflow_dispatch on main branch
-    if: "inputs.environment == 'preview' || github.event_name != 'workflow_dispatch'"
-    name: deploy preview
-    runs-on: ubuntu-latest
+  deploy-playground:
+    name: playground
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
+    if: ${{ github.repository_owner == 'likec4' }}
     environment:
-      name: "playground-preview"
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
+      name: "playground-${{ inputs.environment }}"
+      url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     outputs:
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
+      url: "${{ inputs.environment == 'production' && 'https://playground.likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
+      - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -69,40 +68,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: versions upload -c dist/playground/wrangler.json
-          workingDirectory: apps/playground
-          packageManager: pnpm
-
-  deploy-playground-prod:
-    if: "inputs.environment == 'production' || (github.event_name != 'workflow_dispatch' && contains(github.event.head_commit.message, 'chore: release'))"
-    name: deploy prod
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      CLOUDFLARE_ENV: "production"
-    environment:
-      name: "playground-prod"
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    outputs:
-      url: ${{ steps.cloudflare.outputs.deployment-url }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ build
-        run: |
-          pnpm turbo run build --filter='@likec4/playground'
-
-      - id: cloudflare
-        name: publish to cloudflare
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy -c dist/playground/wrangler.json
+          command: "${{ inputs.environment == 'production' && 'deploy -c dist/playground/wrangler.json' || 'versions upload -c dist/playground/wrangler.json' }}"
           workingDirectory: apps/playground
           packageManager: pnpm

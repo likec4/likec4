@@ -1,30 +1,30 @@
 {
   "name": "root",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@10.11.0",
   "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=20.19.1"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
-    "build": "turbo run build --filter=\"!@likec4/docs-astro\" --filter=\"!@likec4/playground\"",
+    "build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "typecheck:all": "turbo run typecheck",
     "generate": "turbo run generate --filter=\"!@likec4/docs-astro\"",
     "generate:all": "turbo run generate",
     "ci:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
-    "ci:build": "turbo run build --filter=\"!@likec4/docs-astro\" --filter=\"!@likec4/playground\"",
+    "ci:build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "ci:test": "vitest run --no-isolate",
-    "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\" --filter=\"!@likec4/playground\"",
+    "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "release": "shipjs prepare",
     "clean": "turbo run clean",
     "git:pre-commit": "nano-staged",
@@ -36,9 +36,9 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
-    "dprint": "0.49.1",
+    "dprint": "^0.50.0",
     "esbuild": "catalog:esbuild",
-    "execa": "^9.5.2",
+    "execa": "^9.5.3",
     "global": "^4.4.0",
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",

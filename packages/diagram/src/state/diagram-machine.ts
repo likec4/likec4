@@ -13,6 +13,7 @@ import {
   getBBoxCenter,
   getParallelStepsPrefix,
   invariant,
+  isStepEdgeId,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
@@ -24,7 +25,8 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { clamp, first, hasAtLeast, prop, reduce } from 'remeda'
+import { clamp, first, hasAtLeast, prop } from 'remeda'
+import type { PartialDeep } from 'type-fest'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -68,7 +70,7 @@ import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import { findDiagramNode, focusedBounds, typedSystem } from './utils'
 
-type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
 export interface NavigationHistory {
   history: ReadonlyArray<{
@@ -88,7 +90,7 @@ export interface Input {
   nodesSelectable: boolean
 }
 
-type ToggledFeatures = Partial<EnabledFeatures>
+export type ToggledFeatures = Partial<EnabledFeatures>
 
 export interface Context extends Input {
   xynodes: Types.Node[]
@@ -149,8 +151,8 @@ export type Events =
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge }
-  | { type: 'update.nodeData'; nodeId: NodeId; data: Partial<Types.NodeData> }
-  | { type: 'update.edgeData'; edgeId: EdgeId; data: Partial<Types.Edge['data']> }
+  | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
+  | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore'>> }
   | { type: 'update.features'; features: EnabledFeatures }
@@ -178,7 +180,7 @@ export type Events =
 export type ActionArg = { context: Context; event: Events }
 
 // TODO: naming convention for actors
-export const diagramMachine = setup({
+const _diagramMachine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -199,6 +201,7 @@ export const diagramMachine = setup({
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
+    'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
     'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -226,6 +229,10 @@ export const diagramMachine = setup({
     'click: node has connections': ({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return context.xyedges.some(e => e.source === event.node.id || e.target === event.node.id)
+    },
+    'click: selected edge': ({ event }) => {
+      assertEvent(event, 'xyflow.edgeClick')
+      return event.edge.selected === true || event.edge.data.active === true
     },
   },
   actions: {
@@ -767,6 +774,26 @@ export const diagramMachine = setup({
               }),
               target: 'focused',
             },
+            'xyflow.edgeClick': [{
+              guard: and([
+                'is dynamic view',
+                'click: selected edge',
+              ]) as any,
+              actions: raise(({ event }) => ({
+                type: 'walkthrough.start',
+                stepId: event.edge.id as StepEdgeId,
+              })),
+            }, {
+              guard: and([
+                'enabled: RelationshipDetails',
+                'click: selected edge',
+              ]) as any,
+              actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+                type: 'open.relationshipDetails',
+                viewId: context.view.id,
+                edgeId: event.edge.id as EdgeId,
+              })),
+            }],
           },
         },
         focused: {
@@ -779,18 +806,18 @@ export const diagramMachine = setup({
             spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
             'xyflow:fitFocusedBounds',
           ],
-          exit: enqueueActions(({ enqueue, context }) => {
+          exit: enqueueActions(({ enqueue, context, event }) => {
             enqueue.stopChild('hotkey')
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
               enqueue({ type: 'xyflow:fitDiagram' })
             }
-            enqueue.assign((s) => ({
-              ...unfocusNodesEdges(s),
+            enqueue.assign({
+              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
               focusedNode: null,
-            }))
+            })
           }),
           on: {
             'xyflow.nodeClick': [
@@ -884,6 +911,23 @@ export const diagramMachine = setup({
                 enqueue.assign(updateActiveWalkthrough)
                 enqueue('xyflow:fitFocusedBounds')
               }),
+            },
+            'xyflow.edgeClick': {
+              actions: [
+                assign(({ event, context }) => {
+                  if (!isStepEdgeId(event.edge.id) || event.edge.id === context.activeWalkthrough?.stepId) {
+                    return {}
+                  }
+                  return {
+                    activeWalkthrough: {
+                      stepId: event.edge.id,
+                      parallelPrefix: getParallelStepsPrefix(event.edge.id),
+                    },
+                  }
+                }),
+                assign(updateActiveWalkthrough),
+                'xyflow:fitFocusedBounds',
+              ],
             },
             'notations.unhighlight': {
               actions: assign(s => ({
@@ -1077,6 +1121,10 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   return { fromNode, toNode }
 }
 
-export type DiagramMachineLogic = ActorLogicFrom<typeof diagramMachine>
-// export type MachineSnapshot = SnapshotFrom<Machine>
-// export type LikeC4ViewActorRef = ActorRefFromLogic<Machine>
+/**
+ * Here is a trick to reduce inference types
+ */
+type InferredDiagramMachine = typeof _diagramMachine
+export interface DiagramMachine extends InferredDiagramMachine {}
+export const diagramMachine: DiagramMachine = _diagramMachine
+export interface DiagramMachineLogic extends ActorLogicFrom<DiagramMachine> {}

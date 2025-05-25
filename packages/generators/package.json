@@ -1,14 +1,13 @@
 {
   "name": "@likec4/generators",
-  "version": "1.28.1",
+  "version": "1.31.0",
   "license": "MIT",
-  "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "!dist/src"
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -18,15 +17,22 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc --outDir dist",
+    "typecheck": "tsc -b --verbose",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
@@ -45,5 +51,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.11.0"
 }

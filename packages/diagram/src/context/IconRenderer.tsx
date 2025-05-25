@@ -1,4 +1,5 @@
 import type { ElementShape } from '@likec4/core'
+import { cx as clsx } from '@likec4/styles/css'
 import {
   type Icon,
   type IconProps,
@@ -9,7 +10,6 @@ import {
   IconReorder,
   IconUser,
 } from '@tabler/icons-react'
-import clsx from 'clsx'
 import {
   type ForwardRefExoticComponent,
   type PropsWithChildren,
@@ -53,7 +53,9 @@ export function IconRenderer({
     return null
   }
   let icon: ReactNode
-  if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
+  if (
+    element.icon.startsWith('http://') || element.icon.startsWith('https://')
+  ) {
     icon = <img src={element.icon} alt={element.title} />
   } else if (RenderIcon) {
     icon = <RenderIcon node={element} />

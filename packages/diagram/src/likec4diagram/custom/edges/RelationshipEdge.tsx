@@ -2,10 +2,10 @@ import {
   type EdgeId,
   nonNullable,
 } from '@likec4/core'
+import { cx as clsx } from '@likec4/styles/css'
 import { useDebouncedEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'

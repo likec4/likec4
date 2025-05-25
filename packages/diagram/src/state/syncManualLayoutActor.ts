@@ -12,6 +12,10 @@ import { bezierControlPoints, isSamePoint } from '../utils'
 import type { Context as DiagramContext, Events as DiagramEvents } from './diagram-machine'
 
 export type Input = {
+  /**
+   * Actually this is DiagramActorRef
+   * But we can't use it here due to circular type inference
+   */
   parent: ActorRef<
     MachineSnapshot<DiagramContext, DiagramEvents, any, any, any, any, any, any>,
     DiagramEvents,
@@ -29,8 +33,8 @@ export type Events =
   | { type: 'synced' }
   | { type: 'cancel' }
   | { type: 'stop' }
-// TODO: naming convention for actors
-export const syncManualLayoutActorLogic = setup({
+
+const _syncManualLayoutActorLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -121,7 +125,9 @@ export const syncManualLayoutActorLogic = setup({
   },
 })
 
-export type SyncLayoutActorLogic = ActorLogicFrom<typeof syncManualLayoutActorLogic>
+export interface SyncLayoutActorLogic extends ActorLogicFrom<typeof _syncManualLayoutActorLogic> {}
+
+export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic
 
 function createViewChange(parentContext: DiagramContext): ViewChange.SaveManualLayout {
   const { view, xystore, xyflow } = parentContext

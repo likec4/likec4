@@ -20,6 +20,18 @@
         "src/generated-lib/**"
       ],
       "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "^generate",
+        "generate",
+        "@likec4/core#build",
+        "@likec4/log#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

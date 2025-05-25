@@ -1,0 +1,2 @@
+@layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+@import "@xyflow/react/dist/style.css" layer(xyflow);

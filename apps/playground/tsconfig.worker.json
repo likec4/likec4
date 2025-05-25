@@ -7,10 +7,18 @@
     "jsxImportSource": "hono/jsx",
     "tsBuildInfoFile": "lib/worker.tsbuildinfo",
     "outDir": "lib/worker",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": [
+      "vite/client"
+    ]
   },
   "include": [
     "worker-configuration.d.ts",
     "worker"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core/tsconfig.json"
+    }
   ]
 }

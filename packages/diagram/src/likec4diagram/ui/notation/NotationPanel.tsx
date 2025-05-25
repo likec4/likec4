@@ -1,5 +1,5 @@
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
-import { css, cx } from '@likec4/styles/css'
+import { css, cx, cx as clsx } from '@likec4/styles/css'
 import {
   ActionIcon,
   Badge,
@@ -19,7 +19,6 @@ import {
 } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
-import clsx from 'clsx'
 import { AnimatePresence, m } from 'motion/react'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'

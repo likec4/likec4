@@ -6,9 +6,9 @@ import {
   type LayoutedLikeC4ModelData,
   type ViewChange,
   type ViewId,
-  LikeC4Model,
   nonNullable,
 } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
 import { deepEqual, shallowEqual } from 'fast-equals'

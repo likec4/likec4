@@ -206,13 +206,18 @@ specification {
 
 #### Icon
 
-Elements may have an icon - any browser-supported image and publicly available with `https://`:
+Elements may have an icon - any browser-supported image (png, svg, webp, etc.):
 
 ```likec4 copy
 model {
   pg = service 'PostgreSQL' {
     style {
+      // Publicly available with `https://`
       icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+
+      // or local image, relative to current file
+      icon ../postgresql.svg
+
       size sm
       textSize lg
     }

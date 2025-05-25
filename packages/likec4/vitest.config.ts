@@ -4,8 +4,10 @@ import { defineProject } from 'vitest/config'
 export default defineProject({
   resolve: {
     conditions: ['sources'],
+    // Seems vitest doesn't resolve conditions
     alias: {
       '@likec4/core': resolve(__dirname, '../core/src'),
+      '@likec4/log': resolve(__dirname, '../log/src'),
       '@likec4/language-server': resolve(__dirname, '../language-server/src'),
       '@likec4/layouts': resolve(__dirname, '../layouts/src'),
       '@likec4/generators': resolve(__dirname, '../generators/src'),

@@ -1,6 +1,7 @@
 # LikeC4
 
-![NPM Version](https://img.shields.io/npm/v/likec4)
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/likec4)</a>
 
 `likec4` package is a composition of language services, react components, vite plugin and CLI.
 

@@ -1,0 +1,72 @@
+{
+  "name": "@likec4/mcp",
+  "license": "MIT",
+  "version": "1.31.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "bin": {
+    "likec4-mcp-server": "dist/index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/mcp"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "keywords": [
+    "likec4",
+    "mcp",
+    "model context protocol",
+    "server"
+  ],
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "wireit",
+    "inspector": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "unbuild",
+      "files": [
+        "src/**/*"
+      ]
+    },
+    "inspector": {
+      "dependencies": [
+        "build"
+      ],
+      "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
+      "env": {
+        "LIKEC4_WORKSPACE": "../../examples/"
+      },
+      "service": {
+        "readyWhen": {
+          "lineMatches": "MCP Inspector is up"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "likec4": "workspace:*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "catalog:mcp",
+    "@likec4/core": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "remeda": "catalog:utils",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest",
+    "zod": "catalog:utils",
+    "wireit": "catalog:"
+  },
+  "packageManager": "pnpm@10.11.0"
+}

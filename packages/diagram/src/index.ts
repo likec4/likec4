@@ -5,19 +5,13 @@ export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
 export { Overlay } from './overlays/overlay/Overlay'
 
-export {
-  useLikeC4ElementsTree,
-  useLikeC4Model,
-} from './likec4model'
-
 export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
-export { useSetState } from './hooks/useSetState'
-export { useUpdateEffect } from './hooks/useUpdateEffect'
-// export { vars, xyvars } from './theme-vars'
+export * from './custom/hooks'
 
 export type {
   ChangeEvent,
+  CustomNodes,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   LikeC4ColorScheme,
@@ -29,6 +23,8 @@ export type {
   OnNavigateTo,
   OnNodeClick,
   OpenSourceParams,
+  PaddingUnit,
+  PaddingWithUnit,
   WhereOperator,
 } from './LikeC4Diagram.props'
 
