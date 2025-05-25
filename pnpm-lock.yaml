@@ -262,7 +262,7 @@ overrides:
   vscode-languageserver-types: 3.17.5
   vscode-oniguruma: 2.0.1
   vscode-uri: 3.1.0
-  type-fest: ^4.40.0
+  type-fest: ^4.41.0
   mnemonist: 0.40.3
 
 patchedDependencies:
@@ -576,7 +576,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.2
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
@@ -636,7 +636,7 @@ importers:
   packages/core:
     dependencies:
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
     devDependencies:
       '@dagrejs/dagre':
@@ -763,7 +763,7 @@ importers:
         specifier: catalog:utils
         version: 2.21.3
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       xstate:
         specifier: ^5.19.2
@@ -988,7 +988,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.2
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
@@ -1063,7 +1063,7 @@ importers:
         specifier: ^1.8.2
         version: 1.8.2
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       which:
         specifier: ^5.0.0
@@ -1115,7 +1115,7 @@ importers:
         specifier: catalog:vite
         version: 4.41.0
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       vite:
         specifier: catalog:vite
@@ -1540,7 +1540,7 @@ importers:
         specifier: 'catalog:'
         version: 2.5.2
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
@@ -1666,7 +1666,7 @@ importers:
         specifier: 'catalog:'
         version: 4.19.3
       type-fest:
-        specifier: ^4.40.0
+        specifier: ^4.41.0
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
