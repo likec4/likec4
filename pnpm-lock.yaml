@@ -253,8 +253,8 @@ overrides:
   esbuild: ^0.25.4
   react: ^19.1.0
   react-dom: ^19.1.0
-  '@types/react': ^19.1.2
-  '@types/react-dom': ^19.1.3
+  '@types/react': ^19.1.5
+  '@types/react-dom': ^19.1.5
   vscode-jsonrpc: 8.2.0
   vscode-languageclient: 9.0.1
   vscode-languageserver: 9.0.1
@@ -375,10 +375,10 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       tsx:
         specifier: 'catalog:'
@@ -495,10 +495,10 @@ importers:
         specifier: 'catalog:'
         version: 20.17.30
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       '@vitejs/plugin-react':
         specifier: catalog:vite
@@ -788,10 +788,10 @@ importers:
         specifier: 'catalog:'
         version: 20.17.30
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       '@vitejs/plugin-react':
         specifier: catalog:vite
@@ -855,10 +855,10 @@ importers:
   packages/icons:
     devDependencies:
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       esbuild:
         specifier: ^0.25.4
@@ -1191,10 +1191,10 @@ importers:
         specifier: ^15.7.14
         version: 15.7.14
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       '@types/semver':
         specifier: ^7.7.0
@@ -1618,10 +1618,10 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       '@types/vscode':
         specifier: catalog:vscode
@@ -1735,10 +1735,10 @@ importers:
         specifier: catalog:css
         version: 0.53.6(typescript@5.8.3)
       '@types/react':
-        specifier: ^19.1.2
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
-        specifier: ^19.1.3
+        specifier: ^19.1.5
         version: 19.1.5(@types/react@19.1.5)
       nano-spawn:
         specifier: catalog:utils
@@ -1807,8 +1807,8 @@ packages:
     resolution: {integrity: sha512-N02aj52Iezn69qHyx5+XvPqgsPMEnel9mI5JMbGiRMTzzLMuNaxRVoQTaq2024Dpr7BLsxCjqMkNvelqMDhaHA==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0}
     peerDependencies:
-      '@types/react': ^19.1.2
-      '@types/react-dom': ^19.1.3
+      '@types/react': ^19.1.5
+      '@types/react-dom': ^19.1.5
       react: ^19.1.0
       react-dom: ^19.1.0
 
@@ -3776,7 +3776,7 @@ packages:
   '@types/react-dom@19.1.5':
     resolution: {integrity: sha512-CMCjrWucUBZvohgZxkjd6S9h0nZxXjzus6yDfUb+xLxYM7VvjKNH1tQrE9GWLql1XoOP4/Ds3bwFqShHUYraGg==}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
 
   '@types/react@19.1.5':
     resolution: {integrity: sha512-piErsCVVbpMMT2r7wbawdZsq4xMvIAhQuac2gedQHysu1TZYEigE6pnFfgZT+/jQnrRuF5r+SHzuehFjfRjr4g==}
@@ -7217,7 +7217,7 @@ packages:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       react: ^19.1.0
     peerDependenciesMeta:
       '@types/react':
@@ -7227,7 +7227,7 @@ packages:
     resolution: {integrity: sha512-sGsQtcjMqdQyijAHytfGEELB8FufGbfXIsvUTe+NLx1GDRJCXtCFLBLUI1eyZCKXXvbEU2C6gai0PZKoIE9Vbg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       react: ^19.1.0
     peerDependenciesMeta:
       '@types/react':
@@ -7256,7 +7256,7 @@ packages:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       react: ^19.1.0
     peerDependenciesMeta:
       '@types/react':
@@ -8285,7 +8285,7 @@ packages:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       react: ^19.1.0
     peerDependenciesMeta:
       '@types/react':
@@ -8322,7 +8322,7 @@ packages:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       react: ^19.1.0
     peerDependenciesMeta:
       '@types/react':
@@ -8838,7 +8838,7 @@ packages:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
-      '@types/react': ^19.1.2
+      '@types/react': ^19.1.5
       immer: '>=9.0.6'
       react: ^19.1.0
     peerDependenciesMeta:
