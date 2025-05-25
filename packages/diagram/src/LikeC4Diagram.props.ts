@@ -224,6 +224,11 @@ export interface LikeC4DiagramProperties {
   renderControls?: ControlsCustomLayout | undefined
 
   /**
+   * Override node renderers
+   */
+  renderNodes?: CustomNodes | undefined
+
+  /**
    * Dynamic filter, applies both to nodes and edges
    */
   where?: WhereOperator<string, string> | undefined
@@ -232,11 +237,6 @@ export interface LikeC4DiagramProperties {
    * Override ReactFlow props
    */
   reactFlowProps?: OverrideReactFlowProps | undefined
-
-  /**
-   * Override node renderers
-   */
-  customNodes?: CustomNodes | undefined
 }
 
 export type OpenSourceParams =

@@ -151,7 +151,7 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   /**
    * Override node renderers
    */
-  customNodes?: CustomNodes | undefined
+  renderNodes?: CustomNodes | undefined
 
   /**
    * Render custom icon for a node

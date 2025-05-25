@@ -1,7 +1,5 @@
 # `@likec4/diagram`
 
-[docs](https://likec4.dev/tooling/code-generation/react/) | [demo](https://template.likec4.dev/view/index/)
-
 A React component library for rendering software architecture diagrams.\
 Although you can use them directly, it is recommended to use [likec4](../likec4/) CLI to generate components from LikeC4 sources.
 
@@ -10,6 +8,13 @@ Install:
 ```bash
 pnpm add @likec4/diagram
 ```
+
+See:
+
+- Docs - https://likec4.dev/tooling/react/
+- Demo - https://template.likec4.dev/
+
+Contents:
 
 - [Bundled Version](#bundled-version)
   - [LikeC4View](#likec4view)
@@ -30,7 +35,8 @@ Diagram renders inside shadow DOM and has its own styles.
 ### LikeC4View
 
 ```tsx
-import { LikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+import { LikeC4Model } from '@likec4/core/model'
+import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
 
 // instance of LikeC4Model
 // See https://likec4.dev/tooling/model-api/
@@ -265,13 +271,13 @@ function App() {
 
 ### Custom node renderer
 
-You can provide custom node renderers.
+LikeC4Diagram can use custom node renderers.\
+Compose custom nodes renderers using primitives from `@likec4/diagram/custom` (or `@likec4/diagram/bundle/custom` for the bundled version).\
+See [customNodes.tsx](./src/custom/customNodes.tsx) for examples.
 
 ```tsx
 import { LikeC4Diagram } from '@likec4/diagram'
 import {
-  type CustomNodes,
-  DefaultHandles,
   ElementActions,
   ElementDetailsButtonWithHandler,
   elementNode,
@@ -283,7 +289,7 @@ import {
 } from '@likec4/diagram/custom'
 import { IconPlus } from '@tabler/icons-react'
 
-const customNodes = {
+const renderNodes = {
   element: elementNode(({ nodeProps, nodeModel }) => (
     <ElementNodeContainer nodeProps={nodeProps}>
       <ElementShape {...nodeProps} />
@@ -298,23 +304,22 @@ const customNodes = {
           },
         ]}
       />
-      {nodeModel.element.getMetadata('your-attr') === 'value' && <YourComponent />}
+      <div style={{ position: 'absolute', bottom: 0 }}>
+        {nodeModel.element.getMetadata('your-attr')}
+      </div>
     </ElementNodeContainer>
   )),
-} satisfies CustomNodes
+}
 
 function App() {
   return (
     <LikeC4Diagram
       view={view}
-      customNodes={customNodes}
+      renderNodes={renderNodes}
     />
   )
 }
 ```
-
-You can compose custom nodes renderers from provided primitives.\
-See [customNodes.tsx](./src/custom/customNodes.tsx) for more examples.
 
 > [!IMPORTANT]
 > Try to keep node renderers referentially stable.

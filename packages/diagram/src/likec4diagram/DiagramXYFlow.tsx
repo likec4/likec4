@@ -52,7 +52,7 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
     | 'nodesDraggable'
     | 'nodesSelectable'
     | 'reactFlowProps'
-    | 'customNodes'
+    | 'renderNodes'
   >
 >
 
@@ -62,7 +62,7 @@ const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =
   a.children == b.children &&
   deepEqual(a.background, b.background) &&
   deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {}) &&
-  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {})
+  shallowEqual(a.renderNodes ?? {}, b.renderNodes ?? {})
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   background = 'dots',
@@ -70,7 +70,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   nodesSelectable = false,
   reactFlowProps = {},
   children,
-  customNodes,
+  renderNodes,
 }) => {
   const diagram = useDiagram()
   const {
@@ -126,20 +126,20 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     nodeTypes = useCustomCompareMemo(
       () => {
         return {
-          element: customNodes?.element ?? defaultNodeTypes.element,
-          deployment: customNodes?.deployment ?? defaultNodeTypes.deployment,
-          'compound-element': customNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
-          'compound-deployment': customNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
-          'view-group': customNodes?.viewGroup ?? defaultNodeTypes['view-group'],
+          element: renderNodes?.element ?? defaultNodeTypes.element,
+          deployment: renderNodes?.deployment ?? defaultNodeTypes.deployment,
+          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
+          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
+          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes['view-group'],
         } satisfies { [key in Types.Node['type']]: any }
       },
-      [customNodes],
+      [renderNodes],
       shallowEqual,
     )
 
   useUpdateEffect(() => {
-    console.warn('customNodes changed - this might degrade performance')
-  }, [customNodes])
+    console.warn('renderNodes changed - this might degrade performance')
+  }, [renderNodes])
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
