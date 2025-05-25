@@ -1127,9 +1127,6 @@ importers:
       '@fontsource/ibm-plex-sans':
         specifier: ^5.2.5
         version: 5.2.5
-      '@likec4/diagram':
-        specifier: workspace:*
-        version: link:../diagram
       '@likec4/generators':
         specifier: workspace:*
         version: link:../generators
@@ -1379,6 +1376,10 @@ importers:
       yargs:
         specifier: 17.7.2
         version: 17.7.2
+    optionalDependencies:
+      '@likec4/diagram':
+        specifier: workspace:*
+        version: link:../diagram
 
   packages/log:
     dependencies:
