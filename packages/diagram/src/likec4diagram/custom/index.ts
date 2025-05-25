@@ -6,7 +6,7 @@ import {
   DeploymentNode,
   ElementNode,
   ViewGroupNode,
-} from './nodes/nodeTypes'
+} from './nodes/nodes'
 
 export const BuiltinNodes = {
   element: ElementNode,

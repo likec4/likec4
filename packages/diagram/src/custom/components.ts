@@ -18,36 +18,28 @@ export {
 } from '../context/IconRenderer'
 
 export {
+  CompoundActions,
   CompoundDeploymentNode,
+  CompoundDeploymentToolbar,
   CompoundDetailsButtonWithHandler,
   CompoundElementNode,
+  CompoundElementToolbar,
+  DeploymentElementActions,
+  DeploymentElementToolbar,
   DeploymentNode,
+  ElementActions,
   ElementDetailsButtonWithHandler,
   ElementNode,
+  ElementToolbar,
+  Toolbar,
   ViewGroupNode,
-} from '../likec4diagram/custom/nodes/nodeTypes'
+} from '../likec4diagram/custom/nodes'
 
 export {
   IfEnabled,
   IfNotEnabled,
   IfNotReadOnly,
 } from '../context/DiagramFeatures'
-
-export {
-  CompoundActions,
-} from '../likec4diagram/custom/nodes/CompoundActions'
-export {
-  DeploymentElementActions,
-  ElementActions,
-} from '../likec4diagram/custom/nodes/ElementActions'
-export {
-  CompoundDeploymentToolbar,
-  CompoundElementToolbar,
-} from '../likec4diagram/custom/nodes/toolbar/CompoundToolbar'
-export {
-  DeploymentElementToolbar,
-  ElementToolbar,
-} from '../likec4diagram/custom/nodes/toolbar/ElementToolbar'
 
 export {
   Overlay,

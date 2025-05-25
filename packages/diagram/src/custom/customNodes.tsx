@@ -3,19 +3,19 @@ import type { DiagramView } from '@likec4/core/types'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
-import { useLikeC4ViewModel } from '../hooks/useCurrentViewId'
 import type { Types } from '../likec4diagram/types'
+import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 
 function customDiagramNode<
   P extends {
-    nodeProps: any
-    nodeModel: any
+    nodeProps: NodeProps<Types.NodeData>
+    nodeModel: NodeModel<AnyAux>
   },
 >(
   Node: (props: P) => ReactNode,
 ): (props: P['nodeProps']) => ReactNode {
   return customNode((props) => {
-    const viewModel = useLikeC4ViewModel()
+    const viewModel = useLikeC4Model(true).view(props.data.viewId)
     const model = viewModel.node(props.id)
     // @ts-ignore
     return <Node nodeProps={props} nodeModel={model} />

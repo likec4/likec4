@@ -1,8 +1,7 @@
 import type { DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
-import type { Base } from '../base'
-import type { ReactFlowEdge, ReactFlowNode } from '../base/types'
+import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
 
 type NonOptional<T extends object> = Simplify<
   & {
@@ -33,6 +32,10 @@ export namespace Types {
       >
     >
     & {
+      /**
+       * View this node belongs to
+       */
+      viewId: ViewId
       isMultiple?: boolean | undefined
       icon: string | null
     }
@@ -75,6 +78,10 @@ export namespace Types {
       >
     >
     & {
+      /**
+       * View this node belongs to
+       */
+      viewId: ViewId
       depth: number
       icon?: IconUrl
     }
