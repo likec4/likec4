@@ -36,7 +36,8 @@
       "dependsOn": [
         "generate:app",
         "generate:icons"
-      ]
+      ],
+      "outputs": []
     },
     "build-react": {
       "dependsOn": [
@@ -56,7 +57,7 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/diagram#generate"
+        "@likec4/styles#build"
       ],
       "outputs": [
         "__app__/**"

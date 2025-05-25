@@ -56,7 +56,6 @@
         "default": "./bundle/index.js"
       }
     },
-
     "./panda.buildinfo.json": "./panda.buildinfo.json",
     "./styles-min.css": "./dist/styles-min.css",
     "./styles-font.css": "./dist/styles-font.css",
@@ -68,10 +67,10 @@
   },
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "generate": "panda codegen",
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -m bundle",
+    "build": "echo \"use pnpm turbo run build\" || true",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate"

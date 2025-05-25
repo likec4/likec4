@@ -81,6 +81,7 @@
     "build-cli": "unbuild",
     "build-app": "tsx scripts/bundle-app.ts",
     "build-react": "tsx scripts/bundle-react.ts",
+    "build": "echo \"use pnpm turbo run build\" || true",
     "generate:app": "tsr generate && panda codegen",
     "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
     "pack": "pnpm pack",
@@ -123,6 +124,9 @@
   "peerDependencies": {
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
+  },
+  "optionalDependencies": {
+    "@likec4/diagram": "workspace:*"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",

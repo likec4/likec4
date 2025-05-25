@@ -13,12 +13,6 @@ export {
   useEnabledFeatures,
 } from '../context/DiagramFeatures'
 export {
-  useXYFlow,
-  useXYInternalNode,
-  useXYStore,
-  useXYStoreApi,
-} from '../hooks'
-export {
   useCurrentViewId,
   useLikeC4ViewModel,
 } from '../hooks/useCurrentViewId'
@@ -26,11 +20,17 @@ export {
   useDiagram,
   useDiagramContext,
 } from '../hooks/useDiagram'
+export {
+  useXYFlow,
+  useXYInternalNode,
+  useXYStore,
+  useXYStoreApi,
+} from '../hooks/useXYFlow'
 
 export {
   useLikeC4Model,
 } from '../likec4model/useLikeC4Model'
 
-export {
-  useMantinePortalProps,
-} from '../hooks/useMantinePortalProps'
+export { useMantinePortalProps } from '../hooks/useMantinePortalProps'
+export { useSetState } from '../hooks/useSetState'
+export { useUpdateEffect } from '../hooks/useUpdateEffect'

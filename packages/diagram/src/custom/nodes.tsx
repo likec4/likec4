@@ -233,7 +233,7 @@ export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const viewGroupNode = customDiagramNode<CustomViewGroupNodeProps>
 
-export type CustomNodes = {
+export interface CustomNodes {
   element?: undefined | ((props: NodeProps<Types.ElementNodeData, 'element'>) => ReactNode)
   deployment?: undefined | ((props: NodeProps<Types.DeploymentElementNodeData, 'deployment'>) => ReactNode)
   compoundElement?: undefined | ((props: NodeProps<Types.CompoundElementNodeData, 'compound-element'>) => ReactNode)

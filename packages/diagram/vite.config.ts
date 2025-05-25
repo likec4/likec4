@@ -1,6 +1,7 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
 import { spawnSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
@@ -47,6 +48,13 @@ const defaultConfig = defineConfig({
         pandacss(),
       ],
     },
+  },
+  esbuild: {
+    jsxDev: false,
+    minifyIdentifiers: false,
+    minifyWhitespace: true,
+    minifySyntax: true,
+    tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
   },
   build: {
     emptyOutDir: true,
@@ -136,6 +144,7 @@ const bundleConfig = defineConfig({
     minifyIdentifiers: false,
     minifyWhitespace: true,
     minifySyntax: true,
+    tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
   },
   build: {
     outDir: 'bundle',

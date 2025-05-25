@@ -5,23 +5,9 @@ export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
 export { Overlay } from './overlays/overlay/Overlay'
 
-export {
-  useLikeC4ElementsTree,
-  useLikeC4Model,
-} from './likec4model'
-
 export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
-export {
-  useCurrentViewId,
-  useLikeC4ViewModel,
-} from './hooks/useCurrentViewId'
-export {
-  useDiagram,
-  useDiagramContext,
-} from './hooks/useDiagram'
-export { useSetState } from './hooks/useSetState'
-export { useUpdateEffect } from './hooks/useUpdateEffect'
+export * from './custom/hooks'
 
 export type {
   ChangeEvent,

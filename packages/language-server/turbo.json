@@ -20,6 +20,29 @@
         "src/generated-lib/**"
       ],
       "outputLogs": "new-only"
+    },
+    "typecheck": {
+      "dependsOn": [
+        "@likec4/core#typecheck",
+        "generate",
+        "topo"
+      ],
+      "outputs": [
+        "lib/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "^generate",
+        "generate",
+        "@likec4/core#build",
+        "@likec4/log#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

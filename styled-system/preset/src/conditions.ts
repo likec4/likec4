@@ -1,4 +1,5 @@
 import type { Config } from '@pandacss/dev'
+import { root } from './const'
 import { conditions as generated } from './generated'
 
 type ExtendableConditions = NonNullable<Config['conditions']>
@@ -10,26 +11,26 @@ export const conditions = {
 
     // This is used to hide certain elements when the diagram is in reduced graphics mode (large)
     reduceGraphics: [
-      '.likec4-root:is([data-likec4-reduced-graphics])',
+      `${root}:is([data-likec4-reduced-graphics])`,
       ' &',
     ].join(''),
 
     // This is used to improve performance when the diagram is in reduced graphics mode
     // and the user is panning around the diagram
     reduceGraphicsOnPan: [
-      '.likec4-root:is(',
+      `${root}:is(`,
       '[data-likec4-reduced-graphics]',
       '[data-likec4-diagram-panning]',
       ') &',
     ].join(''),
 
     noReduceGraphics: [
-      '.likec4-root:not(',
+      `${root}:not(`,
       '[data-likec4-reduced-graphics]',
       ') &',
     ].join(''),
 
-    whenPanning: ':is(.likec4-root[data-likec4-diagram-panning]) &',
+    whenPanning: `:is(${root}[data-likec4-diagram-panning]) &`,
 
     smallZoom: ':where([data-likec4-zoom-small]) &',
 

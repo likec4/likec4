@@ -4,19 +4,9 @@
     "//"
   ],
   "tasks": {
-    "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
-      "outputs": [
-        "styled-system/**"
-      ],
-      "outputLogs": "new-only"
-    },
     "typecheck": {
       "dependsOn": [
-        "^generate",
-        "generate",
+        "@likec4/styles#generate",
         "topo"
       ],
       "outputs": [
@@ -26,8 +16,8 @@
     },
     "build:dist": {
       "dependsOn": [
-        "generate",
-        "@likec4/core#build"
+        "@likec4/core#build",
+        "@likec4/styles#build"
       ],
       "outputs": [
         "dist/**",
@@ -37,8 +27,8 @@
     },
     "build:bundle": {
       "dependsOn": [
-        "generate",
-        "@likec4/core#build"
+        "@likec4/core#build",
+        "@likec4/styles#build"
       ],
       "outputs": [
         "bundle/**"
@@ -50,6 +40,7 @@
         "build:dist",
         "build:bundle"
       ],
+      "outputs": [],
       "outputLogs": "new-only"
     }
   }
