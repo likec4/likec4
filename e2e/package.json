@@ -15,17 +15,17 @@
   },
   "devDependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "^1.52.0",
     "likec4": "file:../packages/likec4/package.tgz",
-    "@types/react": "~19.1.5",
-    "@types/react-dom": "~19.1.5",
-    "react": "~19.1.0",
-    "react-dom": "~19.1.0",
-    "std-env": "3.9.0",
-    "typescript": "5.8.3",
-    "vitest": "3.1.4",
-    "wrangler": "4.16.1",
-    "zx": "8.5.4"
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "std-env": "^3.9.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4",
+    "wrangler": "^4.16.1",
+    "zx": "^8.5.4"
   },
   "pnpm": {
     "overrides": {
