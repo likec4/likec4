@@ -287,7 +287,7 @@ importers:
         specifier: ^0.25.3
         version: 0.25.4
       execa:
-        specifier: ^9.5.2
+        specifier: ^9.5.3
         version: 9.5.3
       global:
         specifier: ^4.4.0
@@ -864,7 +864,7 @@ importers:
         specifier: ^0.25.3
         version: 0.25.4
       execa:
-        specifier: ^9.5.2
+        specifier: ^9.5.3
         version: 9.5.3
       fdir:
         specifier: catalog:utils
@@ -1507,7 +1507,7 @@ importers:
         specifier: catalog:utils
         version: 1.2.2
       execa:
-        specifier: ^9.5.2
+        specifier: ^9.5.3
         version: 9.5.3
       fast-equals:
         specifier: catalog:utils
