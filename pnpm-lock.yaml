@@ -243,11 +243,11 @@ catalogs:
       version: 9.2.0
   xyflow:
     '@xyflow/react':
-      specifier: ^12.6.0
-      version: 12.6.0
+      specifier: ^12.6.4
+      version: 12.6.4
     '@xyflow/system':
-      specifier: ^0.0.57
-      version: 0.0.57
+      specifier: ^0.0.61
+      version: 0.0.61
 
 overrides:
   esbuild: ^0.25.3
@@ -508,10 +508,10 @@ importers:
         version: 5.0.4(@types/react@19.1.5)(react@19.1.0)(xstate@5.19.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.6.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.57
+        version: 0.0.61
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -734,10 +734,10 @@ importers:
         version: 5.0.4(@types/react@19.1.5)(react@19.1.0)(xstate@5.19.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.6.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.57
+        version: 0.0.61
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1204,10 +1204,10 @@ importers:
         version: 17.0.33
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.6.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.57
+        version: 0.0.61
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.3)
@@ -1634,10 +1634,10 @@ importers:
         version: 4.5.0(vite@6.3.5(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.2)(tsx@4.19.3)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.6.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.57
+        version: 0.0.61
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -3959,14 +3959,14 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.6.0':
-    resolution: {integrity: sha512-YzsSK4SlpC6e9Ki1g6O9B1UH7xvz/bzWF+tJ+vWDD8Am5xJmFn0jYnCEuqvzvH8dRKb1NFBmyuqEGqWN39xXsA==}
+  '@xyflow/react@12.6.4':
+    resolution: {integrity: sha512-/dOQ43Nu217cwHzy7f8kNUrFMeJJENzftVgT2VdFFHi6fHlG83pF+gLmvkRW9Be7alCsR6G+LFxxCdsQQbazHg==}
     peerDependencies:
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@xyflow/system@0.0.57':
-    resolution: {integrity: sha512-1YpBo0WgmZLR5wQw9Jvk3Tu0gISi/oYc4uSimrDuAsA/G2rGleulLrKkM59uuT/QU5m6DYC2VdBDAzjSNMGuBA==}
+  '@xyflow/system@0.0.61':
+    resolution: {integrity: sha512-TsZG/Ez8dzxX6/Ol44LvFqVZsYvyz6dpDlAQZZk6hTL7JLGO5vN3dboRJqMwU8/Qtr5IEv5YBzojjAwIqW1HCA==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -11799,9 +11799,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.6.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@xyflow/react@12.6.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@xyflow/system': 0.0.57
+      '@xyflow/system': 0.0.61
       classcat: 5.0.5
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -11810,7 +11810,7 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.57':
+  '@xyflow/system@0.0.61':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-selection': 3.0.11

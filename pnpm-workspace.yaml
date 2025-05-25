@@ -90,8 +90,8 @@ catalogs:
     vscode-textmate: "9.2.0"
     "@types/vscode": "^1.84.0"
   xyflow:
-    "@xyflow/react": "^12.6.0"
-    "@xyflow/system": "^0.0.57"
+    "@xyflow/react": "^12.6.4"
+    "@xyflow/system": "^0.0.61"
   langium:
     langium: "3.5.0"
     langium-cli: "3.5.0"
