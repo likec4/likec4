@@ -1350,7 +1350,7 @@ importers:
         specifier: catalog:vite
         version: 4.5.4(@types/node@20.17.30)(rollup@4.41.0)(typescript@5.8.3)(vite@6.3.5(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.2)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-inspect:
-        specifier: ^11.0.1
+        specifier: ^11.1.0
         version: 11.1.0(vite@6.3.5(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.2)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-singlefile:
         specifier: ^2.2.0
