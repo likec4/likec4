@@ -1127,6 +1127,9 @@ importers:
       '@fontsource/ibm-plex-sans':
         specifier: ^5.2.5
         version: 5.2.5
+      '@likec4/diagram':
+        specifier: workspace:*
+        version: link:../diagram
       '@likec4/generators':
         specifier: workspace:*
         version: link:../generators
@@ -1376,10 +1379,6 @@ importers:
       yargs:
         specifier: 17.7.2
         version: 17.7.2
-    optionalDependencies:
-      '@likec4/diagram':
-        specifier: workspace:*
-        version: link:../diagram
 
   packages/log:
     dependencies:
@@ -1683,10 +1682,6 @@ importers:
         version: 0.5.1
 
   styled-system/preset:
-    dependencies:
-      '@pandacss/dev':
-        specifier: catalog:css
-        version: 0.53.6(typescript@5.8.3)
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1700,6 +1695,9 @@ importers:
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
         version: 8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 0.53.6(typescript@5.8.3)
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1717,10 +1715,13 @@ importers:
         version: 5.8.3
 
   styled-system/styles:
-    dependencies:
+    devDependencies:
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../preset
+      '@likec4/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@pandabox/panda-plugins':
         specifier: ^0.0.8
         version: 0.0.8
@@ -1733,10 +1734,6 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.6(typescript@5.8.3)
-    devDependencies:
-      '@likec4/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@types/react':
         specifier: ^19.1.2
         version: 19.1.5
