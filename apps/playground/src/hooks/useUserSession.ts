@@ -1,9 +1,15 @@
-import type { SessionData } from '#worker'
 import { api } from '$/api'
 import { useStore } from '@nanostores/react'
 import { atom, onMount } from 'nanostores'
 
-const sessionAtom = atom<SessionData | null>(null)
+const sessionAtom = atom<
+  null | {
+    login: string
+    userId: number
+    name: string
+    avatarUrl: string | null
+  }
+>(null)
 
 onMount(sessionAtom, () => {
   api.auth.me().then(
