@@ -62,6 +62,8 @@ export default defineConfig(({ command }) => ({
     tsconfigpaths(),
     TanStackRouterVite(tanStackRouterViteCfg),
     react(),
-    cloudflare(),
+    cloudflare({
+      persistState: true,
+    }),
   ],
 }))

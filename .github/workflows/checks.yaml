@@ -13,15 +13,12 @@ jobs:
   check-types:
     name: ʦ typescript
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
-
-      - name: ⚙️ generate
-        run: pnpm generate
 
       - name: ʦ typecheck
         run: pnpm ci:typecheck
@@ -29,7 +26,7 @@ jobs:
   check-build:
     name: 🛠️ build
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +39,7 @@ jobs:
   check-tests:
     name: 🔬 tests
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -60,7 +57,7 @@ jobs:
   check-docs-astro:
     name: 📖 docs
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
@@ -82,7 +79,7 @@ jobs:
   check-e2e-tests:
     name: 🔬 e2e tests
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
@@ -102,7 +99,7 @@ jobs:
         env:
           NODE_ENV: development
         run: |
-          pnpm install
+          pnpm install --prefer-offline
           pnpm install:chromium
           pnpm bootstrap
 
@@ -137,7 +134,7 @@ jobs:
   check-e2e-types:
     name: 🔬 e2e types
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - check-build
       - check-types
@@ -157,7 +154,7 @@ jobs:
         env:
           NODE_ENV: development
         run: |
-          pnpm install
+          pnpm install --prefer-offline
           pnpm bootstrap
 
       - name: ʦ typecheck test

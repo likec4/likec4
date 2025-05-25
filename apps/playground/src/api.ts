@@ -1,10 +1,8 @@
-// import { type ClientResponse, type InferResponseType, hc } from 'hono/client'
 import type { ApiType } from '#worker'
 import type { SharedPlayground } from '#worker/types'
 import { notFound } from '@tanstack/react-router'
 import { type ClientResponse, type InferRequestType, type InferResponseType, hc } from 'hono/client'
 import type { Get } from 'type-fest'
-// import type { Get } from 'node_modules/nanostores/map'
 
 const workerApi = hc<ApiType>('')
 

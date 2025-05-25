@@ -9,13 +9,14 @@ permissions:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: production
   FORCE_COLOR: true
   DO_NOT_TRACK: "1"
 
 jobs:
   publish-vscode:
     name: publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     if: ${{ github.repository_owner == 'likec4' }}
     steps:

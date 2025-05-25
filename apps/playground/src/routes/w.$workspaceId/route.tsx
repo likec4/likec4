@@ -8,7 +8,7 @@ import { AppShell, AppShellHeader, AppShellMain, Box, Stack } from '@mantine/cor
 import { useMediaQuery } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import * as styles from './styles.css'
+import * as styles from '../styles.css'
 
 export const Route = createFileRoute('/w/$workspaceId')({
   component: WorkspaceContextPage,

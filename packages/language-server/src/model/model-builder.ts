@@ -2,9 +2,8 @@ import type * as c4 from '@likec4/core'
 import {
   type ViewId,
   isScopedElementView,
-  LikeC4Model,
-  sortParentsFirst,
 } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
@@ -23,7 +22,6 @@ import {
   groupBy,
   hasAtLeast,
   isNot,
-  map,
   mapToObj,
   pipe,
   prop,
@@ -35,7 +33,7 @@ import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import type { LangiumDocuments, ProjectsManager } from '../workspace'
+import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
 

@@ -32,6 +32,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: production
   DO_NOT_TRACK: "1"
   FORCE_COLOR: true
 
@@ -42,7 +43,7 @@ concurrency:
 jobs:
   deploy-docs:
     name: docs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     if: ${{ github.repository_owner == 'likec4' }}
     environment:
