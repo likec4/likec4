@@ -20,9 +20,6 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: ⚙️ generate
-        run: pnpm generate
-
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
@@ -102,7 +99,7 @@ jobs:
         env:
           NODE_ENV: development
         run: |
-          pnpm install
+          pnpm install --prefer-offline
           pnpm install:chromium
           pnpm bootstrap
 
@@ -157,7 +154,7 @@ jobs:
         env:
           NODE_ENV: development
         run: |
-          pnpm install
+          pnpm install --prefer-offline
           pnpm bootstrap
 
       - name: ʦ typecheck test
