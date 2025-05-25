@@ -15,6 +15,12 @@
   "references": [
     {
       "path": "./tsconfig.protocol.json"
+    },
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../diagram/tsconfig.json"
     }
   ]
 }

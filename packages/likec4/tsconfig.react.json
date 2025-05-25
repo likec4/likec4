@@ -24,6 +24,9 @@
     },
     {
       "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../diagram/tsconfig.json"
     }
   ]
 }
