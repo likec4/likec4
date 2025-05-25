@@ -121,7 +121,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "@xstate/react": "^5.0.3",
+    "@xstate/react": "^5.0.4",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "clsx": "catalog:react",
@@ -165,6 +165,6 @@
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
     "wrangler": "catalog:",
-    "xstate": "^5.19.2"
+    "xstate": "^5.19.3"
   }
 }
