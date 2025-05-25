@@ -1,6 +1,6 @@
 import { definePreset } from '@pandacss/dev'
 import { conditions } from './conditions'
-import { root } from './const'
+import { nodeOrEdge, root, rootNotReduced } from './const'
 import { compoundColors, globalCss, themeColors } from './generated'
 import { patterns } from './patterns'
 import { theme } from './theme'

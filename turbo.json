@@ -19,7 +19,8 @@
     "topo": {
       "dependsOn": [
         "^topo"
-      ]
+      ],
+      "outputs": []
     },
     "typecheck": {
       "dependsOn": [
