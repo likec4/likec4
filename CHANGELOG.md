@@ -1,3 +1,63 @@
+# [1.31.0](https://github.com/likec4/likec4/compare/v1.30.0...v1.31.0) (2025-05-25)
+
+### 🚀 Features
+
+* **Custom renderers**  
+  More customization coming, you can control how elements are rendered, add your action buttons or extra details:
+  ```tsx
+  import { LikeC4Diagram } from '@likec4/diagram'
+  import {
+    ElementActions,
+    ElementDetailsButtonWithHandler,
+    elementNode,
+    ElementNodeContainer,
+    ElementShape,
+    ElementTitle,
+    ElementToolbar,
+    IfNotReadOnly,
+  } from '@likec4/diagram/custom'
+  import { IconPlus } from '@tabler/icons-react'
+  
+  const customNodes = {
+    element: elementNode(({ nodeProps, nodeModel }) => (
+      <ElementNodeContainer nodeProps={nodeProps}>
+        <ElementShape {...nodeProps} />
+        <ElementTitle {...nodeProps} />
+        {/* Add extra buttons */}
+        <ElementActions
+          {...nodeProps}
+          extraButtons={[
+            {
+              key: 'plus',
+              icon: <IconPlus />,
+              onClick: () => console.log('extra'),
+            },
+          ]}
+        />
+        {/* Add extra info */}
+        <div style={{ position: 'absolute', bottom: 0 }}>
+          {nodeModel.element.getMetadata('your-attr')}
+        </div>
+      </ElementNodeContainer>
+    )),
+  }
+  
+  function App() {
+    return (
+      <LikeC4Diagram
+        view={view}
+        renderNodes={customNodes}
+      />
+    )
+  }
+  ```
+  [📖 Documentation](https://likec4.dev/tooling/react/)
+    
+* **Quotes Formatting**  
+  VSCode extension allows to configure preferred quote style.  
+  (thanks @pavelpykhtin, closes [#1772](https://github.com/likec4/likec4/issues/1772))
+
+
 # [1.30.0](https://github.com/likec4/likec4/compare/v1.29.1...v1.30.0) (2025-04-27)
 
 ### 🚀 Features
