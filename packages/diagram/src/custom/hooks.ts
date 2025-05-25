@@ -14,7 +14,6 @@ export {
 } from '../context/DiagramFeatures'
 export {
   useCurrentViewId,
-  useLikeC4ViewModel,
 } from '../hooks/useCurrentViewId'
 export {
   useDiagram,

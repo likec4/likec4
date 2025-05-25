@@ -15,7 +15,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'initialWidth'
   | 'initialHeight'
   | 'renderIcon'
-  | 'customNodes'
+  | 'renderNodes'
   | 'where'
 >
 
