@@ -57,12 +57,12 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
 >
 
 const compareProps = <T extends LikeC4DiagramXYFlowProps>(a: T, b: T): boolean =>
-  a.nodesDraggable === b.nodesDraggable &&
-  a.nodesSelectable === b.nodesSelectable &&
+  a.nodesDraggable == b.nodesDraggable &&
+  a.nodesSelectable == b.nodesSelectable &&
+  a.children == b.children &&
   deepEqual(a.background, b.background) &&
   deepEqual(a.reactFlowProps ?? {}, b.reactFlowProps ?? {}) &&
-  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {}) &&
-  a.children == b.children
+  shallowEqual(a.customNodes ?? {}, b.customNodes ?? {})
 
 export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
   background = 'dots',
@@ -122,21 +122,20 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({
     }),
     onViewportResize = useCallbackRef(() => {
       diagram.send({ type: 'xyflow.resized' })
-    })
-
-  const nodeTypes = useCustomCompareMemo(
-    () => {
-      return {
-        element: customNodes?.element ?? defaultNodeTypes.element,
-        deployment: customNodes?.deployment ?? defaultNodeTypes.deployment,
-        'compound-element': customNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
-        'compound-deployment': customNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
-        'view-group': customNodes?.viewGroup ?? defaultNodeTypes['view-group'],
-      } satisfies { [key in Types.Node['type']]: any }
-    },
-    [customNodes],
-    shallowEqual,
-  )
+    }),
+    nodeTypes = useCustomCompareMemo(
+      () => {
+        return {
+          element: customNodes?.element ?? defaultNodeTypes.element,
+          deployment: customNodes?.deployment ?? defaultNodeTypes.deployment,
+          'compound-element': customNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
+          'compound-deployment': customNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
+          'view-group': customNodes?.viewGroup ?? defaultNodeTypes['view-group'],
+        } satisfies { [key in Types.Node['type']]: any }
+      },
+      [customNodes],
+      shallowEqual,
+    )
 
   useUpdateEffect(() => {
     console.warn('customNodes changed - this might degrade performance')
