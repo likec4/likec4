@@ -37,6 +37,7 @@
         'wireit',
         'pnpm',
         'semver',
+        'terser',
         '@fontsource{/,}**',
       ]
     },
