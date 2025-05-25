@@ -10,7 +10,6 @@ import {
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
-import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
 import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'

@@ -1,4 +1,4 @@
-import { type LikeC4Model } from '@likec4/core'
+import { type LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
 
