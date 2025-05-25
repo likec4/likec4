@@ -25,7 +25,7 @@
     "server"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "wireit",
     "inspector": "wireit"
   },

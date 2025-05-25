@@ -24,6 +24,9 @@
   "references": [
     {
       "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../language-server/tsconfig.json"
     }
   ]
 }
