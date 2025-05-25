@@ -98,11 +98,11 @@ catalogs:
 
   astro:
     "@astrojs/check": "^0.9.4"
-    "@astrojs/react": "4.2.5"
+    "@astrojs/react": "4.3.0"
     "@astrojs/starlight": "0.34.3"
     "@expressive-code/plugin-collapsible-sections": "^0.41.2"
     "@expressive-code/plugin-line-numbers": "^0.41.2"
-    astro: "5.7.5"
+    astro: "5.8.0"
     astro-og-canvas: "^0.7.0"
     starlight-heading-badges: "^0.5.0"
     starlight-links-validator: "^0.16.0"
