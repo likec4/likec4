@@ -114,7 +114,7 @@ catalogs:
   hono:
     hono: "^4.7.10"
     hono-sessions: "^0.7.2"
-    "@hono/node-server": "^1.14.1"
+    "@hono/node-server": "^1.14.2"
 
 onlyBuiltDependencies:
   - dprint
