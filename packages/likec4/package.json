@@ -194,7 +194,7 @@
     "semver": "^7.7.2",
     "std-env": "catalog:utils",
     "strip-indent": "^4.0.0",
-    "terser": "^5.39.0",
+    "terser": "^5.39.2",
     "tinyrainbow": "^2.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
