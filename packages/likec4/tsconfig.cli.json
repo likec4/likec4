@@ -20,5 +20,10 @@
   ],
   "exclude": [
     "src/vite-plugin/modules.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
   ]
 }

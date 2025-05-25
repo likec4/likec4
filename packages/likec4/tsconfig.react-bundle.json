@@ -13,5 +13,10 @@
         "../diagram/dist/*"
       ],
     },
-  }
+  },
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
+  ]
 }

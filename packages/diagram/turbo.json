@@ -4,17 +4,6 @@
     "//"
   ],
   "tasks": {
-    "typecheck": {
-      "dependsOn": [
-        "@likec4/styles#generate",
-        "@likec4/core#typecheck",
-        "topo"
-      ],
-      "outputs": [
-        "lib/**"
-      ],
-      "outputLogs": "new-only"
-    },
     "build:dist": {
       "dependsOn": [
         "@likec4/core#build",

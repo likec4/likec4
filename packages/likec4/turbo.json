@@ -92,16 +92,6 @@
       ],
       "outputLogs": "new-only"
     },
-    "typecheck": {
-      "dependsOn": [
-        "^typecheck",
-        "generate"
-      ],
-      "outputs": [
-        "lib/**"
-      ],
-      "outputLogs": "new-only"
-    },
     "build": {
       "dependsOn": [
         "generate",

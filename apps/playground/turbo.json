@@ -14,18 +14,6 @@
         "worker-configuration.d.ts"
       ]
     },
-    "typecheck": {
-      "dependsOn": [
-        "@likec4/diagram#typecheck",
-        "@likec4/language-server#typecheck",
-        "generate",
-        "topo"
-      ],
-      "outputs": [
-        "lib/**"
-      ],
-      "outputLogs": "new-only"
-    },
     "build": {
       "env": [
         "NODE_ENV",
