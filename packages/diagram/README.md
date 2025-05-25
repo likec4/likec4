@@ -11,8 +11,6 @@ Install:
 pnpm add @likec4/diagram
 ```
 
-## Table of Contents
-
 - [Bundled Version](#bundled-version)
   - [LikeC4View](#likec4view)
   - [ReactLikeC4](#reactlikec4)
@@ -176,7 +174,7 @@ export default defineConfig({
   include: [
     'src/**/*.{ts,tsx}',
     // Include likec4 diagram source code to get the styles
-    './node_modules/@likec4/diagram/src/**/*.{ts,tsx}',
+    './node_modules/@likec4/diagram/panda.buildinfo.json',
   ],
   importMap: [
     '@likec4/styles',
@@ -191,8 +189,6 @@ export default defineConfig({
   },
 })
 ```
-
-You can also use `./node_modules/@likec4/diagram/dist/panda.buildinfo.json` to get panda build info.
 
 You global CSS should look like this:
 
@@ -318,7 +314,7 @@ function App() {
 ```
 
 You can compose custom nodes renderers from provided primitives.\
-See [custom nodes](../src/custom/nodes.tsx) for more examples.
+See [customNodes.tsx](./src/custom/customNodes.tsx) for more examples.
 
 > [!IMPORTANT]
 > Try to keep node renderers referentially stable.
