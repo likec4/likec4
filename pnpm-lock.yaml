@@ -1522,7 +1522,7 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       reactive-vscode:
-        specifier: ^0.2.14
+        specifier: ^0.2.17
         version: 0.2.17(@types/vscode@1.100.0)
       remeda:
         specifier: catalog:utils
