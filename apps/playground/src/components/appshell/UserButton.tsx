@@ -1,9 +1,9 @@
-import type { SessionData } from '#worker'
+import type { UserSession } from '$hooks/useUserSession'
 import { useUserSession } from '$hooks/useUserSession'
 import { Avatar, Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { useState } from 'react'
 
-function CurrentUser({ session }: { session: SessionData }) {
+function CurrentUser({ session }: { session: UserSession }) {
   return (
     <Menu shadow="md">
       <MenuTarget>
