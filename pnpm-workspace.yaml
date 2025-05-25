@@ -11,7 +11,7 @@ catalog:
   "@types/node": "^20.17.30"
   unbuild: "^3.5.0"
   turbo: "^2.5.3"
-  tsx: "~4.19.3"
+  tsx: "~4.19.4"
   zx: "^8.5.4"
 
 catalogs:
