@@ -36,6 +36,7 @@
         'wrangler',
         'wireit',
         'pnpm',
+        'semver',
         '@fontsource{/,}**',
       ]
     },
