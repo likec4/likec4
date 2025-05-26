@@ -1,4 +1,4 @@
-import TelemetryReporter from '@vscode/extension-telemetry'
+import { TelemetryReporter } from '@vscode/extension-telemetry'
 import { deepEqual } from 'fast-equals'
 import { tryOnScopeDispose } from 'reactive-vscode'
 import { keys } from 'remeda'
