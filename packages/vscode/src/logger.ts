@@ -7,7 +7,7 @@ import {
   loggable,
   rootLogger,
 } from '@likec4/log'
-import type TelemetryReporter from '@vscode/extension-telemetry'
+import { type TelemetryReporter } from '@vscode/extension-telemetry'
 import { defineLogger } from 'reactive-vscode'
 import type { LogOutputChannel } from 'vscode'
 import vscode from 'vscode'
