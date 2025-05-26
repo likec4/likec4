@@ -154,6 +154,9 @@ catalogs:
     '@valibot/to-json-schema':
       specifier: ^1.0.0
       version: 1.0.0
+    chroma-js:
+      specifier: ^3.1.2
+      version: 3.1.2
     consola:
       specifier: ^3.4.2
       version: 3.4.2
@@ -921,6 +924,9 @@ importers:
       '@smithy/util-base64':
         specifier: ^4.0.0
         version: 4.0.0
+      '@types/chroma-js':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@types/express':
         specifier: ^5.0.2
         version: 5.0.2
@@ -933,6 +939,9 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      chroma-js:
+        specifier: catalog:utils
+        version: 3.1.2
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -3618,6 +3627,9 @@ packages:
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
+
+  '@types/chroma-js@3.1.1':
+    resolution: {integrity: sha512-SFCr4edNkZ1bGaLzGz7rgR1bRzVX4MmMxwsIa3/Bh6ose8v+hRpneoizHv0KChdjxaXyjRtaMq7sCuZSzPomQA==}
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
@@ -11333,6 +11345,8 @@ snapshots:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 20.17.30
+
+  '@types/chroma-js@3.1.1': {}
 
   '@types/connect@3.4.38':
     dependencies:

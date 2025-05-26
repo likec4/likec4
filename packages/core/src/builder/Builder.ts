@@ -24,6 +24,7 @@ import {
   DeploymentElement,
   isScopedElementView,
 } from '../types'
+import type { TagSpecification } from '../types/element'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
@@ -167,7 +168,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     relationships: {
       ...structuredClone(spec.relationships) as any,
     },
-    tags: (spec.tags ?? []) as Tag<T['Tag']>[],
+    // TODO: fix
+    tags: {} as Record<T['Tag'], TagSpecification>,
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {

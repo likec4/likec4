@@ -110,21 +110,22 @@
     "vscode-uri": "catalog:vscode"
   },
   "devDependencies": {
+    "@types/chroma-js": "^3.1.1",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
-    "express": "^5.1.0",
     "@msgpack/msgpack": "^3.1.1",
     "@smithy/util-base64": "^4.0.0",
     "@types/express": "^5.0.2",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
-    "picomatch": "catalog:utils",
     "@types/which": "^3.0.4",
+    "chroma-js": "catalog:utils",
     "esm-env": "catalog:utils",
+    "express": "^5.1.0",
     "fast-equals": "catalog:utils",
     "fdir": "catalog:utils",
     "indent-string": "^5.0.0",
@@ -135,6 +136,7 @@
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
+    "picomatch": "catalog:utils",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
@@ -145,12 +147,12 @@
     "ufo": "^1.6.1",
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
-    "zod": "catalog:utils",
     "vitest": "catalog:vitest",
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
-    "which": "^5.0.0"
+    "which": "^5.0.0",
+    "zod": "catalog:utils"
   },
   "packageManager": "pnpm@10.11.0"
 }

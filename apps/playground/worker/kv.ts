@@ -24,7 +24,7 @@ const RecordAny = v.record(v.string(), v.any())
 const ModelSchema = v.object({
   __: v.literal('layouted'),
   specification: v.object({
-    tags: v.array(v.string()),
+    tags: RecordAny,
     elements: RecordAny,
     deployments: RecordAny,
     relationships: RecordAny,

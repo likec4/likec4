@@ -117,7 +117,7 @@ export const $likeC4Diagrams = map<LikeC4DiagramsAtom>(
 
 const EMPTY: ComputedLikeC4ModelData = {
   specification: {
-    tags: [],
+    tags: {},
     elements: {},
     relationships: {},
     deployments: {},

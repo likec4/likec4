@@ -13,7 +13,7 @@ import {
   useVscodeContext,
   watch,
 } from 'reactive-vscode'
-import { countBy, entries, flatMap, groupBy, keys, map, mapValues, pipe, piped, prop, sort } from 'remeda'
+import { countBy, entries, groupBy, keys, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
 import {
   type BaseLanguageClient,
@@ -25,6 +25,7 @@ import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
 import { useDiagramPreview, ViewType } from './common/useDiagramPreview'
 import { useExtensionLogger } from './common/useExtensionLogger'
 import { activateMessenger } from './common/useMessenger'
+import { activateTagDecoration } from './common/useTagDecoration'
 import { activateTelemetry } from './common/useTelemetry'
 import { languageId } from './const'
 import { logger, logWarn } from './logger'
@@ -209,6 +210,7 @@ function activateLc(
   })
 
   activateMessenger(rpc)
+  activateTagDecoration(rpc)
 
   const layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
     'likec4:layout',

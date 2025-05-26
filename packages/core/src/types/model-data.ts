@@ -5,7 +5,7 @@ import type {
   DeploymentNodeKindSpecification,
   DeploymentRelation,
 } from './deployments'
-import type { Element, ElementKindSpecification, TypedElement } from './element'
+import type { Element, ElementKindSpecification, TagSpecification, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
 import type { ProjectId, Tag } from './scalars'
@@ -36,7 +36,7 @@ export interface ParsedLikeC4ModelData<
   // To prevent accidental use of this type
   __?: never
   specification: {
-    tags: Tag<Tags>[]
+    tags: Record<Tags, TagSpecification> | Array<Tag<Tags>>[]
     elements: Record<ElementKinds, ElementKindSpecification>
     deployments: Record<DeploymentNodeKind, DeploymentNodeKindSpecification>
     relationships: Record<RelationKinds, RelationshipKindSpecification>

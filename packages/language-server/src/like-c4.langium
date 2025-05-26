@@ -61,7 +61,9 @@ SpecificationDeploymentNodeKind:
   '}')?;
 
 SpecificationTag:
-  'tag' tag=Tag;
+  'tag' tag=Tag ('{'
+    ('color' color=CustomColorValue)?
+  '}')?;
 
 SpecificationColor:
   'color' name=CustomColor color=CustomColorValue;

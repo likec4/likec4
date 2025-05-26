@@ -22,6 +22,7 @@ catalogs:
     "@react-hookz/web": "^25.1.1"
     std-env: "^3.9.0"
     consola: "^3.4.2"
+    chroma-js: "^3.1.2"
     "@hpcc-js/wasm-graphviz": "1.7.0"
     valibot: "^1.0.0"
     "@valibot/to-json-schema": "^1.0.0"

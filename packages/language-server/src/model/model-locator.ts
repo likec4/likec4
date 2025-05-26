@@ -1,20 +1,25 @@
 import type * as c4 from '@likec4/core'
-import { splitGlobalFqn } from '@likec4/core'
-import type { LangiumDocuments } from 'langium'
-import { AstUtils, GrammarUtils } from 'langium'
-import { isString } from 'remeda'
-import type { Location } from 'vscode-languageserver-types'
+import { ifilter, splitGlobalFqn, toArray } from '@likec4/core'
+import { loggable } from '@likec4/log'
+import type { Cancellation, LangiumDocuments, Reference } from 'langium'
+import { AstUtils, DocumentState, GrammarUtils } from 'langium'
+import { flatMap, isString, pipe } from 'remeda'
+import type { Location, Range } from 'vscode-languageserver-types'
+import { URI } from 'vscode-uri'
 import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
-import { ast } from '../ast'
+import { ast, isLikeC4LangiumDocument } from '../ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import type { ProjectsManager } from '../workspace'
+import { assignTagColors } from './builder/assignTagColors'
+import { MergedSpecification } from './builder/MergedSpecification'
 import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
-const { getDocument } = AstUtils
+const { getDocument, streamAllContents } = AstUtils
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
@@ -167,6 +172,66 @@ export class LikeC4ModelLocator {
     return {
       uri: res.doc.uri.toString(),
       range: targetNode.range,
+    }
+  }
+
+  public async locateDocumentTags(
+    documentUri: URI,
+    cancelToken?: Cancellation.CancellationToken,
+  ): Promise<Array<{ name: string; color: string; range: Range; isSpecification?: boolean }>> {
+    const doc = this.langiumDocuments.getDocument(documentUri)
+    if (!doc || !isLikeC4LangiumDocument(doc)) {
+      return []
+    }
+    if (doc.state < DocumentState.Validated) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be Validated`)
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
+      logger.debug(`Document is validated`)
+    }
+    const projectId = projectIdFrom(doc)
+    try {
+      const c4Specification = new MergedSpecification(this.documents(projectId).toArray())
+      const tagColors = assignTagColors(c4Specification)
+      logger.debug(`Assigned colors to tags`, { tagColors })
+      const tags = pipe(
+        streamAllContents(doc.parseResult.value),
+        ifilter(astNode => ast.isTag(astNode) || ast.isTags(astNode)),
+        toArray(),
+        flatMap((astNode): Array<ast.Tag | Reference<ast.Tag>> => {
+          if (ast.isTag(astNode)) {
+            return [astNode]
+          }
+          return astNode.values
+        }),
+        flatMap(tagRef => {
+          let name: c4.Tag | undefined
+          try {
+            if (ast.isTag(tagRef)) {
+              name = tagRef.name as c4.Tag
+              return {
+                name,
+                color: tagColors[name]!.color,
+                range: findNodeForProperty(tagRef.$cstNode, 'name')!.range,
+                isSpecification: true,
+              }
+            }
+            name = tagRef.$refText.slice(1) as c4.Tag
+            return {
+              name,
+              color: tagColors[name]!.color,
+              range: tagRef.$refNode!.range,
+            }
+          } catch (err) {
+            logger.warn(`Fail on tag ${name}`, { err })
+            return []
+          }
+        }),
+      )
+      logger.debug(`Found ${tags.length} tags in document ${doc.uri.path}`)
+      return tags
+    } catch (e) {
+      logger.warn(loggable(e))
+      return []
     }
   }
 }

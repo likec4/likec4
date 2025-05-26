@@ -28,7 +28,7 @@ import { logger, logWarnError } from '../../logger'
  */
 export class MergedSpecification {
   public readonly specs: ParsedAstSpecification = {
-    tags: new Set(),
+    tags: {},
     elements: {},
     deployments: {},
     relationships: {},
@@ -51,7 +51,7 @@ export class MergedSpecification {
         c4Imports,
       } = doc
 
-      spec.tags.forEach(t => this.specs.tags.add(t))
+      Object.assign(this.specs.tags, spec.tags)
       Object.assign(this.specs.elements, spec.elements)
       Object.assign(this.specs.relationships, spec.relationships)
       Object.assign(this.specs.colors, spec.colors)

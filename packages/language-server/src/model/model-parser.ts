@@ -93,7 +93,7 @@ export class LikeC4ModelParser {
   private createParser(doc: LangiumDocument): DocumentParser {
     const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {
       c4Specification: {
-        tags: new Set(),
+        tags: {},
         elements: {},
         relationships: {},
         colors: {},

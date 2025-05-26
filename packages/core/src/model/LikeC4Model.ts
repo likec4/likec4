@@ -462,7 +462,7 @@ export namespace LikeC4Model {
       elements: {},
       relationships: {},
       deployments: {},
-      tags: [],
+      tags: {},
     },
     globals: {
       predicates: {},

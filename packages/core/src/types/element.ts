@@ -1,7 +1,7 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, IconUrl, Tag } from './scalars'
-import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
+import type { Color, ColorLiteral, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
@@ -54,9 +54,8 @@ export interface ElementStyle {
   readonly textSize?: TextSize
 }
 
-export interface TagSpec {
-  readonly id: Tag
-  readonly style: ElementStyle
+export interface TagSpecification {
+  readonly color: ColorLiteral
 }
 
 export interface Link {

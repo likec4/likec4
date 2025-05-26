@@ -57,7 +57,10 @@ export type ParsedElementStyle = {
 }
 
 export interface ParsedAstSpecification {
-  tags: Set<c4.Tag>
+  tags: Record<c4.Tag, {
+    astPath: string
+    color?: c4.ColorLiteral
+  }>
   elements: Record<c4.ElementKind, {
     technology?: string
     notation?: string

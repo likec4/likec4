@@ -12,9 +12,8 @@ import {
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
-import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
-import { type Base, removeIndent, toSingleLine } from './Base'
+import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>

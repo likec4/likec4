@@ -55,7 +55,7 @@ export type {
   ElementShape,
   ElementStyle,
   Link,
-  TagSpec,
+  TagSpecification,
   TypedElement,
 } from './element'
 

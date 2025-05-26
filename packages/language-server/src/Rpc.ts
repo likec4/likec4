@@ -21,6 +21,7 @@ import {
   FetchProjects,
   FetchTelemetryMetrics,
   FetchViewsFromAllProjects,
+  GetDocumentTags,
   LayoutView,
   Locate,
   ValidateLayout,
@@ -215,7 +216,7 @@ export class Rpc extends ADisposable {
           return {
             elementKinds: keys(model.$model.specification.elements).length,
             relationshipKinds: keys(model.$model.specification.relationships).length,
-            tags: model.$model.specification.tags.length,
+            tags: keys(model.$model.specification.tags).length,
             elements: keys(model.$model.elements).length,
             relationships: keys(model.$model.relations).length,
             views: keys(model.$model.views).length,
@@ -240,6 +241,12 @@ export class Rpc extends ADisposable {
           : null
         return {
           metrics,
+        }
+      }),
+      connection.onRequest(GetDocumentTags.req, async ({ documentUri }, cancelToken) => {
+        const tags = await modelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
+        return {
+          tags,
         }
       }),
       Disposable.create(() => {

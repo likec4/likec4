@@ -1,4 +1,5 @@
 import type {
+  ColorLiteral,
   ComputedLikeC4ModelData,
   ComputedView,
   DiagramView,
@@ -11,12 +12,17 @@ import type {
   ViewId,
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
-import type { DiagnosticSeverity, DocumentUri, Location, Position } from 'vscode-languageserver-types'
+import type { DiagnosticSeverity, DocumentUri, Location, Position, Range } from 'vscode-languageserver-types'
 
 export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
   export type Type = typeof type
 }
+
+// export namespace DidChangeModelNotification {
+//   export const type = new NotificationType<string>('likec4/onDidChangeModel')
+//   export type Type = typeof type
+// }
 
 /**
  * Request to fetch the computed model data
@@ -221,5 +227,27 @@ export namespace FetchTelemetryMetrics {
     }
   }
   export const req = new RequestType0<Res, void>('likec4/metrics')
+  export type Req = typeof req
+}
+
+/**
+ * Request to fetch all tags of a document
+ */
+export namespace GetDocumentTags {
+  export type Params = {
+    documentUri: DocumentUri
+  }
+  export type Res = {
+    /**
+     * Used tags in the document
+     */
+    tags: Array<{
+      name: string
+      range: Range
+      color: ColorLiteral
+      isSpecification?: boolean
+    }>
+  }
+  export const req = new RequestType<Params, Res, void>('likec4/document-tags')
   export type Req = typeof req
 }

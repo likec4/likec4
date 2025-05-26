@@ -29,6 +29,7 @@ import type {
 } from '../../ast'
 import { logger } from '../../logger'
 import { resolveRelativePaths } from '../../view-utils'
+import { assignTagColors } from './assignTagColors'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
@@ -217,7 +218,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
   return {
     data: {
       specification: {
-        tags: Array.from(c4Specification.specs.tags),
+        tags: assignTagColors(c4Specification),
         elements: c4Specification.specs.elements,
         relationships: c4Specification.specs.relationships,
         deployments: c4Specification.specs.deployments,
