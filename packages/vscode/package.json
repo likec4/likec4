@@ -262,7 +262,7 @@
     "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
-    "@vscode/extension-telemetry": "^0.9.9",
+    "@vscode/extension-telemetry": "^1.0.0",
     "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
