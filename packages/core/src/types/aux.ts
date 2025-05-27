@@ -1,9 +1,9 @@
 export interface SpecAux<
-  ElementKind extends string,
-  DeploymentKind extends string,
-  RelationKind extends string,
-  Tag extends string,
-  MetadataKey extends string,
+  ElementKind,
+  DeploymentKind,
+  RelationKind,
+  Tag,
+  MetadataKey,
 > {
   ElementKind: ElementKind
   DeploymentKind: DeploymentKind
@@ -18,10 +18,10 @@ export type AnySpecAux = SpecAux<string, string, string, string, string>
  * Auxilary type to keep track
  */
 export interface TypeAux<
+  Element,
+  Deployment,
+  View,
   Spec extends AnySpecAux,
-  Element extends string,
-  Deployment extends string,
-  View extends string,
 > {
   Spec: Spec
   Element: Element
@@ -59,9 +59,4 @@ export interface TypeAux<
   // Model: Simplify<Omit<GenericLikeC4ModelData, 'views'> & WithViews<this['ViewId'], ViewType>>
 }
 
-export type AnyTypes = TypeAux<
-  AnySpecAux,
-  string,
-  string,
-  string
->
+export type AnyTypes = TypeAux<string, string, string, AnySpecAux>
