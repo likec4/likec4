@@ -16,7 +16,7 @@ import {
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
-} from '../types2'
+} from '../types'
 import { commonAncestor, hierarchyLevel } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'

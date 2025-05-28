@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { IteratorLike, Link } from '../types2'
+import type { IteratorLike, Link } from '../types'
 import {
   type Aux,
   type Relationship,
@@ -8,7 +8,7 @@ import {
   DefaultLineStyle,
   DefaultRelationshipColor,
   FqnRef,
-} from '../types2'
+} from '../types'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'

@@ -9,7 +9,7 @@ import {
   type LikeC4ModelData,
   FqnRef,
   isDeploymentNode,
-} from '../types2'
+} from '../types'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'

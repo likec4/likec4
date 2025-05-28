@@ -10,8 +10,8 @@ import type {
   ProcessedView,
   Relationship,
   UnknownAux,
-} from '../types2'
-import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types2'
+} from '../types'
+import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'

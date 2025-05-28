@@ -1,3 +1,4 @@
+import type { Aux, ProcessedView } from '../../types'
 import {
   type Color,
   type IteratorLike,
@@ -5,7 +6,6 @@ import {
   extractStep,
   isStepEdgeId,
 } from '../../types'
-import type { Aux, ProcessedView } from '../../types2'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux } from '../types'

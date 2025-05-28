@@ -1,5 +1,5 @@
 import { isString } from 'remeda'
-import type { AnyAux, Aux } from '../types2'
+import type { AnyAux, Aux } from '../types'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
 export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
@@ -14,7 +14,7 @@ export function getId<Id extends string>(element: string | { id: Id }): Id {
 export {
   type AnyAux,
   type Aux,
-} from '../types2'
+} from '../types'
 
 export type ElementOrFqn<A extends AnyAux> = Aux.Fqn<A> | {
   id: Aux.Strict.Fqn<A>

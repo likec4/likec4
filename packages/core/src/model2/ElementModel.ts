@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Aux, IteratorLike, ThemeColor } from '../types2'
+import type { AnyAux, Aux, IteratorLike, ThemeColor } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -12,7 +12,7 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
   splitGlobalFqn,
-} from '../types2'
+} from '../types'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'

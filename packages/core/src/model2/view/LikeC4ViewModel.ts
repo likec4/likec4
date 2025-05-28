@@ -1,6 +1,6 @@
 import { isNullish } from 'remeda'
 import { nonNullable } from '../../errors'
-import type { AnyAux, Aux, IteratorLike, Link, ProcessedView } from '../../types2'
+import type { AnyAux, Aux, IteratorLike, Link, ProcessedView } from '../../types'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
@@ -8,7 +8,7 @@ import {
   type ComputedView,
   type DiagramView,
   type NodeId as C4NodeId,
-} from '../../types2'
+} from '../../types'
 import { DefaultMap, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'

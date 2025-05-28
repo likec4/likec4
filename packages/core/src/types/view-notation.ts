@@ -1,9 +1,8 @@
-import type { ElementShape } from './element'
-import type { Color } from './theme'
+import type { ElementShape, ThemeColor } from './styles'
 
 export type ElementNotation = {
   kinds: string[]
   shape: ElementShape
-  color: Color
+  color: ThemeColor
   title: string
 }

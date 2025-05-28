@@ -1,5 +1,5 @@
 import type { LastArrayElement, Split } from 'type-fest'
-import type { DeploymentElement, DeploymentFqn, DeploymentRelationship } from '../types2'
+import type { DeploymentElement, DeploymentFqn, DeploymentRelationship } from '../types'
 import type { AnyTypes, Invalid, Types, ValidId } from './_types'
 import type { Builder } from './Builder'
 import type { AddDeploymentNode } from './Builder.deployment'

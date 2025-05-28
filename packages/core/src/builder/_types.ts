@@ -17,7 +17,7 @@ import type {
   TextSize,
   ThemeColor as Color,
   UnknownAux,
-} from '../types2'
+} from '../types'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 

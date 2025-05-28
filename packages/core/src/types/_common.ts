@@ -1,10 +1,9 @@
-import type { Simplify, Tagged, UnionToIntersection } from 'type-fest'
+import type { Simplify, UnionToIntersection } from 'type-fest'
+import type { IsPlainObject } from 'type-fest/source/internal'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
-
-export type CustomColor = string
 
 export type Point = readonly [x: number, y: number]
 
@@ -13,7 +12,11 @@ export interface XYPoint {
   y: number
 }
 
-export type KeysOf<T> = keyof T extends infer K extends string ? K : never
+// dprint-ignore
+export type KeysOf<T> =
+  IsPlainObject<T> extends true
+    ? keyof T extends infer K extends string ? K : never
+    : never
 
 type AllNever<Expressions> = UnionToIntersection<
   {
@@ -25,6 +28,7 @@ type AllNever<Expressions> = UnionToIntersection<
 
 /**
  * @example
+ * ```ts
  *   type Variant1 = {
  *     a: string
  *   }
@@ -37,13 +41,13 @@ type AllNever<Expressions> = UnionToIntersection<
  *     Variant2: Variant2
  *   }>
  *
- *   Fail here
+ *   // Fail here
  *   const variant1: Variants = {
  *      a: 'one',
  *      b: 1
  *   }
+ * ```
  */
-
 export type ExclusiveUnion<Expressions> = Expressions extends object ? {
     [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
   }[keyof Expressions]
@@ -66,3 +70,11 @@ export type NTuple<
 export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
 
 export type Predicate<T> = (x: T) => boolean
+
+export interface Link {
+  title?: string
+  // Value from Likec4 DSL
+  url: string
+  // Relative to workspace root (if url is relative),
+  relative?: string
+}

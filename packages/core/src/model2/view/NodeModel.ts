@@ -1,4 +1,4 @@
-import type { Aux, GroupElementKind, ProcessedView } from '../../types2'
+import type { Aux, GroupElementKind, ProcessedView } from '../../types'
 import {
   type DiagramView,
   type ElementShape as C4ElementShape,
@@ -8,7 +8,7 @@ import {
   type Link,
   type ThemeColor as C4Color,
   ComputedNode,
-} from '../../types2'
+} from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
 import type { AnyAux, IncomingFilter, OutgoingFilter } from '../types'

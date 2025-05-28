@@ -79,14 +79,6 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./types2": {
-      "sources": "./src/types2/index.ts",
-      "default": {
-        "types": "./dist/types2/index.d.mts",
-        "import": "./dist/types2/index.mjs",
-        "default": "./dist/types2/index.mjs"
-      }
-    },
     "./types": {
       "sources": "./src/types/index.ts",
       "default": {

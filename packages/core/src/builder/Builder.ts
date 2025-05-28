@@ -3,7 +3,7 @@ import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapT
 import type { Writable } from 'type-fest'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model2/LikeC4Model'
-import type { DeployedInstance, DeploymentFqn, ParsedLikeC4ModelData, Specification } from '../types2'
+import type { DeployedInstance, DeploymentFqn, ParsedLikeC4ModelData, Specification } from '../types'
 import {
   type Color,
   type DeploymentElement,
@@ -26,7 +26,7 @@ import {
   FqnRef,
   isDeployedInstance,
   isScopedElementView,
-} from '../types2'
+} from '../types'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'

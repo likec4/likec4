@@ -1,14 +1,14 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
-import { ModelLayer } from '../types/expression-v2-model'
-import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import {
   type AutoLayoutDirection,
   type Expression,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
-} from '../types2'
+} from '../types'
+import { ModelLayer } from '../types/expression-v2-model'
+import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
 export interface LikeC4ViewBuilder<
