@@ -1,12 +1,12 @@
 import { map, mapToObj, mapValues, omit } from 'remeda'
-import type { ComputedLikeC4ModelData } from '../../types'
+import type { AnyAux, ComputedLikeC4ModelData } from '../../types'
 import type { ComputedView, EdgeId } from '../../types/view'
 
 /**
  * Convert hashed edge ids to human-readable
  * Mostly for testing purposes
  */
-export function withReadableEdges<T extends ComputedView>({ edges, nodes, ...view }: T, separator = ':'): T & {
+export function withReadableEdges<T extends ComputedView<any>>({ edges, nodes, ...view }: T, separator = ':'): T & {
   nodeIds: string[]
   edgeIds: string[]
 } {
@@ -28,9 +28,11 @@ export function withReadableEdges<T extends ComputedView>({ edges, nodes, ...vie
   } as any
 }
 
-export function viewsWithReadableEdges<M extends ComputedLikeC4ModelData>({ views, ...model }: M): M {
+export function viewsWithReadableEdges<A extends AnyAux>(
+  { views, ...model }: ComputedLikeC4ModelData<A>,
+): ComputedLikeC4ModelData<A> {
   return {
     ...model,
-    views: mapValues(views, v => omit(withReadableEdges(v), ['nodeIds', 'edgeIds'])),
+    views: mapValues(views as Record<string, ComputedView<A>>, v => omit(withReadableEdges(v), ['nodeIds', 'edgeIds'])),
   } as any
 }
