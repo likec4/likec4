@@ -3,7 +3,7 @@ import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
 import { forEach, map, partition, pipe, takeWhile } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
-import type { ComputedEdge, ComputedNode, Fqn, NodeId } from '../../types'
+import type { AnyAux, ComputedEdge, ComputedNode, Fqn, NodeId } from '../../types'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**
@@ -41,7 +41,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
 /**
  * Side effect, mutates node.children field to preserve same order as in the input
  */
-function updateChildren(nodes: ComputedNode[]) {
+function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
   nodes.forEach(parent => {
     if (parent.children.length > 0) {
       parent.children = nodes.reduce((acc, n) => {
@@ -55,15 +55,15 @@ function updateChildren(nodes: ComputedNode[]) {
   return nodes
 }
 
-type TopologicalSortParam = {
-  nodes: ReadonlyMap<Fqn, ComputedNode>
-  edges: Iterable<ComputedEdge>
+type TopologicalSortParam<A extends AnyAux> = {
+  nodes: ReadonlyMap<string, ComputedNode<A>>
+  edges: Iterable<ComputedEdge<A>>
 }
-export function topologicalSort(
-  param: TopologicalSortParam,
+export function topologicalSort<A extends AnyAux>(
+  param: TopologicalSortParam<A>,
 ): {
-  nodes: ComputedNode[]
-  edges: ComputedEdge[]
+  nodes: ComputedNode<A>[]
+  edges: ComputedEdge<A>[]
 } {
   let nodes = ensureParentsFirst([...param.nodes.values()])
   let edges = [...param.edges]
@@ -74,7 +74,7 @@ export function topologicalSort(
     }
   }
 
-  const getNode = (id: Fqn) => nonNullable(param.nodes.get(id))
+  const getNode = (id: string) => nonNullable(param.nodes.get(id))
   // const nodeLevel = (id: string) => getNode(id).level + 1
   //
 
@@ -140,9 +140,9 @@ export function topologicalSort(
   //   // }
   //   // return Math.min(nodes.indexOf(a.source), nodes.indexOf(a.target)) - Math.min(nodes.indexOf(b.source), nodes.indexOf(b.target))
   // })
-  const sortedEdges = [] as ComputedEdge[]
+  const sortedEdges = [] as ComputedEdge<A>[]
 
-  const addEdgeToGraph = (edge: ComputedEdge) => {
+  const addEdgeToGraph = (edge: ComputedEdge<A>) => {
     g.mergeNode(edge.source)
     g.mergeNode(edge.target)
     sortedEdges.push(edge)
@@ -221,7 +221,7 @@ export function topologicalSort(
   // }
 
   const sortedIds = topsort(g)
-  let sorted = [] as ComputedNode[]
+  let sorted = [] as ComputedNode<A>[]
   let unsorted = nodes.slice()
   for (const sortedId of sortedIds) {
     const indx = unsorted.findIndex(n => n.id === sortedId)

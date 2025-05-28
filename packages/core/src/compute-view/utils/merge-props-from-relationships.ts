@@ -1,9 +1,28 @@
 import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
-import type { Color, DeploymentRelation, Link, Tag, ViewId } from '../../types'
-import type { ModelRelation, RelationshipArrowType, RelationshipKind, RelationshipLineType } from '../../types/relation'
+import type {
+  AnyAux,
+  Aux,
+  DeploymentRelationship,
+  Link,
+  NonEmptyArray,
+  Relationship,
+  RelationshipArrowType,
+  RelationshipLineType,
+  ThemeColor,
+} from '../../types'
 import { isNonEmptyArray } from '../../utils'
 
-function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
+function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | DeploymentRelationship<A>): {
+  title?: string
+  description?: string | null
+  technology: string | null
+  kind: Aux.RelationKind<A> | null
+  color: ThemeColor | null
+  line: RelationshipLineType | null
+  head: RelationshipArrowType | null
+  tail: RelationshipArrowType | null
+  navigateTo: Aux.Strict.ViewId<A> | null
+} {
   const {
     title,
     description = null,
@@ -13,22 +32,36 @@ function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
     line = null,
     head = null,
     tail = null,
-    navigateTo = null
+    navigateTo = null,
   } = relation
   return {
     // Pick description only if title is present
     ...(title && {
       title,
-      description
+      description,
     }),
     technology,
-    kind,
+    kind: kind as Aux.RelationKind<A> | null,
     color,
     line,
     head,
     tail,
-    navigateTo
+    navigateTo: navigateTo as Aux.Strict.ViewId<A> | null,
   }
+}
+
+export type MergedRelationshipProps<A extends AnyAux> = {
+  title?: string | null
+  description?: string
+  technology?: string
+  kind?: Aux.RelationKind<A>
+  color?: ThemeColor
+  line?: RelationshipLineType
+  head?: RelationshipArrowType
+  tail?: RelationshipArrowType
+  navigateTo?: Aux.Strict.ViewId<A>
+  tags?: NonEmptyArray<Aux.Tag<A>>
+  links?: NonEmptyArray<Link>
 }
 
 /**
@@ -36,10 +69,10 @@ function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
  * @param relations - The relationships to merge.
  * @param prefer - The relationship to prefer when merging.
  */
-export function mergePropsFromRelationships(
-  relations: Array<ModelRelation | DeploymentRelation>,
-  prefer?: ModelRelation | DeploymentRelation
-) {
+export function mergePropsFromRelationships<A extends AnyAux>(
+  relations: Array<Relationship<A> | DeploymentRelationship<A>>,
+  prefer?: Relationship<A> | DeploymentRelationship<A>,
+): MergedRelationshipProps<A> {
   const allprops = pipe(
     relations,
     reduce(
@@ -83,16 +116,16 @@ export function mergePropsFromRelationships(
         title: [] as string[],
         description: [] as string[],
         technology: [] as string[],
-        kind: [] as RelationshipKind[],
+        kind: [] as Aux.RelationKind<A>[],
         head: [] as RelationshipArrowType[],
         tail: [] as RelationshipArrowType[],
-        color: [] as Color[],
-        tags: [] as Tag[],
+        color: [] as ThemeColor[],
+        tags: [] as Aux.Tag<A>[],
         links: [] as Link[],
         line: [] as RelationshipLineType[],
-        navigateTo: [] as ViewId[]
-      }
-    )
+        navigateTo: [] as Aux.ViewId<A>[],
+      },
+    ),
   )
 
   let technology = only(allprops.technology)
@@ -112,17 +145,16 @@ export function mergePropsFromRelationships(
       line: only(allprops.line),
       navigateTo: only(allprops.navigateTo),
       ...isNonEmptyArray(allprops.links) && { links: allprops.links },
-      ...isNonEmptyArray(tags) && { tags }
+      ...isNonEmptyArray(tags) && { tags },
     },
-    isTruthy
+    isTruthy,
   )
 
   if (prefer) {
     return {
       ...merged,
-      ...pickBy(pickRelationshipProps(prefer), isTruthy)
+      ...pickBy(pickRelationshipProps(prefer), isTruthy),
     }
   }
   return merged
 }
-export type MergedRelationshipProps = ReturnType<typeof mergePropsFromRelationships>

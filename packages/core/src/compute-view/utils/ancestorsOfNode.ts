@@ -1,14 +1,14 @@
 import { nonNullable } from '../../errors'
-import type { ComputedNode, Fqn } from '../../types'
+import type { AnyAux, ComputedNode } from '../../types'
 
 /**
  * Returns the ancestors of given computed node, starting with the direct parent and ending with the root node.
  */
-export function ancestorsOfNode(
-  node: ComputedNode,
-  nodes: ReadonlyMap<Fqn, ComputedNode>
-): ReadonlyArray<ComputedNode> {
-  const ancestors = [] as ComputedNode[]
+export function ancestorsOfNode<A extends AnyAux>(
+  node: ComputedNode<A>,
+  nodes: ReadonlyMap<string, ComputedNode<A>>,
+): ReadonlyArray<ComputedNode<A>> {
+  const ancestors = [] as ComputedNode<A>[]
   let parentId = node.parent
   while (parentId) {
     const parentNode = nonNullable(nodes.get(parentId), `Parent node ${parentId} not found`)
