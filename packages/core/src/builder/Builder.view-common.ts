@@ -1,14 +1,16 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
+  type AnyAux,
   type AutoLayoutDirection,
   type Expression,
+  type ModelRelationExpr,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
+  ModelFqnExpr,
 } from '../types'
-import { ModelLayer } from '../types/expression-v2-model'
-import type { KindEqual, Participant, TagEqual } from '../types/operators'
+import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
 export interface LikeC4ViewBuilder<
@@ -85,7 +87,7 @@ export namespace ViewPredicate {
     where?: ViewPredicate.WhereOperator<Types>
     with?: Simplify<
       Omit<
-        ModelLayer.FqnExpr.Custom['custom'] & ModelLayer.RelationExpr.Custom['customRelation'],
+        ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
         'expr' | 'relation' | 'navigateTo'
       > & {
         navigateTo?: Types['ViewId']
@@ -124,16 +126,16 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
         }
       case op.startsWith('source.'):
         return {
-          operator: parseWhere(op.replace('source.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
-            | KindEqual<string>
-            | TagEqual<string>,
+          operator: parseWhere(
+            op.replace('source.', '') as ViewPredicate.WhereOperator<AnyTypes>,
+          ) as ParticipantOperator<AnyAux>['operator'],
           participant: 'source',
         }
       case op.startsWith('target.'):
         return {
-          operator: parseWhere(op.replace('target.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
-            | KindEqual<string>
-            | TagEqual<string>,
+          operator: parseWhere(
+            op.replace('target.', '') as ViewPredicate.WhereOperator<AnyTypes>,
+          ) as ParticipantOperator<AnyAux>['operator'],
           participant: 'target',
         }
       default:
@@ -181,7 +183,7 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
       const custom = args[1].with
       if (custom) {
-        const isElement = ModelLayer.FqnExpr.is(expr)
+        const isElement = ModelFqnExpr.is(expr)
         if (isElement) {
           expr = {
             custom: {
@@ -233,7 +235,7 @@ function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 ): (b: B) => B {
   return (b) =>
     b.style({
-      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as ModelLayer.FqnExpr),
+      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as ModelFqnExpr),
       ...(notation ? { notation } : {}),
       style: {
         ...style,

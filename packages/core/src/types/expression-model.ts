@@ -67,7 +67,7 @@ export namespace ModelFqnExpr {
     return 'where' in expr && is(expr.where.expr)
   }
 
-  export interface Custom<A extends AnyAux> {
+  export interface Custom<A extends AnyAux = AnyAux> {
     custom: {
       expr: OrWhere<A>
       title?: string
@@ -128,7 +128,7 @@ export namespace ModelFqnExpr {
   }
 }
 
-export type ModelFqnExpr<A extends AnyAux> = ExclusiveUnion<{
+export type ModelFqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Wildcard: ModelFqnExpr.Wildcard
   Ref: ModelFqnExpr.Ref<A>
   ElementKind: ModelFqnExpr.ElementKindExpr<A>
@@ -181,7 +181,7 @@ export namespace ModelRelationExpr {
         isInOut(expr.where.expr))
   }
 
-  export interface Custom<A extends AnyAux> {
+  export interface Custom<A extends AnyAux = AnyAux> {
     customRelation: {
       expr: OrWhere<A>
       title?: string
