@@ -4,13 +4,13 @@ import type { DynamicViewIncludeRule, ViewRulePredicate, ViewRuleStyle } from '.
 
 export type GlobalPredicateId = Tagged<string, 'GlobalPredicateId'>
 
-export type GlobalPredicates = NonEmptyArray<ViewRulePredicate>
+export type GlobalPredicates = NonEmptyArray<ViewRulePredicate<any>>
 
-export type GlobalDynamicPredicates = NonEmptyArray<DynamicViewIncludeRule>
+export type GlobalDynamicPredicates = NonEmptyArray<DynamicViewIncludeRule<any>>
 
 export type GlobalStyleID = Tagged<string, 'GlobalStyleID'>
 
-export type GlobalStyles = NonEmptyTuple<ViewRuleStyle>
+export type GlobalStyles = NonEmptyTuple<ViewRuleStyle<any>>
 
 export interface ModelGlobals {
   readonly predicates: Record<GlobalPredicateId, GlobalPredicates>

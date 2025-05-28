@@ -1,4 +1,3 @@
-import type { MergeExclusive, Simplify } from 'type-fest'
 import type { Link } from './_common'
 import type { AnyAux, Aux, UnknownAux } from './aux'
 import type { FqnRef } from './fqnRef'
@@ -16,6 +15,7 @@ export interface DeploymentElementStyle extends ElementStyle {
 }
 
 export interface DeploymentNode<A extends AnyAux = UnknownAux> {
+  element?: never
   // Full-qualified-name for Deployment model
   readonly id: Aux.Strict.DeploymentFqn<A>
   readonly kind: Aux.DeploymentKind<A>
@@ -30,6 +30,7 @@ export interface DeploymentNode<A extends AnyAux = UnknownAux> {
 }
 
 export interface DeployedInstance<A extends AnyAux = UnknownAux> {
+  kind?: never
   /**
    * Format: `<DeploymentNode Fqn>.<Instance Id>`
    * i.e parent fqn is deployment target
@@ -46,9 +47,7 @@ export interface DeployedInstance<A extends AnyAux = UnknownAux> {
   readonly metadata?: Aux.Metadata<A>
 }
 
-export type DeploymentElement<A extends AnyAux = UnknownAux> = Simplify<
-  MergeExclusive<DeploymentNode<A>, DeployedInstance<A>>
->
+export type DeploymentElement<A extends AnyAux = UnknownAux> = DeploymentNode<A> | DeployedInstance<A>
 
 export type DeploymentElementRef<A extends AnyAux = UnknownAux> = {
   readonly id: Aux.Strict.DeploymentFqn<A>

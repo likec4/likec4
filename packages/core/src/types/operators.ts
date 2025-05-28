@@ -76,14 +76,16 @@ export type WhereOperator<A extends AnyAux = UnknownAux> =
 
 export type Filterable<A extends AnyAux> = {
   tags?: Aux.Tags<A> | null
-  kind?: Aux.ElementKind<A> | Aux.DeploymentKind<A> | Aux.RelationKind<A>
+  kind?: Aux.ElementKind<A> | Aux.DeploymentKind<A> | Aux.RelationKind<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }
 
 export type OperatorPredicate<A extends AnyAux> = (value: Filterable<A>) => boolean
 
-export function whereOperatorAsPredicate<A extends AnyAux>(operator: WhereOperator<A>): OperatorPredicate<A> {
+export function whereOperatorAsPredicate<A extends AnyAux = UnknownAux>(
+  operator: WhereOperator<A>,
+): OperatorPredicate<A> {
   switch (true) {
     case isParticipantOperator(operator): {
       const participant = operator.participant

@@ -91,7 +91,7 @@ export function isViewRuleAutoLayout(rule: ViewRule<any>): rule is ViewRuleAutoL
   return 'direction' in rule
 }
 
-export interface ViewRuleGroup<A extends AnyAux> {
+export interface ViewRuleGroup<A extends AnyAux = UnknownAux> {
   groupRules: Array<ViewRulePredicate<A> | ViewRuleGroup<A>>
   title: string | null
   color?: ThemeColor
@@ -117,11 +117,10 @@ export type ViewRule<A extends AnyAux = UnknownAux> =
   | ViewRuleAutoLayout
 
 export interface BasicView<A extends AnyAux> {
-  readonly __: 'element' | 'deployment' | 'dynamic'
   readonly id: Aux.Strict.ViewId<A>
   readonly title: string | null
   readonly description: string | null
-  readonly tags: Aux.Tags<A>
+  readonly tags: Aux.Tags<A> | null
   readonly links: NonEmptyArray<Link> | null
 
   /**
@@ -150,23 +149,26 @@ export interface BasicView<A extends AnyAux> {
 export interface UnscopedElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
+  viewOf?: never
+  extends?: never
 }
 export interface ScopedElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
   readonly viewOf: Aux.Strict.Fqn<A>
+  extends?: never
 }
 
 export interface ExtendsElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
+  readonly viewOf?: Aux.Strict.Fqn<A>
   readonly extends: Aux.Strict.ViewId<A>
 }
-export type ElementView<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
-  ScopedElementView: ScopedElementView<A>
-  ExtendsElementView: ExtendsElementView<A>
-  UnscopedElementView: UnscopedElementView<A>
-}>
+export type ElementView<A extends AnyAux = UnknownAux> =
+  | UnscopedElementView<A>
+  | ScopedElementView<A>
+  | ExtendsElementView<A>
 
 export interface DynamicViewStep<A extends AnyAux> {
   readonly source: Aux.Strict.Fqn<A>
@@ -249,13 +251,12 @@ export interface DeploymentView<A extends AnyAux = UnknownAux> extends BasicView
   readonly rules: DeploymentViewRule<A>[]
 }
 
-export type LikeC4View<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
-  ScopedElementView: ScopedElementView<A>
-  ExtendsElementView: ExtendsElementView<A>
-  BasicElementView: UnscopedElementView<A>
-  Deployment: DeploymentView<A>
-  Dynamic: DynamicView<A>
-}>
+export type LikeC4View<A extends AnyAux = UnknownAux> =
+  | ScopedElementView<A>
+  | ExtendsElementView<A>
+  | UnscopedElementView<A>
+  | DeploymentView<A>
+  | DynamicView<A>
 
 export function isDeploymentView<A extends AnyAux>(view: LikeC4View<A>): view is DeploymentView<A> {
   return view.__ === 'deployment'
@@ -325,8 +326,8 @@ export interface ComputedNode<A extends AnyAux = UnknownAux> {
   description?: string | null
   technology?: string | null
   notation?: string
-  tags: Aux.Tags<A>
-  links: NonEmptyArray<Link> | null
+  tags: Aux.Tags<A> | null
+  links?: readonly Link[] | null
   children: Aux.Strict.NodeId<A>[]
   inEdges: Aux.Strict.EdgeId<A>[]
   outEdges: Aux.Strict.EdgeId<A>[]
@@ -375,7 +376,7 @@ export interface ComputedEdge<A extends AnyAux = UnknownAux> {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
-  tags: Aux.Tags<A>
+  tags?: Aux.Tags<A> | null
   // Link to dynamic view
   navigateTo?: Aux.Strict.ViewId<A>
   /**

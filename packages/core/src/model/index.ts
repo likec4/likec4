@@ -45,7 +45,4 @@ export type {
   OutgoingFilter,
 } from './types'
 
-export {
-  isDeployedInstance,
-  isDeploymentNode,
-} from './guards'
+export * from './guards'

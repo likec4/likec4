@@ -25,10 +25,10 @@ export function isNestedElementOfDeployedInstanceModel<M extends AnyAux>(
   return !model.isInstance() && !model.isDeploymentNode()
 }
 
-export function isDeploymentElementModel<M extends AnyAux>(x: any): x is DeploymentElementModel<M> {
+export function isDeploymentElementModel<M extends AnyAux = AnyAux>(x: unknown): x is DeploymentElementModel<M> {
   return x instanceof DeploymentNodeModel || x instanceof DeployedInstanceModel
 }
 
-export function isElementModel<M extends AnyAux>(element: any): element is ElementModel<M> {
+export function isElementModel<M extends AnyAux = AnyAux>(element: unknown): element is ElementModel<M> {
   return element instanceof ElementModel
 }

@@ -115,7 +115,7 @@ export interface Aux<
   MetadataKey: Spec['MetadataKey']
 }
 
-export type AnyAux = Aux<any, string, string, string, SpecTypes<any, any, any, any, any>>
+export type AnyAux = Aux<string, string, string, string, AnySpecTypes>
 
 /**
  * @param ElementKind - Literal union of element kinds
@@ -125,11 +125,11 @@ export type AnyAux = Aux<any, string, string, string, SpecTypes<any, any, any, a
  * @param MetadataKey - Literal union of metadata keys
  */
 export type AnyAuxWithSpec<
-  ElementKind = unknown,
-  DeploymentKind = unknown,
-  RelationKind = unknown,
-  Tag = unknown,
-  MetadataKey = unknown,
+  ElementKind = string,
+  DeploymentKind = string,
+  RelationKind = string,
+  Tag = string,
+  MetadataKey = string,
 > = Aux<
   string,
   string,
@@ -141,9 +141,11 @@ export type AnyAuxWithSpec<
 /**
  * Fallback when {@link Aux} can't be inferred
  */
-export interface UnknownAux extends Aux<string, string, string, string, AnySpecTypes> {}
+// export interface UnknownAux extends Aux<string, string, string, string, AnySpecTypes> {}
+export type UnknownAux = AnyAux
 
-type ArrayOf<T> = IsNever<T> extends false ? readonly T[] : readonly []
+// type ArrayOf<T> = IsNever<T> extends false ? readonly T[] : readonly []
+type ArrayOf<T> = readonly T[]
 type MetadataObject<T> = T extends infer K extends string ? Record<K, string> : EmptyObject
 
 export namespace Aux {
@@ -251,7 +253,8 @@ export namespace Aux {
     export type DeploymentId<A extends AnyAux> = Scalars.DeploymentFqn<A['DeploymentId']>
     export type ViewId<A extends AnyAux> = Scalars.ViewId<A['ViewId']>
 
-    export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']> | Scalars.DeploymentFqn<A['DeploymentId']>
+    // export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']> | Scalars.DeploymentFqn<A['DeploymentId']>
+    export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']>
     export type EdgeId<A extends AnyAux> = Scalars.RelationId
 
     export type RelationId<A extends AnyAux> = Scalars.RelationId

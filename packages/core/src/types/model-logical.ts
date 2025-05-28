@@ -67,7 +67,7 @@ export const DefaultRelationshipColor: ThemeColor = 'gray'
 
 export interface AbstractRelationship<A extends AnyAux> {
   readonly id: Aux.Strict.RelationId<A>
-  readonly title?: string | null
+  readonly title: string | null
   readonly description?: string | null
   readonly technology?: string | null
   readonly kind?: Aux.RelationKind<A>

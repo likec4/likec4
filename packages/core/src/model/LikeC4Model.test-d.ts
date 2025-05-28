@@ -1,6 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
-import type { ComputedView, Fqn, ViewId } from '../types'
 import { LikeC4Model } from './LikeC4Model'
 
 test('LikeC4Model.create: should have types', () => {
@@ -82,31 +81,21 @@ test('LikeC4Model.create: should have types', () => {
     )
     .build()
 
-  const m = LikeC4Model.compute(source)
+  const m = LikeC4Model.fromParsed(source)
 
   // @ts-expect-error
   m.element('wrong')
 
-  expectTypeOf(m.Aux.Element).toEqualTypeOf(
+  // should not fail
+  m.findElement('wrong')
+
+  expectTypeOf(m.Aux.ElementId).toEqualTypeOf(
     '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
   )
-  expectTypeOf(m.Aux.Fqn).toEqualTypeOf(
-    '' as Fqn<
-      'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
-    >,
-  )
-  expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
-    '' as ViewId<'index' | 'prodview'>,
-  )
-  expectTypeOf(m.Aux.ViewType).toEqualTypeOf(
-    {} as ComputedView<ViewId<'index' | 'prodview'>>,
-  )
-  expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
-    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api',
-  )
-  expectTypeOf(m.Aux.DeploymentFqn).toEqualTypeOf(
-    '' as Fqn<'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'>,
-  )
+  expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'index' | 'prodview'>()
+  expectTypeOf(m.Aux.DeploymentId).toEqualTypeOf<
+    'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
+  >()
 })
 
 test('LikeC4Model.fromDump: should have types', () => {

@@ -24,7 +24,7 @@ export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
 export class ElementModel<A extends AnyAux = UnknownAux> {
   readonly id: Aux.Strict.Fqn<A>
-  readonly _literalId: Aux.Fqn<A>
+  readonly _literalId: Aux.ElementId<A>
   readonly hierarchyLevel: number
 
   readonly imported: null | {
