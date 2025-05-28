@@ -103,20 +103,32 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
   "relations": {
     "rel1": {
       "id": "rel1",
-      "source": "s2.c1.c2.c3",
-      "target": "s1.c1",
+      "source": {
+        "model": "s2.c1.c2.c3",
+      },
+      "target": {
+        "model": "s1.c1",
+      },
       "title": "relation from s2.1.2.3 to s1.1",
     },
     "rel2": {
       "id": "rel2",
-      "source": "s2.c1",
-      "target": "s1.c1",
+      "source": {
+        "model": "s2.c1",
+      },
+      "target": {
+        "model": "s1.c1",
+      },
       "title": "relation from s2.1 to s1.1",
     },
     "rel3": {
       "id": "rel3",
-      "source": "s1.c1",
-      "target": "s2.c1.c2",
+      "source": {
+        "model": "s1.c1",
+      },
+      "target": {
+        "model": "s2.c1.c2",
+      },
       "title": "relation from s1.1 to s2.1.2",
     },
   },
@@ -138,7 +150,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       },
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {},
 }
@@ -201,7 +213,7 @@ exports[`Builder (style1) > should build view  1`] = `
       "component": {},
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "1": {
@@ -344,7 +356,7 @@ exports[`Builder (style1) > should build viewOf  1`] = `
       "component": {},
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "1": {

@@ -31,7 +31,7 @@ export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux = AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
 abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   abstract readonly id: Aux.Strict.DeploymentFqn<A>

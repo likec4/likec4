@@ -85,9 +85,13 @@ export interface AbstractRelationship<A extends AnyAux> {
 /**
  * Relationship between two model elements
  */
-export interface Relationship<A extends AnyAux> extends AbstractRelationship<A> {
+export interface Relationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.ModelRef<A>
   readonly target: FqnRef.ModelRef<A>
 }
 
-export { type Relationship as ModelRelation }
+/**
+ * Backward compatibility alias
+ * @deprecated Use {@link Relationship} instead
+ */
+export type ModelRelation<A extends AnyAux = AnyAux> = Relationship<A>

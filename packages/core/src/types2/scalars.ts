@@ -20,27 +20,27 @@ export type IconUrl = Icon
  *
  * ```
  */
-export type Fqn<This = string, All = This> = Tagged<This, 'Fqn', All>
-export type ElementKind<This = string, All = string> = Tagged<This, 'ElementKind', All>
+export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
+export type ElementKind<Kinds = string> = Tagged<Kinds, 'ElementKind'>
 export const GroupElementKind = '@group' as ElementKind<'@group'>
 
 /**
  * Full-qualified-name for deployment elements
  */
-export type DeploymentFqn<T = string> = Tagged<string, 'DeploymentFqn', T>
-export type DeploymentKind<T = string> = Tagged<string, 'DeploymentKind', T>
-export type ViewId<Id = string> = Tagged<string, 'ViewId', Id>
+export type DeploymentFqn<T = string> = Tagged<T, 'DeploymentFqn'>
+export type DeploymentKind<Kinds = string> = Tagged<Kinds, 'DeploymentKind'>
+export type ViewId<Id = string> = Tagged<Id, 'ViewId'>
 
-export type RelationKind<T = string> = Tagged<string, 'RelationKind', T>
+export type RelationKind<Kinds = string> = Tagged<Kinds, 'RelationKind'>
 export type RelationId<Id = string> = Tagged<Id, 'RelationId'>
 
-export type Tag<Id = string> = Tagged<string, 'Tag', Id>
+export type Tag<T = string> = Tagged<T, 'Tag'>
 
 export function AsFqn(name: string, parent?: Fqn | null): Fqn {
   return (parent ? parent + '.' + name : name) as unknown as Fqn
 }
 
-export type GlobalFqn<This = string, All = This> = Tagged<Fqn<This, All>, 'GlobalFqn', All>
+export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
 export function GlobalFqn(projectId: ProjectId, name: string): GlobalFqn {
   invariant(isTruthy(projectId), 'Project ID must start with @')
   return '@' + projectId + '.' + name as GlobalFqn

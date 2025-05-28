@@ -145,7 +145,7 @@ export namespace FqnExpr {
   }
 }
 
-export type FqnExpr<A extends AnyAux> = ExclusiveUnion<{
+export type FqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>
@@ -258,7 +258,7 @@ export namespace RelationExpr {
   }
 }
 
-export type RelationExpr<A extends AnyAux> = ExclusiveUnion<{
+export type RelationExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<A>
   Incoming: RelationExpr.Incoming<A>
   Outgoing: RelationExpr.Outgoing<A>
@@ -271,7 +271,7 @@ export type RelationExpr<A extends AnyAux> = ExclusiveUnion<{
  * @template D - The type for the deployment FQN, defaults to `Fqn`.
  * @template M - The type for the model FQN, defaults to `Fqn`.
  */
-export type Expression<A extends AnyAux> = ExclusiveUnion<{
+export type Expression<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>

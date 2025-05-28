@@ -6,7 +6,7 @@ import { difference, equals, intersection, union } from '../../../utils/set'
 import { stringHash } from '../../../utils/string-hash'
 import type { ElementModel } from '../../ElementModel'
 import type { RelationshipModel } from '../../RelationModel'
-import type { AnyAux } from '../../types'
+import type { AnyAux, Aux } from '../../types'
 import type { Connection } from '../Connection'
 import { hasSameSourceTarget } from '../ops'
 import { findConnection } from './find'
@@ -17,15 +17,15 @@ import { findConnection } from './find'
  *
  * Merges relationships together to an single edge on the diagram.
  */
-export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<ElementModel<M>, M['EdgeId']> {
-  public readonly id: M['EdgeId']
+export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<ElementModel<M>, Aux.EdgeId<M>> {
+  public readonly id: Aux.EdgeId<M>
 
   constructor(
     public readonly source: ElementModel<M>,
     public readonly target: ElementModel<M>,
     public readonly relations: ReadonlySet<RelationshipModel<M>> = new Set(),
   ) {
-    this.id = stringHash(`model:${source.id}:${target.id}`) as M['EdgeId']
+    this.id = stringHash(`model:${source.id}:${target.id}`) as Aux.EdgeId<M>
   }
 
   private _boundary: ElementModel<M> | null | undefined

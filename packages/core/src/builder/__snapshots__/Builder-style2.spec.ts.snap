@@ -127,7 +127,7 @@ exports[`Builder (style 2) > should build  1`] = `
       },
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "cloud": {

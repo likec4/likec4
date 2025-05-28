@@ -1,15 +1,15 @@
 import type { Simplify, Writable } from 'type-fest'
-import type { DeploymentView, ElementView, LikeC4View } from '../types'
+import type { DeploymentView, ElementView, LikeC4View } from '../types2'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
 import type { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
-import { $deploymentExpr, type AddDeploymentViewHelper, type DeploymentViewBuilder } from './Builder.view-deployment'
+import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
-  $expr,
   type AddViewHelper,
   type AddViewOfHelper,
   type ElementViewBuilder,
   type TypedAddViewOfHelper,
+  $expr,
 } from './Builder.view-element'
 
 export interface ViewsBuilder<T extends AnyTypes> extends Builder<T> {

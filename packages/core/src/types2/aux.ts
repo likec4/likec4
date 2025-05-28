@@ -13,6 +13,9 @@ import type {
   ThemeColor,
 } from './styles'
 
+/**
+ * Element and deployment kind specification
+ */
 export interface ElementSpecification {
   technology?: string
   notation?: string
@@ -59,6 +62,15 @@ export interface Specification<A extends AnyAux> {
   metadataKeys?: UnionToTuple<A['MetadataKey']>
 }
 
+/**
+ * Specification types (kinds, tags, metadata keys)
+ *
+ * @param ElementKind - Literal union of element kinds
+ * @param DeploymentKind - Literal union of deployment kinds
+ * @param RelationKind - Literal union of relationship kinds
+ * @param Tag - Literal union of tags
+ * @param MetadataKey - Literal union of metadata keys
+ */
 export interface SpecTypes<
   ElementKind,
   DeploymentKind,
@@ -76,12 +88,18 @@ export type AnySpecTypes = SpecTypes<string, string, string, string, string>
 
 /**
  * Auxilary interface to keep inferred types
+ *
+ * @param Project - Project identifier type
+ * @param Element - Literal union of FQNs of model elements
+ * @param Deployment - Literal union of FQNs of deployment elements
+ * @param View - Literal union of view identifiers
+ * @param Spec - Specification types (kinds, tags, metadata keys)
  */
 export interface Aux<
   Project,
-  Element extends string = string,
-  Deployment extends string = string,
-  View extends string = string,
+  Element,
+  Deployment,
+  View,
   Spec extends AnySpecTypes = AnySpecTypes,
 > {
   ProjectId: Project
@@ -108,38 +126,108 @@ type ArrayOf<T> = IsNever<T> extends false ? readonly T[] : readonly []
 type MetadataObject<T> = T extends infer K extends string ? Record<K, string> : EmptyObject
 
 export namespace Aux {
+  /**
+   * Project identifier from Aux
+   */
   export type ProjectId<A extends AnyAux> = A['ProjectId']
 
+  /**
+   * Element FQN from Aux as a literal union
+   * @alias {@link Aux.ElementId}
+   */
   export type Fqn<A extends AnyAux> = A['ElementId']
-  // export type ElementId<A> = A extends Aux<any, infer E extends string, any, any, any> ? E : never
+
+  /**
+   * Element FQN from Aux as a literal union
+   * @alias {@link Aux.Fqn}
+   */
   export type ElementId<A extends AnyAux> = A['ElementId']
 
-  export type DeploymentId<A extends AnyAux> = A['DeploymentId']
+  /**
+   * Deployment FQN from Aux as a literal union
+   * @alias {@link Aux.DeploymentId}
+   */
   export type DeploymentFqn<A extends AnyAux> = A['DeploymentId']
 
+  /**
+   * Deployment FQN from Aux as a literal union
+   * @alias {@link Aux.DeploymentFqn}
+   */
+  export type DeploymentId<A extends AnyAux> = A['DeploymentId']
+
+  /**
+   * View identifier from Aux as a literal union
+   */
   export type ViewId<A extends AnyAux> = A['ViewId']
+
+  /**
+   * Relation identifier from Aux as a literal union
+   */
   export type RelationId<A extends AnyAux> = string
 
+  /**
+   * Node identifier from Aux as a literal union
+   */
   export type NodeId<A extends AnyAux> = A['ElementId'] | A['DeploymentId']
+
+  /**
+   * Edge identifier from Aux as a literal union
+   */
   export type EdgeId<A extends AnyAux> = string
 
+  /**
+   * ElementKind from Aux as a literal union
+   */
   export type ElementKind<A extends AnyAux> = A['ElementKind']
+
+  /**
+   * DeploymentKind from Aux as a literal union
+   */
   export type DeploymentKind<A extends AnyAux> = A['DeploymentKind']
+
+  /**
+   * RelationKind from Aux as a literal union
+   */
   export type RelationKind<A extends AnyAux> = A['RelationKind']
 
+  /**
+   * Tag from Aux as a literal union
+   */
   export type Tag<A extends AnyAux> = A['Tag']
+
+  /**
+   * Array of tags from Aux
+   */
   export type Tags<A extends AnyAux> = ArrayOf<A['Tag']>
 
+  /**
+   * Metadata key from Aux
+   */
   export type MetadataKey<A extends AnyAux> = A['MetadataKey']
+
+  /**
+   * Metadata object from Aux
+   */
   export type Metadata<A extends AnyAux> = MetadataObject<A['MetadataKey']>
 
+  /**
+   * Specification from Aux
+   */
   export type Spec<A extends AnyAux> = A['Spec']
 
+  /**
+   * Strict types from Aux
+   * These are branded types that are used to ensure type safety
+   *
+   * @param A - Aux type
+   */
   export namespace Strict {
     export type ProjectId<A extends AnyAux> = Scalars.ProjectId<A['ProjectId']>
 
     export type Fqn<A extends AnyAux> = Scalars.Fqn<A['ElementId']>
+    export type ElementId<A extends AnyAux> = Scalars.Fqn<A['ElementId']>
     export type DeploymentFqn<A extends AnyAux> = Scalars.DeploymentFqn<A['DeploymentId']>
+    export type DeploymentId<A extends AnyAux> = Scalars.DeploymentFqn<A['DeploymentId']>
     export type ViewId<A extends AnyAux> = Scalars.ViewId<A['ViewId']>
 
     export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']> | Scalars.DeploymentFqn<A['DeploymentId']>
@@ -166,7 +254,8 @@ export namespace Aux {
   }
 
   /**
-   * Allows creating a union type by combining primitive types and literal types without sacrificing auto-completion in IDEs for the literal type part of the union.
+   * Allows creating a union type by combining primitive types and literal types
+   * without sacrificing auto-completion in IDEs for the literal type part of the union.
    */
   export namespace Primitive {
     export type ElementId<A extends AnyAux> = LiteralUnion<A['ElementId'], string>

@@ -1,4 +1,4 @@
-import type { Fqn } from '../../types'
+import type { Fqn } from '../../types2'
 import { isAncestor } from '../../utils'
 import type { DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'

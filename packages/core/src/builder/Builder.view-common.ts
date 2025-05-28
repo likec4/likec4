@@ -1,14 +1,14 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
+import { ModelLayer } from '../types/expression-v2-model'
+import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import {
   type AutoLayoutDirection,
-  type ExpressionV2,
+  type Expression,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
-} from '../types'
-import { ModelLayer } from '../types/expression-v2-model'
-import type { KindEqual, Participant, TagEqual } from '../types/operators'
+} from '../types2'
 import type { AnyTypes, Types } from './_types'
 
 export interface LikeC4ViewBuilder<
@@ -94,7 +94,7 @@ export namespace ViewPredicate {
   }
 }
 
-function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<any, any> {
+function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator {
   if (isString(where)) {
     const op = where as LiteralUnion<ViewPredicate.WhereEq<AnyTypes>, string>
     switch (true) {
@@ -212,7 +212,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
-    let expr = b.$expr(args[0]) as ExpressionV2
+    let expr = b.$expr(args[0]) as Expression
     if (args.length === 2 && args[1].where) {
       const condition = parseWhere(args[1].where)
       expr = {

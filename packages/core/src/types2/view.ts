@@ -52,7 +52,7 @@ export function isViewRuleGlobalPredicateRef(rule: ViewRule<any>): rule is ViewR
   return 'predicateId' in rule
 }
 
-export interface ViewRuleStyle<A extends AnyAux> {
+export interface ViewRuleStyle<A extends AnyAux = AnyAux> {
   targets: ModelFqnExpr<A>[]
   notation?: string
   style: ElementStyle & {
@@ -159,7 +159,7 @@ export interface ScopedElementView<A extends AnyAux> extends BasicElementView<A>
 export interface ExtendsElementView<A extends AnyAux> extends BasicElementView<A> {
   readonly extends: Aux.Strict.ViewId<A>
 }
-export type ElementView<A extends AnyAux> = ExclusiveUnion<{
+export type ElementView<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   ScopedElementView: ScopedElementView<A>
   ExtendsElementView: ExtendsElementView<A>
   BasicElementView: BasicElementView<A>
@@ -238,13 +238,15 @@ export type DeploymentViewRule<A extends AnyAux> =
   | ViewRuleAutoLayout
   | DeploymentViewRuleStyle<A>
 
-export interface DeploymentView<A extends AnyAux> extends BasicView<A> {
+export interface DeploymentView<A extends AnyAux = AnyAux> extends BasicView<A> {
   readonly __: 'deployment'
   readonly rules: DeploymentViewRule<A>[]
 }
 
-export type LikeC4View<A extends AnyAux> = ExclusiveUnion<{
-  Element: ElementView<A>
+export type LikeC4View<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+  ScopedElementView: ScopedElementView<A>
+  ExtendsElementView: ExtendsElementView<A>
+  BasicElementView: BasicElementView<A>
   Deployment: DeploymentView<A>
   Dynamic: DynamicView<A>
 }>
@@ -353,7 +355,7 @@ export namespace ComputedNode {
   }
 }
 
-export interface ComputedEdge<A extends AnyAux> {
+export interface ComputedEdge<A extends AnyAux = AnyAux> {
   id: Aux.Strict.EdgeId<A>
   parent: Aux.Strict.NodeId<A> | null
   source: Aux.Strict.NodeId<A>
@@ -402,7 +404,7 @@ export interface ViewAutoLayout {
   rankSep?: number
   nodeSep?: number
 }
-export interface ComputedElementView<A extends AnyAux>
+export interface ComputedElementView<A extends AnyAux = AnyAux>
   extends Omit<ElementView<A>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly extends?: Aux.Strict.ViewId<A>
@@ -412,7 +414,7 @@ export interface ComputedElementView<A extends AnyAux>
   rules?: never
   docUri?: never
 }
-export interface ComputedDynamicView<A extends AnyAux>
+export interface ComputedDynamicView<A extends AnyAux = AnyAux>
   extends Omit<DynamicView<A>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly autoLayout: ViewAutoLayout
@@ -423,7 +425,7 @@ export interface ComputedDynamicView<A extends AnyAux>
   docUri?: never
 }
 
-export interface ComputedDeploymentView<A extends AnyAux>
+export interface ComputedDeploymentView<A extends AnyAux = AnyAux>
   extends Omit<DeploymentView<A>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly autoLayout: ViewAutoLayout
@@ -433,7 +435,7 @@ export interface ComputedDeploymentView<A extends AnyAux>
   docUri?: never
 }
 
-export type ComputedView<A extends AnyAux> = ExclusiveUnion<{
+export type ComputedView<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Element: ComputedElementView<A>
   Deployment: ComputedDeploymentView<A>
   Dynamic: ComputedDynamicView<A>
@@ -471,7 +473,7 @@ export function getBBoxCenter({
   }
 }
 
-export interface DiagramNode<A extends AnyAux> extends ComputedNode<A> {
+export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A> {
   width: number
   height: number
   // Absolute position, top left
@@ -496,7 +498,7 @@ export namespace DiagramNode {
   }
 }
 
-export interface DiagramEdge<A extends AnyAux> extends ComputedEdge<A> {
+export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {
   // Bezier points
   points: NonEmptyArray<Point>
   // Control points to adjust the edge
@@ -507,7 +509,9 @@ export interface DiagramEdge<A extends AnyAux> extends ComputedEdge<A> {
   dotpos?: string
 }
 
-export interface DiagramView<A extends AnyAux> extends Omit<ComputedView<A>, 'nodes' | 'edges' | 'manualLayout'> {
+export interface DiagramView<A extends AnyAux = AnyAux>
+  extends Omit<ComputedView<A>, 'nodes' | 'edges' | 'manualLayout'>
+{
   readonly nodes: DiagramNode<A>[]
   readonly edges: DiagramEdge<A>[]
   readonly bounds: BBox
@@ -547,4 +551,4 @@ export type ViewManualLayout = {
   }>
 }
 
-export type ProcessedView<A extends AnyAux> = ComputedView<A> | DiagramView<A>
+export type ProcessedView<A extends AnyAux = AnyAux> = ComputedView<A> | DiagramView<A>

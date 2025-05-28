@@ -1,12 +1,13 @@
 import { isString } from 'remeda'
 import type { IsStringLiteral } from 'type-fest/source/is-literal'
-import { type ExpressionV2 } from '../types/expression-v2'
-import { type Fqn } from '../types/scalars'
+import { type Expression, type Fqn } from '../types2'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
 import type { ViewsBuilder } from './Builder.views'
 
-export interface ElementViewBuilder<T extends AnyTypes> extends LikeC4ViewBuilder<T, T['Fqn'], Types.ToExpression<T>> {
+export interface ElementViewBuilder<T extends AnyTypes>
+  extends LikeC4ViewBuilder<T, T['Fqn'], Expression<Types.ToAux<T>>>
+{
 }
 
 export type ElementViewRulesBuilder<T extends AnyTypes> = (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
@@ -126,15 +127,15 @@ export interface TypedAddViewOfHelper<A extends AnyTypes> {
   }
 }
 // To hook types
-const asTypedExpr = (expr: ExpressionV2): ExpressionV2 => {
-  return expr as ExpressionV2
+const asTypedExpr = <T extends AnyTypes>(expr: Expression): Expression<Types.ToAux<T>> => {
+  return expr as Expression<Types.ToAux<T>>
 }
 
-export function $expr<Types extends AnyTypes>(
-  expr: ViewPredicate.Expression<Types> | ExpressionV2,
-): ExpressionV2 {
+export function $expr<T extends AnyTypes>(
+  expr: ViewPredicate.Expression<T> | Expression,
+): Expression<Types.ToAux<T>> {
   if (!isString(expr)) {
-    return expr as ExpressionV2
+    return expr as Expression<Types.ToAux<T>>
   }
   if (expr === '*') {
     return asTypedExpr({ wildcard: true })

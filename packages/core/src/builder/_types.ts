@@ -1,22 +1,23 @@
 import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
-import type { LikeC4Model } from '../model/LikeC4Model'
 import type {
+  Aux,
   BorderStyle,
-  Color,
-  DeploymentNodeKindSpecification,
-  ElementKindSpecification,
   ElementShape,
+  ElementSpecification as DeploymentNodeKindSpecification,
+  ElementSpecification as ElementKindSpecification,
+  Expression,
   KeysOf,
   NonEmptyArray,
-  ParsedLikeC4ModelData,
   RelationshipArrowType,
-  RelationshipKindSpecification,
   RelationshipLineType,
+  RelationshipSpecification as RelationshipKindSpecification,
   ShapeSize,
   SpacingSize,
+  SpecTypes,
   TextSize,
-} from '../types'
-import type { ExpressionV2 } from '../types/expression-v2'
+  ThemeColor as Color,
+  UnknownAux,
+} from '../types2'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
@@ -275,23 +276,22 @@ export namespace Types {
       >
     : never
 
-  export type ToParsedLikeC4Model<T> = T extends AnyTypes ? ParsedLikeC4ModelData<
-      T['ElementKind'],
-      T['RelationshipKind'],
-      T['Tag'],
+  export type ToAux<T> = T extends AnyTypes ? Aux<
+      'from-builder',
       T['Fqn'],
+      T['DeploymentFqn'],
       T['ViewId'],
-      T['DeploymentFqn']
+      SpecTypes<
+        T['ElementKind'],
+        T['DeploymentKind'],
+        T['RelationshipKind'],
+        T['Tag'],
+        T['MetadataKey']
+      >
     >
-    : never
+    : UnknownAux
 
-  export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
-    T['Fqn'],
-    T['DeploymentFqn'],
-    T['ViewId']
-  >
-
-  export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
+  export type ToExpression<T> = T extends AnyTypes ? Expression<ToAux<T>> : never
 
   export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
 

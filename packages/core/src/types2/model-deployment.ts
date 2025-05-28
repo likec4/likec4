@@ -66,7 +66,12 @@ export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): 
 /**
  * Relationship in deployment model
  */
-export interface DeploymentRelationship<A extends AnyAux> extends AbstractRelationship<A> {
+export interface DeploymentRelationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.DeploymentRef<A>
   readonly target: FqnRef.DeploymentRef<A>
 }
+/**
+ * Backward compatibility alias
+ * @deprecated Use {@link DeploymentRelationship} instead
+ */
+export type DeploymentRelation<A extends AnyAux = AnyAux> = DeploymentRelationship<A>

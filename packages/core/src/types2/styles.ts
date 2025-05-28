@@ -59,6 +59,12 @@ export const ThemeColors = [
 ] as const
 export type ThemeColor = typeof ThemeColors[number]
 
+/**
+ * Backward compatibility alias
+ * @deprecated Use {@link ThemeColor} instead
+ */
+export type Color = ThemeColor
+
 export function isThemeColor(color: string): color is ThemeColor {
   return ThemeColors.includes(color as ThemeColor)
 }

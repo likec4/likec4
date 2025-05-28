@@ -1,16 +1,16 @@
 import type { LastArrayElement, Split } from 'type-fest'
-import type { DeploymentElement, DeploymentRelation, Fqn } from '../types'
+import type { DeploymentElement, DeploymentFqn, DeploymentRelationship } from '../types2'
 import type { AnyTypes, Invalid, Types, ValidId } from './_types'
 import type { Builder } from './Builder'
 import type { AddDeploymentNode } from './Builder.deployment'
 
 export interface DeploymentModelBuilder<T extends AnyTypes> extends Builder<T> {
   __addDeployment(node: DeploymentElement): Builder<T>
-  __addDeploymentRelation(rel: Omit<DeploymentRelation, 'id'>): Builder<T>
+  __addDeploymentRelation(rel: Omit<DeploymentRelationship, 'id'>): Builder<T>
   /**
    * Create a fully qualified name from an id (for nested models)
    */
-  __fqn(id: string): Fqn
+  __deploymentFqn(id: string): DeploymentFqn
 }
 
 export function deployment<A extends AnyTypes>(): (input: Builder<A>) => Builder<A>
