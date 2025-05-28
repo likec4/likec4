@@ -106,6 +106,7 @@ describe('SpecTypesFromDump', () => {
 describe('AuxFromDump', () => {
   it('should convert empty LikeC4ModelDump to Aux with never types', () => {
     const emptyModel = castModel({
+      __: 'computed',
       projectId: 'test-project',
       elements: {},
       views: {},
@@ -127,6 +128,7 @@ describe('AuxFromDump', () => {
 
   it('should convert complete LikeC4ModelDump to Aux with correct types', () => {
     const model = castModel({
+      __: 'computed',
       projectId: 'test-project',
       elements: {
         'element1': {},
@@ -218,6 +220,7 @@ describe('AuxFromDump', () => {
 
   it('should handle optional fields in LikeC4ModelDump', () => {
     const model = castModel({
+      __: 'computed',
       projectId: 'test-project',
       elements: {
         'e1': {},

@@ -14,6 +14,7 @@ import type {
   ShapeSize,
   SpacingSize,
   SpecTypes,
+  TagSpecification,
   TextSize,
   ThemeColor as Color,
   UnknownAux,
@@ -31,7 +32,9 @@ export type BuilderSpecification = {
   deployments?: {
     [kind: string]: Partial<DeploymentNodeKindSpecification>
   }
-  tags?: [string, ...string[]]
+  tags?: {
+    [kind: string]: Partial<TagSpecification>
+  }
   metadataKeys?: [string, ...string[]]
 }
 
@@ -197,7 +200,7 @@ export namespace Types {
       never,
       never,
       KeysOf<Spec['relationships']>,
-      TupleToUnion<Spec['tags']>,
+      KeysOf<Spec['tags']>,
       TupleToUnion<Spec['metadataKeys']>,
       KeysOf<Spec['deployments']>,
       never

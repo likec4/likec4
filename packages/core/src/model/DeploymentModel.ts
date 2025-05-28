@@ -1,12 +1,14 @@
 import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
+  type AnyAux,
   type Aux,
   type ComputedDeploymentView,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
   type LikeC4ModelData,
+  type UnknownAux,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -25,7 +27,6 @@ import {
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import {
-  type AnyAux,
   type DeploymentOrFqn,
   type ElementOrFqn,
   type IncomingFilter,
@@ -34,7 +35,7 @@ import {
 } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<A extends AnyAux = AnyAux> {
+export class LikeC4DeploymentModel<A extends AnyAux = UnknownAux> {
   readonly #elements = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
   readonly #parents = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentNodeModel<A>>()
@@ -72,7 +73,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = AnyAux> {
     public readonly $model: LikeC4Model<A>,
     public readonly $deployments: LikeC4ModelData<A>['deployments'],
   ) {
-    const elements = values($deployments.elements)
+    const elements = values($deployments.elements as Record<string, DeploymentElement<A>>)
     for (const element of sortParentsFirst(elements)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {

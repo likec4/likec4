@@ -32,7 +32,7 @@ export interface ElementSpecification {
 }
 
 export interface TagSpecification {
-  color: ColorLiteral
+  color: ColorLiteral | ThemeColor
 }
 
 export interface RelationshipSpecification {
@@ -100,7 +100,7 @@ export interface Aux<
   Element,
   Deployment,
   View,
-  Spec extends AnySpecTypes = AnySpecTypes,
+  Spec extends SpecTypes<any, any, any, any, any>,
 > {
   ProjectId: Project
   ElementId: Element
@@ -115,12 +115,33 @@ export interface Aux<
   MetadataKey: Spec['MetadataKey']
 }
 
-export type AnyAux = Aux<string, string, string, string, AnySpecTypes>
+export type AnyAux = Aux<any, string, string, string, SpecTypes<any, any, any, any, any>>
+
+/**
+ * @param ElementKind - Literal union of element kinds
+ * @param DeploymentKind - Literal union of deployment kinds
+ * @param RelationKind - Literal union of relationship kinds
+ * @param Tag - Literal union of tags
+ * @param MetadataKey - Literal union of metadata keys
+ */
+export type AnyAuxWithSpec<
+  ElementKind = unknown,
+  DeploymentKind = unknown,
+  RelationKind = unknown,
+  Tag = unknown,
+  MetadataKey = unknown,
+> = Aux<
+  string,
+  string,
+  string,
+  string,
+  SpecTypes<ElementKind, DeploymentKind, RelationKind, Tag, MetadataKey>
+>
 
 /**
  * Fallback when {@link Aux} can't be inferred
  */
-export interface UnknownAux extends Aux<never, string, string, string, AnySpecTypes> {}
+export interface UnknownAux extends Aux<string, string, string, string, AnySpecTypes> {}
 
 type ArrayOf<T> = IsNever<T> extends false ? readonly T[] : readonly []
 type MetadataObject<T> = T extends infer K extends string ? Record<K, string> : EmptyObject

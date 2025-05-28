@@ -1,5 +1,5 @@
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, UnknownAux } from './aux'
 import type { PredicateSelector } from './expression'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
@@ -67,7 +67,7 @@ export namespace ModelFqnExpr {
     return 'where' in expr && is(expr.where.expr)
   }
 
-  export interface Custom<A extends AnyAux = AnyAux> {
+  export interface Custom<A extends AnyAux = UnknownAux> {
     custom: {
       expr: OrWhere<A>
       title?: string
@@ -128,7 +128,7 @@ export namespace ModelFqnExpr {
   }
 }
 
-export type ModelFqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+export type ModelFqnExpr<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
   Wildcard: ModelFqnExpr.Wildcard
   Ref: ModelFqnExpr.Ref<A>
   ElementKind: ModelFqnExpr.ElementKindExpr<A>
@@ -136,7 +136,7 @@ export type ModelFqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
 }>
 
 export namespace ModelRelationExpr {
-  export type Endpoint<A extends AnyAux = AnyAux> = ModelFqnExpr.Where<A>['where']['expr']
+  export type Endpoint<A extends AnyAux = UnknownAux> = ModelFqnExpr.Where<A>['where']['expr']
 
   export interface Direct<A extends AnyAux> {
     source: Endpoint<A>
@@ -181,7 +181,7 @@ export namespace ModelRelationExpr {
         isInOut(expr.where.expr))
   }
 
-  export interface Custom<A extends AnyAux = AnyAux> {
+  export interface Custom<A extends AnyAux = UnknownAux> {
     customRelation: {
       expr: OrWhere<A>
       title?: string

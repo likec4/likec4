@@ -2,6 +2,8 @@ import { isTruthy, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
+  type AnyAux,
+  type Aux,
   type ComputedDeploymentView,
   type DeployedInstance,
   type DeploymentElementStyle,
@@ -12,6 +14,7 @@ import {
   type Link,
   type RelationshipLineType,
   type ThemeColor,
+  type UnknownAux,
   DefaultElementShape,
   DefaultLineStyle,
   DefaultShapeSize,
@@ -22,7 +25,7 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { AnyAux, Aux, IncomingFilter, OutgoingFilter } from './types'
+import type { IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<
@@ -31,7 +34,7 @@ export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux = UnknownAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
 abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   abstract readonly id: Aux.Strict.DeploymentFqn<A>

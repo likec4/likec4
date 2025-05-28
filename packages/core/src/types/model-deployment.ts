@@ -1,6 +1,6 @@
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type { Link } from './_common'
-import type { AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, UnknownAux } from './aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 import type { Icon } from './scalars'
@@ -15,7 +15,7 @@ export interface DeploymentElementStyle extends ElementStyle {
   readonly color?: ThemeColor
 }
 
-export interface DeploymentNode<A extends AnyAux = AnyAux> {
+export interface DeploymentNode<A extends AnyAux = UnknownAux> {
   // Full-qualified-name for Deployment model
   readonly id: Aux.Strict.DeploymentFqn<A>
   readonly kind: Aux.DeploymentKind<A>
@@ -29,7 +29,7 @@ export interface DeploymentNode<A extends AnyAux = AnyAux> {
   readonly metadata?: Aux.Metadata<A>
 }
 
-export interface DeployedInstance<A extends AnyAux = AnyAux> {
+export interface DeployedInstance<A extends AnyAux = UnknownAux> {
   /**
    * Format: `<DeploymentNode Fqn>.<Instance Id>`
    * i.e parent fqn is deployment target
@@ -46,11 +46,11 @@ export interface DeployedInstance<A extends AnyAux = AnyAux> {
   readonly metadata?: Aux.Metadata<A>
 }
 
-export type DeploymentElement<A extends AnyAux = AnyAux> = Simplify<
+export type DeploymentElement<A extends AnyAux = UnknownAux> = Simplify<
   MergeExclusive<DeploymentNode<A>, DeployedInstance<A>>
 >
 
-export type DeploymentElementRef<A extends AnyAux = AnyAux> = {
+export type DeploymentElementRef<A extends AnyAux = UnknownAux> = {
   readonly id: Aux.Strict.DeploymentFqn<A>
   readonly element?: Aux.Strict.Fqn<A>
 }
@@ -66,7 +66,7 @@ export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): 
 /**
  * Relationship in deployment model
  */
-export interface DeploymentRelationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
+export interface DeploymentRelationship<A extends AnyAux = UnknownAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.DeploymentRef<A>
   readonly target: FqnRef.DeploymentRef<A>
 }
@@ -74,4 +74,4 @@ export interface DeploymentRelationship<A extends AnyAux = AnyAux> extends Abstr
  * Backward compatibility alias
  * @deprecated Use {@link DeploymentRelationship} instead
  */
-export type DeploymentRelation<A extends AnyAux = AnyAux> = DeploymentRelationship<A>
+export type DeploymentRelation<A extends AnyAux = UnknownAux> = DeploymentRelationship<A>

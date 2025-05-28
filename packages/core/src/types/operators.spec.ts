@@ -1,14 +1,17 @@
 import { describe, it } from 'vitest'
+import type { AnyAuxWithSpec } from './aux'
 import { type Filterable, whereOperatorAsPredicate } from './operators'
 
 type FTag = 'old' | 'new'
 type FKind = 'a' | 'b'
 
-function item(props: Filterable<FTag, FKind>): Filterable<FTag, FKind> {
+type A = AnyAuxWithSpec<FKind, unknown, unknown, FTag, unknown>
+
+function item(props: Filterable<A>): Filterable<A> {
   return props
 }
 
-describe.concurrent('expression operators', () => {
+describe('expression operators', () => {
   it('tag eq', ({ expect }) => {
     const matchingItem1 = item({ tags: ['old'] })
     const matchingItem2 = item({ tags: ['old', 'new'] })

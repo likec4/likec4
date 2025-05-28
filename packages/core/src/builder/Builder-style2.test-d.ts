@@ -1,5 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
-import type { LikeC4Model } from '../model/LikeC4Model'
+import { LikeC4Model } from '../model/LikeC4Model'
 import type { Aux, ParsedLikeC4ModelData, SpecTypes } from '../types'
 import { Builder } from './Builder'
 
@@ -23,7 +23,10 @@ test('Builder types - style 2', () => {
         like: {},
         dislike: {},
       },
-      tags: ['tag1', 'tag2', 'tag1'],
+      tags: {
+        tag1: {},
+        tag2: {},
+      },
     })
     .model(({ actor, system, component, relTo }, _) =>
       _(

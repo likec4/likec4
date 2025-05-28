@@ -53,7 +53,12 @@ test('Builder types - style 1', () => {
       like: {},
       dislike: {},
     },
-    tags: ['tag1', 'tag2', 'tag1'],
+    tags: {
+      tag1: {
+        color: 'rgb(200, 100, 0)',
+      },
+      tag2: {},
+    },
   })
 
   const m = builder

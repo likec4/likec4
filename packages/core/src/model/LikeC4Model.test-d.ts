@@ -43,7 +43,10 @@ test('LikeC4Model.create: should have types', () => {
       like: {},
       dislike: {},
     },
-    tags: ['tag1', 'tag2', 'tag1'],
+    tags: {
+      tag1: {},
+      tag2: {},
+    },
   })
 
   const source = builder
@@ -108,8 +111,9 @@ test('LikeC4Model.create: should have types', () => {
 
 test('LikeC4Model.fromDump: should have types', () => {
   const m = LikeC4Model.fromDump({
+    __: 'computed',
     specification: {
-      tags: [],
+      tags: {},
       elements: {},
       relationships: {},
       deployments: {},
@@ -136,19 +140,7 @@ test('LikeC4Model.fromDump: should have types', () => {
       relations: {},
     },
   })
-  expectTypeOf(m.Aux.Element).toEqualTypeOf(
-    '' as 'el1' | 'el2',
-  )
-  expectTypeOf(m.Aux.Fqn).toEqualTypeOf(
-    '' as Fqn<'el1' | 'el2'>,
-  )
-  expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
-    '' as ViewId<'v1' | 'v2'>,
-  )
-  expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
-    '' as 'd1' | 'd2',
-  )
-  expectTypeOf(m.Aux.DeploymentFqn).toEqualTypeOf(
-    '' as Fqn<'d1' | 'd2'>,
-  )
+  expectTypeOf(m.Aux.ElementId).toEqualTypeOf<'el1' | 'el2'>()
+  expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'v1' | 'v2'>()
+  expectTypeOf(m.Aux.DeploymentId).toEqualTypeOf<'d1' | 'd2'>()
 })

@@ -1,9 +1,17 @@
 import defu from 'defu'
 import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
 import type { Writable } from 'type-fest'
+import { computeLikeC4Model } from '../compute-view/compute-view'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
-import type { DeployedInstance, DeploymentFqn, ParsedLikeC4ModelData, Specification } from '../types'
+import type {
+  DeployedInstance,
+  DeploymentFqn,
+  ParsedLikeC4ModelData,
+  ScopedElementView,
+  Specification,
+  UnscopedElementView,
+} from '../types'
 import {
   type Color,
   type DeploymentElement,
@@ -11,7 +19,6 @@ import {
   type DeploymentView,
   type Element,
   type ElementShape,
-  type ElementView,
   type Fqn,
   type IconUrl,
   type LikeC4View,
@@ -20,7 +27,6 @@ import {
   type ModelRelation,
   type NonEmptyArray,
   type RelationId,
-  type TagSpecification,
   DefaultElementShape,
   DefaultThemeColor,
   FqnRef,
@@ -170,8 +176,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     relationships: {
       ...structuredClone(spec.relationships) as any,
     },
-    // TODO: fix
-    tags: {} as Record<T['Tag'], TagSpecification>,
+    tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
+      color: DefaultThemeColor,
+      ...tagSpec,
+    })),
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
@@ -185,7 +193,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     id: string,
     _props: T['NewViewProps'] | string | B | null,
     builder: B,
-  ): [Omit<LikeC4View, 'rules'>, B] => {
+  ): [Omit<LikeC4View, 'rules' | '__'>, B] => {
     if (isFunction(_props)) {
       builder = _props as B
       _props = {}
@@ -195,7 +203,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       links: _links = [],
       title = null,
       description = null,
-      tags = null,
+      tags = [],
       ...props
     } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -349,8 +357,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     } as any),
     toLikeC4Model: () => {
       const parsed = self.build()
-      return LikeC4Model.EMPTY as any
-      // return LikeC4Model.compute(parsed)
+      return computeLikeC4Model(parsed)
     },
     helpers: () => ({
       model: {
@@ -490,7 +497,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ElementView> = {
+          const view: Writable<UnscopedElementView> = {
             ...generic,
             __: 'element',
             rules: [],
@@ -521,7 +528,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ElementView> = {
+          const view: Writable<ScopedElementView> = {
             ...generic,
             viewOf: viewOf as Fqn,
             __: 'element',

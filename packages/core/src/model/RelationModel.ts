@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { IteratorLike, Link } from '../types'
+import type { AnyAux, IteratorLike, Link, UnknownAux } from '../types'
 import {
   type Aux,
   type Relationship,
@@ -9,7 +9,6 @@ import {
   DefaultRelationshipColor,
   FqnRef,
 } from '../types'
-import type { AnyAux } from '../types'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
@@ -18,7 +17,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
 
-export class RelationshipModel<A extends AnyAux = AnyAux> {
+export class RelationshipModel<A extends AnyAux = UnknownAux> {
   public readonly source: ElementModel<A>
   public readonly target: ElementModel<A>
 

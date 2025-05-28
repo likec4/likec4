@@ -1,4 +1,4 @@
-import type { IsNever, IsStringLiteral, TupleToObject, UnionToIntersection } from 'type-fest'
+import type { IsNever, IsStringLiteral, Simplify, TupleToObject, UnionToIntersection } from 'type-fest'
 import type { LastOfUnion, UnionToTuple } from 'type-fest/source/union-to-tuple'
 import type { NonEmptyArray } from './_common'
 import type { AnyAux, Aux, Specification, UnknownAux } from './aux'
@@ -42,9 +42,9 @@ type KeysOf<T> = IsStringLiteral<T> extends true ? `${T & string}` : string
 //   [key: string]: Value
 // }
 // IsStringLiteral<Ke?
-type StrictRecord<Keys, Value> = UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>
+type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
 
-type Object1 = StrictRecord<'a' | 'b' | 'c' | 2, { value: number }>
+// type Object1 = StrictRecord<'a' | 'b' | 'c' | 2, { value: number }>
 
 // type E = Extract<'a' | 'b' | 'c' | unknown, string>
 
@@ -69,24 +69,36 @@ type Object1 = StrictRecord<'a' | 'b' | 'c' | 2, { value: number }>
 export interface ParsedLikeC4ModelData<A extends AnyAux = UnknownAux> {
   // To prevent accidental use of this type
   __?: never
-  projectId: ProjectId
+  projectId: Aux.ProjectId<A>
   specification: Specification<A>
-  elements: StrictRecord<Aux.ElementId<A>, Element<A>>
-  deployments: {
-    elements: StrictRecord<Aux.DeploymentId<A>, DeploymentElement<A>>
-    relations: StrictRecord<Aux.RelationId<A>, DeploymentRelationship<A>>
+  elements: {
+    [key in Aux.ElementId<A>]: Element<A>
   }
-  relations: StrictRecord<Aux.RelationId<A>, Relationship<A>>
+  deployments: {
+    elements: {
+      [key in Aux.DeploymentId<A>]: DeploymentElement<A>
+    }
+    relations: {
+      [key in Aux.RelationId<A>]: DeploymentRelationship<A>
+    }
+  }
+  relations: {
+    [key in Aux.RelationId<A>]: Relationship<A>
+  }
   globals: ModelGlobals
-  views: StrictRecord<Aux.ViewId<A>, LikeC4View<A>>
+  views: {
+    [key in Aux.ViewId<A>]: LikeC4View<A>
+  }
   imports: Record<ProjectId, NonEmptyArray<Element<A>>>
 }
 
-export interface LikeC4ModelData<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>>
+export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
   extends Omit<ParsedLikeC4ModelData<A>, 'views' | '__'>
 {
   __: 'computed' | 'layouted'
-  views: StrictRecord<Aux.ViewId<A>, V>
+  views: {
+    [key in Aux.ViewId<A>]: V
+  }
 }
 
 export interface ComputedLikeC4ModelData<A extends AnyAux> extends LikeC4ModelData<A, ComputedView<A>> {

@@ -1,5 +1,6 @@
 import type { KeysOf } from './_common'
 import type { Aux, Specification, SpecTypes, UnknownAux } from './aux'
+import type { ParsedLikeC4ModelData } from './model-data'
 
 /**
  * JSON representation of {@link Specification}
@@ -29,9 +30,10 @@ export type SpecTypesFromDump<J> = J extends SpecificationDump ? SpecTypes<
   : SpecTypes<never, never, never, never, never>
 
 /**
- * Hook to get types from dump
+ * Dump differs from {@link ParsedLikeC4ModelData} by the fact that it is computed or layouted
  */
 export type LikeC4ModelDump = {
+  __: 'computed' | 'layouted'
   projectId?: string
   specification: SpecificationDump
   elements: {

@@ -1,5 +1,5 @@
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, UnknownAux } from './aux'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
 import { type Icon } from './scalars'
@@ -145,7 +145,7 @@ export namespace FqnExpr {
   }
 }
 
-export type FqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+export type FqnExpr<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>
@@ -154,7 +154,7 @@ export type FqnExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
 }>
 
 export namespace RelationExpr {
-  export type Endpoint<A extends AnyAux = AnyAux> = FqnExpr.Where<A>['where']['expr']
+  export type Endpoint<A extends AnyAux = UnknownAux> = FqnExpr.Where<A>['where']['expr']
 
   export interface Direct<A extends AnyAux> {
     source: Endpoint<A>
@@ -258,7 +258,7 @@ export namespace RelationExpr {
   }
 }
 
-export type RelationExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+export type RelationExpr<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<A>
   Incoming: RelationExpr.Incoming<A>
   Outgoing: RelationExpr.Outgoing<A>
@@ -271,7 +271,7 @@ export type RelationExpr<A extends AnyAux = AnyAux> = ExclusiveUnion<{
  * @template D - The type for the deployment FQN, defaults to `Fqn`.
  * @template M - The type for the model FQN, defaults to `Fqn`.
  */
-export type Expression<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+export type Expression<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>

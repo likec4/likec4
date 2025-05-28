@@ -1,5 +1,5 @@
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, UnknownAux } from './aux'
 import { GlobalFqn } from './scalars'
 
 export namespace FqnRef {
@@ -77,7 +77,7 @@ export namespace FqnRef {
   }
 }
 
-export type FqnRef<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+export type FqnRef<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
   DeploymentRef: FqnRef.DeploymentRef<A>
   ModelRef: FqnRef.ModelRef<A>
 }>

@@ -41,7 +41,7 @@ export function AsFqn(name: string, parent?: Fqn | null): Fqn {
 }
 
 export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
-export function GlobalFqn(projectId: ProjectId, name: string): GlobalFqn {
+export function GlobalFqn(projectId: ProjectId<any>, name: string): GlobalFqn {
   invariant(isTruthy(projectId), 'Project ID must start with @')
   return '@' + projectId + '.' + name as GlobalFqn
 }

@@ -3,9 +3,11 @@ import { invariant, nonNullable } from '../errors'
 import type {
   AnyAux,
   Aux,
+  AuxFromDump,
   Element,
   IteratorLike,
   LikeC4ModelData,
+  LikeC4ModelDump,
   ModelGlobals,
   ParsedLikeC4ModelData,
   ProcessedView,
@@ -59,38 +61,6 @@ export class LikeC4Model<A extends AnyAux = UnknownAux> {
 
   public readonly deployment: LikeC4DeploymentModel<A>
 
-  // /**
-  //  * Computes views from the parsed model
-  //  * Creates a new LikeC4Model instance from a parsed model.
-  //  *
-  //  * May throw an error if the model is invalid.
-  //  *
-  //  * @typeParam M - The type of the parsed LikeC4 model, must extend ParsedLikeC4Model
-  //  * @param parsed - The parsed LikeC4 model to compute from
-  //  * @returns A new LikeC4Model instance with computed relationships and structure
-  //  */
-  // static compute<const M extends AnyParsedLikeC4ModelData>(parsed: M): LikeC4Model<Aux.FromParsed<A>> {
-  //   let { views, ...rest } = parsed as Omit<M, '__'>
-  //   const model = new LikeC4Model({ ...rest, views: {} })
-  //   return new LikeC4Model({
-  //     ...rest,
-  //     views: mapValues(views, view => unsafeComputeView(view as LikeC4View, model)),
-  //   } as any)
-  // }
-
-  // /**
-  //  * Creates a function that computes a view using the data from the model.
-  //  *
-  //  * @example
-  //  * const compute = LikeC4Model.makeCompute(parsedModel);
-  //  * const result = compute(viewSource);
-  //  */
-  // static makeCompute<M extends AnyParsedLikeC4ModelData>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
-  //   let { views, ...rest } = parsed as Omit<M, '__'>
-  //   const model = new LikeC4Model({ ...rest, views: {} })
-  //   return (viewsource) => computeView(viewsource, model)
-  // }
-
   /**
    * Creates a new LikeC4Model instance from a parsed model data.\
    * This model omits the views, as they must be computed (or layouted)
@@ -116,21 +86,22 @@ export class LikeC4Model<A extends AnyAux = UnknownAux> {
     return new LikeC4Model(model)
   }
 
-  // /**
-  //  * Creates a new LikeC4Model instance from a model dump.
-  //  *
-  //  * @typeParam M - A constant type parameter extending LikeC4ModelDump
-  //  * @param dump - The model dump to create the instance from
-  //  * @returns A  new LikeC4Model instance with types inferred from the dump
-  //  */
-  // static fromDump<const M extends LikeC4ModelDump>(dump: M): LikeC4Model<Aux.FromDump<A>> {
-  //   return new LikeC4Model(dump as any)
-  // }
+  /**
+   * Creates a new LikeC4Model instance and infers types from a model dump.\
+   * Model dump expected to be computed or layouted.
+   *
+   * @typeParam D - A constant type parameter extending LikeC4ModelDump
+   * @param dump - The model dump to create the instance from
+   * @returns A  new LikeC4Model instance with types inferred from the dump
+   */
+  static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4Model<AuxFromDump<D>> {
+    return new LikeC4Model(dump as any)
+  }
 
   private constructor(
     public readonly $model: LikeC4ModelData<A>,
   ) {
-    for (const element of values($model.elements)) {
+    for (const element of values($model.elements as Record<string, Element<A>>)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
@@ -152,7 +123,7 @@ export class LikeC4Model<A extends AnyAux = UnknownAux> {
     }
     this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
     const views = pipe(
-      values($model.views),
+      values($model.views as Record<string, ProcessedView<A>>),
       sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
     )
     for (const view of views) {
@@ -468,7 +439,7 @@ export class LikeC4Model<A extends AnyAux = UnknownAux> {
 export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create<UnknownAux>({
     __: 'computed',
-    projectId: 'default' as ProjectId,
+    projectId: 'default' as never,
     specification: {
       elements: {},
       relationships: {},

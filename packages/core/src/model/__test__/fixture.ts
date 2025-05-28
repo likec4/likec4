@@ -48,6 +48,10 @@ const {
       },
     },
   },
+  tags: {
+    internal: {},
+    external: {},
+  },
   deployments: {
     env: {},
     zone: {},

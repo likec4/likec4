@@ -1,9 +1,16 @@
-import { mapValues } from 'remeda'
+import { indexBy, values } from 'remeda'
 import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
+  type AnyAux,
+  type ComputedDeploymentView,
+  type ComputedDynamicView,
+  type ComputedElementView,
   type ComputedLikeC4ModelData,
   type ComputedView,
+  type DeploymentView,
+  type DynamicView,
+  type ElementView,
   type LikeC4View,
   type ParsedLikeC4ModelData,
   isDeploymentView,
@@ -14,7 +21,7 @@ import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
 import { computeElementView } from './element-view/compute'
 
-export type ComputeViewResult<V extends ComputedView = ComputedView> =
+export type ComputeViewResult<V> =
   | {
     isSuccess: true
     error?: undefined
@@ -26,27 +33,38 @@ export type ComputeViewResult<V extends ComputedView = ComputedView> =
     view: undefined
   }
 
-export function unsafeComputeView(
-  viewsource: LikeC4View,
-  likec4model: LikeC4Model,
-): ComputedView {
+// dprint-ignore
+export function unsafeComputeView<A extends AnyAux>(viewsource: ElementView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedElementView<A>
+// dprint-ignore
+export function unsafeComputeView<A extends AnyAux>(viewsource: DeploymentView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedDeploymentView<A>
+// dprint-ignore
+export function unsafeComputeView<A extends AnyAux>(viewsource: DynamicView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedDynamicView<A>
+// dprint-ignore
+export function unsafeComputeView<A extends AnyAux>(viewsource: LikeC4View<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedView<A>
+export function unsafeComputeView<A extends AnyAux>(
+  viewsource: LikeC4View<NoInfer<A>>,
+  likec4model: LikeC4Model<A>,
+) {
   switch (true) {
-    case isDeploymentView(viewsource): {
-      return computeDeploymentView(likec4model, viewsource)
-    }
-    case isDynamicView(viewsource):
-      return computeDynamicView(likec4model, viewsource)
     case isElementView(viewsource):
       return computeElementView(likec4model, viewsource)
+    case isDeploymentView(viewsource):
+      return computeDeploymentView(likec4model, viewsource)
+    case isDynamicView(viewsource):
+      return computeDynamicView(likec4model, viewsource)
     default:
       nonexhaustive(viewsource)
   }
 }
 
-export function computeView<V extends LikeC4View>(
-  viewsource: V,
-  likec4model: LikeC4Model,
-): ComputeViewResult {
+// dprint-ignore
+export function computeView<A extends AnyAux>(viewsource: ElementView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedElementView<A>>
+// dprint-ignore
+export function computeView<A extends AnyAux>(viewsource: DeploymentView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedDeploymentView<A>>
+// dprint-ignore
+export function computeView<A extends AnyAux>(viewsource: DynamicView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedDynamicView<A>>
+// dprint-ignore
+export function computeView<A extends AnyAux>(viewsource: LikeC4View<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedView<A>> {
   try {
     return {
       isSuccess: true,
@@ -61,23 +79,16 @@ export function computeView<V extends LikeC4View>(
   }
 }
 
-export function computeViews<P extends ParsedLikeC4ModelData>(parsed: P): ComputedLikeC4ModelData {
-  const { views, ...rest } = parsed as Omit<P, '__'>
-  const likec4model = LikeC4Model.create({
-    ...rest,
-    views: {},
-  })
-  const compute = (source: LikeC4View): ComputedView => {
-    const result = computeView(source, likec4model)
-    if (result.isSuccess) {
-      return result.view
-    } else {
-      throw result.error
-    }
-  }
+export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): ComputedLikeC4ModelData<A> {
+  const likec4model = LikeC4Model.fromParsed(parsed)
+  const views = values(parsed.views as Record<string, LikeC4View<A>>).map(v => unsafeComputeView(v, likec4model))
   return {
-    ...rest,
+    ...parsed,
     __: 'computed',
-    views: mapValues(parsed.views, compute),
+    views: indexBy(views, v => v.id) as ComputedLikeC4ModelData<A>['views'],
   }
+}
+
+export function computeLikeC4Model<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): LikeC4Model<A> {
+  return LikeC4Model.create(computeViews(parsed))
 }

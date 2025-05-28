@@ -43,14 +43,14 @@ export namespace NodeModel {
   }
 }
 
-export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedView<M>> {
+export class NodeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> {
   constructor(
-    public readonly $view: LikeC4ViewModel<M, V>,
+    public readonly $view: LikeC4ViewModel<A, V>,
     public readonly $node: V['nodes'][number],
   ) {
   }
 
-  get id(): Aux.Strict.NodeId<M> {
+  get id(): Aux.Strict.NodeId<A> {
     return this.$node.id
   }
 
@@ -58,28 +58,28 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return this.$node.title
   }
 
-  get kind(): Aux.ElementKind<M> | Aux.DeploymentKind<M> | typeof GroupElementKind | 'instance' {
+  get kind(): Aux.ElementKind<A> | Aux.DeploymentKind<A> | typeof GroupElementKind | 'instance' {
     return this.$node.kind as any
   }
 
   get description(): string | null {
-    return this.$node.description
+    return this.$node.description ?? null
   }
 
   get technology(): string | null {
-    return this.$node.technology
+    return this.$node.technology ?? null
   }
 
-  get parent(): NodeModel<M, V> | null {
+  get parent(): NodeModel<A, V> | null {
     return this.$node.parent ? this.$view.node(this.$node.parent) : null
   }
 
-  get element(): ElementModel<M> | null {
+  get element(): ElementModel<A> | null {
     const modelRef = ComputedNode.modelRef(this.$node)
     return modelRef ? this.$view.$model.element(modelRef) : null
   }
 
-  get deployment(): DeploymentElementModel<M> | null {
+  get deployment(): DeploymentElementModel<A> | null {
     const modelRef = ComputedNode.deploymentRef(this.$node)
     return modelRef ? this.$view.$model.deployment.element(modelRef) : null
   }
@@ -96,7 +96,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return this.$node.icon ?? null
   }
 
-  get tags(): Aux.Tags<M> {
+  get tags(): Aux.Tags<A> {
     return this.$node.tags ?? []
   }
 
@@ -104,7 +104,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return this.$node.links ?? []
   }
 
-  get navigateTo(): LikeC4ViewModel<M> | null {
+  get navigateTo(): LikeC4ViewModel<A> | null {
     return this.$node.navigateTo ? this.$view.$model.view(this.$node.navigateTo) : null
   }
 
@@ -116,7 +116,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(): NodesIterator<M, V> {
+  public *ancestors(): NodesIterator<A, V> {
     let parent = this.parent
     while (parent) {
       yield parent
@@ -125,14 +125,14 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public *children(): NodesIterator<M, V> {
+  public *children(): NodesIterator<A, V> {
     for (const child of this.$node.children) {
       yield this.$view.node(child)
     }
     return
   }
 
-  public *siblings(): NodesIterator<M, V> {
+  public *siblings(): NodesIterator<A, V> {
     const siblings = this.parent?.children() ?? this.$view.roots()
     for (const sibling of siblings) {
       if (sibling.id !== this.id) {
@@ -142,7 +142,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<M, V> {
+  public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<A, V> {
     for (const edgeId of this.$node.inEdges) {
       const edge = this.$view.edge(edgeId)
       switch (true) {
@@ -156,8 +156,8 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public *incomers(filter: IncomingFilter = 'all'): NodesIterator<M, V> {
-    const unique = new Set<Aux.Strict.NodeId<M>>()
+  public *incomers(filter: IncomingFilter = 'all'): NodesIterator<A, V> {
+    const unique = new Set<Aux.Strict.NodeId<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -168,7 +168,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<M, V> {
+  public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<A, V> {
     for (const edgeId of this.$node.outEdges) {
       const edge = this.$view.edge(edgeId)
       switch (true) {
@@ -182,8 +182,8 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public *outgoers(filter: OutgoingFilter = 'all'): NodesIterator<M, V> {
-    const unique = new Set<Aux.Strict.NodeId<M>>()
+  public *outgoers(filter: OutgoingFilter = 'all'): NodesIterator<A, V> {
+    const unique = new Set<Aux.Strict.NodeId<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue
@@ -194,7 +194,7 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return
   }
 
-  public isDiagramNode(): this is NodeModel<M, DiagramView<M>> {
+  public isDiagramNode(): this is NodeModel<A, DiagramView<A>> {
     return 'width' in this.$node && 'height' in this.$node
   }
 
@@ -202,31 +202,31 @@ export class NodeModel<M extends AnyAux, V extends ProcessedView<M> = ProcessedV
     return this.$node.children.length > 0
   }
 
-  public hasParent(): this is NodeModel.WithParent<M, V> {
+  public hasParent(): this is NodeModel.WithParent<A, V> {
     return this.$node.parent !== null
   }
 
   /**
    * Check if this node references to logical model element.
    */
-  public hasElement(): this is NodeModel.WithElement<M, V> {
+  public hasElement(): this is NodeModel.WithElement<A, V> {
     return ComputedNode.modelRef(this.$node) !== null
   }
   /**
    * Check if this node references to deployment element (Node or Instance).
    */
-  public hasDeployment(): this is NodeModel.WithDeploymentElement<M, V> {
+  public hasDeployment(): this is NodeModel.WithDeploymentElement<A, V> {
     return ComputedNode.deploymentRef(this.$node) !== null
   }
   /**
    * Check if this node references to deployed instance
    * Deployed instance always references to element and deployment element.
    */
-  public hasDeployedInstance(): this is NodeModel.WithDeployedInstance<M, V> {
+  public hasDeployedInstance(): this is NodeModel.WithDeployedInstance<A, V> {
     return this.hasElement() && this.hasDeployment()
   }
 
-  public isGroup(): this is NodeModel.IsGroup<M, V> {
+  public isGroup(): this is NodeModel.IsGroup<A, V> {
     return ComputedNode.isNodesGroup(this.$node)
   }
 }
