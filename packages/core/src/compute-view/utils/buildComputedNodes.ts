@@ -1,18 +1,18 @@
 import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
+  type AnyAux,
+  type Aux,
   type ComputedNode,
   type Element,
-  type Fqn,
-  type NodeId,
   DefaultElementShape,
   DefaultThemeColor,
-  ElementKind,
+  GroupElementKind,
 } from '../../types'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'
 
-function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
+function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, ComputedNode>) {
   let parentNd
   while (!!node.parent && (parentNd = nodes.get(node.parent))) {
     const depth = parentNd.depth ?? 1
@@ -25,7 +25,7 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, Comp
   }
 }
 
-const modelElementAsNodeSource = (element: Element): ComputedNodeSource => {
+const modelElementAsNodeSource = <A extends AnyAux>(element: Element<A>): ComputedNodeSource<A> => {
   return {
     ...element,
     modelRef: 1,
@@ -33,22 +33,25 @@ const modelElementAsNodeSource = (element: Element): ComputedNodeSource => {
 }
 
 // type ComputedNodeSource = Simplify<SetRequired<Partial<Omit<ComputedNode, 'parent' | 'children' | 'inEdges' | 'outEdges' | 'level' | 'depth'>>, 'id' | 'title' | 'kind'>>
-export type ComputedNodeSource = Simplify<
-  & Pick<ComputedNode, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
-  & Partial<Omit<Element, 'id' | 'title' | 'kind'>>
+export type ComputedNodeSource<A extends AnyAux = AnyAux> = Simplify<
+  & Pick<ComputedNode<A>, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
+  & Partial<Omit<Element<A>, 'id' | 'title' | 'kind'>>
 >
 
-export function buildComputedNodesFromElements(elements: ReadonlyArray<Element>, groups?: NodesGroup[]) {
+export function buildComputedNodesFromElements<A extends AnyAux>(
+  elements: ReadonlyArray<Element<A>>,
+  groups?: NodesGroup[],
+) {
   return buildComputedNodes(elements.map(modelElementAsNodeSource), groups)
 }
 
-export function buildComputedNodes(
-  elements: ReadonlyArray<ComputedNodeSource>,
+export function buildComputedNodes<A extends AnyAux>(
+  elements: ReadonlyArray<ComputedNodeSource<A>>,
   groups?: ReadonlyArray<NodesGroup>,
-): ReadonlyMap<Fqn, ComputedNode> {
-  const nodesMap = new Map<Fqn, ComputedNode>()
+): ReadonlyMap<Aux.Strict.NodeId<A>, ComputedNode<A>> {
+  const nodesMap = new Map<Aux.Strict.NodeId<A>, ComputedNode<A>>()
 
-  const elementToGroup = new Map<Fqn, NodeId>()
+  const elementToGroup = new Map<Aux.Strict.Fqn<A>, Aux.Strict.NodeId<A>>()
 
   groups?.forEach(({ id, parent, viewRule, elements }) => {
     if (parent) {
@@ -57,7 +60,7 @@ export function buildComputedNodes(
     nodesMap.set(id, {
       id,
       parent,
-      kind: ElementKind.Group,
+      kind: GroupElementKind,
       title: viewRule.title ?? '',
       color: viewRule.color ?? 'muted',
       shape: 'rectangle',
@@ -66,10 +69,7 @@ export function buildComputedNodes(
       outEdges: [],
       level: 0,
       depth: 0,
-      description: null,
-      technology: null,
-      tags: null,
-      links: null,
+      tags: [],
       style: {
         border: viewRule.border ?? 'dashed',
         opacity: viewRule.opacity ?? 0,
@@ -90,7 +90,7 @@ export function buildComputedNodes(
     .forEach(({ id, style, kind, title, color, shape, ...el }) => {
       let parent = parentFqn(id)
       let level = 0
-      let parentNd: ComputedNode | undefined
+      let parentNd: ComputedNode<A> | undefined
       // Find the first ancestor that is already in the map
       while (parent) {
         parentNd = nodesMap.get(parent)
@@ -115,7 +115,7 @@ export function buildComputedNodes(
         parentNd.children.push(id)
         level = parentNd.level + 1
       }
-      const node: ComputedNode = {
+      const node: ComputedNode<A> = {
         id,
         parent,
         kind,
@@ -123,10 +123,7 @@ export function buildComputedNodes(
         level,
         color: color ?? DefaultThemeColor,
         shape: shape ?? DefaultElementShape,
-        description: null,
-        technology: null,
-        tags: null,
-        links: null,
+        tags: [],
         children: [],
         inEdges: [],
         outEdges: [],
@@ -139,7 +136,7 @@ export function buildComputedNodes(
     })
 
   // Create new map and add elements in the same order as they were in the input
-  const orderedMap = new Map<Fqn, ComputedNode>()
+  const orderedMap = new Map<Aux.Strict.NodeId<A>, ComputedNode<A>>()
 
   groups?.forEach(({ id }) => {
     orderedMap.set(id, nonNullable(nodesMap.get(id)))

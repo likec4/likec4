@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   type ComputedNode,
   type IconUrl,
-  type ModelLayer,
+  type ModelExpression,
   type NonEmptyArray,
   type ViewRuleStyle,
-  ElementKind,
+  GroupElementKind,
 } from '../../types'
 import { $expr } from '../element-view/__test__/fixture'
 import { applyViewRuleStyles } from './applyViewRuleStyles'
@@ -15,11 +15,11 @@ function nd(id: string, props?: any): ComputedNode {
 }
 
 function g(id: string): ComputedNode {
-  return { id, kind: ElementKind.Group } as any
+  return { id, kind: GroupElementKind } as any
 }
 
 function r(
-  targets: NonEmptyArray<ModelLayer.Expression>,
+  targets: NonEmptyArray<ModelExpression>,
   props: Partial<Omit<ViewRuleStyle, 'targets'>>,
 ): ViewRuleStyle {
   return {

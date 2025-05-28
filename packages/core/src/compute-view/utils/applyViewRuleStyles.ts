@@ -1,5 +1,5 @@
 import { anyPass, filter, forEach, isDefined, isNot, pipe } from 'remeda'
-import { type ViewRule, type ViewRuleStyle, ComputedNode, isViewRuleStyle } from '../../types'
+import { type AnyAux, type ViewRule, type ViewRuleStyle, ComputedNode, isViewRuleStyle } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
@@ -8,8 +8,8 @@ type CommonViewRuleStyle = Pick<ViewRuleStyle, 'style' | 'notation'>
 
 export function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
   rule: Rule,
-  predicates: Predicate<ComputedNode>[],
-  nodes: ComputedNode[],
+  predicates: Predicate<ComputedNode<any>>[],
+  nodes: ComputedNode<any>[],
 ) {
   pipe(
     nodes,
@@ -53,7 +53,7 @@ export function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
   )
 }
 
-export function applyViewRuleStyles(rules: ViewRule[], nodes: ComputedNode[]) {
+export function applyViewRuleStyles<A extends AnyAux, N extends ComputedNode<A>[]>(rules: ViewRule<A>[], nodes: N): N {
   for (const rule of rules) {
     if (!isViewRuleStyle(rule) || rule.targets.length === 0) {
       continue

@@ -1,14 +1,14 @@
 import { isNullish, omitBy, pick } from 'remeda'
-import { type ComputedEdge, type ComputedNode, type ViewRule, ModelLayer } from '../../types'
+import { type AnyAux, type ComputedEdge, type ComputedNode, type ViewRule, ModelRelationExpr } from '../../types'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
 
-export function applyCustomRelationProperties(
-  _rules: ViewRule[],
-  nodes: ComputedNode[],
-  _edges: Iterable<ComputedEdge>,
-): ComputedEdge[] {
-  const rules = _rules.flatMap(flattenGroupRules(ModelLayer.RelationExpr.isCustom))
+export function applyCustomRelationProperties<A extends AnyAux>(
+  _rules: ViewRule<A>[],
+  nodes: ComputedNode<A>[],
+  _edges: Iterable<ComputedEdge<A>>,
+): ComputedEdge<A>[] {
+  const rules = _rules.flatMap(flattenGroupRules(ModelRelationExpr.isCustom))
   const edges = Array.from(_edges)
   if (rules.length === 0 || edges.length === 0) {
     return edges
