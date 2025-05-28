@@ -37,8 +37,12 @@ export { LikeC4ViewModel } from './view/LikeC4ViewModel'
 export { NodeModel } from './view/NodeModel'
 
 export type {
-  AnyAux,
-  Aux,
+  DeploymentOrFqn,
+  EdgeOrId,
+  ElementOrFqn,
+  IncomingFilter,
+  NodeOrId,
+  OutgoingFilter,
 } from './types'
 
 export {

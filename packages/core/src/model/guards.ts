@@ -4,13 +4,18 @@ import type {
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import { DeployedInstanceModel, DeploymentNodeModel } from './DeploymentElementModel'
+import { ElementModel } from './ElementModel'
 import type { AnyAux } from './types'
 
-export function isDeploymentNode(model: DeploymentElementModel): model is DeploymentNodeModel {
+export function isDeploymentNode<M extends AnyAux = AnyAux>(
+  model: DeploymentElementModel<M>,
+): model is DeploymentNodeModel<M> {
   return model.isDeploymentNode()
 }
 
-export function isDeployedInstance(model: DeploymentElementModel): model is DeployedInstanceModel {
+export function isDeployedInstance<M extends AnyAux = AnyAux>(
+  model: DeploymentElementModel<M>,
+): model is DeployedInstanceModel<M> {
   return model.isInstance()
 }
 
@@ -20,6 +25,10 @@ export function isNestedElementOfDeployedInstanceModel<M extends AnyAux = AnyAux
   return !model.isInstance() && !model.isDeploymentNode()
 }
 
-export function isDeploymentElementModel(x: any): x is DeploymentElementModel {
+export function isDeploymentElementModel<M extends AnyAux = AnyAux>(x: any): x is DeploymentElementModel<M> {
   return x instanceof DeploymentNodeModel || x instanceof DeployedInstanceModel
+}
+
+export function isElementModel<M extends AnyAux = AnyAux>(element: any): element is ElementModel<M> {
+  return element instanceof ElementModel
 }

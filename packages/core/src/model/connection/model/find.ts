@@ -1,7 +1,7 @@
+import type { AnyAux } from '../../../types'
 import { isSameHierarchy } from '../../../utils/fqn'
 import { intersection } from '../../../utils/set'
 import type { ElementModel } from '../../ElementModel'
-import type { AnyAux } from '../../types'
 import { ConnectionModel } from './ConnectionModel'
 
 /**
@@ -10,13 +10,13 @@ import { ConnectionModel } from './ConnectionModel'
  * @param direction - if 'both', also returns connection from target to source
  * @default `directed`
  */
-export function findConnection<M extends AnyAux>(
-  source: ElementModel<M>,
-  target: ElementModel<M>,
+export function findConnection<A extends AnyAux>(
+  source: ElementModel<A>,
+  target: ElementModel<A>,
   direction: 'directed' | 'both' = 'directed',
 ):
-  | [ConnectionModel<M>, ConnectionModel<M>]
-  | [ConnectionModel<M>]
+  | [ConnectionModel<A>, ConnectionModel<A>]
+  | [ConnectionModel<A>]
   | []
 {
   if (source === target) {

@@ -89,11 +89,11 @@ export type AnySpecTypes = SpecTypes<string, string, string, string, string>
 /**
  * Auxilary interface to keep inferred types
  *
- * @param Project - Project identifier type
- * @param Element - Literal union of FQNs of model elements
- * @param Deployment - Literal union of FQNs of deployment elements
- * @param View - Literal union of view identifiers
- * @param Spec - Specification types (kinds, tags, metadata keys)
+ * @typeParam Project - Project identifier type
+ * @typeParam Element - Literal union of FQNs of model elements
+ * @typeParam Deployment - Literal union of FQNs of deployment elements
+ * @typeParam View - Literal union of view identifiers
+ * @typeParam Spec - Specification types (kinds, tags, metadata keys)
  */
 export interface Aux<
   Project,

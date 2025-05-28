@@ -85,12 +85,12 @@ export interface ParsedLikeC4ModelData<A extends AnyAux = UnknownAux> {
 export interface LikeC4ModelData<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>>
   extends Omit<ParsedLikeC4ModelData<A>, 'views' | '__'>
 {
-  __?: 'computed' | 'layouted'
+  __: 'computed' | 'layouted'
   views: StrictRecord<Aux.ViewId<A>, V>
 }
 
 export interface ComputedLikeC4ModelData<A extends AnyAux> extends LikeC4ModelData<A, ComputedView<A>> {
-  __?: 'computed'
+  __: 'computed'
 }
 
 export interface LayoutedLikeC4ModelData<A extends AnyAux> extends LikeC4ModelData<A, DiagramView<A>> {

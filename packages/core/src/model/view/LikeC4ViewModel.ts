@@ -1,41 +1,33 @@
 import { nonNullable } from '../../errors'
-import type { IteratorLike } from '../../types/_common'
-import type { Link } from '../../types/element'
-import type { Tag } from '../../types/scalars'
+import type { AnyAux, Aux, IteratorLike, Link, ProcessedView } from '../../types'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
   type ComputedView,
   type DiagramView,
-  type EdgeId as C4EdgeId,
-  type LikeC4View,
   type NodeId as C4NodeId,
-  isDeploymentView,
-  isDynamicView,
-  isElementView,
-  isScopedElementView,
-} from '../../types/view'
+} from '../../types'
 import { DefaultMap, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
-import { type AnyAux, getId } from '../types'
+import { type EdgeOrId, type ElementOrFqn, type NodeOrId, getId } from '../types'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
-export type ViewsIterator<M extends AnyAux> = IteratorLike<LikeC4ViewModel<M>>
+export type ViewsIterator<A extends AnyAux> = IteratorLike<LikeC4ViewModel<A>>
 
-export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
-  readonly #rootnodes = new Set<NodeModel<M, V>>()
-  readonly #nodes = new Map<C4NodeId, NodeModel<M, V>>()
-  readonly #edges = new Map<C4EdgeId, EdgeModel<M, V>>()
-  readonly #includeElements = new Set<M['Element']>()
-  readonly #includeDeployments = new Set<M['Deployment']>()
-  readonly #includeRelations = new Set<M['RelationId']>()
-  readonly #allTags = new DefaultMap((_key: Tag) => new Set<NodeModel<M, V> | EdgeModel<M, V>>())
+export class LikeC4ViewModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> {
+  readonly #rootnodes = new Set<NodeModel<A, V>>()
+  readonly #nodes = new Map<Aux.Strict.NodeId<A>, NodeModel<A, V>>()
+  readonly #edges = new Map<Aux.Strict.EdgeId<A>, EdgeModel<A, V>>()
+  readonly #includeElements = new Set<Aux.Fqn<A>>()
+  readonly #includeDeployments = new Set<Aux.DeploymentFqn<A>>()
+  readonly #includeRelations = new Set<Aux.RelationId<A>>()
+  readonly #allTags = new DefaultMap((_key: Aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
 
   constructor(
-    public readonly $model: LikeC4Model<M>,
+    public readonly $model: LikeC4Model<A>,
     public readonly $view: V,
   ) {
     for (const node of $view.nodes) {
@@ -72,11 +64,11 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     }
   }
 
-  get __(): NonNullable<M['ViewType']['__']> {
+  get __(): NonNullable<V['__']> {
     return this.$view.__ ?? 'element'
   }
 
-  get id(): M['ViewId'] {
+  get id(): Aux.Strict.ViewId<A> {
     return this.$view.id
   }
 
@@ -84,7 +76,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     return this.$view.title
   }
 
-  get tags(): ReadonlyArray<Tag> {
+  get tags(): Aux.Tags<A> {
     return this.$view.tags ?? []
   }
 
@@ -92,29 +84,29 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     return this.$view.links ?? []
   }
 
-  get viewOf(): ElementModel<M> | null {
-    const v = this.$view as LikeC4View
-    if (isScopedElementView(v)) {
-      return this.$model.element(v.viewOf)
+  get viewOf(): ElementModel<A> | null {
+    if (!this.isElementView()) {
+      return null
     }
-    return null
+    const viewOf = this.$view.viewOf
+    return viewOf ? this.$model.element(viewOf) : null
   }
 
   /**
    * All tags from nodes and edges.
    */
-  get includedTags(): ReadonlyArray<Tag> {
-    return [...this.#allTags.keys()]
+  get includedTags(): Aux.Tags<A> {
+    return [...this.#allTags.keys()] as unknown as Aux.Tags<A>
   }
 
-  public roots(): NodesIterator<M, V> {
+  public roots(): NodesIterator<A, V> {
     return this.#rootnodes.values()
   }
 
   /**
    * Iterate over all nodes that have children.
    */
-  public *compounds(): NodesIterator<M, V> {
+  public *compounds(): NodesIterator<A, V> {
     for (const node of this.#nodes.values()) {
       if (node.hasChildren()) {
         yield node
@@ -127,7 +119,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
    * Get node by id.
    * @throws Error if node is not found.
    */
-  public node(node: M['NodeOrId']): NodeModel<M, V> {
+  public node(node: NodeOrId<A>): NodeModel<A, V> {
     const nodeId = getId(node)
     return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.$view.id}`)
   }
@@ -135,11 +127,11 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   /**
    * Find node by id.
    */
-  public findNode(node: M['NodeOrId']): NodeModel<M, V> | null {
+  public findNode(node: NodeOrId<A>): NodeModel<A, V> | null {
     return this.#nodes.get(getId(node) as C4NodeId) ?? null
   }
 
-  public findNodeWithElement(fqn: M['Element']): NodeModel.WithElement<M, V> | null {
+  public findNodeWithElement(fqn: ElementOrFqn<A>): NodeModel.WithElement<A, V> | null {
     const nd = ifind(this.#nodes.values(), node => node.element?.id === fqn) ?? null
     return nd && nd.hasElement() ? nd : null
   }
@@ -147,7 +139,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   /**
    * Iterate over all nodes.
    */
-  public nodes(): NodesIterator<M, V> {
+  public nodes(): NodesIterator<A, V> {
     return this.#nodes.values()
   }
 
@@ -156,24 +148,24 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
    * @param edge Edge or id
    * @returns EdgeModel
    */
-  public edge(edge: M['EdgeOrId']): EdgeModel<M, V> {
-    const edgeId = getId(edge) as C4EdgeId
+  public edge(edge: EdgeOrId<A>): EdgeModel<A, V> {
+    const edgeId = getId(edge)
     return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.$view.id}`)
   }
-  public findEdge(edge: M['EdgeOrId']): EdgeModel<M, V> | null {
-    return this.#edges.get(getId(edge) as C4EdgeId) ?? null
+  public findEdge(edge: EdgeOrId<A>): EdgeModel<A, V> | null {
+    return this.#edges.get(getId(edge)) ?? null
   }
   /**
    * Iterate over all edges.
    */
-  public edges(): EdgesIterator<M, V> {
+  public edges(): EdgesIterator<A, V> {
     return this.#edges.values()
   }
 
   /**
    * Iterate over all edges.
    */
-  public *edgesWithRelation(relation: M['RelationId']): EdgesIterator<M, V> {
+  public *edgesWithRelation(relation: Aux.RelationId<A>): EdgesIterator<A, V> {
     for (const edge of this.#edges.values()) {
       if (edge.includesRelation(relation)) {
         yield edge
@@ -185,7 +177,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   /**
    * Nodes that have references to elements from logical model.
    */
-  public *elements(): IteratorLike<NodeModel.WithElement<M, V>> {
+  public *elements(): IteratorLike<NodeModel.WithElement<A, V>> {
     // return this.#nodes.values().filter(node => node.hasElement())
     for (const node of this.#nodes.values()) {
       if (node.hasElement()) {
@@ -195,38 +187,38 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     return
   }
 
-  public includesElement(elementId: M['Element']): boolean {
+  public includesElement(elementId: Aux.Fqn<A>): boolean {
     return this.#includeElements.has(elementId)
   }
 
-  public includesDeployment(deploymentId: M['Deployment']): boolean {
+  public includesDeployment(deploymentId: Aux.DeploymentFqn<A>): boolean {
     return this.#includeDeployments.has(deploymentId)
   }
 
-  public includesRelation(relationId: M['RelationId']): boolean {
+  public includesRelation(relationId: Aux.RelationId<A>): boolean {
     return this.#includeRelations.has(relationId)
   }
 
   /**
    * Below are type guards.
    */
-  public isComputed(): this is LikeC4ViewModel<M, ComputedView> {
-    return true // Diagram view is a computed view
+  public isComputed(): this is LikeC4ViewModel<A, ComputedView<A>> {
+    return !('bounds' in this.$view)
   }
 
-  public isDiagram(): this is LikeC4ViewModel<M, DiagramView> {
+  public isDiagram(): this is LikeC4ViewModel<A, DiagramView<A>> {
     return 'bounds' in this.$view
   }
 
-  public isElementView(): this is LikeC4ViewModel<M, ComputedElementView> {
-    return isElementView(this.$view as LikeC4View)
+  public isElementView(): this is LikeC4ViewModel<A, ComputedElementView<A>> {
+    return this.__ === 'element'
   }
 
-  public isDeploymentView(): this is LikeC4ViewModel<M, ComputedDeploymentView> {
-    return isDeploymentView(this.$view as LikeC4View)
+  public isDeploymentView(): this is LikeC4ViewModel<A, ComputedDeploymentView<A>> {
+    return this.__ === 'deployment'
   }
 
-  public isDynamicView(): this is LikeC4ViewModel<M, ComputedDynamicView> {
-    return isDynamicView(this.$view as LikeC4View)
+  public isDynamicView(): this is LikeC4ViewModel<A, ComputedDynamicView<A>> {
+    return this.__ === 'dynamic'
   }
 }

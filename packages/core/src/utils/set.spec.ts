@@ -1,5 +1,6 @@
-import { map } from 'remeda'
+import { map, range } from 'remeda'
 import { describe, expect, it } from 'vitest'
+import type { NTuple } from '../types'
 import { difference, equals, intersection, symmetricDifference, union } from './set'
 
 const [
@@ -10,8 +11,7 @@ const [
   a5,
   a6,
   a7,
-  a8
-] = map([1, 2, 3, 4, 5, 6, 7, 8], (value) => ({ value }))
+] = map(range(1, 8) as NTuple<number, 7>, (value) => ({ value }))
 
 describe('Set Utility Functions', () => {
   describe('union', () => {
@@ -32,7 +32,7 @@ describe('Set Utility Functions', () => {
       const result = [...intersection(setA, setB, setC)]
       expect(result).toEqual([
         a3,
-        a5
+        a5,
       ])
     })
   })
@@ -44,7 +44,7 @@ describe('Set Utility Functions', () => {
       const result = [...difference(setA, setB)]
       expect(result).toEqual([
         a2,
-        a4
+        a4,
       ])
     })
   })

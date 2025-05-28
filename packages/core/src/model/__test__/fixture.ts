@@ -26,33 +26,33 @@ const {
     viewOf,
     deploymentView,
     $rules,
-    $include
-  }
+    $include,
+  },
 } = Builder.forSpecification({
   elements: {
     person: {
       style: {
-        shape: 'person'
-      }
+        shape: 'person',
+      },
     },
     system: {},
     component: {},
     webapp: {
       style: {
-        shape: 'browser'
-      }
+        shape: 'browser',
+      },
     },
     mobile: {
       style: {
-        shape: 'mobile'
-      }
-    }
+        shape: 'mobile',
+      },
+    },
   },
   deployments: {
     env: {},
     zone: {},
-    node: {}
-  }
+    node: {},
+  },
 })
 
 const local = b
@@ -62,26 +62,26 @@ const local = b
       system('cloud').with(
         component('frontend').with(
           webapp('dashboard'),
-          mobile('mobile')
+          mobile('mobile'),
         ),
         component('auth'),
         component('backend').with(
           component('api'),
-          component('graphql')
+          component('graphql'),
         ),
         component('media', {
-          shape: 'storage'
-        })
+          shape: 'storage',
+        }),
       ),
       system('aws').with(
         component('rds', {
-          shape: 'storage'
+          shape: 'storage',
         }),
         component('s3', {
-          shape: 'storage'
-        })
+          shape: 'storage',
+        }),
       ),
-      system('email')
+      system('email'),
     ),
     $m.model(
       $m.rel('customer', 'cloud', 'uses services'),
@@ -93,7 +93,7 @@ const local = b
       $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
       $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
-      $m.rel('cloud.frontend', 'cloud.backend')
+      $m.rel('cloud.frontend', 'cloud.backend'),
     ),
     $m.model(
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
@@ -102,30 +102,30 @@ const local = b
       $m.rel('cloud.backend.api', 'email', 'sends emails'),
       $m.rel('cloud', 'email', 'uses'),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
-      $m.rel('email', 'customer', 'sends emails')
+      $m.rel('email', 'customer', 'sends emails'),
     ),
     deployment(
       node('customer').with(
-        instanceOf('instance', 'customer')
+        instanceOf('instance', 'customer'),
       ),
       env('prod').with(
         zone('eu').with(
           zone('zone1').with(
             instanceOf('ui', 'cloud.frontend.dashboard'),
-            instanceOf('api', 'cloud.backend.api')
+            instanceOf('api', 'cloud.backend.api'),
           ),
           zone('zone2').with(
             instanceOf('ui', 'cloud.frontend.dashboard'),
-            instanceOf('api', 'cloud.backend.api')
+            instanceOf('api', 'cloud.backend.api'),
           ),
           instanceOf('media', 'cloud.media'),
-          instanceOf('db', 'aws.rds')
+          instanceOf('db', 'aws.rds'),
         ),
         zone('us').with(
-          instanceOf('db', 'aws.rds')
-        )
+          instanceOf('db', 'aws.rds'),
+        ),
       ),
-      $d.rel('prod.eu.db', 'prod.us.db', 'replicates')
+      $d.rel('prod.eu.db', 'prod.us.db', 'replicates'),
     ),
     views(
       view('index', $include('*')),
@@ -134,14 +134,14 @@ const local = b
         'cloud',
         $rules(
           $include('*'),
-          $include('cloud.frontend.dashboard')
-        )
+          $include('cloud.frontend.dashboard'),
+        ),
       ),
       deploymentView('prod').with(
         $include('customer.instance'),
-        $include('prod.eu.zone1.ui')
-      )
-    )
+        $include('prod.eu.zone1.ui'),
+      ),
+    ),
   )
 
 export const builder = local.clone()

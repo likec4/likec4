@@ -1,6 +1,6 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { computed, model, type TestFqn } from './__test__/fixture'
+import { type TestFqn, computed, model } from './__test__/fixture'
 
 describe('LikeC4Model', () => {
   const els = computed.elements

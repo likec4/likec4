@@ -2,7 +2,7 @@ import defu from 'defu'
 import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
 import type { Writable } from 'type-fest'
 import { invariant } from '../errors'
-import { LikeC4Model } from '../model2/LikeC4Model'
+import { LikeC4Model } from '../model/LikeC4Model'
 import type { DeployedInstance, DeploymentFqn, ParsedLikeC4ModelData, Specification } from '../types'
 import {
   type Color,

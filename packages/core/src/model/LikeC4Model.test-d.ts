@@ -10,40 +10,40 @@ test('LikeC4Model.create: should have types', () => {
       actor,
       system,
       component,
-      relTo
+      relTo,
     },
     deployment: {
       deployment,
       instanceOf,
       env,
-      vm
+      vm,
     },
     views: {
       deploymentView,
       views,
       view,
-      $include
+      $include,
     },
-    builder
+    builder,
   } = Builder.forSpecification({
     elements: {
       actor: {
         style: {
-          shape: 'person'
-        }
+          shape: 'person',
+        },
       },
       system: {},
-      component: {}
+      component: {},
     },
     deployments: {
       env: {},
-      vm: {}
+      vm: {},
     },
     relationships: {
       like: {},
-      dislike: {}
+      dislike: {},
     },
-    tags: ['tag1', 'tag2', 'tag1']
+    tags: ['tag1', 'tag2', 'tag1'],
   })
 
   const source = builder
@@ -54,28 +54,28 @@ test('LikeC4Model.create: should have types', () => {
         system('cloud').with(
           component('backend').with(
             component('api'),
-            component('db')
+            component('db'),
           ),
           component('frontend').with(
-            relTo('cloud.backend.api')
-          )
-        )
+            relTo('cloud.backend.api'),
+          ),
+        ),
       ),
       deployment(
         env('prod').with(
           vm('vm1'),
-          vm('vm2')
+          vm('vm2'),
         ),
         env('dev').with(
           vm('vm1'),
           instanceOf('api', 'cloud.backend.api'),
-          vm('vm2')
-        )
+          vm('vm2'),
+        ),
       ),
       views(
         view('index', $include('*')),
-        deploymentView('prodview', $include('*'))
-      )
+        deploymentView('prodview', $include('*')),
+      ),
     )
     .build()
 
@@ -85,22 +85,24 @@ test('LikeC4Model.create: should have types', () => {
   m.element('wrong')
 
   expectTypeOf(m.Aux.Element).toEqualTypeOf(
-    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
+    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
   )
   expectTypeOf(m.Aux.Fqn).toEqualTypeOf(
-    '' as Fqn<'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'>
+    '' as Fqn<
+      'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
+    >,
   )
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
-    '' as ViewId<'index' | 'prodview'>
+    '' as ViewId<'index' | 'prodview'>,
   )
   expectTypeOf(m.Aux.ViewType).toEqualTypeOf(
-    {} as ComputedView<ViewId<'index' | 'prodview'>>
+    {} as ComputedView<ViewId<'index' | 'prodview'>>,
   )
   expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
-    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
+    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api',
   )
   expectTypeOf(m.Aux.DeploymentFqn).toEqualTypeOf(
-    '' as Fqn<'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'>
+    '' as Fqn<'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'>,
   )
 })
 
@@ -110,43 +112,43 @@ test('LikeC4Model.fromDump: should have types', () => {
       tags: [],
       elements: {},
       relationships: {},
-      deployments: {}
+      deployments: {},
     },
     elements: {
       el1: {},
-      el2: {}
+      el2: {},
     },
     relations: {},
     globals: {
       predicates: {},
       dynamicPredicates: {},
-      styles: {}
+      styles: {},
     },
     views: {
       v1: {},
-      v2: {}
+      v2: {},
     },
     deployments: {
       elements: {
         d1: {},
-        d2: {}
+        d2: {},
       },
-      relations: {}
-    }
+      relations: {},
+    },
   })
   expectTypeOf(m.Aux.Element).toEqualTypeOf(
-    '' as 'el1' | 'el2'
+    '' as 'el1' | 'el2',
   )
   expectTypeOf(m.Aux.Fqn).toEqualTypeOf(
-    '' as Fqn<'el1' | 'el2'>
+    '' as Fqn<'el1' | 'el2'>,
   )
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
-    '' as ViewId<'v1' | 'v2'>
+    '' as ViewId<'v1' | 'v2'>,
   )
   expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
-    '' as 'd1' | 'd2'
+    '' as 'd1' | 'd2',
   )
   expectTypeOf(m.Aux.DeploymentFqn).toEqualTypeOf(
-    '' as Fqn<'d1' | 'd2'>
+    '' as Fqn<'d1' | 'd2'>,
   )
 })

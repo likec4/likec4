@@ -10,12 +10,12 @@ describe('Find deployment connections', () => {
   it('findConnection', () => {
     const [connection] = findConnection(
       deployment.element('customer'),
-      deployment.element('prod.eu')
+      deployment.element('prod.eu'),
     )
     expect(connection).toBeDefined()
     expect(connection!.expression).toBe('customer -> prod.eu')
     expect(map([...connection!.values()], prop('expression'))).toEqual([
-      'customer -> cloud.frontend.dashboard'
+      'customer -> cloud.frontend.dashboard',
     ])
   })
 
@@ -24,13 +24,13 @@ describe('Find deployment connections', () => {
       deployment.element('customer'),
       deployment.element('prod.eu.zone1.ui'),
       deployment.element('prod.eu.zone2.api'),
-      deployment.element('prod.eu.media')
+      deployment.element('prod.eu.media'),
     ])
     expect(conns.map(prop('expression'))).toEqual([
       'customer -> prod.eu.zone1.ui',
       'prod.eu.zone1.ui -> prod.eu.zone2.api',
       'prod.eu.zone1.ui -> prod.eu.media',
-      'prod.eu.zone2.api -> prod.eu.media'
+      'prod.eu.zone2.api -> prod.eu.media',
     ])
   })
 })

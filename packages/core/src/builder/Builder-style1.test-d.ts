@@ -1,5 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
-import type { LikeC4Model } from '../model2/LikeC4Model'
+import type { LikeC4Model } from '../model/LikeC4Model'
 import type { Aux, ParsedLikeC4ModelData, SpecTypes } from '../types'
 import { Builder } from './Builder'
 
