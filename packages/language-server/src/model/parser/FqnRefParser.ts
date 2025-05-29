@@ -59,7 +59,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       nonexhaustive(refValue)
     }
 
-    parseExpressionV2(astNode: ast.ExpressionV2): c4.ExpressionV2 {
+    parseExpressionV2(astNode: ast.ExpressionV2): c4.Expression {
       if (ast.isFqnExprOrWith(astNode)) {
         return this.parseFqnExprOrWith(astNode)
       }

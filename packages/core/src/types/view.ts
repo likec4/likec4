@@ -1,5 +1,5 @@
 import { isArray } from 'remeda'
-import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
+import type { MergeExclusive, Simplify } from 'type-fest'
 import type { Link, NonEmptyArray, Point, XYPoint } from './_common'
 import type { AnyAux, Aux, UnknownAux } from './aux'
 import type { Expression, FqnExpr } from './expression'
@@ -13,13 +13,13 @@ import {
 } from './scalars'
 import type {
   BorderStyle,
+  Color,
   ElementShape,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
   SpacingSize,
   TextSize,
-  ThemeColor,
   ThemeColorValues,
 } from './styles'
 import type { ElementNotation } from './view-notation'
@@ -57,7 +57,7 @@ export interface ViewRuleStyle<A extends AnyAux = UnknownAux> {
   targets: ModelFqnExpr<A>[]
   notation?: string
   style: ElementStyle & {
-    color?: ThemeColor
+    color?: Color
     shape?: ElementShape
     icon?: Icon
   }
@@ -75,7 +75,7 @@ export function isViewRuleGlobalStyle(rule: ViewRule<any>): rule is ViewRuleGlob
   return 'styleId' in rule
 }
 
-export type ViewRuleStyleOrGlobalRef<A extends AnyAux> = ViewRuleStyle<A> | ViewRuleGlobalStyle
+export type ViewRuleStyleOrGlobalRef<A extends AnyAux = UnknownAux> = ViewRuleStyle<A> | ViewRuleGlobalStyle
 
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
@@ -95,7 +95,7 @@ export function isViewRuleAutoLayout(rule: object): rule is ViewRuleAutoLayout {
 export interface ViewRuleGroup<A extends AnyAux = UnknownAux> {
   groupRules: Array<ViewRulePredicate<A> | ViewRuleGroup<A>>
   title: string | null
-  color?: ThemeColor
+  color?: Color
   border?: BorderStyle
   // 0-100
   opacity?: number
@@ -180,7 +180,7 @@ export interface DynamicViewStep<A extends AnyAux = UnknownAux> {
   readonly notation?: string
   // Notes for walkthrough
   readonly notes?: string
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
@@ -224,7 +224,7 @@ export function isDynamicViewParallelSteps<A extends AnyAux>(
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
-export type DeploymentViewRulePredicate<A extends AnyAux> =
+export type DeploymentViewRulePredicate<A extends AnyAux = UnknownAux> =
   | {
     include: Expression<A>[]
     exclude?: never
@@ -233,16 +233,16 @@ export type DeploymentViewRulePredicate<A extends AnyAux> =
     include?: never
     exclude: Expression<A>[]
   }
-export type DeploymentViewRuleStyle<A extends AnyAux> = {
+export type DeploymentViewRuleStyle<A extends AnyAux = UnknownAux> = {
   targets: FqnExpr<A>[]
   notation?: string
   style: ElementStyle & {
-    color?: ThemeColor
+    color?: Color
     shape?: ElementShape
     icon?: Icon
   }
 }
-export type DeploymentViewRule<A extends AnyAux> =
+export type DeploymentViewRule<A extends AnyAux = UnknownAux> =
   | DeploymentViewRulePredicate<A>
   | ViewRuleAutoLayout
   | DeploymentViewRuleStyle<A>
@@ -312,7 +312,7 @@ export interface ComputedNode<A extends AnyAux = UnknownAux> {
   inEdges: Aux.Strict.EdgeId<A>[]
   outEdges: Aux.Strict.EdgeId<A>[]
   shape: ElementShape
-  color: ThemeColor
+  color: Color
   icon?: Icon
   style: ElementStyle
   navigateTo?: Aux.Strict.ViewId<A> | null
@@ -352,7 +352,7 @@ export interface ComputedEdge<A extends AnyAux = UnknownAux> {
   notation?: string
   // Notes for walkthrough
   notes?: string
-  color?: ThemeColor
+  color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType

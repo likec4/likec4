@@ -5,11 +5,11 @@ import type { WhereOperator } from './operators'
 import { type Icon } from './scalars'
 import type {
   BorderStyle,
+  Color,
   ElementShape,
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
-  ThemeColor,
 } from './styles'
 
 export type PredicateSelector =
@@ -89,7 +89,7 @@ export namespace FqnExpr {
       technology?: string
       notation?: string
       shape?: ElementShape
-      color?: ThemeColor
+      color?: Color
       icon?: Icon
       border?: BorderStyle
       opacity?: number
@@ -210,7 +210,7 @@ export namespace RelationExpr {
       navigateTo?: Aux.Strict.ViewId<A>
       // Notes for walkthrough
       notes?: string
-      color?: ThemeColor
+      color?: Color
       line?: RelationshipLineType
       head?: RelationshipArrowType
       tail?: RelationshipArrowType
@@ -228,7 +228,7 @@ export namespace RelationExpr {
       || isInOut(expr)
   }
 
-  export type OrWhere<A extends AnyAux> = ExclusiveUnion<{
+  export type OrWhere<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
     Direct: Direct<A>
     Incoming: Incoming<A>
     Outgoing: Outgoing<A>
@@ -236,7 +236,7 @@ export namespace RelationExpr {
     Where: Where<A>
   }>
 
-  export type Any<A extends AnyAux> = ExclusiveUnion<{
+  export type Any<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
     Direct: Direct<A>
     Incoming: Incoming<A>
     Outgoing: Outgoing<A>

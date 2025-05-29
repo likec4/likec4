@@ -634,8 +634,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(values(model.relations)[0]).toMatchObject({
-      source: 'user1',
-      target: 'user2',
+      source: {
+        model: 'user1',
+      },
+      target: {
+        model: 'user2',
+      },
       kind: 'async',
       tags: ['next'],
     })
@@ -662,8 +666,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(values(model.relations)[0]).toMatchObject({
-      source: 'user1',
-      target: 'user2',
+      source: {
+        model: 'user1',
+      },
+      target: {
+        model: 'user2',
+      },
       kind: 'async',
       technology: 'Async',
     })
@@ -695,8 +703,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const edge = values(model.relations)[0]
     expect(edge).toMatchObject({
       title: '',
-      source: 'user1',
-      target: 'user2',
+      source: {
+        model: 'user1',
+      },
+      target: {
+        model: 'user2',
+      },
       color: 'red',
       line: 'dotted',
       head: 'diamond',
@@ -733,8 +745,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(values(model.relations)[0]).toMatchObject({
-      source: 'user1',
-      target: 'user2',
+      source: {
+        model: 'user1',
+      },
+      target: {
+        model: 'user2',
+      },
       title: 'calls',
       technology: 'NodeJS',
       description: 'description',
@@ -867,8 +883,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const relations = values(model.relations)
     expect(relations).toHaveLength(1)
     expect(relations[0]).toMatchObject({
-      source: 'system2',
-      target: 'system1',
+      source: {
+        model: 'system2',
+      },
+      target: {
+        model: 'system1',
+      },
       links: [
         { url: './samefolder.html', relative: 'src/samefolder.html' },
         { url: 'https://example1.com', title: 'example 1' },
@@ -900,8 +920,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const relations = values(model.relations)
     expect(relations).toHaveLength(1)
     expect(relations[0]).toMatchObject({
-      source: 'system2',
-      target: 'system1',
+      source: {
+        model: 'system2',
+      },
+      target: {
+        model: 'system1',
+      },
       metadata: {
         rps: '100',
         messageSize: '10',
@@ -928,8 +952,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const relations = values(model.relations)
     expect(relations).toHaveLength(1)
     expect(relations[0]).toMatchObject({
-      source: 'system2',
-      target: 'system1',
+      source: {
+        model: 'system2',
+      },
+      target: {
+        model: 'system1',
+      },
       title: 'uses',
       technology: 'http',
     })

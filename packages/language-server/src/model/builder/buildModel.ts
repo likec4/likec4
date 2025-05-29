@@ -1,9 +1,9 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import {
   type MultiMap,
   type ViewId,
   computeColorValues,
-  DeploymentElement,
+  isDeploymentNode,
   isGlobalFqn,
   parentFqn,
   sortByFqnHierarchically,
@@ -45,7 +45,7 @@ export type BuildModelData = {
  * This function builds a model from all documents, merging the specifications
  * and globals, and applying the extends to the elements.
  */
-export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
+export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
   const customColorDefinitions: c4.CustomColorDefinitions = mapValues(
@@ -73,7 +73,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
           logger.debug`No parent found for ${el.id}`
           return acc
         }
-        acc[el.id] = elementExtends.apply(el)
+        acc[el.id] = elementExtends.applyExtended<c4.Element>(el)
         return acc
       },
       {} as c4.ParsedLikeC4ModelData['elements'],
@@ -85,13 +85,16 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
     flatMap(d => map(d.c4Relations, c4Specification.toModelRelation)),
     filter((rel): rel is c4.ModelRelation => {
       if (!rel) return false
+      const source = c4.FqnRef.flatten(rel.source),
+        target = c4.FqnRef.flatten(rel.target)
+
       if (
-        (isNullish(elements[rel.source]) && !isGlobalFqn(rel.source)) ||
-        (isNullish(elements[rel.target]) && !isGlobalFqn(rel.target))
+        (isNullish(elements[source]) && !isGlobalFqn(source)) ||
+        (isNullish(elements[target]) && !isGlobalFqn(target))
       ) {
         logger.debug`Invalid relation ${rel.id}
-  source: ${rel.source} resolved: ${!!elements[rel.source]}
-  target: ${rel.target} resolved: ${!!elements[rel.target]}\n`
+  source: ${source} resolved: ${!!elements[source]}
+  target: ${target} resolved: ${!!elements[target]}\n`
         return false
       }
       return true
@@ -116,7 +119,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
           logger.debug`No parent found for deployment element ${el.id}`
           return acc
         }
-        acc[el.id] = DeploymentElement.isDeploymentNode(el) ? deploymentExtends.apply(el) : el
+        acc[el.id] = isDeploymentNode(el) ? deploymentExtends.applyExtended<c4.DeploymentNode>(el) : el
         return acc
       },
       {} as Record<string, c4.DeploymentElement>,
@@ -126,12 +129,14 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
   const deploymentRelations = pipe(
     docs,
     flatMap(d => map(d.c4DeploymentRelations, c4Specification.toDeploymentRelation)),
-    filter((rel): rel is c4.DeploymentRelation => {
+    filter((rel): rel is c4.DeploymentRelationship => {
       if (!rel) return false
-      if (isNullish(deploymentElements[rel.source.id]) || isNullish(deploymentElements[rel.target.id])) {
+      if (
+        isNullish(deploymentElements[rel.source.deployment]) || isNullish(deploymentElements[rel.target.deployment])
+      ) {
         logger.debug`Invalid deployment relation ${rel.id}
-  source: ${rel.source.id} resolved: ${!!deploymentElements[rel.source.id]}
-  target: ${rel.target.id} resolved: ${!!deploymentElements[rel.target.id]}\n`
+  source: ${rel.source.deployment} resolved: ${!!deploymentElements[rel.source.deployment]}
+  target: ${rel.target.deployment} resolved: ${!!deploymentElements[rel.target.deployment]}\n`
         return false
       }
       return true
@@ -217,10 +222,15 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
 
   return {
     data: {
+      projectId,
       specification: {
         tags: assignTagColors(c4Specification),
         elements: c4Specification.specs.elements,
-        relationships: c4Specification.specs.relationships,
+        relationships: mapValues(c4Specification.specs.relationships, ({ notation, technology, ...style }) => ({
+          ...(notation && { notation }),
+          ...(technology && { technology }),
+          style,
+        })),
         deployments: c4Specification.specs.deployments,
       },
       elements,

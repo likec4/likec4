@@ -101,10 +101,10 @@ export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
   }
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux> extends LikeC4ModelData<A, ComputedView<A>> {
+export interface ComputedLikeC4ModelData<A extends AnyAux = UnknownAux> extends LikeC4ModelData<A, ComputedView<A>> {
   __: 'computed'
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux> extends LikeC4ModelData<A, DiagramView<A>> {
+export interface LayoutedLikeC4ModelData<A extends AnyAux = UnknownAux> extends LikeC4ModelData<A, DiagramView<A>> {
   __: 'layouted'
 }

@@ -74,7 +74,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
     }
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
-      const exprs = [] as c4.ExpressionV2[]
+      const exprs = [] as c4.Expression[]
       let iterator: ast.Expressions | undefined = astRule.expr
       while (iterator) {
         try {

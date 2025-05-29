@@ -61,11 +61,7 @@ export interface ParsedAstSpecification {
     astPath: string
     color?: c4.ColorLiteral
   }>
-  elements: Record<c4.ElementKind, {
-    technology?: string
-    notation?: string
-    style: ParsedElementStyle
-  }>
+  elements: Record<c4.ElementKind, c4.ElementSpecification>
   relationships: Record<
     c4.RelationshipKind,
     {
@@ -80,10 +76,10 @@ export interface ParsedAstSpecification {
   colors: Record<
     c4.CustomColor,
     {
-      color: c4.HexColorLiteral
+      color: c4.ColorLiteral
     }
   >
-  deployments: Record<c4.DeploymentNodeKind, c4.DeploymentNodeKindSpecification>
+  deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
 }
 
 export interface ParsedAstElement {
@@ -110,8 +106,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
-  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  source: c4.FqnRef.ModelRef
+  target: c4.FqnRef.ModelRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
@@ -131,10 +127,10 @@ export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.No
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
   export type Instance = Omit<c4.DeployedInstance, 'element'> & {
-    readonly element: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+    readonly element: c4.FqnRef.ModelRef
   }
 }
-export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
+export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & {
   astPath: string
 }
 
@@ -350,7 +346,7 @@ export function toRelationshipStyleExcludeDefaults(
 }
 
 export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
-  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColorLiteral | undefined))
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColor | undefined))
 }
 
 export function toAutoLayout(

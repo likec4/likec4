@@ -1,7 +1,7 @@
 import {
   type ViewRulePredicate,
   isViewRulePredicate,
-  ModelLayer,
+  ModelRelationExpr,
 } from '@likec4/core'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
@@ -140,11 +140,11 @@ describe.concurrent('LikeC4ModelParser', () => {
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
-      const withPredicate = includeRule.include?.[0] as ModelLayer.RelationExpr.Custom
+      const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
       expect(isViewRulePredicate(includeRule)).toBe(true)
-      expect(ModelLayer.RelationExpr.isCustom(withPredicate)).toBe(true)
-      expect(ModelLayer.RelationExpr.isWhere(withPredicate.customRelation.expr)).toBe(true)
+      expect(ModelRelationExpr.isCustom(withPredicate)).toBe(true)
+      expect(ModelRelationExpr.isWhere(withPredicate.customRelation.expr)).toBe(true)
       expect(withPredicate).toStrictEqual({
         customRelation: {
           color: 'red',
@@ -184,10 +184,10 @@ describe.concurrent('LikeC4ModelParser', () => {
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
-      const wherePredicate = includeRule.include?.[0] as ModelLayer.RelationExpr.Where
+      const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
 
       expect(isViewRulePredicate(includeRule)).toBe(true)
-      expect(ModelLayer.RelationExpr.isWhere(wherePredicate)).toBe(true)
+      expect(ModelRelationExpr.isWhere(wherePredicate)).toBe(true)
       expect(wherePredicate).toStrictEqual({
         where: {
           condition: {
@@ -229,10 +229,10 @@ describe.concurrent('LikeC4ModelParser', () => {
 
       const rules = doc.c4Views[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
-      const withPredicate = includeRule.include?.[0] as ModelLayer.RelationExpr.Custom
+      const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
       expect(isViewRulePredicate(includeRule)).toBe(true)
-      expect(ModelLayer.RelationExpr.isCustom(withPredicate)).toBe(true)
+      expect(ModelRelationExpr.isCustom(withPredicate)).toBe(true)
       expect(withPredicate).toStrictEqual({
         customRelation: {
           color: 'red',
@@ -393,20 +393,20 @@ describe.concurrent('LikeC4ModelParser', () => {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
-            id: 'n1',
+            deployment: 'n1',
           },
           target: {
-            id: 'n2',
+            deployment: 'n2',
           },
         },
         {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
-            id: 'n1.sys1',
+            deployment: 'n1.sys1',
           },
           target: {
-            id: 'n2.sys2',
+            deployment: 'n2.sys2',
           },
           title: 'Nested',
           color: 'red',
@@ -415,10 +415,10 @@ describe.concurrent('LikeC4ModelParser', () => {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
-            id: 'n1.sys1',
+            deployment: 'n1.sys1',
           },
           target: {
-            id: 'n2.sys2',
+            deployment: 'n2.sys2',
             element: 'sys.c1',
           },
           title: 'title',
@@ -427,11 +427,11 @@ describe.concurrent('LikeC4ModelParser', () => {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
-            id: 'n1.sys1',
+            deployment: 'n1.sys1',
             element: 'sys.c1',
           },
           target: {
-            id: 'n2.sys2',
+            deployment: 'n2.sys2',
             element: 'sys.c1.c2',
           },
           tags: ['next'],

@@ -1,5 +1,5 @@
-import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, ModelLayer, nonexhaustive } from '@likec4/core'
+import * as c4 from '@likec4/core'
+import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
@@ -148,7 +148,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRulePredicate(astNode: ast.ViewRulePredicate): c4.ViewRulePredicate {
-      const exprs = [] as c4.ModelLayer.Expression[]
+      const exprs = [] as c4.ModelExpression[]
       let predicate = astNode.exprs
       while (predicate) {
         const { value, prev } = predicate
@@ -227,8 +227,8 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     ): c4.ViewRuleStyle {
       const styleProps = this.parseStyleProps(styleProperties)
       const notation = removeIndent(notationProperty?.value)
-      const targets = this.parseFqnExpressions(elementExpressionsIterator).filter((e): e is ModelLayer.FqnExpr =>
-        ModelLayer.Expression.isFqnExpr(e as any)
+      const targets = this.parseFqnExpressions(elementExpressionsIterator).filter((e): e is ModelFqnExpr.Any =>
+        c4.ModelExpression.isFqnExpr(e as any)
       )
       return {
         targets,
@@ -328,7 +328,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate): c4.DynamicViewIncludeRule {
-      const include = [] as c4.ModelLayer.AnyFqnExpr[]
+      const include = [] as c4.ModelFqnExpr.Any[]
       let iter: ast.Expressions | undefined = astRule.exprs
       while (iter) {
         try {

@@ -4,6 +4,7 @@ import type { FqnRef } from './fqnRef'
 import type { Icon } from './scalars'
 import type {
   BorderStyle,
+  Color,
   ElementShape,
   RelationshipArrowType,
   RelationshipLineType,
@@ -55,7 +56,7 @@ export interface Element<A extends AnyAux = UnknownAux> {
   readonly links?: readonly Link[] | null
   readonly icon?: Icon
   readonly shape?: ElementShape
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
   readonly metadata?: Aux.Metadata<A>
@@ -67,11 +68,11 @@ export const DefaultRelationshipColor: ThemeColor = 'gray'
 
 export interface AbstractRelationship<A extends AnyAux> {
   readonly id: Aux.Strict.RelationId<A>
-  readonly title: string | null
+  readonly title?: string | null
   readonly description?: string | null
   readonly technology?: string | null
   readonly kind?: Aux.RelationKind<A>
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType

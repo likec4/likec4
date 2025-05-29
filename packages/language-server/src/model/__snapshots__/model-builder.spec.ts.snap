@@ -2,6 +2,7 @@
 
 exports[`LikeC4ModelBuilder > builds model with description and technology 1`] = `
 {
+  "__": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -62,17 +63,26 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     "styles": {},
   },
   "imports": {},
+  "projectId": "default",
   "relations": {
     "90t726": {
       "id": "90t726",
-      "source": "system.frontend",
-      "target": "system.backend",
+      "source": {
+        "model": "system.frontend",
+      },
+      "target": {
+        "model": "system.backend",
+      },
       "title": "requests",
     },
     "vcxqbt": {
       "id": "vcxqbt",
-      "source": "client",
-      "target": "system.frontend",
+      "source": {
+        "model": "client",
+      },
+      "target": {
+        "model": "system.frontend",
+      },
       "title": "",
     },
   },
@@ -90,7 +100,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       },
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "index": {
@@ -168,6 +178,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
 
 exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
+  "__": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -230,17 +241,26 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "default",
   "relations": {
     "14imtre": {
       "id": "14imtre",
-      "source": "client",
-      "target": "system.frontend",
+      "source": {
+        "model": "client",
+      },
+      "target": {
+        "model": "system.frontend",
+      },
       "title": "opens",
     },
     "fubnyh": {
       "id": "fubnyh",
-      "source": "system.frontend",
-      "target": "system.backend.api",
+      "source": {
+        "model": "system.frontend",
+      },
+      "target": {
+        "model": "system.backend.api",
+      },
       "title": "requests",
     },
   },
@@ -255,9 +275,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       },
     },
     "relationships": {},
-    "tags": [
-      "deprecated",
-    ],
+    "tags": {
+      "deprecated": {
+        "color": "#e41a1c",
+      },
+    },
   },
   "views": {
     "frontend": {
@@ -528,6 +550,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = `
 {
+  "__": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -560,15 +583,20 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     "styles": {},
   },
   "imports": {},
+  "projectId": "default",
   "relations": {
     "1qlbaph": {
       "id": "1qlbaph",
       "kind": "async",
-      "source": "user1",
+      "source": {
+        "model": "user1",
+      },
       "tags": [
         "next",
       ],
-      "target": "user2",
+      "target": {
+        "model": "user2",
+      },
       "title": "",
     },
   },
@@ -580,11 +608,15 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       },
     },
     "relationships": {
-      "async": {},
+      "async": {
+        "style": {},
+      },
     },
-    "tags": [
-      "next",
-    ],
+    "tags": {
+      "next": {
+        "color": "#e41a1c",
+      },
+    },
   },
   "views": {
     "index": {
@@ -664,6 +696,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec with technology 1`] = `
 {
+  "__": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -696,12 +729,17 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     "styles": {},
   },
   "imports": {},
+  "projectId": "default",
   "relations": {
     "1qlbaph": {
       "id": "1qlbaph",
       "kind": "async",
-      "source": "user1",
-      "target": "user2",
+      "source": {
+        "model": "user1",
+      },
+      "target": {
+        "model": "user2",
+      },
       "technology": "Async",
       "title": "",
     },
@@ -715,10 +753,11 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
     "relationships": {
       "async": {
+        "style": {},
         "technology": "Async",
       },
     },
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "index": {
@@ -796,6 +835,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
 
 exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
 {
+  "__": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -828,15 +868,20 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "default",
   "relations": {
     "1qlbaph": {
       "color": "red",
       "head": "diamond",
       "id": "1qlbaph",
       "line": "dotted",
-      "source": "user1",
+      "source": {
+        "model": "user1",
+      },
       "tail": "none",
-      "target": "user2",
+      "target": {
+        "model": "user2",
+      },
       "title": "",
     },
   },
@@ -848,7 +893,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
       },
     },
     "relationships": {},
-    "tags": [],
+    "tags": {},
   },
   "views": {
     "index": {

@@ -42,7 +42,7 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       }
     }
 
-    if (isSameHierarchy(FqnRef.toModelFqn(source), FqnRef.toModelFqn(target))) {
+    if (isSameHierarchy(FqnRef.flatten(source), FqnRef.flatten(target))) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,
       })

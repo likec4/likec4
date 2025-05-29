@@ -1,4 +1,4 @@
-import type { TupleToUnion } from 'type-fest'
+import type { Tagged, TupleToUnion } from 'type-fest'
 
 /**
  * For padding, margin, etc.
@@ -30,6 +30,8 @@ export type ColorLiteral =
   | HexColor
   | `rgb(${number}${Comma}${number}${Comma}${number})`
   | `rgba(${number}${Comma}${number}${Comma}${number}${Comma}${number})`
+
+export type CustomColor<T = string> = Tagged<T, 'CustomColor'>
 
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 
@@ -65,7 +67,7 @@ export type ThemeColor = typeof ThemeColors[number]
  * Backward compatibility alias
  * @deprecated Use {@link ThemeColor} instead
  */
-export type Color = ThemeColor
+export type Color = ThemeColor | HexColor
 
 export function isThemeColor(color: string): color is ThemeColor {
   return ThemeColors.includes(color as ThemeColor)

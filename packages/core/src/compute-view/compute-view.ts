@@ -57,14 +57,10 @@ export function unsafeComputeView<A extends AnyAux>(
   }
 }
 
-// dprint-ignore
-export function computeView<A extends AnyAux>(viewsource: ElementView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedElementView<A>>
-// dprint-ignore
-export function computeView<A extends AnyAux>(viewsource: DeploymentView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedDeploymentView<A>>
-// dprint-ignore
-export function computeView<A extends AnyAux>(viewsource: DynamicView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedDynamicView<A>>
-// dprint-ignore
-export function computeView<A extends AnyAux>(viewsource: LikeC4View<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputeViewResult<ComputedView<A>> {
+export function computeView<A extends AnyAux>(
+  viewsource: LikeC4View<NoInfer<A>>,
+  likec4model: LikeC4Model<A>,
+): ComputeViewResult<ComputedView<A>> {
   try {
     return {
       isSuccess: true,

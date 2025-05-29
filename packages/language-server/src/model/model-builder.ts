@@ -3,6 +3,7 @@ import {
   type ViewId,
   isScopedElementView,
 } from '@likec4/core'
+import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
@@ -50,8 +51,8 @@ export interface LikeC4ModelBuilder {
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<c4.ParsedLikeC4ModelData | null>
-  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed
-  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
+  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model
+  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model>
   computeView(
     viewId: ViewId,
     projectId?: c4.ProjectId | undefined,
@@ -117,7 +118,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           return null
         }
         log.debug`unsafeSyncBuildModelData, project ${projectId}`
-        return buildModelData(docs)
+        return buildModelData(projectId, docs)
       } catch (e) {
         logWarnError(e)
         return null
@@ -185,25 +186,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed {
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
+  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model {
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedModelCacheKey(projectId), () => {
       const parsed = this.unsafeSyncJoinedModelData(projectId)
       if (!parsed) {
         return LikeC4Model.EMPTY
       }
-
-      const {
-        views: parsedViews,
-        ...model
-      } = parsed
-
-      const computeView = LikeC4Model.makeCompute(parsed)
-
+      const parsedModel = LikeC4Model.fromParsed(parsed)
       const allViews = [] as c4.ComputedView[]
-      for (const view of values(parsedViews)) {
-        const result = computeView(view)
+      for (const view of values(parsed.views)) {
+        const result = computeView(view, parsedModel)
         if (!result.isSuccess) {
           logger.warn(loggable(result.error))
           continue
@@ -220,7 +214,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       })
       this.previousViews = { ...this.previousViews, ...views }
       return LikeC4Model.create({
-        ...model,
+        ...parsed,
+        __: 'computed',
         views,
       })
     })
@@ -229,10 +224,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public async buildLikeC4Model(
     projectId?: c4.ProjectId | undefined,
     cancelToken = CancellationToken.None,
-  ): Promise<LikeC4Model.Computed> {
+  ): Promise<LikeC4Model> {
     const project = this.projects.ensureProjectId(projectId)
     const log = logger.getChild(['project', project])
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model>
     const cached = cache.get(computedModelCacheKey(project))
     if (cached) {
       log.debug('buildLikeC4Model from cache')
@@ -269,9 +264,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         log.warn`computeView: cant find view ${viewId}`
         return null
       }
+      const parsedModel = LikeC4Model.fromParsed(parsed)
       log.debug`computeView: ${viewId}`
-      const computeView = LikeC4Model.makeCompute(parsed)
-      const result = computeView(view)
+      const result = computeView(view, parsedModel)
       if (!result.isSuccess) {
         logWarnError(result.error)
         return null

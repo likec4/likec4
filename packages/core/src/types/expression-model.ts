@@ -51,7 +51,7 @@ export namespace ModelFqnExpr {
     ElementTag: ElementTagExpr<A>
   }>
 
-  export interface Where<A extends AnyAux> {
+  export interface Where<A extends AnyAux = UnknownAux> {
     where: {
       expr: ExclusiveUnion<{
         Wildcard: Wildcard
@@ -98,7 +98,7 @@ export namespace ModelFqnExpr {
       || isElementTagExpr(expr)
   }
 
-  export type OrWhere<A extends AnyAux> = ExclusiveUnion<{
+  export type OrWhere<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
     Wildcard: ModelFqnExpr.Wildcard
     Ref: ModelFqnExpr.Ref<A>
     ElementKind: ElementKindExpr<A>

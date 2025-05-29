@@ -1,13 +1,15 @@
 import { isString } from 'remeda'
+import { invariant } from '../errors'
 import type { ExclusiveUnion } from './_common'
 import type { AnyAux, Aux, UnknownAux } from './aux'
+import type { DeploymentElementRef as DeploymentModelElementRef } from './model-deployment'
 import { GlobalFqn } from './scalars'
 
 export namespace FqnRef {
   /**
    * Reference to logical model element
    */
-  export interface ElementRef<A extends AnyAux> {
+  export interface ElementRef<A extends AnyAux = AnyAux> {
     project?: never
     model: Aux.ElementId<A>
   }
@@ -18,7 +20,7 @@ export namespace FqnRef {
   /**
    * Reference to imported logical model element
    */
-  export interface ImportRef<A extends AnyAux> {
+  export interface ImportRef<A extends AnyAux = AnyAux> {
     project: Aux.ProjectId<A>
     model: Aux.ElementId<A>
   }
@@ -39,7 +41,7 @@ export namespace FqnRef {
     throw new Error('Expected FqnRef.ModelRef or FqnRef.ImportRef')
   }
 
-  export type ModelRef<A extends AnyAux> = ImportRef<A> | ElementRef<A>
+  export type ModelRef<A extends AnyAux = AnyAux> = ImportRef<A> | ElementRef<A>
   export function isModelRef<A extends AnyAux>(ref: FqnRef<A>): ref is ModelRef<A> {
     return isElementRef(ref) || isImportRef(ref)
   }
@@ -53,7 +55,7 @@ export namespace FqnRef {
    * @property {D} deployment - TThe fully qualified name (FQN) of the deployed instance.
    * @property {M} element - The element reference within the deployment.
    */
-  export interface InsideInstanceRef<A extends AnyAux> {
+  export interface InsideInstanceRef<A extends AnyAux = AnyAux> {
     deployment: Aux.DeploymentId<A>
     element: Aux.ElementId<A>
   }
@@ -67,7 +69,7 @@ export namespace FqnRef {
    * @template F - The type of the fully qualified name (FQN) of the deployment element. Defaults to `Fqn`.
    * @property {F} deployment - The fully qualified name (FQN) of the deployment element.
    */
-  export interface DeploymentElementRef<A extends AnyAux> {
+  export interface DeploymentElementRef<A extends AnyAux = AnyAux> {
     deployment: Aux.DeploymentId<A>
     element?: never
   }
@@ -79,6 +81,18 @@ export namespace FqnRef {
   export function isDeploymentRef<A extends AnyAux>(ref: FqnRef<A>): ref is DeploymentRef<A> {
     return !isModelRef(ref) && !isImportRef(ref)
   }
+
+  // export function toDeploymentRef<A extends AnyAux>(ref: FqnRef<A>): DeploymentModelElementRef {
+  //   invariant(isDeploymentRef(ref), 'Expected DeploymentRef')
+  //   return isInsideInstanceRef(ref)
+  //     ? {
+  //       id: ref.deployment as Aux.Strict.DeploymentFqn<A>,
+  //       element: ref.element as Aux.Strict.Fqn<A>,
+  //     }
+  //     : {
+  //       id: ref.deployment as Aux.Strict.DeploymentFqn<A>,
+  //     }
+  // }
 }
 
 export type FqnRef<A extends AnyAux = UnknownAux> = ExclusiveUnion<{

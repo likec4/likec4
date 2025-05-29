@@ -33,7 +33,12 @@ export type ViewId<Id = string> = Tagged<Id, 'ViewId'>
 
 export type AnyFqn<T = string> = DeploymentFqn<T> | Fqn<T>
 
-export type RelationKind<Kinds = string> = Tagged<Kinds, 'RelationKind'>
+/**
+ * @deprecated Use {@link RelationshipKind} instead
+ */
+export type RelationKind<Kinds = string> = RelationshipKind<Kinds>
+
+export type RelationshipKind<Kinds = string> = Tagged<Kinds, 'RelationshipKind'>
 export type RelationId<Id = string> = Tagged<Id, 'RelationId'>
 
 export type Tag<T = string> = Tagged<T, 'Tag'>

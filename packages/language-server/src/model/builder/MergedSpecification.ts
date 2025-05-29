@@ -1,7 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { MultiMap } from '@likec4/core'
 import {
-  DeploymentElement,
   FqnRef,
 } from '@likec4/core/types'
 import {
@@ -139,15 +138,13 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath,
-    source: sourceFqnRef,
-    target: targetFqnRef,
+    source,
+    target,
     kind,
     links,
     id,
     ...model
-  }: ParsedAstRelation): c4.ModelRelation | null => {
-    const target = FqnRef.toModelFqn(targetFqnRef)
-    const source = FqnRef.toModelFqn(sourceFqnRef)
+  }: ParsedAstRelation): c4.Relationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],
@@ -157,7 +154,7 @@ export class MergedSpecification {
         target,
         kind,
         id,
-      } satisfies c4.ModelRelation
+      } satisfies c4.Relationship
     }
     return {
       ...(links && { links }),
@@ -165,7 +162,7 @@ export class MergedSpecification {
       source,
       target,
       id,
-    } satisfies c4.ModelRelation
+    } satisfies c4.Relationship
   }
 
   /**
@@ -175,14 +172,14 @@ export class MergedSpecification {
     if ('element' in parsed && !('kind' in parsed)) {
       return {
         ...parsed,
-        element: FqnRef.toModelFqn(parsed.element),
+        element: FqnRef.flatten(parsed.element),
       }
     }
     if ('element' in parsed) {
       return null
     }
     try {
-      const __kind = this.specs.deployments[parsed.kind]
+      const __kind = this.specs.deployments[parsed.kind as c4.DeploymentKind]
       if (!__kind) {
         logger.warn`No kind ${parsed.kind} found for ${parsed.id}`
         return null
@@ -220,17 +217,17 @@ export class MergedSpecification {
     links,
     id,
     ...model
-  }: ParsedAstDeploymentRelation): c4.DeploymentRelation | null => {
-    if (isNonNullish(kind) && this.specs.relationships[kind]) {
+  }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
+    if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       return {
-        ...this.specs.relationships[kind],
+        ...this.specs.relationships[kind as c4.RelationshipKind],
         ...model,
         ...(links && { links }),
         source,
         target,
         kind,
         id,
-      } satisfies c4.DeploymentRelation
+      } satisfies c4.DeploymentRelationship
     }
     return {
       ...(links && { links }),
@@ -238,6 +235,6 @@ export class MergedSpecification {
       source,
       target,
       id,
-    } satisfies c4.DeploymentRelation
+    } satisfies c4.DeploymentRelationship
   }
 }

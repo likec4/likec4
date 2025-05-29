@@ -1,5 +1,4 @@
 import type * as c4 from '@likec4/core'
-import type { HexColorLiteral } from '@likec4/core'
 import { filter, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import { ast, toRelationshipStyleExcludeDefaults } from '../../ast'
 import { logger, logWarnError } from '../../logger'
@@ -100,7 +99,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           }
 
           c4Specification.colors[colorName] = {
-            color: color as HexColorLiteral,
+            color: color as c4.ColorLiteral,
           }
         } catch (e) {
           logWarnError(e)
@@ -110,8 +109,8 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
 
     parseSpecificationDeploymentNodeKind(
       { kind, props }: ast.SpecificationDeploymentNodeKind,
-    ): { [key: c4.DeploymentNodeKind]: c4.DeploymentNodeKindSpecification } {
-      const kindName = kind.name as c4.DeploymentNodeKind
+    ): { [key: c4.DeploymentKind]: c4.ElementSpecification } {
+      const kindName = kind.name as c4.DeploymentKind
       if (!isTruthy(kindName)) {
         throw new Error('DeploymentNodeKind name is not resolved')
       }

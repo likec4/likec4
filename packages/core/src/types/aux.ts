@@ -3,6 +3,7 @@ import type * as Scalars from './scalars'
 import type { Icon } from './scalars'
 import type {
   BorderStyle,
+  Color,
   ColorLiteral,
   ElementShape,
   RelationshipArrowType,
@@ -22,12 +23,13 @@ export interface ElementSpecification {
   style: {
     shape?: ElementShape
     icon?: Icon
-    color?: ThemeColor
+    color?: Color
     border?: BorderStyle
     opacity?: number
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    multiple?: boolean
   }
 }
 
@@ -39,7 +41,7 @@ export interface RelationshipSpecification {
   technology?: string
   notation?: string
   style: {
-    color?: ThemeColor
+    color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType
     tail?: RelationshipArrowType

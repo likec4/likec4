@@ -4,14 +4,14 @@ import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 import type { Icon } from './scalars'
 import type {
+  Color,
   ElementShape,
-  ThemeColor,
 } from './styles'
 
 export interface DeploymentElementStyle extends ElementStyle {
   readonly icon?: Icon
   readonly shape?: ElementShape
-  readonly color?: ThemeColor
+  readonly color?: Color
 }
 
 export interface DeploymentNode<A extends AnyAux = UnknownAux> {
@@ -37,7 +37,7 @@ export interface DeployedInstance<A extends AnyAux = UnknownAux> {
    */
   readonly id: Aux.Strict.DeploymentFqn<A>
   readonly element: Aux.Strict.Fqn<A>
-  readonly title: string
+  readonly title?: string
   readonly description?: string | null
   readonly technology?: string | null
   readonly tags?: Aux.Tags<A> | null
