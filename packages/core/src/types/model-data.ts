@@ -1,5 +1,3 @@
-import type { IsNever, IsStringLiteral, Simplify, TupleToObject, UnionToIntersection } from 'type-fest'
-import type { LastOfUnion, UnionToTuple } from 'type-fest/source/union-to-tuple'
 import type { NonEmptyArray } from './_common'
 import type { AnyAux, Aux, Specification, UnknownAux } from './aux'
 import type { ModelGlobals } from './global'
@@ -8,30 +6,30 @@ import type { Element, Relationship } from './model-logical'
 import type { ProjectId } from './scalars'
 import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './view'
 
-type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
+// type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
 
 // type TupleToObject<T, Value, L = LastOfUnion<T>> =
 // IsNever<T> extends false
 // 	? [...UnionToTuple<Exclude<T, L>>, L]
 // 	: [];
 
-type UnionToRecord<Keys, Value, L = LastOfUnion<Keys>> = IsNever<Keys> extends false
-  ? MakeEntry<L, Value> | UnionToRecord<Exclude<Keys, L>, Value>
-  : {}
+// type UnionToRecord<Keys, Value, L = LastOfUnion<Keys>> = IsNever<Keys> extends false
+//   ? MakeEntry<L, Value> | UnionToRecord<Exclude<Keys, L>, Value>
+//   : {}
 
-type Entries<KeysObject extends object, Value> = {
-  [K in keyof KeysObject]: KeysObject[K] extends infer S extends string ? {
-      [key in S]: Value
-    } :
-    never
-}[keyof KeysObject]
+// type Entries<KeysObject extends object, Value> = {
+//   [K in keyof KeysObject]: KeysObject[K] extends infer S extends string ? {
+//       [key in S]: Value
+//     } :
+//     never
+// }[keyof KeysObject]
 
-// type StrictRecord<Keys, Value> = IsNever<Keys> extends true ? Record<any, Value> : Simplify<Entries<Keys, Value>>
+// // type StrictRecord<Keys, Value> = IsNever<Keys> extends true ? Record<any, Value> : Simplify<Entries<Keys, Value>>
 
-// type Entries<Keys, Value> = IsNever<Keys> extends false ? { [K in Keys as `${K & string}`]: Value }
-//   : { [key: string]: Value }
+// // type Entries<Keys, Value> = IsNever<Keys> extends false ? { [K in Keys as `${K & string}`]: Value }
+// //   : { [key: string]: Value }
 
-type KeysOf<T> = IsStringLiteral<T> extends true ? `${T & string}` : string
+// type KeysOf<T> = IsStringLiteral<T> extends true ? `${T & string}` : string
 
 // type StrictRecord<Keys, Value> = Simplify<UnionToRecord<Keys, Value>>
 // type StrictRecord<Keys, Value> = Record<`${Keys & string}`, Value>
@@ -41,16 +39,7 @@ type KeysOf<T> = IsStringLiteral<T> extends true ? `${T & string}` : string
 // & {
 //   [key: string]: Value
 // }
-// IsStringLiteral<Ke?
-type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
-
-// type Object1 = StrictRecord<'a' | 'b' | 'c' | 2, { value: number }>
-
-// type E = Extract<'a' | 'b' | 'c' | unknown, string>
-
-// const o1 = {} as Object1
-
-// values(o1)
+// type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
 
 /**
  * Represents a LikeC4 model with customizable type parameters,

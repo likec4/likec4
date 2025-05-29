@@ -1,7 +1,10 @@
 import { vValidator } from '@hono/valibot-validator'
+import type { TagSpecification } from '@likec4/core'
+import { defaultTheme } from '@likec4/core'
+import { isArray, mapToObj } from 'remeda'
 import * as v from 'valibot'
 import { SharePlaygroundReqSchema, sharesKV } from './kv'
-import { factory } from './types'
+import { type SharedPlayground, factory } from './types'
 
 const CheckPincodeSchema = v.strictObject({
   pincode: v.string(),
@@ -17,11 +20,14 @@ export const apiShareRoute = factory.createApp()
     const shareId = c.req.param('shareId')
     const { value, metadata } = await kv.find(shareId)
     await kv.ensureAccess(shareId, metadata.shareOptions)
-    /*
-      TypeScript fails to infer the type of value
-      Thats why I cast it in ../src/api.ts#L57
-    */
-    return c.json(value) as never
+
+    // TODO: temporary solution for backwards compatibility
+    const tagSpecs = value.model.specification.tags as Record<string, TagSpecification> | string[] | undefined
+    if (isArray(tagSpecs)) {
+      value.model.specification.tags = mapToObj(tagSpecs, tag => [tag, { color: defaultTheme.elements.muted.fill }])
+    }
+
+    return c.json<SharedPlayground>(value)
   })
   .post(
     '/:shareId/check-pincode',

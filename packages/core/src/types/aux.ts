@@ -1,4 +1,4 @@
-import type { EmptyObject, IsNever, LiteralUnion, UnionToTuple } from 'type-fest'
+import type { EmptyObject, IsNever, IsStringLiteral, LiteralUnion, UnionToTuple } from 'type-fest'
 import type * as Scalars from './scalars'
 import type { Icon } from './scalars'
 import type {
@@ -40,12 +40,10 @@ export interface TagSpecification {
 export interface RelationshipSpecification {
   technology?: string
   notation?: string
-  style: {
-    color?: Color
-    line?: RelationshipLineType
-    head?: RelationshipArrowType
-    tail?: RelationshipArrowType
-  }
+  color?: Color
+  line?: RelationshipLineType
+  head?: RelationshipArrowType
+  tail?: RelationshipArrowType
 }
 
 export interface Specification<A extends AnyAux> {
@@ -61,7 +59,12 @@ export interface Specification<A extends AnyAux> {
   relationships: {
     [key in A['RelationKind']]: RelationshipSpecification
   }
-  metadataKeys?: UnionToTuple<A['MetadataKey']>
+  // dprint-ignore
+  metadataKeys?: IsNever<A['MetadataKey']> extends true
+    ? never
+    : IsStringLiteral<A['MetadataKey']> extends true
+      ? UnionToTuple<A['MetadataKey']>
+      : string[]
 }
 
 /**

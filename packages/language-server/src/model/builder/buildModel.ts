@@ -13,10 +13,12 @@ import type { LangiumDocument } from 'langium'
 import {
   filter,
   flatMap,
+  forEach,
   indexBy,
   isDefined,
   isNullish,
   isTruthy,
+  keys,
   map,
   mapValues,
   pipe,
@@ -53,8 +55,15 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
     c => computeColorValues(c.color),
   )
 
+  const metadataKeys = new Set<string>()
   const elementExtends = new MergedExtends()
   const deploymentExtends = new MergedExtends()
+
+  const scanMetadataKeys = (obj?: { metadata?: Record<string, unknown> }) => {
+    if (obj?.metadata) {
+      keys(obj.metadata).forEach(key => metadataKeys.add(key))
+    }
+  }
 
   const elements = pipe(
     docs,
@@ -74,6 +83,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
           return acc
         }
         acc[el.id] = elementExtends.applyExtended<c4.Element>(el)
+        scanMetadataKeys(acc[el.id])
         return acc
       },
       {} as c4.ParsedLikeC4ModelData['elements'],
@@ -99,6 +109,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
       }
       return true
     }),
+    forEach(scanMetadataKeys),
     indexBy(prop('id')),
   )
 
@@ -120,6 +131,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
           return acc
         }
         acc[el.id] = isDeploymentNode(el) ? deploymentExtends.applyExtended<c4.DeploymentNode>(el) : el
+        scanMetadataKeys(acc[el.id])
         return acc
       },
       {} as Record<string, c4.DeploymentElement>,
@@ -147,10 +159,11 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
           logger.debug`Duplicate deployment relation ${el.id}`
           return acc
         }
+        scanMetadataKeys(el)
         acc[el.id] = el
         return acc
       },
-      {} as Record<string, c4.DeploymentRelation>,
+      {} as Record<string, c4.DeploymentRelationship>,
     ),
   )
 
@@ -232,6 +245,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
           style,
         })),
         deployments: c4Specification.specs.deployments,
+        ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(c4.compareNatural) }),
       },
       elements,
       relations,

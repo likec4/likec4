@@ -1,12 +1,16 @@
 import { api } from '$/api'
-import { LikeC4Model } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4ModelProvider } from '@likec4/diagram'
 import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router'
 import { useMemo } from 'react'
 
 export const Route = createFileRoute('/share/$shareId')({
   component: RouteComponent,
-  loader: async ({ params: param }) => await api.share.get({ param }),
+  loader: async ({ params: { shareId } }) => {
+    const sharedPlayground = await api.share.get(shareId)
+    // const likec4model = LikeC4Model.create(sharedPlayground.model)
+    return sharedPlayground
+  },
   notFoundComponent: () => {
     const { shareId } = Route.useParams()
     return (

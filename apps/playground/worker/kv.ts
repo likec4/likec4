@@ -23,8 +23,9 @@ type ModelSchema = v.InferOutput<typeof ModelSchema>
 const RecordAny = v.record(v.string(), v.any())
 const ModelSchema = v.object({
   __: v.literal('layouted'),
+  projectId: v.optional(v.string()),
   specification: v.object({
-    tags: RecordAny,
+    tags: v.optional(RecordAny),
     elements: RecordAny,
     deployments: RecordAny,
     relationships: RecordAny,

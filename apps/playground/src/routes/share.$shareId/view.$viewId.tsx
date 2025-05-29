@@ -2,7 +2,7 @@ import type { LocalWorkspace } from '#worker/types'
 import { IconRenderer } from '$components/IconRenderer'
 import { Logo } from '$components/Logo'
 import { useWorkspaces } from '$hooks/useWorkspaces'
-import type { ViewId } from '@likec4/core'
+import type { DiagramView, ViewId } from '@likec4/core'
 import { type ControlsCustomLayout, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { css } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
@@ -15,8 +15,12 @@ export const Route = createFileRoute('/share/$shareId/view/$viewId')({
   component: RouteComponent,
 })
 
-function useLikeC4DiagramView(viewId: string) {
-  return useLikeC4Model(true, 'layouted').findView(viewId)?.$view ?? null
+function useLikeC4DiagramView(viewId: string): DiagramView | null {
+  const viewModel = useLikeC4Model(true, 'layouted').findView(viewId)
+  if (!viewModel || !viewModel.isDiagram()) {
+    return null
+  }
+  return viewModel.$view
 }
 
 function RouteComponent() {

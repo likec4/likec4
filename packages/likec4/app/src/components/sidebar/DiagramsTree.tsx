@@ -166,11 +166,12 @@ function DiagramPreview({
   children,
   onClick,
 }: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
-  const diagram = useLikeC4Model(true, 'layouted').view(viewId).$view
+  const diagramModel = useLikeC4Model(true, 'layouted').findView(viewId)
 
-  if (!diagram) {
-    return children
+  if (!diagramModel || !diagramModel.isDiagram()) {
+    return <>{children}</>
   }
+  const diagram = diagramModel.$view
 
   const ratio = Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300)
 

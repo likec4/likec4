@@ -85,10 +85,15 @@ export class LikeC4ModelLocator {
     }
   }
 
-  public locateDeploymentElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
-    let [_projectId, _fqn] = splitGlobalFqn(fqn)
-    _projectId ??= this.projects.ensureProjectId(projectId)
-    const entry = this.deploymentsIndex.byFqn(_projectId, _fqn).head()
+  public locateDeploymentElement(
+    deploymentFqn: c4.DeploymentFqn,
+    projectId?: c4.ProjectId | undefined,
+  ): Location | null {
+    // let [_projectId, _fqn] = splitGlobalFqn(fqn)
+    const _projectId = this.projects.ensureProjectId(projectId)
+    // TODO: remove this cast to Fqn
+    const fqn = deploymentFqn as unknown as c4.Fqn
+    const entry = this.deploymentsIndex.byFqn(_projectId, fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null

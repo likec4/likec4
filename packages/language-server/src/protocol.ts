@@ -2,6 +2,7 @@ import type {
   ColorLiteral,
   ComputedLikeC4ModelData,
   ComputedView,
+  DeploymentFqn,
   DiagramView,
   Fqn,
   LayoutedLikeC4ModelData,
@@ -181,7 +182,7 @@ export namespace Locate {
       relation: RelationId
     }
     | {
-      deployment: Fqn
+      deployment: DeploymentFqn
       projectId?: string | undefined
       property?: string
     }

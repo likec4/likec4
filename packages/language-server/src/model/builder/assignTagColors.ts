@@ -1,7 +1,7 @@
 import { compareNatural, nonNullable } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import chroma from 'chroma-js'
-import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
+import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort, sortBy } from 'remeda'
 import { MergedSpecification } from './MergedSpecification'
 
 const colors = chroma
@@ -36,6 +36,7 @@ export function assignTagColors(specification: MergedSpecification) {
       }
     }),
     concat(tagsWithColors),
+    sort((a, b) => compareNatural(a.tag, b.tag)),
     pullObject(prop('tag'), prop('spec')),
   )
 }
