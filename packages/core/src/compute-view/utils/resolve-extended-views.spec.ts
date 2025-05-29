@@ -1,7 +1,6 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn } from '../../types/scalars'
-import type { ElementView, ViewId, ViewRule } from '../../types/view'
+import type { ElementView, Fqn, ViewId, ViewRule } from '../../types'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 
 function views(...views: ElementView[]): Record<ViewId, ElementView> {
@@ -44,7 +43,7 @@ describe('resolveRulesExtendedViews', () => {
     id: 'index',
     title: null,
     description: null,
-    tags: null,
+    tags: [],
     links: null,
     rules: [viewRule1],
   } as any
@@ -96,7 +95,7 @@ describe('resolveRulesExtendedViews', () => {
       viewOf: 'cloud',
       rules: [viewRule1],
       links: null,
-      tags: null,
+      tags: [],
       description: null,
     } as any
     const result = resolveRulesExtendedViews(views(index3, index, index2))
@@ -109,7 +108,7 @@ describe('resolveRulesExtendedViews', () => {
         title: 'Landscape',
         viewOf: 'cloud',
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },
@@ -119,7 +118,7 @@ describe('resolveRulesExtendedViews', () => {
         title: 'Landscape',
         viewOf: 'cloud',
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2, viewRule3],
       },
@@ -151,7 +150,7 @@ describe('resolveRulesExtendedViews', () => {
         extends: 'index',
         title: null,
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },
@@ -166,7 +165,7 @@ describe('resolveRulesExtendedViews', () => {
       description: 'This is the root view',
       rules: [],
       links: null,
-      tags: null,
+      tags: [],
     } as any
     const index2: ElementView = {
       id: 'index2',
@@ -191,7 +190,7 @@ describe('resolveRulesExtendedViews', () => {
         description: 'This is the index2 view',
         rules: [],
         links: null,
-        tags: null,
+        tags: [],
       },
       index3: {
         description: 'This is the index2 view',
@@ -199,7 +198,7 @@ describe('resolveRulesExtendedViews', () => {
         id: 'index3',
         links: null,
         rules: [],
-        tags: null,
+        tags: [],
         title: 'Root View',
       },
     })
@@ -220,7 +219,7 @@ describe('resolveRulesExtendedViews', () => {
         extends: 'index',
         title: null,
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },

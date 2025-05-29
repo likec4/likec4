@@ -1,15 +1,21 @@
 import { filter, isArray, map, pick, pipe } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import { type DeploymentConnectionModel, ElementModel, isDeployedInstance, isDeploymentNode } from '../../../model'
+import {
+  type DeploymentConnectionModel,
+  ElementModel,
+  isDeployedInstance,
+  isDeploymentElementModel,
+  isDeploymentNode,
+  isElementModel,
+  isNestedElementOfDeployedInstanceModel,
+} from '../../../model'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
   DeploymentRelationModel,
 } from '../../../model/DeploymentElementModel'
-import { isElementModel } from '../../../model/ElementModel'
-import { isDeploymentElementModel, isNestedElementOfDeployedInstanceModel } from '../../../model/guards'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
+import type { AnyAux } from '../../../types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
 import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
@@ -60,10 +66,10 @@ export function predicateToPatch(
   }
 }
 
-export function excludeModelRelations(
-  relationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>,
+export function excludeModelRelations<M extends AnyAux>(
+  relationsToExclude: ReadonlySet<RelationshipModel<M>>,
   { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
   // Optional filter to scope the connections to exclude
   filterConnections: (c: DeploymentConnectionModel) => boolean = () => true,
 ): StageExclude {
@@ -92,7 +98,7 @@ export function excludeModelRelations(
 
 export function matchConnection<M extends AnyAux>(
   c: DeploymentConnectionModel<M>,
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): boolean {
   return applyPredicate(c, where).nonEmpty()
 }
@@ -108,7 +114,7 @@ export function matchConnection<M extends AnyAux>(
  */
 export function applyPredicate<M extends AnyAux>(
   c: readonly DeploymentConnectionModel<M>[],
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): readonly DeploymentConnectionModel<M>[]
 /**
  * Filters relations of the connection using the provided predicate.
@@ -119,7 +125,7 @@ export function applyPredicate<M extends AnyAux>(
  */
 export function applyPredicate<M extends AnyAux>(
   c: DeploymentConnectionModel<M>,
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): DeploymentConnectionModel<M>
 /**
  * Creates a function that filters relations of the provided connections using the provided predicate.
@@ -130,13 +136,13 @@ export function applyPredicate<M extends AnyAux>(
  * @returns A function to create a filtered copy of connections
  */
 export function applyPredicate<M extends AnyAux>(
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): (data: readonly DeploymentConnectionModel<M>[]) => readonly DeploymentConnectionModel<M>[]
 export function applyPredicate<M extends AnyAux>(
   ...args:
-    | [readonly DeploymentConnectionModel<M>[], OperatorPredicate<Filterable> | null]
-    | [OperatorPredicate<Filterable> | null]
-    | [c: DeploymentConnectionModel<M>, OperatorPredicate<Filterable> | null]
+    | [readonly DeploymentConnectionModel<M>[], OperatorPredicate<M> | null]
+    | [OperatorPredicate<M> | null]
+    | [c: DeploymentConnectionModel<M>, OperatorPredicate<M> | null]
 ):
   | DeploymentConnectionModel<M>
   | readonly DeploymentConnectionModel<M>[]
@@ -172,7 +178,7 @@ export function applyPredicate<M extends AnyAux>(
  */
 export function applyElementPredicate<M extends AnyAux>(
   c: readonly DeploymentElementModel<M>[],
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): readonly DeploymentElementModel<M>[]
 /**
  * Checks element using the provided predicate.
@@ -183,7 +189,7 @@ export function applyElementPredicate<M extends AnyAux>(
  */
 export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
   c: E,
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): boolean
 /**
  * Creates a function that filters elemetns using the provided predicate.
@@ -192,13 +198,13 @@ export function applyElementPredicate<M extends AnyAux, E extends DeploymentElem
  * @returns A function to filter elements
  */
 export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): (data: readonly E[]) => readonly E[]
 export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
   ...args:
-    | [readonly E[], OperatorPredicate<Filterable> | null]
-    | [OperatorPredicate<Filterable> | null]
-    | [c: E, OperatorPredicate<Filterable> | null]
+    | [readonly E[], OperatorPredicate<M> | null]
+    | [OperatorPredicate<M> | null]
+    | [c: E, OperatorPredicate<M> | null]
 ):
   | boolean
   | readonly E[]
@@ -219,8 +225,8 @@ export function applyElementPredicate<M extends AnyAux, E extends DeploymentElem
 
 export function matchConnections<M extends AnyAux>(
   connections: readonly DeploymentConnectionModel<M>[],
-  where: OperatorPredicate<Filterable> | null,
-): readonly DeploymentConnectionModel[] {
+  where: OperatorPredicate<M> | null,
+): readonly DeploymentConnectionModel<M>[] {
   if (!where) {
     return connections
   }
@@ -240,8 +246,8 @@ export function matchConnections<M extends AnyAux>(
 function toFilterable<M extends AnyAux>(
   relationEndpoint: ElementModel<M> | DeploymentRelationEndpoint<M>,
   connectionEndpoint: DeploymentRelationEndpoint<M>,
-): Filterable {
-  if (isElementModel(relationEndpoint)) { // Element itself. Extend with tags of the deployed instance (TODO)
+): Filterable<M> {
+  if (isElementModel<M>(relationEndpoint)) { // Element itself. Extend with tags of the deployed instance (TODO)
     const deployedInstance = isDeploymentElementModel(connectionEndpoint) && isDeployedInstance(connectionEndpoint)
       ? connectionEndpoint
       : null

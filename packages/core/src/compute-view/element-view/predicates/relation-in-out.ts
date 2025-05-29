@@ -1,16 +1,15 @@
 import { unique } from 'remeda'
 import { type ConnectionModel, findConnectionsBetween } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { type AnyAux, type ModelRelationExpr, ModelFqnExpr } from '../../../types'
 import { toArray, toSet } from '../../../utils/iterable/to'
 import type { PredicateExecutor } from '../_types'
 import { resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
-export const InOutRelationPredicate: PredicateExecutor<ModelLayer.RelationExpr.InOut> = {
+export const InOutRelationPredicate: PredicateExecutor<ModelRelationExpr.InOut<AnyAux>> = {
   include: ({ expr: { inout }, scope, model, memory, stage, filterWhere }) => {
     const connections = [] as ConnectionModel<AnyAux>[]
-    if (ModelLayer.FqnExpr.isWildcard(inout)) {
+    if (ModelFqnExpr.isWildcard(inout)) {
       if (!scope) {
         return
       }
@@ -46,7 +45,7 @@ export const InOutRelationPredicate: PredicateExecutor<ModelLayer.RelationExpr.I
   },
   exclude: ({ expr: { inout }, model, scope, stage, where }) => {
     const excluded = [] as RelationshipModel[]
-    if (ModelLayer.FqnExpr.isWildcard(inout)) {
+    if (ModelFqnExpr.isWildcard(inout)) {
       if (!scope) {
         return
       }

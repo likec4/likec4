@@ -352,10 +352,10 @@ export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
   | ((builder: ViewsBuilder<A>) => ViewsBuilder<B>)
   | ((builder: Builder<A>) => Builder<B>)
 
-export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
-export function mkViewBuilder(view: Writable<ElementView>): ElementViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<DeploymentView<any>>): DeploymentViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<ElementView<any>>): ElementViewBuilder<AnyTypes>
 export function mkViewBuilder(
-  view: Writable<ElementView | DeploymentView>,
+  view: Writable<ElementView<any> | DeploymentView<any>>,
 ): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
     $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,

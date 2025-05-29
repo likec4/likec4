@@ -1,3 +1,4 @@
+import { isString } from 'remeda'
 import type { ExclusiveUnion } from './_common'
 import type { AnyAux, Aux, UnknownAux } from './aux'
 import { GlobalFqn } from './scalars'
@@ -26,6 +27,9 @@ export namespace FqnRef {
   }
 
   export function flatten<A extends AnyAux>(ref: FqnRef<A>): Aux.Strict.Fqn<A> {
+    if (isString(ref)) {
+      throw new Error(`Expected FqnRef, got: "${ref}"`)
+    }
     if (isImportRef(ref)) {
       return GlobalFqn(ref.project, ref.model)
     }

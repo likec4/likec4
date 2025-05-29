@@ -1,6 +1,7 @@
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
+  type Aux,
   type BorderStyle,
   type Color,
   type ComputedView,
@@ -12,14 +13,15 @@ import {
   type GlobalStyleID,
   type IconUrl,
   type KindEqual,
+  type ModelExpression,
   type ModelRelation,
   type NonEmptyArray,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
+  type SpecTypes,
   type Tag,
   type TagEqual,
-  type ViewId,
   type ViewRule,
   type ViewRuleGlobalPredicateRef,
   type ViewRuleGlobalStyle,
@@ -27,7 +29,8 @@ import {
   type ViewRulePredicate,
   type ViewRuleStyle,
   type WhereOperator,
-  ModelLayer,
+  ModelFqnExpr,
+  ModelRelationExpr,
 } from '../../../types'
 import type { Participant } from '../../../types/operators'
 import { withReadableEdges } from '../../utils/with-readable-edges'
@@ -239,8 +242,12 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   ({
     id: `${source}:${target}` as RelationId,
     title: title ?? '',
-    source: source as Fqn,
-    target: target as Fqn,
+    source: {
+      model: source as Fqn,
+    },
+    target: {
+      model: target as Fqn,
+    },
     ...(props as any),
   }) as Omit<ModelRelation, 'id'> & { id: `${Source}:${Target}` }
 
@@ -325,7 +332,7 @@ export const fakeRelations = [
 export const globalStyles = {
   'mute_old': [{
     targets: [$expr({
-      elementTag: 'old' as Tag,
+      elementTag: 'old',
       isEqual: true,
     })],
     style: {
@@ -334,7 +341,7 @@ export const globalStyles = {
   }],
   'red_next': [{
     targets: [$expr({
-      elementTag: 'next' as Tag,
+      elementTag: 'next',
       isEqual: true,
     })],
     style: {
@@ -345,6 +352,27 @@ export const globalStyles = {
 
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
+  __: 'computed' as const,
+  specification: {
+    elements: {
+      actor: {},
+      system: {},
+      container: {},
+      component: {},
+    },
+    relationships: {
+      graphlql: {},
+    },
+    deployments: {},
+    tags: {
+      old: {},
+      next: {},
+      aws: {},
+      storage: {},
+      communication: {},
+      legacy: {},
+    },
+  },
   elements: fakeElements,
   relations: indexBy(fakeRelations, r => r.id),
   deployments: {
@@ -387,10 +415,23 @@ const fakeParsedModel = {
   },
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
+type A = Aux<
+  never,
+  FakeElementIds,
+  never,
+  never,
+  SpecTypes<
+    'actor' | 'system' | 'container' | 'component',
+    never,
+    'graphlql',
+    TestTag,
+    never
+  >
+>
 
 const emptyView = {
   __: 'element' as const,
-  id: 'index' as ViewId,
+  id: 'index' as Aux.Strict.ViewId<A>,
   title: null,
   description: null,
   tags: null,
@@ -429,8 +470,8 @@ export type Expression =
 
 export function $custom(
   expr: ElementRefExpr,
-  props: Omit<ModelLayer.FqnExpr.Custom['custom'], 'expr'>,
-): ModelLayer.FqnExpr.Custom {
+  props: Omit<ModelFqnExpr.Custom<A>['custom'], 'expr'>,
+): ModelFqnExpr.Custom<A> {
   return {
     custom: {
       expr: $expr(expr) as any,
@@ -440,9 +481,9 @@ export function $custom(
 }
 
 export function $customRelation(
-  relation: ModelLayer.RelationExprOrWhere,
-  props: Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr'>,
-): ModelLayer.RelationExpr.Custom {
+  relation: ModelRelationExpr.OrWhere<A>,
+  props: Omit<ModelRelationExpr.Custom<A>['customRelation'], 'expr'>,
+): ModelRelationExpr.Custom<A> {
   return {
     customRelation: {
       expr: $expr(relation) as any,
@@ -453,20 +494,20 @@ export function $customRelation(
 
 export function $where(
   expr: Expression,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.Expression.Where
+  operator: WhereOperator<A>,
+): ModelExpression.Where<A>
 export function $where(
-  expr: ModelLayer.RelationExpr,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.RelationExpr.Where
+  expr: ModelRelationExpr<A>,
+  operator: WhereOperator<A>,
+): ModelRelationExpr.Where<A>
 export function $where(
-  expr: ModelLayer.FqnExpr,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.FqnExpr.Where
+  expr: ModelFqnExpr<A>,
+  operator: WhereOperator<A>,
+): ModelFqnExpr.Where<A>
 export function $where(
-  expr: Expression | ModelLayer.Expression,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.Expression {
+  expr: Expression | ModelExpression<A>,
+  operator: WhereOperator<A>,
+): ModelExpression.Where<A> {
   return {
     where: {
       expr: $expr(expr) as any,
@@ -477,8 +518,8 @@ export function $where(
 
 export function $participant(
   participant: Participant,
-  operator: TagEqual<TestTag> | KindEqual<TestTag>,
-): WhereOperator<TestTag, string> {
+  operator: TagEqual<A> | KindEqual<A>,
+): WhereOperator<A> {
   return {
     participant,
     operator,
@@ -486,38 +527,38 @@ export function $participant(
 }
 
 export function $inout(
-  expr: InOutExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.InOut {
+  expr: InOutExpr | ModelFqnExpr<A>,
+): ModelRelationExpr.InOut<A> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr
     : $expr(expr.replace(/->/g, '').trim() as any)
 
-  return { inout: innerExpression }
+  return { inout: innerExpression as any }
 }
 
 export function $incoming(
-  expr: IncomingExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.Incoming {
+  expr: IncomingExpr | ModelFqnExpr<A>,
+): ModelRelationExpr.Incoming<A> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr
     : $expr(expr.replace('-> ', '') as any)
 
-  return { incoming: innerExpression }
+  return { incoming: innerExpression as any }
 }
 
 export function $outgoing(
-  expr: OutgoingExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.Outgoing {
+  expr: OutgoingExpr | ModelFqnExpr<A>,
+): ModelRelationExpr.Outgoing<A> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr as ModelFqnExpr
     : $expr(expr.replace(' ->', '') as any)
 
-  return { outgoing: innerExpression }
+  return { outgoing: innerExpression as any }
 }
 
 export function $relation(
   expr: RelationExpr,
-): ModelLayer.RelationExpr {
+): ModelRelationExpr.Direct<A> {
   const [source, target] = expr.split(/ -> | <-> /)
   const isBidirectional = expr.includes(' <-> ')
 
@@ -528,9 +569,9 @@ export function $relation(
   }
 }
 
-export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expression {
+export function $expr(expr: Expression | ModelExpression<A>): ModelExpression<A> {
   if (!isString(expr)) {
-    return expr as ModelLayer.Expression
+    return expr as ModelExpression<A>
   }
   if (expr === '*') {
     return { wildcard: true }
@@ -547,7 +588,7 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('._')) {
     return {
       ref: {
-        model: expr.replace('._', '') as Fqn,
+        model: expr.replace('._', '') as Aux.Strict.Fqn<A>,
       },
       selector: 'expanded',
     }
@@ -555,7 +596,7 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('.*')) {
     return {
       ref: {
-        model: expr.replace('.*', '') as Fqn,
+        model: expr.replace('.*', '') as Aux.Strict.Fqn<A>,
       },
       selector: 'children',
     }
@@ -563,20 +604,20 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('.**')) {
     return {
       ref: {
-        model: expr.replace('.**', '') as Fqn,
+        model: expr.replace('.**', '') as Aux.Strict.Fqn<A>,
       },
       selector: 'descendants',
     }
   }
   return {
     ref: {
-      model: expr as Fqn,
+      model: expr as Aux.Strict.Fqn<A>,
     },
   }
 }
 
 type CustomProps = {
-  where?: WhereOperator<TestTag, string>
+  where?: WhereOperator<A>
   with?: {
     title?: string
     description?: string
@@ -588,30 +629,30 @@ type CustomProps = {
     opacity?: number
     navigateTo?: string
     multiple?: boolean
-  } & Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr' | 'navigateTo'>
+  } & Omit<ModelRelationExpr.Custom<A>['customRelation'], 'expr' | 'navigateTo'>
 }
 export function $include(
-  expr: Expression | ModelLayer.Expression,
+  expr: Expression | ModelExpression<A>,
   props?: CustomProps,
-): ViewRulePredicate {
-  let _expr = props?.where ? $where(expr as any, props.where) : $expr(expr)
+): ViewRulePredicate<A> {
+  let _expr = props?.where ? $where(expr as any, props.where as any) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
     include: [_expr],
   }
 }
 export function $with(
-  expr: ModelLayer.Expression,
+  expr: ModelExpression<A>,
   props?: CustomProps['with'],
-): ModelLayer.RelationExpr.Custom | ModelLayer.FqnExpr.Custom {
-  if (ModelLayer.RelationExpr.is(expr) || ModelLayer.RelationExpr.isWhere(expr)) {
+): ModelRelationExpr.Custom<A> | ModelFqnExpr.Custom<A> {
+  if (ModelRelationExpr.is(expr) || ModelRelationExpr.isWhere(expr)) {
     return {
       customRelation: {
         expr,
         ...props as any,
       },
     }
-  } else if (ModelLayer.FqnExpr.is(expr) || ModelLayer.FqnExpr.isWhere(expr)) {
+  } else if (ModelFqnExpr.is(expr) || ModelFqnExpr.isWhere(expr)) {
     return {
       custom: {
         expr,
@@ -623,9 +664,9 @@ export function $with(
   throw 'Unsupported type of internal expression'
 }
 export function $exclude(
-  expr: Expression | ModelLayer.Expression,
-  where?: WhereOperator<TestTag, string>,
-): ViewRulePredicate {
+  expr: Expression | ModelExpression<A>,
+  where?: WhereOperator<A>,
+): ViewRulePredicate<A> {
   let _expr = where ? $where(expr as any, where) : $expr(expr)
   return {
     exclude: [_expr],
@@ -640,7 +681,7 @@ export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
 
 export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
   return {
-    targets: [$expr(element) as ModelLayer.FqnExpr],
+    targets: [$expr(element) as ModelFqnExpr<A>],
     style: Object.assign({}, style),
   }
 }
@@ -665,11 +706,11 @@ export function $global(expr: GlobalExpr): ViewRuleGlobalStyle | ViewRuleGlobalP
 }
 
 export function computeView(
-  ...args: [FakeElementIds, ViewRule | ViewRule[]] | [ViewRule | ViewRule[]]
+  ...args: [FakeElementIds, ViewRule<any> | ViewRule<any>[]] | [ViewRule<any> | ViewRule<any>[]]
 ) {
   let result: ComputedView
   if (args.length === 1) {
-    result = computeElementView(
+    result = computeElementView<A>(
       fakeModel,
       {
         ...emptyView,
@@ -681,8 +722,7 @@ export function computeView(
       fakeModel,
       {
         ...emptyView,
-        id: 'index' as ViewId,
-        viewOf: args[0] as Fqn,
+        viewOf: args[0] as Aux.Strict.ElementId<A>,
         rules: [args[1]].flat(),
       },
     )

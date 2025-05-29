@@ -636,7 +636,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
           return <T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
             const {
-              title,
+              title = null,
               links,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
@@ -648,7 +648,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               target: {
                 deployment: target as any,
               },
-              ...title && { title },
+              title,
               ...links && { links: mapLinks(links) },
               ...props,
             })

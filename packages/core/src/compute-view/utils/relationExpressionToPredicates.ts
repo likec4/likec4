@@ -1,24 +1,22 @@
 import { nonexhaustive } from '../../errors'
-import { ModelLayer } from '../../types'
-import { whereOperatorAsPredicate } from '../../types/operators'
-import type { ModelRelation } from '../../types/relation'
-import type { ComputedNode } from '../../types/view'
+import type { ComputedNode, Relationship } from '../../types'
+import { ModelRelationExpr, whereOperatorAsPredicate } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
-export type FilterableEdge = Pick<ModelRelation, 'kind' | 'tags'> & {
+export type FilterableEdge = Pick<Relationship, 'kind' | 'tags'> & {
   source: ComputedNode
   target: ComputedNode
 }
 
 export function relationExpressionToPredicates<T extends FilterableEdge>(
-  expr: ModelLayer.AnyRelationExpr,
+  expr: ModelRelationExpr.Any,
 ): Predicate<T> {
   switch (true) {
-    case ModelLayer.RelationExpr.isCustom(expr): {
+    case ModelRelationExpr.isCustom(expr): {
       return relationExpressionToPredicates(expr.customRelation.expr)
     }
-    case ModelLayer.RelationExpr.isWhere(expr): {
+    case ModelRelationExpr.isWhere(expr): {
       const predicate = relationExpressionToPredicates(expr.where.expr)
       const where = whereOperatorAsPredicate(expr.where.condition)
       return e =>
@@ -29,7 +27,7 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
           ...(e.kind && { kind: e.kind }),
         })
     }
-    case ModelLayer.RelationExpr.isDirect(expr): {
+    case ModelRelationExpr.isDirect(expr): {
       const isSource = elementExprToPredicate(expr.source)
       const isTarget = elementExprToPredicate(expr.target)
       return edge => {
@@ -37,15 +35,15 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
           || (!!expr.isBidirectional && isSource(edge.target) && isTarget(edge.source))
       }
     }
-    case ModelLayer.RelationExpr.isInOut(expr): {
+    case ModelRelationExpr.isInOut(expr): {
       const isInOut = elementExprToPredicate(expr.inout)
       return edge => isInOut(edge.source) || isInOut(edge.target)
     }
-    case ModelLayer.RelationExpr.isIncoming(expr): {
+    case ModelRelationExpr.isIncoming(expr): {
       const isTarget = elementExprToPredicate(expr.incoming)
       return edge => isTarget(edge.target)
     }
-    case ModelLayer.RelationExpr.isOutgoing(expr): {
+    case ModelRelationExpr.isOutgoing(expr): {
       const isSource = elementExprToPredicate(expr.outgoing)
       return edge => isSource(edge.source)
     }

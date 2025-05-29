@@ -2,8 +2,7 @@ import { filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { type RelationExpr, FqnExpr } from '../../../types/expression-v2'
+import { type RelationExpr, FqnExpr } from '../../../types'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { resolveElements, resolveModelElements } from '../utils'
@@ -46,7 +45,7 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
         return stage
       }
       const excludedRelations = union(
-        new Set<RelationshipModel<AnyAux>>(),
+        new Set<RelationshipModel>(),
         ...elements.flatMap(e => [e.allIncoming, e.allOutgoing]),
       )
       return excludeModelRelations(excludedRelations, { stage, memory }, where)

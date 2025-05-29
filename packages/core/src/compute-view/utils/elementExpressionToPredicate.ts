@@ -1,7 +1,8 @@
 import { isNullish } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import {
-  ModelLayer,
+  FqnRef,
+  ModelFqnExpr,
   whereOperatorAsPredicate,
 } from '../../types'
 import { parentFqn } from '../../utils'
@@ -9,29 +10,29 @@ import { parentFqn } from '../../utils'
 type Predicate<T> = (x: T) => boolean
 
 export function elementExprToPredicate<T extends { id: string; tags?: readonly string[] | null; kind: string }>(
-  target: ModelLayer.AnyFqnExpr,
+  target: ModelFqnExpr.Any,
 ): Predicate<T> {
-  if (ModelLayer.FqnExpr.isCustom(target)) {
+  if (ModelFqnExpr.isCustom(target)) {
     return elementExprToPredicate(target.custom.expr)
   }
-  if (ModelLayer.FqnExpr.isWhere(target)) {
+  if (ModelFqnExpr.isWhere(target)) {
     const predicate = elementExprToPredicate(target.where.expr)
     const where = whereOperatorAsPredicate(target.where.condition)
     return n => predicate(n) && where(n)
   }
-  if (ModelLayer.FqnExpr.isElementKindExpr(target)) {
+  if (ModelFqnExpr.isElementKindExpr(target)) {
     return target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
   }
-  if (ModelLayer.FqnExpr.isElementTagExpr(target)) {
+  if (ModelFqnExpr.isElementTagExpr(target)) {
     return target.isEqual
       ? ({ tags }) => !!tags && tags.includes(target.elementTag)
       : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
   }
-  if (ModelLayer.FqnExpr.isWildcard(target)) {
+  if (ModelFqnExpr.isWildcard(target)) {
     return () => true
   }
-  if (ModelLayer.FqnExpr.isModelRef(target)) {
-    const fqn = ModelLayer.FqnRef.toFqn(target.ref)
+  if (ModelFqnExpr.isModelRef(target)) {
+    const fqn = FqnRef.flatten(target.ref)
     if (target.selector === 'expanded') {
       return (n) => {
         return n.id === fqn || parentFqn(n.id) === fqn

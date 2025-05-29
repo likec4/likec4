@@ -9,8 +9,8 @@ import {
 import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
 import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { type Filterable, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
+import type { AnyAux } from '../../../types'
+import { type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
@@ -254,7 +254,7 @@ function toFilterableRelation<M extends AnyAux>(
 
 function matchConnection<M extends AnyAux>(
   c: DeploymentConnectionModel<M>,
-  where: OperatorPredicate<Filterable> | null,
+  where: OperatorPredicate<M> | null,
 ): boolean {
   if (!where) {
     return true

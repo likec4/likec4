@@ -4,15 +4,20 @@ import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { type ElementModel } from '../../model/ElementModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
-import type { AnyAux } from '../../model/types'
-import type {
-  ComputedElementView,
-  ElementView,
-  NodeId,
-  ViewRule,
+import {
+  type AnyAux,
+  type ComputedElementView,
+  type ElementView,
+  type NodeId,
+  type ViewRule,
+  isViewRuleAutoLayout,
+  isViewRuleGroup,
+  isViewRulePredicate,
+  ModelExpression,
+  ModelFqnExpr,
+  ModelRelationExpr,
+  whereOperatorAsPredicate,
 } from '../../types'
-import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
-import { ModelLayer } from '../../types/expression-v2-model'
 import { sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -39,35 +44,35 @@ import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
 function processElementPredicate(
   // ...args:
-  //   | [expr: ModelLayer.AnyFqnExpr, op: 'include', IncludePredicateCtx<ModelLayer.AnyFqnExpr>]
-  //   | [expr: ModelLayer.AnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelLayer.AnyFqnExpr>]
-  expr: ModelLayer.AnyFqnExpr,
+  //   | [expr: ModelAnyFqnExpr, op: 'include', IncludePredicateCtx<ModelAnyFqnExpr>]
+  //   | [expr: ModelAnyFqnExpr, op: 'exclude', ExcludePredicateCtx<ModelAnyFqnExpr>]
+  expr: ModelFqnExpr.Any,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<ModelLayer.AnyFqnExpr>, 'expr'>,
+  ctx: Omit<PredicateCtx<ModelFqnExpr.Any>, 'expr'>,
 ): Stage {
   switch (true) {
-    case ModelLayer.FqnExpr.isCustom(expr): {
+    case ModelFqnExpr.isCustom(expr): {
       if (op === 'include') {
         return processElementPredicate(expr.custom.expr, op, ctx)
       }
       return ctx.stage
     }
-    case ModelLayer.FqnExpr.isWhere(expr): {
+    case ModelFqnExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterWhere = filter<Elem>(where)
       return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
-    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
+    case ModelFqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
       return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.FqnExpr.isWildcard(expr): {
+    case ModelFqnExpr.isWildcard(expr): {
       return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.FqnExpr.isElementKindExpr(expr):
-    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+    case ModelFqnExpr.isElementKindExpr(expr):
+    case ModelFqnExpr.isElementTagExpr(expr): {
       return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.FqnExpr.isModelRef(expr): {
+    case ModelFqnExpr.isModelRef(expr): {
       return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     default:
@@ -75,18 +80,18 @@ function processElementPredicate(
   }
 }
 function processRelationtPredicate(
-  expr: ModelLayer.AnyRelationExpr,
+  expr: ModelRelationExpr.Any,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<ModelLayer.AnyRelationExpr>, 'expr'>,
+  ctx: Omit<PredicateCtx<ModelRelationExpr.Any>, 'expr'>,
 ): Stage {
   switch (true) {
-    case ModelLayer.RelationExpr.isCustom(expr): {
+    case ModelRelationExpr.isCustom(expr): {
       if (op === 'include') {
         return processRelationtPredicate(expr.customRelation.expr, op, ctx)
       }
       return ctx.stage
     }
-    case ModelLayer.RelationExpr.isWhere(expr): {
+    case ModelRelationExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterRelations = (relations: ReadonlySet<RelationshipModel>) => {
         return new Set(filter([...relations], where))
@@ -104,16 +109,16 @@ function processRelationtPredicate(
         filterWhere,
       })
     }
-    case ModelLayer.RelationExpr.isInOut(expr): {
+    case ModelRelationExpr.isInOut(expr): {
       return InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.RelationExpr.isDirect(expr): {
+    case ModelRelationExpr.isDirect(expr): {
       return DirectRelationExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.RelationExpr.isOutgoing(expr): {
+    case ModelRelationExpr.isOutgoing(expr): {
       return OutgoingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
-    case ModelLayer.RelationExpr.isIncoming(expr): {
+    case ModelRelationExpr.isIncoming(expr): {
       return IncomingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     default:
@@ -121,10 +126,10 @@ function processRelationtPredicate(
   }
 }
 
-export function processPredicates<M extends AnyAux>(
-  model: LikeC4Model<M>,
+export function processPredicates<A extends AnyAux>(
+  model: LikeC4Model<A>,
   memory: Memory,
-  rules: ViewRule[],
+  rules: ViewRule<A>[],
 ): Memory {
   const ctx = {
     model,
@@ -146,14 +151,14 @@ export function processPredicates<M extends AnyAux>(
       for (const expr of exprs) {
         let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
         switch (true) {
-          case ModelLayer.isAnyFqnExpr(expr):
+          case ModelExpression.isFqnExpr(expr):
             stage = processElementPredicate(expr, op, {
               ...ctx,
               stage,
               memory,
             } as any) ?? stage
             break
-          case ModelLayer.isAnyRelationExpr(expr):
+          case ModelExpression.isRelationExpr(expr):
             stage = processRelationtPredicate(expr, op, {
               ...ctx,
               stage,
@@ -170,17 +175,17 @@ export function processPredicates<M extends AnyAux>(
   return StageFinal.for(memory).commit()
 }
 
-export function computeElementView<M extends AnyAux>(
-  likec4model: LikeC4Model<M>,
+export function computeElementView<A extends AnyAux>(
+  likec4model: LikeC4Model<A>,
   {
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: ElementView,
-): ComputedElementView<M['ViewId']> {
+  }: ElementView<NoInfer<A>>,
+): ComputedElementView<A> {
   rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
-  const scope = view.viewOf ? likec4model.element(view.viewOf) : null
-  let memory = processPredicates<M>(
+  const scope = view.viewOf ? likec4model.element(view.viewOf) as ElementModel<any> : null
+  let memory = processPredicates(
     likec4model,
     Memory.empty(scope),
     rules,
@@ -192,9 +197,9 @@ export function computeElementView<M extends AnyAux>(
   }
   memory = assignElementsToGroups(memory)
 
-  const nodesMap = buildNodes(memory)
+  const nodesMap = buildNodes<A>(memory)
 
-  const computedEdges = toComputedEdges(memory.connections)
+  const computedEdges = toComputedEdges<A>(memory.connections as readonly ConnectionModel<A>[])
 
   linkNodesWithEdges(nodesMap, computedEdges)
 

@@ -1,11 +1,11 @@
 import { findConnectionsWithin } from '../../../model/connection/model'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { type AnyAux, type ModelFqnExpr, FqnRef } from '../../../types'
 import type { Elem, PredicateExecutor } from '../_types'
 import { resolveElements } from './_utils'
 
-export const ExpandedElementPredicate: PredicateExecutor<ModelLayer.FqnExpr.ModelRef> = {
+export const ExpandedElementPredicate: PredicateExecutor<ModelFqnExpr.Ref<AnyAux>> = {
   include: ({ expr, model, stage, where }) => {
-    const parent = model.element(ModelLayer.FqnRef.toFqn(expr.ref))
+    const parent = model.element(FqnRef.flatten(expr.ref))
     if (where(parent)) {
       stage.addExplicit(parent)
       stage.connectWithExisting(parent)

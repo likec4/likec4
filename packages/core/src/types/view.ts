@@ -267,7 +267,7 @@ export function isDynamicView<A extends AnyAux>(view: LikeC4View<A>): view is Dy
 }
 
 export function isElementView<A extends AnyAux>(view: LikeC4View<A>): view is ElementView<A> {
-  return view.__ === 'element'
+  return !('__' in view) || view.__ === 'element'
 }
 
 export function isExtendsElementView<A extends AnyAux>(view: LikeC4View<A>): view is ExtendsElementView<A> {

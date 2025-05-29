@@ -136,9 +136,9 @@ export type ModelFqnExpr<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
 }>
 
 export namespace ModelRelationExpr {
-  export type Endpoint<A extends AnyAux = UnknownAux> = ModelFqnExpr.Where<A>['where']['expr']
+  export type Endpoint<A extends AnyAux = AnyAux> = ModelFqnExpr.Where<A>['where']['expr']
 
-  export interface Direct<A extends AnyAux> {
+  export interface Direct<A extends AnyAux = AnyAux> {
     source: Endpoint<A>
     target: Endpoint<A>
     isBidirectional?: boolean
@@ -146,25 +146,25 @@ export namespace ModelRelationExpr {
   export function isDirect<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelRelationExpr.Direct<A> {
     return 'source' in expr && 'target' in expr
   }
-  export interface Incoming<A extends AnyAux> {
+  export interface Incoming<A extends AnyAux = AnyAux> {
     incoming: Endpoint<A>
   }
   export function isIncoming<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelRelationExpr.Incoming<A> {
     return 'incoming' in expr
   }
-  export interface Outgoing<A extends AnyAux> {
+  export interface Outgoing<A extends AnyAux = AnyAux> {
     outgoing: Endpoint<A>
   }
   export function isOutgoing<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelRelationExpr.Outgoing<A> {
     return 'outgoing' in expr
   }
-  export interface InOut<A extends AnyAux> {
+  export interface InOut<A extends AnyAux = AnyAux> {
     inout: Endpoint<A>
   }
   export function isInOut<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelRelationExpr.InOut<A> {
     return 'inout' in expr
   }
-  export interface Where<A extends AnyAux> {
+  export interface Where<A extends AnyAux = AnyAux> {
     where: {
       expr: ExclusiveUnion<{
         Direct: ModelRelationExpr.Direct<A>
@@ -268,7 +268,7 @@ export type ModelExpression<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
 }>
 
 export namespace ModelExpression {
-  export type Where<A extends AnyAux> = ModelFqnExpr.Where<A> | ModelRelationExpr.Where<A>
+  export type Where<A extends AnyAux = AnyAux> = ModelFqnExpr.Where<A> | ModelRelationExpr.Where<A>
   export function isWhere<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelExpression.Where<A> {
     return 'where' in expr
   }

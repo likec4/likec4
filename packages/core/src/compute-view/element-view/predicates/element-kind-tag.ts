@@ -1,10 +1,11 @@
 import { findConnectionsWithin } from '../../../model/connection/model'
-import type { ModelLayer } from '../../../types/expression-v2-model'
+import type { AnyAux } from '../../../types'
+import type { ModelFqnExpr } from '../../../types/expression-model'
 import type { PredicateExecutor } from '../_types'
 import { resolveElements } from './_utils'
 
 export const ElementKindOrTagPredicate: PredicateExecutor<
-  ModelLayer.FqnExpr.ElementKindExpr | ModelLayer.FqnExpr.ElementTagExpr
+  ModelFqnExpr.ElementKindExpr<AnyAux> | ModelFqnExpr.ElementTagExpr<AnyAux>
 > = {
   include: ({ expr, model, stage, filterWhere }) => {
     const elements = filterWhere(resolveElements(model, expr))
