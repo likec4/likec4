@@ -1,5 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
+import type { Fqn } from '../types'
 import { LikeC4Model } from './LikeC4Model'
 
 test('LikeC4Model.create: should have types', () => {
@@ -46,6 +47,7 @@ test('LikeC4Model.create: should have types', () => {
       tag1: {},
       tag2: {},
     },
+    metadataKeys: ['key1', 'key2'],
   })
 
   const source = builder
@@ -86,16 +88,40 @@ test('LikeC4Model.create: should have types', () => {
   // @ts-expect-error
   m.element('wrong')
 
+  type Elements =
+    | 'alice'
+    | 'bob'
+    | 'cloud'
+    | 'cloud.backend'
+    | 'cloud.backend.api'
+    | 'cloud.backend.db'
+    | 'cloud.frontend'
+
   // should not fail
   m.findElement('wrong')
 
-  expectTypeOf(m.Aux.ElementId).toEqualTypeOf(
-    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-  )
+  expectTypeOf(m.element).parameter(0).toEqualTypeOf<
+    Elements | {
+      id: Fqn<Elements>
+    }
+  >()
+
+  const e = m.element('alice')
+
+  expectTypeOf(e.getMetadata).parameter(0).toEqualTypeOf<'key1' | 'key2' | undefined>()
+  expectTypeOf(() => e.getMetadata()).returns.toEqualTypeOf<Record<'key1' | 'key2', string>>()
+
+  expectTypeOf(m.Aux.ElementId).toEqualTypeOf<Elements>()
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'index' | 'prodview'>()
   expectTypeOf(m.Aux.DeploymentId).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
   >()
+
+  expectTypeOf(m.Aux.ElementKind).toEqualTypeOf<'actor' | 'system' | 'component'>()
+  expectTypeOf(m.Aux.DeploymentKind).toEqualTypeOf<'env' | 'vm'>()
+  expectTypeOf(m.Aux.RelationKind).toEqualTypeOf<'like' | 'dislike'>()
+  expectTypeOf(m.Aux.Tag).toEqualTypeOf<'tag1' | 'tag2'>()
+  expectTypeOf(m.Aux.MetadataKey).toEqualTypeOf<'key1' | 'key2'>()
 })
 
 test('LikeC4Model.fromDump: should have types', () => {
