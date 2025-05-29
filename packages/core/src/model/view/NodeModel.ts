@@ -1,4 +1,4 @@
-import type { Aux, Color, GroupElementKind, ProcessedView } from '../../types'
+import type { Aux, Color, GroupElementKind, ProcessedView, Unknown } from '../../types'
 import {
   type AnyAux,
   type DiagramView,
@@ -43,7 +43,7 @@ export namespace NodeModel {
   }
 }
 
-export class NodeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> {
+export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = ProcessedView<A>> {
   constructor(
     public readonly $view: LikeC4ViewModel<A, V>,
     public readonly $node: V['nodes'][number],

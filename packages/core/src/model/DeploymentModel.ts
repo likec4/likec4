@@ -1,7 +1,6 @@
 import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
-  type Any,
   type AnyAux,
   type Aux,
   type ComputedDeploymentView,
@@ -9,6 +8,7 @@ import {
   type DeploymentRelationship,
   type IteratorLike,
   type LikeC4ModelData,
+  type Unknown,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -35,7 +35,7 @@ import {
 } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<A extends AnyAux = Any> {
+export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
   readonly #elements = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
   readonly #parents = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentNodeModel<A>>()

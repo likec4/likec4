@@ -1,17 +1,21 @@
-import type { LikeC4Model } from '@likec4/core/model'
+import type { AnyAux, LikeC4Model, Unknown } from '@likec4/core/model'
 import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
 import { LikeC4ModelContext } from './LikeC4ModelContext'
 
-export function useLikeC4Model(): LikeC4Model | null
-export function useLikeC4Model(strict: true): LikeC4Model
-export function useLikeC4Model(strict: boolean): LikeC4Model | null
-export function useLikeC4Model(strict: true, type: 'layouted'): LikeC4Model.Layouted
-export function useLikeC4Model(strict: true, type: 'computed'): LikeC4Model.Computed
-export function useLikeC4Model(strict: true, type: 'layouted' | 'computed' | undefined): LikeC4Model
-export function useLikeC4Model(strict: boolean, type: 'layouted'): LikeC4Model.Layouted | null
-export function useLikeC4Model(strict: boolean, type: 'computed'): LikeC4Model.Computed | null
-export function useLikeC4Model(strict: boolean, type: 'layouted' | 'computed' | undefined): LikeC4Model | null
+export function useLikeC4Model<A extends AnyAux = Unknown>(): LikeC4Model<A> | null
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: true): LikeC4Model<A>
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: boolean): LikeC4Model<A> | null
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: true, type: 'layouted'): LikeC4Model.Layouted<A>
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: true, type: 'computed'): LikeC4Model.Computed<A>
+// dprint-ignore
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: true, type: 'layouted' | 'computed' | undefined): LikeC4Model<A>
+// dprint-ignore
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: boolean, type: 'layouted'): LikeC4Model.Layouted<A> | null
+// dprint-ignore
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: boolean, type: 'computed'): LikeC4Model.Computed<A> | null
+// dprint-ignore
+export function useLikeC4Model<A extends AnyAux = Unknown>(strict: boolean, type: 'layouted' | 'computed' | undefined): LikeC4Model<A> | null
 export function useLikeC4Model(strict?: boolean, type?: 'layouted' | 'computed') {
   const model = useContext(LikeC4ModelContext)
 

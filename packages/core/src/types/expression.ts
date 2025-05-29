@@ -1,5 +1,5 @@
 import type { ExclusiveUnion } from './_common'
-import type { Any as ANY, AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, Unknown } from './aux'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
 import { type Icon } from './scalars'
@@ -25,7 +25,7 @@ export namespace FqnExpr {
     return 'wildcard' in expr && expr.wildcard === true
   }
 
-  export interface ModelRef<M extends AnyAux = ANY> {
+  export interface ModelRef<M extends AnyAux = Unknown> {
     ref: FqnRef.ModelRef<M>
     selector?: PredicateSelector
   }
@@ -33,7 +33,7 @@ export namespace FqnExpr {
     return 'ref' in ref && FqnRef.isModelRef(ref.ref)
   }
 
-  export interface DeploymentRef<A extends AnyAux = ANY> {
+  export interface DeploymentRef<A extends AnyAux = Unknown> {
     ref: FqnRef.DeploymentRef<A>
     selector?: PredicateSelector
   }
@@ -41,7 +41,7 @@ export namespace FqnExpr {
     return 'ref' in expr && FqnRef.isDeploymentRef(expr.ref)
   }
 
-  export interface ElementKindExpr<A extends AnyAux = ANY> {
+  export interface ElementKindExpr<A extends AnyAux = Unknown> {
     elementKind: Aux.ElementKind<A>
     isEqual: boolean
   }
@@ -49,7 +49,7 @@ export namespace FqnExpr {
     return 'elementKind' in expr && 'isEqual' in expr
   }
 
-  export interface ElementTagExpr<A extends AnyAux = ANY> {
+  export interface ElementTagExpr<A extends AnyAux = Unknown> {
     elementTag: Aux.Tag<A>
     isEqual: boolean
   }
@@ -57,14 +57,14 @@ export namespace FqnExpr {
     return 'elementTag' in expr && 'isEqual' in expr
   }
 
-  export type NonWildcard<A extends AnyAux = ANY> = ExclusiveUnion<{
+  export type NonWildcard<A extends AnyAux = Unknown> = ExclusiveUnion<{
     ModelRef: ModelRef<A>
     DeploymentRef: DeploymentRef<A>
     ElementKind: ElementKindExpr<A>
     ElementTag: ElementTagExpr<A>
   }>
 
-  export interface Where<A extends AnyAux = ANY> {
+  export interface Where<A extends AnyAux = Unknown> {
     where: {
       expr: ExclusiveUnion<{
         Wildcard: Wildcard
@@ -81,7 +81,7 @@ export namespace FqnExpr {
     return 'where' in expr && is(expr.where.expr)
   }
 
-  export interface Custom<A extends AnyAux = ANY> {
+  export interface Custom<A extends AnyAux = Unknown> {
     custom: {
       expr: OrWhere<A>
       title?: string
@@ -113,7 +113,7 @@ export namespace FqnExpr {
       || isElementTagExpr(expr)
   }
 
-  export type OrWhere<A extends AnyAux = ANY> = ExclusiveUnion<{
+  export type OrWhere<A extends AnyAux = Unknown> = ExclusiveUnion<{
     Wildcard: FqnExpr.Wildcard
     ModelRef: FqnExpr.ModelRef<A>
     DeploymentRef: FqnExpr.DeploymentRef<A>
@@ -122,7 +122,7 @@ export namespace FqnExpr {
     Where: FqnExpr.Where<A>
   }>
 
-  export type Any<A extends AnyAux = ANY> = ExclusiveUnion<{
+  export type Any<A extends AnyAux = Unknown> = ExclusiveUnion<{
     Wildcard: Wildcard
     ModelRef: ModelRef<A>
     DeploymentRef: DeploymentRef<A>
@@ -145,7 +145,7 @@ export namespace FqnExpr {
   }
 }
 
-export type FqnExpr<A extends AnyAux = ANY> = ExclusiveUnion<{
+export type FqnExpr<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>
@@ -154,9 +154,9 @@ export type FqnExpr<A extends AnyAux = ANY> = ExclusiveUnion<{
 }>
 
 export namespace RelationExpr {
-  export type Endpoint<A extends AnyAux = ANY> = FqnExpr.Where<A>['where']['expr']
+  export type Endpoint<A extends AnyAux = Unknown> = FqnExpr.Where<A>['where']['expr']
 
-  export interface Direct<A extends AnyAux = ANY> {
+  export interface Direct<A extends AnyAux = Unknown> {
     source: Endpoint<A>
     target: Endpoint<A>
     isBidirectional?: boolean
@@ -164,25 +164,25 @@ export namespace RelationExpr {
   export function isDirect<A extends AnyAux>(expr: Expression<A>): expr is RelationExpr.Direct<A> {
     return 'source' in expr && 'target' in expr
   }
-  export interface Incoming<A extends AnyAux = ANY> {
+  export interface Incoming<A extends AnyAux = Unknown> {
     incoming: Endpoint<A>
   }
   export function isIncoming<A extends AnyAux>(expr: Expression<A>): expr is RelationExpr.Incoming<A> {
     return 'incoming' in expr
   }
-  export interface Outgoing<A extends AnyAux = ANY> {
+  export interface Outgoing<A extends AnyAux = Unknown> {
     outgoing: Endpoint<A>
   }
   export function isOutgoing<A extends AnyAux>(expr: Expression<A>): expr is RelationExpr.Outgoing<A> {
     return 'outgoing' in expr
   }
-  export interface InOut<A extends AnyAux = ANY> {
+  export interface InOut<A extends AnyAux = Unknown> {
     inout: Endpoint<A>
   }
   export function isInOut<A extends AnyAux>(expr: Expression<A>): expr is RelationExpr.InOut<A> {
     return 'inout' in expr
   }
-  export interface Where<A extends AnyAux = ANY> {
+  export interface Where<A extends AnyAux = Unknown> {
     where: {
       expr: ExclusiveUnion<{
         Direct: RelationExpr.Direct<A>
@@ -199,7 +199,7 @@ export namespace RelationExpr {
         isInOut(expr.where.expr))
   }
 
-  export interface Custom<A extends AnyAux = ANY> {
+  export interface Custom<A extends AnyAux = Unknown> {
     customRelation: {
       expr: OrWhere<A>
       title?: string
@@ -228,7 +228,7 @@ export namespace RelationExpr {
       || isInOut(expr)
   }
 
-  export type OrWhere<A extends AnyAux = ANY> = ExclusiveUnion<{
+  export type OrWhere<A extends AnyAux = Unknown> = ExclusiveUnion<{
     Direct: Direct<A>
     Incoming: Incoming<A>
     Outgoing: Outgoing<A>
@@ -236,7 +236,7 @@ export namespace RelationExpr {
     Where: Where<A>
   }>
 
-  export type Any<A extends AnyAux = ANY> = ExclusiveUnion<{
+  export type Any<A extends AnyAux = Unknown> = ExclusiveUnion<{
     Direct: Direct<A>
     Incoming: Incoming<A>
     Outgoing: Outgoing<A>
@@ -258,7 +258,7 @@ export namespace RelationExpr {
   }
 }
 
-export type RelationExpr<A extends AnyAux = ANY> = ExclusiveUnion<{
+export type RelationExpr<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<A>
   Incoming: RelationExpr.Incoming<A>
   Outgoing: RelationExpr.Outgoing<A>
@@ -271,7 +271,7 @@ export type RelationExpr<A extends AnyAux = ANY> = ExclusiveUnion<{
  * @template D - The type for the deployment FQN, defaults to `Fqn`.
  * @template M - The type for the model FQN, defaults to `Fqn`.
  */
-export type Expression<A extends AnyAux = ANY> = ExclusiveUnion<{
+export type Expression<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
   ModelRef: FqnExpr.ModelRef<A>
   DeploymentRef: FqnExpr.DeploymentRef<A>
@@ -287,7 +287,7 @@ export type Expression<A extends AnyAux = ANY> = ExclusiveUnion<{
 }>
 
 export namespace Expression {
-  export type Where<A extends AnyAux = ANY> = FqnExpr.Where<A> | RelationExpr.Where<A>
+  export type Where<A extends AnyAux = Unknown> = FqnExpr.Where<A> | RelationExpr.Where<A>
   export function isWhere<A extends AnyAux>(expr: Expression<A>): expr is Expression.Where<A> {
     return 'where' in expr
   }

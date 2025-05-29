@@ -14,7 +14,7 @@ import type {
   RelationshipSpecification as RelationshipKindSpecification,
   ShapeSize,
   SpacingSize,
-  SpecTypes,
+  SpecAux,
   TagSpecification,
   TextSize,
   ThemeColor as Color,
@@ -284,7 +284,7 @@ export namespace Types {
       T['Fqn'],
       T['DeploymentFqn'],
       T['ViewId'],
-      SpecTypes<
+      SpecAux<
         T['ElementKind'],
         T['DeploymentKind'],
         T['RelationshipKind'],

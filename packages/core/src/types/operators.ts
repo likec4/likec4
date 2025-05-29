@@ -1,7 +1,7 @@
 import { allPass, anyPass, isNot, isNullish } from 'remeda'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
-import type { Any, AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, Unknown } from './aux'
 
 export type EqualOperator<V> = {
   eq: V
@@ -66,7 +66,7 @@ export function isOrOperator<A extends AnyAux>(operator: WhereOperator<A>): oper
   return 'or' in operator
 }
 
-export type WhereOperator<A extends AnyAux = Any> =
+export type WhereOperator<A extends AnyAux = Unknown> =
   | TagEqual<A>
   | KindEqual<A>
   | ParticipantOperator<A>
@@ -83,7 +83,7 @@ export type Filterable<A extends AnyAux> = {
 
 export type OperatorPredicate<A extends AnyAux> = (value: Filterable<A>) => boolean
 
-export function whereOperatorAsPredicate<A extends AnyAux = Any>(
+export function whereOperatorAsPredicate<A extends AnyAux = Unknown>(
   operator: WhereOperator<A>,
 ): OperatorPredicate<A> {
   switch (true) {

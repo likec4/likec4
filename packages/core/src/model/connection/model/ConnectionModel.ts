@@ -1,6 +1,6 @@
 import { isNot } from 'remeda'
 import { invariant } from '../../../errors'
-import type { Any, AnyAux, Aux } from '../../../types'
+import type { AnyAux, Aux, Unknown } from '../../../types'
 import { customInspectSymbol } from '../../../utils/const'
 import { ifilter, isome } from '../../../utils/iterable'
 import { difference, equals, intersection, union } from '../../../utils/set'
@@ -17,7 +17,7 @@ import { findConnection } from './find'
  *
  * Merges relationships together to an single edge on the diagram.
  */
-export class ConnectionModel<A extends AnyAux = Any> implements Connection<ElementModel<A>, Aux.Strict.EdgeId<A>> {
+export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<ElementModel<A>, Aux.Strict.EdgeId<A>> {
   public readonly id: Aux.Strict.EdgeId<A>
 
   constructor(

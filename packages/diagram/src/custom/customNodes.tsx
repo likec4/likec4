@@ -1,5 +1,5 @@
-import type { AnyAux, DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
-import type { DiagramView } from '@likec4/core/types'
+import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
+import type { AnyAux, DiagramView, Unknown } from '@likec4/core/types'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
@@ -9,7 +9,7 @@ import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 function customDiagramNode<
   P extends {
     nodeProps: NodeProps<Types.NodeData>
-    nodeModel: NodeModel<AnyAux>
+    nodeModel: NodeModel
   },
 >(
   Node: (props: P) => ReactNode,
@@ -22,7 +22,7 @@ function customDiagramNode<
   }) as (props: P['nodeProps']) => ReactNode
 }
 
-export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomElementNodeProps<M extends AnyAux = Unknown> = {
   nodeProps: NodeProps<Types.ElementNodeData, 'element'>
   nodeModel: NodeModel.WithElement<M, DiagramView<M>>
 }

@@ -1,7 +1,6 @@
-import { entries, pipe, sort, values } from 'remeda'
+import { entries, isNullish, pipe, sort, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
-  Any,
   AnyAux,
   Aux,
   AuxFromDump,
@@ -13,6 +12,7 @@ import type {
   ParsedLikeC4ModelData,
   ProcessedView,
   Relationship,
+  Unknown,
 } from '../types'
 import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
 import { compareNatural } from '../utils'
@@ -30,7 +30,7 @@ import { type ElementOrFqn, type IncomingFilter, type OutgoingFilter, getId } fr
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends AnyAux = Any> {
+export class LikeC4Model<A extends AnyAux = Aux.Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -73,9 +73,8 @@ export class LikeC4Model<A extends AnyAux = Any> {
     const { views: _omit, ...rest } = parsed
     return new LikeC4Model({
       ...rest,
-      __: 'computed',
-      views: {} as LikeC4ModelData<T>['views'],
-    })
+      views: {},
+    } as any)
   }
 
   /**
@@ -140,6 +139,18 @@ export class LikeC4Model<A extends AnyAux = Any> {
 
   get type(): 'computed' | 'layouted' {
     return this.$model.__ ?? 'computed'
+  }
+
+  get projectId(): Aux.ProjectId<A> {
+    return this.$model.projectId ?? 'unknown'
+  }
+
+  /**
+   * Returns true if the model was created from a parsed data
+   * (not computed or layouted)
+   */
+  get isFromParsed(): boolean {
+    return isNullish(this.$model.__)
   }
 
   public element(el: ElementOrFqn<A>): ElementModel<A> {
@@ -439,8 +450,13 @@ export class LikeC4Model<A extends AnyAux = Any> {
   }
 }
 
+/**
+ *  When you do not need types in the model
+ */
+export type AnyLikeC4Model = LikeC4Model<Aux.Any>
+
 export namespace LikeC4Model {
-  export const EMPTY = LikeC4Model.create<Any>({
+  export const EMPTY = LikeC4Model.create<Unknown>({
     __: 'computed',
     projectId: 'default' as never,
     specification: {
@@ -464,16 +480,16 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Computed<A extends AnyAux = Any> = LikeC4Model<A>
-  export type Layouted<A extends AnyAux = Any> = LikeC4Model<A>
+  export type Computed<A extends AnyAux = Unknown> = LikeC4Model<A>
+  export type Layouted<A extends AnyAux = Unknown> = LikeC4Model<A>
 
-  export type Node<A extends AnyAux = Any> = NodeModel<A>
-  export type Element<A extends AnyAux = Any> = ElementModel<A>
-  export type Relationship<A extends AnyAux = Any> = RelationshipModel<A>
-  export type View<A extends AnyAux = Any> = LikeC4ViewModel<A>
+  export type Node<A extends AnyAux = Unknown> = NodeModel<A>
+  export type Element<A extends AnyAux = Unknown> = ElementModel<A>
+  export type Relationship<A extends AnyAux = Unknown> = RelationshipModel<A>
+  export type View<A extends AnyAux = Unknown> = LikeC4ViewModel<A>
 
-  export type DeploymentNode<A extends AnyAux = Any> = DeploymentNodeModel<A>
-  export type DeployedInstance<A extends AnyAux = Any> = DeployedInstanceModel<A>
+  export type DeploymentNode<A extends AnyAux = Unknown> = DeploymentNodeModel<A>
+  export type DeployedInstance<A extends AnyAux = Unknown> = DeployedInstanceModel<A>
 
-  export type AnyRelation<M extends AnyAux = Any> = RelationshipModel<M> | DeploymentRelationModel<M>
+  export type AnyRelation<M extends AnyAux = Unknown> = RelationshipModel<M> | DeploymentRelationModel<M>
 }

@@ -5,252 +5,31 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  astro:
-    '@astrojs/check':
-      specifier: ^0.9.4
-      version: 0.9.4
-    '@astrojs/react':
-      specifier: 4.3.0
-      version: 4.3.0
-    '@astrojs/starlight':
-      specifier: 0.34.3
-      version: 0.34.3
-    '@expressive-code/plugin-collapsible-sections':
-      specifier: ^0.41.2
-      version: 0.41.2
-    '@expressive-code/plugin-line-numbers':
-      specifier: ^0.41.2
-      version: 0.41.2
-    astro:
-      specifier: 5.8.0
-      version: 5.8.0
-    astro-og-canvas:
-      specifier: ^0.7.0
-      version: 0.7.0
-    shiki:
-      specifier: ^3.3.0
-      version: 3.3.0
-    starlight-heading-badges:
-      specifier: ^0.5.0
-      version: 0.5.0
-    starlight-links-validator:
-      specifier: ^0.16.0
-      version: 0.16.0
-    starlight-package-managers:
-      specifier: ^0.11.0
-      version: 0.11.0
-  css:
-    '@pandacss/dev':
-      specifier: ^0.53.6
-      version: 0.53.6
-    postcss:
-      specifier: ^8.5.3
-      version: 8.5.3
   default:
     '@types/node':
       specifier: ^20.17.30
       version: 20.17.30
-    tsx:
-      specifier: ~4.19.4
-      version: 4.19.4
-    turbo:
-      specifier: ^2.5.3
-      version: 2.5.3
     typescript:
       specifier: ^5.8.3
       version: 5.8.3
     unbuild:
       specifier: ^3.5.0
       version: 3.5.0
-    wireit:
-      specifier: ^0.14.12
-      version: 0.14.12
-    wrangler:
-      specifier: ^4.16.1
-      version: 4.16.1
-  esbuild:
-    esbuild-node-externals:
-      specifier: ^1.18.0
-      version: 1.18.0
-    esbuild-plugins-node-modules-polyfill:
-      specifier: ^1.7.0
-      version: 1.7.0
-  hono:
-    hono:
-      specifier: ^4.7.10
-      version: 4.7.10
-    hono-sessions:
-      specifier: ^0.7.2
-      version: 0.7.2
   langium:
     langium:
       specifier: 3.5.0
       version: 3.5.0
-    langium-cli:
-      specifier: 3.5.0
-      version: 3.5.0
-  mantine:
-    '@mantine/colors-generator':
-      specifier: 8.0.1
-      version: 8.0.1
-    '@mantine/core':
-      specifier: 8.0.1
-      version: 8.0.1
-    '@mantine/hooks':
-      specifier: 8.0.1
-      version: 8.0.1
-    '@mantine/modals':
-      specifier: 8.0.1
-      version: 8.0.1
-    '@mantine/notifications':
-      specifier: 8.0.1
-      version: 8.0.1
-    '@mantine/vanilla-extract':
-      specifier: 8.0.1
-      version: 8.0.1
-  mcp:
-    '@modelcontextprotocol/sdk':
-      specifier: ^1.10.2
-      version: 1.10.2
-  react:
-    '@nanostores/react':
-      specifier: 1.0.0
-      version: 1.0.0
-    '@tabler/icons-react':
-      specifier: 3.31.0
-      version: 3.31.0
-    clsx:
-      specifier: ^2.1.1
-      version: 2.1.1
-    motion:
-      specifier: ^12.12.2
-      version: 12.12.2
-    nanostores:
-      specifier: 1.0.1
-      version: 1.0.1
-    react-error-boundary:
-      specifier: ^5.0.0
-      version: 5.0.0
-  router:
-    '@tanstack/react-router':
-      specifier: ^1.114.13
-      version: 1.114.27
-    '@tanstack/router-cli':
-      specifier: ^1.114.13
-      version: 1.114.17
-    '@tanstack/router-vite-plugin':
-      specifier: ^1.114.13
-      version: 1.114.17
   utils:
-    '@hpcc-js/wasm-graphviz':
-      specifier: 1.7.0
-      version: 1.7.0
-    '@react-hookz/web':
-      specifier: ^25.1.1
-      version: 25.1.1
-    '@types/picomatch':
-      specifier: ^4.0.0
-      version: 4.0.0
-    '@valibot/to-json-schema':
-      specifier: ^1.0.0
-      version: 1.0.0
-    chroma-js:
-      specifier: ^3.1.2
-      version: 3.1.2
-    consola:
-      specifier: ^3.4.2
-      version: 3.4.2
-    esm-env:
-      specifier: ^1.2.2
-      version: 1.2.2
-    fast-equals:
-      specifier: ^5.2.2
-      version: 5.2.2
-    fdir:
-      specifier: ^6.4.4
-      version: 6.4.4
     json5:
       specifier: ^2.2.3
       version: 2.2.3
-    nano-spawn:
-      specifier: ^1.0.2
-      version: 1.0.2
-    object-hash:
-      specifier: ^3.0.0
-      version: 3.0.0
-    p-debounce:
-      specifier: ^4.0.0
-      version: 4.0.0
-    p-limit:
-      specifier: ^6.2.0
-      version: 6.2.0
-    p-queue:
-      specifier: ^8.1.0
-      version: 8.1.0
-    p-timeout:
-      specifier: ^6.1.4
-      version: 6.1.4
-    package-manager-detector:
-      specifier: ^1.2.0
-      version: 1.2.0
-    picomatch:
-      specifier: ^4.0.2
-      version: 4.0.2
     remeda:
       specifier: ^2.21.3
       version: 2.21.3
-    std-env:
-      specifier: ^3.9.0
-      version: 3.9.0
-    ufo:
-      specifier: ^1.6.1
-      version: 1.6.1
-    valibot:
-      specifier: ^1.0.0
-      version: 1.0.0
-    zod:
-      specifier: ^3.24.3
-      version: 3.24.3
-  vite:
-    '@vitejs/plugin-react':
-      specifier: ^4.5.0
-      version: 4.5.0
-    rollup:
-      specifier: ^4.41.0
-      version: 4.41.0
-    vite:
-      specifier: ^6.3.5
-      version: 6.3.5
-    vite-plugin-dts:
-      specifier: ^4.5.4
-      version: 4.5.4
-    vite-plugin-node-polyfills:
-      specifier: ^0.23.0
-      version: 0.23.0
-    vite-tsconfig-paths:
-      specifier: ^5.1.4
-      version: 5.1.4
   vitest:
-    '@vitest/ui':
-      specifier: ^3.1.4
-      version: 3.1.4
     vitest:
       specifier: ^3.1.4
       version: 3.1.4
-  vscode:
-    '@types/vscode':
-      specifier: ^1.84.0
-      version: 1.97.0
-    vscode-textmate:
-      specifier: 9.2.0
-      version: 9.2.0
-  xyflow:
-    '@xyflow/react':
-      specifier: ^12.6.4
-      version: 12.6.4
-    '@xyflow/system':
-      specifier: ^0.0.61
-      version: 0.0.61
 
 overrides:
   esbuild: ^0.25.4

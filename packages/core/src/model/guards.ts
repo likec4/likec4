@@ -1,11 +1,12 @@
-import type { Any, AnyAux } from '../types'
+import type { AnyAux, Unknown } from '../types'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
-import { DeployedInstanceModel, DeploymentNodeModel } from './DeploymentElementModel'
+import { DeployedInstanceModel, DeploymentNodeModel, DeploymentRelationModel } from './DeploymentElementModel'
 import { ElementModel } from './ElementModel'
+import { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
 
 export function isDeploymentNode<M extends AnyAux>(
   model: DeploymentElementModel<M>,
@@ -25,10 +26,18 @@ export function isNestedElementOfDeployedInstanceModel<M extends AnyAux>(
   return !model.isInstance() && !model.isDeploymentNode()
 }
 
-export function isDeploymentElementModel<M extends AnyAux = Any>(x: unknown): x is DeploymentElementModel<M> {
+export function isDeploymentRelation<M extends AnyAux>(x: AnyRelationshipModel<M>): x is DeploymentRelationModel<M> {
+  return x instanceof DeploymentRelationModel
+}
+
+export function isModelRelation<M extends AnyAux>(x: AnyRelationshipModel<M>): x is RelationshipModel<M> {
+  return x instanceof RelationshipModel
+}
+
+export function isDeploymentElementModel<M extends AnyAux = Unknown>(x: unknown): x is DeploymentElementModel<M> {
   return x instanceof DeploymentNodeModel || x instanceof DeployedInstanceModel
 }
 
-export function isElementModel<M extends AnyAux = Any>(element: unknown): element is ElementModel<M> {
+export function isElementModel<M extends AnyAux = Unknown>(element: unknown): element is ElementModel<M> {
   return element instanceof ElementModel
 }

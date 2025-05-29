@@ -106,6 +106,7 @@ exports[`Builder (style 2) > should build  1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "from-builder",
   "relations": {},
   "specification": {
     "deployments": {

@@ -100,6 +100,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "from-builder",
   "relations": {
     "rel1": {
       "id": "rel1",
@@ -206,6 +207,7 @@ exports[`Builder (style1) > should build view  1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "from-builder",
   "relations": {},
   "specification": {
     "deployments": {},
@@ -349,6 +351,7 @@ exports[`Builder (style1) > should build viewOf  1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "from-builder",
   "relations": {},
   "specification": {
     "deployments": {},

@@ -1,11 +1,11 @@
 import { describe, it } from 'vitest'
-import type { AnyAuxWithSpec } from './aux'
+import type { Aux, SpecAux } from './aux'
 import { type Filterable, whereOperatorAsPredicate } from './operators'
 
 type FTag = 'old' | 'new'
 type FKind = 'a' | 'b'
 
-type A = AnyAuxWithSpec<FKind, string, string, FTag, string>
+type A = Aux<string, string, string, string, SpecAux<FKind, string, string, FTag, string>>
 
 function item(props: Filterable<A>): Filterable<A> {
   return props

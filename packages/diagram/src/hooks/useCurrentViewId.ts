@@ -1,8 +1,5 @@
-import { invariant } from '@likec4/core'
-import type { AnyAux, LikeC4ViewModel } from '@likec4/core/model'
-import type { DiagramView, ViewId } from '@likec4/core/types'
+import type { ViewId } from '@likec4/core/types'
 import { useSelector } from '@xstate/react'
-import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import type { DiagramActorSnapshot } from '../state/types'
 import { useDiagramActorRef } from './useDiagram'
 

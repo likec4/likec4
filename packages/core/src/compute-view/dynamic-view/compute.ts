@@ -3,7 +3,7 @@ import { nonNullable } from '../../errors'
 import type { LikeC4Model } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { ElementModel } from '../../model/ElementModel'
-import type { Any, AnyAux, Aux } from '../../types'
+import type { AnyAux, Aux, Unknown } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
@@ -31,10 +31,10 @@ import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../utils/view-hash'
 
-type Element<A extends AnyAux = Any> = ElementModel<A>
+type Element<A extends AnyAux = Unknown> = ElementModel<A>
 
 namespace DynamicViewCompute {
-  export interface Step<A extends AnyAux = Any> {
+  export interface Step<A extends AnyAux = Unknown> {
     id: StepEdgeId
     source: Element<A>
     target: Element<A>
@@ -52,7 +52,7 @@ namespace DynamicViewCompute {
   }
 }
 
-class DynamicViewCompute<A extends AnyAux = Any> {
+class DynamicViewCompute<A extends AnyAux = Unknown> {
   // Intermediate state
   private explicits = new Set<Element<A>>()
   private steps = [] as DynamicViewCompute.Step<A>[]

@@ -3,7 +3,7 @@ import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
 import { forEach, map, partition, pipe, takeWhile } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
-import type { Any, AnyAux, ComputedEdge, ComputedNode, NodeId } from '../../types'
+import type { AnyAux, ComputedEdge, ComputedNode, NodeId, Unknown } from '../../types'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**
@@ -41,7 +41,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
 /**
  * Side effect, mutates node.children field to preserve same order as in the input
  */
-function updateChildren<A extends AnyAux = Any>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
+function updateChildren<A extends AnyAux = Unknown>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
   nodes.forEach(parent => {
     if (parent.children.length > 0) {
       parent.children = nodes.reduce((acc, n) => {

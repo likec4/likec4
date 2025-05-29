@@ -3,7 +3,7 @@ import { invariant, nonexhaustive } from '../../errors'
 import type { DeployedInstanceModel, DeploymentNodeModel, LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
 import type { ElementModel } from '../../model/ElementModel'
-import type { Any, AnyAux, Aux } from '../../types'
+import type { AnyAux, Aux, Unknown } from '../../types'
 import {
   type ComputedEdge,
   type ComputedNode,
@@ -258,7 +258,7 @@ export function toComputedEdges<A extends AnyAux>(
   }, [] as ComputedEdge<A>[])
 }
 
-export function buildNodes<A extends AnyAux = Any>(
+export function buildNodes<A extends AnyAux = Unknown>(
   memory: Memory,
 ): ReadonlyMap<Aux.Strict.NodeId<A>, ComputedNode<A>> {
   return buildComputedNodes([...memory.final].map(toNodeSource))

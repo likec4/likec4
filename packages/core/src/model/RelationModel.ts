@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { Any, AnyAux, Color, IteratorLike, Link } from '../types'
+import type { AnyAux, Color, IteratorLike, Link, Unknown } from '../types'
 import {
   type Aux,
   type Relationship,
@@ -11,12 +11,35 @@ import {
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
+import type { isDeploymentRelation } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
 
-export class RelationshipModel<A extends AnyAux = Any> {
+/**
+ * A relationship between two elements (in logical or deployment model)
+ * use {@link isDeploymentRelation} guard to check if the relationship is a deployment relationship
+ */
+export interface AnyRelationshipModel<A extends AnyAux = Unknown> {
+  get id(): Aux.Strict.RelationId<A>
+  get expression(): string
+  get title(): string | null
+  get technology(): string | null
+  get description(): string | null
+  get navigateTo(): LikeC4ViewModel<A> | null
+  get tags(): Aux.Tags<A>
+  get kind(): Aux.RelationKind<A> | null
+  get links(): ReadonlyArray<Link>
+  get color(): Color
+  get line(): RelationshipLineType
+  isDeploymentRelation(): this is DeploymentRelationModel<A>
+  isModelRelation(): this is RelationshipModel<A>
+  getMetadata(): Aux.Strict.Metadata<A>
+  getMetadata(field: Aux.MetadataKey<A>): string | undefined
+}
+
+export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelationshipModel<A> {
   public readonly source: ElementModel<A>
   public readonly target: ElementModel<A>
 
@@ -103,6 +126,10 @@ export class RelationshipModel<A extends AnyAux = Any> {
 
   public isDeploymentRelation(): this is DeploymentRelationModel<A> {
     return false
+  }
+
+  public isModelRelation(): this is RelationshipModel<A> {
+    return true
   }
 
   public getMetadata(): Aux.Strict.Metadata<A>

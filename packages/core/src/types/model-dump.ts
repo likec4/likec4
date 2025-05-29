@@ -1,5 +1,5 @@
 import type { KeysOf } from './_common'
-import type { Any, Aux, Specification, SpecTypes } from './aux'
+import type { Aux, SpecAux, Specification, Unknown } from './aux'
 import type { ParsedLikeC4ModelData } from './model-data'
 
 /**
@@ -20,14 +20,14 @@ export interface SpecificationDump {
   }
   metadataKeys?: string[]
 }
-export type SpecTypesFromDump<J> = J extends SpecificationDump ? SpecTypes<
+export type SpecTypesFromDump<J> = J extends SpecificationDump ? SpecAux<
     KeysOf<J['elements']>,
     KeysOf<J['deployments']>,
     KeysOf<J['relationships']>,
     KeysOf<J['tags']>,
     J['metadataKeys'] extends readonly string[] ? J['metadataKeys'][number] : never
   >
-  : SpecTypes<never, never, never, never, never>
+  : SpecAux<never, never, never, never, never>
 
 /**
  * Dump differs from {@link ParsedLikeC4ModelData} by the fact that it is computed or layouted
@@ -56,4 +56,4 @@ export type AuxFromDump<D> = D extends LikeC4ModelDump ? Aux<
     KeysOf<D['views']>,
     SpecTypesFromDump<D['specification']>
   >
-  : Any
+  : Unknown

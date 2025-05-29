@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type { AnyAux, Aux, SpecTypes } from './aux'
+import type { AnyAux, Aux, SpecAux } from './aux'
 import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
@@ -18,7 +18,7 @@ describe('SpecTypesFromDump', () => {
     type Result = SpecTypesFromDump<typeof emptySpec>
 
     expectTypeOf<Result>().toEqualTypeOf<
-      SpecTypes<
+      SpecAux<
         never,
         never,
         never,
@@ -60,7 +60,7 @@ describe('SpecTypesFromDump', () => {
     type Result = SpecTypesFromDump<typeof spec>
 
     expectTypeOf<Result>().toEqualTypeOf<
-      SpecTypes<
+      SpecAux<
         'system' | 'container',
         'pod' | 'container',
         'http' | 'grpc',
@@ -88,7 +88,7 @@ describe('SpecTypesFromDump', () => {
     type TestSpec = typeof spec
     type Result = SpecTypesFromDump<TestSpec>
 
-    expectTypeOf<Result>().toEqualTypeOf<SpecTypes<'system', never, 'http', never, never>>()
+    expectTypeOf<Result>().toEqualTypeOf<SpecAux<'system', never, 'http', never, never>>()
   })
 
   it('should return never for non-SpecificationJson types', () => {
@@ -99,7 +99,7 @@ describe('SpecTypesFromDump', () => {
 
     type Result = SpecTypesFromDump<NotASpec>
 
-    expectTypeOf<Result>().toEqualTypeOf<SpecTypes<never, never, never, never, never>>()
+    expectTypeOf<Result>().toEqualTypeOf<SpecAux<never, never, never, never, never>>()
   })
 })
 
@@ -118,7 +118,7 @@ describe('AuxFromDump', () => {
     type Result = AuxFromDump<typeof emptyModel>
 
     expectTypeOf<Result>().toEqualTypeOf<
-      Aux<'test-project', never, never, never, SpecTypes<never, never, never, never, never>>
+      Aux<'test-project', never, never, never, SpecAux<never, never, never, never, never>>
     >()
     expectTypeOf<Result['ProjectId']>().toEqualTypeOf<'test-project'>()
     expectTypeOf<Result['ElementId']>().toEqualTypeOf<never>()
@@ -174,7 +174,7 @@ describe('AuxFromDump', () => {
         'element1' | 'element2',
         'deployment1' | 'deployment2',
         'view1' | 'view2',
-        SpecTypes<
+        SpecAux<
           'system' | 'container',
           'k8s' | 'aws',
           'http' | 'grpc',
@@ -196,7 +196,7 @@ describe('AuxFromDump', () => {
 
     // Verify Spec properties
     expectTypeOf<A['Spec']>().toEqualTypeOf<
-      SpecTypes<
+      SpecAux<
         'system' | 'container',
         'k8s' | 'aws',
         'http' | 'grpc',
@@ -247,7 +247,7 @@ describe('AuxFromDump', () => {
         'e1' | 'e2' | 'e3',
         never,
         never,
-        SpecTypes<
+        SpecAux<
           'system',
           never,
           'http',

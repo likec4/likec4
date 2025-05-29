@@ -1,11 +1,11 @@
 import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
-  type Any,
   type AnyAux,
   type Aux,
   type ComputedNode,
   type Element,
+  type Unknown,
   DefaultElementShape,
   DefaultThemeColor,
   GroupElementKind,
@@ -34,7 +34,7 @@ const modelElementAsNodeSource = <A extends AnyAux>(element: Element<A>): Comput
 }
 
 // type ComputedNodeSource = Simplify<SetRequired<Partial<Omit<ComputedNode, 'parent' | 'children' | 'inEdges' | 'outEdges' | 'level' | 'depth'>>, 'id' | 'title' | 'kind'>>
-export type ComputedNodeSource<A extends AnyAux = Any> = Simplify<
+export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
   & Pick<ComputedNode<A>, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
   & Partial<Omit<Element<A>, 'id' | 'title' | 'kind'>>
 >

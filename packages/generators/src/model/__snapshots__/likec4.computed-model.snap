@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* prettier-ignore-start */
 /* eslint-disable */
 
@@ -7,8 +8,84 @@
  ******************************************************************************/
 
 import { LikeC4Model } from '@likec4/core/model'
+import type { Aux, SpecAux } from '@likec4/core/types';
 
-export const likeC4Model = LikeC4Model.fromDump({
+export type ElementId = 
+  | 'aws'
+  | 'cloud'
+  | 'customer'
+  | 'email'
+  | 'aws.rds'
+  | 'aws.s3'
+  | 'cloud.auth'
+  | 'cloud.backend'
+  | 'cloud.frontend'
+  | 'cloud.media'
+  | 'cloud.backend.api'
+  | 'cloud.backend.graphql'
+  | 'cloud.frontend.dashboard'
+  | 'cloud.frontend.mobile';
+
+export type DeploymentId = 
+  | 'customer'
+  | 'prod'
+  | 'customer.instance'
+  | 'prod.eu'
+  | 'prod.us'
+  | 'prod.eu.db'
+  | 'prod.eu.media'
+  | 'prod.eu.zone1'
+  | 'prod.eu.zone2'
+  | 'prod.us.db'
+  | 'prod.eu.zone1.api'
+  | 'prod.eu.zone1.ui'
+  | 'prod.eu.zone2.api'
+  | 'prod.eu.zone2.ui';
+
+export type ViewId = 
+  | 'cloud'
+  | 'index'
+  | 'prod';
+
+export type ElementKind = 
+  | 'component'
+  | 'mobile'
+  | 'person'
+  | 'system'
+  | 'webapp';
+
+export type RelationshipKind = never;
+
+export type DeploymentKind = 
+  | 'env'
+  | 'node'
+  | 'zone';
+
+export type Tag = 
+  | 'external'
+  | 'internal';
+
+export type MetadataKey = 
+  | 'key1';
+
+export type $Aux = Aux<
+  'from-builder',
+  ElementId,
+  DeploymentId,
+  ViewId,
+  SpecAux<
+    ElementKind,
+    DeploymentKind,
+    RelationshipKind,
+    Tag,
+    MetadataKey
+  >
+>
+
+
+export const likeC4Model = LikeC4Model.create<$Aux>({
+  __: 'computed',
+  projectId: 'from-builder',
   specification: {
     elements: {
       person: {
@@ -35,7 +112,17 @@ export const likeC4Model = LikeC4Model.fromDump({
       node: {},
     },
     relationships: {},
-    tags: {},
+    tags: {
+      internal: {
+        color: 'primary',
+      },
+      external: {
+        color: 'primary',
+      },
+    },
+    metadataKeys: [
+      'key1',
+    ],
   },
   elements: {
     customer: {
@@ -116,11 +203,16 @@ export const likeC4Model = LikeC4Model.fromDump({
       title: 'backend',
       description: null,
       technology: null,
-      tags: null,
+      tags: [
+        'external',
+      ],
       color: 'primary',
       shape: 'rectangle',
       style: {},
       links: null,
+      metadata: {
+        key1: 'value1',
+      },
     },
     'cloud.backend.api': {
       id: 'cloud.backend.api',
@@ -152,7 +244,9 @@ export const likeC4Model = LikeC4Model.fromDump({
       title: 'media',
       description: null,
       technology: null,
-      tags: null,
+      tags: [
+        'internal',
+      ],
       color: 'primary',
       shape: 'storage',
       style: {},
@@ -193,6 +287,9 @@ export const likeC4Model = LikeC4Model.fromDump({
       shape: 'storage',
       style: {},
       links: null,
+      metadata: {
+        key1: 'value2',
+      },
     },
     email: {
       id: 'email',
@@ -357,6 +454,12 @@ export const likeC4Model = LikeC4Model.fromDump({
         model: 'customer',
       },
       title: 'sends emails',
+      tags: [
+        'external',
+      ],
+      metadata: {
+        key1: 'value3',
+      },
     },
   },
   globals: {
@@ -373,13 +476,15 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'customer.instance': {
         id: 'customer.instance',
         element: 'customer',
+        title: 'customer',
       },
       prod: {
         id: 'prod',
@@ -388,9 +493,10 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'prod.eu': {
         id: 'prod.eu',
@@ -399,9 +505,10 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'prod.eu.zone1': {
         id: 'prod.eu.zone1',
@@ -410,17 +517,20 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'prod.eu.zone1.ui': {
         id: 'prod.eu.zone1.ui',
         element: 'cloud.frontend.dashboard',
+        title: 'dashboard',
       },
       'prod.eu.zone1.api': {
         id: 'prod.eu.zone1.api',
         element: 'cloud.backend.api',
+        title: 'api',
       },
       'prod.eu.zone2': {
         id: 'prod.eu.zone2',
@@ -429,25 +539,30 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'prod.eu.zone2.ui': {
         id: 'prod.eu.zone2.ui',
         element: 'cloud.frontend.dashboard',
+        title: 'dashboard',
       },
       'prod.eu.zone2.api': {
         id: 'prod.eu.zone2.api',
         element: 'cloud.backend.api',
+        title: 'api',
       },
       'prod.eu.media': {
         id: 'prod.eu.media',
         element: 'cloud.media',
+        title: 'media',
       },
       'prod.eu.db': {
         id: 'prod.eu.db',
         element: 'aws.rds',
+        title: 'rds',
       },
       'prod.us': {
         id: 'prod.us',
@@ -456,13 +571,15 @@ export const likeC4Model = LikeC4Model.fromDump({
         description: null,
         technology: null,
         tags: null,
-        color: 'primary',
-        shape: 'rectangle',
-        style: {},
+        style: {
+          color: 'primary',
+          shape: 'rectangle',
+        },
       },
       'prod.us.db': {
         id: 'prod.us.db',
         element: 'aws.rds',
+        title: 'rds',
       },
     },
     relations: {
@@ -479,7 +596,6 @@ export const likeC4Model = LikeC4Model.fromDump({
     },
   },
   imports: {},
-  __: 'computed',
   views: {
     index: {
       id: 'index',
@@ -515,6 +631,9 @@ export const likeC4Model = LikeC4Model.fromDump({
           relations: [
             'rel15',
           ],
+          tags: [
+            'external',
+          ],
         },
         {
           id: 'cloud:aws',
@@ -544,6 +663,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'email',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -555,8 +676,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           outEdges: [
             'email:customer',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -566,6 +685,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'person',
           title: 'customer',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'person',
@@ -577,8 +698,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           outEdges: [
             'customer:cloud',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -588,6 +707,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'cloud',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -600,8 +721,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud:aws',
             'cloud:email',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -611,6 +730,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'aws',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -620,8 +741,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud:aws',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -739,6 +858,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'person',
           title: 'customer',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'person',
@@ -748,8 +869,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           outEdges: [
             'customer:cloud.frontend.dashboard',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -759,6 +878,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'cloud',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -777,8 +898,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.backend:email',
             'cloud.media:aws',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -789,6 +908,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'cloud',
           kind: 'component',
           title: 'frontend',
+          description: null,
+          technology: null,
           level: 1,
           color: 'primary',
           shape: 'rectangle',
@@ -804,8 +925,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.frontend.dashboard:cloud.backend',
             'cloud.frontend.dashboard:cloud.media',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -816,6 +935,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'cloud.frontend',
           kind: 'webapp',
           title: 'dashboard',
+          description: null,
+          technology: null,
           level: 2,
           color: 'primary',
           shape: 'browser',
@@ -829,8 +950,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.frontend.dashboard:cloud.backend',
             'cloud.frontend.dashboard:cloud.media',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -840,10 +959,14 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'cloud',
           kind: 'component',
           title: 'backend',
+          description: null,
+          technology: null,
           level: 1,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [
+            'external',
+          ],
           children: [],
           inEdges: [
             'cloud.frontend.dashboard:cloud.backend',
@@ -854,9 +977,10 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.backend:aws',
             'cloud.backend:email',
           ],
-          description: null,
-          technology: null,
           links: null,
+          metadata: {
+            key1: 'value1',
+          },
           modelRef: 1,
           style: {},
         },
@@ -865,6 +989,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'cloud',
           kind: 'component',
           title: 'auth',
+          description: null,
+          technology: null,
           level: 1,
           color: 'primary',
           shape: 'rectangle',
@@ -875,8 +1001,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.frontend.dashboard:cloud.auth',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -886,10 +1010,14 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'cloud',
           kind: 'component',
           title: 'media',
+          description: null,
+          technology: null,
           level: 1,
           color: 'primary',
           shape: 'storage',
-          tags: null,
+          tags: [
+            'internal',
+          ],
           children: [],
           inEdges: [
             'cloud.backend:cloud.media',
@@ -898,8 +1026,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           outEdges: [
             'cloud.media:aws',
           ],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -909,6 +1035,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'email',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -918,8 +1046,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.backend:email',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -929,6 +1055,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'system',
           title: 'aws',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -939,8 +1067,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.media:aws',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           links: null,
           modelRef: 1,
           style: {},
@@ -977,6 +1103,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'instance',
           title: 'customer',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'person',
@@ -986,8 +1114,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           outEdges: [
             'customer.instance:prod.eu.zone1.ui',
           ],
-          description: null,
-          technology: null,
           links: null,
           deploymentRef: 1,
           modelRef: 'customer',
@@ -1000,6 +1126,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: null,
           kind: 'env',
           title: 'prod',
+          description: null,
+          technology: null,
           level: 0,
           color: 'primary',
           shape: 'rectangle',
@@ -1011,8 +1139,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer.instance:prod.eu.zone1.ui',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           deploymentRef: 1,
           style: {},
           depth: 1,
@@ -1022,6 +1148,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           parent: 'prod',
           kind: 'instance',
           title: 'dashboard',
+          description: null,
+          technology: null,
           level: 1,
           color: 'primary',
           shape: 'browser',
@@ -1031,8 +1159,6 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer.instance:prod.eu.zone1.ui',
           ],
           outEdges: [],
-          description: null,
-          technology: null,
           links: null,
           deploymentRef: 1,
           modelRef: 'cloud.frontend.dashboard',
@@ -1043,11 +1169,6 @@ export const likeC4Model = LikeC4Model.fromDump({
       ],
     },
   },
-})
-
-export type LikeC4ModelTypes = typeof likeC4Model.Aux
-export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
-export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
-export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
+} as any)
 
 /* prettier-ignore-end */

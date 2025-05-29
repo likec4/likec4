@@ -1,5 +1,5 @@
 import type { Link } from './_common'
-import type { Any, AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, Unknown } from './aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 import type { Icon } from './scalars'
@@ -14,7 +14,7 @@ export interface DeploymentElementStyle extends ElementStyle {
   readonly color?: Color
 }
 
-export interface DeploymentNode<A extends AnyAux = Any> {
+export interface DeploymentNode<A extends AnyAux = Unknown> {
   element?: never
   // Full-qualified-name for Deployment model
   readonly id: Aux.Strict.DeploymentFqn<A>
@@ -29,7 +29,7 @@ export interface DeploymentNode<A extends AnyAux = Any> {
   readonly metadata?: Aux.Metadata<A>
 }
 
-export interface DeployedInstance<A extends AnyAux = Any> {
+export interface DeployedInstance<A extends AnyAux = Unknown> {
   kind?: never
   /**
    * Format: `<DeploymentNode Fqn>.<Instance Id>`
@@ -47,9 +47,9 @@ export interface DeployedInstance<A extends AnyAux = Any> {
   readonly metadata?: Aux.Metadata<A>
 }
 
-export type DeploymentElement<A extends AnyAux = Any> = DeploymentNode<A> | DeployedInstance<A>
+export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>
 
-export type DeploymentElementRef<A extends AnyAux = Any> = {
+export type DeploymentElementRef<A extends AnyAux = Unknown> = {
   readonly id: Aux.Strict.DeploymentFqn<A>
   readonly element?: Aux.Strict.Fqn<A>
 }
@@ -65,7 +65,7 @@ export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): 
 /**
  * Relationship in deployment model
  */
-export interface DeploymentRelationship<A extends AnyAux = Any> extends AbstractRelationship<A> {
+export interface DeploymentRelationship<A extends AnyAux = Unknown> extends AbstractRelationship<A> {
   readonly source: FqnRef.DeploymentRef<A>
   readonly target: FqnRef.DeploymentRef<A>
 }
@@ -73,4 +73,4 @@ export interface DeploymentRelationship<A extends AnyAux = Any> extends Abstract
  * Backward compatibility alias
  * @deprecated Use {@link DeploymentRelationship} instead
  */
-export type DeploymentRelation<A extends AnyAux = Any> = DeploymentRelationship<A>
+export type DeploymentRelation<A extends AnyAux = Unknown> = DeploymentRelationship<A>

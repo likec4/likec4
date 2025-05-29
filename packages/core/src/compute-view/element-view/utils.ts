@@ -1,7 +1,7 @@
 import { filter, hasAtLeast, only } from 'remeda'
 import { invariant } from '../../errors'
 import type { ConnectionModel, ElementModel } from '../../model'
-import { type Any, type AnyAux, type Aux, type ComputedEdge, type ComputedNode } from '../../types'
+import { type AnyAux, type Aux, type ComputedEdge, type ComputedNode, type Unknown } from '../../types'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Memory } from './_types'
@@ -57,7 +57,9 @@ export function toComputedEdges<A extends AnyAux>(
   }, [] as ComputedEdge<A>[])
 }
 
-export function buildNodes<A extends AnyAux = Any>(memory: Memory): ReadonlyMap<Aux.Strict.Fqn<A>, ComputedNode<A>> {
+export function buildNodes<A extends AnyAux = Unknown>(
+  memory: Memory,
+): ReadonlyMap<Aux.Strict.Fqn<A>, ComputedNode<A>> {
   return buildComputedNodes(
     [...memory.final].map(n => toNodeSource<A>(n)),
     memory.groups,

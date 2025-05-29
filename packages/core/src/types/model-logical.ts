@@ -1,5 +1,5 @@
 import type { Link } from './_common'
-import type { Any, AnyAux, Aux } from './aux'
+import type { AnyAux, Aux, Unknown } from './aux'
 import type { FqnRef } from './fqnRef'
 import type { Icon } from './scalars'
 import type {
@@ -46,7 +46,7 @@ export interface ElementStyle {
   readonly textSize?: TextSize
 }
 
-export interface Element<A extends AnyAux = Any> {
+export interface Element<A extends AnyAux = Unknown> {
   readonly id: Aux.Strict.Fqn<A>
   readonly kind: Aux.ElementKind<A>
   readonly title: string
@@ -86,7 +86,7 @@ export interface AbstractRelationship<A extends AnyAux> {
 /**
  * Relationship between two model elements
  */
-export interface Relationship<A extends AnyAux = Any> extends AbstractRelationship<A> {
+export interface Relationship<A extends AnyAux = Unknown> extends AbstractRelationship<A> {
   readonly source: FqnRef.ModelRef<A>
   readonly target: FqnRef.ModelRef<A>
 }
@@ -95,4 +95,4 @@ export interface Relationship<A extends AnyAux = Any> extends AbstractRelationsh
  * Backward compatibility alias
  * @deprecated Use {@link Relationship} instead
  */
-export type ModelRelation<A extends AnyAux = Any> = Relationship<A>
+export type ModelRelation<A extends AnyAux = Unknown> = Relationship<A>

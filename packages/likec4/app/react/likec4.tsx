@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
 import { $likec4data, $likec4model } from 'likec4:single-project'
 
-export const likeC4Model = $likec4model.get()
+export const likec4model = $likec4model.get()
 
 export {
   IconRenderer as RenderIcon,

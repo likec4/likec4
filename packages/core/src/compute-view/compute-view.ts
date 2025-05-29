@@ -79,8 +79,8 @@ export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>)
   const likec4model = LikeC4Model.fromParsed(parsed)
   const views = values(parsed.views as Record<string, LikeC4View<A>>).map(v => unsafeComputeView(v, likec4model))
   return {
-    ...parsed,
     __: 'computed',
+    ...parsed,
     views: indexBy(views, v => v.id) as ComputedLikeC4ModelData<A>['views'],
   }
 }

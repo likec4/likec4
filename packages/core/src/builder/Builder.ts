@@ -180,6 +180,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       color: DefaultThemeColor,
       ...tagSpec,
     })),
+    ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
@@ -332,6 +333,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return self
     },
     build: () => ({
+      projectId: 'from-builder',
       specification: toLikeC4Specification(),
       elements: fromEntries(
         structuredClone(
@@ -626,7 +628,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             b.__addDeployment({
               id: _id,
               element: target as Fqn,
-              ...title && { title },
+              title: title ?? nameFromFqn(target),
               ...links && { links: mapLinks(links) },
               ...props,
             } as DeployedInstance)
@@ -682,18 +684,20 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 description: null,
                 technology: null,
                 tags: null,
-                color: specStyle?.color ?? DefaultThemeColor as Color,
-                shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                style: pickBy({
-                  border: specStyle?.border,
-                  opacity: specStyle?.opacity,
-                  size: specStyle?.size,
-                  padding: specStyle?.padding,
-                  textSize: specStyle?.textSize,
-                  ...style,
-                }, isNonNullish),
+                style: {
+                  ...icon && { icon: icon as IconUrl },
+                  color: specStyle?.color ?? DefaultThemeColor as Color,
+                  shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
+                  ...pickBy({
+                    border: specStyle?.border,
+                    opacity: specStyle?.opacity,
+                    size: specStyle?.size,
+                    padding: specStyle?.padding,
+                    textSize: specStyle?.textSize,
+                    ...style,
+                  }, isNonNullish),
+                },
                 ...links && { links: mapLinks(links) },
-                ...icon && { icon: icon as IconUrl },
                 ...spec,
                 ...props,
               })

@@ -1,10 +1,17 @@
-import { type AnyAux, type LikeC4Model } from '@likec4/core/model'
+import type { AnyLikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
+import { generateAux } from './generate-aux'
 
-export function generateLikeC4Model<A extends AnyAux>(model: LikeC4Model<A>) {
+export function generateLikeC4Model(model: AnyLikeC4Model) {
   const out = new CompositeGeneratorNode()
+
+  const aux = generateAux(model)
+
+  const method = model.isFromParsed ? 'fromParsed' : 'create'
+
   out.appendTemplate`
+    // @ts-nocheck
     /* prettier-ignore-start */
     /* eslint-disable */
 
@@ -14,18 +21,14 @@ export function generateLikeC4Model<A extends AnyAux>(model: LikeC4Model<A>) {
      ******************************************************************************/
 
     import { LikeC4Model } from '@likec4/core/model'
+    ${aux}
 
-    export const likeC4Model = LikeC4Model.fromDump(${
+    export const likeC4Model = LikeC4Model.${method}<$Aux>(${
     JSON5.stringify(model.$model, {
       space: 2,
       quote: '\'',
     })
-  })
-
-    export type LikeC4ModelTypes = typeof likeC4Model.Aux
-    export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
-    export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
-    export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
+  } as any)
 
     /* prettier-ignore-end */
   `

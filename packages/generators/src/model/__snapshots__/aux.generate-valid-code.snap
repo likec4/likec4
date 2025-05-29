@@ -1,0 +1,57 @@
+import type { Aux, SpecAux } from '@likec4/core/types';
+
+export type ElementId = 
+  | 'alice'
+  | 'bob'
+  | 'cloud'
+  | 'cloud.backend'
+  | 'cloud.frontend'
+  | 'cloud.backend.api'
+  | 'cloud.backend.db';
+
+export type DeploymentId = 
+  | 'dev'
+  | 'prod'
+  | 'dev.api'
+  | 'dev.vm1'
+  | 'prod.vm1'
+  | 'prod.vm2';
+
+export type ViewId = 
+  | 'view1'
+  | 'view2';
+
+export type ElementKind = 
+  | 'actor'
+  | 'component'
+  | 'system';
+
+export type RelationshipKind = 
+  | 'dislike'
+  | 'like';
+
+export type DeploymentKind = 
+  | 'env'
+  | 'vm';
+
+export type Tag = 
+  | 'tag1'
+  | 'tag2';
+
+export type MetadataKey = 
+  | 'key1'
+  | 'key2';
+
+export type $Aux = Aux<
+  'from-builder',
+  ElementId,
+  DeploymentId,
+  ViewId,
+  SpecAux<
+    ElementKind,
+    DeploymentKind,
+    RelationshipKind,
+    Tag,
+    MetadataKey
+  >
+>

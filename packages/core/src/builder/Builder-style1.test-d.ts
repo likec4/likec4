@@ -1,6 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
 import type { LikeC4Model } from '../model/LikeC4Model'
-import type { Aux, ParsedLikeC4ModelData, SpecTypes } from '../types'
+import type { Aux, ParsedLikeC4ModelData, SpecAux } from '../types'
 import { Builder } from './Builder'
 
 test('Builder types - style 1', () => {
@@ -192,7 +192,7 @@ test('Builder types - style 1', () => {
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
         'view' | 'view-of' | 'deployment',
-        SpecTypes<
+        SpecAux<
           'actor' | 'system' | 'component',
           'env' | 'vm',
           'like' | 'dislike',
@@ -210,7 +210,7 @@ test('Builder types - style 1', () => {
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
         'view' | 'view-of' | 'deployment',
-        SpecTypes<
+        SpecAux<
           'actor' | 'system' | 'component',
           'env' | 'vm',
           'like' | 'dislike',

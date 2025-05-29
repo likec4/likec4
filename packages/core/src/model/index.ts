@@ -1,5 +1,5 @@
 export { ElementModel } from './ElementModel'
-export { LikeC4Model } from './LikeC4Model'
+export { type AnyLikeC4Model, LikeC4Model } from './LikeC4Model'
 export { RelationshipModel } from './RelationModel'
 
 export {
@@ -46,3 +46,11 @@ export type {
 } from './types'
 
 export * from './guards'
+
+export type {
+  AnyAux,
+  Aux,
+  AuxFromDump,
+  SpecAux,
+  Unknown,
+} from '../types'

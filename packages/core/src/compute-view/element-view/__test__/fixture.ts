@@ -19,7 +19,7 @@ import {
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
-  type SpecTypes,
+  type SpecAux,
   type Tag,
   type TagEqual,
   type ViewRule,
@@ -420,7 +420,7 @@ export type A = Aux<
   FakeElementIds,
   never,
   never,
-  SpecTypes<
+  SpecAux<
     'actor' | 'system' | 'container' | 'component',
     never,
     'graphlql',

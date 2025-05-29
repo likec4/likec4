@@ -25,7 +25,7 @@ import {
   invariant,
   toArray,
 } from '@likec4/core'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   concat,
   filter,
@@ -216,7 +216,7 @@ export namespace LayoutRelationshipsViewResult {
 
 export function layoutRelationshipsView(
   data: RelationshipsViewData,
-  scope: LikeC4ViewModel<AnyAux> | null,
+  scope: LikeC4ViewModel | null,
 ): Omit<LayoutRelationshipsViewResult, 'subject'> {
   const g = createGraph()
 
