@@ -138,9 +138,6 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
     for (const rule of rules) {
       if (isViewRulePredicate(rule)) {
         for (const expr of rule.include) {
-          if (!ModelFqnExpr.is(expr)) {
-            continue
-          }
           const satisfies = elementExprToPredicate(expr)
           for (const e of this.model.elements()) {
             if (satisfies(e)) {

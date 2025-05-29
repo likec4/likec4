@@ -200,7 +200,7 @@ export type DynamicViewStepOrParallel<A extends AnyAux = UnknownAux> = Simplify<
 >
 
 export type DynamicViewIncludeRule<A extends AnyAux = UnknownAux> = {
-  include: ModelExpression<A>[]
+  include: ModelFqnExpr.Any<A>[]
 }
 
 export type DynamicViewRule<A extends AnyAux = UnknownAux> =
