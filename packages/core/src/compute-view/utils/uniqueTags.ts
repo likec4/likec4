@@ -6,12 +6,12 @@ import { compareNatural } from '../../utils/compare-natural'
  * Extracts unique tags from an array of elements.
  * and sort in natural order; returns null if no tags are present.
  */
-export function uniqueTags<T extends string, E extends { tags: readonly T[] }>(
+export function uniqueTags<T extends string, E extends { tags?: readonly T[] | null }>(
   elements: ReadonlyArray<E>,
 ): NonEmptyReadonlyArray<T> | null {
   const tags = pipe(
     elements,
-    flatMap(e => e.tags),
+    flatMap(e => e.tags ?? []),
     unique(),
     sort(compareNatural),
   )

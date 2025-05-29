@@ -10,6 +10,7 @@ import {
   mergeConnections,
 } from '../../model/connection/ops'
 import type { RelationshipModel } from '../../model/RelationModel'
+import type { AnyAux } from '../../types'
 import { intersection, union } from '../../utils'
 import { ifilter, toSet } from '../../utils/iterable'
 
@@ -36,7 +37,9 @@ function isInOutToDescendant(id: string): (c: ConnectionModel) => boolean {
   ])
 }
 
-export function findRedundantConnections(connections: Iterable<ConnectionModel>): Array<ConnectionModel> {
+export function findRedundantConnections<A extends AnyAux>(
+  connections: Iterable<ConnectionModel<A>>,
+): Array<ConnectionModel<A>> {
   return pipe(
     [...connections],
     mergeConnections,
@@ -92,7 +95,7 @@ export function findRedundantConnections(connections: Iterable<ConnectionModel>)
       }
 
       return reducedConnections
-    }, [] as ConnectionModel[]),
+    }, [] as ConnectionModel<A>[]),
   )
 }
 
@@ -103,9 +106,9 @@ export function findRedundantConnections(connections: Iterable<ConnectionModel>)
  * @returns New connection without redundant relationships
  *          Connection may be empty if all relationships are redundant, in this case it should be removed
  */
-export function cleanRedundantRelationships(
-  connections: Iterable<ConnectionModel>,
-): Array<ConnectionModel> {
+export function cleanRedundantRelationships<A extends AnyAux>(
+  connections: Iterable<ConnectionModel<A>>,
+): Array<ConnectionModel<A>> {
   return differenceConnections(
     connections,
     findRedundantConnections(connections),

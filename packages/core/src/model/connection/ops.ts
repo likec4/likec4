@@ -136,14 +136,14 @@ export function findDescendantConnections<C extends ConnectionElemId>(
   return connections.filter(isNestedConnection(connection))
 }
 
-export function mergeConnections<C extends Connection>(
-  connections: ReadonlyArray<C>,
-): C[] {
-  const map = new Map<C['id'], C>()
+export function mergeConnections<C extends IterableContainer<Connection<any, any>>>(
+  connections: C,
+): Array<C[number]> {
+  const map = new Map<C[number]['id'], C[number]>()
   for (const conn of connections) {
     const existing = map.get(conn.id)
     if (existing) {
-      map.set(conn.id, conn.mergeWith(existing) as C)
+      map.set(conn.id, conn.mergeWith(existing))
     } else {
       map.set(conn.id, conn)
     }
@@ -155,7 +155,7 @@ export function mergeConnections<C extends Connection>(
  * Excludes the values existing in `other` array.
  * The output maintains the same order as the input.
  */
-export function differenceConnections<C extends Connection>(
+export function differenceConnections<C extends Connection<any, any>>(
   source: Iterable<C>,
   exclude: Iterable<C>,
 ): C[] {

@@ -59,10 +59,7 @@ export function toComputedEdges<A extends AnyAux>(
 
 export function buildNodes<A extends AnyAux = AnyAux>(memory: Memory): ReadonlyMap<Aux.Strict.Fqn<A>, ComputedNode<A>> {
   return buildComputedNodes(
-    [...memory.final].map(n =>
-      // @ts-expect-error Memory not typed
-      toNodeSource<A>(n)
-    ),
+    [...memory.final].map(n => toNodeSource<A>(n)),
     memory.groups,
   )
 }

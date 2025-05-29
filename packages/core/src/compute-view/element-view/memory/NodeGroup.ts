@@ -1,14 +1,14 @@
-import { ElementKind } from '../../../types/element'
+import { GroupElementKind } from '../../../types'
 import { type NodeId, type ViewRuleGroup } from '../../../types/view'
 import type { Elem } from '../_types'
 
 export class NodesGroup {
-  static readonly kind = ElementKind.Group
+  static readonly kind = GroupElementKind
 
   constructor(
-    public readonly id: NodeId,
+    public readonly id: NodeId<any>,
     public readonly viewRule: ViewRuleGroup,
-    public readonly parent: NodeId | null = null,
+    public readonly parent: NodeId<any> | null = null,
     public readonly elements: ReadonlySet<Elem> = new Set<Elem>(),
   ) {
   }

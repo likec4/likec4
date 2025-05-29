@@ -2,7 +2,7 @@ import type { Connection } from '../../model/connection'
 import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
 import type { ElementModel } from '../../model/ElementModel'
 
-type Element = ElementModel | DeploymentElementModel
+type Element = ElementModel<any> | DeploymentElementModel<any>
 
 export interface ComputeCtx<
   E extends Element,

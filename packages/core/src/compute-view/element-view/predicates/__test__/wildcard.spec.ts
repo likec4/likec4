@@ -8,7 +8,11 @@ describe('Wildcard predicate', () => {
       elements: {
         el: {},
       },
-      tags: ['web', 'mobile', 'top'],
+      tags: {
+        web: {},
+        mobile: {},
+        top: {},
+      },
     })
     .model(({ el }, _) =>
       _(

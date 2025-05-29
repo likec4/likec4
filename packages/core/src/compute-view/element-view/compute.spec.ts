@@ -1,22 +1,22 @@
 import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../../builder'
+import { type AnyTypes, Builder } from '../../builder'
 import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
-import { isElementView } from '../../types'
+import { type ElementView, isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
 
 const builder = Builder.specification({
   elements: {
-    el: {}
-  }
+    el: {},
+  },
 })
 
-function compute(buider: Builder<any>) {
-  const { views, ...model } = buider.build()
-  const likec4model = LikeC4Model.create({ ...model, views: {} })
-  const view = only(values(views))
+function compute<const T extends AnyTypes>(builder: Builder<T>) {
+  const parsed = builder.build()
+  const likec4model = LikeC4Model.fromParsed(parsed)
+  const view = only(values(parsed.views as Record<string, ElementView<any>>))
   invariant(view && isElementView(view), 'Must have one element view')
   return withReadableEdges(computeElementView(likec4model, view))
 }
@@ -30,11 +30,11 @@ describe('compute', () => {
             el('cloud').with(
               el('backend').with(
                 el('graphql'),
-                el('db')
-              )
+                el('db'),
+              ),
             ),
             el('amazon'),
-            rel('cloud.backend.graphql', 'amazon')
+            rel('cloud.backend.graphql', 'amazon'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -46,11 +46,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('amazon')
-              )
-            )
+                $include('amazon'),
+              ),
+            ),
           )
-        )
+        ),
     )
     const expected = ['cloud.backend.graphql:amazon']
     expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).toEqual(expected)
@@ -68,7 +68,7 @@ describe('compute', () => {
             el('cloud.backend.graphql'),
             el('cloud.frontend'),
             el('cloud.frontend.dashboard'),
-            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -80,11 +80,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('cloud.frontend.*')
-              )
-            )
+                $include('cloud.frontend.*'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     const expected = 'cloud.backend.graphq:cloud.frontend.dashboard'
@@ -101,7 +101,7 @@ describe('compute', () => {
             el('cloud.backend'),
             el('cloud.backend.graphql'),
             el('amazon'),
-            rel('amazon', 'cloud.backend.graphql')
+            rel('amazon', 'cloud.backend.graphql'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -113,11 +113,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('amazon')
-              )
-            )
+                $include('amazon'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     const expected = ['amazon:cloud.backend.graphql']
@@ -136,7 +136,7 @@ describe('compute', () => {
             el('cloud.backend.graphql'),
             el('cloud.frontend'),
             el('cloud.frontend.dashboard'),
-            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -148,11 +148,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('cloud.frontend.*')
-              )
-            )
+                $include('cloud.frontend.*'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     expect(context.edges[0]!.parent).toBe('cloud')

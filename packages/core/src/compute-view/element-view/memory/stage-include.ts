@@ -1,6 +1,6 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import { ModelExpression } from '../../../types'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'
@@ -62,7 +62,7 @@ export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
   }
 
   protected override processConnections(connections: CtxConnection<Ctx>[]) {
-    if (ModelLayer.isAnyRelationExpr(this.expression)) {
+    if (ModelExpression.isRelationExpr(this.expression)) {
       return connections
     }
 

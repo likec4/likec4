@@ -11,7 +11,10 @@ describe('RelationPredicate', () => {
       deployments: {
         node: {},
       },
-      tags: ['next', 'alpha'],
+      tags: {
+        next: {},
+        alpha: {},
+      },
     })
     .model(({ el, rel }, _) =>
       _(

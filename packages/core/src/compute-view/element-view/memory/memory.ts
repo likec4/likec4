@@ -1,7 +1,7 @@
 import { nonNullable } from '../../../errors'
 import type { ConnectionModel } from '../../../model/connection'
 import type { ElementModel } from '../../../model/ElementModel'
-import type { ModelLayer } from '../../../types/expression-v2-model'
+import type { ModelExpression } from '../../../types'
 import type { NodeId, ViewRuleGroup } from '../../../types/view'
 import { Stack } from '../../../utils/mnemonist'
 import { type ComputeCtx, type CtxElement, type MutableState, type StageExpression, AbstractMemory } from '../../memory'
@@ -11,12 +11,12 @@ import { ActiveGroupStageInclude, StageInclude } from './stage-include'
 
 export interface Ctx extends
   ComputeCtx<
-    ElementModel,
-    ConnectionModel,
+    ElementModel<any>,
+    ConnectionModel<any>,
     Memory<Ctx>,
     StageInclude<Ctx>,
     StageExclude,
-    ModelLayer.Expression
+    ModelExpression
   >
 {
   MutableState: {
@@ -39,7 +39,7 @@ export interface Ctx extends
 }
 
 export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
-  static empty(scope: CtxElement<Ctx> | null): Memory {
+  static empty<EC extends Ctx>(scope: ElementModel<any> | null): Memory<EC> {
     return new Memory({
       elements: new Set(),
       explicits: new Set(),
@@ -70,10 +70,10 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
     return this.state.lastSeenIn
   }
 
-  override stageInclude(expr: StageExpression<Ctx>): StageInclude {
+  override stageInclude(expr: StageExpression<C>): StageInclude {
     return new StageInclude(this, expr)
   }
-  override stageExclude(expr: StageExpression<Ctx>): StageExclude {
+  override stageExclude(expr: StageExpression<C>): StageExclude {
     return new StageExclude(this, expr)
   }
 
