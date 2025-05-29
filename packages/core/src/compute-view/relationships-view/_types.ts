@@ -1,6 +1,6 @@
 import { type ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
-import type { AnyAux } from '../../model/types'
+import type { AnyAux } from '../../types'
 
 // type Pair = {
 //   left: ReadonlySet<ElementModel>

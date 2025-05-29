@@ -9,7 +9,7 @@ import type { ComputedNode, ElementNotation } from '../../types'
  * 4. For each group get unique kinds
  * 5. Unwind the groups
  */
-export function buildElementNotations(nodes: ComputedNode[]): ElementNotation[] {
+export function buildElementNotations(nodes: ComputedNode<any>[]): ElementNotation[] {
   return pipe(
     nodes,
     groupBy(prop('notation')),
@@ -22,25 +22,25 @@ export function buildElementNotations(nodes: ComputedNode[]): ElementNotation[] 
             mapValues(
               piped(
                 map(prop('kind')),
-                unique()
-              )
+                unique(),
+              ),
             ),
             entries(),
             map(([color, kinds]) => ({
               kinds,
-              color
-            }))
-          )
+              color,
+            })),
+          ),
         ),
         entries(),
         flatMap(([shape, colors]) =>
           colors.map(({ color, kinds }) => ({
             shape,
             color,
-            kinds
+            kinds,
           }))
-        )
-      )
+        ),
+      ),
     ),
     entries(),
     flatMap(([title, shapes]) =>
@@ -48,7 +48,7 @@ export function buildElementNotations(nodes: ComputedNode[]): ElementNotation[] 
         title,
         shape,
         color,
-        kinds
+        kinds,
       }))
     ),
     sortBy(
@@ -56,8 +56,8 @@ export function buildElementNotations(nodes: ComputedNode[]): ElementNotation[] 
       prop('title'),
       [
         n => n.kinds.length,
-        'desc'
-      ]
-    )
+        'desc',
+      ],
+    ),
   )
 }
