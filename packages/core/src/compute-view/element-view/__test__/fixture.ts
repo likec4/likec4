@@ -714,7 +714,7 @@ export function computeView(
       fakeModel,
       {
         ...emptyView,
-        rules: [args[0]].flat(),
+        rules: [args[0]].flat() as ViewRule<A>[],
       },
     )
   } else {
@@ -723,7 +723,7 @@ export function computeView(
       {
         ...emptyView,
         viewOf: args[0] as Aux.Strict.ElementId<A>,
-        rules: [args[1]].flat(),
+        rules: [args[1]].flat() as ViewRule<A>[],
       },
     )
   }
