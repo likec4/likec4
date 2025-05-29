@@ -6,8 +6,8 @@ import type {
   IconUrl,
   ModelRelation,
   NonEmptyArray,
-  ParsedLikeC4ModelData,
   RelationId,
+  ScopedElementView,
   ViewId,
 } from '@likec4/core'
 
@@ -183,39 +183,39 @@ export type FakeElementIds = keyof typeof fakeElements
 const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
     id: 'customer:cloud.frontend.dashboard' as RelationId,
-    source: 'customer' as Fqn,
-    target: 'cloud.frontend.dashboard' as Fqn,
+    source: { model: 'customer' as Fqn },
+    target: { model: 'cloud.frontend.dashboard' as Fqn },
     title: 'opens in browser',
   },
   'support:cloud.frontend.adminPanel': {
     id: 'support:cloud.frontend.adminPanel' as RelationId,
-    source: 'support' as Fqn,
-    target: 'cloud.frontend.adminPanel' as Fqn,
+    source: { model: 'support' as Fqn },
+    target: { model: 'cloud.frontend.adminPanel' as Fqn },
     title: 'manages',
   },
   'cloud.backend.storage:amazon.s3': {
     id: 'cloud.backend.storage:amazon.s3' as RelationId,
-    source: 'cloud.backend.storage' as Fqn,
-    target: 'amazon.s3' as Fqn,
+    source: { model: 'cloud.backend.storage' as Fqn },
+    target: { model: 'amazon.s3' as Fqn },
     title: 'persists artifacts',
     tail: 'odiamond',
   },
   'cloud.backend.graphql:cloud.backend.storage': {
     id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
-    source: 'cloud.backend.graphql' as Fqn,
-    target: 'cloud.backend.storage' as Fqn,
+    source: { model: 'cloud.backend.graphql' as Fqn },
+    target: { model: 'cloud.backend.storage' as Fqn },
     title: '',
   },
   'cloud.frontend.dashboard:cloud.backend.graphql': {
     id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.dashboard' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    source: { model: 'cloud.frontend.dashboard' as Fqn },
+    target: { model: 'cloud.backend.graphql' as Fqn },
     title: 'fetches data',
   },
   'cloud.frontend.adminPanel:cloud.backend.graphql': {
     id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.adminPanel' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    source: { model: 'cloud.frontend.adminPanel' as Fqn },
+    target: { model: 'cloud.backend.graphql' as Fqn },
     title: 'fetches data in zero trust network with sso authentification',
   },
 } satisfies Record<string, ModelRelation>
@@ -318,6 +318,7 @@ export const amazonView = {
 
 // see https://github.com/likec4/likec4/issues/577
 export const issue577View = (icon: string) => ({
+  __: 'element',
   id: 'issue577' as ViewId,
   title: '',
   description: null,
@@ -342,14 +343,20 @@ export const issue577View = (icon: string) => ({
       },
     },
   ],
-} satisfies ElementView)
+} satisfies ScopedElementView)
 
-export const FakeModel: ParsedLikeC4ModelData = {
+export const FakeModel = {
+  __: 'computed',
+  projectId: 'test',
   elements: fakeElements,
   relations: fakeRelations,
   views: {},
   specification: {
-    elements: {},
+    elements: {
+      actor: {},
+      system: {},
+      component: {},
+    },
     relationships: {},
     deployments: {},
     tags: {},
@@ -364,4 +371,4 @@ export const FakeModel: ParsedLikeC4ModelData = {
     styles: {},
   },
   imports: {},
-}
+} as const

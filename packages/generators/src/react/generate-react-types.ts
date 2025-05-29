@@ -12,7 +12,7 @@ function toUnion(unionset: string[] | Set<string>) {
   return union.join('\n') + ';'
 }
 
-export function generateReactTypes(model: LikeC4Model.Layouted) {
+export function generateReactTypes(model: LikeC4Model) {
   const {
     fqns,
     tags,

@@ -45,7 +45,7 @@ const d2shape = ({ shape }: ComputedNode) => {
   }
 }
 
-export function generateD2<V extends ComputedView>(view: V) {
+export function generateD2(view: ComputedView) {
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 
@@ -69,10 +69,10 @@ export function generateD2<V extends ComputedView>(view: V) {
               NL,
               joinToNode(
                 nodes.filter(n => n.parent === node.id),
-                n => printNode(n, fqnName)
-              )
+                n => printNode(n, fqnName),
+              ),
             ),
-        indentation: 2
+        indentation: 2,
       })
       .append('}', NL)
   }
@@ -91,16 +91,16 @@ export function generateD2<V extends ComputedView>(view: V) {
           nodes.filter(n => isNil(n.parent)),
           n => printNode(n),
           {
-            appendNewLineIfNotEmpty: true
-          }
-        )
+            appendNewLineIfNotEmpty: true,
+          },
+        ),
       )
       .appendIf(
         edges.length > 0,
         NL,
         joinToNode(edges, e => printEdge(e), {
-          appendNewLineIfNotEmpty: true
-        })
-      )
+          appendNewLineIfNotEmpty: true,
+        }),
+      ),
   )
 }

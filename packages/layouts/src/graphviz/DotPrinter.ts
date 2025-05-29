@@ -11,9 +11,11 @@ import {
   nonNullable,
 } from '@likec4/core'
 import {
+  type AnyFqn,
   type Color,
   type ComputedEdge,
   type ComputedView,
+  type DeploymentFqn,
   type EdgeId,
   type ElementThemeColorValues,
   type Fqn,
@@ -90,7 +92,7 @@ export type ApplyManualLayoutData = {
 
 type GraphologyNodeAttributes = {
   modelRef: Fqn | null
-  deploymentRef: Fqn | null
+  deploymentRef: DeploymentFqn | null
   origin: ComputedNode
   level: number
   depth: number
@@ -140,8 +142,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
     for (const edge of view.edges) {
       // First compare deploymentRef of any
-      let sourceFqn = this.graphology.getNodeAttribute(edge.source, 'deploymentRef')
-      let targetFqn = this.graphology.getNodeAttribute(edge.target, 'deploymentRef')
+      let sourceFqn: AnyFqn | null = this.graphology.getNodeAttribute(edge.source, 'deploymentRef')
+      let targetFqn: AnyFqn | null = this.graphology.getNodeAttribute(edge.target, 'deploymentRef')
       if (sourceFqn === null || targetFqn === null) {
         // Then compare modelRef
         sourceFqn = this.graphology.getNodeAttribute(edge.source, 'modelRef')

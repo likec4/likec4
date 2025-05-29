@@ -1,11 +1,10 @@
-import { type DiagramView, type OverviewGraph, ComputedView, nonexhaustive } from '@likec4/core'
+import { type DiagramView, ComputedView, nonexhaustive } from '@likec4/core'
 import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
-import { parseGraphvizJson, parseOverviewGraphvizJson } from './GraphvizParser'
-import { OverviewDiagramsPrinter } from './OverviewDiagramsPrinter'
+import { parseGraphvizJson } from './GraphvizParser'
 import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
 
@@ -131,16 +130,16 @@ export class GraphvizLayouter {
     }
   }
 
-  async layoutOverviewGraph(views: ComputedView[]): Promise<OverviewGraph> {
-    if (views.length === 0) {
-      return Promise.resolve({
-        nodes: [],
-        edges: [],
-        bounds: { x: 0, y: 0, width: 10, height: 10 },
-      })
-    }
-    const dot = OverviewDiagramsPrinter.toDot(views)
-    const json = await this.dotToJson(dot)
-    return parseOverviewGraphvizJson(json)
-  }
+  // async layoutOverviewGraph(views: ComputedView[]): Promise<OverviewGraph> {
+  //   if (views.length === 0) {
+  //     return Promise.resolve({
+  //       nodes: [],
+  //       edges: [],
+  //       bounds: { x: 0, y: 0, width: 10, height: 10 },
+  //     })
+  //   }
+  //   const dot = OverviewDiagramsPrinter.toDot(views)
+  //   const json = await this.dotToJson(dot)
+  //   return parseOverviewGraphvizJson(json)
+  // }
 }

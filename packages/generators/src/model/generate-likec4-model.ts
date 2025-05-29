@@ -1,8 +1,8 @@
-import { type LikeC4Model } from '@likec4/core/model'
+import { type AnyAux, type LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
 
-export function generateLikeC4Model(model: LikeC4Model) {
+export function generateLikeC4Model<A extends AnyAux>(model: LikeC4Model<A>) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /* prettier-ignore-start */
@@ -13,7 +13,7 @@ export function generateLikeC4Model(model: LikeC4Model) {
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
 
-    import { LikeC4Model } from 'likec4/model'
+    import { LikeC4Model } from '@likec4/core/model'
 
     export const likeC4Model = LikeC4Model.fromDump(${
     JSON5.stringify(model.$model, {
