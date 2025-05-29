@@ -16,9 +16,9 @@ import { predicateToPatch } from './predicates'
 import { StageFinal } from './stages/stage-final'
 import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
 
-export function processPredicates<M extends AnyAux>(
-  model: LikeC4DeploymentModel<M>,
-  rules: DeploymentViewRule<M>[],
+export function processPredicates(
+  model: LikeC4DeploymentModel<any>,
+  rules: DeploymentViewRule<any>[],
 ) {
   let memory = Memory.empty()
 
@@ -45,7 +45,7 @@ export function computeDeploymentView<M extends AnyAux>(
     ...view
   }: DeploymentView<NoInfer<M>>,
 ): ComputedDeploymentView<M> {
-  const memory = processPredicates<M>(likec4model.deployment, rules)
+  const memory = processPredicates(likec4model.deployment, rules)
 
   const nodesMap = buildNodes<M>(memory)
 

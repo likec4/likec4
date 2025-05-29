@@ -1,6 +1,6 @@
 import { partition } from 'remeda'
-import type { DynamicViewRule, DynamicViewStep, Fqn, ViewId, ViewRulePredicate } from '../../../types'
-import { type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
+import type { DynamicView, DynamicViewRule, DynamicViewStep, Fqn, ViewId, ViewRulePredicate } from '../../../types'
+import { type A, type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
 import { computeDynamicView } from '../compute'
 
 const emptyView = {
@@ -11,7 +11,7 @@ const emptyView = {
   tags: null,
   links: null,
   customColorDefinitions: {},
-  rules: []
+  rules: [],
 }
 
 type StepExpr = `${FakeElementIds} ${'->' | '<-'} ${FakeElementIds}`
@@ -25,7 +25,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       source: source as Fqn,
       target: target as Fqn,
       ...(typeof props === 'object' ? props : {}),
-      title: title ?? null
+      title: title ?? null,
     }
   }
   if (expr.includes(' <- ')) {
@@ -35,7 +35,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       target: target as Fqn,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
-      isBackward: true
+      isBackward: true,
     }
   }
   throw new Error(`Invalid step expression: ${expr}`)
@@ -48,11 +48,11 @@ export function compute(stepsAndRules: (DynamicViewStep | ViewRulePredicate)[]) 
     {
       ...emptyView,
       steps,
-      rules: rules as DynamicViewRule[]
-    }
+      rules: rules as DynamicViewRule[],
+    } as DynamicView<A>,
   )
   return Object.assign(view, {
     nodeIds: view.nodes.map((node) => node.id) as string[],
-    edgeIds: view.edges.map((edge) => edge.id) as string[]
+    edgeIds: view.edges.map((edge) => edge.id) as string[],
   })
 }

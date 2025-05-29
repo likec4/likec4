@@ -224,10 +224,5 @@ export function computeNodesAndEdges(...rules: DeploymentRulesBuilderOp<Types>[]
 }
 
 export function createModel() {
-  const modelsource = builder.build()
-
-  return LikeC4Model.create({
-    ...modelsource,
-    views: {},
-  })
+  return LikeC4Model.fromParsed(builder.build())
 }

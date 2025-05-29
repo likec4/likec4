@@ -9,7 +9,7 @@ export namespace FqnRef {
    */
   export interface ElementRef<A extends AnyAux> {
     project?: never
-    model: Aux.Strict.ElementId<A>
+    model: Aux.ElementId<A>
   }
   export function isElementRef<A extends AnyAux>(ref: FqnRef<A>): ref is ElementRef<A> {
     return 'model' in ref && !('project' in ref)
@@ -19,8 +19,8 @@ export namespace FqnRef {
    * Reference to imported logical model element
    */
   export interface ImportRef<A extends AnyAux> {
-    project: Aux.Strict.ProjectId<A>
-    model: Aux.Strict.ElementId<A>
+    project: Aux.ProjectId<A>
+    model: Aux.ElementId<A>
   }
   export function isImportRef<A extends AnyAux>(ref: FqnRef<A>): ref is ImportRef<A> {
     return 'project' in ref && 'model' in ref
@@ -54,8 +54,8 @@ export namespace FqnRef {
    * @property {M} element - The element reference within the deployment.
    */
   export interface InsideInstanceRef<A extends AnyAux> {
-    deployment: Aux.Strict.DeploymentId<A>
-    element: Aux.Strict.ElementId<A>
+    deployment: Aux.DeploymentId<A>
+    element: Aux.ElementId<A>
   }
   export function isInsideInstanceRef<A extends AnyAux>(ref: FqnRef<A>): ref is InsideInstanceRef<A> {
     return 'deployment' in ref && 'element' in ref
@@ -68,7 +68,7 @@ export namespace FqnRef {
    * @property {F} deployment - The fully qualified name (FQN) of the deployment element.
    */
   export interface DeploymentElementRef<A extends AnyAux> {
-    deployment: Aux.Strict.DeploymentId<A>
+    deployment: Aux.DeploymentId<A>
     element?: never
   }
   export function isDeploymentElementRef<A extends AnyAux>(ref: FqnRef<A>): ref is DeploymentElementRef<A> {

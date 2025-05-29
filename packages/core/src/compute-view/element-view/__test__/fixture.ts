@@ -415,7 +415,7 @@ const fakeParsedModel = {
   },
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
-type A = Aux<
+export type A = Aux<
   never,
   FakeElementIds,
   never,

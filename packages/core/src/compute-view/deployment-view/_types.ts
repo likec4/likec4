@@ -13,26 +13,26 @@ export type Connection = Ctx['Connection']
 export type ElementWhere = Where<Elem>
 export type ElementWhereFilter = (elements: readonly Elem[]) => Elem[]
 export type ConnectionWhere = Where<Connection>
-export type RelationshipWhere = Where<RelationshipModel>
+export type RelationshipWhere = Where<RelationshipModel<any>>
 export type ConnectionWhereFilter = (connections: readonly Connection[]) => Connection[]
 
 export type Connections = ReadonlyArray<Connection>
 
-export interface PredicateCtx<Expr = Expression> {
+export interface PredicateCtx<Expr = Expression<AnyAux>> {
   expr: Expr
   stage: Stage
-  model: LikeC4DeploymentModel
+  model: LikeC4DeploymentModel<AnyAux>
   memory: Memory
   where: OperatorPredicate<AnyAux> | null
 }
-export interface IncludePredicateCtx<Expr = Expression> extends PredicateCtx<Expr> {
+export interface IncludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
   stage: StageInclude
 }
-export interface ExcludePredicateCtx<Expr = Expression> extends PredicateCtx<Expr> {
+export interface ExcludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
   stage: StageExclude
 }
 
-export interface PredicateExecutor<Expr extends Expression = Expression> {
+export interface PredicateExecutor<Expr extends Expression<AnyAux> = Expression<AnyAux>> {
   include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
   exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

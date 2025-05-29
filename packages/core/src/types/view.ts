@@ -170,7 +170,7 @@ export type ElementView<A extends AnyAux = UnknownAux> =
   | ScopedElementView<A>
   | ExtendsElementView<A>
 
-export interface DynamicViewStep<A extends AnyAux> {
+export interface DynamicViewStep<A extends AnyAux = UnknownAux> {
   readonly source: Aux.Strict.Fqn<A>
   readonly target: Aux.Strict.Fqn<A>
   readonly title: string | null
@@ -188,11 +188,11 @@ export interface DynamicViewStep<A extends AnyAux> {
   readonly navigateTo?: Aux.Strict.ViewId<A>
 }
 
-export interface DynamicViewParallelSteps<A extends AnyAux> {
+export interface DynamicViewParallelSteps<A extends AnyAux = UnknownAux> {
   readonly __parallel: DynamicViewStep<A>[]
 }
 
-export type DynamicViewStepOrParallel<A extends AnyAux> = Simplify<
+export type DynamicViewStepOrParallel<A extends AnyAux = UnknownAux> = Simplify<
   MergeExclusive<
     DynamicViewStep<A>,
     DynamicViewParallelSteps<A>

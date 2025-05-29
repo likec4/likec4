@@ -218,7 +218,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   }
 }
 
-export class DeploymentNodeModel<A extends AnyAux> extends AbstractDeploymentElementModel<A> {
+export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
   override id: Aux.Strict.DeploymentFqn<A>
   override title: string
   override hierarchyLevel: number
@@ -334,7 +334,7 @@ export class DeploymentNodeModel<A extends AnyAux> extends AbstractDeploymentEle
   }
 }
 
-export class DeployedInstanceModel<A extends AnyAux> extends AbstractDeploymentElementModel<A> {
+export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
   override readonly id: Aux.Strict.DeploymentFqn<A>
   override readonly title: string
   override readonly hierarchyLevel: number
@@ -433,7 +433,7 @@ export class DeployedInstanceModel<A extends AnyAux> extends AbstractDeploymentE
   }
 }
 
-export class NestedElementOfDeployedInstanceModel<A extends AnyAux> {
+export class NestedElementOfDeployedInstanceModel<A extends AnyAux = UnknownAux> {
   constructor(
     public readonly instance: DeployedInstanceModel<A>,
     public readonly element: ElementModel<A>,
@@ -482,11 +482,11 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux> {
   }
 }
 
-export type DeploymentRelationEndpoint<A extends AnyAux> =
+export type DeploymentRelationEndpoint<A extends AnyAux = UnknownAux> =
   | DeploymentElementModel<A>
   | NestedElementOfDeployedInstanceModel<A>
 
-export class DeploymentRelationModel<A extends AnyAux> {
+export class DeploymentRelationModel<A extends AnyAux = UnknownAux> {
   public boundary: DeploymentNodeModel<A> | null
   public source: DeploymentRelationEndpoint<A>
   public target: DeploymentRelationEndpoint<A>
@@ -576,7 +576,7 @@ export class DeploymentRelationModel<A extends AnyAux> {
   }
 }
 
-export class RelationshipsAccum<A extends AnyAux> {
+export class RelationshipsAccum<A extends AnyAux = UnknownAux> {
   static empty<A extends AnyAux>(): RelationshipsAccum<A> {
     return new RelationshipsAccum()
   }

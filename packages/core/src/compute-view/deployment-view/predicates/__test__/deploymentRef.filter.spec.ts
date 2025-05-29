@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { Builder } from '../../../../builder'
 import { TestHelper } from '../../__test__/TestHelper'
 
@@ -9,7 +9,12 @@ describe('DeploymentRef', () => {
         el: {},
         app: {},
       },
-      tags: ['next', 'alpha', 'beta', 'omega'],
+      tags: {
+        next: {},
+        alpha: {},
+        beta: {},
+        omega: {},
+      },
       deployments: {
         nd: {},
         vm: {},
