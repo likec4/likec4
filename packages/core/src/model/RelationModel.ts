@@ -1,10 +1,9 @@
 import { isTruthy } from 'remeda'
-import type { AnyAux, IteratorLike, Link, UnknownAux } from '../types'
+import type { AnyAux, Color, IteratorLike, Link, UnknownAux } from '../types'
 import {
   type Aux,
   type Relationship,
   type RelationshipLineType,
-  type ThemeColor,
   DefaultLineStyle,
   DefaultRelationshipColor,
   FqnRef,
@@ -82,7 +81,7 @@ export class RelationshipModel<A extends AnyAux = UnknownAux> {
     return this.$relationship.links ?? []
   }
 
-  get color(): ThemeColor {
+  get color(): Color {
     return this.$relationship.color ?? DefaultRelationshipColor
   }
 

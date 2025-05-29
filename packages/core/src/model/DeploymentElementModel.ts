@@ -4,6 +4,7 @@ import { nonNullable } from '../errors'
 import {
   type AnyAux,
   type Aux,
+  type Color,
   type ComputedDeploymentView,
   type DeployedInstance,
   type DeploymentElementStyle,
@@ -13,7 +14,6 @@ import {
   type IteratorLike,
   type Link,
   type RelationshipLineType,
-  type ThemeColor,
   type UnknownAux,
   DefaultElementShape,
   DefaultLineStyle,
@@ -38,6 +38,7 @@ export type DeploymentElementModel<A extends AnyAux = UnknownAux> = DeploymentNo
 
 abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   abstract readonly id: Aux.Strict.DeploymentFqn<A>
+  abstract readonly _literalId: Aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
   abstract readonly title: string
   abstract readonly hierarchyLevel: number
@@ -59,8 +60,8 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux> {
     return this.$node.style?.shape ?? DefaultElementShape
   }
 
-  get color(): ThemeColor {
-    return this.$node.style?.color as ThemeColor ?? DefaultThemeColor
+  get color(): Color {
+    return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
   get tags(): Aux.Tags<A> {
@@ -220,6 +221,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux> {
 
 export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
   override id: Aux.Strict.DeploymentFqn<A>
+  override _literalId: Aux.DeploymentId<A>
   override title: string
   override hierarchyLevel: number
 
@@ -229,6 +231,7 @@ export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends Abstract
   ) {
     super()
     this.id = $node.id
+    this._literalId = $node.id
     this.title = $node.title
     this.hierarchyLevel = hierarchyLevel($node.id)
   }
@@ -336,6 +339,7 @@ export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends Abstract
 
 export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
   override readonly id: Aux.Strict.DeploymentFqn<A>
+  override readonly _literalId: Aux.DeploymentId<A>
   override readonly title: string
   override readonly hierarchyLevel: number
 
@@ -346,6 +350,7 @@ export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends Abstra
   ) {
     super()
     this.id = $instance.id
+    this._literalId = $instance.id
     this.title = $instance.title ?? element.title
     this.hierarchyLevel = hierarchyLevel($instance.id)
   }
@@ -374,8 +379,8 @@ export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends Abstra
     return this.$instance.style?.shape ?? this.element.shape
   }
 
-  override get color(): ThemeColor {
-    return this.$instance.style?.color as ThemeColor ?? this.element.color
+  override get color(): Color {
+    return this.$instance.style?.color as Color ?? this.element.color
   }
 
   override get tags(): Aux.Tags<A> {
@@ -444,6 +449,10 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = UnknownAux>
     return this.instance.id
   }
 
+  get _literalId(): Aux.DeploymentId<A> {
+    return this.instance.id
+  }
+
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
     const { icon, style } = this.element.$element
     return {
@@ -458,7 +467,7 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = UnknownAux>
     return this.element.shape
   }
 
-  get color(): ThemeColor {
+  get color(): Color {
     return this.element.color
   }
 
@@ -545,7 +554,7 @@ export class DeploymentRelationModel<A extends AnyAux = UnknownAux> {
     return this.$relationship.links ?? []
   }
 
-  get color(): ThemeColor {
+  get color(): Color {
     return this.$relationship.color ?? DefaultThemeColor
   }
 

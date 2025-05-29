@@ -6,6 +6,7 @@ import type { WhereOperator } from './operators'
 import { type Icon } from './scalars'
 import type {
   BorderStyle,
+  Color,
   ElementShape,
   RelationshipArrowType,
   RelationshipLineType,
@@ -75,7 +76,7 @@ export namespace ModelFqnExpr {
       technology?: string
       notation?: string
       shape?: ElementShape
-      color?: ThemeColor
+      color?: Color
       icon?: Icon
       border?: BorderStyle
       opacity?: number
@@ -192,7 +193,7 @@ export namespace ModelRelationExpr {
       navigateTo?: Aux.Strict.ViewId<A>
       // Notes for walkthrough
       notes?: string
-      color?: ThemeColor
+      color?: Color
       line?: RelationshipLineType
       head?: RelationshipArrowType
       tail?: RelationshipArrowType

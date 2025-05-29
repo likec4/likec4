@@ -1,4 +1,4 @@
-import type { LikeC4Model } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { Alert, Anchor, Box, Pill, Text, Tree, useTree } from '@mantine/core'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { type ReactNode, useEffect, useMemo } from 'react'

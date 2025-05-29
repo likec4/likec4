@@ -1,4 +1,5 @@
 import type {
+  DeploymentFqn,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -231,7 +232,7 @@ export interface LikeC4DiagramProperties {
   /**
    * Dynamic filter, applies both to nodes and edges
    */
-  where?: WhereOperator<string, string> | undefined
+  where?: WhereOperator | undefined
 
   /**
    * Override ReactFlow props
@@ -248,7 +249,7 @@ export type OpenSourceParams =
     relation: RelationId
   }
   | {
-    deployment: Fqn
+    deployment: DeploymentFqn
     property?: string
   }
   | {

@@ -87,7 +87,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
 
   const [browserViewId, onNavigateTo] = useState(null as ViewId | null)
 
-  const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
+  const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view as (DiagramView | undefined) : null
 
   const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0

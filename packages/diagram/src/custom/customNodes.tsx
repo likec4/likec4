@@ -24,7 +24,7 @@ function customDiagramNode<
 
 export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
   nodeProps: NodeProps<Types.ElementNodeData, 'element'>
-  nodeModel: NodeModel.WithElement<M, DiagramView>
+  nodeModel: NodeModel.WithElement<M, DiagramView<M>>
 }
 /**
  * Node that will be used to render the element from the model.
@@ -76,7 +76,7 @@ export const elementNode = customDiagramNode<CustomElementNodeProps>
 
 export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
   nodeProps: NodeProps<Types.DeploymentElementNodeData, 'deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView>
+  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView<M>>
 }
 /**
  * Node that will be used to render the element from deployment model.
@@ -128,7 +128,7 @@ export const deploymentNode = customDiagramNode<CustomDeploymentNodeProps>
 
 export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
   nodeProps: NodeProps<Types.CompoundElementNodeData, 'compound-element'>
-  nodeModel: NodeModel.WithElement<M, DiagramView>
+  nodeModel: NodeModel.WithElement<M, DiagramView<M>>
 }
 /**
  * Node that will be used to render the compound element from the model.
@@ -170,7 +170,7 @@ export const compoundElementNode = customDiagramNode<CustomCompoundElementNodePr
 
 export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
   nodeProps: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView>
+  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView<M>>
 }
 /**
  * Node that will be used to render the compound from the deployment model.
@@ -206,7 +206,7 @@ export const compoundDeploymentNode = customDiagramNode<CustomCompoundDeployment
 
 export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
   nodeProps: NodeProps<Types.ViewGroupNodeData, 'view-group'>
-  nodeModel: NodeModel.IsGroup<M, DiagramView>
+  nodeModel: NodeModel.IsGroup<M, DiagramView<M>>
 }
 /**
  * Node that will be used to render the view group from the model.

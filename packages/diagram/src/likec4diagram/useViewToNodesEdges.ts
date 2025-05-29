@@ -6,7 +6,7 @@ import {
   type NodeId,
   type WhereOperator,
   DiagramNode,
-  ElementKind,
+  GroupElementKind,
   invariant,
   nonNullable,
   Queue,
@@ -20,7 +20,7 @@ import type { Types } from './types'
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 function viewToNodesEdge(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
-  where: WhereOperator<string, string> | undefined
+  where: WhereOperator | undefined
   nodesSelectable: boolean
 }): {
   xynodes: Types.Node[]
@@ -73,7 +73,7 @@ function viewToNodesEdge(opts: {
   let next: TraverseItem | undefined
   while ((next = queue.dequeue())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == GroupElementKind
     if (isCompound) {
       for (const child of node.children) {
         queue.enqueue({ node: nodeById(child), parent: node })
@@ -93,8 +93,8 @@ function viewToNodesEdge(opts: {
 
     const base = {
       id,
-      selectable: selectable && node.kind !== ElementKind.Group,
-      focusable: selectable && node.kind !== ElementKind.Group,
+      selectable: selectable && node.kind !== GroupElementKind,
+      focusable: selectable && node.kind !== GroupElementKind,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -104,7 +104,7 @@ function viewToNodesEdge(opts: {
       },
       initialWidth: node.width,
       initialHeight: node.height,
-      hidden: node.kind !== ElementKind.Group && !visiblePredicate(node),
+      hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
       ...(parent && {
         parentId: ns + parent.id,
       }),
@@ -139,7 +139,7 @@ function viewToNodesEdge(opts: {
       isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData
 
-    if (node.kind === ElementKind.Group) {
+    if (node.kind === GroupElementKind) {
       xynodes.push({
         ...base,
         type: 'view-group',
@@ -280,7 +280,7 @@ export function useViewToNodesEdges({
   ...opts
 }: {
   view: DiagramView
-  where: WhereOperator<string, string> | undefined
+  where: WhereOperator | undefined
   nodesSelectable: boolean
 }) {
   return useDeepCompareMemo(() => {

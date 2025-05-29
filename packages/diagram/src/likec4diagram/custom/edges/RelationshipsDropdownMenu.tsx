@@ -1,11 +1,10 @@
 import {
   type DiagramEdge,
   type EdgeId,
-  type LikeC4Model,
-  type NodeId,
   DiagramNode,
   nameFromFqn,
 } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
 import {
   type StackProps,
@@ -266,8 +265,8 @@ const Relationship = forwardRef<
 })
 
 function getShortId(
-  r: LikeC4Model.AnyRelation<LikeC4Model.Any>,
-  actualEndpointId: NodeId<string>,
+  r: LikeC4Model.AnyRelation,
+  actualEndpointId: string,
   diagramNode: DiagramNode,
 ) {
   const diagramNodeId = r.isDeploymentRelation()

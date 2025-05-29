@@ -2,13 +2,13 @@ import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
 import type {
   AnyAux,
   Aux,
+  Color,
   DeploymentRelationship,
   Link,
   NonEmptyArray,
   Relationship,
   RelationshipArrowType,
   RelationshipLineType,
-  ThemeColor,
 } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 
@@ -17,7 +17,7 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
   description?: string | null
   technology: string | null
   kind: Aux.RelationKind<A> | null
-  color: ThemeColor | null
+  color: Color | null
   line: RelationshipLineType | null
   head: RelationshipArrowType | null
   tail: RelationshipArrowType | null
@@ -55,7 +55,7 @@ export type MergedRelationshipProps<A extends AnyAux> = {
   description?: string
   technology?: string
   kind?: Aux.RelationKind<A>
-  color?: ThemeColor
+  color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
@@ -119,7 +119,7 @@ export function mergePropsFromRelationships<A extends AnyAux>(
         kind: [] as Aux.RelationKind<A>[],
         head: [] as RelationshipArrowType[],
         tail: [] as RelationshipArrowType[],
-        color: [] as ThemeColor[],
+        color: [] as Color[],
         tags: [] as Aux.Tag<A>[],
         links: [] as Link[],
         line: [] as RelationshipLineType[],

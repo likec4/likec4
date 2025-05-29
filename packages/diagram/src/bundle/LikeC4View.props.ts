@@ -130,7 +130,7 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
-  where?: WhereOperator<Tag, Kind> | undefined
+  where?: WhereOperator | undefined
 
   /**
    * Override some react flow props

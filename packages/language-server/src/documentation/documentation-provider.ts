@@ -1,4 +1,4 @@
-import { FqnRef } from '@likec4/core'
+import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
 import { type AstNode, type DocumentationProvider, AstUtils } from 'langium'
 import { ast } from '../ast'
 import { logWarnError } from '../logger'
@@ -29,8 +29,8 @@ export class LikeC4DocumentationProvider implements DocumentationProvider {
         const doc = AstUtils.getDocument(node)
         const instance = this.parser.forDocument(doc).parseDeployedInstance(node)
         const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-          ? [instance.element.project, instance.element.model]
-          : [doc.likec4ProjectId, instance.element.model]
+          ? [instance.element.project as ProjectId, instance.element.model as Fqn]
+          : [doc.likec4ProjectId, instance.element.model as Fqn]
         const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
         const lines = [instance.id, `_instance of_ ${instance.element}`]
         if (el) {

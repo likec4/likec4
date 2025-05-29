@@ -216,7 +216,7 @@ export class Rpc extends ADisposable {
           return {
             elementKinds: keys(model.$model.specification.elements).length,
             relationshipKinds: keys(model.$model.specification.relationships).length,
-            tags: keys(model.$model.specification.tags).length,
+            tags: keys(model.$model.specification.tags ?? {}).length,
             elements: keys(model.$model.elements).length,
             relationships: keys(model.$model.relations).length,
             views: keys(model.$model.views).length,
@@ -254,7 +254,7 @@ export class Rpc extends ADisposable {
       }),
     )
 
-    function reportLayoutDrift(diagrams: DiagramView<string, string>[]) {
+    function reportLayoutDrift(diagrams: DiagramView[]) {
       return pipe(
         diagrams,
         filter(d => !!d.hasLayoutDrift),

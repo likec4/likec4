@@ -1,7 +1,7 @@
 import {
   type Fqn,
   DiagramNode,
-  ElementKind,
+  GroupElementKind,
   invariant,
   nonNullable,
   Queue,
@@ -47,7 +47,7 @@ export function viewToNodesEdge(
   let next: TraverseItem | undefined
   while ((next = queue.dequeue())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == GroupElementKind
     if (isCompound) {
       for (const child of node.children) {
         queue.enqueue({ node: nodeById(child), parent: node })

@@ -19,6 +19,8 @@ import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
+  DeployedInstanceModel,
+  DeploymentNodeModel,
   DeploymentRelationModel,
 } from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
@@ -26,6 +28,7 @@ import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
 import { type ElementOrFqn, type IncomingFilter, type OutgoingFilter, getId } from './types'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends AnyAux = UnknownAux> {
   /**
@@ -460,4 +463,17 @@ export namespace LikeC4Model {
     views: {},
     imports: {},
   })
+
+  export type Computed<A extends AnyAux = UnknownAux> = LikeC4Model<A>
+  export type Layouted<A extends AnyAux = UnknownAux> = LikeC4Model<A>
+
+  export type Node<A extends AnyAux = UnknownAux> = NodeModel<A>
+  export type Element<A extends AnyAux = UnknownAux> = ElementModel<A>
+  export type Relationship<A extends AnyAux = UnknownAux> = RelationshipModel<A>
+  export type View<A extends AnyAux = UnknownAux> = LikeC4ViewModel<A>
+
+  export type DeploymentNode<A extends AnyAux = UnknownAux> = DeploymentNodeModel<A>
+  export type DeployedInstance<A extends AnyAux = UnknownAux> = DeployedInstanceModel<A>
+
+  export type AnyRelation<M extends AnyAux = UnknownAux> = RelationshipModel<M> | DeploymentRelationModel<M>
 }

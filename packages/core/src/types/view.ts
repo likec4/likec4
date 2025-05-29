@@ -303,8 +303,8 @@ export interface ComputedNode<A extends AnyAux = UnknownAux> {
    */
   deploymentRef?: 1 | Aux.Strict.DeploymentFqn<A>
   title: string
-  description?: string | null
-  technology?: string | null
+  description: string | null
+  technology: string | null
   notation?: string
   tags: Aux.Tags<A> | null
   links?: readonly Link[] | null

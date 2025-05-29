@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Aux, IteratorLike, ThemeColor, UnknownAux } from '../types'
+import type { AnyAux, Aux, Color, IteratorLike, UnknownAux } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -63,8 +63,8 @@ export class ElementModel<A extends AnyAux = UnknownAux> {
     return this.$element.shape ?? DefaultElementShape
   }
 
-  get color(): ThemeColor {
-    return this.$element.color as ThemeColor ?? DefaultThemeColor
+  get color(): Color {
+    return this.$element.color as Color ?? DefaultThemeColor
   }
 
   get icon(): IconUrl | null {

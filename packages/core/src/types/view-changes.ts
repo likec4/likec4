@@ -1,5 +1,5 @@
 import type { NonEmptyArray } from './_common'
-import type { Fqn } from './scalars'
+import type { DeploymentFqn, Fqn } from './scalars'
 import type { BorderStyle, ElementShape, ThemeColor } from './styles'
 import type { AutoLayoutDirection, ViewManualLayout } from './view'
 
@@ -12,7 +12,7 @@ export namespace ViewChange {
       shape?: ElementShape
       color?: ThemeColor
     }
-    targets: NonEmptyArray<Fqn>
+    targets: NonEmptyArray<Fqn | DeploymentFqn>
   }
 
   export interface SaveManualLayout {

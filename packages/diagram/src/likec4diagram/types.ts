@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
+import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
@@ -59,7 +59,7 @@ export namespace Types {
     & LeafNodeData
     & {
       navigateTo: ViewId | null
-      deploymentFqn: Fqn
+      deploymentFqn: DeploymentFqn
       // If set - this node refers to a model element
       modelFqn: Fqn | null
     }
@@ -96,7 +96,7 @@ export namespace Types {
   }
 
   export type CompoundDeploymentNodeData = CompoundNodeData & {
-    deploymentFqn: Fqn
+    deploymentFqn: DeploymentFqn
     /**
      * If set - this node refers to a model element
      */

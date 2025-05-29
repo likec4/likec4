@@ -1,4 +1,4 @@
-import type { Aux, GroupElementKind, ProcessedView } from '../../types'
+import type { Aux, Color, GroupElementKind, ProcessedView } from '../../types'
 import {
   type AnyAux,
   type DiagramView,
@@ -88,7 +88,7 @@ export class NodeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
     return this.$node.shape
   }
 
-  get color(): C4Color {
+  get color(): Color {
     return this.$node.color
   }
 

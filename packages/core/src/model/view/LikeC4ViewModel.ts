@@ -1,5 +1,5 @@
 import { nonNullable } from '../../errors'
-import type { AnyAux, Aux, IteratorLike, Link, ProcessedView } from '../../types'
+import type { AnyAux, Aux, IteratorLike, Link, ProcessedView, UnknownAux } from '../../types'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
@@ -17,7 +17,7 @@ import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends AnyAux> = IteratorLike<LikeC4ViewModel<A>>
 
-export class LikeC4ViewModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> {
+export class LikeC4ViewModel<A extends AnyAux = UnknownAux, V extends ProcessedView<A> = ProcessedView<A>> {
   readonly #rootnodes = new Set<NodeModel<A, V>>()
   readonly #nodes = new Map<Aux.Strict.NodeId<A>, NodeModel<A, V>>()
   readonly #edges = new Map<Aux.Strict.EdgeId<A>, EdgeModel<A, V>>()

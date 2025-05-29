@@ -1,11 +1,11 @@
 import {
-  type ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
   type LikeC4View,
   type NodeId,
   type ViewId,
+  ComputedView,
   isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'
@@ -512,7 +512,7 @@ const ViewButton = ({
     <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
-          {isDeploymentView(view)
+          {ComputedView.isDeployment(view)
             ? <IconStack2 stroke={1.8} />
             : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>

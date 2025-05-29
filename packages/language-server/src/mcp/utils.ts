@@ -1,10 +1,10 @@
 import { type ProjectId, imap, toArray } from '@likec4/core'
-import { type LikeC4Model } from '@likec4/core/model'
+import { type ElementModel, type LikeC4Model, type LikeC4ViewModel } from '@likec4/core/model'
 import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
 
 export function elementResource(
   languageServices: LikeC4LanguageServices,
-  el: LikeC4Model.Element,
+  el: ElementModel,
   projectId?: ProjectId,
 ) {
   return {
@@ -87,7 +87,7 @@ export function elementResource(
 
 export function modelViewResource(
   languageServices: LikeC4LanguageServices,
-  view: LikeC4Model.View,
+  view: LikeC4ViewModel,
   projectId?: ProjectId,
 ) {
   return {

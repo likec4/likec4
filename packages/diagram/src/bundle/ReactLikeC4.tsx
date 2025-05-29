@@ -41,7 +41,7 @@ export type ReactLikeC4Props<
 
   style?: CSSProperties | undefined
 
-  where?: WhereOperator<Tag, Kind> | undefined
+  where?: WhereOperator | undefined
 
   onNavigateTo?: OnNavigateTo<ViewId> | undefined
 

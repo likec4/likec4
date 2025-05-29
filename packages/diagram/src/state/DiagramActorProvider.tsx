@@ -25,7 +25,7 @@ export function DiagramActorProvider({
   children,
 }: PropsWithChildren<{
   input: ActorContextInput
-  where?: WhereOperator<string, string> | undefined
+  where?: WhereOperator | undefined
 }>) {
   const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()

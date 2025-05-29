@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView, OverviewGraph, ProjectId, ViewId } from '@likec4/core'
+import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
@@ -35,7 +35,7 @@ export interface LikeC4Views {
   ): Promise<GraphvizOut | null>
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
-  overviewGraph(): Promise<OverviewGraph>
+  // overviewGraph(): Promise<OverviewGraph>
 }
 
 export class DefaultLikeC4Views implements LikeC4Views {
@@ -194,15 +194,15 @@ export class DefaultLikeC4Views implements LikeC4Views {
     return succeed
   }
 
-  async overviewGraph(): Promise<OverviewGraph> {
-    const KEY = 'OverviewGraph'
-    const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
-    if (cache.has(KEY)) {
-      return await Promise.resolve(cache.get(KEY)!)
-    }
-    const views = await this.computedViews()
-    const overviewGraph = await this.layouter.layoutOverviewGraph(views)
-    cache.set(KEY, overviewGraph)
-    return overviewGraph
-  }
+  // async overviewGraph(): Promise<OverviewGraph> {
+  //   const KEY = 'OverviewGraph'
+  //   const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
+  //   if (cache.has(KEY)) {
+  //     return await Promise.resolve(cache.get(KEY)!)
+  //   }
+  //   const views = await this.computedViews()
+  //   const overviewGraph = await this.layouter.layoutOverviewGraph(views)
+  //   cache.set(KEY, overviewGraph)
+  //   return overviewGraph
+  // }
 }

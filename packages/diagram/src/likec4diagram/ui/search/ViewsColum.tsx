@@ -1,8 +1,4 @@
-import {
-  type LikeC4Model,
-  type Tag,
-  isDeploymentView,
-} from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import {
@@ -42,7 +38,7 @@ export function ViewsColumn() {
     } else {
       views = views.filter(view => {
         if (search.startsWith('#')) {
-          return view.tags.some((tag: Tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
+          return view.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
         }
         return (view.title ?? '' + view.$view.description ?? '').toLocaleLowerCase().includes(search)
       })
@@ -136,7 +132,7 @@ export function ViewButton(
         },
       })}>
       <ThemeIcon variant="transparent" className={btn.icon!}>
-        {isDeploymentView(view)
+        {view.isDeploymentView()
           ? <IconStack2 stroke={1.8} />
           : <IconZoomScan stroke={1.8} />}
       </ThemeIcon>

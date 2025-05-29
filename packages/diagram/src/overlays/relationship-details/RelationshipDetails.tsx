@@ -239,8 +239,8 @@ const TopLeftPanel = memo(() => {
       find(edges, (e) => e.source.element?.id === subject.source && e.target.element?.id === subject.target)
       || find(edges, (e) => {
         return (e.source.element?.id === subject.source ||
-          isAncestor(e.source.element?.id ?? '--', subject.source ?? '__')) &&
-          (e.target.element?.id === subject.target || isAncestor(e.target.element?.id ?? '', subject.target ?? '__'))
+          isAncestor(e.source.element?.id ?? '__', subject.source ?? '__')) &&
+          (e.target.element?.id === subject.target || isAncestor(e.target.element?.id ?? '__', subject.target ?? '__'))
       })
     )
   if (!edge) {
