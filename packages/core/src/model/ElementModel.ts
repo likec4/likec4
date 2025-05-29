@@ -29,7 +29,7 @@ export class ElementModel<A extends AnyAux = UnknownAux> {
 
   readonly imported: null | {
     from: ProjectId
-    fqn: string
+    fqn: Aux.Strict.Fqn<A>
   }
 
   constructor(

@@ -31,6 +31,8 @@ export type DeploymentFqn<T = string> = Tagged<T, 'DeploymentFqn'>
 export type DeploymentKind<Kinds = string> = Tagged<Kinds, 'DeploymentKind'>
 export type ViewId<Id = string> = Tagged<Id, 'ViewId'>
 
+export type AnyFqn<T = string> = DeploymentFqn<T> | Fqn<T>
+
 export type RelationKind<Kinds = string> = Tagged<Kinds, 'RelationKind'>
 export type RelationId<Id = string> = Tagged<Id, 'RelationId'>
 
@@ -50,7 +52,7 @@ export function isGlobalFqn(fqn: string): fqn is GlobalFqn {
   return fqn.startsWith('@')
 }
 
-export function splitGlobalFqn(fqn: Fqn | GlobalFqn): [ProjectId | null, Fqn] {
+export function splitGlobalFqn<I extends string>(fqn: Fqn<I> | GlobalFqn<I>): [ProjectId | null, Fqn<I>] {
   if (!fqn.startsWith('@')) {
     return [null, fqn]
   }
@@ -58,7 +60,28 @@ export function splitGlobalFqn(fqn: Fqn | GlobalFqn): [ProjectId | null, Fqn] {
   if (firstDot < 2) {
     throw new Error('Invalid global FQN')
   }
-  const projectId = fqn.slice(1, firstDot) as ProjectId
-  const name = fqn.slice(firstDot + 1) as Fqn
+  const projectId = fqn.slice(1, firstDot) as ProjectId<I>
+  const name = fqn.slice(firstDot + 1) as Fqn<I>
   return [projectId, name]
+}
+
+export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
+export type EdgeId<IDs extends string = string> = Tagged<IDs, 'EdgeId'>
+
+export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
+export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
+export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
+  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
+  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
+}
+
+export function isStepEdgeId(id: string): id is StepEdgeId {
+  return id.startsWith('step-')
+}
+
+export function extractStep(id: EdgeId): number {
+  if (!isStepEdgeId(id)) {
+    throw new Error(`Invalid step edge id: ${id}`)
+  }
+  return parseFloat(id.slice('step-'.length))
 }

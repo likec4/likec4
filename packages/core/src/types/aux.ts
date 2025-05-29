@@ -254,8 +254,8 @@ export namespace Aux {
     export type ViewId<A extends AnyAux> = Scalars.ViewId<A['ViewId']>
 
     // export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']> | Scalars.DeploymentFqn<A['DeploymentId']>
-    export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']>
-    export type EdgeId<A extends AnyAux> = Scalars.RelationId
+    export type NodeId<A extends AnyAux> = Scalars.NodeId<A['ElementId'] | A['DeploymentId']>
+    export type EdgeId<A extends AnyAux> = Scalars.EdgeId
 
     export type RelationId<A extends AnyAux> = Scalars.RelationId
 

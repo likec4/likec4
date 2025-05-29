@@ -1,6 +1,6 @@
 import { isArray } from 'remeda'
 import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
-import type { ExclusiveUnion, Link, NonEmptyArray, Point, XYPoint } from './_common'
+import type { Link, NonEmptyArray, Point, XYPoint } from './_common'
 import type { AnyAux, Aux, UnknownAux } from './aux'
 import type { Expression, FqnExpr } from './expression'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
@@ -9,6 +9,7 @@ import type { ElementStyle } from './model-logical'
 import {
   type Icon,
   GroupElementKind,
+  isStepEdgeId,
 } from './scalars'
 import type {
   BorderStyle,
@@ -278,27 +279,6 @@ export function isScopedElementView<A extends AnyAux>(view: LikeC4View<A>): view
   return isElementView(view) && 'viewOf' in view
 }
 
-export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
-
-export type EdgeId = Tagged<string, 'EdgeId'>
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
-export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
-export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
-}
-
-export function isStepEdgeId(id: string): id is StepEdgeId {
-  return id.startsWith('step-')
-}
-
-export function extractStep(id: EdgeId): number {
-  if (!isStepEdgeId(id)) {
-    throw new Error(`Invalid step edge id: ${id}`)
-  }
-  return parseFloat(id.slice('step-'.length))
-}
-
 // Get the prefix of the parallel steps
 // i.e. step-01.1 -> step-01.
 export function getParallelStepsPrefix(id: string): string | null {
@@ -440,11 +420,10 @@ export interface ComputedDeploymentView<A extends AnyAux = UnknownAux>
   docUri?: never
 }
 
-export type ComputedView<A extends AnyAux = UnknownAux> = ExclusiveUnion<{
-  Element: ComputedElementView<A>
-  Deployment: ComputedDeploymentView<A>
-  Dynamic: ComputedDynamicView<A>
-}>
+export type ComputedView<A extends AnyAux = UnknownAux> =
+  | ComputedElementView<A>
+  | ComputedDeploymentView<A>
+  | ComputedDynamicView<A>
 
 export namespace ComputedView {
   export function isDeployment<A extends AnyAux>(view: ComputedView<A>): view is ComputedDeploymentView<A> {
@@ -454,7 +433,7 @@ export namespace ComputedView {
     return view.__ === 'dynamic'
   }
   export function isElement<A extends AnyAux>(view: ComputedView<A>): view is ComputedElementView<A> {
-    return view.__ === 'element'
+    return !('__' in view) || view.__ === 'element'
   }
 }
 

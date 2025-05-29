@@ -1,5 +1,4 @@
-import { GroupElementKind } from '../../../types'
-import { type NodeId, type ViewRuleGroup } from '../../../types/view'
+import { type NodeId, type ViewRuleGroup, GroupElementKind } from '../../../types'
 import type { Elem } from '../_types'
 
 export class NodesGroup {

@@ -1,5 +1,5 @@
 import { generateColors } from '@mantine/colors-generator'
-import type { ColorLiteral, LikeC4Theme, ThemeColorValues } from '../types'
+import type { ColorLiteral, HexColor, LikeC4Theme, ThemeColorValues } from '../types'
 import { ElementColors } from './element'
 import { RelationshipColors } from './relationships'
 
@@ -52,15 +52,15 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
 
     return {
       elements: {
-        fill: colors[6] as ColorLiteral,
-        stroke: colors[7] as ColorLiteral,
-        hiContrast: colors[0] as ColorLiteral,
-        loContrast: colors[1] as ColorLiteral,
+        fill: colors[6] as HexColor,
+        stroke: colors[7] as HexColor,
+        hiContrast: colors[0] as HexColor,
+        loContrast: colors[1] as HexColor,
       },
       relationships: {
-        lineColor: colors[4] as ColorLiteral,
-        labelColor: colors[3] as ColorLiteral,
-        labelBgColor: colors[9] as ColorLiteral,
+        lineColor: colors[4] as HexColor,
+        labelColor: colors[3] as HexColor,
+        labelBgColor: colors[9] as HexColor,
       },
     }
   } else {

@@ -1,6 +1,5 @@
 import { map, mapToObj, mapValues, omit } from 'remeda'
-import type { AnyAux, ComputedLikeC4ModelData } from '../../types'
-import type { ComputedView, EdgeId } from '../../types/view'
+import type { AnyAux, ComputedLikeC4ModelData, ComputedView, EdgeId } from '../../types'
 
 /**
  * Convert hashed edge ids to human-readable

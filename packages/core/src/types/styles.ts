@@ -23,9 +23,11 @@ export const ElementShapes = [
 
 export type ElementShape = TupleToUnion<typeof ElementShapes>
 
+export type HexColor = `#${string}`
+
 type Comma = ',' | ', '
 export type ColorLiteral =
-  | `#${string}`
+  | HexColor
   | `rgb(${number}${Comma}${number}${Comma}${number})`
   | `rgba(${number}${Comma}${number}${Comma}${number}${Comma}${number})`
 
@@ -70,12 +72,12 @@ export function isThemeColor(color: string): color is ThemeColor {
 }
 
 export interface ElementThemeColorValues {
-  fill: ColorLiteral
-  stroke: ColorLiteral
+  fill: HexColor
+  stroke: HexColor
   // Main text (title, etc.)
-  hiContrast: ColorLiteral
+  hiContrast: HexColor
   // Secondary text (description, etc.)
-  loContrast: ColorLiteral
+  loContrast: HexColor
 }
 
 export type ElementThemeColors = {
@@ -83,9 +85,9 @@ export type ElementThemeColors = {
 }
 
 export interface RelationshipThemeColorValues {
-  lineColor: ColorLiteral
-  labelBgColor: ColorLiteral
-  labelColor: ColorLiteral
+  lineColor: HexColor
+  labelBgColor: HexColor
+  labelColor: HexColor
 }
 
 export interface ThemeColorValues {
