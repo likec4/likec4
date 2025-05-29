@@ -1,7 +1,6 @@
 import { findLast, map } from 'remeda'
 import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux } from '../../model/types'
-import type { DeploymentViewRule } from '../../types'
+import type { AnyAux, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
   type DeploymentView,
@@ -19,7 +18,7 @@ import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './ut
 
 export function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
-  rules: DeploymentViewRule[],
+  rules: DeploymentViewRule<M>[],
 ) {
   let memory = Memory.empty()
 
@@ -44,13 +43,13 @@ export function computeDeploymentView<M extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: DeploymentView,
-): ComputedDeploymentView<M['ViewId']> {
+  }: DeploymentView<NoInfer<M>>,
+): ComputedDeploymentView<M> {
   const memory = processPredicates<M>(likec4model.deployment, rules)
 
-  const nodesMap = buildNodes(memory)
+  const nodesMap = buildNodes<M>(memory)
 
-  const computedEdges = toComputedEdges(memory.connections)
+  const computedEdges = toComputedEdges<M>(memory.connections)
 
   linkNodesWithEdges(nodesMap, computedEdges)
 

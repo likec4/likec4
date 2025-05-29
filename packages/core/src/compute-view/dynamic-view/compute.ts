@@ -3,7 +3,7 @@ import { nonNullable } from '../../errors'
 import type { LikeC4Model } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux } from '../../model/types'
+import type { AnyAux } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,

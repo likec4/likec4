@@ -11,6 +11,7 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
+import type { LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
 import { imap, toArray } from '../../../utils/iterable'
@@ -36,7 +37,9 @@ type Elem = Memory['Ctx']['Element']
 type Connection = Memory['Ctx']['Connection']
 
 export class TestHelper<T extends AnyTypes> {
-  model: Types.ToLikeC4Model<T>
+  Aux!: Types.ToAux<T>
+
+  model: LikeC4Model<typeof this.Aux>
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
@@ -54,7 +57,7 @@ export class TestHelper<T extends AnyTypes> {
     private builder: Builder<T>,
     private _expect: ExpectStatic,
   ) {
-    this.model = builder.toLikeC4Model() as Types.ToLikeC4Model<T>
+    this.model = builder.toLikeC4Model()
   }
 
   computeView = (...rules: DeploymentRulesBuilderOp<T>[]) => {
@@ -64,7 +67,7 @@ export class TestHelper<T extends AnyTypes> {
         .views(_ => _.deploymentView('dev').with(...rules))
         .toLikeC4Model()
         .view('dev')
-        .$view as ComputedDeploymentView<'dev'>,
+        .$view as ComputedDeploymentView<typeof this.Aux>,
       ' -> ',
     )
   }
@@ -175,7 +178,7 @@ class ProcessPredicates<T extends AnyTypes> {
     return processor
   }
 
-  public viewrules: ReadonlyArray<DeploymentViewRule> = []
+  public viewrules: ReadonlyArray<DeploymentViewRule<typeof this.t.Aux>> = []
 
   public previousMemory: Memory = Memory.empty()
   public memory: Memory = Memory.empty()
@@ -218,7 +221,7 @@ class ProcessPredicates<T extends AnyTypes> {
       id: 'test' as ViewId,
       __: 'deployment',
       rules: [],
-    } as any as Writable<DeploymentView>
+    } as any as Writable<DeploymentView<typeof this.t.Aux>>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,

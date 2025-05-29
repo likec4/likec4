@@ -87,7 +87,7 @@ export interface ViewRuleAutoLayout {
   rankSep?: number
 }
 
-export function isViewRuleAutoLayout(rule: ViewRule<any>): rule is ViewRuleAutoLayout {
+export function isViewRuleAutoLayout(rule: object): rule is ViewRuleAutoLayout {
   return 'direction' in rule
 }
 
