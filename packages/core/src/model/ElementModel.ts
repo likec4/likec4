@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Aux, Color, IteratorLike, UnknownAux } from '../types'
+import type { Any, AnyAux, Aux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -22,7 +22,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux = UnknownAux> {
+export class ElementModel<A extends AnyAux = Any> {
   readonly id: Aux.Strict.Fqn<A>
   readonly _literalId: Aux.ElementId<A>
   readonly hierarchyLevel: number
@@ -254,7 +254,7 @@ export class ElementModel<A extends AnyAux = UnknownAux> {
     return this.$model.deployment.instancesOf(this)
   }
 
-  public getMetadata(): Aux.Strict.Metadata<A>
+  public getMetadata(): Aux.Metadata<A>
   public getMetadata(field: Aux.MetadataKey<A>): string | undefined
   public getMetadata(field?: Aux.MetadataKey<A>) {
     if (field) {

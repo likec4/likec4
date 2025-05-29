@@ -1,5 +1,4 @@
 import type { Simplify, UnionToIntersection } from 'type-fest'
-import type { IsPlainObject } from 'type-fest/source/internal'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
@@ -13,10 +12,7 @@ export interface XYPoint {
 }
 
 // dprint-ignore
-export type KeysOf<T> =
-  IsPlainObject<T> extends true
-    ? keyof T extends infer K extends string ? K : never
-    : never
+export type KeysOf<T> = keyof T extends infer K extends string ? K : never
 
 type AllNever<Expressions> = UnionToIntersection<
   {

@@ -1,5 +1,6 @@
 import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
 import type {
+  AnyAux,
   Aux,
   BorderStyle,
   ElementShape,
@@ -17,7 +18,6 @@ import type {
   TagSpecification,
   TextSize,
   ThemeColor as Color,
-  UnknownAux,
 } from '../types'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
@@ -292,7 +292,7 @@ export namespace Types {
         T['MetadataKey']
       >
     >
-    : UnknownAux
+    : AnyAux
 
   export type ToExpression<T> = T extends AnyTypes ? Expression<ToAux<T>> : never
 

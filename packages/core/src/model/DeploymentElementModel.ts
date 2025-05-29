@@ -2,6 +2,7 @@ import { isTruthy, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
+  type Any,
   type AnyAux,
   type Aux,
   type Color,
@@ -14,7 +15,6 @@ import {
   type IteratorLike,
   type Link,
   type RelationshipLineType,
-  type UnknownAux,
   DefaultElementShape,
   DefaultLineStyle,
   DefaultShapeSize,
@@ -34,7 +34,7 @@ export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = UnknownAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux = Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
 abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   abstract readonly id: Aux.Strict.DeploymentFqn<A>
@@ -219,7 +219,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux> {
   }
 }
 
-export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
+export class DeploymentNodeModel<A extends AnyAux = Any> extends AbstractDeploymentElementModel<A> {
   override id: Aux.Strict.DeploymentFqn<A>
   override _literalId: Aux.DeploymentId<A>
   override title: string
@@ -337,7 +337,7 @@ export class DeploymentNodeModel<A extends AnyAux = UnknownAux> extends Abstract
   }
 }
 
-export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends AbstractDeploymentElementModel<A> {
+export class DeployedInstanceModel<A extends AnyAux = Any> extends AbstractDeploymentElementModel<A> {
   override readonly id: Aux.Strict.DeploymentFqn<A>
   override readonly _literalId: Aux.DeploymentId<A>
   override readonly title: string
@@ -438,7 +438,7 @@ export class DeployedInstanceModel<A extends AnyAux = UnknownAux> extends Abstra
   }
 }
 
-export class NestedElementOfDeployedInstanceModel<A extends AnyAux = UnknownAux> {
+export class NestedElementOfDeployedInstanceModel<A extends AnyAux = Any> {
   constructor(
     public readonly instance: DeployedInstanceModel<A>,
     public readonly element: ElementModel<A>,
@@ -491,11 +491,11 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = UnknownAux>
   }
 }
 
-export type DeploymentRelationEndpoint<A extends AnyAux = UnknownAux> =
+export type DeploymentRelationEndpoint<A extends AnyAux = Any> =
   | DeploymentElementModel<A>
   | NestedElementOfDeployedInstanceModel<A>
 
-export class DeploymentRelationModel<A extends AnyAux = UnknownAux> {
+export class DeploymentRelationModel<A extends AnyAux = Any> {
   public boundary: DeploymentNodeModel<A> | null
   public source: DeploymentRelationEndpoint<A>
   public target: DeploymentRelationEndpoint<A>
@@ -585,7 +585,7 @@ export class DeploymentRelationModel<A extends AnyAux = UnknownAux> {
   }
 }
 
-export class RelationshipsAccum<A extends AnyAux = UnknownAux> {
+export class RelationshipsAccum<A extends AnyAux = Any> {
   static empty<A extends AnyAux>(): RelationshipsAccum<A> {
     return new RelationshipsAccum()
   }

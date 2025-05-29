@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { AnyAux, Color, IteratorLike, Link, UnknownAux } from '../types'
+import type { Any, AnyAux, Color, IteratorLike, Link } from '../types'
 import {
   type Aux,
   type Relationship,
@@ -16,7 +16,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
 
-export class RelationshipModel<A extends AnyAux = UnknownAux> {
+export class RelationshipModel<A extends AnyAux = Any> {
   public readonly source: ElementModel<A>
   public readonly target: ElementModel<A>
 

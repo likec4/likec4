@@ -3,12 +3,11 @@ import { invariant, nonexhaustive } from '../../errors'
 import type { DeployedInstanceModel, DeploymentNodeModel, LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux } from '../../types'
+import type { Any, AnyAux, Aux } from '../../types'
 import {
   type ComputedEdge,
   type ComputedNode,
   type DeploymentViewRule,
-  type Fqn,
   DefaultArrowType,
   FqnExpr,
   isViewRuleStyle,
@@ -259,7 +258,7 @@ export function toComputedEdges<A extends AnyAux>(
   }, [] as ComputedEdge<A>[])
 }
 
-export function buildNodes<A extends AnyAux = AnyAux>(
+export function buildNodes<A extends AnyAux = Any>(
   memory: Memory,
 ): ReadonlyMap<Aux.Strict.NodeId<A>, ComputedNode<A>> {
   return buildComputedNodes([...memory.final].map(toNodeSource))

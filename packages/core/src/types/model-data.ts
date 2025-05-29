@@ -1,5 +1,5 @@
 import type { NonEmptyArray } from './_common'
-import type { AnyAux, Aux, Specification, UnknownAux } from './aux'
+import type { Any, AnyAux, Aux, Specification } from './aux'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
@@ -55,7 +55,7 @@ import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './vie
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends AnyAux = UnknownAux> {
+export interface ParsedLikeC4ModelData<A extends AnyAux = Any> {
   // To prevent accidental use of this type
   __?: never
   projectId: Aux.ProjectId<A>
@@ -90,10 +90,10 @@ export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
   }
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux = UnknownAux> extends LikeC4ModelData<A, ComputedView<A>> {
+export interface ComputedLikeC4ModelData<A extends AnyAux = Any> extends LikeC4ModelData<A, ComputedView<A>> {
   __: 'computed'
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = UnknownAux> extends LikeC4ModelData<A, DiagramView<A>> {
+export interface LayoutedLikeC4ModelData<A extends AnyAux = Any> extends LikeC4ModelData<A, DiagramView<A>> {
   __: 'layouted'
 }

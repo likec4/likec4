@@ -5,6 +5,7 @@ import {
   type IteratorLike,
   type ProcessedView,
   type RelationshipLineType,
+  type StepEdgeId,
   extractStep,
   isStepEdgeId,
 } from '../../types'
@@ -53,7 +54,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
   }
 
   get stepNumber(): number | null {
-    return this.isStep() ? extractStep(this.id as any) : null
+    return this.isStep() ? extractStep(this.id) : null
   }
 
   get navigateTo(): LikeC4ViewModel<A, V> | null {
@@ -99,7 +100,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
 
 namespace EdgeModel {
   export interface StepEdge<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> extends EdgeModel<A, V> {
-    // id: StepEdgeId
+    id: StepEdgeId
     stepNumber: number
   }
   export interface WithParent<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> extends EdgeModel<A, V> {

@@ -46,12 +46,3 @@ export type {
 } from './types'
 
 export * from './guards'
-
-export type {
-  AnyAux,
-  Aux,
-  AuxFromDump,
-  SpecTypes,
-  SpecTypesFromDump,
-  UnknownAux,
-} from '../types'

@@ -2,6 +2,7 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "rootDir": "src",
+    "incremental": true,
     "composite": true
   },
   "include": [

@@ -1,5 +1,5 @@
 import type { KeysOf } from './_common'
-import type { Aux, Specification, SpecTypes, UnknownAux } from './aux'
+import type { Any, Aux, Specification, SpecTypes } from './aux'
 import type { ParsedLikeC4ModelData } from './model-data'
 
 /**
@@ -56,4 +56,4 @@ export type AuxFromDump<D> = D extends LikeC4ModelDump ? Aux<
     KeysOf<D['views']>,
     SpecTypesFromDump<D['specification']>
   >
-  : UnknownAux
+  : Any

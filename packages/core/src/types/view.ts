@@ -1,7 +1,7 @@
 import { isArray } from 'remeda'
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type { Link, NonEmptyArray, Point, XYPoint } from './_common'
-import type { AnyAux, Aux, UnknownAux } from './aux'
+import type { Any, AnyAux, Aux } from './aux'
 import type { Expression, FqnExpr } from './expression'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
@@ -24,7 +24,7 @@ import type {
 } from './styles'
 import type { ElementNotation } from './view-notation'
 
-export type ViewRulePredicate<A extends AnyAux = UnknownAux> =
+export type ViewRulePredicate<A extends AnyAux = Any> =
   | {
     include: ModelExpression<A>[]
     exclude?: never
@@ -53,7 +53,7 @@ export function isViewRuleGlobalPredicateRef(rule: ViewRule<any>): rule is ViewR
   return 'predicateId' in rule
 }
 
-export interface ViewRuleStyle<A extends AnyAux = UnknownAux> {
+export interface ViewRuleStyle<A extends AnyAux = Any> {
   targets: ModelFqnExpr<A>[]
   notation?: string
   style: ElementStyle & {
@@ -75,7 +75,7 @@ export function isViewRuleGlobalStyle(rule: ViewRule<any>): rule is ViewRuleGlob
   return 'styleId' in rule
 }
 
-export type ViewRuleStyleOrGlobalRef<A extends AnyAux = UnknownAux> = ViewRuleStyle<A> | ViewRuleGlobalStyle
+export type ViewRuleStyleOrGlobalRef<A extends AnyAux = Any> = ViewRuleStyle<A> | ViewRuleGlobalStyle
 
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
@@ -92,7 +92,7 @@ export function isViewRuleAutoLayout(rule: object): rule is ViewRuleAutoLayout {
   return 'direction' in rule
 }
 
-export interface ViewRuleGroup<A extends AnyAux = UnknownAux> {
+export interface ViewRuleGroup<A extends AnyAux = Any> {
   groupRules: Array<ViewRulePredicate<A> | ViewRuleGroup<A>>
   title: string | null
   color?: Color
@@ -109,7 +109,7 @@ export function isViewRuleGroup<A extends AnyAux>(rule: ViewRule<A>): rule is Vi
   return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
 }
 
-export type ViewRule<A extends AnyAux = UnknownAux> =
+export type ViewRule<A extends AnyAux = Any> =
   | ViewRulePredicate<A>
   | ViewRuleGlobalPredicateRef
   | ViewRuleGroup<A>
@@ -147,31 +147,31 @@ export interface BasicView<A extends AnyAux> {
   readonly customColorDefinitions: CustomColorDefinitions
 }
 
-export interface UnscopedElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
+export interface UnscopedElementView<A extends AnyAux = Any> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
   viewOf?: never
   extends?: never
 }
-export interface ScopedElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
+export interface ScopedElementView<A extends AnyAux = Any> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
   readonly viewOf: Aux.Strict.Fqn<A>
   extends?: never
 }
 
-export interface ExtendsElementView<A extends AnyAux = UnknownAux> extends BasicView<A> {
+export interface ExtendsElementView<A extends AnyAux = Any> extends BasicView<A> {
   readonly __: 'element'
   readonly rules: ViewRule<A>[]
   readonly viewOf?: Aux.Strict.Fqn<A>
   readonly extends: Aux.Strict.ViewId<A>
 }
-export type ElementView<A extends AnyAux = UnknownAux> =
+export type ElementView<A extends AnyAux = Any> =
   | UnscopedElementView<A>
   | ScopedElementView<A>
   | ExtendsElementView<A>
 
-export interface DynamicViewStep<A extends AnyAux = UnknownAux> {
+export interface DynamicViewStep<A extends AnyAux = Any> {
   readonly source: Aux.Strict.Fqn<A>
   readonly target: Aux.Strict.Fqn<A>
   readonly title: string | null
@@ -189,28 +189,28 @@ export interface DynamicViewStep<A extends AnyAux = UnknownAux> {
   readonly navigateTo?: Aux.Strict.ViewId<A>
 }
 
-export interface DynamicViewParallelSteps<A extends AnyAux = UnknownAux> {
+export interface DynamicViewParallelSteps<A extends AnyAux = Any> {
   readonly __parallel: DynamicViewStep<A>[]
 }
 
-export type DynamicViewStepOrParallel<A extends AnyAux = UnknownAux> = Simplify<
+export type DynamicViewStepOrParallel<A extends AnyAux = Any> = Simplify<
   MergeExclusive<
     DynamicViewStep<A>,
     DynamicViewParallelSteps<A>
   >
 >
 
-export type DynamicViewIncludeRule<A extends AnyAux = UnknownAux> = {
+export type DynamicViewIncludeRule<A extends AnyAux = Any> = {
   include: ModelFqnExpr.Any<A>[]
 }
 
-export type DynamicViewRule<A extends AnyAux = UnknownAux> =
+export type DynamicViewRule<A extends AnyAux = Any> =
   | DynamicViewIncludeRule<A>
   | ViewRuleGlobalPredicateRef
   | ViewRuleStyle<A>
   | ViewRuleGlobalStyle
   | ViewRuleAutoLayout
-export interface DynamicView<A extends AnyAux = UnknownAux> extends BasicView<A> {
+export interface DynamicView<A extends AnyAux = Any> extends BasicView<A> {
   readonly __: 'dynamic'
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]
@@ -224,7 +224,7 @@ export function isDynamicViewParallelSteps<A extends AnyAux>(
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
-export type DeploymentViewRulePredicate<A extends AnyAux = UnknownAux> =
+export type DeploymentViewRulePredicate<A extends AnyAux = Any> =
   | {
     include: Expression<A>[]
     exclude?: never
@@ -233,7 +233,7 @@ export type DeploymentViewRulePredicate<A extends AnyAux = UnknownAux> =
     include?: never
     exclude: Expression<A>[]
   }
-export type DeploymentViewRuleStyle<A extends AnyAux = UnknownAux> = {
+export type DeploymentViewRuleStyle<A extends AnyAux = Any> = {
   targets: FqnExpr<A>[]
   notation?: string
   style: ElementStyle & {
@@ -242,17 +242,17 @@ export type DeploymentViewRuleStyle<A extends AnyAux = UnknownAux> = {
     icon?: Icon
   }
 }
-export type DeploymentViewRule<A extends AnyAux = UnknownAux> =
+export type DeploymentViewRule<A extends AnyAux = Any> =
   | DeploymentViewRulePredicate<A>
   | ViewRuleAutoLayout
   | DeploymentViewRuleStyle<A>
 
-export interface DeploymentView<A extends AnyAux = UnknownAux> extends BasicView<A> {
+export interface DeploymentView<A extends AnyAux = Any> extends BasicView<A> {
   readonly __: 'deployment'
   readonly rules: DeploymentViewRule<A>[]
 }
 
-export type LikeC4View<A extends AnyAux = UnknownAux> =
+export type LikeC4View<A extends AnyAux = Any> =
   | ScopedElementView<A>
   | ExtendsElementView<A>
   | UnscopedElementView<A>
@@ -288,7 +288,7 @@ export function getParallelStepsPrefix(id: string): string | null {
   return null
 }
 
-export interface ComputedNode<A extends AnyAux = UnknownAux> {
+export interface ComputedNode<A extends AnyAux = Any> {
   id: Aux.Strict.NodeId<A>
   kind: Aux.ElementKind<A> | Aux.DeploymentKind<A> | typeof GroupElementKind
   parent: Aux.Strict.NodeId<A> | null
@@ -334,12 +334,12 @@ export namespace ComputedNode {
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */
-  export function isNodesGroup(node: ComputedNode): boolean {
+  export function isNodesGroup(node: ComputedNode<any>): boolean {
     return node.kind === GroupElementKind
   }
 }
 
-export interface ComputedEdge<A extends AnyAux = UnknownAux> {
+export interface ComputedEdge<A extends AnyAux = Any> {
   id: Aux.Strict.EdgeId<A>
   parent: Aux.Strict.NodeId<A> | null
   source: Aux.Strict.NodeId<A>
@@ -388,7 +388,7 @@ export interface ViewAutoLayout {
   rankSep?: number
   nodeSep?: number
 }
-export interface ComputedElementView<A extends AnyAux = UnknownAux>
+export interface ComputedElementView<A extends AnyAux = Any>
   extends Omit<ElementView<A>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly viewOf?: Aux.Strict.Fqn<A>
@@ -399,7 +399,7 @@ export interface ComputedElementView<A extends AnyAux = UnknownAux>
   rules?: never
   docUri?: never
 }
-export interface ComputedDynamicView<A extends AnyAux = UnknownAux>
+export interface ComputedDynamicView<A extends AnyAux = Any>
   extends Omit<DynamicView<A>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly autoLayout: ViewAutoLayout
@@ -410,7 +410,7 @@ export interface ComputedDynamicView<A extends AnyAux = UnknownAux>
   docUri?: never
 }
 
-export interface ComputedDeploymentView<A extends AnyAux = UnknownAux>
+export interface ComputedDeploymentView<A extends AnyAux = Any>
   extends Omit<DeploymentView<A>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
   readonly autoLayout: ViewAutoLayout
@@ -420,7 +420,7 @@ export interface ComputedDeploymentView<A extends AnyAux = UnknownAux>
   docUri?: never
 }
 
-export type ComputedView<A extends AnyAux = UnknownAux> =
+export type ComputedView<A extends AnyAux = Any> =
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
@@ -457,7 +457,7 @@ export function getBBoxCenter({
   }
 }
 
-export interface DiagramNode<A extends AnyAux = UnknownAux> extends ComputedNode<A> {
+export interface DiagramNode<A extends AnyAux = Any> extends ComputedNode<A> {
   width: number
   height: number
   // Absolute position, top left
@@ -482,7 +482,7 @@ export namespace DiagramNode {
   }
 }
 
-export interface DiagramEdge<A extends AnyAux = UnknownAux> extends ComputedEdge<A> {
+export interface DiagramEdge<A extends AnyAux = Any> extends ComputedEdge<A> {
   // Bezier points
   points: NonEmptyArray<Point>
   // Control points to adjust the edge
@@ -493,9 +493,7 @@ export interface DiagramEdge<A extends AnyAux = UnknownAux> extends ComputedEdge
   dotpos?: string
 }
 
-export interface DiagramView<A extends AnyAux = UnknownAux>
-  extends Omit<ComputedView<A>, 'nodes' | 'edges' | 'manualLayout'>
-{
+export interface DiagramView<A extends AnyAux = Any> extends Omit<ComputedView<A>, 'nodes' | 'edges' | 'manualLayout'> {
   readonly nodes: DiagramNode<A>[]
   readonly edges: DiagramEdge<A>[]
   readonly bounds: BBox
@@ -535,4 +533,4 @@ export type ViewManualLayout = {
   }>
 }
 
-export type ProcessedView<A extends AnyAux = UnknownAux> = ComputedView<A> | DiagramView<A>
+export type ProcessedView<A extends AnyAux = Any> = ComputedView<A> | DiagramView<A>

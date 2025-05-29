@@ -1,6 +1,7 @@
 import { entries, pipe, sort, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
+  Any,
   AnyAux,
   Aux,
   AuxFromDump,
@@ -12,7 +13,6 @@ import type {
   ParsedLikeC4ModelData,
   ProcessedView,
   Relationship,
-  UnknownAux,
 } from '../types'
 import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
 import { compareNatural } from '../utils'
@@ -30,7 +30,7 @@ import { type ElementOrFqn, type IncomingFilter, type OutgoingFilter, getId } fr
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends AnyAux = UnknownAux> {
+export class LikeC4Model<A extends AnyAux = Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -440,7 +440,7 @@ export class LikeC4Model<A extends AnyAux = UnknownAux> {
 }
 
 export namespace LikeC4Model {
-  export const EMPTY = LikeC4Model.create<UnknownAux>({
+  export const EMPTY = LikeC4Model.create<Any>({
     __: 'computed',
     projectId: 'default' as never,
     specification: {
@@ -464,16 +464,16 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Computed<A extends AnyAux = UnknownAux> = LikeC4Model<A>
-  export type Layouted<A extends AnyAux = UnknownAux> = LikeC4Model<A>
+  export type Computed<A extends AnyAux = Any> = LikeC4Model<A>
+  export type Layouted<A extends AnyAux = Any> = LikeC4Model<A>
 
-  export type Node<A extends AnyAux = UnknownAux> = NodeModel<A>
-  export type Element<A extends AnyAux = UnknownAux> = ElementModel<A>
-  export type Relationship<A extends AnyAux = UnknownAux> = RelationshipModel<A>
-  export type View<A extends AnyAux = UnknownAux> = LikeC4ViewModel<A>
+  export type Node<A extends AnyAux = Any> = NodeModel<A>
+  export type Element<A extends AnyAux = Any> = ElementModel<A>
+  export type Relationship<A extends AnyAux = Any> = RelationshipModel<A>
+  export type View<A extends AnyAux = Any> = LikeC4ViewModel<A>
 
-  export type DeploymentNode<A extends AnyAux = UnknownAux> = DeploymentNodeModel<A>
-  export type DeployedInstance<A extends AnyAux = UnknownAux> = DeployedInstanceModel<A>
+  export type DeploymentNode<A extends AnyAux = Any> = DeploymentNodeModel<A>
+  export type DeployedInstance<A extends AnyAux = Any> = DeployedInstanceModel<A>
 
-  export type AnyRelation<M extends AnyAux = UnknownAux> = RelationshipModel<M> | DeploymentRelationModel<M>
+  export type AnyRelation<M extends AnyAux = Any> = RelationshipModel<M> | DeploymentRelationModel<M>
 }

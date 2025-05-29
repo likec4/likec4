@@ -3,7 +3,7 @@ import { nonNullable } from '../../errors'
 import type { LikeC4Model } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux } from '../../types'
+import type { Any, AnyAux, Aux } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
@@ -20,7 +20,6 @@ import {
   isDynamicViewParallelSteps,
   isViewRuleAutoLayout,
   isViewRulePredicate,
-  ModelFqnExpr,
   stepEdgeId,
 } from '../../types'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
@@ -32,10 +31,10 @@ import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../utils/view-hash'
 
-type Element<A extends AnyAux = AnyAux> = ElementModel<A>
+type Element<A extends AnyAux = Any> = ElementModel<A>
 
 namespace DynamicViewCompute {
-  export interface Step<A extends AnyAux = AnyAux> {
+  export interface Step<A extends AnyAux = Any> {
     id: StepEdgeId
     source: Element<A>
     target: Element<A>
@@ -53,7 +52,7 @@ namespace DynamicViewCompute {
   }
 }
 
-class DynamicViewCompute<A extends AnyAux = AnyAux> {
+class DynamicViewCompute<A extends AnyAux = Any> {
   // Intermediate state
   private explicits = new Set<Element<A>>()
   private steps = [] as DynamicViewCompute.Step<A>[]

@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type { Aux, SpecTypes, UnknownAux } from './aux'
+import type { AnyAux, Aux, SpecTypes } from './aux'
 import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
@@ -266,6 +266,6 @@ describe('AuxFromDump', () => {
 
     type Result = AuxFromDump<NotAModel>
 
-    expectTypeOf<Result>().toEqualTypeOf<UnknownAux>()
+    expectTypeOf<Result>().toEqualTypeOf<AnyAux>()
   })
 })
