@@ -112,7 +112,7 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   /**
    * Display element tags in the bottom left corner
-   * @default true
+   * @default false
    */
   enableElementTags?: boolean | undefined
 

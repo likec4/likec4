@@ -1,11 +1,12 @@
-import { type DiagramNode } from '@likec4/core'
+import { type DiagramNode, isCustomTagColor } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, HStack } from '@likec4/styles/jsx'
-import { hstack, likec4tag } from '@likec4/styles/patterns'
+import { hstack } from '@likec4/styles/patterns'
+import { likec4tag } from '@likec4/styles/recipes'
 import { HoverCard } from '@mantine/core'
 import { deepEqual } from 'fast-equals'
 import { forwardRef, memo, useCallback } from 'react'
-import { useTagStyles } from '../../../context/TagStylesContext'
+import { useTagSpecification } from '../../../context/TagStylesContext'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../../hooks/useMantinePortalProps'
 import { useCurrentZoom } from '../../../hooks/useXYFlow'
@@ -14,32 +15,20 @@ import type { NodeProps } from '../../types'
 
 export type ElementTagProps = {
   tag: string
-  tagColor: string
 } & Omit<BoxProps, 'children' | 'css'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
-  ({ tag, tagColor, className, ...props }, ref) => {
+  ({ tag, className, ...props }, ref) => {
+    const { color } = useTagSpecification(tag)
     return (
       <Box
         ref={ref}
+        data-likec4-tag={tag}
         className={cx(
           likec4tag({
-            tagColor: tagColor as any,
+            autoTextColor: isCustomTagColor(color),
           }),
           className,
-          css({
-            transition: 'fast',
-            fontSize: 'xs',
-            fontWeight: 500,
-            '& > span': {
-              display: 'inline-block',
-            },
-            width: 'min-content',
-            minWidth: 30,
-            whiteSpace: 'nowrap',
-            backgroundColor: 'likec4.tag.bg/80',
-            px: 5,
-          }),
         )}
         {...props}
       >
@@ -49,49 +38,6 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
     )
   },
 )
-// const selectCurrentZoom = (state: ReactFlowState) => state.transform[2] > 1.2
-// function useCurrentZoomIsLargeEnough(): boolean {
-//   return useStore(selectCurrentZoom)
-// }
-function ElementTagsDropdown({ tags, zoomIsLargeEnough }: { tags: readonly string[]; zoomIsLargeEnough: boolean }) {
-  const { getTagColor } = useTagStyles()
-  const diagram = useDiagram()
-
-  const onHover = (tag: string) => {
-    diagram.send({ type: 'tag.highlight', tag })
-  }
-
-  const onLeave = useCallback(() => {
-    diagram.send({ type: 'tag.unhighlight' })
-  }, [])
-
-  return (
-    <HStack
-      css={{
-        gap: 6,
-        flexWrap: 'wrap',
-      }}
-    >
-      {tags.map((tag) => (
-        <ElementTag
-          key={tag}
-          tag={tag}
-          tagColor={getTagColor(tag)}
-          className={css({
-            cursor: 'pointer',
-            ...(zoomIsLargeEnough && {
-              fontSize: 'lg',
-              borderRadius: 4,
-              px: 8,
-            }),
-          })}
-          onMouseEnter={() => onHover(tag)}
-          onMouseLeave={onLeave}
-        />
-      ))}
-    </HStack>
-  )
-}
 
 type Data = Pick<DiagramNode, 'tags' | 'width'>
 type ElementTagsProps = NodeProps<Data>
@@ -102,7 +48,6 @@ const propsAreEqual = (prev: ElementTagsProps, next: ElementTagsProps) => {
 export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) => {
   const zoom = useCurrentZoom()
   const zoomIsLargeEnough = zoom > 1.2
-  const { getTagColor } = useTagStyles()
   const portalProps = useMantinePortalProps()
   if (!tags || tags.length === 0) {
     return null
@@ -119,7 +64,7 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
         mainAxis: 4,
       }}
       keepMounted={false}
-      openDelay={500}
+      openDelay={300}
       closeDelay={500}
     >
       <HoverCard.Target>
@@ -135,10 +80,7 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
               width: '100%',
               bottom: 0,
               left: 0,
-              paddingBottom: 4,
-              paddingLeft: 4,
-              paddingTop: 'sm',
-              paddingRight: 4,
+              padding: 4,
               _shapeCylinder: {
                 bottom: 5,
               },
@@ -156,24 +98,19 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
           {tags.map((tag) => (
             <Box
               key={tag}
+              data-likec4-tag={tag}
               className={css({
+                layerStyle: 'likec4.tag',
                 flex: 1,
-                pointerEvents: 'all',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 maxWidth: 50,
-                minHeight: 8,
-                color: 'likec4.tag.text',
-                backgroundColor: 'likec4.tag.bg',
-                _hover: {
-                  backgroundColor: 'likec4.tag.bg.hover',
+                minHeight: 6,
+                _whenHovered: {
+                  minHeight: 10,
                 },
-                border: 'none',
-                // borderColor: 'likec4.tag.border',
                 transition: 'fast',
-                borderRadius: 3,
-                tagColor: getTagColor(tag),
               })}
             />
           ))}
@@ -194,3 +131,43 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
   )
 }, propsAreEqual)
 ElementTags.displayName = 'ElementTags'
+
+function ElementTagsDropdown({ tags, zoomIsLargeEnough }: { tags: readonly string[]; zoomIsLargeEnough: boolean }) {
+  const diagram = useDiagram()
+
+  const onHover = (tag: string) => {
+    diagram.send({ type: 'tag.highlight', tag })
+  }
+
+  const onLeave = useCallback(() => {
+    diagram.send({ type: 'tag.unhighlight' })
+  }, [])
+
+  return (
+    <HStack
+      css={{
+        gap: 4,
+        flexWrap: 'wrap',
+      }}
+    >
+      {tags.map((tag) => (
+        <ElementTag
+          key={tag}
+          tag={tag}
+          className={css({
+            userSelect: 'none',
+            cursor: 'pointer',
+            ...(zoomIsLargeEnough && {
+              fontSize: 'lg',
+              borderRadius: 4,
+              px: 6,
+            }),
+          })}
+          onClick={stopPropagation}
+          onMouseEnter={() => onHover(tag)}
+          onMouseLeave={onLeave}
+        />
+      ))}
+    </HStack>
+  )
+}

@@ -38,6 +38,11 @@ export interface TagSpecification {
   color: ColorLiteral | ThemeColor
 }
 
+export function isCustomTagColor(spec: string | TagSpecification): spec is { color: ColorLiteral } {
+  const color = typeof spec === 'string' ? spec : spec.color
+  return color.startsWith('#') || color.startsWith('rgb')
+}
+
 export interface RelationshipSpecification {
   technology?: string
   notation?: string

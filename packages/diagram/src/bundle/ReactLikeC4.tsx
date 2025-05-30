@@ -139,6 +139,7 @@ function ReactLikeC4Inner({
           showNotations={showNotations && hasNotations}
           onNavigateTo={onNavigateTo as any}
           background={background}
+          enableElementTags={false}
           {...props}
         />
       </ShadowRoot>

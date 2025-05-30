@@ -43,7 +43,6 @@ import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
 import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
-import { useTagStyles } from '../../context/TagStylesContext'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
@@ -104,7 +103,6 @@ export function ElementDetailsCard({
   fqn,
   onClose,
 }: ElementDetailsCardProps) {
-  const { getTagColor } = useTagStyles()
   const [opened, setOpened] = useState(false)
   const windowSize = useViewportSize()
   const windowWidth = windowSize.width || window.innerWidth || 1200,
@@ -334,13 +332,7 @@ export function ElementDetailsCard({
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
                 <Flex gap={4} flex={1} mt={6} wrap="wrap">
-                  {elementModel.tags.map((tag) => (
-                    <ElementTag
-                      key={tag}
-                      tag={tag}
-                      tagColor={getTagColor(tag)}
-                    />
-                  ))}
+                  {elementModel.tags.map((tag) => <ElementTag key={tag} tag={tag} />)}
                   {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                 </Flex>
               </div>
