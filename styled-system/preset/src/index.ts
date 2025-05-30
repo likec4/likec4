@@ -1,6 +1,7 @@
 import { definePreset } from '@pandacss/dev'
+import radixColorsPreset from 'pandacss-preset-radix-colors'
 import { conditions } from './conditions'
-import { nodeOrEdge, root, rootNotReduced } from './const'
+import { nodeOrEdge, radixColors, root, rootNotReduced } from './const'
 import { compoundColors, globalCss, themeColors } from './generated'
 import { patterns } from './patterns'
 import { theme } from './theme'
@@ -12,6 +13,15 @@ export default definePreset({
   // presets: [
   //   PandaPreset as any,
   // ],
+  presets: [
+    radixColorsPreset({
+      autoP3: true,
+      darkMode: {
+        condition: '[data-mantine-color-scheme="dark"] &',
+      },
+      colorScales: radixColors,
+    }),
+  ],
   globalVars: {
     '--likec4-palette': {
       syntax: '*',
@@ -99,6 +109,7 @@ export default definePreset({
           ],
           likec4Palette: [...themeColors, ...compoundColors],
           likec4RelationPalette: themeColors,
+          tagColor: radixColors,
         },
       }],
     },

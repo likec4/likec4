@@ -1,6 +1,7 @@
 import type { Config } from '@pandacss/dev'
 import { theme as generated } from './generated'
-import { actionBtn } from './recipes'
+import * as recipes from './recipes'
+import { layerStyles } from './theme.layer-styles'
 import { semanticTokens } from './theme.semantic-tokens'
 import { textStyles } from './theme.text-styles'
 import { tokens } from './theme.tokens'
@@ -11,11 +12,10 @@ export const theme: ExtendableTheme = {
   ...generated,
   extend: {
     textStyles,
+    layerStyles,
     tokens,
     semanticTokens,
-    recipes: {
-      actionBtn,
-    },
+    recipes,
     keyframes: {
       'indicatorStrokeOpacity': {
         '0%': {

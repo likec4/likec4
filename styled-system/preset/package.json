@@ -36,16 +36,19 @@
     "@pandacss/dev": "catalog:css"
   },
   "devDependencies": {
-    "remeda": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/vanilla-extract": "catalog:mantine",
     "@mantine/core": "catalog:mantine",
+    "@mantine/vanilla-extract": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
-    "khroma": "^2.1.0",
     "json5": "catalog:utils",
+    "remeda": "catalog:utils",
     "tsx": "catalog:",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "pandacss-preset-radix-colors": "^0.2.0"
+  }
 }

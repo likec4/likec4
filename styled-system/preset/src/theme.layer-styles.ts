@@ -1,4 +1,4 @@
-import { defineTextStyles } from '@pandacss/dev'
+import { defineLayerStyles } from '@pandacss/dev'
 
 // export const title = style({
 //   flex: '0 0 auto',
@@ -57,39 +57,18 @@ import { defineTextStyles } from '@pandacss/dev'
 //   },
 // })
 
-export const textStyles = defineTextStyles({
+export const layerStyles = defineLayerStyles({
   likec4: {
     tag: {
-      description: 'Tag text, usually a tag',
+      description: 'LikeC4 tag layer',
       value: {
-        fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-        fontWeight: '500',
-        fontSize: 'sm',
-        lineHeight: '1',
-      },
-    },
-    node: {
-      primary: {
-        description: 'Primary text, usually a title or name',
-        value: {
-          fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-          fontWeight: '500',
-          fontSize: '[var(--likec4-text-size)]',
-          lineHeight: '1.15',
-          textWrap: 'balance',
-          whiteSpace: 'preserve-breaks',
+        color: 'likec4.tag.text',
+        backgroundColor: 'likec4.tag.bg',
+        _hover: {
+          backgroundColor: 'likec4.tag.bg.hover',
         },
-      },
-      secondary: {
-        description: 'Secondary text, usually a description or technology',
-        value: {
-          fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-          fontWeight: '400',
-          fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
-          lineHeight: '1.2',
-          textWrap: 'pretty',
-          whiteSpace: 'preserve-breaks',
-        },
+        borderColor: 'likec4.tag.border/30',
+        borderRadius: 2,
       },
     },
   },

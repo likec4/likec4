@@ -7,6 +7,36 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
+  describe('parses specification', () => {
+    it('parses tags', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          element system
+          tag tag1
+          tag tag2 {
+            color #3094FEB9
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        elements: {
+          system: {},
+        },
+        tags: {
+          tag1: {
+            astPath: expect.any(String),
+          },
+          tag2: {
+            astPath: expect.any(String),
+            color: '#3094FEB9',
+          },
+        },
+      })
+    })
+  })
+
   describe('parses logical model', () => {
     it('parses styles', async ({ expect }) => {
       const { validate, services } = createTestServices()

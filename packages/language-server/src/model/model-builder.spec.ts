@@ -1253,6 +1253,41 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
   })
 
+  it('assigns tag colors', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    await validate(`
+      specification {
+        element system
+        tag tag1
+        tag tag2 {
+          color #3094FEB9
+        }
+        tag tag3
+      }
+    `)
+    const model = await buildModel()
+    expect(model.specification).toEqual({
+      deployments: {},
+      elements: {
+        system: {
+          style: {},
+        },
+      },
+      relationships: {},
+      tags: {
+        tag1: {
+          color: 'tomato',
+        },
+        tag2: {
+          color: '#3094FEB9',
+        },
+        tag3: {
+          color: 'grass',
+        },
+      },
+    })
+  })
+
   it('outputs metadata keys from elements and relations', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     await validate(`

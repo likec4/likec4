@@ -20,6 +20,18 @@ export const semanticTokens = defineSemanticTokens({
           _light: 'black',
         },
       },
+      tag: {
+        bg: {
+          DEFAULT: { value: `{colors.tomato.9}` },
+          hover: { value: `{colors.tomato.10}` },
+        },
+        border: {
+          value: `{colors.tomato.8}`,
+        },
+        text: {
+          value: `{colors.tomato.12}`,
+        },
+      },
       palette: {
         DEFAULT: { value: `var(--likec4-palette,'likec4.primary')` },
         fill: { value: '{colors.likec4.primary.element.fill}' },
