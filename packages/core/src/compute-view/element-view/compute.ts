@@ -181,7 +181,7 @@ export function computeElementView<A extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: ElementView<NoInfer<A>>,
+  }: ElementView<A>,
 ): ComputedElementView<A> {
   rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
   const scope = view.viewOf ? likec4model.element(view.viewOf) as ElementModel<any> : null

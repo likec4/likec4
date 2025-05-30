@@ -295,7 +295,7 @@ class DynamicViewCompute<A extends AnyAux = Unknown> {
 }
 export function computeDynamicView<M extends AnyAux>(
   model: LikeC4Model<M>,
-  view: DynamicView<NoInfer<M>>,
+  view: DynamicView<M>,
 ): ComputedDynamicView<M> {
   return new DynamicViewCompute(model, view).compute()
 }

@@ -4,8 +4,6 @@ import type {
   AnyAux,
   Aux,
   ComputedLikeC4ModelData,
-  ComputedView,
-  DiagramView,
   Element,
   IteratorLike,
   LayoutedLikeC4ModelData,
@@ -13,7 +11,6 @@ import type {
   LikeC4ModelDump,
   ModelGlobals,
   ParsedLikeC4ModelData,
-  ProcessedView,
   Relationship,
   Unknown,
 } from '../types'
@@ -30,6 +27,10 @@ import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
 import {
+  type $Computed,
+  type $Diagram,
+  type $M,
+  type $View,
   type ElementOrFqn,
   type IncomingFilter,
   type LikeC4ModelFromDump,
@@ -39,7 +40,7 @@ import {
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedView<A> = ProcessedView<A>> {
+export class LikeC4Model<A extends AnyAux = Aux.Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -48,7 +49,7 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
   /**
    * Don't use in runtime, only for type inference
    */
-  readonly ViewType!: ViewType
+  readonly ViewType!: $View<A>
 
   readonly #elements = new Map<Aux.Strict.Fqn<A>, ElementModel<A>>()
   // Parent element for given FQN
@@ -69,12 +70,11 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
   // Relationships inside the element, among descendants
   readonly #internal = new DefaultMap<Aux.Strict.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
-  readonly #views = new Map<Aux.Strict.ViewId<A>, LikeC4ViewModel<A, ViewType>>()
+  readonly #views = new Map<Aux.Strict.ViewId<A>, LikeC4ViewModel<A>>()
 
-  readonly #allTags = new DefaultMap<
-    Aux.Tag<A>,
-    Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A, ViewType>>
-  >(() => new Set())
+  readonly #allTags = new DefaultMap<Aux.Tag<A>, Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>>(() =>
+    new Set()
+  )
 
   public readonly deployment: LikeC4DeploymentModel<A>
 
@@ -83,7 +83,7 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
    * This model omits the views, as they must be computed (or layouted)
    * Parsed model is used for computing views
    */
-  static fromParsed<T extends AnyAux>(parsed: ParsedLikeC4ModelData<T>): LikeC4Model<T, never> {
+  static fromParsed<T extends AnyAux>(parsed: ParsedLikeC4ModelData<T>): LikeC4Model<$M<T, never>> {
     const { views: _omit, ...rest } = parsed
     return new LikeC4Model({
       ...rest,
@@ -142,11 +142,11 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
     }
     this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
     const views = pipe(
-      values($model.views as any as Record<string, ViewType>),
+      values($model.views as any as Record<string, $View<A>>),
       sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
     )
     for (const view of views) {
-      const vm = new LikeC4ViewModel(this, Object.freeze(view) as ViewType)
+      const vm = new LikeC4ViewModel(this, Object.freeze(view) as $View<A>)
       this.#views.set(view.id, vm)
       for (const tag of vm.tags) {
         this.#allTags.get(tag).add(vm)
@@ -175,7 +175,7 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
     return this.type === 'layouted'
   }
 
-  isComputed<This extends LikeC4Model<A>>(this: This): this is LikeC4Model.Computed<A> {
+  isComputed(): this is LikeC4Model.Computed<A> {
     return this.type === 'computed'
   }
 
@@ -267,10 +267,10 @@ export class LikeC4Model<A extends AnyAux = Aux.Any, ViewType extends ProcessedV
   /**
    * Returns a specific view by its ID.
    */
-  public view<V extends ProcessedView<A> = ViewType>(viewId: Aux.ViewId<A>): LikeC4ViewModel<A, V> {
-    return nonNullable(this.#views.get(viewId as any) as unknown as LikeC4ViewModel<A, V>, `View ${viewId} not found`)
+  public view(viewId: Aux.ViewId<A>): LikeC4ViewModel<A> {
+    return nonNullable(this.#views.get(viewId as any), `View ${viewId} not found`)
   }
-  public findView(viewId: Aux.Primitive.ViewId<A>): LikeC4ViewModel<A, ViewType> | null {
+  public findView(viewId: Aux.Primitive.ViewId<A>): LikeC4ViewModel<A> | null {
     return this.#views.get(viewId as any) ?? null
   }
 
@@ -506,8 +506,8 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Computed<A extends AnyAux = Aux.Any> = LikeC4Model<A, ComputedView<A>>
-  export type Layouted<A extends AnyAux = Aux.Any> = LikeC4Model<A, DiagramView<A>>
+  export type Computed<A extends AnyAux = Aux.Any> = LikeC4Model<$Computed<A>>
+  export type Layouted<A extends AnyAux = Aux.Any> = LikeC4Model<$Diagram<A>>
 
   export type Node<A extends AnyAux = Unknown> = NodeModel<A>
   export type Element<A extends AnyAux = Unknown> = ElementModel<A>

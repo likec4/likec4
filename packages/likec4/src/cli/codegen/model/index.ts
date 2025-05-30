@@ -31,10 +31,6 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
   const model = await languageServices.layoutedModel()
 
   for (const view of model.views()) {
-    if (!view.isDiagram()) {
-      logger.error(`Invalid state: view ${view.id} not layouted`)
-      continue
-    }
     if (view.$view.hasLayoutDrift) {
       logger.warn(
         k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),

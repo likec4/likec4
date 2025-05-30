@@ -44,7 +44,7 @@ export function unsafeComputeView<A extends AnyAux>(
 }
 
 export function computeView<A extends AnyAux>(
-  viewsource: LikeC4View<NoInfer<A>>,
+  viewsource: LikeC4View<A>,
   likec4model: LikeC4Model<A>,
 ): ComputeViewResult<ComputedView<A>> {
   try {

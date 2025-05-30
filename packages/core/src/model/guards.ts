@@ -6,7 +6,6 @@ import type {
 } from './DeploymentElementModel'
 import { DeployedInstanceModel, DeploymentNodeModel, DeploymentRelationModel } from './DeploymentElementModel'
 import { ElementModel } from './ElementModel'
-import type { LikeC4Model } from './LikeC4Model'
 import { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
 
 export function isDeploymentNode<M extends AnyAux>(
@@ -43,10 +42,10 @@ export function isElementModel<M extends AnyAux = Unknown>(element: unknown): el
   return element instanceof ElementModel
 }
 
-export function isComputedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M, any>): model is LikeC4Model.Computed<M> {
-  return model.type === 'computed'
-}
+// export function isComputedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M>): model is LikeC4Model<$Computed<M>> {
+//   return model.type === 'computed'
+// }
 
-export function isLayoutedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M, any>): model is LikeC4Model.Layouted<M> {
-  return model.type === 'layouted'
-}
+// export function isLayoutedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M>): model is LikeC4Model.Layouted<M> {
+//   return model.type === 'layouted'
+// }

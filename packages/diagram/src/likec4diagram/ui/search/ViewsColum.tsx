@@ -31,7 +31,7 @@ export const NothingFound = () => (
 
 export function ViewsColumn() {
   const search = useNormalizedSearch()
-  let views = [...useLikeC4Model(true).views()]
+  let views = [...useLikeC4Model().views()]
   if (search) {
     if (search.startsWith('kind:')) {
       views = []

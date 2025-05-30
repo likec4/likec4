@@ -1,7 +1,6 @@
-import type { Aux, Color, GroupElementKind, ProcessedView, Unknown } from '../../types'
+import type { Aux, Color, GroupElementKind } from '../../types'
 import {
   type AnyAux,
-  type DiagramView,
   type ElementShape as C4ElementShape,
   type ElementStyle,
   type IconUrl,
@@ -11,41 +10,41 @@ import {
 } from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import type { IncomingFilter, OutgoingFilter } from '../types'
+import type { $Diagram, $View, IncomingFilter, OutgoingFilter } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export type NodesIterator<M extends AnyAux, V extends ProcessedView<M>> = IteratorLike<NodeModel<M, V>>
+export type NodesIterator<M extends AnyAux> = IteratorLike<NodeModel<M>>
 
 export namespace NodeModel {
-  export interface WithParent<M extends AnyAux, V extends ProcessedView<M>> extends NodeModel<M, V> {
-    parent: NodeModel<M, V>
+  export interface WithParent<M extends AnyAux> extends NodeModel<M> {
+    parent: NodeModel<M>
   }
-  export interface WithElement<M extends AnyAux, V extends ProcessedView<M>> extends NodeModel<M, V> {
+  export interface WithElement<M extends AnyAux> extends NodeModel<M> {
     kind: Aux.ElementKind<M>
     element: ElementModel<M>
   }
-  export interface WithDeploymentElement<M extends AnyAux, V extends ProcessedView<M>> extends NodeModel<M, V> {
+  export interface WithDeploymentElement<M extends AnyAux> extends NodeModel<M> {
     kind: Aux.DeploymentKind<M>
     deployment: DeploymentElementModel<M>
   }
-  export interface WithDeployedInstance<M extends AnyAux, V extends ProcessedView<M>> extends NodeModel<M, V> {
+  export interface WithDeployedInstance<M extends AnyAux> extends NodeModel<M> {
     kind: 'instance'
     element: ElementModel<M>
     deployment: DeployedInstanceModel<M>
   }
 
-  export interface IsGroup<M extends AnyAux, V extends ProcessedView<M>> extends NodeModel<M, V> {
+  export interface IsGroup<M extends AnyAux> extends NodeModel<M> {
     kind: typeof GroupElementKind
     element: null
     deployment: null
   }
 }
 
-export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = ProcessedView<A>> {
+export class NodeModel<A extends AnyAux = Aux.Any> {
   constructor(
-    public readonly $view: LikeC4ViewModel<A, V>,
-    public readonly $node: V['nodes'][number],
+    public readonly $view: LikeC4ViewModel<A>,
+    public readonly $node: $View<A>['nodes'][number],
   ) {
   }
 
@@ -69,7 +68,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return this.$node.technology ?? null
   }
 
-  get parent(): NodeModel<A, V> | null {
+  get parent(): NodeModel<A> | null {
     return this.$node.parent ? this.$view.node(this.$node.parent) : null
   }
 
@@ -103,7 +102,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return this.$node.links ?? []
   }
 
-  get navigateTo(): LikeC4ViewModel<A, V> | null {
+  get navigateTo(): LikeC4ViewModel<A> | null {
     return this.$node.navigateTo ? this.$view.$model.view(this.$node.navigateTo) : null
   }
 
@@ -115,7 +114,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(): NodesIterator<A, V> {
+  public *ancestors(): NodesIterator<A> {
     let parent = this.parent
     while (parent) {
       yield parent
@@ -124,14 +123,14 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public *children(): NodesIterator<A, V> {
+  public *children(): NodesIterator<A> {
     for (const child of this.$node.children) {
       yield this.$view.node(child)
     }
     return
   }
 
-  public *siblings(): NodesIterator<A, V> {
+  public *siblings(): NodesIterator<A> {
     const siblings = this.parent?.children() ?? this.$view.roots()
     for (const sibling of siblings) {
       if (sibling.id !== this.id) {
@@ -141,7 +140,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<A, V> {
+  public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<A> {
     for (const edgeId of this.$node.inEdges) {
       const edge = this.$view.edge(edgeId)
       switch (true) {
@@ -155,7 +154,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public *incomers(filter: IncomingFilter = 'all'): NodesIterator<A, V> {
+  public *incomers(filter: IncomingFilter = 'all'): NodesIterator<A> {
     const unique = new Set<Aux.Strict.NodeId<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
@@ -167,7 +166,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<A, V> {
+  public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<A> {
     for (const edgeId of this.$node.outEdges) {
       const edge = this.$view.edge(edgeId)
       switch (true) {
@@ -181,7 +180,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public *outgoers(filter: OutgoingFilter = 'all'): NodesIterator<A, V> {
+  public *outgoers(filter: OutgoingFilter = 'all'): NodesIterator<A> {
     const unique = new Set<Aux.Strict.NodeId<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
@@ -193,7 +192,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return
   }
 
-  public isDiagramNode(): this is NodeModel<A, DiagramView<A>> {
+  public isDiagramNode(): this is NodeModel<$Diagram<A>> {
     return 'width' in this.$node && 'height' in this.$node
   }
 
@@ -201,31 +200,31 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return this.$node.children.length > 0
   }
 
-  public hasParent(): this is NodeModel.WithParent<A, V> {
+  public hasParent(): this is NodeModel.WithParent<A> {
     return this.$node.parent !== null
   }
 
   /**
    * Check if this node references to logical model element.
    */
-  public hasElement(): this is NodeModel.WithElement<A, V> {
+  public hasElement(): this is NodeModel.WithElement<A> {
     return ComputedNode.modelRef(this.$node) !== null
   }
   /**
    * Check if this node references to deployment element (Node or Instance).
    */
-  public hasDeployment(): this is NodeModel.WithDeploymentElement<A, V> {
+  public hasDeployment(): this is NodeModel.WithDeploymentElement<A> {
     return ComputedNode.deploymentRef(this.$node) !== null
   }
   /**
    * Check if this node references to deployed instance
    * Deployed instance always references to element and deployment element.
    */
-  public hasDeployedInstance(): this is NodeModel.WithDeployedInstance<A, V> {
+  public hasDeployedInstance(): this is NodeModel.WithDeployedInstance<A> {
     return this.hasElement() && this.hasDeployment()
   }
 
-  public isGroup(): this is NodeModel.IsGroup<A, V> {
+  public isGroup(): this is NodeModel.IsGroup<A> {
     return ComputedNode.isNodesGroup(this.$node)
   }
 }

@@ -1,5 +1,5 @@
 import type { NonEmptyArray } from './_common'
-import type { AnyAux, Aux, Specification, Unknown } from './aux'
+import type { AnyAux, Aux, Specification } from './aux'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
@@ -90,10 +90,10 @@ export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
   }
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux = Unknown> extends LikeC4ModelData<A, ComputedView<A>> {
+export interface ComputedLikeC4ModelData<A extends AnyAux = Aux.Any> extends LikeC4ModelData<A, ComputedView<A>> {
   __: 'computed'
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = Unknown> extends LikeC4ModelData<A, DiagramView<A>> {
+export interface LayoutedLikeC4ModelData<A extends AnyAux = Aux.Any> extends LikeC4ModelData<A, DiagramView<A>> {
   __: 'layouted'
 }

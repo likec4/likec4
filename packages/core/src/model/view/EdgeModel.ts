@@ -3,7 +3,6 @@ import {
   type Aux,
   type Color,
   type IteratorLike,
-  type ProcessedView,
   type RelationshipLineType,
   type StepEdgeId,
   extractStep,
@@ -11,17 +10,18 @@ import {
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
+import type { $View } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<A extends AnyAux, V extends ProcessedView<A>> = IteratorLike<EdgeModel<A, V>>
+export type EdgesIterator<A extends AnyAux> = IteratorLike<EdgeModel<A>>
 
-export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> {
+export class EdgeModel<A extends AnyAux> {
   constructor(
-    public readonly view: LikeC4ViewModel<A, V>,
-    public readonly $edge: V['edges'][number],
-    public readonly source: NodeModel<A, V>,
-    public readonly target: NodeModel<A, V>,
+    public readonly view: LikeC4ViewModel<A>,
+    public readonly $edge: $View<A>['edges'][number],
+    public readonly source: NodeModel<A>,
+    public readonly target: NodeModel<A>,
   ) {
   }
 
@@ -29,7 +29,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
     return this.$edge.id
   }
 
-  get parent(): NodeModel<A, V> | null {
+  get parent(): NodeModel<A> | null {
     return this.$edge.parent ? this.view.node(this.$edge.parent) : null
   }
 
@@ -45,7 +45,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
     return this.$edge.technology ?? null
   }
 
-  public hasParent(): this is EdgeModel.WithParent<A, V> {
+  public hasParent(): this is EdgeModel.WithParent<A> {
     return this.$edge.parent !== null
   }
 
@@ -57,8 +57,8 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
     return this.isStep() ? extractStep(this.id) : null
   }
 
-  get navigateTo(): LikeC4ViewModel<A, V> | null {
-    return this.$edge.navigateTo ? this.view.$model.view<V>(this.$edge.navigateTo) : null
+  get navigateTo(): LikeC4ViewModel<A> | null {
+    return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
   }
 
   get color(): Color {
@@ -69,7 +69,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
     return this.$edge.line ?? 'dashed'
   }
 
-  public isStep(): this is EdgeModel.StepEdge<A, V> {
+  public isStep(): this is EdgeModel.StepEdge<A> {
     return isStepEdgeId(this.id)
   }
 
@@ -99,11 +99,11 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
 }
 
 namespace EdgeModel {
-  export interface StepEdge<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> extends EdgeModel<A, V> {
+  export interface StepEdge<A extends AnyAux> extends EdgeModel<A> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<A extends AnyAux, V extends ProcessedView<A> = ProcessedView<A>> extends EdgeModel<A, V> {
-    parent: NodeModel<A, V>
+  export interface WithParent<A extends AnyAux> extends EdgeModel<A> {
+    parent: NodeModel<A>
   }
 }

@@ -3,6 +3,7 @@ import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
+  type ComputedLikeC4ModelData,
   type DiagramView,
   type LayoutedLikeC4ModelData,
   type ProjectId,
@@ -79,7 +80,7 @@ export class Rpc extends ADisposable {
         }
         const likec4model = await modelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
-          return { model: likec4model.$model }
+          return { model: likec4model.$model as ComputedLikeC4ModelData }
         }
         return { model: null }
       }),

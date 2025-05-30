@@ -58,7 +58,7 @@ const btn = buttonsva()
 
 export function ElementsColumn() {
   const search = useNormalizedSearch()
-  const model = useLikeC4Model(true)
+  const model = useLikeC4Model()
 
   const data = useMemo(() => {
     const searchTerms = search.split('.')

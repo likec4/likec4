@@ -166,7 +166,7 @@ function DiagramPreview({
   children,
   onClick,
 }: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
-  const diagramModel = useLikeC4Model(true, 'layouted').findView(viewId)
+  const diagramModel = useLikeC4Model('layouted').findView(viewId)
 
   if (!diagramModel || !diagramModel.isDiagram()) {
     return <>{children}</>

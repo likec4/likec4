@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_single/single-index')({
 
 function RouteComponent() {
   useDocumentTitle('LikeC4')
-  const views = keys(useLikeC4Model(true).$model.views)
+  const views = keys(useLikeC4Model().$model.views)
   return (
     <SimpleGrid
       p={{ base: 'md', sm: 'xl' }}
@@ -32,7 +32,7 @@ function RouteComponent() {
 }
 
 const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
-  const diagram = useLikeC4Model(true, 'layouted').findView(viewId)
+  const diagram = useLikeC4Model('layouted').findView(viewId)
   if (!diagram || !diagram.isDiagram()) {
     return null
   }

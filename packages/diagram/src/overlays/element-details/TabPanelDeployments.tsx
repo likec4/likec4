@@ -108,7 +108,7 @@ const DeployedInstanceRenderer = (
 
 const setHoveredNode = () => {}
 export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn }) => {
-  const element = useLikeC4Model(true).element(elementFqn)
+  const element = useLikeC4Model().element(elementFqn)
   const deployments = [...element.deployments()]
 
   const tree = useTree({

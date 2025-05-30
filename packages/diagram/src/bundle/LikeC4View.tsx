@@ -80,14 +80,14 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   renderNodes,
   ...props
 }) => {
-  const likec4model = useLikeC4Model(true, 'layouted')
+  const likec4model = useLikeC4Model('layouted')
   const colorScheme = useColorScheme(explicitColorScheme)
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
 
   const [browserViewId, onNavigateTo] = useState(null as ViewId | null)
 
-  const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view as (DiagramView | undefined) : null
+  const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
 
   const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0

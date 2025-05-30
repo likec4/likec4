@@ -83,7 +83,7 @@ const selectSubject = (state: RelationshipDetailsSnapshot) => ({
 const SyncRelationshipDetailsXYFlow = memo(() => {
   const actor = useRelationshipDetailsActor()
   const subject = useSelector(actor, selectSubject, deepEqual)
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const view = likec4model.findView(subject.viewId) ?? null
   const data = useMemo(() => {
     let data: RelationshipDetailsViewData
@@ -224,7 +224,7 @@ const topLeftPanelselector = ({ context }: RelationshipDetailsSnapshot) => ({
 })
 const TopLeftPanel = memo(() => {
   const { subject, viewId } = useRelationshipDetailsState(topLeftPanelselector, deepEqual)
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const view = likec4model.findView(viewId)
 
   if (!view || !view.isDiagram()) {

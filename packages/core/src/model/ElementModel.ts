@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Aux, Color, IteratorLike, Unknown } from '../types'
+import type { AnyAux, Aux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -22,7 +22,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux = Unknown> {
+export class ElementModel<A extends AnyAux = Aux.Any> {
   readonly id: Aux.Strict.Fqn<A>
   readonly _literalId: Aux.ElementId<A>
   readonly hierarchyLevel: number

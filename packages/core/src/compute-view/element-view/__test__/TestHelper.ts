@@ -200,7 +200,7 @@ class ProcessPredicates<T extends AnyTypes> {
     return processor
   }
 
-  public viewrules: ReadonlyArray<ViewRule<typeof this.t.Aux>> = []
+  public viewrules: ReadonlyArray<ViewRule<typeof this.t.model.Aux>> = []
 
   public previousMemory: Memory = Memory.empty(null)
   public memory: Memory = Memory.empty(null)
@@ -244,7 +244,7 @@ class ProcessPredicates<T extends AnyTypes> {
       id: 'test' as ViewId,
       __: 'element',
       rules: [],
-    } as any as Writable<ElementView<typeof this.t.Aux>>
+    } as any as Writable<ElementView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,

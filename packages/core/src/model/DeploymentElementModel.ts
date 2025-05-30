@@ -5,7 +5,6 @@ import {
   type AnyAux,
   type Aux,
   type Color,
-  type ComputedDeploymentView,
   type DeployedInstance,
   type DeploymentElement,
   type DeploymentElementStyle,
@@ -33,9 +32,9 @@ export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<Deployme
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = Unknown> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux = Aux.Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
-abstract class AbstractDeploymentElementModel<A extends AnyAux = Unknown> {
+abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
   abstract readonly id: Aux.Strict.DeploymentFqn<A>
   abstract readonly _literalId: Aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
@@ -165,7 +164,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Unknown> {
   /**
    * Iterate over all views that include this deployment element.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>> {
+  public *views(): IteratorLike<LikeC4ViewModel<A>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -217,7 +216,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Unknown> {
   }
 }
 
-export class DeploymentNodeModel<A extends AnyAux = Unknown> extends AbstractDeploymentElementModel<A> {
+export class DeploymentNodeModel<A extends AnyAux = Aux.Any> extends AbstractDeploymentElementModel<A> {
   override id: Aux.Strict.DeploymentFqn<A>
   override _literalId: Aux.DeploymentId<A>
   override title: string
@@ -416,7 +415,7 @@ export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractD
    * Iterate over all views that include this instance.
    * (Some views may include the parent deployment node instead of the instance.)
    */
-  public override *views(): IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>> {
+  public override *views(): IteratorLike<LikeC4ViewModel<A>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -560,7 +559,7 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     return this.$relationship.line ?? DefaultLineStyle
   }
 
-  public *views(): IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>> {
+  public *views(): IteratorLike<LikeC4ViewModel<A>> {
     for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
         yield view

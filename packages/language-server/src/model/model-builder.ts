@@ -51,8 +51,8 @@ export interface LikeC4ModelBuilder {
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<c4.ParsedLikeC4ModelData | null>
-  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model
-  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model>
+  unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed
+  buildLikeC4Model(projectId?: c4.ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
   computeView(
     viewId: ViewId,
     projectId?: c4.ProjectId | undefined,
@@ -186,8 +186,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model {
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model>
+  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed {
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedModelCacheKey(projectId), () => {
       const parsed = this.unsafeSyncJoinedModelData(projectId)
@@ -224,10 +224,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public async buildLikeC4Model(
     projectId?: c4.ProjectId | undefined,
     cancelToken = CancellationToken.None,
-  ): Promise<LikeC4Model> {
+  ): Promise<LikeC4Model.Computed> {
     const project = this.projects.ensureProjectId(projectId)
     const log = logger.getChild(['project', project])
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model>
+    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const cached = cache.get(computedModelCacheKey(project))
     if (cached) {
       log.debug('buildLikeC4Model from cache')

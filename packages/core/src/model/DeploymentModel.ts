@@ -3,7 +3,6 @@ import { invariant, nonNullable } from '../errors'
 import {
   type AnyAux,
   type Aux,
-  type ComputedDeploymentView,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
@@ -209,7 +208,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
   /**
    * Returns all deployment views in the model.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>> {
+  public *views(): IteratorLike<LikeC4ViewModel<A>> {
     for (const view of this.$model.views()) {
       if (view.isDeploymentView()) {
         yield view

@@ -47,7 +47,7 @@ export const SelectElement = memo(() => {
 
   const root = useRef<HTMLDivElement>(null)
   const viewport = useRef<HTMLDivElement>(null)
-  const model = useLikeC4Model(true)
+  const model = useLikeC4Model()
   const subject = model.findElement(subjectId)
   const data = useLikeC4ElementsTree(scope === 'view' && viewId ? viewId : undefined)
   const tree = useTree({

@@ -602,7 +602,7 @@ export function useRelationshipsView(
   viewId: ViewId | null,
   scope: 'global' | 'view',
 ): LayoutRelationshipsViewResult {
-  const model = useLikeC4Model(true)
+  const model = useLikeC4Model()
   return useMemo(() => {
     const view = viewId ? model.findView(viewId) : null
     const data = layoutRelationshipsView(

@@ -113,7 +113,7 @@ export function ElementDetailsCard({
     defaultValue: 'Properties',
   })
   const diagram = useDiagram()
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const viewModel = likec4model.view(viewId)
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
 

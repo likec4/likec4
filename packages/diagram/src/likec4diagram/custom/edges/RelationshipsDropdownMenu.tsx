@@ -68,7 +68,7 @@ export const RelationshipsDropdownMenu = memo((
       targetNode: findDiagramNode(ctx, target),
     }), [edgeId, source, target]),
   )
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const diagram = useDiagram()
 
   const portalProps = useMantinePortalProps()

@@ -30,7 +30,7 @@ const SEARCH_PREFIXES = ['#', 'kind:']
 
 export function LikeC4SearchInput() {
   const isPickViewActive = useIsPickViewActive()
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const combobox = useCombobox({
     scrollBehavior: 'smooth',
   })

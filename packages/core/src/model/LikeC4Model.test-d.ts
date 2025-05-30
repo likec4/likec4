@@ -1,9 +1,16 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
 import { computeLikeC4Model } from '../compute-view'
-import type { ComputedView, DiagramView, Fqn, LayoutedLikeC4ModelData } from '../types'
-import { isLayoutedLikeC4Model } from './guards'
+import {
+  type ComputedDynamicView,
+  type DiagramView,
+  type Fqn,
+  type LayoutedLikeC4ModelData,
+  ComputedView,
+} from '../types'
+// import { isLayoutedLikeC4Model } from './guards'
 import { LikeC4Model } from './LikeC4Model'
+import type { $UnwrapM } from './types'
 
 test('LikeC4Model.create: should have types', () => {
   const {
@@ -24,6 +31,7 @@ test('LikeC4Model.create: should have types', () => {
       deploymentView,
       views,
       view,
+      viewOf,
       $include,
     },
     builder,
@@ -91,26 +99,26 @@ test('LikeC4Model.create: should have types', () => {
   expectTypeOf(m.view('index').$view).toBeNever()
 
   const computed = computeLikeC4Model(source)
-  expectTypeOf(computed.view('index').$view).toEqualTypeOf<ComputedView<typeof computed.Aux>>()
+  type A = $UnwrapM<typeof computed.Aux>
+  expectTypeOf(computed.view('index').$view).toEqualTypeOf<ComputedView<A>>()
+  expectTypeOf(computed.element('cloud.backend.api').defaultView!.$view).toEqualTypeOf<ComputedView<A>>()
 
   // type guard
-  if (isLayoutedLikeC4Model(computed)) {
-    expectTypeOf(computed.view('index').$view).toEqualTypeOf<DiagramView<typeof computed.Aux>>()
-  }
+
   if (computed.isLayouted()) {
-    expectTypeOf(computed.view('index').$view).toEqualTypeOf<DiagramView<typeof computed.Aux>>()
+    expectTypeOf(computed.view('index').$view).toEqualTypeOf<DiagramView<A>>()
+    expectTypeOf(computed.element('cloud.backend.api').defaultView!.$view).toEqualTypeOf<DiagramView<A>>()
   }
 
   const layouted = LikeC4Model.create(
     {} as LayoutedLikeC4ModelData<typeof m.Aux>,
   )
-  expectTypeOf(layouted.view('index').$view).toEqualTypeOf<DiagramView<typeof layouted.Aux>>()
-  // if (layouted.isComputed()) {
-  //   expectTypeOf(layouted.view('index').$view).toEqualTypeOf<ComputedView<typeof layouted.Aux>>()
-  // }
-  // if (isComputedLikeC4Model(layouted)) {
-  //   expectTypeOf(layouted.view('index').$view).toEqualTypeOf<ComputedView<typeof layouted.Aux>>()
-  // }
+  type A2 = $UnwrapM<typeof layouted.Aux>
+  const v = layouted.view('index')
+  expectTypeOf(v.$view).toEqualTypeOf<DiagramView<A2>>()
+  if (v.isDynamicView()) {
+    expectTypeOf(v.$view).toEqualTypeOf<DiagramView<A2> & ComputedDynamicView<A2>>()
+  }
 
   // @ts-expect-error
   m.element('wrong')
@@ -182,7 +190,7 @@ test('LikeC4Model.fromDump: should have types', () => {
       relations: {},
     },
   })
-  expectTypeOf(m.view('v1').$view).toEqualTypeOf<DiagramView<typeof m.Aux>>()
+  expectTypeOf(m.view('v1').$view).toEqualTypeOf<DiagramView<$UnwrapM<typeof m.Aux>>>()
 
   expectTypeOf(m.Aux.ElementId).toEqualTypeOf<'el1' | 'el2'>()
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'v1' | 'v2'>()
