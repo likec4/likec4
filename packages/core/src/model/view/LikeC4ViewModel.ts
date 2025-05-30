@@ -27,7 +27,7 @@ export class LikeC4ViewModel<A extends AnyAux = Unknown, V extends ProcessedView
   readonly #allTags = new DefaultMap((_key: Aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
 
   constructor(
-    public readonly $model: LikeC4Model<A>,
+    public readonly $model: LikeC4Model<A, V>,
     public readonly $view: V,
   ) {
     for (const node of $view.nodes) {

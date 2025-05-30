@@ -11,6 +11,7 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
+import { invariant } from '../../../errors'
 import type { LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
@@ -39,7 +40,7 @@ type Connection = Memory['Ctx']['Connection']
 export class TestHelper<T extends AnyTypes> {
   Aux!: Types.ToAux<T>
 
-  model: LikeC4Model<typeof this.Aux>
+  model: LikeC4Model.Computed<typeof this.Aux>
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
@@ -61,13 +62,14 @@ export class TestHelper<T extends AnyTypes> {
   }
 
   computeView = (...rules: DeploymentRulesBuilderOp<T>[]) => {
+    const view = this.builder
+      .clone()
+      .views(_ => _.deploymentView('dev').with(...rules))
+      .toLikeC4Model()
+      .view('dev')
+    invariant(view.isDeploymentView())
     return withReadableEdges(
-      this.builder
-        .clone()
-        .views(_ => _.deploymentView('dev').with(...rules))
-        .toLikeC4Model()
-        .view('dev')
-        .$view as ComputedDeploymentView<typeof this.Aux>,
+      view.$view,
       ' -> ',
     )
   }

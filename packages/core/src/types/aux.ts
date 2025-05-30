@@ -1,4 +1,4 @@
-import type { IfNever, IsNever, Tagged, UnionToTuple } from 'type-fest'
+import type { IfNever, IsAny, IsNever, Tagged, UnionToTuple } from 'type-fest'
 import type {
   Icon,
 } from './scalars'
@@ -61,7 +61,7 @@ export interface Specification<A extends AnyAux> {
     [key in A['RelationKind']]: Partial<RelationshipSpecification>
   }
   // dprint-ignore
-  metadataKeys?: UnionToTuple<A['MetadataKey']>
+  metadataKeys?: IsAny<A['MetadataKey']> extends true ? string[] : UnionToTuple<A['MetadataKey']>
 }
 
 /**

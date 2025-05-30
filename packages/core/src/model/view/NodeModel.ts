@@ -7,7 +7,6 @@ import {
   type IconUrl,
   type IteratorLike,
   type Link,
-  type ThemeColor as C4Color,
   ComputedNode,
 } from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
@@ -104,7 +103,7 @@ export class NodeModel<A extends AnyAux = Unknown, V extends ProcessedView<A> = 
     return this.$node.links ?? []
   }
 
-  get navigateTo(): LikeC4ViewModel<A> | null {
+  get navigateTo(): LikeC4ViewModel<A, V> | null {
     return this.$node.navigateTo ? this.$view.$model.view(this.$node.navigateTo) : null
   }
 

@@ -1,6 +1,8 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
-import type { Fqn } from '../types'
+import { computeLikeC4Model } from '../compute-view'
+import type { ComputedView, DiagramView, Fqn, LayoutedLikeC4ModelData } from '../types'
+import { isLayoutedLikeC4Model } from './guards'
 import { LikeC4Model } from './LikeC4Model'
 
 test('LikeC4Model.create: should have types', () => {
@@ -85,6 +87,31 @@ test('LikeC4Model.create: should have types', () => {
 
   const m = LikeC4Model.fromParsed(source)
 
+  // Check view types
+  expectTypeOf(m.view('index').$view).toBeNever()
+
+  const computed = computeLikeC4Model(source)
+  expectTypeOf(computed.view('index').$view).toEqualTypeOf<ComputedView<typeof computed.Aux>>()
+
+  // type guard
+  if (isLayoutedLikeC4Model(computed)) {
+    expectTypeOf(computed.view('index').$view).toEqualTypeOf<DiagramView<typeof computed.Aux>>()
+  }
+  if (computed.isLayouted()) {
+    expectTypeOf(computed.view('index').$view).toEqualTypeOf<DiagramView<typeof computed.Aux>>()
+  }
+
+  const layouted = LikeC4Model.create(
+    {} as LayoutedLikeC4ModelData<typeof m.Aux>,
+  )
+  expectTypeOf(layouted.view('index').$view).toEqualTypeOf<DiagramView<typeof layouted.Aux>>()
+  // if (layouted.isComputed()) {
+  //   expectTypeOf(layouted.view('index').$view).toEqualTypeOf<ComputedView<typeof layouted.Aux>>()
+  // }
+  // if (isComputedLikeC4Model(layouted)) {
+  //   expectTypeOf(layouted.view('index').$view).toEqualTypeOf<ComputedView<typeof layouted.Aux>>()
+  // }
+
   // @ts-expect-error
   m.element('wrong')
 
@@ -126,7 +153,7 @@ test('LikeC4Model.create: should have types', () => {
 
 test('LikeC4Model.fromDump: should have types', () => {
   const m = LikeC4Model.fromDump({
-    __: 'computed',
+    __: 'layouted',
     specification: {
       tags: {},
       elements: {},
@@ -155,6 +182,8 @@ test('LikeC4Model.fromDump: should have types', () => {
       relations: {},
     },
   })
+  expectTypeOf(m.view('v1').$view).toEqualTypeOf<DiagramView<typeof m.Aux>>()
+
   expectTypeOf(m.Aux.ElementId).toEqualTypeOf<'el1' | 'el2'>()
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'v1' | 'v2'>()
   expectTypeOf(m.Aux.DeploymentId).toEqualTypeOf<'d1' | 'd2'>()

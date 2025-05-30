@@ -176,7 +176,7 @@ test('Builder types - style 2', () => {
   >()
 
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf<
-    LikeC4Model<
+    LikeC4Model.Computed<
       Aux<
         'from-builder',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',

@@ -13,7 +13,7 @@ import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
 import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
-import type { ComputedElementView, ElementView, ViewId, ViewRule } from '../../../types'
+import type { ComputedElementView, ComputedView, ElementView, ViewId, ViewRule } from '../../../types'
 import { compareNatural } from '../../../utils'
 import { imap, toArray } from '../../../utils/iterable'
 import { difference as differenceSet } from '../../../utils/set'
@@ -44,7 +44,7 @@ export class TestHelper<T extends AnyTypes> {
   Connection!: ConnectionModel<typeof this.Aux>
   CompView!: ComputedElementView<typeof this.Aux>
 
-  model: LikeC4Model<typeof this.Aux>
+  model: LikeC4Model.Computed<typeof this.Aux>
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
@@ -73,7 +73,7 @@ export class TestHelper<T extends AnyTypes> {
         .views(_ => _.view('dev').with(...rules))
         .toLikeC4Model()
         .view('dev')
-        .$view as typeof this.CompView,
+        .$view,
       ' -> ',
     )
   }
@@ -85,7 +85,7 @@ export class TestHelper<T extends AnyTypes> {
     return ProcessPredicates.executeWithScope(this, scope, ...rules)
   }
 
-  expectView(view: typeof this.CompView) {
+  expectView(view: ComputedView) {
     return {
       toHave: (nodesAndEdges: { nodes: Array<T['Fqn']>; edges: Array<ConnectionExpression<T>> }) => {
         const actual = {

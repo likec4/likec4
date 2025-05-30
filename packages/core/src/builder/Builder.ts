@@ -145,7 +145,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**
    * Returns LikeC4Model with computed views
    */
-  toLikeC4Model(): LikeC4Model<Types.ToAux<T>>
+  toLikeC4Model(): LikeC4Model.Computed<Types.ToAux<T>>
 }
 
 interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>, DeploymentModelBuilder<T> {
@@ -628,7 +628,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             b.__addDeployment({
               id: _id,
               element: target as Fqn,
-              title: title ?? nameFromFqn(target),
+              ...title && { title },
               ...links && { links: mapLinks(links) },
               ...props,
             } as DeployedInstance)

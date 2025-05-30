@@ -58,7 +58,7 @@ export class EdgeModel<A extends AnyAux, V extends ProcessedView<A> = ProcessedV
   }
 
   get navigateTo(): LikeC4ViewModel<A, V> | null {
-    return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
+    return this.$edge.navigateTo ? this.view.$model.view<V>(this.$edge.navigateTo) : null
   }
 
   get color(): Color {

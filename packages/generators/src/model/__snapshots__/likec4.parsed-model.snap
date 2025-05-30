@@ -480,7 +480,6 @@ export const likeC4Model = LikeC4Model.fromParsed<$Aux>({
       'customer.instance': {
         id: 'customer.instance',
         element: 'customer',
-        title: 'customer',
       },
       prod: {
         id: 'prod',
@@ -521,12 +520,10 @@ export const likeC4Model = LikeC4Model.fromParsed<$Aux>({
       'prod.eu.zone1.ui': {
         id: 'prod.eu.zone1.ui',
         element: 'cloud.frontend.dashboard',
-        title: 'dashboard',
       },
       'prod.eu.zone1.api': {
         id: 'prod.eu.zone1.api',
         element: 'cloud.backend.api',
-        title: 'api',
       },
       'prod.eu.zone2': {
         id: 'prod.eu.zone2',
@@ -543,22 +540,18 @@ export const likeC4Model = LikeC4Model.fromParsed<$Aux>({
       'prod.eu.zone2.ui': {
         id: 'prod.eu.zone2.ui',
         element: 'cloud.frontend.dashboard',
-        title: 'dashboard',
       },
       'prod.eu.zone2.api': {
         id: 'prod.eu.zone2.api',
         element: 'cloud.backend.api',
-        title: 'api',
       },
       'prod.eu.media': {
         id: 'prod.eu.media',
         element: 'cloud.media',
-        title: 'media',
       },
       'prod.eu.db': {
         id: 'prod.eu.db',
         element: 'aws.rds',
-        title: 'rds',
       },
       'prod.us': {
         id: 'prod.us',
@@ -575,7 +568,6 @@ export const likeC4Model = LikeC4Model.fromParsed<$Aux>({
       'prod.us.db': {
         id: 'prod.us.db',
         element: 'aws.rds',
-        title: 'rds',
       },
     },
     relations: {

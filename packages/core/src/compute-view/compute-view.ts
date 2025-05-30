@@ -3,14 +3,8 @@ import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
   type AnyAux,
-  type ComputedDeploymentView,
-  type ComputedDynamicView,
-  type ComputedElementView,
   type ComputedLikeC4ModelData,
   type ComputedView,
-  type DeploymentView,
-  type DynamicView,
-  type ElementView,
   type LikeC4View,
   type ParsedLikeC4ModelData,
   isDeploymentView,
@@ -33,18 +27,10 @@ export type ComputeViewResult<V> =
     view: undefined
   }
 
-// dprint-ignore
-export function unsafeComputeView<A extends AnyAux>(viewsource: ElementView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedElementView<A>
-// dprint-ignore
-export function unsafeComputeView<A extends AnyAux>(viewsource: DeploymentView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedDeploymentView<A>
-// dprint-ignore
-export function unsafeComputeView<A extends AnyAux>(viewsource: DynamicView<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedDynamicView<A>
-// dprint-ignore
-export function unsafeComputeView<A extends AnyAux>(viewsource: LikeC4View<NoInfer<A>>, likec4model: LikeC4Model<A>): ComputedView<A>
 export function unsafeComputeView<A extends AnyAux>(
   viewsource: LikeC4View<NoInfer<A>>,
   likec4model: LikeC4Model<A>,
-) {
+): ComputedView<A> {
   switch (true) {
     case isElementView(viewsource):
       return computeElementView(likec4model, viewsource)
@@ -77,14 +63,16 @@ export function computeView<A extends AnyAux>(
 
 export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): ComputedLikeC4ModelData<A> {
   const likec4model = LikeC4Model.fromParsed(parsed)
-  const views = values(parsed.views as Record<string, LikeC4View<A>>).map(v => unsafeComputeView(v, likec4model))
+  const views = values(parsed.views as Record<string, LikeC4View<typeof likec4model.Aux>>).map(v =>
+    unsafeComputeView(v, likec4model)
+  )
   return {
     __: 'computed',
     ...parsed,
-    views: indexBy(views, v => v.id) as ComputedLikeC4ModelData<A>['views'],
-  }
+    views: indexBy(views, v => v.id),
+  } as unknown as ComputedLikeC4ModelData<A>
 }
 
-export function computeLikeC4Model<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): LikeC4Model<A> {
+export function computeLikeC4Model<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): LikeC4Model.Computed<A> {
   return LikeC4Model.create(computeViews(parsed))
 }
