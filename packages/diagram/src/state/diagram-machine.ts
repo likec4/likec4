@@ -59,7 +59,6 @@ import {
   navigateBack,
   navigateForward,
   resetEdgeControlPoints,
-  unfocusNodesEdges,
   updateActiveWalkthrough,
   updateEdgeData,
   updateNavigationHistory,
@@ -175,6 +174,8 @@ export type Events =
   | { type: 'walkthrough.end' }
   | { type: 'notations.highlight'; notation: ElementNotation; kind?: string }
   | { type: 'notations.unhighlight' }
+  | { type: 'tag.highlight'; tag: string }
+  | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
 export type ActionArg = { context: Context; event: Events }
@@ -450,6 +451,7 @@ const _diagramMachine = setup({
         }),
       }
     }),
+    'focus on nodes and edges': assign(focusNodesEdges),
     'notations.highlight': assign(({ context }, params: { notation: ElementNotation; kind?: string }) => {
       const kinds = params.kind ? [params.kind] : params.notation.kinds
       const xynodes = context.xynodes.map((n) => {
@@ -470,6 +472,25 @@ const _diagramMachine = setup({
         xyedges: context.xyedges.map(Base.setDimmed('immediate')),
       }
     }),
+    'tag.highlight': assign(({ context, event }) => {
+      assertEvent(event, 'tag.highlight')
+      return {
+        xynodes: context.xynodes.map((n) => {
+          if (n.data.tags?.includes(event.tag)) {
+            return Base.setDimmed(n, false)
+          }
+          return Base.setDimmed(n, 'immediate')
+        }),
+      }
+    }),
+    'undim everything': assign(({ context }) => ({
+      xynodes: context.xynodes.map(Base.setDimmed(false)),
+      xyedges: context.xyedges.map(Base.setData({
+        dimmed: false,
+        active: false,
+      })),
+    })),
+    'update active walkthrough': assign(updateActiveWalkthrough),
   },
 }).createMachine({
   initial: 'initializing',
@@ -528,7 +549,7 @@ const _diagramMachine = setup({
         },
       },
     },
-    'isReady': {
+    isReady: {
       always: [{
         guard: 'isReady',
         actions: [
@@ -703,10 +724,13 @@ const _diagramMachine = setup({
           },
         },
         'notations.unhighlight': {
-          actions: assign(({ context }) => ({
-            xynodes: context.xynodes.map(Base.setDimmed(false)),
-            xyedges: context.xyedges.map(Base.setDimmed(false)),
-          })),
+          actions: 'undim everything',
+        },
+        'tag.highlight': {
+          actions: 'tag.highlight',
+        },
+        'tag.unhighlight': {
+          actions: 'undim everything',
         },
         'saveManualLayout.*': {
           guard: 'not readonly',
@@ -798,8 +822,8 @@ const _diagramMachine = setup({
         },
         focused: {
           entry: [
+            'focus on nodes and edges',
             assign(s => ({
-              ...focusNodesEdges(s),
               viewportBeforeFocus: { ...s.context.viewport },
             })),
             'open source of focused or last clicked node',
@@ -811,10 +835,10 @@ const _diagramMachine = setup({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue({ type: 'xyflow:fitDiagram' })
+              enqueue('xyflow:fitDiagram')
             }
+            enqueue('undim everything')
             enqueue.assign({
-              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
               focusedNode: null,
             })
@@ -842,7 +866,7 @@ const _diagramMachine = setup({
                 assign({
                   focusedNode: ({ event }) => event.nodeId,
                 }),
-                assign(focusNodesEdges),
+                'focus on nodes and edges',
                 'open source of focused or last clicked node',
                 'xyflow:fitFocusedBounds',
               ],
@@ -857,9 +881,10 @@ const _diagramMachine = setup({
               target: 'idle',
             },
             'notations.unhighlight': {
-              actions: assign(s => ({
-                ...focusNodesEdges(s),
-              })),
+              actions: 'focus on nodes and edges',
+            },
+            'tag.unhighlight': {
+              actions: 'focus on nodes and edges',
             },
           },
         },
@@ -877,7 +902,7 @@ const _diagramMachine = setup({
                 }
               },
             }),
-            assign(updateActiveWalkthrough),
+            'update active walkthrough',
             'xyflow:fitFocusedBounds',
           ],
           on: {
@@ -908,7 +933,7 @@ const _diagramMachine = setup({
                     parallelPrefix: getParallelStepsPrefix(nextStepId),
                   },
                 })
-                enqueue.assign(updateActiveWalkthrough)
+                enqueue('update active walkthrough')
                 enqueue('xyflow:fitFocusedBounds')
               }),
             },
@@ -925,14 +950,15 @@ const _diagramMachine = setup({
                     },
                   }
                 }),
-                assign(updateActiveWalkthrough),
+                'update active walkthrough',
                 'xyflow:fitFocusedBounds',
               ],
             },
             'notations.unhighlight': {
-              actions: assign(s => ({
-                ...updateActiveWalkthrough(s),
-              })),
+              actions: 'update active walkthrough',
+            },
+            'tag.unhighlight': {
+              actions: 'update active walkthrough',
             },
             'walkthrough.end': {
               target: 'idle',
@@ -952,11 +978,11 @@ const _diagramMachine = setup({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue({ type: 'xyflow:fitDiagram' })
+              enqueue('xyflow:fitDiagram')
             }
+            enqueue('undim everything')
             enqueue.assign({
               activeWalkthrough: null,
-              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
             })
           }),

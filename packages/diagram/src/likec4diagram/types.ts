@@ -28,6 +28,7 @@ export namespace Types {
         | 'level'
         | 'height'
         | 'style'
+        | 'tags'
         | 'position'
       >
     >
@@ -74,6 +75,7 @@ export namespace Types {
         | 'color'
         | 'shape'
         | 'style'
+        | 'tags'
         | 'position'
       >
     >

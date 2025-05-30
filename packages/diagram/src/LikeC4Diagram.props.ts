@@ -201,6 +201,12 @@ export interface LikeC4DiagramProperties {
   enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
+   * Display element tags in the bottom left corner
+   * @default true
+   */
+  enableElementTags?: boolean | undefined
+
+  /**
    * Experimental feature to enable edge editing
    * @default false
    */

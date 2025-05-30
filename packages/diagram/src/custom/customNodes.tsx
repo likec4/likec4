@@ -34,6 +34,8 @@ export type CustomElementNodeProps<M extends AnyAux = Unknown> = {
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
  *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
+ *
  * @example
  * ```tsx
  * import {
@@ -87,6 +89,8 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: {@link NodeModel.WithDeploymentElement}
  *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
+ *
  * @example
  * ```tsx
  * import {
@@ -138,6 +142,8 @@ export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
  *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
+ *
  * @example
  * ```tsx
  * import {
@@ -180,6 +186,8 @@ export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithDeploymentElement}
  *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
+ *
  * @example
  * ```tsx
  * import {
@@ -214,6 +222,8 @@ export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.IsGroup}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx

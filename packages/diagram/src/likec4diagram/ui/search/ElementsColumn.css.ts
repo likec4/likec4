@@ -14,7 +14,6 @@ export const treeRoot = css(
     containerName: 'likec4-tree',
   }),
   {
-    overflow: 'hidden',
     containerType: 'inline-size',
     height: '100%',
   },

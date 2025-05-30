@@ -11,6 +11,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'enableElementDetails'
   | 'enableRelationshipDetails'
   | 'enableRelationshipBrowser'
+  | 'enableElementTags'
   | 'reduceGraphics'
   | 'initialWidth'
   | 'initialHeight'
@@ -23,7 +24,6 @@ export function StaticLikeC4Diagram({
   view,
   fitView = true,
   fitViewPadding = '8px',
-  enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = enableRelationshipDetails,
   background = 'transparent',
@@ -41,7 +41,7 @@ export function StaticLikeC4Diagram({
       background={background}
       showDiagramTitle={false}
       showNotations={false}
-      enableElementDetails={enableElementDetails}
+      enableElementDetails={false}
       enableRelationshipDetails={enableRelationshipDetails}
       enableRelationshipBrowser={enableRelationshipBrowser}
       enableDynamicViewWalkthrough={false}
@@ -51,6 +51,7 @@ export function StaticLikeC4Diagram({
       enableSearch={false}
       nodesSelectable={false}
       nodesDraggable={false}
+      enableElementTags={false}
       {...rest}
     />
   )

@@ -76,5 +76,8 @@ specification {
   tag deprecated
   tag v1
   tag v2
+  tag team-one
+  tag team-two
+  tag storage
 
 }

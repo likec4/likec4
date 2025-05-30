@@ -27,10 +27,10 @@ export const root = css({
   flexDirection: 'column',
   justifyContent: 'stretch',
   gap: 'md',
-  paddingTop: '32px',
-  paddingLeft: '16px',
-  paddingRight: '16px',
-  paddingBottom: 0,
+  paddingTop: 32,
+  paddingLeft: 16,
+  paddingRight: 16,
+  paddingBottom: 8,
 })
 export const input = css({
   border: 'transparent',

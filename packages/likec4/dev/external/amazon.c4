@@ -11,12 +11,14 @@ model {
     }
 
     rds = container 'RDS' {
+      #storage #team-one #next
       description: 'Relational Databases'
       style {
         shape cylinder
       }
 
       pg = database 'PostgreSQL' {
+        #storage #team-one #next
         technology 'AWS Aurora'
         description: 'Database for storing relational data'
         style {
@@ -25,6 +27,7 @@ model {
       }
 
       mysql = database 'MySQL' {
+        #storage #team-one #next
         technology 'AWS Aurora'
         description: 'Database for storing relational data'
         style {
@@ -40,6 +43,7 @@ model {
     }
 
     kinesis = component 'Kinesis' {
+      #team-two #deprecated #storage #v2
       description: 'Streaming data'
       style {
         shape queue
@@ -54,7 +58,7 @@ model {
         -> sqs.hits 'send in batches'
       }
 
-      cloud.ui.dashboard -> hits "send page hits via GoogleTagManager"
+      cloud.ui.dashboard -> hits 'send page hits via GoogleTagManager'
     }
 
     sqs = component 'SQS' {
@@ -78,7 +82,7 @@ model {
 views {
 
   view amazon of amazon {
-    title "[system] Amazon"
+    title '[system] Amazon'
     include
       *,
       cloud,
@@ -101,12 +105,13 @@ views {
   view amazon_rds of rds {
     title: '[context] Amazon RDS'
 
-    include *,
-       amazon,
-       cloud,
-       cloud.backend,
-       cloud.* -> rds,
-       cloud.backend.* -> rds,
+    include
+      *,
+      amazon,
+      cloud,
+      cloud.backend,
+      cloud.* -> rds,
+      cloud.backend.* -> rds,
 
     style * {
       color secondary
@@ -124,7 +129,8 @@ views {
   view amazon_cognito of cognito {
     title '[context] Amazon Cognito'
 
-    include *,
+    include
+      *,
       amazon,
       cloud,
       cloud.* -> cognito

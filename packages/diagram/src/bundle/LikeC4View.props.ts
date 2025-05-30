@@ -111,6 +111,12 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   enableElementDetails?: boolean | undefined
 
   /**
+   * Display element tags in the bottom left corner
+   * @default true
+   */
+  enableElementTags?: boolean | undefined
+
+  /**
    * Experimental feature to browse relationships
    *
    * @default enableElementDetails
@@ -229,6 +235,12 @@ export interface LikeC4BrowserProps {
    * @default enableRelationshipBrowser
    */
   enableRelationshipDetails?: boolean | undefined
+
+  /**
+   * Display element tags in the bottom left corner
+   * @default true
+   */
+  enableElementTags?: boolean | undefined
 
   /**
    * Display notations of the view

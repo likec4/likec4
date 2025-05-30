@@ -140,16 +140,16 @@ export function focusNodesEdges(params: ActionArg): Partial<DiagramContext> {
   }
 }
 
-export function unfocusNodesEdges({ context }: ActionArg): Partial<DiagramContext> {
-  const { xynodes, xyedges } = context
-  return {
-    xynodes: xynodes.map(Base.setDimmed(false)),
-    xyedges: xyedges.map(Base.setData({
-      dimmed: false,
-      active: false,
-    })),
-  }
-}
+// export function unfocusNodesEdges({ context }: ActionArg): Partial<DiagramContext> {
+//   const { xynodes, xyedges } = context
+//   return {
+//     xynodes: xynodes.map(Base.setDimmed(false)),
+//     xyedges: xyedges.map(Base.setData({
+//       dimmed: false,
+//       active: false,
+//     })),
+//   }
+// }
 
 export function updateNavigationHistory({ context, event }: ActionArg): Partial<DiagramContext> {
   assertEvent(event, 'update.view')

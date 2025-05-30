@@ -72,6 +72,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   enableElementDetails = false,
   enableRelationshipBrowser = enableElementDetails,
   enableRelationshipDetails = enableRelationshipBrowser,
+  enableElementTags = true,
   reduceGraphics = 'auto',
   mantineTheme,
   styleNonce,
@@ -140,6 +141,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
             enableRelationshipDetails={enableRelationshipDetails}
             enableElementDetails={enableElementDetails}
             enableRelationshipBrowser={enableRelationshipBrowser}
+            enableElementTags
             controls={controls}
             nodesDraggable={false}
             reduceGraphics={reduceGraphics}
@@ -168,6 +170,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                 enableElementDetails
                 enableRelationshipDetails
                 enableSearch
+                enableElementTags
                 controls
                 readonly
                 fitView

@@ -13,11 +13,12 @@ type ElementActionButtonsProps = NodeProps & {
 
 const container = css({
   position: 'absolute',
-  top: `calc(100% - 28px)`,
+  zIndex: 1,
+  top: `calc(100% - 30px)`,
   // transform: 'translateY(-100%)',
   left: 0,
   width: '100%',
-  minHeight: '28px',
+  minHeight: '30px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -54,7 +55,7 @@ export function ElementActionButtons({
         initial={false}
         style={{
           originY: 0,
-          gap: '8px',
+          gap: 6,
         }}
         animate={{
           opacity: (isHovered || selected) ? 1 : 0.75,

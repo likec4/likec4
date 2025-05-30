@@ -6,7 +6,6 @@ import {
   type NodeId,
   type ViewId,
   ComputedView,
-  isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
@@ -41,8 +40,10 @@ import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
+import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
+import { useTagStyles } from '../../context/TagStylesContext'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
@@ -103,6 +104,7 @@ export function ElementDetailsCard({
   fqn,
   onClose,
 }: ElementDetailsCardProps) {
+  const { getTagColor } = useTagStyles()
   const [opened, setOpened] = useState(false)
   const windowSize = useViewportSize()
   const windowWidth = windowSize.width || window.innerWidth || 1200,
@@ -331,16 +333,20 @@ export function ElementDetailsCard({
               </div>
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
-                <Flex gap={4} flex={1} mt={6}>
+                <Flex gap={4} flex={1} mt={6} wrap="wrap">
                   {elementModel.tags.map((tag) => (
-                    <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
+                    <ElementTag
+                      key={tag}
+                      tag={tag}
+                      tagColor={getTagColor(tag)}
+                    />
                   ))}
                   {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                 </Flex>
               </div>
               <ActionIconGroup
                 style={{
-                  alignSelf: 'flex-end',
+                  alignSelf: 'flex-start',
                 }}>
                 {defaultLink && (
                   <ActionIcon

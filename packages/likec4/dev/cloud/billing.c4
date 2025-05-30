@@ -1,6 +1,7 @@
 model {
 
   extend cloud.billing {
+    #team-two #next
 
     subscriptions = service 'Subscriptions' {
       description 'Manage subscriptions'
@@ -32,11 +33,12 @@ model {
 views {
 
   view billing of cloud.billing {
-    title "[context] Billing"
-    include *,
-        cloud,
-        stripe,
-        stripe.*
+    title '[context] Billing'
+    include
+      *,
+      cloud,
+      stripe,
+      stripe.*
 
     style cloud {
       color muted

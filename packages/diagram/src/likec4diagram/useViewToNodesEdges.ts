@@ -119,6 +119,7 @@ function viewToNodesEdge(opts: {
       style: node.style,
       depth: node.depth ?? 0,
       icon: node.icon ?? 'none',
+      tags: node.tags ?? null,
       position: node.position,
     } satisfies Types.CompoundNodeData
 
@@ -135,6 +136,7 @@ function viewToNodesEdge(opts: {
       shape: node.shape,
       style: node.style,
       icon: node.icon ?? null,
+      tags: node.tags ?? null,
       position: node.position,
       isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData
