@@ -22,6 +22,12 @@ describe('Builder (style 2)', () => {
         },
         node: {},
       },
+      tags: {
+        tag1: {
+          color: '#FFF',
+        },
+        tag2: {},
+      },
     })
 
   it('should build ', () => {

@@ -130,7 +130,14 @@ exports[`Builder (style 2) > should build  1`] = `
       },
     },
     "relationships": {},
-    "tags": {},
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+    },
   },
   "views": {
     "cloud": {

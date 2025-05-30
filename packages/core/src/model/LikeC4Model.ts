@@ -12,6 +12,7 @@ import type {
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
+  Specification,
   Unknown,
 } from '../types'
 import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
@@ -160,6 +161,10 @@ export class LikeC4Model<A extends AnyAux = Aux.Any> {
 
   get projectId(): Aux.ProjectId<A> {
     return this.$model.projectId ?? 'unknown'
+  }
+
+  get specification(): Specification<A> {
+    return this.$model.specification
   }
 
   /**

@@ -28,6 +28,12 @@ describe('Builder (style1)', () => {
           },
         },
       },
+      tags: {
+        tag1: {
+          color: '#FFF',
+        },
+        tag2: {},
+      },
     })
 
     const b = builder.with(

@@ -1,3 +1,4 @@
+import { sort } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
@@ -10,6 +11,7 @@ import {
   DefaultThemeColor,
   GroupElementKind,
 } from '../../types'
+import { compareNatural } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'
 
@@ -90,7 +92,7 @@ export function buildComputedNodes<A extends AnyAux>(
   // Ensure that parent nodes are created before child nodes
   Array.from(elements)
     .sort(compareByFqnHierarchically)
-    .forEach(({ id, style, kind, title, color, shape, ...el }) => {
+    .forEach(({ id, style, kind, title, color, shape, tags, ...el }) => {
       let parent = parentFqn(id)
       let level = 0
       let parentNd: ComputedNode<A> | undefined
@@ -128,7 +130,7 @@ export function buildComputedNodes<A extends AnyAux>(
         level,
         color: color ?? DefaultThemeColor,
         shape: shape ?? DefaultElementShape,
-        tags: [],
+        tags: tags ? sort(tags, compareNatural) : [],
         children: [],
         inEdges: [],
         outEdges: [],

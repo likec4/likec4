@@ -151,7 +151,14 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       },
     },
     "relationships": {},
-    "tags": {},
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+    },
   },
   "views": {},
 }
