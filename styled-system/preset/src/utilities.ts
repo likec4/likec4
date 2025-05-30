@@ -1,5 +1,4 @@
 import { type Config, defineUtility } from '@pandacss/dev'
-import { radixColors } from './const'
 import { compoundColors, themeColors } from './generated'
 
 const colorPaletteValues = [
@@ -57,28 +56,6 @@ const likec4RelationPalette = defineUtility({
   },
 })
 
-const tagColor = defineUtility({
-  values: radixColors,
-  className: 'likec4-tag-color',
-  transform(value, { token, raw }) {
-    if (!radixColors.includes(value)) {
-      console.log('raw', raw)
-      throw new Error(`Invalid value "${value}" for likec4TagColor`)
-    }
-    let textcolor = '12'
-    if (['mint', 'lime', 'yellow', 'amber'].includes(value)) {
-      textcolor = 'light.12'
-    }
-    return {
-      ['--likec4-tag-color']: `'${value}'`,
-      ['--colors-likec4-tag-border']: token(`colors.${value}.8`),
-      ['--colors-likec4-tag-bg']: token(`colors.${value}.9`),
-      ['--colors-likec4-tag-bg-hover']: token(`colors.${value}.a.10`),
-      ['--colors-likec4-tag-text']: token(`colors.${value}.${textcolor}`),
-    }
-  },
-})
-
 type ExtendableUtilityConfig = NonNullable<Config['utilities']>
 
 export const utilities: ExtendableUtilityConfig = {
@@ -99,6 +76,5 @@ export const utilities: ExtendableUtilityConfig = {
     },
     likec4Palette,
     likec4RelationPalette,
-    tagColor,
   },
 }

@@ -67,8 +67,8 @@ export const layerStyles = defineLayerStyles({
         _hover: {
           backgroundColor: 'likec4.tag.bg.hover',
         },
-        borderColor: 'likec4.tag.border/30',
-        borderRadius: 2,
+        border: 'none',
+        borderRadius: 3,
       },
     },
   },
