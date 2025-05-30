@@ -42,7 +42,7 @@ function code(views: ComputedView[]) {
 import { jsx } from 'react/jsx-runtime'
 ${imports.join('\n')}
 
-export const Icons = {
+const Icons = {
 ${cases.join(',\n')}
 }
 export function IconRenderer({ node }) {
@@ -51,20 +51,6 @@ export function IconRenderer({ node }) {
     return null
   }
   return jsx(IconComponent, {node})
-}
-
-if (import.meta.hot) {
-  import.meta.hot.accept(md => {
-    const update = md.Icons
-    if (update) {
-      if (!import.meta.hot.data.icons) {
-        import.meta.hot.data.icons = Icons
-      }
-      Object.assign(import.meta.hot.data.icons, update)
-    } else {
-      import.meta.hot.invalidate()
-    }
-  })
 }
 `
 }
