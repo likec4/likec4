@@ -39,7 +39,7 @@ export function compareNaturalHierarchically(separator = '.') {
     const aParts = a.split(separator)
     const bParts = b.split(separator)
     if (aParts.length !== bParts.length) {
-      return bParts.length - aParts.length
+      return aParts.length - bParts.length
     }
     for (let i = 0; i < aParts.length; i++) {
       const aPart = aParts[i]!

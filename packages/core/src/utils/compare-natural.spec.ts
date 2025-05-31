@@ -86,10 +86,10 @@ describe('compareNaturalHierarchically', () => {
       ]),
     ).toEqual([
       'a',
+      'b',
       'a.a',
       'a.b',
       'a.b.c',
-      'b',
     ])
   })
 
@@ -118,8 +118,8 @@ describe('compareNaturalHierarchically', () => {
     ).toEqual([
       '',
       'a',
-      'a.b',
       'b',
+      'a.b',
     ])
   })
 
@@ -134,8 +134,8 @@ describe('compareNaturalHierarchically', () => {
       ]),
     ).toEqual([
       'a',
-      'a.b',
       'b',
+      'a.b',
       undefined,
       undefined,
     ])

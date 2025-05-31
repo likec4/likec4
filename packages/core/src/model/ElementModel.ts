@@ -13,7 +13,7 @@ import {
   DefaultThemeColor,
   splitGlobalFqn,
 } from '../types'
-import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
+import { commonAncestor, hierarchyLevel, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -52,7 +52,7 @@ export class ElementModel<A extends AnyAux = Aux.Any> {
   }
 
   get parent(): ElementModel<A> | null {
-    return this.$model.parent(this)
+    return memoizeProp(this, Symbol('parent'), () => this.$model.parent(this))
   }
 
   get kind(): Aux.ElementKind<A> {
@@ -92,7 +92,7 @@ export class ElementModel<A extends AnyAux = Aux.Any> {
   }
 
   get defaultView(): LikeC4ViewModel<A> | null {
-    return this.scopedViews().next().value ?? null
+    return memoizeProp(this, Symbol('defaultView'), () => this.scopedViews().next().value ?? null)
   }
 
   get isRoot(): boolean {
@@ -205,17 +205,12 @@ export class ElementModel<A extends AnyAux = Aux.Any> {
     return
   }
 
-  protected cachedOutgoing: Set<RelationshipModel<A>> | null = null
-  protected cachedIncoming: Set<RelationshipModel<A>> | null = null
-
   public get allOutgoing(): ReadonlySet<RelationshipModel<A>> {
-    this.cachedOutgoing ??= new Set(this.outgoing())
-    return this.cachedOutgoing
+    return memoizeProp(this, Symbol('allOutgoing'), () => new Set(this.outgoing()))
   }
 
   public get allIncoming(): ReadonlySet<RelationshipModel<A>> {
-    this.cachedIncoming ??= new Set(this.incoming())
-    return this.cachedIncoming
+    return memoizeProp(this, Symbol('allIncoming'), () => new Set(this.incoming()))
   }
 
   /**

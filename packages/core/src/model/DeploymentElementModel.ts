@@ -20,7 +20,7 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
 } from '../types'
-import { commonAncestor, hierarchyLevel } from '../utils'
+import { commonAncestor, hierarchyLevel, memoizeProp } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
@@ -187,23 +187,20 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
   public abstract outgoingModelRelationships(): RelationshipsIterator<A>
   public abstract incomingModelRelationships(): RelationshipsIterator<A>
 
-  protected cachedOutgoing: RelationshipsAccum<A> | null = null
-  protected cachedIncoming: RelationshipsAccum<A> | null = null
-
   public get allOutgoing(): RelationshipsAccum<A> {
-    this.cachedOutgoing ??= RelationshipsAccum.from(
-      new Set(this.outgoingModelRelationships()),
-      new Set(this.outgoing()),
-    )
-    return this.cachedOutgoing
+    return memoizeProp(this, Symbol('allOutgoing'), () =>
+      RelationshipsAccum.from(
+        new Set(this.outgoingModelRelationships()),
+        new Set(this.outgoing()),
+      ))
   }
 
   public get allIncoming(): RelationshipsAccum<A> {
-    this.cachedIncoming ??= RelationshipsAccum.from(
-      new Set(this.incomingModelRelationships()),
-      new Set(this.incoming()),
-    )
-    return this.cachedIncoming
+    return memoizeProp(this, Symbol('allIncoming'), () =>
+      RelationshipsAccum.from(
+        new Set(this.incomingModelRelationships()),
+        new Set(this.incoming()),
+      ))
   }
 
   public getMetadata(): Aux.Strict.Metadata<A>
