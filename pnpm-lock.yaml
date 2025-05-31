@@ -1717,9 +1717,6 @@ importers:
       json5:
         specifier: catalog:utils
         version: 2.2.3
-      khroma:
-        specifier: ^2.1.0
-        version: 2.1.0
       remeda:
         specifier: catalog:utils
         version: 2.21.3
