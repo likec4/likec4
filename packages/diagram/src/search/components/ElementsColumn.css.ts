@@ -64,40 +64,12 @@ export const elementId = css({
   },
 })
 
-// const iconSizeVar = `var(${iconSize}, 32px)`
 export const elementIcon = css({
   ['--likec4-icon-size']: '24px',
   [whenContainerIsNarrow]: {
     ['--likec4-icon-size']: '18px',
   },
 })
-//   flex: `0 0 ${iconSizeVar}`,
-//   height: iconSizeVar,
-//   width: iconSizeVar,
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'center',
-//   alignSelf: 'flex-start',
-//   marginTop: 4,
-//   [`& svg, & img`]: {
-//     width: '100%',
-//     height: 'auto',
-//     maxHeight: '100%',
-//     pointerEvents: 'none',
-//   },
-//   [`& img`]: {
-//     objectFit: 'contain',
-//   },
-//   '&.likec4-shape-icon svg': {
-//     color: `[var(${iconColor})]`,
-//     width: '90%',
-//     strokeWidth: 1.5,
-//   },
-//   [iconSize]: '24px',
-//   [whenContainerIsNarrow]: {
-//     [iconSize]: '18px',
-//   },
-// })
 
 export const elementViewsCount = css({
   flex: 0,

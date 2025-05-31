@@ -9,6 +9,14 @@ specification {
   element actor
   element system
   element component
+
+  tag ui {
+    color #33B074
+  }
+  tag version1 {
+    color #D6409F
+  }
+  tag warn
 }
 
 model {
@@ -17,13 +25,17 @@ model {
   }
 
   saas = system 'Our SaaS' {
+    #version1
+
     component ui 'Frontend' {
+      #ui #warn
       description 'Nextjs application, hosted on Vercel'
       style {
         icon tech:nextjs
         shape browser
       }
     }
+
     component backend 'Backend Services' {
       description '
         Implements business logic

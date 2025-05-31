@@ -15,7 +15,7 @@ import type { NodeProps } from '../../types'
 
 export type ElementTagProps = {
   tag: string
-} & Omit<BoxProps, 'children' | 'css'>
+} & Omit<BoxProps, 'children'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, className, ...props }, ref) => {
@@ -32,7 +32,7 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
         )}
         {...props}
       >
-        <span style={{ opacity: 0.5, marginRight: 1, fontSize: '1.05em' }}>#</span>
+        <span style={{ opacity: 0.7, fontSize: '1.05em' }}>#</span>
         <span>{tag}</span>
       </Box>
     )
@@ -60,8 +60,8 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
       floatingStrategy="fixed"
       position="bottom-start"
       offset={{
-        alignmentAxis: 0,
-        mainAxis: 4,
+        alignmentAxis: Math.round(4 * zoom),
+        mainAxis: 8,
       }}
       keepMounted={false}
       openDelay={300}
@@ -106,7 +106,7 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
                 alignItems: 'center',
                 justifyContent: 'center',
                 maxWidth: 50,
-                minHeight: 6,
+                minHeight: 5,
                 _whenHovered: {
                   minHeight: 10,
                 },
@@ -163,7 +163,10 @@ function ElementTagsDropdown({ tags, zoomIsLargeEnough }: { tags: readonly strin
               px: 6,
             }),
           })}
-          onClick={stopPropagation}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.openSearch(`#${tag}`)
+          }}
           onMouseEnter={() => onHover(tag)}
           onMouseLeave={onLeave}
         />

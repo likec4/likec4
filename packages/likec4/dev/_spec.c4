@@ -75,11 +75,11 @@ specification {
   tag next
   tag deprecated
   tag v1
-  tag v2 {
-    color #3094FEB9
-  }
+
   tag team-one
   tag team-two
   tag storage
-
+  tag v2 {
+    color #3094FEB9
+  }
 }

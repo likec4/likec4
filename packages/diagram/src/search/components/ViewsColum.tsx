@@ -15,11 +15,13 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import { memo } from 'react'
 import { first } from 'remeda'
-import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
-import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
+import { useCurrentViewId } from '../../hooks/useCurrentViewId'
+import { useDiagram } from '../../hooks/useDiagram'
+import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useNormalizedSearch } from '../hooks'
 import { buttonsva } from './_shared.css'
-import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput } from './utils'
 import * as styles from './ViewsColumn.css'
 
@@ -29,9 +31,9 @@ export const NothingFound = () => (
   </Box>
 )
 
-export function ViewsColumn() {
-  const search = useNormalizedSearch()
+export const ViewsColumn = memo(() => {
   let views = [...useLikeC4Model().views()]
+  let search = useNormalizedSearch()
   if (search) {
     if (search.startsWith('kind:')) {
       views = []
@@ -54,7 +56,7 @@ export function ViewsColumn() {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           const maxY = (e.target as HTMLElement).getBoundingClientRect().y
           const elementButtons = [...document.querySelectorAll<HTMLButtonElement>(
-            `[data-likec4-search-elements] .likec4-element-button`,
+            `[data-likec4-search-elements] .likec4-focusable`,
           )]
           let elementButton = elementButtons.length > 1
             ? elementButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
@@ -91,7 +93,7 @@ export function ViewsColumn() {
       ))}
     </Stack>
   )
-}
+})
 
 const btn = buttonsva()
 
@@ -105,7 +107,8 @@ export function ViewButton(
     & UnstyledButtonProps
     & ElementProps<'button'>,
 ) {
-  const navigateTo = useCloseSearchAndNavigateTo()
+  const diagram = useDiagram()
+  // const navigateTo = useCloseSearchAndNavigateTo()
   const currentViewId = useCurrentViewId()
   const isCurrentView = view.id === currentViewId
   return (
@@ -116,7 +119,7 @@ export function ViewButton(
       {...isCurrentView && { 'data-disabled': true }}
       onClick={(e) => {
         e.stopPropagation()
-        navigateTo(view.id)
+        diagram.navigateTo(view.id)
       }}
       onKeyDown={createScopedKeydownHandler({
         siblingSelector: '[data-likec4-view]',
@@ -127,7 +130,7 @@ export function ViewButton(
         onKeyDown: (e) => {
           if (e.nativeEvent.code === 'Space') {
             e.stopPropagation()
-            navigateTo(view.id)
+            diagram.navigateTo(view.id)
           }
         },
       })}>

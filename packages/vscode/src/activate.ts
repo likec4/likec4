@@ -210,7 +210,7 @@ function activateLc(
   })
 
   activateMessenger(rpc)
-  activateTagDecoration(rpc)
+  // activateTagDecoration(rpc)
 
   const layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
     'likec4:layout',

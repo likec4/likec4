@@ -3,12 +3,12 @@ import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { LayoutGroup, m } from 'motion/react'
 import { memo } from 'react'
+import { SearchControl } from '../../../components/SearchControl'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../context/ControlsCustomLayout'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
-import { LikeC4Search } from '../search/LikeC4Search'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { LayoutDriftNotification } from './LayoutDriftNotification'
@@ -103,7 +103,14 @@ export const Controls = memo(() => {
             </ActionIcon>
           )}
           navigationButtons={enableNavigationButtons && <NavigationButtons />}
-          search={enableSearch && <LikeC4Search />}
+          search={enableSearch && (
+            <SearchControl
+              onClick={e => {
+                e.stopPropagation()
+                diagram.openSearch()
+              }}
+            />
+          )}
           syncInProgressBadge={<SyncLayoutBadge />}
           actionsGroup={
             <ActionIconGroup className={css.actionIconGroup} orientation="vertical">

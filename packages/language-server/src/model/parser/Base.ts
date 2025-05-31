@@ -122,8 +122,7 @@ export class BaseParser {
       }
       iter = iter.prev
     }
-    tags = unique(tags.reverse())
-    return isNonEmptyArray(tags) ? tags : null
+    return isNonEmptyArray(tags) ? unique(tags) : null
   }
 
   convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {

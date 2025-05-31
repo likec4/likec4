@@ -1,13 +1,12 @@
 import { nonexhaustive } from '@likec4/core'
-import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
-import { memo, useEffect, useMemo } from 'react'
-import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
+import { useEffect, useMemo } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { isNonNullish } from 'remeda'
 import type { AnyActorRef } from 'xstate'
+import { ErrorFallback } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
 import { useXYStore } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
@@ -15,32 +14,6 @@ import { Overlay } from './overlay/Overlay'
 import { type OverlaysActorRef, type OverlaysActorSnapshot } from './overlaysActor'
 import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
-
-function Fallback({ error, resetErrorBoundary }: FallbackProps) {
-  const errorString = error instanceof Error ? error.message : 'Unknown error'
-  return (
-    <Box pos={'fixed'} top={0} left={0} w={'100%'} p={0} style={{ zIndex: 1000 }}>
-      <Notification
-        icon={<IconX style={{ width: 16, height: 16 }} />}
-        styles={{
-          icon: {
-            alignSelf: 'flex-start',
-          },
-        }}
-        color={'red'}
-        title={'Oops, something went wrong'}
-        p={'xl'}
-        withCloseButton={false}>
-        <ScrollAreaAutosize maw={'100%'} mah={400}>
-          <Code block>{errorString}</Code>
-        </ScrollAreaAutosize>
-        <Group gap={'xs'} mt="xl">
-          <Button color="gray" size="xs" variant="light" onClick={() => resetErrorBoundary()}>Reset</Button>
-        </Group>
-      </Notification>
-    </Box>
-  )
-}
 
 const selectOverlays = (s: OverlaysActorSnapshot) => {
   return s.context.overlays.map((overlay) => {
@@ -85,7 +58,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
   const isMotionReduced = useReducedMotionConfig() ?? false
 
-  const isActiveOverlay = overlays.length > 0
+  const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails')
 
   useEffect(() => {
     if (!xyflowRendererDom || isMotionReduced) return
@@ -136,7 +109,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
 
   return (
     <DiagramFeatures.Overlays>
-      <ErrorBoundary FallbackComponent={Fallback} onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
+      <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
         <LayoutGroup>
           <AnimatePresence>
             {overlaysReact}

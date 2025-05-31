@@ -41,7 +41,7 @@ model {
 
         -> amazon.cognito 'authenticate'
         -> backend.graphql 'fetch data' {
-           #v1 #v2
+          #v1 #v2
           technology 'graphql'
           link https://react.dev 'docs'
 
@@ -112,18 +112,18 @@ model {
 views {
 
   view index {
-    title "Landscape"
+    title 'Landscape'
     link https://github.com/likec4/likec4
 
     include *
   }
 
   view customer of customer {
-    title "[context] Customer"
+    title '[context] Customer'
     include
-        *,
-        cloud,
-        -> ui.*
+      *,
+      cloud,
+      -> ui.*
     style cloud {
       color muted
     }
@@ -133,11 +133,12 @@ views {
   }
 
   view cloud of cloud {
-    title "[system] Cloud"
-    description "
+    #v1
+    title '[system] Cloud'
+    description '
       Some description with
       multi-lines
-    "
+    '
 
     link https://likec4.dev/
     link https://github.com/likec4/likec4
@@ -150,14 +151,15 @@ views {
   }
 
   view cloud_ui of ui {
-    title "[context] Cloud UI"
+    #v2 #next
+    title '[context] Cloud UI'
     link ./model.c4#L127
 
     include
       *,
       cloud,
-      //ui -> amazon.*,
-      //backend ->
+    //ui -> amazon.*,
+    //backend ->
 
     style * {
       color secondary
@@ -174,7 +176,7 @@ views {
   }
 
   view cloud_backend of backend {
-    title "[context] Cloud Backend"
+    title '[context] Cloud Backend'
     include
       cloud,
       amazon,

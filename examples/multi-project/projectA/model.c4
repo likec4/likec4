@@ -27,6 +27,7 @@ model {
     }
 
     legacy = container 'Cloud Legacy' {
+      #deprecated
       description '
         The legacy version of our SaaS
         MVP as was presented to the first customers
@@ -59,7 +60,7 @@ model {
 views {
 
   view index {
-    title "Landscape"
+    title 'Landscape'
     group 'SAAS' {
       color primary
       opacity 20%
@@ -68,9 +69,10 @@ views {
     group 'External' {
       color green
       opacity 100%
-      include customer with {
-        color green
-      }
+      include
+        customer with {
+          color green
+        }
     }
 
 
@@ -92,8 +94,8 @@ views {
     style supportUser {
       color indigo
     }
-  	autoLayout BottomTop
-	}
+    autoLayout BottomTop
+  }
 
   dynamic view dynamic-view-1 {
     title 'Dynamic View Example'
@@ -140,10 +142,10 @@ views {
     title 'Cloud to amazon'
 
     next.backend -> next.events {
-      notes "
+      notes '
       - Backend triggers EventManager
       - These calls enriched with data before publishing
-      "
+      '
     }
 
     parallel {

@@ -22,14 +22,15 @@ import {
 import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { type KeyboardEventHandler, useCallback, useEffect, useMemo } from 'react'
-import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
-import { IconOrShapeRenderer } from '../../../context/IconRenderer'
-import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
-import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
+import { type KeyboardEventHandler, memo, useCallback, useEffect, useMemo } from 'react'
+import { first, isEmpty, only, pipe, reduce } from 'remeda'
+import { IconOrShapeRenderer } from '../../context/IconRenderer'
+import { useDiagram } from '../../hooks/useDiagram'
+import { sortByLabel } from '../../likec4model/useLikeC4ElementsTree'
+import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
-import { setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import { centerY, moveFocusToSearchInput, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
 
@@ -56,14 +57,13 @@ function buildNode(
 
 const btn = buttonsva()
 
-export function ElementsColumn() {
-  const search = useNormalizedSearch()
+export const ElementsColumn = memo(() => {
   const model = useLikeC4Model()
-
+  const search = useNormalizedSearch()
   const data = useMemo(() => {
     const searchTerms = search.split('.')
     let elements
-    if (isEmpty(search) || search === 'kind:') {
+    if (isEmpty(searchTerms) || searchTerms[0] === 'kind:') {
       elements = model.elements()
     } else {
       elements = ifilter(model.elements(), element => {
@@ -120,7 +120,7 @@ export function ElementsColumn() {
   }
 
   return <ElementsTree data={data} handleClick={handleClick} />
-}
+})
 
 const setHoveredNode = () => {}
 
@@ -297,7 +297,9 @@ function ElementTreeNode(
 }
 
 function useHandleElementSelection() {
-  const navigateTo = useCloseSearchAndNavigateTo()
+  const diagram = useDiagram()
+  const { searchActorRef } = useSearchActor()
+  // const naviconst { searchActorRef } = useSearchActor(gateTo = useCloseSearchAndNavigateTo()
 
   return useCallback((element: LikeC4Model.Element) => {
     const views = [...element.views()]
@@ -306,14 +308,13 @@ function useHandleElementSelection() {
     }
     const singleView = only(views)
     if (singleView) {
-      navigateTo(singleView.id, element.id)
+      if (singleView.id === diagram.currentView.id) {
+        searchActorRef.send({ type: 'close' })
+      } else {
+        diagram.navigateTo(singleView.id)
+      }
       return
     }
-    const [scoped, others] = partition(views, v => v.viewOf?.id === element.id)
-    setPickView({
-      elementFqn: element.id,
-      scoped,
-      others,
-    })
-  }, [setPickView, navigateTo])
+    searchActorRef.send({ type: 'pickview.open', elementFqn: element.id })
+  }, [])
 }

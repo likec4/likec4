@@ -1,3 +1,5 @@
+import { focusable } from './_shared.css'
+
 export function stopAndPrevent(e: React.KeyboardEvent | KeyboardEvent) {
   e.stopPropagation()
   e.preventDefault()
@@ -17,4 +19,9 @@ export function moveFocusToSearchInput() {
     input.focus()
     input.setSelectionRange(length, length)
   }
+}
+
+export function focusToFirstFoundElement() {
+  let firstFoundElement = document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${focusable}`)
+  firstFoundElement?.focus()
 }

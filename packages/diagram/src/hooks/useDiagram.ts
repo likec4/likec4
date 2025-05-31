@@ -19,6 +19,7 @@ import type { Types } from '../likec4diagram/types'
 import type { AlignmentMode } from '../state/aligners'
 import type {
   DiagramActorEvent,
+  DiagramActorRef,
   DiagramActorSnapshot,
   DiagramContext,
   SyncLayoutActorRef,
@@ -29,11 +30,94 @@ import { useDiagramActorRef } from './safeContext'
 
 export { useDiagramActorRef }
 
+export interface DiagramApi {
+  readonly actor: DiagramActorRef
+  /**
+   * @warning Do not use in render phase
+   */
+  readonly currentView: DiagramView
+  /**
+   * Send event to diagram actor
+   */
+  send(event: DiagramActorEvent): void
+  /**
+   * Navigate to view
+   */
+  navigateTo(viewId: ViewId, fromNode?: NodeId): void
+  /**
+   * Navigate back or forward in history
+   */
+  navigate(direction: 'back' | 'forward'): void
+  /**
+   * Fit diagram to view
+   */
+  fitDiagram(duration?: number): void
+  /**
+   * Open relationships browser
+   */
+  openRelationshipsBrowser(fqn: Fqn): void
+  /**
+   * If running in editor, trigger opening source file
+   */
+  openSource(params: OpenSourceParams): void
+  /**
+   * Open element details card
+   */
+  openElementDetails(fqn: Fqn, fromNode?: NodeId): void
+  openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]): void
+  updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
+  updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
+  /**
+   * Schedule save manual layout
+   */
+  scheduleSaveManualLayout(): void
+  /**
+   * @returns true if there was pending request to save layout
+   */
+  cancelSaveManualLayout(): boolean
+  /**
+   * Align nodes
+   */
+  align(mode: AlignmentMode): void
+  /**
+   * Reset edge control points
+   */
+  resetEdgeControlPoints(): void
+  /**
+   * Focus node
+   */
+  focusNode(nodeId: NodeId): void
+
+  /**
+   * @warning Do not use in render phase
+   */
+  getSnapshot(): DiagramActorSnapshot
+  /**
+   * @warning Do not use in render phase
+   */
+  getContext(): DiagramContext
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramNode(xynodeId: string): DiagramNode | null
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramEdge(xyedgeId: string): DiagramEdge | null
+  startWalkthrough(): void
+  walkthroughStep(direction?: 'next' | 'previous'): void
+  stopWalkthrough(): void
+  toggleFeature(feature: FeatureName, forceValue?: boolean): void
+  highlightNotation(notation: ElementNotation, kind?: string): void
+  unhighlightNotation(): void
+  openSearch(searchValue?: string): void
+}
+
 /**
  * Diagram API
  * Mostly for internal use
  */
-export function useDiagram() {
+export function useDiagram(): DiagramApi {
   const actor = useDiagramActorRef()
   return useMemo(() => ({
     actor,
@@ -150,6 +234,10 @@ export function useDiagram() {
     },
     unhighlightNotation: () => {
       actor.send({ type: 'notations.unhighlight' })
+    },
+
+    openSearch: (searchValue?: string) => {
+      actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
     },
   }), [actor])
 }

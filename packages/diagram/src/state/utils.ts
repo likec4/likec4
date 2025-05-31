@@ -1,6 +1,7 @@
 import type { BBox, DiagramEdge, DiagramNode, XYPoint } from '@likec4/core/types'
 import type { ActorSystem } from 'xstate'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
+import type { SearchActorRef } from '../search/searchActor'
 import type { Context } from './diagram-machine'
 import type { DiagramActorRef, System } from './types'
 
@@ -11,6 +12,9 @@ export function typedSystem(system: ActorSystem<any>) {
     },
     get diagramActorRef(): DiagramActorRef | null {
       return (system as System).get('diagram') ?? null
+    },
+    get searchActorRef(): SearchActorRef | null {
+      return (system as System).get('search') ?? null
     },
   }
 }

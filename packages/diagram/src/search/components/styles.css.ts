@@ -1,44 +1,17 @@
 import { css } from '@likec4/styles/css'
 export { focusable } from './_shared.css'
 
-export const backdrop = css({
-  position: 'fixed',
-  zIndex: 900,
-  inset: '0px',
-  backgroundColor: '[rgb(34 34 34 / 0.95)]',
-  backdropFilter: 'auto',
-  backdropBlur: '10px',
-  _light: {
-    backgroundColor: '[rgb(255 255 255 / 0.92 )]',
-  },
-})
-export const root = css({
-  containerName: 'likec4-search',
-  containerType: 'size',
-  position: 'fixed',
-  zIndex: 901,
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  maxHeight: '100vh',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  gap: 'md',
-  paddingTop: 32,
-  paddingLeft: 16,
-  paddingRight: 16,
-  paddingBottom: 8,
-})
 export const input = css({
   border: 'transparent',
-  background: 'transparent',
-  _focusWithin: {
-    background: `mantine.colors.gray[3]/55`,
-    _dark: {
-      background: `mantine.colors.dark[4]/55`,
+  background: {
+    base: 'transparent',
+    _focusWithin: {
+      base: `mantine.colors.gray[4]/55 !important`,
+      _dark: `mantine.colors.dark[5]/55 !important`,
+    },
+    _groupHover: {
+      base: 'mantine.colors.gray[3]/35',
+      _dark: 'mantine.colors.dark[5]/35',
     },
   },
 })

@@ -1,5 +1,4 @@
 import { css, sva } from '@likec4/styles/css'
-import type { ColorToken } from '@likec4/styles/tokens'
 
 // export const titleColor = '--title-color'
 // export const descriptionColor = '---description-color'
@@ -13,21 +12,6 @@ const buttonFocused = css.raw({
 
 const _treenodefocus = '.mantine-Tree-node:focus > .mantine-Tree-label &'
 
-function colors(color: ColorToken, hover: ColorToken) {
-  return {
-    color,
-    _groupHover: {
-      color: hover,
-    },
-    _groupFocus: {
-      color: hover,
-    },
-    [_treenodefocus]: {
-      color: hover,
-    },
-  }
-}
-
 const button = css.raw({
   display: 'flex',
   width: '100%',
@@ -35,7 +19,7 @@ const button = css.raw({
   rounded: 'sm',
   padding: `12px 8px 12px 14px`,
   minHeight: '60px',
-  gap: '8',
+  gap: 8,
   // alignItems: 'flex-start',
   // transition: `all 50ms ${easings.inOut}`,
   border: `1px solid`,
@@ -76,9 +60,14 @@ const iconSize = {
 }
 
 const icon = css.raw({
-  ...colors('mantine.colors.dimmed', 'mantine.colors.primary[0]'),
-  _light: {
-    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
+  color: {
+    base: 'mantine.colors.dimmed',
+    _light: 'mantine.colors.gray[5]',
+    _groupHover: 'mantine.colors.primary[0]',
+    _groupFocus: 'mantine.colors.primary[0]',
+  },
+  [_treenodefocus]: {
+    color: 'mantine.colors.primary[0]',
   },
   flex: `0 0 ${iconSize.ref}`,
   height: iconSize.ref,
@@ -116,23 +105,23 @@ const title = css.raw({
     opacity: 0.4,
   },
 
-  // color: 'mantine.colors.dark[1]',
-  // _groupHover: {
-  //   color: 'mantine.colors.primary[1]',
-  // },
-  // _groupFocus: {
-  //   color: 'mantine.colors.primary[1]',
-  // },
-  ...colors('mantine.colors.dark[1]', 'mantine.colors.primary[1]'),
-  _light: {
-    ...colors('mantine.colors.gray[6]', 'mantine.colors.primary[3]'),
-    // color: `mantine.colors.gray[6]`,
-    // _groupHover: {
-    //   color: 'mantine.colors.primary[3]',
-    // },
-    // _groupFocus: {
-    //   color: 'mantine.colors.primary[3]',
-    // },
+  color: {
+    base: 'mantine.colors.dark[1]',
+    _light: 'mantine.colors.gray[7]',
+    _groupHover: {
+      base: 'mantine.colors.primary[1]',
+      _light: 'mantine.colors.white',
+    },
+    _groupFocus: {
+      base: 'mantine.colors.primary[1]',
+      _light: 'mantine.colors.white',
+    },
+  },
+  [_treenodefocus]: {
+    color: {
+      base: 'mantine.colors.primary[1]',
+      _light: 'mantine.colors.white',
+    },
   },
 })
 const descriptionColor = css.raw({

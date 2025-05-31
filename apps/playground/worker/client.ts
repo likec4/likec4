@@ -5,7 +5,4 @@ import type { ApiType } from './index'
 const client = hc<ApiType>('')
 export type Client = typeof client
 
-type one = Client['api']['share'][':shareId']['$get']
-client.api.share[':shareId'].$get({ param: { shareId: '123' } })
-
 export const hcWithType = (...args: Parameters<typeof hc>): Client => hc<ApiType>(...args)

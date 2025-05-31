@@ -51,6 +51,7 @@ import type { OpenSourceParams, PaddingWithUnit } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
 import { overlaysActorLogic } from '../overlays/overlaysActor'
+import { searchActorLogic } from '../search/searchActor'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
@@ -160,6 +161,7 @@ export type Events =
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
@@ -189,6 +191,7 @@ const _diagramMachine = setup({
       syncLayout: 'syncManualLayoutActorLogic'
       hotkey: 'hotkeyActorLogic'
       overlays: 'overlaysActorLogic'
+      search: 'searchActorLogic'
     },
     events: {} as Events,
   },
@@ -196,6 +199,7 @@ const _diagramMachine = setup({
     syncManualLayoutActorLogic,
     hotkeyActorLogic,
     overlaysActorLogic,
+    searchActorLogic,
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
@@ -203,6 +207,7 @@ const _diagramMachine = setup({
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
+    'enabled: Search': ({ context }) => context.features.enableSearch,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
     'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -366,14 +371,7 @@ const _diagramMachine = setup({
       }
       constraints.updateXYFlowNodes()
     },
-
-    'updateFeatures': enqueueActions(({ enqueue, system, event }) => {
-      assertEvent(event, 'update.features')
-      const { features } = event
-      enqueue.assign({
-        features: { ...features },
-      })
-
+    'ensure overlays actor state': enqueueActions(({ enqueue, context: { features }, system }) => {
       const enableOverlays = features.enableElementDetails || features.enableRelationshipDetails ||
         features.enableRelationshipBrowser
       const hasRunning = typedSystem(system).overlaysActorRef
@@ -388,14 +386,37 @@ const _diagramMachine = setup({
         enqueue.stopChild('overlays')
       }
     }),
-
+    'ensure search actor state': enqueueActions(({ enqueue, context: { features: { enableSearch } }, system }) => {
+      const hasRunning = typedSystem(system).searchActorRef
+      if (enableSearch && !hasRunning) {
+        enqueue.spawnChild('searchActorLogic', { id: 'search', systemId: 'search' })
+        return
+      }
+      if (!enableSearch && hasRunning) {
+        enqueue.sendTo(hasRunning, {
+          type: 'close',
+        })
+        enqueue.stopChild('search')
+      }
+    }),
+    'updateFeatures': assign(({ event }) => {
+      assertEvent(event, 'update.features')
+      return {
+        features: { ...event.features },
+      }
+    }),
+    'closeSearch': sendTo(
+      ({ system }) => typedSystem(system).searchActorRef!,
+      {
+        type: 'close',
+      },
+    ),
     'closeAllOverlays': sendTo(
       ({ system }) => typedSystem(system).overlaysActorRef!,
       {
         type: 'close.all',
       },
     ),
-
     'startSyncLayout': assign(({ context, spawn, self }) => ({
       syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
         id: 'syncLayout',
@@ -744,6 +765,13 @@ const _diagramMachine = setup({
             nonexhaustive(event)
           }),
         },
+        'open.search': {
+          guard: 'enabled: Search',
+          actions: sendTo(({ system }) => typedSystem(system).searchActorRef!, ({ event }) => ({
+            type: 'open',
+            search: event.search,
+          })),
+        },
       },
       exit: [
         cancel('fitDiagram'),
@@ -994,6 +1022,7 @@ const _diagramMachine = setup({
       id: 'navigating',
       entry: [
         'closeAllOverlays',
+        'closeSearch',
         'stopSyncLayout',
         {
           type: 'trigger:NavigateTo',
@@ -1073,6 +1102,7 @@ const _diagramMachine = setup({
           const isAnotherView = check('is another view')
           if (isAnotherView) {
             enqueue('closeAllOverlays')
+            enqueue('closeSearch')
             enqueue('stopSyncLayout')
             enqueue.assign({
               focusedNode: null,
@@ -1117,13 +1147,19 @@ const _diagramMachine = setup({
       actions: assign(({ event }) => ({ ...event.inputs })),
     },
     'update.features': {
-      actions: 'updateFeatures',
+      actions: [
+        'updateFeatures',
+        'ensure overlays actor state',
+        'ensure search actor state',
+      ],
     },
   },
   exit: [
     'stopSyncLayout',
     cancel('fitDiagram'),
     stopChild('hotkey'),
+    stopChild('overlays'),
+    stopChild('search'),
     assign({
       xyflow: null,
       xystore: null as any,

@@ -95,7 +95,7 @@ function WorkspaceDiagramPage() {
             readonly={false}
             controls
             fitView
-            fitViewPadding={0.07}
+            fitViewPadding={'32px'}
             experimentalEdgeEditing
             nodesSelectable
             nodesDraggable
@@ -118,6 +118,7 @@ function WorkspaceDiagramPage() {
                 view: nextView,
               })
               router.navigate({
+                viewTransition: false,
                 from: '/w/$workspaceId/$viewId',
                 to: './',
                 params: {

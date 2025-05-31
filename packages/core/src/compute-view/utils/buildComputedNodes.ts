@@ -1,4 +1,3 @@
-import { sort } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
@@ -11,7 +10,6 @@ import {
   DefaultThemeColor,
   GroupElementKind,
 } from '../../types'
-import { compareNatural } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'
 
@@ -130,7 +128,7 @@ export function buildComputedNodes<A extends AnyAux>(
         level,
         color: color ?? DefaultThemeColor,
         shape: shape ?? DefaultElementShape,
-        tags: tags ? sort(tags, compareNatural) : [],
+        tags: tags ?? [],
         children: [],
         inEdges: [],
         outEdges: [],

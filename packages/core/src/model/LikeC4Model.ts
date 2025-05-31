@@ -1,4 +1,4 @@
-import { entries, isNullish, pipe, sort, values } from 'remeda'
+import { entries, isNullish, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
   AnyAux,
@@ -16,7 +16,7 @@ import type {
   Unknown,
 } from '../types'
 import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
-import { compareNatural } from '../utils'
+import { compareNatural, ifilter } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
@@ -38,7 +38,7 @@ import {
   type OutgoingFilter,
   getId,
 } from './types'
-import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { type ViewsIterator, LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends AnyAux = Aux.Any> {
@@ -393,8 +393,49 @@ export class LikeC4Model<A extends AnyAux = Aux.Any> {
     }
   }
 
-  public allTags(): Aux.Tags<A> {
+  /**
+   * Returns all tags used in the model.
+   */
+  get tags(): Aux.Tags<A> {
     return Array.from(this.#allTags.keys()) as unknown as Aux.Tags<A>
+  }
+
+  /**
+   * Returns all tags used in the model, sorted by usagecount (descending).
+   */
+  get tagsSortedByUsageCount(): Aux.Tags<A> {
+    return pipe(
+      [...this.#allTags.entries()],
+      map(([tag, marked]) => ({
+        tag,
+        count: marked.size,
+      })),
+      sortBy(
+        [prop('count'), 'desc'],
+      ),
+      map(prop('tag')),
+    )
+  }
+
+  /**
+   * Returns all elements, relationships and views marked with the given tag.
+   */
+  public findByTag(tag: Aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
+  public findByTag(tag: Aux.Tag<A>, type: 'model-elements'): ElementsIterator<A>
+  public findByTag(tag: Aux.Tag<A>, type: 'views'): ViewsIterator<A>
+  public findByTag(
+    tag: Aux.Tag<A>,
+    type?: 'model-elements' | 'views' | undefined,
+  ) {
+    return ifilter(this.#allTags.get(tag), (el) => {
+      if (type === 'model-elements') {
+        return el instanceof ElementModel
+      }
+      if (type === 'views') {
+        return el instanceof LikeC4ViewModel
+      }
+      return true
+    })
   }
 
   private addElement(element: Element<A>) {

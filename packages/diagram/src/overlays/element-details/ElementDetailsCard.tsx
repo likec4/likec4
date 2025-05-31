@@ -332,7 +332,19 @@ export function ElementDetailsCard({
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
                 <Flex gap={4} flex={1} mt={6} wrap="wrap">
-                  {elementModel.tags.map((tag) => <ElementTag key={tag} tag={tag} />)}
+                  {elementModel.tags.map((tag) => (
+                    <ElementTag
+                      key={tag}
+                      tag={tag}
+                      css={{
+                        cursor: 'pointer',
+                      }}
+                      onClick={e => {
+                        e.stopPropagation()
+                        diagram.openSearch(`#${tag}`)
+                      }}
+                    />
+                  ))}
                   {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                 </Flex>
               </div>

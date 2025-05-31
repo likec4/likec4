@@ -660,7 +660,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'cloud:email',
@@ -682,7 +682,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'person',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'email:customer',
@@ -704,7 +704,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'customer:cloud',
@@ -727,7 +727,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'cloud:aws',
@@ -855,7 +855,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'person',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [],
           outEdges: [
@@ -875,7 +875,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [
             'cloud.frontend',
             'cloud.backend',
@@ -905,7 +905,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 1,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [
             'cloud.frontend.dashboard',
           ],
@@ -932,7 +932,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 2,
           color: 'primary',
           shape: 'browser',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'customer:cloud.frontend.dashboard',
@@ -986,7 +986,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 1,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'cloud.backend:cloud.auth',
@@ -1032,7 +1032,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'cloud.backend:email',
@@ -1052,7 +1052,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [],
           inEdges: [
             'cloud.backend:aws',
@@ -1123,7 +1123,7 @@ export const likeC4Model = LikeC4Model.create<$Aux>({
           level: 0,
           color: 'primary',
           shape: 'rectangle',
-          tags: null,
+          tags: [],
           children: [
             'prod.eu.zone1.ui',
           ],

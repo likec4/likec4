@@ -1,5 +1,6 @@
 import type { ActorRefFromLogic, ActorSystem, EventFromLogic, SnapshotFrom } from 'xstate'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
+import type { SearchActorRef } from '../search/searchActor'
 import type { DiagramMachineLogic } from './diagram-machine'
 import type { SyncLayoutActorLogic } from './syncManualLayoutActor'
 
@@ -7,6 +8,7 @@ export type System = ActorSystem<{
   actors: {
     diagram: ActorRefFromLogic<DiagramMachineLogic>
     overlays: OverlaysActorRef
+    search: SearchActorRef
   }
 }>
 

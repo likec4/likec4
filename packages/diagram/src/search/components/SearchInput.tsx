@@ -15,12 +15,12 @@ import {
 import { useDebouncedValue, useFocusWithin, useIsFirstRender, useWindowEvent } from '@mantine/hooks'
 import { usePreviousDistinct } from '@react-hookz/web'
 import { IconSearch } from '@tabler/icons-react'
-import { type ReactNode } from 'react'
+import { type ReactNode, memo } from 'react'
 import { isString, keys, only } from 'remeda'
-import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
-import * as css from './LikeC4Search.css'
-import { setSearch, useIsPickViewActive, useSearch } from './state'
-import { moveFocusToSearchInput, stopAndPrevent } from './utils'
+import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useSearch, useSearchActor } from '../hooks'
+import * as css from './styles.css'
+import { focusToFirstFoundElement, moveFocusToSearchInput, stopAndPrevent } from './utils'
 
 function startingWithKind(search: string) {
   return search.match(/^(k|ki|kin|kind|kind:)$/) != null
@@ -28,14 +28,16 @@ function startingWithKind(search: string) {
 
 const SEARCH_PREFIXES = ['#', 'kind:']
 
-export function LikeC4SearchInput() {
-  const isPickViewActive = useIsPickViewActive()
+export const LikeC4SearchInput = memo(() => {
+  const { close, searchActorRef } = useSearchActor()
+  const isPickViewActive = false
   const likec4model = useLikeC4Model()
   const combobox = useCombobox({
     scrollBehavior: 'smooth',
+    loop: false,
   })
   const { ref, focused } = useFocusWithin<HTMLInputElement>()
-  const search = useSearch()
+  const [search, setSearch] = useSearch()
   const previous = usePreviousDistinct(search)
   const isFirstRender = useIsFirstRender()
 
@@ -75,7 +77,7 @@ export function LikeC4SearchInput() {
     }
     case search.startsWith('#'): {
       const searchTag = search.toLocaleLowerCase().slice(1)
-      const alloptions = likec4model.allTags().filter((tag) => tag.toLocaleLowerCase().includes(searchTag)).sort(
+      const alloptions = likec4model.tags.filter((tag) => tag.toLocaleLowerCase().includes(searchTag)).sort(
         compareNatural,
       )
       isExactMatch = only(alloptions)?.toLocaleLowerCase() === searchTag
@@ -130,8 +132,8 @@ export function LikeC4SearchInput() {
           combobox.closeDropdown()
           // Let react to display filtered elements
           setTimeout(() => {
-            document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
-          }, 50)
+            focusToFirstFoundElement()
+          }, 350)
         }
       }}
       width={'max-content'}
@@ -149,13 +151,27 @@ export function LikeC4SearchInput() {
           ref={ref}
           id="likec4searchinput"
           placeholder="Search by title, description or start with # or kind:"
+          autoFocus
           tabIndex={0}
           classNames={{
             input: css.input,
           }}
-          size="xl"
+          size="lg"
           value={search}
           leftSection={<IconSearch style={{ width: rem(20) }} stroke={2} />}
+          rightSection={
+            <Input.ClearButton
+              onClick={(e) => {
+                e.stopPropagation()
+                const openedWithSearch = searchActorRef.getSnapshot().context.openedWithSearch
+                if (search === '' || search === openedWithSearch) {
+                  close()
+                } else {
+                  setSearch('')
+                }
+              }} />
+          }
+          rightSectionPointerEvents="auto"
           onChange={(event) => {
             setSearch(event.currentTarget.value)
             combobox.openDropdown()
@@ -208,6 +224,13 @@ export function LikeC4SearchInput() {
               return
             }
             if (
+              e.key === 'ArrowUp' && combobox.dropdownOpened && search === '' && combobox.getSelectedOptionIndex() === 0
+            ) {
+              combobox.closeDropdown()
+              stopAndPrevent(e)
+              return
+            }
+            if (
               e.key === 'ArrowDown' && (
                 !combobox.dropdownOpened ||
                 options.length === 0 || isExactMatch ||
@@ -217,7 +240,7 @@ export function LikeC4SearchInput() {
             ) {
               combobox.closeDropdown()
               stopAndPrevent(e)
-              document.querySelector<HTMLButtonElement>(`[data-likec4-search] .${css.focusable}`)?.focus()
+              focusToFirstFoundElement()
               return
             }
           }} />
@@ -232,4 +255,4 @@ export function LikeC4SearchInput() {
       </ComboboxDropdown>
     </Combobox>
   )
-}
+})

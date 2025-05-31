@@ -15,7 +15,7 @@ export default definePreset({
   // ],
   presets: [
     radixColorsPreset({
-      autoP3: true,
+      autoP3: false,
       darkMode: {
         condition: '[data-mantine-color-scheme="dark"] &',
       },

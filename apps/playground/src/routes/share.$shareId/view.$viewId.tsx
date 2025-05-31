@@ -34,6 +34,7 @@ function RouteComponent() {
       to: '/share/$shareId/view/$viewId/',
       params: { shareId, viewId },
       search: true,
+      viewTransition: false,
     })
   })
 
@@ -52,7 +53,7 @@ function RouteComponent() {
         zoomable
         pannable
         controls={false}
-        fitViewPadding={0.12}
+        fitViewPadding={'32px'}
         showDiagramTitle
         showNavigationButtons
         enableFocusMode
