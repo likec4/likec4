@@ -4,6 +4,8 @@ packages:
   - "packages/*"
   - "!packages/create-likec4"
 
+pnpmfile: node_modules/.pnpm-config/@pnpm/types-fixer/pnpmfile.cjs
+
 catalog:
   typescript: "^5.8.3"
   wireit: "^0.14.12"

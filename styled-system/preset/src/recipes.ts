@@ -104,9 +104,9 @@ export const likec4tag = defineRecipe({
     border: 'none',
     borderRadius: 3,
     color: 'likec4.tag.text',
-    backgroundColor: 'likec4.tag.bg',
-    _hover: {
-      backgroundColor: 'likec4.tag.bg.hover',
+    backgroundColor: {
+      base: 'likec4.tag.bg',
+      _hover: 'likec4.tag.bg.hover',
     },
   },
   variants: {
