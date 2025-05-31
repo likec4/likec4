@@ -250,10 +250,11 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
         '',
       )
     }
-    if (model.allTags().length > 0) {
+    const tags = model.tags
+    if (tags.length > 0) {
       response.push(
         'tags:',
-        ...model.allTags().map(t => `- ${t}`),
+        ...tags.map(t => `- ${t}`),
         '',
       )
     }

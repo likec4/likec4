@@ -16,7 +16,7 @@ import type {
   Unknown,
 } from '../types'
 import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
-import { compareNatural, ifilter } from '../utils'
+import { compareNatural, ifilter, memoizeProp } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
@@ -397,24 +397,25 @@ export class LikeC4Model<A extends AnyAux = Aux.Any> {
    * Returns all tags used in the model.
    */
   get tags(): Aux.Tags<A> {
-    return Array.from(this.#allTags.keys()) as unknown as Aux.Tags<A>
+    return memoizeProp(this, Symbol('tags'), () => Array.from(this.#allTags.keys())) as unknown as Aux.Tags<A>
   }
 
   /**
    * Returns all tags used in the model, sorted by usagecount (descending).
    */
   get tagsSortedByUsageCount(): Aux.Tags<A> {
-    return pipe(
-      [...this.#allTags.entries()],
-      map(([tag, marked]) => ({
-        tag,
-        count: marked.size,
-      })),
-      sortBy(
-        [prop('count'), 'desc'],
-      ),
-      map(prop('tag')),
-    )
+    return memoizeProp(this, Symbol('tagsSortedByUsageCount'), () =>
+      pipe(
+        [...this.#allTags.entries()],
+        map(([tag, marked]) => ({
+          tag,
+          count: marked.size,
+        })),
+        sortBy(
+          [prop('count'), 'desc'],
+        ),
+        map(prop('tag')),
+      ))
   }
 
   /**
