@@ -8,10 +8,25 @@ export function generateLikeC4Model(model: AnyLikeC4Model) {
 
   const aux = generateAux(model)
 
-  const method = model.isFromParsed ? 'fromParsed' : 'create'
+  let method = 'create', refined = ''
+  switch (true) {
+    case model.isFromParsed: {
+      method = 'fromParsed'
+      break
+    }
+    case model.isLayouted(): {
+      refined = '.Layouted'
+      break
+    }
+    case model.isComputed(): {
+      refined = '.Computed'
+      break
+    }
+    default:
+      throw new Error('Invalid model type, expected parsed, computed or layouted')
+  }
 
   out.appendTemplate`
-    // @ts-nocheck
     /* prettier-ignore-start */
     /* eslint-disable */
 
@@ -23,11 +38,8 @@ export function generateLikeC4Model(model: AnyLikeC4Model) {
     import { LikeC4Model } from '@likec4/core/model'
     ${aux}
 
-    export const likeC4Model = LikeC4Model.${method}<$Aux>(${
-    JSON5.stringify(model.$model, {
-      space: 2,
-      quote: '\'',
-    })
+    export const likec4model: LikeC4Model${refined}<$Aux> = LikeC4Model.${method}(${
+    JSON5.stringify(model.$model, { space: 2, quote: '\'' })
   } as any)
 
     /* prettier-ignore-end */

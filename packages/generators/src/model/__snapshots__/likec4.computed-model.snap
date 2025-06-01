@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* prettier-ignore-start */
 /* eslint-disable */
 
@@ -83,7 +82,7 @@ export type $Aux = Aux<
 >
 
 
-export const likeC4Model = LikeC4Model.create<$Aux>({
+export const likec4model: LikeC4Model.Computed<$Aux> = LikeC4Model.create({
   __: 'computed',
   projectId: 'from-builder',
   specification: {

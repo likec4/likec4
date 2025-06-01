@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* prettier-ignore-start */
 /* eslint-disable */
 
@@ -80,7 +79,7 @@ export type $Aux = Aux<
 >
 
 
-export const likeC4Model = LikeC4Model.fromParsed<$Aux>({
+export const likec4model: LikeC4Model<$Aux> = LikeC4Model.fromParsed({
   projectId: 'from-builder',
   specification: {
     elements: {

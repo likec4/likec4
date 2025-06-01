@@ -17,7 +17,7 @@ export function generateReactTypes(model: AnyLikeC4Model) {
 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import type { GenericLikeC4Model } from '@likec4/core/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ReactLikeC4Props as GenericReactLikeC4Props
@@ -27,10 +27,8 @@ ${aux}
 
 declare function isLikeC4ViewId(value: unknown): value is ViewId;
 
-type LikeC4Model = GenericLikeC4Model<$Aux>;
-
-declare const likec4model: LikeC4Model;
-declare function useLikeC4Model(): LikeC4Model;
+declare const likec4model: LikeC4Model.Layouted<$Aux>;
+declare function useLikeC4Model(): LikeC4Model.Layouted<$Aux>;
 declare function useLikeC4View(viewId: ViewId): DiagramView<$Aux>;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
@@ -53,7 +51,6 @@ declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
 export {
   type LikeC4ViewProps,
   type ReactLikeC4Props,
-  type LikeC4Model,
   isLikeC4ViewId,
   useLikeC4Model,
   useLikeC4View,

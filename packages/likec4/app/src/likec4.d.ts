@@ -40,13 +40,21 @@
 // }
 
 declare module 'likec4/model' {
-  import type { LikeC4Model } from '@likec4/core'
-  export function createLikeC4Model(data: any): LikeC4Model.Layouted
+  import type { LikeC4Model } from '@likec4/core/model'
+  import type { Unknown } from '@likec4/core/types'
+  export function createLikeC4Model(data: any): LikeC4Model.Layouted<Unknown>
   export type {
+    LikeC4Model,
+  } from '@likec4/core/model'
+  export type {
+    AnyAux,
+    Aux,
+    ComputedLikeC4ModelData,
+    ComputedView,
     DiagramView,
     LayoutedLikeC4ModelData,
-    LikeC4Model,
-  } from '@likec4/core'
+    Unknown,
+  } from '@likec4/core/types'
 }
 // declare module 'virtual:likec4/model/*.js' {
 //   import type { DiagramView as CoreDiagramView, LikeC4Model } from '@likec4/core'

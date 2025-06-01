@@ -113,10 +113,12 @@ export const likec4tag = defineRecipe({
     autoTextColor: {
       false: {},
       true: {
-        color: 'likec4.tag.bg',
+        color: '[transparent]',
         '& > span': {
           filter: 'invert(1) grayscale(1) brightness(1.3) contrast(9000)',
-          mixBlendMode: 'luminosity',
+          background: 'inherit',
+          backgroundClip: 'text',
+          mixBlendMode: 'difference',
         },
       },
     },

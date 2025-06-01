@@ -42,6 +42,7 @@ export {
   RelationshipModel,
   sortConnectionsByBoundaryHierarchy,
   sortDeepestFirst,
+  type Unknown,
 } from '@likec4/core/model'
 
 export * from '@likec4/core/types'

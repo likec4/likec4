@@ -1,11 +1,11 @@
 import { expectTypeOf, test } from 'vitest'
-import { likeC4Model } from './likec4-model'
-import { likeC4Model as likeC4ModelFromViews } from './likec4-views'
+import { likec4model } from './likec4-model'
+import { likec4model as likeC4ModelFromViews } from './likec4-views'
 
 test('Model Codegen with valid types', () => {
-  const m = likeC4Model
+  const m = likec4model
 
-  expectTypeOf(m.Aux.Element).toEqualTypeOf(
+  expectTypeOf(m.Aux.ElementId).toEqualTypeOf(
     '' as
       | 'amazon'
       | 'cloud'
@@ -36,7 +36,7 @@ test('Model Codegen with valid types', () => {
       | 'cloud.next.graphql.updateAccount',
   )
 
-  expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
+  expectTypeOf(m.Aux.DeploymentId).toEqualTypeOf(
     '' as
       | 'customernd'
       | 'prod'
@@ -59,7 +59,7 @@ test('Model Codegen with valid types', () => {
       | 'prod.us.zone2.ui',
   )
 
-  expectTypeOf(m.Aux.View).toEqualTypeOf(
+  expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
     '' as
       | 'amazon'
       | 'amazon_lambdas'
@@ -86,7 +86,7 @@ test('Model Codegen with valid types', () => {
 
 test('Views Codegen with valid types', () => {
   const aux = {} as typeof likeC4ModelFromViews.Aux
-  expectTypeOf('' as typeof aux.Element).toEqualTypeOf(
+  expectTypeOf('' as typeof aux.ElementId).toEqualTypeOf(
     '' as
       | 'amazon'
       | 'cloud'
@@ -117,7 +117,7 @@ test('Views Codegen with valid types', () => {
       | 'cloud.next.graphql.updateAccount',
   )
 
-  expectTypeOf('' as typeof aux.Deployment).toEqualTypeOf(
+  expectTypeOf('' as typeof aux.DeploymentId).toEqualTypeOf(
     '' as
       | 'customernd'
       | 'prod'
@@ -140,7 +140,7 @@ test('Views Codegen with valid types', () => {
       | 'prod.us.zone2.ui',
   )
 
-  expectTypeOf({} as typeof aux.View).toEqualTypeOf(
+  expectTypeOf({} as typeof aux.ViewId).toEqualTypeOf(
     '' as
       | 'amazon'
       | 'amazon_lambdas'
