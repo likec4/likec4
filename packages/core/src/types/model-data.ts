@@ -1,9 +1,11 @@
 import type { NonEmptyArray } from './_common'
-import type { AnyAux, Aux, Specification } from './aux'
+import type { AnyAux } from './aux'
+import type * as aux from './aux'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
-import type { ProjectId } from './scalars'
+import type { Specification } from './model-spec'
+import type * as scalar from './scalar'
 import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './view'
 
 // type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
@@ -55,45 +57,33 @@ import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './vie
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends AnyAux = Aux.Any> {
+export interface ParsedLikeC4ModelData<A extends AnyAux = AnyAux> {
   // To prevent accidental use of this type
   __?: never
-  projectId: Aux.ProjectId<A>
+  projectId: aux.ProjectId<A>
   specification: Specification<A>
-  elements: {
-    [key in Aux.ElementId<A>]: Element<A>
-  }
+  elements: Record<aux.ElementId<A>, Element<A>>
   deployments: {
-    elements: {
-      [key in Aux.DeploymentId<A>]: DeploymentElement<A>
-    }
-    relations: {
-      [key in Aux.RelationId<A>]: DeploymentRelationship<A>
-    }
+    elements: Record<aux.DeploymentId<A>, DeploymentElement<A>>
+    relations: Record<scalar.RelationId, DeploymentRelationship<A>>
   }
-  relations: {
-    [key in Aux.RelationId<A>]: Relationship<A>
-  }
+  relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
-  views: {
-    [key in Aux.ViewId<A>]: LikeC4View<A>
-  }
-  imports: Record<ProjectId, NonEmptyArray<Element<A>>>
+  views: Record<aux.ViewId<A>, LikeC4View<A>>
+  imports: Record<scalar.ProjectId<any>, NonEmptyArray<Element<A>>>
 }
 
 export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
   extends Omit<ParsedLikeC4ModelData<A>, 'views' | '__'>
 {
   __: 'computed' | 'layouted'
-  views: {
-    [key in Aux.ViewId<A>]: V
-  }
+  views: Record<aux.ViewId<A>, V>
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux = Aux.Any> extends LikeC4ModelData<A, ComputedView<A>> {
+export interface ComputedLikeC4ModelData<A extends AnyAux = AnyAux> extends LikeC4ModelData<A, ComputedView<A>> {
   __: 'computed'
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = Aux.Any> extends LikeC4ModelData<A, DiagramView<A>> {
+export interface LayoutedLikeC4ModelData<A extends AnyAux = AnyAux> extends LikeC4ModelData<A, DiagramView<A>> {
   __: 'layouted'
 }

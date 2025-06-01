@@ -1,7 +1,8 @@
 import type { Link } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
+import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
 import type { FqnRef } from './fqnRef'
-import type { Icon } from './scalars'
+import type * as scalar from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -46,41 +47,53 @@ export interface ElementStyle {
   readonly textSize?: TextSize
 }
 
-export interface Element<A extends AnyAux = Unknown> {
-  readonly id: Aux.Strict.Fqn<A>
-  readonly kind: Aux.ElementKind<A>
+// dprint-ignore
+export interface Element<A extends AnyAux = Unknown>
+  extends
+    aux.WithOptionalTags<A>,
+    aux.WithOptionalLinks,
+    aux.WithMetadata<A>
+{
+  readonly id: aux.StrictFqn<A>
+  readonly kind: aux.ElementKind<A>
   readonly title: string
   readonly description?: string | null
   readonly technology?: string | null
-  readonly tags?: Aux.Tags<A> | null
+  readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
-  readonly icon?: Icon
+  readonly icon?: scalar.Icon
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
-  readonly metadata?: Aux.Metadata<A>
+  readonly metadata?: aux.Metadata<A>
 }
 
 export const DefaultLineStyle: RelationshipLineType = 'dashed'
 export const DefaultArrowType: RelationshipArrowType = 'normal'
 export const DefaultRelationshipColor: ThemeColor = 'gray'
 
-export interface AbstractRelationship<A extends AnyAux> {
-  readonly id: Aux.Strict.RelationId<A>
+// dprint-ignore
+export interface AbstractRelationship<A extends AnyAux>
+  extends
+    aux.WithOptionalTags<A>,
+    aux.WithOptionalLinks,
+    aux.WithMetadata<A>
+{
+  readonly id: scalar.RelationId
   readonly title?: string | null
   readonly description?: string | null
   readonly technology?: string | null
-  readonly kind?: Aux.RelationKind<A>
+  readonly kind?: aux.RelationKind<A>
   readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
-  readonly tags?: Aux.Tags<A> | null
+  readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   // Link to dynamic view
-  readonly navigateTo?: Aux.ViewId<A>
-  readonly metadata?: Aux.Metadata<A>
+  readonly navigateTo?: aux.ViewId<A>
+  readonly metadata?: aux.Metadata<A>
 }
 
 /**

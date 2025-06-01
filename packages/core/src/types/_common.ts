@@ -4,13 +4,6 @@ export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
 
-export type Point = readonly [x: number, y: number]
-
-export interface XYPoint {
-  x: number
-  y: number
-}
-
 // dprint-ignore
 export type KeysOf<T> = keyof T extends infer K extends string ? K : never
 

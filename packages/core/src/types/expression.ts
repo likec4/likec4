@@ -1,8 +1,9 @@
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
+import type { AnyAux, Unknown } from './aux'
+import type * as aux from './aux'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
-import { type Icon } from './scalars'
+import { type Icon } from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -42,7 +43,7 @@ export namespace FqnExpr {
   }
 
   export interface ElementKindExpr<A extends AnyAux = Unknown> {
-    elementKind: Aux.ElementKind<A>
+    elementKind: aux.ElementKind<A>
     isEqual: boolean
   }
   export function isElementKindExpr<A extends AnyAux>(expr: Expression<A>): expr is ElementKindExpr<A> {
@@ -50,7 +51,7 @@ export namespace FqnExpr {
   }
 
   export interface ElementTagExpr<A extends AnyAux = Unknown> {
-    elementTag: Aux.Tag<A>
+    elementTag: aux.Tag<A>
     isEqual: boolean
   }
   export function isElementTagExpr<A extends AnyAux>(expr: Expression<A>): expr is ElementTagExpr<A> {
@@ -93,7 +94,7 @@ export namespace FqnExpr {
       icon?: Icon
       border?: BorderStyle
       opacity?: number
-      navigateTo?: Aux.Strict.ViewId<A>
+      navigateTo?: aux.StrictViewId<A>
       multiple?: boolean
       size?: ShapeSize
       padding?: ShapeSize
@@ -207,7 +208,7 @@ export namespace RelationExpr {
       technology?: string
       notation?: string
       // Link to dynamic view
-      navigateTo?: Aux.Strict.ViewId<A>
+      navigateTo?: aux.StrictViewId<A>
       // Notes for walkthrough
       notes?: string
       color?: Color

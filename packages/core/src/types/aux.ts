@@ -1,74 +1,5 @@
-import type { IfNever, IsAny, IsNever, Tagged } from 'type-fest'
-import type {
-  Icon,
-} from './scalars'
-import type {
-  BorderStyle,
-  Color,
-  ColorLiteral,
-  ElementShape,
-  RelationshipArrowType,
-  RelationshipLineType,
-  ShapeSize,
-  SpacingSize,
-  TextSize,
-  ThemeColor,
-} from './styles'
-
-/**
- * Element and deployment kind specification
- */
-export interface ElementSpecification {
-  technology?: string
-  notation?: string
-  style: {
-    shape?: ElementShape
-    icon?: Icon
-    color?: Color
-    border?: BorderStyle
-    opacity?: number
-    size?: ShapeSize
-    padding?: SpacingSize
-    textSize?: TextSize
-    multiple?: boolean
-  }
-}
-
-export interface TagSpecification {
-  color: ColorLiteral | ThemeColor
-}
-
-export function isCustomTagColor(spec: string | TagSpecification): spec is { color: ColorLiteral } {
-  const color = typeof spec === 'string' ? spec : spec.color
-  return color.startsWith('#') || color.startsWith('rgb')
-}
-
-export interface RelationshipSpecification {
-  technology?: string
-  notation?: string
-  color?: Color
-  line?: RelationshipLineType
-  head?: RelationshipArrowType
-  tail?: RelationshipArrowType
-}
-
-export interface Specification<A extends AnyAux> {
-  tags?: {
-    [key in A['Tag']]: TagSpecification
-  }
-  elements: {
-    [key in A['ElementKind']]: Partial<ElementSpecification>
-  }
-  deployments: {
-    [key in A['DeploymentKind']]: Partial<ElementSpecification>
-  }
-  relationships: {
-    [key in A['RelationKind']]: Partial<RelationshipSpecification>
-  }
-  // dprint-ignore
-  metadataKeys?: IsAny<A['MetadataKey']> extends true ? string[] : A['MetadataKey'][]
-}
-
+import type { Link } from './_common'
+import type * as scalar from './scalar'
 /**
  * Specification types (kinds, tags, metadata keys)
  *
@@ -79,11 +10,11 @@ export interface Specification<A extends AnyAux> {
  * @param MetadataKey - Literal union of metadata keys
  */
 export interface SpecAux<
-  ElementKind,
-  DeploymentKind,
-  RelationKind,
-  Tag,
-  MetadataKey,
+  ElementKind extends string,
+  DeploymentKind extends string,
+  RelationKind extends string,
+  Tag extends string,
+  MetadataKey extends string,
 > {
   ElementKind: ElementKind
   DeploymentKind: DeploymentKind
@@ -91,7 +22,7 @@ export interface SpecAux<
   Tag: Tag
   MetadataKey: MetadataKey
 }
-export type AnySpecAux = SpecAux<string, string, string, string, string>
+export type AnySpec = SpecAux<any, any, any, any, any>
 
 /**
  * Auxilary interface to keep inferred types
@@ -103,11 +34,11 @@ export type AnySpecAux = SpecAux<string, string, string, string, string>
  * @typeParam Spec - Specification types (kinds, tags, metadata keys)
  */
 export interface Aux<
-  Project,
-  Element,
-  Deployment,
-  View,
-  Spec extends AnySpecAux,
+  Project extends string,
+  Element extends string,
+  Deployment extends string,
+  View extends string,
+  Spec extends SpecAux<string, string, string, string, string>,
 > {
   ProjectId: Project
   ElementId: Element
@@ -122,167 +53,158 @@ export interface Aux<
   MetadataKey: Spec['MetadataKey']
 }
 
-export type AnyAux = Aux<string, string, string, string, AnySpecAux>
+export type AnyAux = Aux<any, any, any, any, AnySpec>
 
 /**
  * Fallback when {@link Aux} can't be inferred
  */
-export interface Unknown extends Aux<string, string, string, string, AnySpecAux> {}
+export type Unknown = Aux<string, string, string, string, SpecAux<string, string, string, string, string>>
 
 type ArrayOf<T> = readonly T[]
 type MetadataObject<T> = Record<`${T & string}`, string>
 
-export namespace Aux {
-  export type Any = Aux<any, any, any, any, any>
+/**
+ * Project identifier from Aux
+ */
+export type ProjectId<A> = A extends Aux<infer P extends string, any, any, any, any> ? P : never
 
-  /**
-   * Project identifier from Aux
-   */
-  export type ProjectId<A extends AnyAux> = A['ProjectId']
+/**
+ * Element FQN from Aux as a literal union
+ * @alias {@link ElementId}
+ */
+export type Fqn<A> = A extends Aux<any, infer E extends string, any, any, any> ? E : never
 
-  /**
-   * Element FQN from Aux as a literal union
-   * @alias {@link Aux.ElementId}
-   */
-  export type Fqn<A extends AnyAux> = A['ElementId']
+/**
+ * Element FQN from Aux as a literal union
+ * @alias {@link Fqn}
+ */
+export type ElementId<A> = Fqn<A>
 
-  /**
-   * Element FQN from Aux as a literal union
-   * @alias {@link Aux.Fqn}
-   */
-  export type ElementId<A extends AnyAux> = A['ElementId']
+/**
+ * Deployment FQN from Aux as a literal union
+ * @alias {@link DeploymentId}
+ */
+export type DeploymentFqn<A> = A extends Aux<any, any, infer D extends string, any, any> ? D : never
 
-  /**
-   * Deployment FQN from Aux as a literal union
-   * @alias {@link Aux.DeploymentId}
-   */
-  export type DeploymentFqn<A extends AnyAux> = A['DeploymentId']
+/**
+ * Deployment FQN from Aux as a literal union
+ * @alias {@link DeploymentFqn}
+ */
+export type DeploymentId<A> = DeploymentFqn<A>
 
-  /**
-   * Deployment FQN from Aux as a literal union
-   * @alias {@link Aux.DeploymentFqn}
-   */
-  export type DeploymentId<A extends AnyAux> = A['DeploymentId']
+/**
+ * View identifier from Aux as a literal union
+ */
+export type ViewId<A> = A extends Aux<any, any, any, infer V extends string, any> ? V : never
 
-  /**
-   * View identifier from Aux as a literal union
-   */
-  export type ViewId<A extends AnyAux> = A['ViewId']
+/**
+ * Relation identifier from Aux as a literal union
+ */
+export type RelationId = scalar.RelationId
 
-  /**
-   * Relation identifier from Aux as a literal union
-   */
-  export type RelationId<A extends AnyAux> = string
+/**
+ * Node identifier from Aux as a literal union
+ */
+export type NodeId = scalar.NodeId
 
-  /**
-   * Node identifier from Aux as a literal union
-   */
-  export type NodeId<A extends AnyAux> = A['ElementId'] | A['DeploymentId']
+/**
+ * Edge identifier from Aux as a literal union
+ */
+export type EdgeId = scalar.EdgeId
 
-  /**
-   * Edge identifier from Aux as a literal union
-   */
-  export type EdgeId<A extends AnyAux> = string
+/**
+ * ElementKind from Aux as a literal union
+ */
+export type ElementKind<A> = A extends Aux<any, any, any, any, SpecAux<infer E extends string, any, any, any, any>> ? E
+  : never
 
-  /**
-   * ElementKind from Aux as a literal union
-   */
-  export type ElementKind<A extends AnyAux> = A['ElementKind']
+/**
+ * DeploymentKind from Aux as a literal union
+ */
+export type DeploymentKind<A> = A extends Aux<any, any, any, any, SpecAux<any, infer D extends string, any, any, any>>
+  ? D
+  : never
 
-  /**
-   * DeploymentKind from Aux as a literal union
-   */
-  export type DeploymentKind<A extends AnyAux> = A['DeploymentKind']
+/**
+ * RelationKind from Aux as a literal union
+ */
+export type RelationKind<A> = A extends Aux<any, any, any, any, SpecAux<any, any, infer R extends string, any, any>> ? R
+  : never
 
-  /**
-   * RelationKind from Aux as a literal union
-   */
-  export type RelationKind<A extends AnyAux> = A['RelationKind']
+/**
+ * Tag from Aux as a literal union
+ */
+export type Tag<A> = A extends Aux<any, any, any, any, SpecAux<any, any, any, infer T extends string, any>> ? T : never
 
-  /**
-   * Tag from Aux as a literal union
-   */
-  export type Tag<A extends AnyAux> = A['Tag']
+/**
+ * Array of tags from Aux
+ */
+export type Tags<A> = readonly Tag<A>[]
 
-  /**
-   * Array of tags from Aux
-   */
-  export type Tags<A extends AnyAux> = ArrayOf<A['Tag']>
+/**
+ * Metadata key from Aux
+ */
+export type MetadataKey<A> = A extends Aux<any, any, any, any, SpecAux<any, any, any, any, infer M extends string>> ? M
+  : never
 
-  /**
-   * Metadata key from Aux
-   */
-  export type MetadataKey<A extends AnyAux> = A['MetadataKey']
+/**
+ * Metadata object from Aux
+ */
+export type Metadata<A> = MetadataKey<A> extends infer K extends string ? { [key in K]?: string }
+  : Record<never, unknown>
 
-  /**
-   * Metadata object from Aux
-   */
-  export type Metadata<A> = A extends AnyAux ? MetadataObject<A['MetadataKey']> : never
+/**
+ * Specification from Aux
+ */
+export type Spec<A> = A extends Aux<any, any, any, any, infer S> ? S : never
 
-  /**
-   * Specification from Aux
-   */
-  export type Spec<A extends AnyAux> = A['Spec']
+export type StrictProjectId<A> = ProjectId<A> extends infer P extends string ? scalar.ProjectId<P> : never
 
-  /**
-   * Strict types from Aux
-   * These are branded types that are used to ensure type safety
-   *
-   * @param A - Aux type
-   */
-  export namespace Strict {
-    export type ProjectId<A extends AnyAux> = Tagged<A['ProjectId'], 'ProjectID'>
+export type StrictFqn<A> = Fqn<A> extends infer F extends string ? scalar.Fqn<F> : never
+export type { StrictFqn as StrictElementId }
 
-    export type Fqn<A extends AnyAux> = Tagged<A['ElementId'], 'Fqn'>
-    export type ElementId<A extends AnyAux> = Fqn<A>
+export type StrictDeploymentFqn<A> = DeploymentFqn<A> extends infer F extends string ? scalar.DeploymentFqn<F> : never
+export type { StrictDeploymentFqn as StrictDeploymentId }
 
-    export type DeploymentFqn<A extends AnyAux> = Tagged<A['DeploymentId'], 'DeploymentFqn'>
-    export type DeploymentId<A extends AnyAux> = DeploymentFqn<A>
+export type StrictViewId<A> = ViewId<A> extends infer V extends string ? scalar.ViewId<V> : never
 
-    export type ViewId<A extends AnyAux> = Tagged<A['ViewId'], 'ViewId'>
+export type StrictTag<A> = Tag<A> extends infer T extends string ? scalar.Tag<T> : never
 
-    // export type NodeId<A extends AnyAux> = Scalars.Fqn<A['ElementId']> | Scalars.DeploymentFqn<A['DeploymentId']>
-    export type NodeId<A extends AnyAux> = Tagged<A['ElementId'] | A['DeploymentId'], 'Fqn'>
-    export type EdgeId<A extends AnyAux> = Tagged<string, 'EdgeId'>
+// dprint-ignore
+export type StrictElementKind<A> = ElementKind<A> extends infer E extends string ? scalar.ElementKind<E> : never
+export type StrictDeploymentKind<A> = DeploymentKind<A> extends infer D extends string ? scalar.DeploymentKind<D>
+  : never
+export type StrictRelationKind<A> = RelationKind<A> extends infer R extends string ? scalar.RelationshipKind<R> : never
 
-    export type RelationId<A extends AnyAux> = Tagged<string, 'RelationId'>
+type StringPrimitive = string & Record<never, never>
 
-    export type Tag<A extends AnyAux> = IsNever<A['Tag']> extends true ? never : Tagged<A['Tag'], 'Tag'>
-    export type MetadataKey<A extends AnyAux> = A['MetadataKey']
+export type LiteralElementId<A> = ElementId<A> | StringPrimitive
+export type LiteralFqn<A> = Fqn<A> | StringPrimitive
+export type LiteralDeploymentId<A> = DeploymentId<A> | StringPrimitive
+export type LiteralDeploymentFqn<A> = DeploymentFqn<A> | StringPrimitive
+export type LiteralViewId<A> = ViewId<A> | StringPrimitive
+export type LiteralTag<A> = Tag<A> | StringPrimitive
 
-    // dprint-ignore
-    export type ElementKind<A extends AnyAux> = IsNever<A['ElementKind']> extends true ? never : Tagged<A['ElementKind'], 'ElementKind'>
-    export type DeploymentKind<A extends AnyAux> = IsNever<A['DeploymentKind']> extends true ? never
-      : Tagged<A['DeploymentKind'], 'DeploymentKind'>
-    export type RelationKind<A extends AnyAux> = IsNever<A['RelationKind']> extends true ? never
-      : Tagged<A['RelationKind'], 'RelationKind'>
+export type LiteralElementKind<A> = ElementKind<A> | StringPrimitive
+export type LiteralDeploymentKind<A> = DeploymentKind<A> | StringPrimitive
+export type LiteralRelationKind<A> = RelationKind<A> | StringPrimitive
 
-    /**
-     * Utility type to get the tags from the spec
-     */
-    // dprint-ignore
-    export type Tags<A extends AnyAux> = IfNever<A['Tag'], never[], readonly Tagged<A['Tag'], 'Tag'>[]>
-    export type Metadata<A extends AnyAux> = MetadataObject<A['MetadataKey']>
-  }
+export type WithTags<A> = {
+  readonly tags: Tags<A>
+}
 
-  /**
-   * Allows creating a union type by combining primitive types and literal types
-   * without sacrificing auto-completion in IDEs for the literal type part of the union.
-   */
-  export namespace Primitive {
-    type StringPrimitive = string & Record<never, never>
+export type WithOptionalTags<A> = {
+  readonly tags?: Tags<A> | null
+}
 
-    export type ElementId<A extends AnyAux> = A['ElementId'] | StringPrimitive
-    export type Fqn<A extends AnyAux> = A['ElementId'] | StringPrimitive
-    export type DeploymentId<A extends AnyAux> = A['DeploymentId'] | StringPrimitive
-    export type DeploymentFqn<A extends AnyAux> = A['DeploymentId'] | StringPrimitive
-    export type ViewId<A extends AnyAux> = A['ViewId'] | StringPrimitive
-    export type RelationId<A extends AnyAux> = string
+export type WithLinks = {
+  readonly links: readonly Link[]
+}
 
-    export type Tag<A extends AnyAux> = A['Tag'] | StringPrimitive
-    export type MetadataKey<A extends AnyAux> = A['MetadataKey'] | StringPrimitive
-    export type ElementKind<A extends AnyAux> = A['ElementKind'] | StringPrimitive
-    export type DeploymentKind<A extends AnyAux> = A['DeploymentKind'] | StringPrimitive
-    export type RelationKind<A extends AnyAux> = A['RelationKind'] | StringPrimitive
-  }
+export type WithOptionalLinks = {
+  readonly links?: readonly Link[] | null
+}
+
+export type WithMetadata<A> = {
+  readonly metadata?: Metadata<A>
 }

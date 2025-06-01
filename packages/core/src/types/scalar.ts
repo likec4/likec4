@@ -48,12 +48,12 @@ export function AsFqn(name: string, parent?: Fqn | null): Fqn {
 }
 
 export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
-export function GlobalFqn(projectId: ProjectId<any>, name: string): GlobalFqn {
+export function GlobalFqn<A>(projectId: ProjectId<A>, name: string): GlobalFqn<A> {
   invariant(isTruthy(projectId), 'Project ID must start with @')
-  return '@' + projectId + '.' + name as GlobalFqn
+  return '@' + projectId + '.' + name as any
 }
 
-export function isGlobalFqn(fqn: string): fqn is GlobalFqn {
+export function isGlobalFqn<A extends string>(fqn: A): fqn is GlobalFqn<A> {
   return fqn.startsWith('@')
 }
 
@@ -70,8 +70,11 @@ export function splitGlobalFqn<I extends string>(fqn: Fqn<I> | GlobalFqn<I>): [P
   return [projectId, name]
 }
 
-export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
-export type EdgeId<IDs extends string = string> = Tagged<IDs, 'EdgeId'>
+export type NodeId = Tagged<string, 'NodeId' | 'Fqn' | 'DeploymentFqn'>
+export function NodeId(id: string): NodeId {
+  return id as any
+}
+export type EdgeId = Tagged<string, 'EdgeId'>
 
 export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
@@ -79,6 +82,7 @@ export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
   const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
   return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
+export const StepEdgeKind = '@step' as RelationshipKind<'@step'>
 
 export function isStepEdgeId(id: string): id is StepEdgeId {
   return id.startsWith('step-')

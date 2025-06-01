@@ -1,12 +1,10 @@
 import type { Link } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
+import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
-import type { Icon } from './scalars'
-import type {
-  Color,
-  ElementShape,
-} from './styles'
+import type { Icon } from './scalar'
+import type { Color, ElementShape } from './styles'
 
 export interface DeploymentElementStyle extends ElementStyle {
   readonly icon?: Icon
@@ -14,44 +12,56 @@ export interface DeploymentElementStyle extends ElementStyle {
   readonly color?: Color
 }
 
-export interface DeploymentNode<A extends AnyAux = Unknown> {
+// dprint-ignore
+export interface DeploymentNode<A extends AnyAux = Unknown>
+  extends
+    aux.WithOptionalTags<A>,
+    aux.WithOptionalLinks,
+    aux.WithMetadata<A>
+{
   element?: never
   // Full-qualified-name for Deployment model
-  readonly id: Aux.Strict.DeploymentFqn<A>
-  readonly kind: Aux.DeploymentKind<A>
+  readonly id: aux.StrictDeploymentFqn<A>
+  readonly kind: aux.DeploymentKind<A>
   readonly title: string
   readonly description?: string | null
   readonly technology?: string | null
-  readonly tags?: Aux.Tags<A> | null
+  readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly style: DeploymentElementStyle
   readonly notation?: string
-  readonly metadata?: Aux.Metadata<A>
+  readonly metadata?: aux.Metadata<A>
 }
 
-export interface DeployedInstance<A extends AnyAux = Unknown> {
+// dprint-ignore
+export interface DeployedInstance<A extends AnyAux = Unknown>
+  extends
+    aux.WithOptionalTags<A>,
+    aux.WithOptionalLinks,
+    aux.WithMetadata<A>
+{
   kind?: never
   /**
    * Format: `<DeploymentNode Fqn>.<Instance Id>`
    * i.e parent fqn is deployment target
    */
-  readonly id: Aux.Strict.DeploymentFqn<A>
-  readonly element: Aux.Strict.Fqn<A>
+  readonly id: aux.StrictDeploymentFqn<A>
+  readonly element: aux.StrictFqn<A>
   readonly title?: string
   readonly description?: string | null
   readonly technology?: string | null
-  readonly tags?: Aux.Tags<A> | null
+  readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly style?: DeploymentElementStyle
   readonly notation?: string
-  readonly metadata?: Aux.Metadata<A>
+  readonly metadata?: aux.Metadata<A>
 }
 
 export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>
 
 export type DeploymentElementRef<A extends AnyAux = Unknown> = {
-  readonly id: Aux.Strict.DeploymentFqn<A>
-  readonly element?: Aux.Strict.Fqn<A>
+  readonly id: aux.StrictDeploymentFqn<A>
+  readonly element?: aux.StrictFqn<A>
 }
 
 export function isDeploymentNode<A extends AnyAux>(el: DeploymentElement<A>): el is DeploymentNode<A> {

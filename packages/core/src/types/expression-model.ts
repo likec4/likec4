@@ -1,9 +1,10 @@
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
+import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
 import type { PredicateSelector } from './expression'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
-import { type Icon } from './scalars'
+import { type Icon } from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -30,7 +31,7 @@ export namespace ModelFqnExpr {
   }
 
   export interface ElementKindExpr<A extends AnyAux = Unknown> {
-    elementKind: Aux.ElementKind<A>
+    elementKind: aux.ElementKind<A>
     isEqual: boolean
   }
   export function isElementKindExpr<A extends AnyAux>(expr: ModelExpression<A>): expr is ElementKindExpr<A> {
@@ -38,7 +39,7 @@ export namespace ModelFqnExpr {
   }
 
   export interface ElementTagExpr<A extends AnyAux> {
-    elementTag: Aux.Tag<A>
+    elementTag: aux.Tag<A>
     isEqual: boolean
   }
   export function isElementTagExpr<A extends AnyAux>(expr: ModelExpression<A>): expr is ElementTagExpr<A> {
@@ -79,7 +80,7 @@ export namespace ModelFqnExpr {
       icon?: Icon
       border?: BorderStyle
       opacity?: number
-      navigateTo?: Aux.Strict.ViewId<A>
+      navigateTo?: aux.StrictViewId<A>
       multiple?: boolean
       size?: ShapeSize
       padding?: ShapeSize
@@ -98,7 +99,7 @@ export namespace ModelFqnExpr {
       || isElementTagExpr(expr)
   }
 
-  export type OrWhere<A extends AnyAux = Unknown> = ExclusiveUnion<{
+  export type OrWhere<A extends AnyAux = AnyAux> = ExclusiveUnion<{
     Wildcard: ModelFqnExpr.Wildcard
     Ref: ModelFqnExpr.Ref<A>
     ElementKind: ElementKindExpr<A>
@@ -106,7 +107,7 @@ export namespace ModelFqnExpr {
     Where: ModelFqnExpr.Where<A>
   }>
 
-  export type Any<A extends AnyAux = Unknown> = ExclusiveUnion<{
+  export type Any<A extends AnyAux = AnyAux> = ExclusiveUnion<{
     Wildcard: Wildcard
     Ref: Ref<A>
     ElementKind: ElementKindExpr<A>
@@ -189,7 +190,7 @@ export namespace ModelRelationExpr {
       technology?: string
       notation?: string
       // Link to dynamic view
-      navigateTo?: Aux.Strict.ViewId<A>
+      navigateTo?: aux.StrictViewId<A>
       // Notes for walkthrough
       notes?: string
       color?: Color

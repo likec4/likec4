@@ -1,7 +1,8 @@
 import { allPass, anyPass, isNot, isNullish } from 'remeda'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
+import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
 
 export type EqualOperator<V> = {
   eq: V
@@ -21,14 +22,14 @@ type AllNever = {
 }
 
 export type TagEqual<A extends AnyAux> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<Aux.Tag<A>>
+  tag: EqualOperator<aux.Tag<A>>
 }
 export function isTagEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
 export type KindEqual<A extends AnyAux> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<Aux.ElementKind<A> | Aux.DeploymentKind<A> | Aux.RelationKind<A>>
+  kind: EqualOperator<aux.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A>>
 }
 export function isKindEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
@@ -75,8 +76,8 @@ export type WhereOperator<A extends AnyAux = Unknown> =
   | OrOperator<A>
 
 export type Filterable<A extends AnyAux> = {
-  tags?: Aux.Tags<A> | null
-  kind?: Aux.ElementKind<A> | Aux.DeploymentKind<A> | Aux.RelationKind<A> | null
+  tags?: aux.Tags<A> | null
+  kind?: aux.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }
@@ -95,24 +96,24 @@ export function whereOperatorAsPredicate<A extends AnyAux = Unknown>(
     }
     case isTagEqual(operator): {
       if ('eq' in operator.tag) {
-        const tag = operator.tag.eq as unknown as Aux.Strict.Tag<A>
+        const tag = operator.tag.eq
         return (value) => {
           return Array.isArray(value.tags) && value.tags.includes(tag)
         }
       }
-      const tag = operator.tag.neq as unknown as Aux.Strict.Tag<A>
+      const tag = operator.tag.neq
       return (value) => {
         return !Array.isArray(value.tags) || !value.tags.includes(tag)
       }
     }
     case isKindEqual(operator): {
       if ('eq' in operator.kind) {
-        const kind = operator.kind.eq as unknown as Aux.Strict.ElementKind<A>
+        const kind = operator.kind.eq
         return (value) => {
           return value.kind === kind
         }
       }
-      const kind = operator.kind.neq as unknown as Aux.Strict.ElementKind<A>
+      const kind = operator.kind.neq
       return (value) => {
         return isNullish(value.kind) || value.kind !== kind
       }

@@ -1,7 +1,8 @@
 import { isString } from 'remeda'
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Aux, Unknown } from './aux'
-import { GlobalFqn } from './scalars'
+import type { AnyAux, Unknown } from './aux'
+import type * as aux from './aux'
+import { GlobalFqn } from './scalar'
 
 export namespace FqnRef {
   /**
@@ -9,7 +10,7 @@ export namespace FqnRef {
    */
   export interface ElementRef<A extends AnyAux = Unknown> {
     project?: never
-    model: Aux.ElementId<A>
+    model: aux.ElementId<A>
   }
   export function isElementRef<A extends AnyAux>(ref: FqnRef<A>): ref is ElementRef<A> {
     return 'model' in ref && !('project' in ref)
@@ -19,22 +20,22 @@ export namespace FqnRef {
    * Reference to imported logical model element
    */
   export interface ImportRef<A extends AnyAux = Unknown> {
-    project: Aux.ProjectId<A>
-    model: Aux.ElementId<A>
+    project: aux.ProjectId<A>
+    model: aux.ElementId<A>
   }
   export function isImportRef<A extends AnyAux>(ref: FqnRef<A>): ref is ImportRef<A> {
     return 'project' in ref && 'model' in ref
   }
 
-  export function flatten<A extends AnyAux>(ref: FqnRef<A>): Aux.Strict.Fqn<A> {
+  export function flatten<A extends AnyAux>(ref: FqnRef<A>): aux.StrictFqn<A> {
     if (isString(ref)) {
       throw new Error(`Expected FqnRef, got: "${ref}"`)
     }
     if (isImportRef(ref)) {
-      return GlobalFqn(ref.project, ref.model)
+      return GlobalFqn(ref.project, ref.model) as unknown as aux.StrictFqn<A>
     }
     if (isElementRef(ref)) {
-      return ref.model as unknown as Aux.Strict.Fqn<A>
+      return ref.model as unknown as aux.StrictFqn<A>
     }
     throw new Error('Expected FqnRef.ModelRef or FqnRef.ImportRef')
   }
@@ -54,8 +55,8 @@ export namespace FqnRef {
    * @property {M} element - The element reference within the deployment.
    */
   export interface InsideInstanceRef<A extends AnyAux = Unknown> {
-    deployment: Aux.DeploymentId<A>
-    element: Aux.ElementId<A>
+    deployment: aux.DeploymentId<A>
+    element: aux.ElementId<A>
   }
   export function isInsideInstanceRef<A extends AnyAux>(ref: FqnRef<A>): ref is InsideInstanceRef<A> {
     return 'deployment' in ref && 'element' in ref
@@ -68,7 +69,7 @@ export namespace FqnRef {
    * @property {F} deployment - The fully qualified name (FQN) of the deployment element.
    */
   export interface DeploymentElementRef<A extends AnyAux = Unknown> {
-    deployment: Aux.DeploymentId<A>
+    deployment: aux.DeploymentId<A>
     element?: never
   }
   export function isDeploymentElementRef<A extends AnyAux>(ref: FqnRef<A>): ref is DeploymentElementRef<A> {

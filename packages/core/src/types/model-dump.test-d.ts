@@ -1,4 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest'
+import type * as aux from './aux'
 import type { AnyAux, Aux, SpecAux } from './aux'
 import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
 
@@ -186,13 +187,13 @@ describe('AuxFromDump', () => {
 
     // Verify individual properties
     expectTypeOf<A['ProjectId']>().toEqualTypeOf<'test-project'>()
-    expectTypeOf<Aux.ProjectId<A>>().toEqualTypeOf<'test-project'>()
+    expectTypeOf<aux.ProjectId<A>>().toEqualTypeOf<'test-project'>()
     expectTypeOf<A['ElementId']>().toEqualTypeOf<'element1' | 'element2'>()
-    expectTypeOf<Aux.ElementId<A>>().toEqualTypeOf<'element1' | 'element2'>()
+    expectTypeOf<aux.ElementId<A>>().toEqualTypeOf<'element1' | 'element2'>()
     expectTypeOf<A['DeploymentId']>().toEqualTypeOf<'deployment1' | 'deployment2'>()
-    expectTypeOf<Aux.DeploymentId<A>>().toEqualTypeOf<'deployment1' | 'deployment2'>()
+    expectTypeOf<aux.DeploymentId<A>>().toEqualTypeOf<'deployment1' | 'deployment2'>()
     expectTypeOf<A['ViewId']>().toEqualTypeOf<'view1' | 'view2'>()
-    expectTypeOf<Aux.ViewId<A>>().toEqualTypeOf<'view1' | 'view2'>()
+    expectTypeOf<aux.ViewId<A>>().toEqualTypeOf<'view1' | 'view2'>()
 
     // Verify Spec properties
     expectTypeOf<A['Spec']>().toEqualTypeOf<
@@ -207,15 +208,15 @@ describe('AuxFromDump', () => {
 
     // Verify derived types
     expectTypeOf<A['ElementKind']>().toEqualTypeOf<'system' | 'container'>()
-    expectTypeOf<Aux.ElementKind<A>>().toEqualTypeOf<'system' | 'container'>()
+    expectTypeOf<aux.ElementKind<A>>().toEqualTypeOf<'system' | 'container'>()
     expectTypeOf<A['DeploymentKind']>().toEqualTypeOf<'k8s' | 'aws'>()
-    expectTypeOf<Aux.DeploymentKind<A>>().toEqualTypeOf<'k8s' | 'aws'>()
+    expectTypeOf<aux.DeploymentKind<A>>().toEqualTypeOf<'k8s' | 'aws'>()
     expectTypeOf<A['RelationKind']>().toEqualTypeOf<'http' | 'grpc'>()
-    expectTypeOf<Aux.RelationKind<A>>().toEqualTypeOf<'http' | 'grpc'>()
+    expectTypeOf<aux.RelationKind<A>>().toEqualTypeOf<'http' | 'grpc'>()
     expectTypeOf<A['Tag']>().toEqualTypeOf<'important' | 'deprecated'>()
-    expectTypeOf<Aux.Tag<A>>().toEqualTypeOf<'important' | 'deprecated'>()
+    expectTypeOf<aux.Tag<A>>().toEqualTypeOf<'important' | 'deprecated'>()
     expectTypeOf<A['MetadataKey']>().toEqualTypeOf<'version' | 'owner'>()
-    expectTypeOf<Aux.MetadataKey<A>>().toEqualTypeOf<'version' | 'owner'>()
+    expectTypeOf<aux.MetadataKey<A>>().toEqualTypeOf<'version' | 'owner'>()
   })
 
   it('should handle optional fields in LikeC4ModelDump', () => {
