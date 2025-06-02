@@ -41,7 +41,7 @@ function ensureParentsFirst<T extends { id: string; parent: string | null }>(
 /**
  * Side effect, mutates node.children field to preserve same order as in the input
  */
-function updateChildren<A extends AnyAux = Unknown>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
+function updateChildren<A extends AnyAux = AnyAux>(nodes: ComputedNode<A>[]): ComputedNode<A>[] {
   nodes.forEach(parent => {
     if (parent.children.length > 0) {
       parent.children = nodes.reduce((acc, n) => {

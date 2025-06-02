@@ -98,6 +98,8 @@ test('LikeC4Model.create: should have types', () => {
   // Check view types
   expectTypeOf(m.view('index').$view).toBeNever()
 
+  m.element
+
   const computed = computeLikeC4Model(source)
   type A = $UnwrapM<typeof computed.Aux>
   expectTypeOf(computed.view('index').$view).toEqualTypeOf<ComputedView<A>>()
@@ -141,10 +143,12 @@ test('LikeC4Model.create: should have types', () => {
     }
   >()
 
-  const e = m.element('alice')
-
+  const e = m.element('cloud.backend.api')
   expectTypeOf(e.getMetadata).parameter(0).toEqualTypeOf<'key1' | 'key2' | undefined>()
-  expectTypeOf(() => e.getMetadata()).returns.toEqualTypeOf<Record<'key1' | 'key2', string>>()
+  expectTypeOf(() => e.getMetadata()).returns.toEqualTypeOf<{
+    key1?: string
+    key2?: string
+  }>()
 
   expectTypeOf(m.Aux.ElementId).toEqualTypeOf<Elements>()
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf<'index' | 'prodview'>()
@@ -163,8 +167,15 @@ test('LikeC4Model.fromDump: should have types', () => {
   const m = LikeC4Model.fromDump({
     __: 'layouted',
     specification: {
-      tags: {},
-      elements: {},
+      tags: {
+        tag1: {},
+        tag2: {},
+      },
+      elements: {
+        actor: {},
+        system: {},
+        component: {},
+      },
       relationships: {},
       deployments: {},
     },

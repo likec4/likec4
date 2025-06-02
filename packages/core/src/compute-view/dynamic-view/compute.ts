@@ -3,7 +3,7 @@ import { nonNullable } from '../../errors'
 import type { LikeC4Model } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux, Unknown } from '../../types'
+import type { AnyAux, Unknown } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
@@ -31,7 +31,7 @@ import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../utils/view-hash'
 
-type Element<A extends AnyAux = Unknown> = ElementModel<A>
+type Element<A extends AnyAux> = ElementModel<A>
 
 namespace DynamicViewCompute {
   export interface Step<A extends AnyAux = Unknown> {
@@ -45,9 +45,9 @@ namespace DynamicViewCompute {
     line?: RelationshipLineType
     head?: RelationshipArrowType
     tail?: RelationshipArrowType
-    relations: Aux.Strict.RelationId<A>[]
+    relations: Aux.StrictRelationId<A>[]
     isBackward: boolean
-    navigateTo?: Aux.Strict.ViewId<A>
+    navigateTo?: Aux.StrictViewId<A>
     tags?: Aux.Tags<A>
   }
 }
@@ -154,10 +154,10 @@ class DynamicViewCompute<A extends AnyAux = Unknown> {
       const sourceNode = nonNullable(nodesMap.get(source.id), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
-        id: id as unknown as Aux.Strict.EdgeId<A>,
+        id: id as unknown as Aux.EdgeId,
         parent: commonAncestor(source.id, target.id),
-        source: source.id,
-        target: target.id,
+        source: sourceNode.id,
+        target: targetNode.id,
         label: title,
         relations,
         color: DefaultRelationshipColor,
@@ -229,8 +229,8 @@ class DynamicViewCompute<A extends AnyAux = Unknown> {
   private findRelations(source: Element<A>, target: Element<A>): {
     title: string | null
     tags: Aux.Tags<A> | null
-    relations: NonEmptyArray<Aux.Strict.RelationId<A>> | null
-    navigateTo: Aux.Strict.ViewId<A> | null
+    relations: NonEmptyArray<Aux.StrictRelationId<A>> | null
+    navigateTo: Aux.StrictViewId<A> | null
     color: Color | null
     line: RelationshipLineType | null
   } {
@@ -259,10 +259,10 @@ class DynamicViewCompute<A extends AnyAux = Unknown> {
     const relationNavigateTo = relation?.$relationship.navigateTo ?? null
 
     const navigateTo = relationNavigateTo && relationNavigateTo !== this.view.id
-      ? relationNavigateTo as Aux.Strict.ViewId<A>
+      ? relationNavigateTo as Aux.StrictViewId<A>
       : pipe(
         relationships,
-        map(r => r.$relationship.navigateTo as Aux.Strict.ViewId<A>),
+        map(r => r.$relationship.navigateTo as Aux.StrictViewId<A>),
         filter(isTruthy),
         filter(v => v !== this.view.id),
         unique(),

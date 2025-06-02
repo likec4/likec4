@@ -1,7 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, Unknown } from '../types'
 import {
-  type Aux,
   type Relationship,
   type RelationshipLineType,
   DefaultLineStyle,
@@ -22,7 +21,7 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * use {@link isDeploymentRelation} guard to check if the relationship is a deployment relationship
  */
 export interface AnyRelationshipModel<A extends AnyAux = Unknown> {
-  get id(): Aux.Strict.RelationId<A>
+  get id(): Aux.StrictRelationId<A>
   get expression(): string
   get title(): string | null
   get technology(): string | null
@@ -35,7 +34,7 @@ export interface AnyRelationshipModel<A extends AnyAux = Unknown> {
   get line(): RelationshipLineType
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
-  getMetadata(): Aux.Strict.Metadata<A>
+  getMetadata(): Aux.StrictMetadata<A>
   getMetadata(field: Aux.MetadataKey<A>): string | undefined
 }
 
@@ -59,7 +58,7 @@ export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelatio
     this.boundary = parent ? this.model.element(parent) : null
   }
 
-  get id(): Aux.Strict.RelationId<A> {
+  get id(): Aux.StrictRelationId<A> {
     return this.$relationship.id
   }
 
@@ -132,7 +131,7 @@ export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelatio
     return true
   }
 
-  public getMetadata(): Aux.Strict.Metadata<A>
+  public getMetadata(): Aux.StrictMetadata<A>
   public getMetadata(field: Aux.MetadataKey<A>): string | undefined
   public getMetadata(field?: Aux.MetadataKey<A>) {
     if (field) {

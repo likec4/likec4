@@ -2,7 +2,6 @@ import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
   type AnyAux,
-  type Aux,
   type ComputedNode,
   type Element,
   type Unknown,
@@ -49,10 +48,10 @@ export function buildComputedNodesFromElements<A extends AnyAux>(
 export function buildComputedNodes<A extends AnyAux>(
   elements: ReadonlyArray<ComputedNodeSource<A>>,
   groups?: ReadonlyArray<NodesGroup>,
-): ReadonlyMap<Aux.Strict.NodeId<A>, ComputedNode<A>> {
-  const nodesMap = new Map<Aux.Strict.NodeId<A>, ComputedNode<A>>()
+): ReadonlyMap<Aux.StrictNodeId, ComputedNode<A>> {
+  const nodesMap = new Map<Aux.StrictNodeId, ComputedNode<A>>()
 
-  const elementToGroup = new Map<Aux.Strict.Fqn<A>, Aux.Strict.NodeId<A>>()
+  const elementToGroup = new Map<Aux.StrictFqn<A>, Aux.StrictNodeId>()
 
   groups?.forEach(({ id, parent, viewRule, elements }) => {
     if (parent) {
@@ -102,10 +101,12 @@ export function buildComputedNodes<A extends AnyAux>(
         }
         parent = parentFqn(parent)
       }
+      const fqn = id as unknown as Aux.StrictFqn<A>
       // If parent is not found in the map, check if it is in a group
-      if (!parentNd && elementToGroup.has(id)) {
-        parent = elementToGroup.get(id)!
-        parentNd = nodesMap.get(parent)!
+      if (!parentNd && elementToGroup.has(fqn)) {
+        const parentGroupId = nonNullable(elementToGroup.get(fqn))
+        parentNd = nodesMap.get(parentGroupId)
+        parent = parentGroupId
       }
       if (parentNd) {
         // if parent has no children and we are about to add first one
@@ -141,7 +142,7 @@ export function buildComputedNodes<A extends AnyAux>(
     })
 
   // Create new map and add elements in the same order as they were in the input
-  const orderedMap = new Map<Aux.Strict.NodeId<A>, ComputedNode<A>>()
+  const orderedMap = new Map<Aux.NodeId, ComputedNode<A>>()
 
   groups?.forEach(({ id }) => {
     orderedMap.set(id, nonNullable(nodesMap.get(id)))

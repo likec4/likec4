@@ -105,9 +105,9 @@ function computeRelationships<const M extends AnyAux>(
 }
 
 export function computeRelationshipsView<M extends AnyAux>(
-  subjectId: NoInfer<Aux.ElementId<M>>,
+  subjectId: Aux.ElementId<M>,
   likec4model: LikeC4Model<M>,
-  scopeViewId: NoInfer<Aux.ViewId<M>> | null,
+  scopeViewId: Aux.ViewId<M> | null,
   scope: 'global' | 'view' = 'global',
 ): RelationshipsViewData<M> {
   let subjectExistsInScope = true

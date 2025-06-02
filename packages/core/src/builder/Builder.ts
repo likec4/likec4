@@ -140,7 +140,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
+  build(): ParsedLikeC4ModelData<Types.ToAux<T, 'parsed'>>
 
   /**
    * Returns LikeC4Model with computed views
@@ -166,7 +166,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
-  const toLikeC4Specification = (): Specification<Types.ToAux<T>> => ({
+  const toLikeC4Specification = (): Specification<Types.ToAux<T, any>> => ({
     elements: {
       ...structuredClone(spec.elements) as any,
     },
@@ -179,8 +179,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
       color: DefaultThemeColor,
       ...tagSpec,
-    })),
+    })) as any,
     ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
+    customColors: {},
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
@@ -215,7 +216,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       description,
       tags,
       links,
-      customColorDefinitions: {},
+      // customColorDefinitions: {},
       ...props,
     }, builder]
   }

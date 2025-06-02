@@ -17,15 +17,15 @@ import { findConnection } from './find'
  *
  * Merges relationships together to an single edge on the diagram.
  */
-export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<ElementModel<A>, Aux.Strict.EdgeId<A>> {
-  public readonly id: Aux.Strict.EdgeId<A>
+export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<ElementModel<A>, Aux.EdgeId> {
+  public readonly id: Aux.EdgeId
 
   constructor(
     public readonly source: ElementModel<A>,
     public readonly target: ElementModel<A>,
     public readonly relations: ReadonlySet<RelationshipModel<A>> = new Set(),
   ) {
-    this.id = stringHash(`model:${source.id}:${target.id}`) as Aux.Strict.EdgeId<A>
+    this.id = stringHash(`model:${source.id}:${target.id}`) as Aux.EdgeId
   }
 
   private _boundary: ElementModel<A> | null | undefined
@@ -96,10 +96,11 @@ export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<E
 
   equals(other: Connection): boolean {
     invariant(other instanceof ConnectionModel, 'Cannot merge connection with different type')
-    return this.id === other.id
-      && this.source.id === other.source.id
-      && this.target.id === other.target.id
-      && equals(this.relations, other.relations)
+    const _other = other as ConnectionModel<A>
+    return this.id === _other.id
+      && this.source.id === _other.source.id
+      && this.target.id === _other.target.id
+      && equals(this.relations, _other.relations)
   }
 
   /**

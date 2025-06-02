@@ -1,7 +1,13 @@
 import { filter, hasAtLeast, only } from 'remeda'
 import { invariant } from '../../errors'
 import type { ConnectionModel, ElementModel } from '../../model'
-import { type AnyAux, type Aux, type ComputedEdge, type ComputedNode, type Unknown } from '../../types'
+import {
+  type AnyAux,
+  type ComputedEdge,
+  type ComputedNode,
+  type Element,
+  type Unknown,
+} from '../../types'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Memory } from './_types'
@@ -9,9 +15,11 @@ import type { Memory } from './_types'
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
 
-export function toNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
+export function toNodeSource<A extends AnyAux>(el: ElementModel<any>): Omit<ComputedNodeSource<A>, 'id'> & {
+  id: Aux.StrictFqn<A>
+} {
   return {
-    ...el.$element,
+    ...el.$element as Element<A>,
     modelRef: 1,
   }
 }
@@ -45,8 +53,8 @@ export function toComputedEdges<A extends AnyAux>(
     const edge: ComputedEdge<A> = {
       id: e.id,
       parent: e.boundary?.id ?? null,
-      source,
-      target,
+      source: NodeId(source),
+      target: NodeId(target),
       label: title ?? null,
       relations: relations.map((r) => r.id),
       ...props,
@@ -59,7 +67,7 @@ export function toComputedEdges<A extends AnyAux>(
 
 export function buildNodes<A extends AnyAux = Unknown>(
   memory: Memory,
-): ReadonlyMap<Aux.Strict.Fqn<A>, ComputedNode<A>> {
+): ReadonlyMap<Aux.StrictFqn<A>, ComputedNode<A>> {
   return buildComputedNodes(
     [...memory.final].map(n => toNodeSource<A>(n)),
     memory.groups,

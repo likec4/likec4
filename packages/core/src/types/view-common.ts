@@ -93,11 +93,12 @@ export type ViewManualLayout = {
   }>
 }
 
+export type ViewStage = 'parsed' | 'computed' | 'layouted'
 export type ViewTypeDiscriminator = 'element' | 'dynamic' | 'deployment'
 
 export interface ViewBaseProperties<
   A extends AnyAux,
-  Stage extends 'parsed' | 'computed' | 'layouted',
+  Stage extends ViewStage,
   Type extends ViewTypeDiscriminator,
 > extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   /**

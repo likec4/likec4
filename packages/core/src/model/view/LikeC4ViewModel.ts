@@ -1,5 +1,5 @@
 import { nonNullable } from '../../errors'
-import type { AnyAux, Aux, IteratorLike, Link } from '../../types'
+import type { AnyAux, IteratorLike, Link } from '../../types'
 import { DefaultMap, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
@@ -18,10 +18,10 @@ import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends AnyAux> = IteratorLike<LikeC4ViewModel<A>>
 
-export class LikeC4ViewModel<A extends AnyAux = Aux.Any> {
+export class LikeC4ViewModel<A extends AnyAux> {
   readonly #rootnodes = new Set<NodeModel<A>>()
-  readonly #nodes = new Map<Aux.Strict.NodeId<A>, NodeModel<A>>()
-  readonly #edges = new Map<Aux.Strict.EdgeId<A>, EdgeModel<A>>()
+  readonly #nodes = new Map<Aux.NodeId, NodeModel<A>>()
+  readonly #edges = new Map<Aux.EdgeId, EdgeModel<A>>()
   readonly #includeElements = new Set<Aux.Fqn<A>>()
   readonly #includeDeployments = new Set<Aux.DeploymentFqn<A>>()
   readonly #includeRelations = new Set<Aux.RelationId<A>>()
@@ -69,7 +69,7 @@ export class LikeC4ViewModel<A extends AnyAux = Aux.Any> {
     return this.$view.__ ?? 'element'
   }
 
-  get id(): Aux.Strict.ViewId<A> {
+  get id(): Aux.StrictViewId<A> {
     return this.$view.id
   }
 
@@ -120,7 +120,7 @@ export class LikeC4ViewModel<A extends AnyAux = Aux.Any> {
    * Get node by id.
    * @throws Error if node is not found.
    */
-  public node(node: NodeOrId<A>): NodeModel<A> {
+  public node(node: NodeOrId): NodeModel<A> {
     const nodeId = getId(node)
     return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.$view.id}`)
   }
@@ -128,11 +128,11 @@ export class LikeC4ViewModel<A extends AnyAux = Aux.Any> {
   /**
    * Find node by id.
    */
-  public findNode(node: NodeOrId<A>): NodeModel<A> | null {
+  public findNode(node: NodeOrId): NodeModel<A> | null {
     return this.#nodes.get(getId(node)) ?? null
   }
 
-  public findNodeWithElement(fqn: ElementOrFqn<A>): NodeModel.WithElement<A> | null {
+  public findNodeWithElement(fqn: ElementOrFqn<Aux.Fqn<A>>): NodeModel.WithElement<A> | null {
     const nd = ifind(this.#nodes.values(), node => node.element?.id === fqn) ?? null
     return nd && nd.hasElement() ? nd : null
   }
@@ -149,11 +149,11 @@ export class LikeC4ViewModel<A extends AnyAux = Aux.Any> {
    * @param edge Edge or id
    * @returns EdgeModel
    */
-  public edge(edge: EdgeOrId<A>): EdgeModel<A> {
+  public edge(edge: EdgeOrId): EdgeModel<A> {
     const edgeId = getId(edge)
     return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.$view.id}`)
   }
-  public findEdge(edge: EdgeOrId<A>): EdgeModel<A> | null {
+  public findEdge(edge: EdgeOrId): EdgeModel<A> | null {
     return this.#edges.get(getId(edge)) ?? null
   }
   /**

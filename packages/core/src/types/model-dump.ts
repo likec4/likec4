@@ -1,7 +1,7 @@
 import type { KeysOf } from './_common'
-import type { Aux, SpecAux } from './aux'
 import type * as aux from './aux'
 import type { ParsedLikeC4ModelData } from './model-data'
+import type { ViewStage } from './view-common'
 
 /**
  * JSON representation of {@link Specification}
@@ -21,14 +21,14 @@ export interface SpecificationDump {
   }
   metadataKeys?: string[]
 }
-export type SpecTypesFromDump<J> = J extends SpecificationDump ? SpecAux<
+export type SpecTypesFromDump<J> = J extends SpecificationDump ? aux.SpecAux<
     KeysOf<J['elements']>,
     KeysOf<J['deployments']>,
     KeysOf<J['relationships']>,
     KeysOf<J['tags']>,
     J['metadataKeys'] extends readonly string[] ? J['metadataKeys'][number] : never
   >
-  : SpecAux<never, never, never, never, never>
+  : aux.SpecAux<never, never, never, never, never>
 
 /**
  * Dump differs from {@link ParsedLikeC4ModelData} by the fact that it is computed or layouted
@@ -50,11 +50,12 @@ export type LikeC4ModelDump = {
   }
 }
 
-export type AuxFromDump<D> = D extends LikeC4ModelDump ? Aux<
-    D['projectId'] extends string ? D['projectId'] : never,
+export type AuxFromDump<D> = D extends LikeC4ModelDump ? aux.Aux<
+    D['__'] extends ViewStage ? D['__'] : never,
     KeysOf<D['elements']>,
     KeysOf<D['deployments']['elements']>,
     KeysOf<D['views']>,
+    D['projectId'] extends string ? D['projectId'] : never,
     SpecTypesFromDump<D['specification']>
   >
-  : Aux<never, never, never, never, SpecAux<never, never, never, never, never>>
+  : aux.Never

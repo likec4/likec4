@@ -1,7 +1,6 @@
 import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
 import type {
   AnyAux,
-  Aux,
   Color,
   DeploymentRelationship,
   Link,
@@ -21,7 +20,7 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
   line: RelationshipLineType | null
   head: RelationshipArrowType | null
   tail: RelationshipArrowType | null
-  navigateTo: Aux.Strict.ViewId<A> | null
+  navigateTo: Aux.StrictViewId<A> | null
 } {
   const {
     title,
@@ -46,7 +45,7 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
     line,
     head,
     tail,
-    navigateTo: navigateTo as Aux.Strict.ViewId<A> | null,
+    navigateTo: navigateTo as Aux.StrictViewId<A> | null,
   }
 }
 
@@ -59,7 +58,7 @@ export type MergedRelationshipProps<A extends AnyAux> = {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
-  navigateTo?: Aux.Strict.ViewId<A>
+  navigateTo?: Aux.StrictViewId<A>
   tags?: NonEmptyArray<Aux.Tag<A>>
   links?: NonEmptyArray<Link>
 }

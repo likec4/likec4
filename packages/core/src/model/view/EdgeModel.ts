@@ -1,6 +1,5 @@
 import {
   type AnyAux,
-  type Aux,
   type Color,
   type IteratorLike,
   type RelationshipLineType,
@@ -25,7 +24,7 @@ export class EdgeModel<A extends AnyAux> {
   ) {
   }
 
-  get id(): Aux.Strict.EdgeId<A> {
+  get id(): Aux.EdgeId {
     return this.$edge.id
   }
 
@@ -94,7 +93,7 @@ export class EdgeModel<A extends AnyAux> {
   }
 
   public includesRelation(rel: Aux.RelationId<A>): boolean {
-    return this.$edge.relations.includes(rel as unknown as Aux.Strict.RelationId<A>)
+    return this.$edge.relations.includes(rel as unknown as Aux.StrictRelationId<A>)
   }
 }
 

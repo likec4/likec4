@@ -161,7 +161,7 @@ export function toNodeSource<A extends AnyAux>(
       },
       deploymentRef: 1,
       kind,
-      id: id as unknown as Aux.Strict.NodeId<A>,
+      id: id as unknown as Aux.NodeId,
     }
   }
   invariant(el.isInstance(), 'Expected Instance')
@@ -185,7 +185,7 @@ export function toNodeSource<A extends AnyAux>(
   const notation = instance.notation ?? element.$element.notation
 
   return {
-    id: el.id as unknown as Aux.Strict.NodeId<A>,
+    id: el.id as unknown as Aux.NodeId,
     kind: 'instance' as Aux.DeploymentKind<A>,
     title: instance.title ?? element.title,
     description: instance.description ?? element.description,
@@ -218,8 +218,8 @@ export function toComputedEdges<A extends AnyAux>(
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
-    const source = e.source.id as unknown as Aux.Strict.NodeId<A>
-    const target = e.target.id as unknown as Aux.Strict.NodeId<A>
+    const source = e.source.id as unknown as Aux.NodeId
+    const target = e.target.id as unknown as Aux.NodeId
 
     const {
       title,
@@ -228,7 +228,7 @@ export function toComputedEdges<A extends AnyAux>(
 
     const edge: ComputedEdge<A> = {
       id: e.id,
-      parent: e.boundary?.id as unknown as Aux.Strict.NodeId<A> ?? null,
+      parent: e.boundary?.id as unknown as Aux.NodeId ?? null,
       source,
       target,
       label: title ?? null,
@@ -260,7 +260,7 @@ export function toComputedEdges<A extends AnyAux>(
 
 export function buildNodes<A extends AnyAux = Unknown>(
   memory: Memory,
-): ReadonlyMap<Aux.Strict.NodeId<A>, ComputedNode<A>> {
+): ReadonlyMap<Aux.NodeId, ComputedNode<A>> {
   return buildComputedNodes([...memory.final].map(toNodeSource))
 }
 

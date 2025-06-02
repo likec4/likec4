@@ -2,12 +2,10 @@ import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
   type AnyAux,
-  type Aux,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
   type LikeC4ModelData,
-  type Unknown,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -34,28 +32,28 @@ import {
 } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
-  readonly #elements = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentElementModel<A>>()
+export class LikeC4DeploymentModel<A extends AnyAux = AnyAux> {
+  readonly #elements = new Map<Aux.StrictDeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
-  readonly #parents = new Map<Aux.Strict.DeploymentFqn<A>, DeploymentNodeModel<A>>()
+  readonly #parents = new Map<Aux.StrictDeploymentFqn<A>, DeploymentNodeModel<A>>()
   // Children elements for given FQN
-  readonly #children = new DefaultMap<Aux.Strict.DeploymentFqn<A>, Set<DeploymentElementModel<A>>>(() => new Set())
+  readonly #children = new DefaultMap<Aux.StrictDeploymentFqn<A>, Set<DeploymentElementModel<A>>>(() => new Set())
 
   // Keep track of instances of the logical element
-  readonly #instancesOf = new DefaultMap<Aux.Strict.Fqn<A>, Set<DeployedInstanceModel<A>>>(() => new Set())
+  readonly #instancesOf = new DefaultMap<Aux.StrictFqn<A>, Set<DeployedInstanceModel<A>>>(() => new Set())
 
   readonly #rootElements = new Set<DeploymentNodeModel<A>>()
 
   readonly #relations = new Map<Aux.RelationId<A>, DeploymentRelationModel<A>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new DefaultMap<Aux.Strict.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
+  readonly #incoming = new DefaultMap<Aux.StrictDeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new DefaultMap<Aux.Strict.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
+  readonly #outgoing = new DefaultMap<Aux.StrictDeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
   // Relationships inside the element, among descendants
-  readonly #internal = new DefaultMap<Aux.Strict.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
+  readonly #internal = new DefaultMap<Aux.StrictDeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
   // readonly #views = new Map<ViewID, LikeC4ViewModel<A>>()
 
@@ -90,7 +88,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
     }
   }
 
-  public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {
+  public element(el: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeploymentElementModel<A> {
     if (el instanceof DeploymentNodeModel || el instanceof DeployedInstanceModel) {
       return el
     }
@@ -98,10 +96,10 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
   public findElement(el: Aux.Primitive.DeploymentFqn<A>): DeploymentElementModel<A> | null {
-    return this.#elements.get(el as Aux.Strict.DeploymentFqn<A>) ?? null
+    return this.#elements.get(el as Aux.StrictDeploymentFqn<A>) ?? null
   }
 
-  public node(el: DeploymentOrFqn<A>): DeploymentNodeModel<A> {
+  public node(el: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeploymentNodeModel<A> {
     const element = this.element(el)
     invariant(element.isDeploymentNode(), `Element ${element.id} is not a deployment node`)
     return element
@@ -115,7 +113,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
     return element
   }
 
-  public instance(el: DeploymentOrFqn<A>): DeployedInstanceModel<A> {
+  public instance(el: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeployedInstanceModel<A> {
     const element = this.element(el)
     invariant(element.isInstance(), `Element ${element.id} is not a deployed instance`)
     return element
@@ -167,7 +165,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
   /**
    * Iterate over all instances of the given logical element.
    */
-  public *instancesOf(element: ElementOrFqn<A>): DeployedInstancesIterator<A> {
+  public *instancesOf(element: ElementOrFqn<Aux.Fqn<A>>): DeployedInstancesIterator<A> {
     const id = getId(element)
     const instances = this.#instancesOf.get(id)
     if (instances) {
@@ -202,7 +200,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
     return nonNullable(this.#relations.get(id), `DeploymentRelationModel ${id} not found`)
   }
   public findRelationship(id: Aux.Primitive.RelationId<A>): DeploymentRelationModel<A> | null {
-    return this.#relations.get(id as Aux.Strict.RelationId<A>) ?? null
+    return this.#relations.get(id as Aux.StrictRelationId<A>) ?? null
   }
 
   /**
@@ -221,7 +219,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: DeploymentOrFqn<A>): DeploymentNodeModel<A> | null {
+  public parent(element: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeploymentNodeModel<A> | null {
     const id = getId(element)
     return this.#parents.get(id) || null
   }
@@ -230,7 +228,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: DeploymentOrFqn<A>): ReadonlySet<DeploymentElementModel<A>> {
+  public children(element: DeploymentOrFqn<Aux.DeploymentFqn<A>>): ReadonlySet<DeploymentElementModel<A>> {
     const id = getId(element)
     return this.#children.get(id)
   }
@@ -238,7 +236,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
   /**
    * Get all sibling (i.e. same parent)
    */
-  public *siblings(element: DeploymentOrFqn<A>): DeploymentElementsIterator<A> {
+  public *siblings(element: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeploymentElementsIterator<A> {
     const id = getId(element)
     const siblings = this.parent(element)?.children() ?? this.roots()
     for (const sibling of siblings) {
@@ -253,7 +251,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(element: DeploymentOrFqn<A>): DeploymentNodesIterator<A> {
+  public *ancestors(element: DeploymentOrFqn<Aux.DeploymentFqn<A>>): DeploymentNodesIterator<A> {
     let id = getId(element)
     let parent
     while (parent = this.#parents.get(id)) {
@@ -266,7 +264,10 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: DeploymentOrFqn<A>, sort: 'asc' | 'desc' = 'desc'): DeploymentElementsIterator<A> {
+  public *descendants(
+    element: DeploymentOrFqn<Aux.DeploymentFqn<A>>,
+    sort: 'asc' | 'desc' = 'desc',
+  ): DeploymentElementsIterator<A> {
     for (const child of this.children(element)) {
       if (sort === 'asc') {
         yield child
@@ -284,7 +285,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
    * @see incomers
    */
   public *incoming(
-    element: DeploymentOrFqn<A>,
+    element: DeploymentOrFqn<Aux.DeploymentFqn<A>>,
     filter: IncomingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<A>> {
     const id = getId(element)
@@ -305,7 +306,7 @@ export class LikeC4DeploymentModel<A extends AnyAux = Unknown> {
    * @see outgoers
    */
   public *outgoing(
-    element: DeploymentOrFqn<A>,
+    element: DeploymentOrFqn<Aux.DeploymentFqn<A>>,
     filter: OutgoingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<A>> {
     const id = getId(element)

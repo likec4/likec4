@@ -3,7 +3,6 @@ import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
   type AnyAux,
-  type Aux,
   type Color,
   type DeployedInstance,
   type DeploymentElement,
@@ -32,10 +31,10 @@ export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<Deployme
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = Aux.Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux = AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
-abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
-  abstract readonly id: Aux.Strict.DeploymentFqn<A>
+abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
+  abstract readonly id: Aux.StrictDeploymentFqn<A>
   abstract readonly _literalId: Aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
   abstract readonly title: string
@@ -139,7 +138,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<A>> {
-    const unique = new Set<Aux.Strict.DeploymentFqn<A>>()
+    const unique = new Set<Aux.StrictDeploymentFqn<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -150,7 +149,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
     return
   }
   public *outgoers(filter: OutgoingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<A>> {
-    const unique = new Set<Aux.Strict.DeploymentFqn<A>>()
+    const unique = new Set<Aux.StrictDeploymentFqn<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue
@@ -203,7 +202,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
       ))
   }
 
-  public getMetadata(): Aux.Strict.Metadata<A>
+  public getMetadata(): Aux.StrictMetadata<A>
   public getMetadata(field: Aux.MetadataKey<A>): string | undefined
   public getMetadata(field?: Aux.MetadataKey<A>) {
     if (field) {
@@ -213,8 +212,8 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = Aux.Any> {
   }
 }
 
-export class DeploymentNodeModel<A extends AnyAux = Aux.Any> extends AbstractDeploymentElementModel<A> {
-  override id: Aux.Strict.DeploymentFqn<A>
+export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDeploymentElementModel<A> {
+  override id: Aux.StrictDeploymentFqn<A>
   override _literalId: Aux.DeploymentId<A>
   override title: string
   override hierarchyLevel: number
@@ -332,7 +331,7 @@ export class DeploymentNodeModel<A extends AnyAux = Aux.Any> extends AbstractDep
 }
 
 export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractDeploymentElementModel<A> {
-  override readonly id: Aux.Strict.DeploymentFqn<A>
+  override readonly id: Aux.StrictDeploymentFqn<A>
   override readonly _literalId: Aux.DeploymentId<A>
   override readonly title: string
   override readonly hierarchyLevel: number
@@ -439,7 +438,7 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = Unknown> {
   ) {
   }
 
-  get id(): Aux.Strict.DeploymentFqn<A> {
+  get id(): Aux.StrictDeploymentFqn<A> {
     return this.instance.id
   }
 
@@ -503,7 +502,7 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     const parent = commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.$model.node(parent) : null
   }
-  get id(): Aux.Strict.RelationId<A> {
+  get id(): Aux.StrictRelationId<A> {
     return this.$relationship.id
   }
 
@@ -573,7 +572,7 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     return false
   }
 
-  public getMetadata(): Aux.Strict.Metadata<A>
+  public getMetadata(): Aux.StrictMetadata<A>
   public getMetadata(field: Aux.MetadataKey<A>): string | undefined
   public getMetadata(field?: Aux.MetadataKey<A>) {
     if (field) {

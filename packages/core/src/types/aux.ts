@@ -1,5 +1,7 @@
+import type { IfAny, IsAny } from 'type-fest'
 import type { Link } from './_common'
 import type * as scalar from './scalar'
+import type { ViewStage } from './view-common'
 /**
  * Specification types (kinds, tags, metadata keys)
  *
@@ -27,19 +29,22 @@ export type AnySpec = SpecAux<any, any, any, any, any>
 /**
  * Auxilary interface to keep inferred types
  *
- * @typeParam Project - Project identifier type
+ * @typeParam Stage - View stage
  * @typeParam Element - Literal union of FQNs of model elements
  * @typeParam Deployment - Literal union of FQNs of deployment elements
  * @typeParam View - Literal union of view identifiers
+ * @typeParam Project - Project identifier type
  * @typeParam Spec - Specification types (kinds, tags, metadata keys)
  */
 export interface Aux<
-  Project extends string,
+  Stage extends ViewStage,
   Element extends string,
   Deployment extends string,
   View extends string,
+  Project extends string,
   Spec extends SpecAux<string, string, string, string, string>,
 > {
+  Stage: Stage
   ProjectId: Project
   ElementId: Element
   DeploymentId: Deployment
@@ -53,26 +58,47 @@ export interface Aux<
   MetadataKey: Spec['MetadataKey']
 }
 
-export type AnyAux = Aux<any, any, any, any, AnySpec>
+export type Any = Aux<any, any, any, any, any, AnySpec>
+export type AnyAux = Aux<any, any, any, any, any, AnySpec>
+
+export type Never = Aux<never, never, never, never, never, SpecAux<never, never, never, never, never>>
 
 /**
  * Fallback when {@link Aux} can't be inferred
+ * By default assumes layouted view
  */
-export type Unknown = Aux<string, string, string, string, SpecAux<string, string, string, string, string>>
+export type Unknown = Aux<'layouted', string, string, string, string, SpecAux<string, string, string, string, string>>
 
-type ArrayOf<T> = readonly T[]
-type MetadataObject<T> = Record<`${T & string}`, string>
+// export type Stage<A> = A extends Aux<infer S extends ViewStage, any, any, any, any, any> ? S : never
+export type Stage<A> =
+  // dprint-ignore
+  A extends AnyAux
+    ? IfAny<A['Stage'], ViewStage, A['Stage']>
+    : never
+
+export type setStage<A, S extends ViewStage> =
+  // dprint-ignore
+  A extends AnyAux
+    ? Aux<S, A['ElementId'], A['DeploymentId'], A['ViewId'], A['ProjectId'], A['Spec']>
+    : never
+
+export type read<A, F extends keyof AnyAux, OnAny = string> =
+  // dprint-ignore
+  A extends AnyAux
+    ? (IsAny<A[F]> extends false ? A[F] : OnAny)
+    : never
+
+export type ValueOrString<T> = IsAny<T> extends false ? T : string
 
 /**
  * Project identifier from Aux
  */
-export type ProjectId<A> = A extends Aux<infer P extends string, any, any, any, any> ? P : never
-
+export type ProjectId<A> = A extends AnyAux ? ValueOrString<A['ProjectId']> : never
 /**
  * Element FQN from Aux as a literal union
  * @alias {@link ElementId}
  */
-export type Fqn<A> = A extends Aux<any, infer E extends string, any, any, any> ? E : never
+export type Fqn<A> = A extends AnyAux ? ValueOrString<A['ElementId']> : never
 
 /**
  * Element FQN from Aux as a literal union
@@ -84,7 +110,7 @@ export type ElementId<A> = Fqn<A>
  * Deployment FQN from Aux as a literal union
  * @alias {@link DeploymentId}
  */
-export type DeploymentFqn<A> = A extends Aux<any, any, infer D extends string, any, any> ? D : never
+export type DeploymentFqn<A> = A extends AnyAux ? ValueOrString<A['DeploymentId']> : never
 
 /**
  * Deployment FQN from Aux as a literal union
@@ -95,7 +121,7 @@ export type DeploymentId<A> = DeploymentFqn<A>
 /**
  * View identifier from Aux as a literal union
  */
-export type ViewId<A> = A extends Aux<any, any, any, infer V extends string, any> ? V : never
+export type ViewId<A> = A extends AnyAux ? ValueOrString<A['ViewId']> : never
 
 /**
  * Relation identifier from Aux as a literal union
@@ -115,26 +141,22 @@ export type EdgeId = scalar.EdgeId
 /**
  * ElementKind from Aux as a literal union
  */
-export type ElementKind<A> = A extends Aux<any, any, any, any, SpecAux<infer E extends string, any, any, any, any>> ? E
-  : never
+export type ElementKind<A> = A extends AnyAux ? ValueOrString<A['ElementKind']> : never
 
 /**
  * DeploymentKind from Aux as a literal union
  */
-export type DeploymentKind<A> = A extends Aux<any, any, any, any, SpecAux<any, infer D extends string, any, any, any>>
-  ? D
-  : never
+export type DeploymentKind<A> = A extends AnyAux ? ValueOrString<A['DeploymentKind']> : never
 
 /**
  * RelationKind from Aux as a literal union
  */
-export type RelationKind<A> = A extends Aux<any, any, any, any, SpecAux<any, any, infer R extends string, any, any>> ? R
-  : never
+export type RelationKind<A> = A extends AnyAux ? ValueOrString<A['RelationKind']> : never
 
 /**
  * Tag from Aux as a literal union
  */
-export type Tag<A> = A extends Aux<any, any, any, any, SpecAux<any, any, any, infer T extends string, any>> ? T : never
+export type Tag<A> = read<A, 'Tag'>
 
 /**
  * Array of tags from Aux
@@ -144,19 +166,29 @@ export type Tags<A> = readonly Tag<A>[]
 /**
  * Metadata key from Aux
  */
-export type MetadataKey<A> = A extends Aux<any, any, any, any, SpecAux<any, any, any, any, infer M extends string>> ? M
-  : never
+export type MetadataKey<A> = A extends AnyAux ? ValueOrString<A['MetadataKey']> : never
 
 /**
  * Metadata object from Aux
  */
-export type Metadata<A> = MetadataKey<A> extends infer K extends string ? { [key in K]?: string }
-  : Record<never, unknown>
+export type Metadata<A> =
+  // dprint-ignore
+  A extends AnyAux
+    ? {
+        [key in ValueOrString<A['MetadataKey']>]?: string
+    }
+    : never
 
 /**
  * Specification from Aux
  */
-export type Spec<A> = A extends Aux<any, any, any, any, infer S> ? S : never
+export type Spec<A> = A extends AnyAux ? A['Spec'] : never
+
+export type setSpec<A, S extends AnySpec> =
+  // dprint-ignore
+  A extends AnyAux
+    ? Aux<A['Stage'], A['ElementId'], A['DeploymentId'], A['ViewId'], A['ProjectId'], S>
+    : never
 
 export type StrictProjectId<A> = ProjectId<A> extends infer P extends string ? scalar.ProjectId<P> : never
 
@@ -177,6 +209,11 @@ export type StrictDeploymentKind<A> = DeploymentKind<A> extends infer D extends 
 export type StrictRelationKind<A> = RelationKind<A> extends infer R extends string ? scalar.RelationshipKind<R> : never
 
 type StringPrimitive = string & Record<never, never>
+
+/**
+ * Suggests values of type `V` in IDE
+ */
+export type complete<V> = V | StringPrimitive
 
 export type LiteralElementId<A> = ElementId<A> | StringPrimitive
 export type LiteralFqn<A> = Fqn<A> | StringPrimitive

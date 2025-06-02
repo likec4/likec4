@@ -415,7 +415,9 @@ const fakeParsedModel = {
   },
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
-export type A = Aux<
+
+// export type $Aux = typeof fakeModel.Aux
+export type $Aux = Aux<
   never,
   FakeElementIds,
   never,
@@ -431,7 +433,7 @@ export type A = Aux<
 
 const emptyView = {
   __: 'element' as const,
-  id: 'index' as Aux.Strict.ViewId<A>,
+  id: 'index' as Aux.StrictViewId<$Aux>,
   title: null,
   description: null,
   tags: null,
@@ -470,8 +472,8 @@ export type Expression =
 
 export function $custom(
   expr: ElementRefExpr,
-  props: Omit<ModelFqnExpr.Custom<A>['custom'], 'expr'>,
-): ModelFqnExpr.Custom<A> {
+  props: Omit<ModelFqnExpr.Custom<$Aux>['custom'], 'expr'>,
+): ModelFqnExpr.Custom<$Aux> {
   return {
     custom: {
       expr: $expr(expr) as any,
@@ -481,9 +483,9 @@ export function $custom(
 }
 
 export function $customRelation(
-  relation: ModelRelationExpr.OrWhere<A>,
-  props: Omit<ModelRelationExpr.Custom<A>['customRelation'], 'expr'>,
-): ModelRelationExpr.Custom<A> {
+  relation: ModelRelationExpr.OrWhere<$Aux>,
+  props: Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr'>,
+): ModelRelationExpr.Custom<$Aux> {
   return {
     customRelation: {
       expr: $expr(relation) as any,
@@ -494,20 +496,20 @@ export function $customRelation(
 
 export function $where(
   expr: Expression,
-  operator: WhereOperator<A>,
-): ModelExpression.Where<A>
+  operator: WhereOperator<$Aux>,
+): ModelExpression.Where<$Aux>
 export function $where(
-  expr: ModelRelationExpr<A>,
-  operator: WhereOperator<A>,
-): ModelRelationExpr.Where<A>
+  expr: ModelRelationExpr<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelRelationExpr.Where<$Aux>
 export function $where(
-  expr: ModelFqnExpr<A>,
-  operator: WhereOperator<A>,
-): ModelFqnExpr.Where<A>
+  expr: ModelFqnExpr<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelFqnExpr.Where<$Aux>
 export function $where(
-  expr: Expression | ModelExpression<A>,
-  operator: WhereOperator<A>,
-): ModelExpression.Where<A> {
+  expr: Expression | ModelExpression<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelExpression.Where<$Aux> {
   return {
     where: {
       expr: $expr(expr) as any,
@@ -518,8 +520,8 @@ export function $where(
 
 export function $participant(
   participant: Participant,
-  operator: TagEqual<A> | KindEqual<A>,
-): WhereOperator<A> {
+  operator: TagEqual<$Aux> | KindEqual<$Aux>,
+): WhereOperator<$Aux> {
   return {
     participant,
     operator,
@@ -527,8 +529,8 @@ export function $participant(
 }
 
 export function $inout(
-  expr: InOutExpr | ModelFqnExpr<A>,
-): ModelRelationExpr.InOut<A> {
+  expr: InOutExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.InOut<$Aux> {
   const innerExpression = !isString(expr)
     ? expr
     : $expr(expr.replace(/->/g, '').trim() as any)
@@ -537,8 +539,8 @@ export function $inout(
 }
 
 export function $incoming(
-  expr: IncomingExpr | ModelFqnExpr<A>,
-): ModelRelationExpr.Incoming<A> {
+  expr: IncomingExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.Incoming<$Aux> {
   const innerExpression = !isString(expr)
     ? expr
     : $expr(expr.replace('-> ', '') as any)
@@ -547,8 +549,8 @@ export function $incoming(
 }
 
 export function $outgoing(
-  expr: OutgoingExpr | ModelFqnExpr<A>,
-): ModelRelationExpr.Outgoing<A> {
+  expr: OutgoingExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.Outgoing<$Aux> {
   const innerExpression = !isString(expr)
     ? expr as ModelFqnExpr
     : $expr(expr.replace(' ->', '') as any)
@@ -558,7 +560,7 @@ export function $outgoing(
 
 export function $relation(
   expr: RelationExpr,
-): ModelRelationExpr.Direct<A> {
+): ModelRelationExpr.Direct<$Aux> {
   const [source, target] = expr.split(/ -> | <-> /)
   const isBidirectional = expr.includes(' <-> ')
 
@@ -569,9 +571,9 @@ export function $relation(
   }
 }
 
-export function $expr(expr: Expression | ModelExpression<A>): ModelExpression<A> {
+export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression<$Aux> {
   if (!isString(expr)) {
-    return expr as ModelExpression<A>
+    return expr as ModelExpression<$Aux>
   }
   if (expr === '*') {
     return { wildcard: true }
@@ -588,7 +590,7 @@ export function $expr(expr: Expression | ModelExpression<A>): ModelExpression<A>
   if (expr.endsWith('._')) {
     return {
       ref: {
-        model: expr.replace('._', '') as Aux.Strict.Fqn<A>,
+        model: expr.replace('._', '') as Aux.StrictFqn<$Aux>,
       },
       selector: 'expanded',
     }
@@ -596,7 +598,7 @@ export function $expr(expr: Expression | ModelExpression<A>): ModelExpression<A>
   if (expr.endsWith('.*')) {
     return {
       ref: {
-        model: expr.replace('.*', '') as Aux.Strict.Fqn<A>,
+        model: expr.replace('.*', '') as Aux.StrictFqn<$Aux>,
       },
       selector: 'children',
     }
@@ -604,20 +606,20 @@ export function $expr(expr: Expression | ModelExpression<A>): ModelExpression<A>
   if (expr.endsWith('.**')) {
     return {
       ref: {
-        model: expr.replace('.**', '') as Aux.Strict.Fqn<A>,
+        model: expr.replace('.**', '') as Aux.StrictFqn<$Aux>,
       },
       selector: 'descendants',
     }
   }
   return {
     ref: {
-      model: expr as Aux.Strict.Fqn<A>,
+      model: expr as Aux.StrictFqn<$Aux>,
     },
   }
 }
 
 type CustomProps = {
-  where?: WhereOperator<A>
+  where?: WhereOperator<$Aux>
   with?: {
     title?: string
     description?: string
@@ -629,12 +631,12 @@ type CustomProps = {
     opacity?: number
     navigateTo?: string
     multiple?: boolean
-  } & Omit<ModelRelationExpr.Custom<A>['customRelation'], 'expr' | 'navigateTo'>
+  } & Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr' | 'navigateTo'>
 }
 export function $include(
-  expr: Expression | ModelExpression<A>,
+  expr: Expression | ModelExpression<$Aux>,
   props?: CustomProps,
-): ViewRulePredicate<A> {
+): ViewRulePredicate<$Aux> {
   let _expr = props?.where ? $where(expr as any, props.where as any) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
@@ -642,9 +644,9 @@ export function $include(
   }
 }
 export function $with(
-  expr: ModelExpression<A>,
+  expr: ModelExpression<$Aux>,
   props?: CustomProps['with'],
-): ModelRelationExpr.Custom<A> | ModelFqnExpr.Custom<A> {
+): ModelRelationExpr.Custom<$Aux> | ModelFqnExpr.Custom<$Aux> {
   if (ModelRelationExpr.is(expr) || ModelRelationExpr.isWhere(expr)) {
     return {
       customRelation: {
@@ -664,9 +666,9 @@ export function $with(
   throw 'Unsupported type of internal expression'
 }
 export function $exclude(
-  expr: Expression | ModelExpression<A>,
-  where?: WhereOperator<A>,
-): ViewRulePredicate<A> {
+  expr: Expression | ModelExpression<$Aux>,
+  where?: WhereOperator<$Aux>,
+): ViewRulePredicate<$Aux> {
   let _expr = where ? $where(expr as any, where) : $expr(expr)
   return {
     exclude: [_expr],
@@ -681,7 +683,7 @@ export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
 
 export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
   return {
-    targets: [$expr(element) as ModelFqnExpr<A>],
+    targets: [$expr(element) as ModelFqnExpr<$Aux>],
     style: Object.assign({}, style),
   }
 }
@@ -710,11 +712,11 @@ export function computeView(
 ) {
   let result: ComputedView
   if (args.length === 1) {
-    result = computeElementView<A>(
+    result = computeElementView<$Aux>(
       fakeModel,
       {
         ...emptyView,
-        rules: [args[0]].flat() as ViewRule<A>[],
+        rules: [args[0]].flat() as ViewRule<$Aux>[],
       },
     )
   } else {
@@ -722,8 +724,8 @@ export function computeView(
       fakeModel,
       {
         ...emptyView,
-        viewOf: args[0] as Aux.Strict.ElementId<A>,
-        rules: [args[1]].flat() as ViewRule<A>[],
+        viewOf: args[0] as Aux.StrictElementId<$Aux>,
+        rules: [args[1]].flat() as ViewRule<$Aux>[],
       },
     )
   }

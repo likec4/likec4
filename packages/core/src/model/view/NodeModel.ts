@@ -41,14 +41,14 @@ export namespace NodeModel {
   }
 }
 
-export class NodeModel<A extends AnyAux = Aux.Any> {
+export class NodeModel<A extends AnyAux = AnyAux> {
   constructor(
     public readonly $view: LikeC4ViewModel<A>,
     public readonly $node: $View<A>['nodes'][number],
   ) {
   }
 
-  get id(): Aux.Strict.NodeId<A> {
+  get id(): Aux.NodeId {
     return this.$node.id
   }
 
@@ -155,7 +155,7 @@ export class NodeModel<A extends AnyAux = Aux.Any> {
   }
 
   public *incomers(filter: IncomingFilter = 'all'): NodesIterator<A> {
-    const unique = new Set<Aux.Strict.NodeId<A>>()
+    const unique = new Set<Aux.NodeId>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -181,7 +181,7 @@ export class NodeModel<A extends AnyAux = Aux.Any> {
   }
 
   public *outgoers(filter: OutgoingFilter = 'all'): NodesIterator<A> {
-    const unique = new Set<Aux.Strict.NodeId<A>>()
+    const unique = new Set<Aux.NodeId>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue

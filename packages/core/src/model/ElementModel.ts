@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Aux, Color, IteratorLike } from '../types'
+import type { AnyAux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -22,14 +22,14 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux = Aux.Any> {
-  readonly id: Aux.Strict.Fqn<A>
+export class ElementModel<A extends AnyAux = AnyAux> {
+  readonly id: Aux.StrictFqn<A>
   readonly _literalId: Aux.ElementId<A>
   readonly hierarchyLevel: number
 
   readonly imported: null | {
     from: ProjectId
-    fqn: Aux.Strict.Fqn<A>
+    fqn: Aux.StrictFqn<A>
   }
 
   constructor(
@@ -180,7 +180,7 @@ export class ElementModel<A extends AnyAux = Aux.Any> {
     return this.$model.incoming(this, filter)
   }
   public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<A> {
-    const unique = new Set<Aux.Strict.Fqn<A>>()
+    const unique = new Set<Aux.StrictFqn<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -194,7 +194,7 @@ export class ElementModel<A extends AnyAux = Aux.Any> {
     return this.$model.outgoing(this, filter)
   }
   public *outgoers(filter: OutgoingFilter = 'all'): ElementsIterator<A> {
-    const unique = new Set<Aux.Strict.Fqn<A>>()
+    const unique = new Set<Aux.StrictFqn<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue

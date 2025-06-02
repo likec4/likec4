@@ -34,11 +34,11 @@ export function isModelRelation<M extends AnyAux>(x: AnyRelationshipModel<M>): x
   return x instanceof RelationshipModel
 }
 
-export function isDeploymentElementModel<M extends AnyAux = Unknown>(x: unknown): x is DeploymentElementModel<M> {
+export function isDeploymentElementModel<M extends AnyAux = AnyAux>(x: unknown): x is DeploymentElementModel<M> {
   return x instanceof DeploymentNodeModel || x instanceof DeployedInstanceModel
 }
 
-export function isElementModel<M extends AnyAux = Unknown>(element: unknown): element is ElementModel<M> {
+export function isElementModel<M extends AnyAux = AnyAux>(element: unknown): element is ElementModel<M> {
   return element instanceof ElementModel
 }
 

@@ -248,7 +248,7 @@ function toFilterable<M extends AnyAux>(
   connectionEndpoint: DeploymentRelationEndpoint<M>,
 ): Filterable<M> {
   if (isElementModel<M>(relationEndpoint)) { // Element itself. Extend with tags of the deployed instance (TODO)
-    const deployedInstance = isDeploymentElementModel(connectionEndpoint) && isDeployedInstance(connectionEndpoint)
+    const deployedInstance = isDeploymentElementModel<M>(connectionEndpoint) && isDeployedInstance(connectionEndpoint)
       ? connectionEndpoint
       : null
     return {

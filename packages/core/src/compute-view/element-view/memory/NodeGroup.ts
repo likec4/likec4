@@ -1,14 +1,14 @@
-import { type NodeId, type ViewRuleGroup, GroupElementKind } from '../../../types'
-import type { Elem } from '../_types'
+import type { ElementModel } from '../../../model'
+import { type AnyAux, type NodeId, type ViewRuleGroup, GroupElementKind } from '../../../types'
 
-export class NodesGroup {
+export class NodesGroup<A extends AnyAux = AnyAux> {
   static readonly kind = GroupElementKind
 
   constructor(
-    public readonly id: NodeId<any>,
-    public readonly viewRule: ViewRuleGroup,
-    public readonly parent: NodeId<any> | null = null,
-    public readonly elements: ReadonlySet<Elem> = new Set<Elem>(),
+    public readonly id: NodeId,
+    public readonly viewRule: ViewRuleGroup<A>,
+    public readonly parent: NodeId | null = null,
+    public readonly elements: ReadonlySet<ElementModel<A>> = new Set<ElementModel<A>>(),
   ) {
   }
 
@@ -16,12 +16,12 @@ export class NodesGroup {
     return this.elements.size === 0
   }
 
-  update(elements: ReadonlySet<Elem>): NodesGroup {
+  update(elements: ReadonlySet<ElementModel<AnyAux>>): NodesGroup<A> {
     return new NodesGroup(
       this.id,
       this.viewRule,
       this.parent,
-      elements,
+      elements as unknown as ReadonlySet<ElementModel<A>>,
     )
   }
 

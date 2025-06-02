@@ -17,16 +17,16 @@ import type { Connection } from '../Connection'
  * Includes direct relationships and/or between their nested elements.
  */
 export class DeploymentConnectionModel<A extends AnyAux = Unknown>
-  implements Connection<DeploymentElementModel<A>, Aux.Strict.EdgeId<A>>
+  implements Connection<DeploymentElementModel<A>, Aux.EdgeId>
 {
-  readonly id: Aux.Strict.EdgeId<A>
+  readonly id: Aux.EdgeId
 
   constructor(
     public readonly source: DeploymentElementModel<A>,
     public readonly target: DeploymentElementModel<A>,
     public readonly relations: RelationshipsAccum<A>,
   ) {
-    this.id = stringHash(`deployment:${source.id}:${target.id}`) as Aux.Strict.EdgeId<A>
+    this.id = stringHash(`deployment:${source.id}:${target.id}`) as Aux.EdgeId
   }
 
   /**

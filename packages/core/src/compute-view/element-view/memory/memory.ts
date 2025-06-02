@@ -1,7 +1,7 @@
 import { nonNullable } from '../../../errors'
 import type { ConnectionModel } from '../../../model/connection'
 import type { ElementModel } from '../../../model/ElementModel'
-import type { ModelExpression, NodeId, ViewRuleGroup } from '../../../types'
+import type { AnyAux, ModelExpression, NodeId, Unknown, ViewRuleGroup } from '../../../types'
 import { Stack } from '../../../utils/mnemonist'
 import { type ComputeCtx, type CtxElement, type MutableState, type StageExpression, AbstractMemory } from '../../memory'
 import { NodesGroup } from './NodeGroup'
@@ -10,30 +10,30 @@ import { ActiveGroupStageInclude, StageInclude } from './stage-include'
 
 export interface Ctx extends
   ComputeCtx<
-    ElementModel<any>,
-    ConnectionModel<any>,
+    ElementModel<Unknown>,
+    ConnectionModel<Unknown>,
     Memory<Ctx>,
     StageInclude<Ctx>,
     StageExclude,
-    ModelExpression
+    ModelExpression<Unknown>
   >
 {
   MutableState: {
-    elements: Set<ElementModel>
-    explicits: Set<ElementModel>
-    final: Set<ElementModel>
-    connections: ConnectionModel[]
+    elements: Set<ElementModel<Unknown>>
+    explicits: Set<ElementModel<Unknown>>
+    final: Set<ElementModel<Unknown>>
+    connections: ConnectionModel<Unknown>[]
     groups: NodesGroup[]
     /*
      * The group where explict element was added first time
      * May be a root group
      */
-    explicitFirstSeenIn: Map<ElementModel, NodesGroup['id']>
+    explicitFirstSeenIn: Map<ElementModel<Unknown>, NodesGroup['id']>
     /**
      * The group where element (implicit or explicit) was last seen (added or updated)
      * Exclude root group
      */
-    lastSeenIn: Map<ElementModel, NodesGroup['id']>
+    lastSeenIn: Map<ElementModel<Unknown>, NodesGroup['id']>
   }
 }
 

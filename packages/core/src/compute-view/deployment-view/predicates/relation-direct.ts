@@ -30,7 +30,7 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   return siblings
 }
 
-const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
+const resolveWildcard = (model: LikeC4DeploymentModel<AnyAux>, nonWildcard: FqnExpr.DeploymentRef) => {
   const sources = resolveElements(model, nonWildcard)
   return sources.map(source => {
     const targets = resolveAscendingSiblings(source)

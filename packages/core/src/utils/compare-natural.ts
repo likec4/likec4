@@ -31,11 +31,13 @@ export function compareNatural(a: string | undefined, b: string | undefined): -1
  * //   'a.c.c',
  * // ]
  */
-export function compareNaturalHierarchically(separator = '.') {
-  return (a: string | undefined, b: string | undefined) => {
+export function compareNaturalHierarchically(
+  separator = '.',
+): (a: string | undefined, b: string | undefined) => number {
+  return (a, b) => {
     if (a === b) return 0
-    if (!isString(a)) return -1
-    if (!isString(b)) return 1
+    if (!a) return -1
+    if (!b) return 1
     const aParts = a.split(separator)
     const bParts = b.split(separator)
     if (aParts.length !== bParts.length) {

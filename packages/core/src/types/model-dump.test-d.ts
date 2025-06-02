@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import type * as aux from './aux'
-import type { AnyAux, Aux, SpecAux } from './aux'
+import type { Aux, SpecAux } from './aux'
 import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
@@ -119,12 +119,20 @@ describe('AuxFromDump', () => {
     type Result = AuxFromDump<typeof emptyModel>
 
     expectTypeOf<Result>().toEqualTypeOf<
-      Aux<'test-project', never, never, never, SpecAux<never, never, never, never, never>>
+      Aux<'computed', never, never, never, 'test-project', SpecAux<never, never, never, never, never>>
     >()
-    expectTypeOf<Result['ProjectId']>().toEqualTypeOf<'test-project'>()
-    expectTypeOf<Result['ElementId']>().toEqualTypeOf<never>()
-    expectTypeOf<Result['ViewId']>().toEqualTypeOf<never>()
-    expectTypeOf<Result['DeploymentId']>().toEqualTypeOf<never>()
+    expectTypeOf<Result['Stage']>().toEqualTypeOf<'computed'>()
+    expectTypeOf<aux.Stage<Result>>().toEqualTypeOf<'computed'>()
+    expectTypeOf<aux.ProjectId<Result>>().toEqualTypeOf<'test-project'>()
+    expectTypeOf<aux.ElementId<Result>>().toBeNever()
+    expectTypeOf<aux.ViewId<Result>>().toBeNever()
+    expectTypeOf<aux.DeploymentId<Result>>().toBeNever()
+    expectTypeOf<aux.ElementKind<Result>>().toBeNever()
+    expectTypeOf<aux.DeploymentKind<Result>>().toBeNever()
+    expectTypeOf<aux.RelationKind<Result>>().toBeNever()
+    expectTypeOf<aux.Tag<Result>>().toBeNever()
+    expectTypeOf<aux.Tags<Result>>().items.toBeNever()
+    expectTypeOf<aux.MetadataKey<Result>>().toBeNever()
   })
 
   it('should convert complete LikeC4ModelDump to Aux with correct types', () => {
@@ -171,10 +179,11 @@ describe('AuxFromDump', () => {
     // Verify the main Aux type parameters
     expectTypeOf<A>().toEqualTypeOf<
       Aux<
-        'test-project',
+        'computed',
         'element1' | 'element2',
         'deployment1' | 'deployment2',
         'view1' | 'view2',
+        'test-project',
         SpecAux<
           'system' | 'container',
           'k8s' | 'aws',
@@ -186,6 +195,8 @@ describe('AuxFromDump', () => {
     >()
 
     // Verify individual properties
+    expectTypeOf<A['Stage']>().toEqualTypeOf<'computed'>()
+    expectTypeOf<aux.Stage<A>>().toEqualTypeOf<'computed'>()
     expectTypeOf<A['ProjectId']>().toEqualTypeOf<'test-project'>()
     expectTypeOf<aux.ProjectId<A>>().toEqualTypeOf<'test-project'>()
     expectTypeOf<A['ElementId']>().toEqualTypeOf<'element1' | 'element2'>()
@@ -215,13 +226,19 @@ describe('AuxFromDump', () => {
     expectTypeOf<aux.RelationKind<A>>().toEqualTypeOf<'http' | 'grpc'>()
     expectTypeOf<A['Tag']>().toEqualTypeOf<'important' | 'deprecated'>()
     expectTypeOf<aux.Tag<A>>().toEqualTypeOf<'important' | 'deprecated'>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly ('important' | 'deprecated')[]>()
+
     expectTypeOf<A['MetadataKey']>().toEqualTypeOf<'version' | 'owner'>()
     expectTypeOf<aux.MetadataKey<A>>().toEqualTypeOf<'version' | 'owner'>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<{
+      version?: string
+      owner?: string
+    }>()
   })
 
   it('should handle optional fields in LikeC4ModelDump', () => {
     const model = castModel({
-      __: 'computed',
+      __: 'layouted',
       projectId: 'test-project',
       elements: {
         'e1': {},
@@ -243,11 +260,12 @@ describe('AuxFromDump', () => {
     type Result = AuxFromDump<typeof model>
 
     expectTypeOf<Result>().toEqualTypeOf<
-      Aux<
-        'test-project',
+      aux.Aux<
+        'layouted',
         'e1' | 'e2' | 'e3',
         never,
         never,
+        'test-project',
         SpecAux<
           'system',
           never,
@@ -267,6 +285,6 @@ describe('AuxFromDump', () => {
 
     type Result = AuxFromDump<NotAModel>
 
-    expectTypeOf<Result>().toEqualTypeOf<AnyAux>()
+    expectTypeOf<Result>().toEqualTypeOf<aux.Never>()
   })
 })
