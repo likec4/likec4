@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, aux, Color, IteratorLike, ViewWithType } from '../types'
+import type { _type, AnyAux, aux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -72,7 +72,7 @@ export class ElementModel<A extends AnyAux> {
   }
 
   get tags(): aux.Tags<A> {
-    return this.$element.tags ?? [] as unknown as aux.Tags<A>
+    return this.$element.tags ?? ([] as any)
   }
 
   get title(): string {
@@ -91,7 +91,7 @@ export class ElementModel<A extends AnyAux> {
     return this.$element.links ?? []
   }
 
-  get defaultView(): LikeC4ViewModel<A> | null {
+  get defaultView(): LikeC4ViewModel<A, Extract<$View<A>, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> | null {
     return memoizeProp(this, Symbol('defaultView'), () => this.scopedViews().next().value ?? null)
   }
 
@@ -229,7 +229,9 @@ export class ElementModel<A extends AnyAux> {
    * Iterate over all views that scope this element.
    * It is possible that element is not included in the view.
    */
-  public *scopedViews(): ViewsIterator<A, ViewWithType<$View<A>, 'element'>> {
+  public *scopedViews(
+    this: ElementModel<A>,
+  ): ViewsIterator<A, Extract<$View<A>, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> {
     for (const vm of this.$model.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm

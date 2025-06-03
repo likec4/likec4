@@ -1,7 +1,7 @@
 import { isString } from 'remeda'
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Unknown } from './aux'
 import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
 import { GlobalFqn } from './scalar'
 
 export namespace FqnRef {
@@ -68,7 +68,7 @@ export namespace FqnRef {
    * @template F - The type of the fully qualified name (FQN) of the deployment element. Defaults to `Fqn`.
    * @property {F} deployment - The fully qualified name (FQN) of the deployment element.
    */
-  export interface DeploymentElementRef<A extends AnyAux = Unknown> {
+  export interface DeploymentElementRef<A extends AnyAux> {
     deployment: aux.DeploymentId<A>
     element?: never
   }
@@ -78,7 +78,7 @@ export namespace FqnRef {
 
   export type DeploymentRef<A extends AnyAux> = DeploymentElementRef<A> | InsideInstanceRef<A>
   export function isDeploymentRef<A extends AnyAux>(ref: FqnRef<A>): ref is DeploymentRef<A> {
-    return !isModelRef(ref) && !isImportRef(ref)
+    return isDeploymentElementRef(ref) || isInsideInstanceRef(ref)
   }
 }
 

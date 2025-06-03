@@ -69,14 +69,15 @@ interface BaseLayoutedViewProperties<A extends AnyAux, Type extends ViewType>
 }
 
 export interface LayoutedElementView<A extends AnyAux = Unknown> extends BaseLayoutedViewProperties<A, 'element'> {
-  readonly viewOf?: aux.StrictFqn<A>
+  readonly viewOf?: aux.Fqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
 export interface LayoutedScopedElementView<A extends AnyAux = Unknown>
   extends BaseLayoutedViewProperties<A, 'element'>
 {
-  readonly viewOf: aux.StrictFqn<A>
+  readonly viewOf: aux.Fqn<A>
+  readonly extends?: aux.StrictViewId<A>
 }
 
 export interface LayoutedDeploymentView<A extends AnyAux = Unknown>

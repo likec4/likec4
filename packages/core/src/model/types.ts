@@ -16,10 +16,18 @@ import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
 export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
 
+type AnyScalar<V extends string> =
+  | Tagged<V, 'Fqn'>
+  | Tagged<V, 'DeploymentFqn'>
+  | Tagged<V, 'ViewId'>
+  | Tagged<V, 'NodeId'>
+  | Tagged<V, 'EdgeId'>
+  | Tagged<V, 'RelationId'>
+
 /**
  * Utility function to extract `id` from the given element.
  */
-export function getId<Id extends string, Scalar extends Tagged<Id, string>>(element: Id | { id: Scalar }): Scalar {
+export function getId<Id extends string, Scalar extends AnyScalar<Id>>(element: Id | { id: Scalar }): Scalar {
   return typeof element === 'string' ? element as unknown as Scalar : element.id
 }
 

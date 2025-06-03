@@ -1,5 +1,5 @@
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
+import type { AnyAux } from './aux'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
 import {
@@ -21,7 +21,7 @@ import type {
   ViewWithNotation,
 } from './view-common'
 
-export interface ComputedNode<A extends AnyAux = Unknown> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
+export interface ComputedNode<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   id: scalar.NodeId
   kind: aux.ElementKind<A> | aux.DeploymentKind<A> | typeof GroupElementKind
   parent: scalar.NodeId | null
@@ -99,21 +99,18 @@ interface BaseComputedViewProperties<A extends AnyAux, Type extends ViewType>
   readonly manualLayout?: ViewManualLayout | undefined
 }
 
-export interface ComputedElementView<A extends AnyAux = Unknown> extends BaseComputedViewProperties<A, 'element'> {
+export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A, 'element'> {
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ComputedScopedElementView<A extends AnyAux = Unknown>
-  extends BaseComputedViewProperties<A, 'element'>
-{
+export interface ComputedScopedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A, 'element'> {
   readonly viewOf: aux.StrictFqn<A>
+  readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ComputedDeploymentView<A extends AnyAux = Unknown>
-  extends BaseComputedViewProperties<A, 'deployment'>
-{
+export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A, 'deployment'> {
 }
 
-export interface ComputedDynamicView<A extends AnyAux = Unknown> extends BaseComputedViewProperties<A, 'dynamic'> {
+export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A, 'dynamic'> {
 }

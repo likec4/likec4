@@ -1,3 +1,4 @@
+import type { IsAny } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
 import type { AnyAux, Unknown } from './aux'
@@ -58,6 +59,14 @@ interface BaseLikeC4ModelData<A extends AnyAux, Stage extends ModelStage> {
   imports: Record<scalar.ProjectId<any>, NonEmptyArray<Element<A>>>
   views: Record<aux.ViewId<A>, ExtractOnStage<AnyView<A>, Stage>>
 }
+
+export type AuxFromLikeC4ModelData<D> =
+  // dprint-ignore
+  D extends BaseLikeC4ModelData<infer A extends AnyAux, any>
+    ? IsAny<A> extends true
+      ? Unknown
+      : A
+    : never
 
 /**
  * Represents a LikeC4 model with customizable type parameters,

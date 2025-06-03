@@ -4,7 +4,7 @@ import type { AnyAux } from './aux'
 import type { _stage, _type, ModelStage } from './const'
 
 import type { BBox, Point, XYPoint } from './geometry'
-import type { GlobalStyleID } from './global'
+import type { GlobalPredicateId, GlobalStyleID } from './global'
 import * as scalar from './scalar'
 import type {
   BorderStyle,
@@ -45,6 +45,13 @@ export interface ViewRuleGlobalStyle {
 }
 export function isViewRuleGlobalStyle(rule: object): rule is ViewRuleGlobalStyle {
   return 'styleId' in rule
+}
+
+export interface ViewRuleGlobalPredicateRef {
+  predicateId: GlobalPredicateId
+}
+export function isViewRuleGlobalPredicateRef(rule: object): rule is ViewRuleGlobalPredicateRef {
+  return 'predicateId' in rule
 }
 
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'

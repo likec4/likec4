@@ -8,6 +8,7 @@ import type { Color, RelationshipArrowType, RelationshipLineType } from './style
 import type {
   BaseParsedViewProperties,
   ViewRuleAutoLayout,
+  ViewRuleGlobalPredicateRef,
   ViewRuleGlobalStyle,
 } from './view-common'
 import type { ElementViewRuleStyle } from './view-parsed.element'
@@ -56,8 +57,9 @@ export interface DynamicViewIncludeRule<A extends AnyAux = AnyAux> {
 
 export type DynamicViewRule<A extends AnyAux = AnyAux> =
   | DynamicViewIncludeRule<A>
-  | ViewRuleGlobalStyle
+  | ViewRuleGlobalPredicateRef
   | ElementViewRuleStyle<A>
+  | ViewRuleGlobalStyle
   | ViewRuleAutoLayout
 
 export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'dynamic'> {

@@ -34,7 +34,7 @@ import {
 } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<A extends AnyAux = AnyAux> {
+export class LikeC4DeploymentModel<A extends AnyAux> {
   readonly #elements = new Map<aux.DeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
   readonly #parents = new Map<aux.DeploymentFqn<A>, DeploymentNodeModel<A>>()

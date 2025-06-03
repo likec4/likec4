@@ -43,15 +43,8 @@ export function isElementModel<M extends AnyAux = AnyAux>(element: unknown): ele
   return element instanceof ElementModel
 }
 
-// export function isComputedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M>): model is LikeC4Model<$Computed<M>> {
-//   return model.type === 'computed'`
-// }
-type AsLayouted<M extends LikeC4Model<any>> = M extends LikeC4Model<infer A extends aux.AnyLayouted>
-  ? LikeC4Model<aux.toLayouted<A>>
-  : never
-
-export function isLayoutedLikeC4Model<A extends AnyAux>(
-  model: LikeC4Model<any>,
-): model is LikeC4Model<aux.toLayouted<A>> {
+export function isLayoutedLikeC4Model<M extends AnyAux>(
+  model: LikeC4Model<M>,
+): model is aux.toLayouted<M> extends M ? LikeC4Model<aux.toLayouted<M>> : never {
   return model.stage === 'layouted'
 }

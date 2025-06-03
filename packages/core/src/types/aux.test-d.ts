@@ -1,10 +1,10 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type * as aux from './aux'
-import type { Any, Aux, SpecAux } from './aux'
+import type { Aux, SpecAux } from './aux'
+import * as aux from './aux'
 import type { ModelStage } from './const'
 import * as scalar from './scalar'
 
-function expectAuxTypes<A extends Any>() {
+function expectAuxTypes<A>() {
   return expectTypeOf<{
     stage: aux.Stage<A>
     projectId: aux.ProjectId<A>
@@ -17,9 +17,7 @@ function expectAuxTypes<A extends Any>() {
     deploymentKind: aux.DeploymentKind<A>
     relationKind: aux.RelationKind<A>
     tag: aux.Tag<A>
-    tags: aux.Tags<A>
     metadataKey: aux.MetadataKey<A>
-    metadata: aux.Metadata<A>
     strict: {
       projectId: aux.StrictProjectId<A>
       fqn: aux.StrictFqn<A>
@@ -62,12 +60,7 @@ describe('Aux', () => {
       deploymentKind: 'pod' | 'node'
       relationKind: 'http' | 'grpc'
       tag: 'tag1' | 'tag2'
-      tags: readonly ('tag1' | 'tag2')[]
       metadataKey: 'k1' | 'k2'
-      metadata: {
-        k1?: string
-        k2?: string
-      }
       strict: {
         projectId: scalar.ProjectId<'test-project'>
         fqn: scalar.Fqn<'e1' | 'e2' | 'e3'>
@@ -79,12 +72,17 @@ describe('Aux', () => {
         tag: scalar.Tag<'tag1' | 'tag2'>
       }
     }>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly ('tag1' | 'tag2')[]>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<{
+      k1?: string
+      k2?: string
+    }>()
   })
 
   it('should work with Unknown', () => {
     type A = aux.Unknown
     expectAuxTypes<A>().toEqualTypeOf<{
-      stage: 'layouted' | 'computed'
+      stage: 'computed' | 'layouted'
       projectId: string
       fqn: scalar.Fqn<string>
       elementId: string
@@ -95,9 +93,7 @@ describe('Aux', () => {
       deploymentKind: string
       relationKind: string
       tag: string
-      tags: readonly string[]
       metadataKey: string
-      metadata: Record<string, string | undefined>
       strict: {
         projectId: scalar.ProjectId<string>
         fqn: scalar.Fqn<string>
@@ -109,36 +105,38 @@ describe('Aux', () => {
         tag: scalar.Tag<string>
       }
     }>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | undefined>>()
   })
 
   it('should work with NEVER', () => {
-    // type A = aux.Never
-    // expectAuxTypes<Aux>().toEqualTypeOf<{
-    //   stage: never
-    //   projectId: never
-    //   fqn: never
-    //   elementId: never
-    //   viewId: never
-    //   deploymentId: never
-    //   deploymentFqn: never
-    //   elementKind: never
-    //   deploymentKind: never
-    //   relationKind: never
-    //   tag: never
-    //   tags: never
-    //   metadataKey: never
-    //   metadata: never,
-    //   strict: {
-    //     projectId: never
-    //     fqn: never
-    //     deploymentFqn: never
-    //     viewId: never
-    //     elementKind: never
-    //     deploymentKind: never
-    //     relationKind: never
-    //     tag: never
-    //   }
-    // }>()
+    type A = aux.Never
+    expectAuxTypes<A>().toEqualTypeOf<{
+      stage: never
+      projectId: never
+      fqn: never
+      elementId: never
+      viewId: never
+      deploymentId: never
+      deploymentFqn: never
+      elementKind: never
+      deploymentKind: never
+      relationKind: never
+      tag: never
+      metadataKey: never
+      strict: {
+        projectId: never
+        fqn: never
+        deploymentFqn: never
+        viewId: never
+        elementKind: never
+        deploymentKind: never
+        relationKind: never
+        tag: never
+      }
+    }>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly never[]>()
+    expectTypeOf<aux.Metadata<A>>().toBeNever()
     expectAuxTypes<never>().toEqualTypeOf<{
       stage: never
       projectId: never
@@ -151,9 +149,7 @@ describe('Aux', () => {
       deploymentKind: never
       relationKind: never
       tag: never
-      tags: never
       metadataKey: never
-      metadata: never
       strict: {
         projectId: never
         fqn: never
@@ -165,6 +161,8 @@ describe('Aux', () => {
         tag: never
       }
     }>()
+    expectTypeOf<aux.Tags<never>>().toEqualTypeOf<readonly never[]>()
+    expectTypeOf<aux.Metadata<never>>().toBeNever()
   })
 
   it('should work with AnyAux (fallback to Unknown)', () => {
@@ -181,9 +179,7 @@ describe('Aux', () => {
       deploymentKind: string
       relationKind: string
       tag: string
-      tags: readonly string[]
       metadataKey: string
-      metadata: Record<string, string | undefined>
       strict: {
         projectId: scalar.ProjectId<string>
         fqn: scalar.Fqn<string>
@@ -195,46 +191,46 @@ describe('Aux', () => {
         tag: scalar.Tag<string>
       }
     }>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | undefined>>()
   })
 
-  // it('should work with any', () => {
-  //   expectAuxTypes<any>().toEqualTypeOf<{
-  //     stage: ModelStage
-  //     projectId: string
-  //     fqn: scalar.Fqn<string>
-  //     elementId: string
-  //     viewId: string
-  //     deploymentId: string
-  //     deploymentFqn: scalar.DeploymentFqn<string>
-  //     elementKind: string
-  //     deploymentKind: string
-  //     relationKind: string
-  //     tag: string
-  //     tags: readonly string[]
-  //     metadataKey: string
-  //     metadata: Record<string, string | undefined>
-  //   }>()
-  //   expectTypeOf<aux.Stage<any>>().toEqualTypeOf<ModelStage>()
-  //   expectTypeOf<aux.ProjectId<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.Fqn<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.ViewId<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.DeploymentFqn<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.ElementKind<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.DeploymentKind<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.RelationKind<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.Tag<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
-  //   expectTypeOf<aux.MetadataKey<any>>().toEqualTypeOf<string>()
-  //   expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | undefined>>()
+  it('should work with any', () => {
+    expectAuxTypes<any>().toEqualTypeOf<{
+      stage: ModelStage
+      projectId: string
+      fqn: scalar.Fqn<string>
+      elementId: string
+      viewId: string
+      deploymentId: string
+      deploymentFqn: scalar.DeploymentFqn<string>
+      elementKind: string
+      deploymentKind: string
+      relationKind: string
+      tag: string
+      metadataKey: string
+      strict: {
+        projectId: scalar.ProjectId<string>
+        fqn: scalar.Fqn<string>
+        deploymentFqn: scalar.DeploymentFqn<string>
+        viewId: scalar.ViewId<string>
+        elementKind: scalar.ElementKind<string>
+        deploymentKind: scalar.DeploymentKind<string>
+        relationKind: scalar.RelationshipKind<string>
+        tag: scalar.Tag<string>
+      }
+    }>()
+    expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
+    expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | undefined>>()
 
-  //   // Check StrictTypes from aux.*
-  //   expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()
-  //   expectTypeOf<aux.StrictDeploymentFqn<any>>().toEqualTypeOf<scalar.DeploymentFqn<string>>()
-  //   expectTypeOf<aux.StrictViewId<any>>().toEqualTypeOf<scalar.ViewId<string>>()
-  //   expectTypeOf<aux.StrictProjectId<any>>().toEqualTypeOf<scalar.ProjectId<string>>()
-  //   expectTypeOf<aux.StrictElementKind<any>>().toEqualTypeOf<scalar.ElementKind<string>>()
-  //   expectTypeOf<aux.StrictDeploymentKind<any>>().toEqualTypeOf<scalar.DeploymentKind<string>>()
-  //   expectTypeOf<aux.StrictRelationKind<any>>().toEqualTypeOf<scalar.RelationshipKind<string>>()
-  //   expectTypeOf<aux.StrictTag<any>>().toEqualTypeOf<scalar.Tag<string>>()
-  // })
+    // Check StrictTypes from aux.*
+    expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()
+    expectTypeOf<aux.StrictDeploymentFqn<any>>().toEqualTypeOf<scalar.DeploymentFqn<string>>()
+    expectTypeOf<aux.StrictViewId<any>>().toEqualTypeOf<scalar.ViewId<string>>()
+    expectTypeOf<aux.StrictProjectId<any>>().toEqualTypeOf<scalar.ProjectId<string>>()
+    expectTypeOf<aux.StrictElementKind<any>>().toEqualTypeOf<scalar.ElementKind<string>>()
+    expectTypeOf<aux.StrictDeploymentKind<any>>().toEqualTypeOf<scalar.DeploymentKind<string>>()
+    expectTypeOf<aux.StrictRelationKind<any>>().toEqualTypeOf<scalar.RelationshipKind<string>>()
+    expectTypeOf<aux.StrictTag<any>>().toEqualTypeOf<scalar.Tag<string>>()
+  })
 })

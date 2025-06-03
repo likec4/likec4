@@ -1,5 +1,6 @@
-import type { AnyAux, Unknown } from './aux'
-import type { _type, ExtractOnStage } from './const'
+import { isTruthy } from 'remeda'
+import type { AnyAux } from './aux'
+import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
 import type { ViewType } from './view-common'
 import type {
   ComputedDeploymentView,
@@ -17,7 +18,7 @@ import type { ParsedDeploymentView } from './view-parsed.deployment'
 import type { ParsedDynamicView } from './view-parsed.dynamic'
 import type { ParsedElementView, ParsedScopedElementView } from './view-parsed.element'
 
-export type AnyView<A extends AnyAux> =
+export type AnyView<A extends AnyAux = AnyAux> =
   | ParsedElementView<A>
   | ParsedScopedElementView<A>
   | ParsedDeploymentView<A>
@@ -31,24 +32,29 @@ export type AnyView<A extends AnyAux> =
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
 
-export type ViewWithType<V extends AnyView<any>, T extends ViewType> = Extract<V, { [_type]: T }>
+export type AnyViews<S extends ModelStage, T extends ViewType = ViewType, A extends AnyAux = AnyAux> = AnyView<A> & {
+  [_stage]: S
+  [_type]: T
+}
 
-export type ParsedView<A extends AnyAux = Unknown> = ExtractOnStage<AnyView<A>, 'parsed'>
-export type ComputedView<A extends AnyAux = Unknown> = ExtractOnStage<AnyView<A>, 'computed'>
-export type DiagramView<A extends AnyAux = Unknown> = ExtractOnStage<AnyView<A>, 'layouted'>
+export type ViewWithType<V extends AnyView<AnyAux>, T extends ViewType> = Extract<V, { [_type]: T }>
+
+export type ParsedView<A extends AnyAux = AnyAux> = ExtractOnStage<AnyView<A>, 'parsed'>
+export type ComputedView<A extends AnyAux = AnyAux> = ExtractOnStage<AnyView<A>, 'computed'>
+export type DiagramView<A extends AnyAux = AnyAux> = ExtractOnStage<AnyView<A>, 'layouted'>
 /**
  * @alias DiagramView
  */
-export type LayoutedView<A extends AnyAux = Unknown> = DiagramView<A>
+export type { DiagramView as LayoutedView }
 
 /**
  * Should be `ParsedView` but keep it for backward compatibility
  * @deprecated use `ParsedView`
  */
-export type LikeC4View<A extends AnyAux = Unknown> = ParsedView<A>
+export type { ParsedView as LikeC4View }
 
-export type ViewRule<A extends AnyAux = Unknown> = ParsedView<A>['rules'][number]
-export type ViewRulePredicate<A extends AnyAux = Unknown> = Extract<
+export type ViewRule<A extends AnyAux = AnyAux> = ParsedView<A>['rules'][number]
+export type ViewRulePredicate<A extends AnyAux = AnyAux> = Extract<
   ViewRule<A>,
   { include: any[] } | { exclude: any[] }
 >
@@ -60,27 +66,35 @@ export function isViewRulePredicate<R extends ViewRule<any>>(rule: R): rule is E
   return 'include' in rule || 'exclude' in rule
 }
 
-export function isViewRuleStyle<R extends ViewRule<any>>(rule: R): rule is Extract<R, { targets: any[]; style: {} }> {
+export function isViewRuleStyle<R extends ViewRule<AnyAux>>(
+  rule: R,
+): rule is Extract<R, { targets: any[]; style: {} }> {
   return 'targets' in rule && 'style' in rule
 }
 
-export function isComputedView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'computed'> {
+export function isComputedView<V extends AnyView<AnyAux>>(view: V): view is ExtractOnStage<V, 'computed'> {
   return view._stage === 'computed'
 }
 
-export function isDiagramView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'layouted'> {
+export function isDiagramView<V extends AnyView<AnyAux>>(view: V): view is ExtractOnStage<V, 'layouted'> {
   return view._stage === 'layouted'
 }
 export { isDiagramView as isLayoutedView }
 
-export function isElementView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'element'> {
-  return view._type === 'element'
+export function isElementView<V>(view: V): view is V & { [_type]: 'element' } {
+  return (view as any)._type === 'element'
 }
 
-export function isDeploymentView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'deployment'> {
-  return view._type === 'deployment'
+export function isScopedElementView<V extends AnyView<AnyAux>>(
+  view: V,
+): view is Extract<V, { [_type]: 'element'; viewOf: string }> {
+  return view._type === 'element' && isTruthy(view.viewOf)
 }
 
-export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'dynamic'> {
-  return view._type === 'dynamic'
+export function isDeploymentView<V>(view: V): view is V & { [_type]: 'deployment' } {
+  return (view as any)._type === 'deployment'
+}
+
+export function isDynamicView<V>(view: V): view is V & { [_type]: 'dynamic' } {
+  return (view as any)._type === 'dynamic'
 }

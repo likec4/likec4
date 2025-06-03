@@ -1,6 +1,6 @@
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
+import type { AnyAux } from './aux'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
 import type { BorderStyle, Color, ShapeSize, SpacingSize, TextSize } from './styles'
 import type {
@@ -9,6 +9,7 @@ import type {
   AnyViewRuleStyle,
   BaseParsedViewProperties,
   ViewRuleAutoLayout,
+  ViewRuleGlobalPredicateRef,
   ViewRuleGlobalStyle,
 } from './view-common'
 
@@ -42,7 +43,7 @@ export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
   textSize?: TextSize
 }
 
-export function isElementViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rule is ElementViewRuleGroup<A> {
+export function isViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rule is ElementViewRuleGroup<A> {
   return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
 }
 
@@ -53,8 +54,9 @@ export type ElementViewRule<A extends AnyAux = AnyAux> =
   | ElementViewExcludePredicate<A>
   | ElementViewRuleGroup<A>
   | ElementViewRuleStyle<A>
-  | ViewRuleAutoLayout
   | ViewRuleGlobalStyle
+  | ViewRuleGlobalPredicateRef
+  | ViewRuleAutoLayout
 
 export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'element'> {
   readonly rules: ElementViewRule<A>[]
@@ -62,6 +64,8 @@ export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsed
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ParsedScopedElementView<A extends AnyAux = AnyAux> extends Omit<ParsedElementView<A>, 'viewOf'> {
-  readonly viewOf: aux.StrictFqn<A>
+export interface ParsedScopedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'element'> {
+  readonly rules: ElementViewRule<A>[]
+  readonly viewOf: aux.Fqn<A>
+  readonly extends?: aux.StrictViewId<A>
 }

@@ -1,3 +1,4 @@
+import { isTruthy } from 'remeda'
 import { nonNullable } from '../../errors'
 import type {
   AnyAux,
@@ -236,6 +237,12 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
 
   public isElementView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel<A, ViewWithType<V, 'element'>> {
     return this.$view[_type] === 'element'
+  }
+
+  public isScopedElementView(
+    this: LikeC4ViewModel<any, any>,
+  ): this is LikeC4ViewModel<A, Extract<V, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> {
+    return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
   }
 
   public isDeploymentView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel<A, ViewWithType<V, 'deployment'>> {

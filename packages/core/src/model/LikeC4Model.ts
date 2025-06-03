@@ -1,12 +1,15 @@
 import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
+  Any,
   AnyAux,
   aux,
+  AuxFromDump,
   ComputedLikeC4ModelData,
   Element,
   IteratorLike,
   LayoutedLikeC4ModelData,
+  LikeC4ModelDump,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -39,11 +42,7 @@ import {
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<
-  A extends AnyAux,
-> // Fqn extends scalar.Fqn = aux.Fqn<A>,
-// ElementOrFqn extends string | { id: scalar.Fqn  } = aux.ElementId<A> | { id: aux.Fqn<A> },
-{
+export class LikeC4Model<A extends AnyAux = Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -113,9 +112,18 @@ export class LikeC4Model<
    * @param dump - The model dump to create the instance from
    * @returns A  new LikeC4Model instance with types inferred from the dump
    */
-  // static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4ModelFromDump<D> {
-  //   return new LikeC4Model(dump as any) as any
-  // }
+  static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4Model<AuxFromDump<D>> {
+    return new LikeC4Model({
+      imports: {},
+      projectId: 'unknown',
+      globals: {
+        predicates: {},
+        dynamicPredicates: {},
+        styles: {},
+      },
+      ...dump,
+    }) as any
+  }
 
   public readonly deployment: LikeC4DeploymentModel<A>
 
@@ -276,7 +284,7 @@ export class LikeC4Model<
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
   public findView(viewId: aux.LiteralViewId<A>): LikeC4ViewModel<A> | null {
-    return this._views.get(getId(viewId)) ?? null
+    return this._views.get(viewId as aux.ViewId<A>) ?? null
   }
 
   /**
@@ -439,12 +447,6 @@ export class LikeC4Model<
     })
   }
 
-  // type $refine<M, S extends ViewStage> = M extends LikeC4Model<infer A>
-  //   ? LikeC4Model<aux.setStage<A, S>>
-  //   : never
-
-  // public isLayouted(): this is ConditionalPick<LikeC4Model<aux.setStage<A, 'layouted'>>, Function> {
-  // public isLayouted<T extends unknown>(this: ThisType<T>): this is LikeC4Model<aux.setStage<A, 'layouted'>> {
   public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
     return this.stage === 'layouted'
   }
@@ -540,11 +542,11 @@ export class LikeC4Model<
 /**
  *  When you do not need types in the model
  */
-export type AnyLikeC4Model = LikeC4Model<AnyAux>
+export type AnyLikeC4Model = LikeC4Model<Any>
 
 export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create<Unknown>({
-    __: 'computed',
+    _stage: 'parsed',
     projectId: 'default' as never,
     specification: {
       elements: {},

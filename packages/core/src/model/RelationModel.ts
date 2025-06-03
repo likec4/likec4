@@ -38,7 +38,7 @@ export interface AnyRelationshipModel<A extends AnyAux> {
   getMetadata(field: aux.MetadataKey<A>): string | undefined
 }
 
-export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelationshipModel<A> {
+export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelationshipModel<A> {
   public readonly source: ElementModel<A>
   public readonly target: ElementModel<A>
 

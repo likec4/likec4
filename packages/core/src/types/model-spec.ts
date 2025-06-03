@@ -74,6 +74,5 @@ export interface Specification<A extends AnyAux> {
   }
   // dprint-ignore
   metadataKeys?: IsAny<aux.MetadataKey<A>> extends true ? string[] : aux.MetadataKey<A>[]
-
   customColors?: Record<string, ThemeColorValues>
 }
