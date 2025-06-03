@@ -2,8 +2,10 @@ import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
   type AnyAux,
+  type aux,
   type ComputedNode,
   type Element,
+  type scalar,
   type Unknown,
   DefaultElementShape,
   DefaultThemeColor,
@@ -25,10 +27,11 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, C
   }
 }
 
-const modelElementAsNodeSource = <A extends AnyAux>(element: Element<A>): ComputedNodeSource<A> => {
+const modelElementAsNodeSource = <A extends AnyAux>({ id, ...element }: Element<A>): ComputedNodeSource<A> => {
   return {
+    id: id as scalar.NodeId,
+    modelRef: id,
     ...element,
-    modelRef: 1,
   }
 }
 
@@ -40,18 +43,18 @@ export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
 
 export function buildComputedNodesFromElements<A extends AnyAux>(
   elements: ReadonlyArray<Element<A>>,
-  groups?: NodesGroup[],
-) {
+  groups?: NodesGroup<A>[],
+): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
   return buildComputedNodes(elements.map(modelElementAsNodeSource), groups)
 }
 
 export function buildComputedNodes<A extends AnyAux>(
   elements: ReadonlyArray<ComputedNodeSource<A>>,
-  groups?: ReadonlyArray<NodesGroup>,
-): ReadonlyMap<Aux.StrictNodeId, ComputedNode<A>> {
-  const nodesMap = new Map<Aux.StrictNodeId, ComputedNode<A>>()
+  groups?: ReadonlyArray<NodesGroup<A>>,
+): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
+  const nodesMap = new Map<scalar.NodeId, ComputedNode<A>>()
 
-  const elementToGroup = new Map<Aux.StrictFqn<A>, Aux.StrictNodeId>()
+  const elementToGroup = new Map<aux.StrictFqn<A>, scalar.NodeId>()
 
   groups?.forEach(({ id, parent, viewRule, elements }) => {
     if (parent) {
@@ -101,7 +104,7 @@ export function buildComputedNodes<A extends AnyAux>(
         }
         parent = parentFqn(parent)
       }
-      const fqn = id as unknown as Aux.StrictFqn<A>
+      const fqn = el.modelRef ?? id as unknown as aux.StrictFqn<A>
       // If parent is not found in the map, check if it is in a group
       if (!parentNd && elementToGroup.has(fqn)) {
         const parentGroupId = nonNullable(elementToGroup.get(fqn))
@@ -142,7 +145,7 @@ export function buildComputedNodes<A extends AnyAux>(
     })
 
   // Create new map and add elements in the same order as they were in the input
-  const orderedMap = new Map<Aux.NodeId, ComputedNode<A>>()
+  const orderedMap = new Map<aux.NodeId, ComputedNode<A>>()
 
   groups?.forEach(({ id }) => {
     orderedMap.set(id, nonNullable(nodesMap.get(id)))

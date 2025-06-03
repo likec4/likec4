@@ -1,7 +1,6 @@
 import { last, reverse } from 'remeda'
 import { invariant } from '../../errors'
-import type { AnyAux } from '../../types'
-import type { ComputedEdge, ComputedNode } from '../../types/view'
+import type { AnyAux, ComputedEdge, ComputedNode } from '../../types'
 import { commonHead } from '../../utils/common-head'
 import { ancestorsOfNode } from './ancestorsOfNode'
 

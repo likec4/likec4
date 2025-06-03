@@ -1,10 +1,12 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
-import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
+import { modelConnection } from '../../../model'
 import { ModelExpression } from '../../../types'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'
 import { type ActiveGroupCtx, type ActiveGroupMemory, type Ctx } from './memory'
+
+const { findConnection, findConnectionsBetween } = modelConnection
 
 export type Elem = Ctx['Element']
 

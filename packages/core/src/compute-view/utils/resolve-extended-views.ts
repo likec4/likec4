@@ -1,10 +1,10 @@
 import { unique, values } from 'remeda'
-import { type ExtendsElementView, type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
+import { type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
 
 import Graph from 'graphology'
 import { topologicalSort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
-import type { AnyAux, Aux } from '../../types'
+import type { AnyAux, aux, ParsedElementView } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 /**
  * Resolve rules of extended views
@@ -16,7 +16,7 @@ export function resolveRulesExtendedViews<A extends AnyAux, V extends Record<any
   const g = new Graph<{ view: LikeC4View<A> }>({
     type: 'directed',
   })
-  const extendedViews = [] as ExtendsElementView<A>[]
+  const extendedViews = [] as ParsedElementView<A>[]
   for (const view of values(unresolvedViews)) {
     g.addNode(view.id, { view })
     if (isExtendsElementView(view)) {
@@ -58,7 +58,7 @@ export function resolveRulesExtendedViews<A extends AnyAux, V extends Record<any
     const tags = unique([
       ...(extendsFrom.tags ?? []),
       ...(view.tags ?? []),
-    ]) as Aux.Tags<A>
+    ]) as aux.Tags<A>
 
     const links = [
       ...(extendsFrom.links ?? []),

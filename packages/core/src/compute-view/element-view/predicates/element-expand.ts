@@ -1,7 +1,6 @@
-import { findConnectionsWithin } from '../../../model/connection/model'
 import { type AnyAux, type ModelFqnExpr, FqnRef } from '../../../types'
 import type { Elem, PredicateExecutor } from '../_types'
-import { resolveElements } from './_utils'
+import { findConnectionsWithin, resolveElements } from './_utils'
 
 export const ExpandedElementPredicate: PredicateExecutor<ModelFqnExpr.Ref<AnyAux>> = {
   include: ({ expr, model, stage, where }) => {

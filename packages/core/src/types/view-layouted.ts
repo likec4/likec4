@@ -1,17 +1,17 @@
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
+import type { AnyAux } from './aux'
+import type { _stage, _type } from './const'
 import type { BBox, Point, XYPoint } from './geometry'
 import type {
   BaseViewProperties,
   ViewAutoLayout,
-  ViewType,
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
 
-export interface DiagramNode<A extends AnyAux = Unknown> extends ComputedNode<A>, BBox {
+export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   x: number
   y: number
   width: number
@@ -28,7 +28,7 @@ export interface DiagramNode<A extends AnyAux = Unknown> extends ComputedNode<A>
   labelBBox: BBox
 }
 
-export interface DiagramEdge<A extends AnyAux = Unknown> extends ComputedEdge<A> {
+export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {
   /**
    * Bezier points
    * (Absolute coordinates)
@@ -53,9 +53,8 @@ export interface DiagramEdge<A extends AnyAux = Unknown> extends ComputedEdge<A>
   dotpos?: string
 }
 
-interface BaseLayoutedViewProperties<A extends AnyAux, Type extends ViewType>
-  extends BaseViewProperties<A, 'layouted', Type>, ViewWithHash, ViewWithNotation
-{
+interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
+  readonly [_stage]: 'layouted'
   readonly autoLayout: ViewAutoLayout
   readonly nodes: DiagramNode<A>[]
   readonly edges: DiagramEdge<A>[]
@@ -68,22 +67,16 @@ interface BaseLayoutedViewProperties<A extends AnyAux, Type extends ViewType>
   hasLayoutDrift?: boolean
 }
 
-export interface LayoutedElementView<A extends AnyAux = Unknown> extends BaseLayoutedViewProperties<A, 'element'> {
+export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
+  readonly [_type]: 'element'
   readonly viewOf?: aux.Fqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface LayoutedScopedElementView<A extends AnyAux = Unknown>
-  extends BaseLayoutedViewProperties<A, 'element'>
-{
-  readonly viewOf: aux.Fqn<A>
-  readonly extends?: aux.StrictViewId<A>
+export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
+  readonly [_type]: 'deployment'
 }
 
-export interface LayoutedDeploymentView<A extends AnyAux = Unknown>
-  extends BaseLayoutedViewProperties<A, 'deployment'>
-{
-}
-
-export interface LayoutedDynamicView<A extends AnyAux = Unknown> extends BaseLayoutedViewProperties<A, 'dynamic'> {
+export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
+  readonly [_type]: 'dynamic'
 }

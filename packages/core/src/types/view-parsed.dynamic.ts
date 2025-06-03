@@ -2,6 +2,7 @@ import { isArray } from 'remeda'
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
+import type { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
 import { isStepEdgeId } from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
@@ -62,7 +63,8 @@ export type DynamicViewRule<A extends AnyAux = AnyAux> =
   | ViewRuleGlobalStyle
   | ViewRuleAutoLayout
 
-export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'dynamic'> {
+export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
+  [_type]: 'dynamic'
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]
 }

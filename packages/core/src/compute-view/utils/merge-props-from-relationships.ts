@@ -1,6 +1,7 @@
 import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
 import type {
   AnyAux,
+  aux,
   Color,
   DeploymentRelationship,
   Link,
@@ -15,12 +16,12 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
   title?: string
   description?: string | null
   technology: string | null
-  kind: Aux.RelationKind<A> | null
+  kind: aux.RelationKind<A> | null
   color: Color | null
   line: RelationshipLineType | null
   head: RelationshipArrowType | null
   tail: RelationshipArrowType | null
-  navigateTo: Aux.StrictViewId<A> | null
+  navigateTo: aux.StrictViewId<A> | null
 } {
   const {
     title,
@@ -40,12 +41,12 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
       description,
     }),
     technology,
-    kind: kind as Aux.RelationKind<A> | null,
+    kind: kind as aux.RelationKind<A> | null,
     color,
     line,
     head,
     tail,
-    navigateTo: navigateTo as Aux.StrictViewId<A> | null,
+    navigateTo: navigateTo as aux.StrictViewId<A> | null,
   }
 }
 
@@ -53,13 +54,13 @@ export type MergedRelationshipProps<A extends AnyAux> = {
   title?: string | null
   description?: string
   technology?: string
-  kind?: Aux.RelationKind<A>
+  kind?: aux.RelationKind<A>
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
-  navigateTo?: Aux.StrictViewId<A>
-  tags?: NonEmptyArray<Aux.Tag<A>>
+  navigateTo?: aux.StrictViewId<A>
+  tags?: NonEmptyArray<aux.Tag<A>>
   links?: NonEmptyArray<Link>
 }
 
@@ -115,14 +116,14 @@ export function mergePropsFromRelationships<A extends AnyAux>(
         title: [] as string[],
         description: [] as string[],
         technology: [] as string[],
-        kind: [] as Aux.RelationKind<A>[],
+        kind: [] as aux.RelationKind<A>[],
         head: [] as RelationshipArrowType[],
         tail: [] as RelationshipArrowType[],
         color: [] as Color[],
-        tags: [] as Aux.Tag<A>[],
+        tags: [] as aux.Tag<A>[],
         links: [] as Link[],
         line: [] as RelationshipLineType[],
-        navigateTo: [] as Aux.ViewId<A>[],
+        navigateTo: [] as aux.ViewId<A>[],
       },
     ),
   )

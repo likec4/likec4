@@ -1,10 +1,10 @@
 import { isNullish, omitBy, pick } from 'remeda'
-import { type AnyAux, type ComputedEdge, type ComputedNode, type ViewRule, ModelRelationExpr } from '../../types'
+import { type AnyAux, type ComputedEdge, type ComputedNode, type ElementViewRule, ModelRelationExpr } from '../../types'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
 
 export function applyCustomRelationProperties<A extends AnyAux>(
-  _rules: ViewRule<A>[],
+  _rules: ElementViewRule<A>[],
   nodes: ComputedNode<A>[],
   _edges: Iterable<ComputedEdge<A>>,
 ): ComputedEdge<A>[] {

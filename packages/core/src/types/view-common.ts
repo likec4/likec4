@@ -1,7 +1,7 @@
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
-import type { _stage, _type, ModelStage } from './const'
+import type { _stage } from './const'
 
 import type { BBox, Point, XYPoint } from './geometry'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
@@ -103,22 +103,7 @@ export type ViewManualLayout = {
 
 export type ViewType = 'element' | 'dynamic' | 'deployment'
 
-export interface BaseViewProperties<
-  A extends AnyAux,
-  Stage extends ModelStage,
-  Type extends ViewType,
-> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
-  /**
-   * Internal field to identify the type of the view.
-   * This is used to create the correct type of the view.
-   */
-  readonly [_type]: Type
-  /**
-   * Internal field to identify the stage of the view.
-   * This is used to create the correct type of the view.
-   */
-  readonly [_stage]: Stage
-
+export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
   readonly description: string | null
@@ -133,9 +118,12 @@ export interface BaseViewProperties<
   readonly relativePath?: string | undefined
 }
 
-export interface BaseParsedViewProperties<A extends AnyAux, Type extends ViewType>
-  extends BaseViewProperties<A, 'parsed', Type>
-{
+export interface BaseParsedViewProperties<A extends AnyAux> extends BaseViewProperties<A> {
+  /**
+   * Internal field to identify the stage of the view.
+   * This is used to create the correct type of the view.
+   */
+  readonly [_stage]: 'parsed'
   /**
    * URI to the source file of this view.
    * Undefined if the view is auto-generated.

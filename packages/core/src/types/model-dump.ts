@@ -49,7 +49,7 @@ export type LikeC4ModelDump = {
     }
     relations?: {}
   }
-  views: {
+  views?: {
     [kind: string]: object
   }
   relations?: {}

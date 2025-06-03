@@ -1,0 +1,17 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "rootDir": "src",
+    "tsBuildInfoFile": null,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/*.test-d.ts",
+    "**/*.spec.ts"
+  ]
+}

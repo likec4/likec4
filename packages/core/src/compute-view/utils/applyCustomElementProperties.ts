@@ -1,17 +1,20 @@
 import { isEmpty, isNullish, omitBy } from 'remeda'
 import {
   type AnyAux,
+  type ComputedNode,
+  type ElementViewRule,
   type ModelExpression,
-  type ViewRule,
-  ComputedNode,
+  isGroupElementKind,
   isViewRuleGroup,
   isViewRulePredicate,
   ModelFqnExpr,
 } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-export function flattenGroupRules<T extends ModelExpression<any>>(guard: (expr: ModelExpression<any>) => expr is T) {
-  return (rule: ViewRule<any>): Array<T> => {
+export function flattenGroupRules<A extends AnyAux, T extends ModelExpression<A>>(
+  guard: (expr: ModelExpression<A>) => expr is T,
+) {
+  return (rule: ElementViewRule<A>): Array<T> => {
     if (isViewRuleGroup(rule)) {
       return rule.groupRules.flatMap(flattenGroupRules(guard))
     }
@@ -24,10 +27,10 @@ export function flattenGroupRules<T extends ModelExpression<any>>(guard: (expr: 
 }
 
 export function applyCustomElementProperties<A extends AnyAux>(
-  _rules: ViewRule<A>[],
+  _rules: ElementViewRule<A>[],
   _nodes: ComputedNode<A>[],
 ) {
-  const rules = _rules.flatMap(flattenGroupRules(ModelFqnExpr.isCustom<A>))
+  const rules = _rules.flatMap(flattenGroupRules(ModelFqnExpr.isCustom))
   if (rules.length === 0) {
     return _nodes
   }
@@ -49,7 +52,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
     const notEmpty = !isEmpty(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
-      if (ComputedNode.isNodesGroup(node) || !satisfies(node)) {
+      if (isGroupElementKind(node) || !satisfies(node)) {
         return
       }
       if (notEmpty) {

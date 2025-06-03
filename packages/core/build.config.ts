@@ -12,5 +12,8 @@ export default defineBuildConfig({
     resolve: {
       browser: true,
     },
+    dts: {
+      tsconfig: 'tsconfig.build.json',
+    },
   },
 })

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   type ComputedNode,
+  type ElementViewRuleStyle as ViewRuleStyle,
   type IconUrl,
   type ModelExpression,
   type NonEmptyArray,
-  type ViewRuleStyle,
   GroupElementKind,
 } from '../../types'
 import { $expr } from '../element-view/__test__/fixture'

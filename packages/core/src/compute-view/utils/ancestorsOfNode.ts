@@ -6,7 +6,7 @@ import type { AnyAux, ComputedNode } from '../../types'
  */
 export function ancestorsOfNode<A extends AnyAux>(
   node: ComputedNode<A>,
-  nodes: ReadonlyMap<any, ComputedNode<A>>,
+  nodes: ReadonlyMap<string, ComputedNode<A>>,
 ): ReadonlyArray<ComputedNode<A>> {
   const ancestors = [] as ComputedNode<A>[]
   let parentId = node.parent

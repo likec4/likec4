@@ -1,10 +1,10 @@
 import { filter } from 'remeda'
-import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
 import type { ModelFqnExpr } from '../../../types'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
 import { type PredicateExecutor, Memory } from '../_types'
 import { NoWhere } from '../utils'
+import { findConnectionsBetween, findConnectionsWithin } from './_utils'
 
 export const WildcardPredicate: PredicateExecutor<ModelFqnExpr.Wildcard> = {
   include: ({ scope, model, stage, memory, where }) => {

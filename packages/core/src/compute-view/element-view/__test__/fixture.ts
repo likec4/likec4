@@ -1,13 +1,21 @@
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
+  type AnyAux,
   type Aux,
+  type aux,
   type BorderStyle,
   type Color,
   type ComputedView,
   type Element,
   type ElementKind,
   type ElementShape,
+  type ElementViewPredicate,
+  type ElementViewPredicate as ViewRulePredicate,
+  type ElementViewRule,
+  type ElementViewRule as ViewRule,
+  type ElementViewRuleGroup as ViewRuleGroup,
+  type ElementViewRuleStyle as ViewRuleStyle,
   type Fqn,
   type GlobalPredicateId,
   type GlobalStyleID,
@@ -16,18 +24,16 @@ import {
   type ModelExpression,
   type ModelRelation,
   type NonEmptyArray,
+  type ParsedElementView,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
+  type scalar,
   type SpecAux,
   type Tag,
   type TagEqual,
-  type ViewRule,
   type ViewRuleGlobalPredicateRef,
   type ViewRuleGlobalStyle,
-  type ViewRuleGroup,
-  type ViewRulePredicate,
-  type ViewRuleStyle,
   type WhereOperator,
   ModelFqnExpr,
   ModelRelationExpr,
@@ -352,7 +358,7 @@ export const globalStyles = {
 
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
-  __: 'computed' as const,
+  _stage: 'computed' as const,
   specification: {
     elements: {
       actor: {},
@@ -418,9 +424,10 @@ export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
 
 // export type $Aux = typeof fakeModel.Aux
 export type $Aux = Aux<
-  never,
+  'computed',
   FakeElementIds,
   never,
+  'index',
   never,
   SpecAux<
     'actor' | 'system' | 'container' | 'component',
@@ -432,15 +439,15 @@ export type $Aux = Aux<
 >
 
 const emptyView = {
-  __: 'element' as const,
-  id: 'index' as Aux.StrictViewId<$Aux>,
+  _stage: 'parsed' as const,
+  _type: 'element' as const,
+  id: 'index' as scalar.ViewId<'index'>,
   title: null,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [],
-}
+} satisfies ParsedElementView<$Aux>
 
 export const includeWildcard = {
   include: [
@@ -590,7 +597,7 @@ export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression
   if (expr.endsWith('._')) {
     return {
       ref: {
-        model: expr.replace('._', '') as Aux.StrictFqn<$Aux>,
+        model: expr.replace('._', '') as aux.Fqn<$Aux>,
       },
       selector: 'expanded',
     }
@@ -598,7 +605,7 @@ export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression
   if (expr.endsWith('.*')) {
     return {
       ref: {
-        model: expr.replace('.*', '') as Aux.StrictFqn<$Aux>,
+        model: expr.replace('.*', '') as aux.Fqn<$Aux>,
       },
       selector: 'children',
     }
@@ -606,14 +613,14 @@ export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression
   if (expr.endsWith('.**')) {
     return {
       ref: {
-        model: expr.replace('.**', '') as Aux.StrictFqn<$Aux>,
+        model: expr.replace('.**', '') as aux.Fqn<$Aux>,
       },
       selector: 'descendants',
     }
   }
   return {
     ref: {
-      model: expr as Aux.StrictFqn<$Aux>,
+      model: expr as aux.Fqn<$Aux>,
     },
   }
 }
@@ -636,7 +643,7 @@ type CustomProps = {
 export function $include(
   expr: Expression | ModelExpression<$Aux>,
   props?: CustomProps,
-): ViewRulePredicate<$Aux> {
+): ElementViewPredicate<$Aux> {
   let _expr = props?.where ? $where(expr as any, props.where as any) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
@@ -708,15 +715,17 @@ export function $global(expr: GlobalExpr): ViewRuleGlobalStyle | ViewRuleGlobalP
 }
 
 export function computeView(
-  ...args: [FakeElementIds, ViewRule<any> | ViewRule<any>[]] | [ViewRule<any> | ViewRule<any>[]]
+  ...args: [FakeElementIds, ElementViewRule<$Aux> | ElementViewRule<$Aux>[]] | [
+    ElementViewRule<$Aux> | ElementViewRule<$Aux>[],
+  ]
 ) {
   let result: ComputedView
   if (args.length === 1) {
-    result = computeElementView<$Aux>(
+    result = computeElementView(
       fakeModel,
       {
         ...emptyView,
-        rules: [args[0]].flat() as ViewRule<$Aux>[],
+        rules: [args[0]].flat() as ElementViewRule[],
       },
     )
   } else {
@@ -724,8 +733,8 @@ export function computeView(
       fakeModel,
       {
         ...emptyView,
-        viewOf: args[0] as Aux.StrictElementId<$Aux>,
-        rules: [args[1]].flat() as ViewRule<$Aux>[],
+        viewOf: args[0] as aux.Fqn<AnyAux>,
+        rules: [args[1]].flat() as ElementViewRule[],
       },
     )
   }

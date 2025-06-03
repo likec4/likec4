@@ -1,16 +1,18 @@
 import { nonexhaustive } from '../../errors'
-import type { ComputedNode, Relationship } from '../../types'
+import type { AnyAux, aux, ComputedNode } from '../../types'
 import { ModelRelationExpr, whereOperatorAsPredicate } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
-export type FilterableEdge = Pick<Relationship, 'kind' | 'tags'> & {
-  source: ComputedNode
-  target: ComputedNode
+export type FilterableEdge<A extends AnyAux> = {
+  tags?: aux.Tags<A> | null | undefined
+  kind?: string
+  source: ComputedNode<A>
+  target: ComputedNode<A>
 }
 
-export function relationExpressionToPredicates<T extends FilterableEdge>(
-  expr: ModelRelationExpr.Any,
+export function relationExpressionToPredicates<A extends AnyAux, T extends FilterableEdge<A>>(
+  expr: ModelRelationExpr.Any<A>,
 ): Predicate<T> {
   switch (true) {
     case ModelRelationExpr.isCustom(expr): {

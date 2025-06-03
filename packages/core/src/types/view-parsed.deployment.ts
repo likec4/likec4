@@ -1,5 +1,6 @@
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type { AnyAux, Unknown } from './aux'
+import type { _type } from './const'
 import type { Expression, FqnExpr } from './expression'
 import type {
   AnyExcludePredicate,
@@ -34,6 +35,7 @@ export type DeploymentViewRule<A extends AnyAux = Unknown> =
   | DeploymentViewRuleStyle<A>
   | ViewRuleAutoLayout
 
-export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A, 'deployment'> {
+export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A> {
+  [_type]: 'deployment'
   readonly rules: DeploymentViewRule<A>[]
 }

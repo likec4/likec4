@@ -2,11 +2,11 @@
 
 exports[`compute-element-view > view of cloud 1`] = `
 {
-  "__": "element",
+  "_stage": "computed",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -89,7 +89,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "customer",
       "outEdges": [
         "customer:cloud.frontend",
       ],
@@ -109,7 +109,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "support",
       "outEdges": [
         "support:cloud.frontend",
       ],
@@ -136,7 +136,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud",
       "outEdges": [
         "cloud.backend:email",
         "cloud.backend:amazon",
@@ -163,7 +163,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "container",
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend",
       "outEdges": [
         "cloud.frontend:cloud.backend",
       ],
@@ -185,7 +185,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "container",
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend",
       "outEdges": [
         "cloud.backend:email",
         "cloud.backend:amazon",
@@ -208,7 +208,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "email",
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
@@ -229,7 +229,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
@@ -249,11 +249,11 @@ exports[`compute-element-view > view of cloud 1`] = `
 
 exports[`compute-element-view > view of cloud.frontend 1`] = `
 {
-  "__": "element",
+  "_stage": "computed",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -321,7 +321,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "customer",
       "outEdges": [
         "customer:cloud.frontend.dashboard",
       ],
@@ -341,7 +341,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "support",
       "outEdges": [
         "support:cloud.frontend.supportPanel",
       ],
@@ -368,7 +368,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "container",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend",
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend",
         "cloud.frontend.supportPanel:cloud.backend",
@@ -392,7 +392,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "component",
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend.dashboard",
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend",
       ],
@@ -416,7 +416,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "component",
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend.supportPanel",
       "outEdges": [
         "cloud.frontend.supportPanel:cloud.backend",
       ],
@@ -441,7 +441,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "container",
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend",
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",

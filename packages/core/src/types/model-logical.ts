@@ -1,6 +1,6 @@
 import type { Link } from './_common'
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
+import type { AnyAux } from './aux'
 import type { FqnRef } from './fqnRef'
 import type * as scalar from './scalar'
 import type {
@@ -48,7 +48,7 @@ export interface ElementStyle {
 }
 
 // dprint-ignore
-export interface Element<A extends AnyAux>
+export interface Element<A extends AnyAux = AnyAux>
   extends
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,

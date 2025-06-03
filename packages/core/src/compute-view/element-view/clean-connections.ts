@@ -1,6 +1,8 @@
 import { allPass, anyPass, pipe, prop, reduce } from 'remeda'
-import { Connection, ConnectionModel } from '../../model/connection'
+import type { RelationshipModel } from '../../model'
 import {
+  Connection,
+  ConnectionModel,
   differenceConnections,
   findDeepestNestedConnection,
   findDescendantConnections,
@@ -8,8 +10,7 @@ import {
   isIncoming,
   isOutgoing,
   mergeConnections,
-} from '../../model/connection/ops'
-import type { RelationshipModel } from '../../model/RelationModel'
+} from '../../model'
 import type { AnyAux } from '../../types'
 import { intersection, union } from '../../utils'
 import { ifilter, toSet } from '../../utils/iterable'

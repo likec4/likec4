@@ -1,6 +1,6 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { ElementView, Fqn, ViewId, ViewRule } from '../../types'
+import { type Fqn, type ParsedElementView as ElementView, type ViewId, type ViewRule } from '../../types'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 
 function views(...views: ElementView[]): Record<ViewId, ElementView> {

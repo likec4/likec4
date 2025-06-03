@@ -1,39 +1,40 @@
 import { nonNullable } from '../../../errors'
-import type { ConnectionModel } from '../../../model/connection'
-import type { ElementModel } from '../../../model/ElementModel'
-import type { AnyAux, ModelExpression, NodeId, Unknown, ViewRuleGroup } from '../../../types'
+import type { ConnectionModel, ElementModel } from '../../../model'
+import type { aux, ElementViewRuleGroup as ViewRuleGroup, ModelExpression, NodeId, scalar } from '../../../types'
 import { Stack } from '../../../utils/mnemonist'
 import { type ComputeCtx, type CtxElement, type MutableState, type StageExpression, AbstractMemory } from '../../memory'
 import { NodesGroup } from './NodeGroup'
 import { ActiveGroupStageExclude, StageExclude } from './stage-exclude'
 import { ActiveGroupStageInclude, StageInclude } from './stage-include'
 
+type A = aux.Any
+
 export interface Ctx extends
   ComputeCtx<
-    ElementModel<Unknown>,
-    ConnectionModel<Unknown>,
+    ElementModel<A>,
+    ConnectionModel<A>,
     Memory<Ctx>,
     StageInclude<Ctx>,
     StageExclude,
-    ModelExpression<Unknown>
+    ModelExpression<A>
   >
 {
   MutableState: {
-    elements: Set<ElementModel<Unknown>>
-    explicits: Set<ElementModel<Unknown>>
-    final: Set<ElementModel<Unknown>>
-    connections: ConnectionModel<Unknown>[]
-    groups: NodesGroup[]
+    elements: Set<ElementModel<A>>
+    explicits: Set<ElementModel<A>>
+    final: Set<ElementModel<A>>
+    connections: ConnectionModel<A>[]
+    groups: NodesGroup<A>[]
     /*
      * The group where explict element was added first time
      * May be a root group
      */
-    explicitFirstSeenIn: Map<ElementModel<Unknown>, NodesGroup['id']>
+    explicitFirstSeenIn: Map<ElementModel<A>, scalar.NodeId>
     /**
      * The group where element (implicit or explicit) was last seen (added or updated)
      * Exclude root group
      */
-    lastSeenIn: Map<ElementModel<Unknown>, NodesGroup['id']>
+    lastSeenIn: Map<ElementModel<A>, scalar.NodeId>
   }
 }
 
@@ -57,15 +58,15 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
     super(state)
   }
 
-  public get groups(): ReadonlyArray<NodesGroup> {
+  public get groups(): ReadonlyArray<NodesGroup<A>> {
     return this.state.groups
   }
 
-  public get explicitFirstSeenIn(): ReadonlyMap<ElementModel, NodesGroup['id']> {
+  public get explicitFirstSeenIn(): ReadonlyMap<ElementModel<A>, scalar.NodeId> {
     return this.state.explicitFirstSeenIn
   }
 
-  public get lastSeenIn(): ReadonlyMap<ElementModel, NodesGroup['id']> {
+  public get lastSeenIn(): ReadonlyMap<ElementModel<A>, scalar.NodeId> {
     return this.state.lastSeenIn
   }
 

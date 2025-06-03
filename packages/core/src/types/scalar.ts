@@ -23,7 +23,9 @@ export type IconUrl = Icon
 export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
 export type ElementKind<Kinds = string> = Tagged<Kinds, 'ElementKind'>
 export const GroupElementKind = '@group' as ElementKind<'@group'>
-export function isGroupElementKind<V extends { kind: any }>(v: V): v is V & { kind: typeof GroupElementKind } {
+export type GroupElementKind = typeof GroupElementKind
+
+export function isGroupElementKind<V extends { kind?: any }>(v: V): v is V & { kind: GroupElementKind } {
   return v.kind === GroupElementKind
 }
 
@@ -33,6 +35,9 @@ export function isGroupElementKind<V extends { kind: any }>(v: V): v is V & { ki
 export type DeploymentFqn<T = string> = Tagged<T, 'DeploymentFqn'>
 export type DeploymentKind<Kinds = string> = Tagged<Kinds, 'DeploymentKind'>
 export type ViewId<Id = string> = Tagged<Id, 'ViewId'>
+export function ViewId(id: string): ViewId {
+  return id as any
+}
 
 export type AnyFqn<T = string> = DeploymentFqn<T> | Fqn<T>
 
@@ -85,7 +90,7 @@ export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
   const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
   return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
-export const StepEdgeKind = '@step' as RelationshipKind<'@step'>
+export const StepEdgeKind = '@step'
 
 export function isStepEdgeId(id: string): id is StepEdgeId {
   return id.startsWith('step-')

@@ -7,9 +7,9 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import {
   type AnyAux,
   type ComputedElementView,
-  type ElementView,
+  type ElementViewRule as ViewRule,
   type NodeId,
-  type ViewRule,
+  type ParsedElementView as ElementView,
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
@@ -199,7 +199,7 @@ export function computeElementView<A extends AnyAux>(
 
   const nodesMap = buildNodes<A>(memory)
 
-  const computedEdges = toComputedEdges<A>(memory.connections as readonly ConnectionModel<A>[])
+  const computedEdges = toComputedEdges(memory.connections as unknown as readonly ConnectionModel<A>[])
 
   linkNodesWithEdges(nodesMap, computedEdges)
 
@@ -218,10 +218,11 @@ export function computeElementView<A extends AnyAux>(
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
-  const elementNotations = buildElementNotations(nodes)
+  const nodeNotations = buildElementNotations(nodes)
 
   return calcViewLayoutHash({
     ...view,
+    _stage: 'computed',
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
@@ -234,9 +235,9 @@ export function computeElementView<A extends AnyAux>(
       }
       return n
     }),
-    ...(elementNotations.length > 0 && {
+    ...(nodeNotations.length > 0 && {
       notation: {
-        elements: elementNotations,
+        nodes: nodeNotations,
       },
     }),
   })
@@ -251,7 +252,7 @@ function assignElementsToGroups(memory: Memory) {
   }
   const groupAssignments = new DefaultMap<NodeId, Set<Elem>>(() => new Set())
 
-  const assignedTo = new Map<ElementModel, NodesGroup['id']>()
+  const assignedTo = new Map<Elem, NodesGroup['id']>()
 
   const isAncestorAssigned = (el: Elem) => {
     for (const parent of el.ancestors()) {

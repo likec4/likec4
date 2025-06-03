@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { type AnyTypes, Builder } from '../../builder'
 import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
-import { type ElementView, isElementView } from '../../types'
+import { type ParsedElementView as ElementView, isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
 

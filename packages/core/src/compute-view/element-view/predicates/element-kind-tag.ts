@@ -1,8 +1,6 @@
-import { findConnectionsWithin } from '../../../model/connection/model'
-import type { AnyAux } from '../../../types'
-import type { ModelFqnExpr } from '../../../types/expression-model'
+import type { AnyAux, ModelFqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
-import { resolveElements } from './_utils'
+import { findConnectionsWithin, resolveElements } from './_utils'
 
 export const ElementKindOrTagPredicate: PredicateExecutor<
   ModelFqnExpr.ElementKindExpr<AnyAux> | ModelFqnExpr.ElementTagExpr<AnyAux>

@@ -1,5 +1,5 @@
 import { entries, flatMap, groupBy, map, mapValues, pipe, piped, prop, sortBy, unique } from 'remeda'
-import type { ComputedNode, ElementNotation } from '../../types'
+import type { ComputedNode, NodeNotation } from '../../types'
 
 /**
  * Build element notations from computed nodes:
@@ -9,7 +9,7 @@ import type { ComputedNode, ElementNotation } from '../../types'
  * 4. For each group get unique kinds
  * 5. Unwind the groups
  */
-export function buildElementNotations(nodes: ComputedNode<any>[]): ElementNotation[] {
+export function buildElementNotations(nodes: ComputedNode<any>[]): NodeNotation[] {
   return pipe(
     nodes,
     groupBy(prop('notation')),

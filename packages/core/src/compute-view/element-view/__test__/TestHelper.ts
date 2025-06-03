@@ -13,7 +13,13 @@ import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
 import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
-import type { ComputedElementView, ComputedView, ElementView, ViewId, ViewRule } from '../../../types'
+import type {
+  ComputedElementView,
+  ComputedView,
+  ParsedElementView as ElementView,
+  ViewId,
+  ViewRule,
+} from '../../../types'
 import { compareNatural } from '../../../utils'
 import { imap, toArray } from '../../../utils/iterable'
 import { difference as differenceSet } from '../../../utils/set'

@@ -1,12 +1,12 @@
 import type { ElementModel } from '../../../model'
-import { type AnyAux, type NodeId, type ViewRuleGroup, GroupElementKind } from '../../../types'
+import { type AnyAux, type ElementViewRuleGroup, type NodeId, GroupElementKind } from '../../../types'
 
 export class NodesGroup<A extends AnyAux = AnyAux> {
   static readonly kind = GroupElementKind
 
   constructor(
     public readonly id: NodeId,
-    public readonly viewRule: ViewRuleGroup<A>,
+    public readonly viewRule: ElementViewRuleGroup<A>,
     public readonly parent: NodeId | null = null,
     public readonly elements: ReadonlySet<ElementModel<A>> = new Set<ElementModel<A>>(),
   ) {

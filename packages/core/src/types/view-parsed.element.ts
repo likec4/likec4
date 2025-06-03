@@ -1,6 +1,7 @@
-import type { MergeExclusive, Simplify } from 'type-fest'
+import type { Simplify } from 'type-fest'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
+import type { _type } from './const'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
 import type { BorderStyle, Color, ShapeSize, SpacingSize, TextSize } from './styles'
 import type {
@@ -24,10 +25,8 @@ export interface ElementViewExcludePredicate<A extends AnyAux = AnyAux>
 {}
 
 export type ElementViewPredicate<A extends AnyAux = AnyAux> = Simplify<
-  MergeExclusive<
-    ElementViewIncludePredicate<A>,
-    ElementViewExcludePredicate<A>
-  >
+  | ElementViewIncludePredicate<A>
+  | ElementViewExcludePredicate<A>
 >
 
 export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
@@ -58,14 +57,9 @@ export type ElementViewRule<A extends AnyAux = AnyAux> =
   | ViewRuleGlobalPredicateRef
   | ViewRuleAutoLayout
 
-export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'element'> {
+export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
+  [_type]: 'element'
   readonly rules: ElementViewRule<A>[]
   readonly viewOf?: aux.StrictFqn<A>
-  readonly extends?: aux.StrictViewId<A>
-}
-
-export interface ParsedScopedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'element'> {
-  readonly rules: ElementViewRule<A>[]
-  readonly viewOf: aux.Fqn<A>
   readonly extends?: aux.StrictViewId<A>
 }

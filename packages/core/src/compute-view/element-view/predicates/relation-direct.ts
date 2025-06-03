@@ -1,14 +1,20 @@
 import { concat, constant, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
 import { invariant } from '../../../errors'
-import { ConnectionModel, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
-import type { RelationshipModel } from '../../../model/RelationModel'
+import type { RelationshipModel } from '../../../model'
+import { ConnectionModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
 import { isSameHierarchy } from '../../../utils'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
-import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import {
+  findConnectionsBetween,
+  findConnectionsWithin,
+  includeDescendantsFromMemory,
+  resolveAndIncludeFromMemory,
+  resolveElements,
+} from './_utils'
 
 const isWildcard = ModelFqnExpr.isWildcard
 

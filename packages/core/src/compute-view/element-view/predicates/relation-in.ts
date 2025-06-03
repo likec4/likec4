@@ -1,18 +1,11 @@
 import { anyPass, unique } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import type { LikeC4Model } from '../../../model'
-import {
-  type ConnectionModel,
-  Connection,
-  findConnection,
-  findConnectionsBetween,
-} from '../../../model/connection/model'
-import type { RelationshipModel } from '../../../model/RelationModel'
+import { type ConnectionModel, type LikeC4Model, type RelationshipModel, Connection } from '../../../model'
 import type { ModelRelationExpr } from '../../../types'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
-import { resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import { findConnection, findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming<AnyAux>> = {
   include: ({ expr, scope, model, memory, stage, filterWhere }) => {

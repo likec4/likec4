@@ -1,10 +1,10 @@
 import { unique } from 'remeda'
-import { type ConnectionModel, findConnectionsBetween } from '../../../model/connection/model'
-import type { RelationshipModel } from '../../../model/RelationModel'
+import { type ConnectionModel } from '../../../model'
+import type { RelationshipModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, ModelFqnExpr } from '../../../types'
 import { toArray, toSet } from '../../../utils/iterable/to'
 import type { PredicateExecutor } from '../_types'
-import { resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import { findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const InOutRelationPredicate: PredicateExecutor<ModelRelationExpr.InOut<AnyAux>> = {
   include: ({ expr: { inout }, scope, model, memory, stage, filterWhere }) => {

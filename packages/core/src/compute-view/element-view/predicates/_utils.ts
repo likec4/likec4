@@ -1,11 +1,12 @@
 import { anyPass } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import type { ElementModel } from '../../../model'
-import type { LikeC4Model } from '../../../model/LikeC4Model'
+import type { ElementModel, LikeC4Model } from '../../../model'
+import { modelConnection } from '../../../model'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
-import { isDescendantOf } from '../../../utils/fqn'
-import { ifilter, toArray } from '../../../utils/iterable'
+import { ifilter, isDescendantOf, toArray } from '../../../utils'
 import type { Elem, Memory, PredicateCtx } from '../_types'
+
+export const { findConnection, findConnectionsBetween, findConnectionsWithin } = modelConnection
 
 /**
  * Resolve elements from the model based on the given expression

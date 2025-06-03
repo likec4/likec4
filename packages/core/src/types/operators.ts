@@ -76,8 +76,8 @@ export type WhereOperator<A extends AnyAux = Unknown> =
   | OrOperator<A>
 
 export type Filterable<A extends AnyAux> = {
-  tags?: aux.Tags<A> | null
-  kind?: aux.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A> | null
+  tags?: aux.Tags<A> | null | undefined
+  kind?: aux.LiteralElementKind<A> | aux.LiteralDeploymentKind<A> | aux.LiteralRelationKind<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }

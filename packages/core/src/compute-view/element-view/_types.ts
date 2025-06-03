@@ -1,6 +1,6 @@
 import { type LikeC4Model } from '../../model'
-import type { ConnectionModel } from '../../model/connection/model'
-import type { RelationshipModel } from '../../model/RelationModel'
+import type { ConnectionModel } from '../../model'
+import type { RelationshipModel } from '../../model'
 import type { ModelExpression, ModelFqnExpr, ModelRelationExpr } from '../../types'
 
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'

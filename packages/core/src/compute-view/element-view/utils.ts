@@ -6,7 +6,7 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type Element,
-  type Unknown,
+  type scalar,
 } from '../../types'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
@@ -15,12 +15,11 @@ import type { Memory } from './_types'
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
 
-export function toNodeSource<A extends AnyAux>(el: ElementModel<any>): Omit<ComputedNodeSource<A>, 'id'> & {
-  id: Aux.StrictFqn<A>
-} {
+export function toNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
   return {
     ...el.$element as Element<A>,
-    modelRef: 1,
+    id: el.id as scalar.NodeId,
+    modelRef: el.id,
   }
 }
 
@@ -52,9 +51,9 @@ export function toComputedEdges<A extends AnyAux>(
 
     const edge: ComputedEdge<A> = {
       id: e.id,
-      parent: e.boundary?.id ?? null,
-      source: NodeId(source),
-      target: NodeId(target),
+      parent: e.boundary?.id as scalar.NodeId ?? null,
+      source: source as scalar.NodeId,
+      target: target as scalar.NodeId,
       label: title ?? null,
       relations: relations.map((r) => r.id),
       ...props,
@@ -65,11 +64,11 @@ export function toComputedEdges<A extends AnyAux>(
   }, [] as ComputedEdge<A>[])
 }
 
-export function buildNodes<A extends AnyAux = Unknown>(
+export function buildNodes<A extends AnyAux>(
   memory: Memory,
-): ReadonlyMap<Aux.StrictFqn<A>, ComputedNode<A>> {
+): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
   return buildComputedNodes(
-    [...memory.final].map(n => toNodeSource<A>(n)),
+    [...memory.final].map(n => toNodeSource(n)),
     memory.groups,
   )
 }
