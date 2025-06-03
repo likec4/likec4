@@ -1,7 +1,17 @@
-import { isString } from 'remeda'
+import type { Tagged } from 'type-fest'
 import type {
+  _type,
+  AnyAux,
+  aux,
+  ComputedLikeC4ModelData,
+  ComputedView,
+  DiagramView,
+  LayoutedLikeC4ModelData,
+  ParsedLikeC4ModelData,
   scalar,
+  ViewType,
 } from '../types'
+import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
 export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
@@ -9,88 +19,42 @@ export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
 /**
  * Utility function to extract `id` from the given element.
  */
-export function getId<Id extends string>(element: string | { id: Id }): Id {
-  return isString(element) ? element as Id : element.id
+export function getId<Id extends string, Scalar extends Tagged<Id, string>>(element: Id | { id: Scalar }): Scalar {
+  return typeof element === 'string' ? element as unknown as Scalar : element.id
 }
 
-export type ElementOrFqn<A> = A | { id: scalar.Fqn<A> }
+export type ElementOrFqn<A extends AnyAux> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
-export type DeploymentOrFqn<A> = A | { id: scalar.DeploymentFqn<A> }
+export type DeploymentOrFqn<A extends AnyAux> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
+
+export type ViewOrId<A extends AnyAux> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
 
 export type NodeOrId = string | { id: scalar.NodeId }
-
 export type EdgeOrId = string | { id: scalar.EdgeId }
+export type RelationOrId = string | { id: scalar.RelationId }
 
-// type LikeC4ModelWithViewType<D extends LikeC4ModelDump, A extends AnyAux> = D['__'] extends 'computed'
-//   ? LikeC4Model<$Computed<A>>
-//   : D['__'] extends 'layouted' ? LikeC4Model<$Diagram<A>>
-//   : LikeC4Model<A>
+export type $View<A extends AnyAux> = {
+  parsed: never
+  computed: ComputedView<A>
+  layouted: DiagramView<A>
+}[A['Stage']]
 
-// export type LikeC4ModelFromDump<D> = D extends LikeC4ModelDump ? LikeC4ModelWithViewType<D, AuxFromDump<D>>
-//   : never
+export type $ViewWithType<A extends AnyAux, T extends ViewType> =
+  & {
+    parsed: never
+    computed: ComputedView<A>
+    layouted: DiagramView<A>
+  }[A['Stage']]
+  & { [_type]: T }
 
-// /**
-//  * Model type with all aux types and view type
-//  */
-// export interface $M<A extends AnyAux, V> extends
-//   Aux<
-//     A['ProjectId'],
-//     A['ElementId'],
-//     A['DeploymentId'],
-//     A['ViewId'],
-//     A['Spec']
-//   >
-// {
-//   ViewType: V
-// }
+export type $ViewModel<A extends AnyAux> = {
+  parsed: never
+  computed: LikeC4ViewModel<A>
+  layouted: LikeC4ViewModel<A>
+}[A['Stage']]
 
-// export type $Computed<A> =
-//   // dprint-ignore
-//   A extends $M<infer T, any>
-//     ? $Computed<T>
-//     : A extends AnyAux
-//       ? $M<A, ComputedView<A>>
-//       : never
-
-// export type $Diagram<A> =
-//   // dprint-ignore
-//   A extends $M<infer T, any>
-//     ? $Diagram<T>
-//     : A extends AnyAux
-//       ? $M<A, DiagramView<A>>
-//       : never
-
-// export type $RefineComputed<A, V extends 'element' | 'deployment' | 'dynamic'> =
-//   // dprint-ignore
-//   A extends $M<infer T, any>
-//     ? $M<T, Extract<ComputedView<T>, { __: V }>>
-//     : A extends AnyAux
-//       ? $M<A, Extract<ComputedView<A>, { __: V }>>
-//       : never
-
-// export type $UnwrapM<A extends AnyAux> =
-//   // dprint-ignore
-//   A extends $M<infer T, any>
-//     ? $UnwrapM<T>
-//     : A
-
-// export type $View<A extends AnyAux> =
-//   // dprint-ignore
-//   A extends $M<infer T, infer V>
-//     ? V extends ProcessedView<T>
-//       ? V
-//       : ProcessedView<T>
-//     : ProcessedView<A>
-
-// export type auxview<A> =
-// // dprint-ignore
-//   A extends AnyAux
-//     ? Extract<AnyLikeC4View
-//     : never
-
-//   // dprint-ignore
-//   A extends $M<infer T, infer V>
-//     ? V extends ProcessedView<T>
-//       ? V
-//       : ProcessedView<T>
-//     : ProcessedView<A>
+export type $ModelData<A extends AnyAux> = {
+  parsed: ParsedLikeC4ModelData<A>
+  computed: ComputedLikeC4ModelData<A>
+  layouted: LayoutedLikeC4ModelData<A>
+}[A['Stage']]

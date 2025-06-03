@@ -1,7 +1,7 @@
 import type { NonEmptyArray } from './_common'
 import type * as scalar from './scalar'
 import type { BorderStyle, ElementShape, ThemeColor } from './styles'
-import type { AutoLayoutDirection, ViewManualLayout } from './view'
+import type { AutoLayoutDirection, ViewManualLayout } from './view-common'
 
 export namespace ViewChange {
   export interface ChangeElementStyle {

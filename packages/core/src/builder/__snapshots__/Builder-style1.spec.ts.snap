@@ -2,6 +2,7 @@
 
 exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 {
+  "_stage": "parsed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -134,6 +135,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "component": {
@@ -166,6 +168,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
 
 exports[`Builder (style1) > should build view  1`] = `
 {
+  "_stage": "parsed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -217,6 +220,7 @@ exports[`Builder (style1) > should build view  1`] = `
   "projectId": "from-builder",
   "relations": {},
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "component": {},
@@ -226,8 +230,8 @@ exports[`Builder (style1) > should build view  1`] = `
   },
   "views": {
     "1": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "1",
       "links": null,
@@ -244,8 +248,8 @@ exports[`Builder (style1) > should build view  1`] = `
       "title": "View 1",
     },
     "2": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "2",
       "links": null,
@@ -272,8 +276,8 @@ exports[`Builder (style1) > should build view  1`] = `
       "title": "view 2",
     },
     "3": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "3",
       "links": null,
@@ -298,6 +302,7 @@ exports[`Builder (style1) > should build view  1`] = `
 
 exports[`Builder (style1) > should build viewOf  1`] = `
 {
+  "_stage": "parsed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -361,6 +366,7 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   "projectId": "from-builder",
   "relations": {},
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "component": {},
@@ -370,8 +376,8 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   },
   "views": {
     "1": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "1",
       "links": null,

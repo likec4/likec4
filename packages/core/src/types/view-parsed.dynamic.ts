@@ -1,18 +1,18 @@
 import { isArray } from 'remeda'
 import type { MergeExclusive, Simplify } from 'type-fest'
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
+import type { AnyAux } from './aux'
 import type { ModelFqnExpr } from './expression-model'
 import { isStepEdgeId } from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
 import type {
-  ParsedViewBaseProperties,
+  BaseParsedViewProperties,
   ViewRuleAutoLayout,
   ViewRuleGlobalStyle,
 } from './view-common'
 import type { ElementViewRuleStyle } from './view-parsed.element'
 
-export interface DynamicViewStep<A extends AnyAux = Unknown> {
+export interface DynamicViewStep<A extends AnyAux = AnyAux> {
   readonly source: aux.StrictFqn<A>
   readonly target: aux.StrictFqn<A>
   readonly title: string | null
@@ -30,7 +30,7 @@ export interface DynamicViewStep<A extends AnyAux = Unknown> {
   readonly navigateTo?: aux.StrictViewId<A>
 }
 
-export interface DynamicViewParallelSteps<A extends AnyAux = Unknown> {
+export interface DynamicViewParallelSteps<A extends AnyAux = AnyAux> {
   readonly __parallel: DynamicViewStep<A>[]
 }
 
@@ -43,24 +43,24 @@ export function getParallelStepsPrefix(id: string): string | null {
   return null
 }
 
-export type DynamicViewStepOrParallel<A extends AnyAux = Unknown> = Simplify<
+export type DynamicViewStepOrParallel<A extends AnyAux = AnyAux> = Simplify<
   MergeExclusive<
     DynamicViewStep<A>,
     DynamicViewParallelSteps<A>
   >
 >
 
-export interface DynamicViewIncludeRule<A extends AnyAux = Unknown> {
+export interface DynamicViewIncludeRule<A extends AnyAux = AnyAux> {
   include: ModelFqnExpr.Any<A>[]
 }
 
-export type DynamicViewRule<A extends AnyAux = Unknown> =
+export type DynamicViewRule<A extends AnyAux = AnyAux> =
   | DynamicViewIncludeRule<A>
   | ViewRuleGlobalStyle
   | ElementViewRuleStyle<A>
   | ViewRuleAutoLayout
 
-export interface ParsedDynamicView<A extends AnyAux = Unknown> extends ParsedViewBaseProperties<A, 'dynamic'> {
+export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'dynamic'> {
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]
 }

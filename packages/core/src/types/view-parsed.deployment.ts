@@ -5,7 +5,7 @@ import type {
   AnyExcludePredicate,
   AnyIncludePredicate,
   AnyViewRuleStyle,
-  ParsedViewBaseProperties,
+  BaseParsedViewProperties,
   ViewRuleAutoLayout,
   ViewRuleGlobalStyle,
 } from './view-common'
@@ -36,6 +36,6 @@ export type DeploymentViewRule<A extends AnyAux = Unknown> =
   | ViewRuleAutoLayout
   | ViewRuleGlobalStyle
 
-export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends ParsedViewBaseProperties<A, 'deployment'> {
+export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A, 'deployment'> {
   readonly rules: DeploymentViewRule<A>[]
 }

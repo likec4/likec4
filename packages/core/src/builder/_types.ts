@@ -279,12 +279,12 @@ export namespace Types {
       >
     : never
 
-  export type ToAux<T, Stage extends 'parsed' | 'computed' = 'computed'> = T extends AnyTypes ? Aux<
-      Stage,
+  export type ToAux<T> = T extends AnyTypes ? Aux<
+      'parsed',
       T['Fqn'],
       T['DeploymentFqn'],
       T['ViewId'],
-      Stage,
+      'from-builder',
       SpecAux<
         T['ElementKind'],
         T['DeploymentKind'],

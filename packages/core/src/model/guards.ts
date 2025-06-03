@@ -1,4 +1,4 @@
-import type { AnyAux, Unknown } from '../types'
+import type { AnyAux, aux } from '../types'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
@@ -6,6 +6,7 @@ import type {
 } from './DeploymentElementModel'
 import { DeployedInstanceModel, DeploymentNodeModel, DeploymentRelationModel } from './DeploymentElementModel'
 import { ElementModel } from './ElementModel'
+import type { LikeC4Model } from './LikeC4Model'
 import { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
 
 export function isDeploymentNode<M extends AnyAux>(
@@ -43,9 +44,14 @@ export function isElementModel<M extends AnyAux = AnyAux>(element: unknown): ele
 }
 
 // export function isComputedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M>): model is LikeC4Model<$Computed<M>> {
-//   return model.type === 'computed'
+//   return model.type === 'computed'`
 // }
+type AsLayouted<M extends LikeC4Model<any>> = M extends LikeC4Model<infer A extends aux.AnyLayouted>
+  ? LikeC4Model<aux.toLayouted<A>>
+  : never
 
-// export function isLayoutedLikeC4Model<M extends AnyAux>(model: LikeC4Model<M>): model is LikeC4Model.Layouted<M> {
-//   return model.type === 'layouted'
-// }
+export function isLayoutedLikeC4Model<A extends AnyAux>(
+  model: LikeC4Model<any>,
+): model is LikeC4Model<aux.toLayouted<A>> {
+  return model.stage === 'layouted'
+}

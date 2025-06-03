@@ -160,10 +160,11 @@ test('Builder types - style 2', () => {
   expectTypeOf(m.build()).toEqualTypeOf<
     ParsedLikeC4ModelData<
       Aux<
-        'from-builder',
+        'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
         'view' | 'view-of' | 'deployment',
+        'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',
           'env' | 'vm',
@@ -178,10 +179,11 @@ test('Builder types - style 2', () => {
   expectTypeOf(m.toLikeC4Model()).toEqualTypeOf<
     LikeC4Model.Computed<
       Aux<
-        'from-builder',
+        'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
         'view' | 'view-of' | 'deployment',
+        'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',
           'env' | 'vm',

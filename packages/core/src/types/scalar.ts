@@ -23,6 +23,9 @@ export type IconUrl = Icon
 export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
 export type ElementKind<Kinds = string> = Tagged<Kinds, 'ElementKind'>
 export const GroupElementKind = '@group' as ElementKind<'@group'>
+export function isGroupElementKind<V extends { kind: any }>(v: V): v is V & { kind: typeof GroupElementKind } {
+  return v.kind === GroupElementKind
+}
 
 /**
  * Full-qualified-name for deployment elements

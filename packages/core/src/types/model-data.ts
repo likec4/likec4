@@ -1,12 +1,13 @@
 import type { NonEmptyArray } from './_common'
-import type { AnyAux } from './aux'
 import type * as aux from './aux'
+import type { AnyAux, Unknown } from './aux'
+import type { _stage, ExtractOnStage, ModelStage } from './const'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
 import type * as scalar from './scalar'
-import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './view'
+import type { AnyView } from './view'
 
 // type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
 
@@ -43,6 +44,21 @@ import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './vie
 // }
 // type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
 
+interface BaseLikeC4ModelData<A extends AnyAux, Stage extends ModelStage> {
+  [_stage]: Stage
+  projectId: aux.ProjectId<A>
+  specification: Specification<A>
+  elements: Record<aux.ElementId<A>, Element<A>>
+  deployments: {
+    elements: Record<aux.DeploymentId<A>, DeploymentElement<A>>
+    relations: Record<scalar.RelationId, DeploymentRelationship<A>>
+  }
+  relations: Record<scalar.RelationId, Relationship<A>>
+  globals: ModelGlobals
+  imports: Record<scalar.ProjectId<any>, NonEmptyArray<Element<A>>>
+  views: Record<aux.ViewId<A>, ExtractOnStage<AnyView<A>, Stage>>
+}
+
 /**
  * Represents a LikeC4 model with customizable type parameters,
  * parsed from DSL or result from Builder
@@ -57,33 +73,21 @@ import type { ComputedView, DiagramView, LikeC4View, ProcessedView } from './vie
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends AnyAux = AnyAux> {
-  // To prevent accidental use of this type
-  __?: never
-  projectId: aux.ProjectId<A>
-  specification: Specification<A>
-  elements: Record<aux.ElementId<A>, Element<A>>
-  deployments: {
-    elements: Record<aux.DeploymentId<A>, DeploymentElement<A>>
-    relations: Record<scalar.RelationId, DeploymentRelationship<A>>
-  }
-  relations: Record<scalar.RelationId, Relationship<A>>
-  globals: ModelGlobals
-  views: Record<aux.ViewId<A>, LikeC4View<A>>
-  imports: Record<scalar.ProjectId<any>, NonEmptyArray<Element<A>>>
+export interface ParsedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'parsed'> {
 }
 
-export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>>
-  extends Omit<ParsedLikeC4ModelData<A>, 'views' | '__'>
-{
-  __: 'computed' | 'layouted'
-  views: Record<aux.ViewId<A>, V>
+// export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>> {
+//   __: 'computed' | 'layouted'
+//   views: Record<aux.ViewId<A>, V>
+// }
+
+export interface ComputedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'computed'> {
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux = AnyAux> extends LikeC4ModelData<A, ComputedView<A>> {
-  __: 'computed'
+export interface LayoutedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'layouted'> {
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = AnyAux> extends LikeC4ModelData<A, DiagramView<A>> {
-  __: 'layouted'
-}
+export type LikeC4ModelData<A extends AnyAux> =
+  | ParsedLikeC4ModelData<A>
+  | ComputedLikeC4ModelData<A>
+  | LayoutedLikeC4ModelData<A>

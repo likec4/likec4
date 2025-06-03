@@ -6,8 +6,8 @@ import type {
   IconUrl,
   ModelRelation,
   NonEmptyArray,
+  ParsedScopedElementView,
   RelationId,
-  ScopedElementView,
   ViewId,
 } from '@likec4/core'
 
@@ -343,7 +343,7 @@ export const issue577View = (icon: string) => ({
       },
     },
   ],
-} satisfies ScopedElementView)
+} satisfies ParsedScopedElementView)
 
 export const FakeModel = {
   __: 'computed',

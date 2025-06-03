@@ -7,7 +7,7 @@ import type {
   AnyExcludePredicate,
   AnyIncludePredicate,
   AnyViewRuleStyle,
-  ParsedViewBaseProperties,
+  BaseParsedViewProperties,
   ViewRuleAutoLayout,
   ViewRuleGlobalStyle,
 } from './view-common'
@@ -15,21 +15,21 @@ import type {
 /**
  * Predicates scoped to logical model
  */
-export interface ElementViewIncludePredicate<A extends AnyAux = Unknown>
+export interface ElementViewIncludePredicate<A extends AnyAux = AnyAux>
   extends AnyIncludePredicate<ModelExpression<A>>
 {}
-export interface ElementViewExcludePredicate<A extends AnyAux = Unknown>
+export interface ElementViewExcludePredicate<A extends AnyAux = AnyAux>
   extends AnyExcludePredicate<ModelExpression<A>>
 {}
 
-export type ElementViewPredicate<A extends AnyAux = Unknown> = Simplify<
+export type ElementViewPredicate<A extends AnyAux = AnyAux> = Simplify<
   MergeExclusive<
     ElementViewIncludePredicate<A>,
     ElementViewExcludePredicate<A>
   >
 >
 
-export interface ElementViewRuleGroup<A extends AnyAux = Unknown> {
+export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
   groupRules: Array<ElementViewPredicate<A> | ElementViewRuleGroup<A>>
   title: string | null
   color?: Color
@@ -46,9 +46,9 @@ export function isElementViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A
   return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
 }
 
-export interface ElementViewRuleStyle<A extends AnyAux = Unknown> extends AnyViewRuleStyle<ModelFqnExpr<A>> {}
+export interface ElementViewRuleStyle<A extends AnyAux = AnyAux> extends AnyViewRuleStyle<ModelFqnExpr<A>> {}
 
-export type ElementViewRule<A extends AnyAux = Unknown> =
+export type ElementViewRule<A extends AnyAux = AnyAux> =
   | ElementViewIncludePredicate<A>
   | ElementViewExcludePredicate<A>
   | ElementViewRuleGroup<A>
@@ -56,20 +56,12 @@ export type ElementViewRule<A extends AnyAux = Unknown> =
   | ViewRuleAutoLayout
   | ViewRuleGlobalStyle
 
-export interface ParsedElementView<A extends AnyAux = Unknown> extends ParsedViewBaseProperties<A, 'element'> {
+export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A, 'element'> {
   readonly rules: ElementViewRule<A>[]
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ScopedElementView<A extends AnyAux = AnyAux> extends Omit<ParsedElementView<A>, 'viewOf' | 'extends'> {
+export interface ParsedScopedElementView<A extends AnyAux = AnyAux> extends Omit<ParsedElementView<A>, 'viewOf'> {
   readonly viewOf: aux.StrictFqn<A>
-  readonly extends?: never
-}
-
-export interface ExtendsElementView<A extends AnyAux = AnyAux>
-  extends Omit<ParsedElementView<A>, 'viewOf' | 'extends'>
-{
-  readonly viewOf?: never
-  readonly extends: aux.StrictViewId<A>
 }

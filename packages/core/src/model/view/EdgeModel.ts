@@ -1,8 +1,10 @@
 import {
   type AnyAux,
+  type aux,
   type Color,
   type IteratorLike,
   type RelationshipLineType,
+  type scalar,
   type StepEdgeId,
   extractStep,
   isStepEdgeId,
@@ -13,22 +15,22 @@ import type { $View } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<A extends AnyAux> = IteratorLike<EdgeModel<A>>
+export type EdgesIterator<A extends AnyAux, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
 
-export class EdgeModel<A extends AnyAux> {
+export class EdgeModel<A extends AnyAux, View extends $View<A> = $View<A>> {
   constructor(
-    public readonly view: LikeC4ViewModel<A>,
-    public readonly $edge: $View<A>['edges'][number],
-    public readonly source: NodeModel<A>,
-    public readonly target: NodeModel<A>,
+    public readonly view: LikeC4ViewModel<A, View>,
+    public readonly $edge: View['edges'][number],
+    public readonly source: NodeModel<A, View>,
+    public readonly target: NodeModel<A, View>,
   ) {
   }
 
-  get id(): Aux.EdgeId {
+  get id(): scalar.EdgeId {
     return this.$edge.id
   }
 
-  get parent(): NodeModel<A> | null {
+  get parent(): NodeModel<A, View> | null {
     return this.$edge.parent ? this.view.node(this.$edge.parent) : null
   }
 
@@ -44,11 +46,11 @@ export class EdgeModel<A extends AnyAux> {
     return this.$edge.technology ?? null
   }
 
-  public hasParent(): this is EdgeModel.WithParent<A> {
+  public hasParent(): this is EdgeModel.WithParent<A, View> {
     return this.$edge.parent !== null
   }
 
-  get tags(): Aux.Tags<A> {
+  get tags(): aux.Tags<A> {
     return this.$edge.tags ?? []
   }
 
@@ -68,7 +70,7 @@ export class EdgeModel<A extends AnyAux> {
     return this.$edge.line ?? 'dashed'
   }
 
-  public isStep(): this is EdgeModel.StepEdge<A> {
+  public isStep(): this is EdgeModel.StepEdge<A, View> {
     return isStepEdgeId(this.id)
   }
 
@@ -92,17 +94,18 @@ export class EdgeModel<A extends AnyAux> {
     return
   }
 
-  public includesRelation(rel: Aux.RelationId<A>): boolean {
-    return this.$edge.relations.includes(rel as unknown as Aux.StrictRelationId<A>)
+  public includesRelation(rel: aux.RelationId | { id: aux.RelationId }): boolean {
+    const id = typeof rel === 'string' ? rel : rel.id
+    return this.$edge.relations.includes(id)
   }
 }
 
 namespace EdgeModel {
-  export interface StepEdge<A extends AnyAux> extends EdgeModel<A> {
+  export interface StepEdge<A extends AnyAux, V extends $View<A>> extends EdgeModel<A, V> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<A extends AnyAux> extends EdgeModel<A> {
-    parent: NodeModel<A>
+  export interface WithParent<A extends AnyAux, V extends $View<A>> extends EdgeModel<A, V> {
+    parent: NodeModel<A, V>
   }
 }

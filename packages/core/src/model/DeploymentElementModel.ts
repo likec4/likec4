@@ -3,6 +3,7 @@ import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
   type AnyAux,
+  type aux,
   type Color,
   type DeployedInstance,
   type DeploymentElement,
@@ -13,6 +14,7 @@ import {
   type IteratorLike,
   type Link,
   type RelationshipLineType,
+  type scalar,
   type Unknown,
   DefaultElementShape,
   DefaultLineStyle,
@@ -24,18 +26,18 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { IncomingFilter, OutgoingFilter } from './types'
+import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<DeploymentElementModel<A>>
 export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
 export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
 abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
-  abstract readonly id: Aux.StrictDeploymentFqn<A>
-  abstract readonly _literalId: Aux.DeploymentId<A>
+  abstract readonly id: aux.DeploymentFqn<A>
+  abstract readonly _literalId: aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
   abstract readonly title: string
   abstract readonly hierarchyLevel: number
@@ -60,7 +62,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
-  get tags(): Aux.Tags<A> {
+  get tags(): aux.Tags<A> {
     return this.$node.tags ?? []
   }
 
@@ -138,7 +140,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<A>> {
-    const unique = new Set<Aux.StrictDeploymentFqn<A>>()
+    const unique = new Set<aux.DeploymentFqn<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -149,7 +151,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
     return
   }
   public *outgoers(filter: OutgoingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<A>> {
-    const unique = new Set<Aux.StrictDeploymentFqn<A>>()
+    const unique = new Set<aux.DeploymentFqn<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue
@@ -163,7 +165,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
   /**
    * Iterate over all views that include this deployment element.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A>> {
+  public *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -202,9 +204,9 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
       ))
   }
 
-  public getMetadata(): Aux.StrictMetadata<A>
-  public getMetadata(field: Aux.MetadataKey<A>): string | undefined
-  public getMetadata(field?: Aux.MetadataKey<A>) {
+  public getMetadata(): aux.Metadata<A>
+  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$node.metadata?.[field]
     }
@@ -213,8 +215,8 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
 }
 
 export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDeploymentElementModel<A> {
-  override id: Aux.StrictDeploymentFqn<A>
-  override _literalId: Aux.DeploymentId<A>
+  override id: aux.DeploymentFqn<A>
+  override _literalId: aux.DeploymentId<A>
   override title: string
   override hierarchyLevel: number
 
@@ -233,7 +235,7 @@ export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDepl
     return this.$model.parent(this)
   }
 
-  get kind(): Aux.DeploymentKind<A> {
+  get kind(): aux.DeploymentKind<A> {
     return this.$node.kind
   }
 
@@ -331,8 +333,8 @@ export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDepl
 }
 
 export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractDeploymentElementModel<A> {
-  override readonly id: Aux.StrictDeploymentFqn<A>
-  override readonly _literalId: Aux.DeploymentId<A>
+  override readonly id: aux.DeploymentFqn<A>
+  override readonly _literalId: aux.DeploymentId<A>
   override readonly title: string
   override readonly hierarchyLevel: number
 
@@ -376,11 +378,11 @@ export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractD
     return this.$instance.style?.color as Color ?? this.element.color
   }
 
-  override get tags(): Aux.Tags<A> {
-    return this.$instance.tags as unknown as Aux.Tags<A> ?? []
+  override get tags(): aux.Tags<A> {
+    return this.$instance.tags ?? []
   }
 
-  get kind(): Aux.ElementKind<A> {
+  get kind(): aux.ElementKind<A> {
     return this.element.kind
   }
 
@@ -411,7 +413,7 @@ export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractD
    * Iterate over all views that include this instance.
    * (Some views may include the parent deployment node instead of the instance.)
    */
-  public override *views(): IteratorLike<LikeC4ViewModel<A>> {
+  public override *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -438,11 +440,11 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = Unknown> {
   ) {
   }
 
-  get id(): Aux.StrictDeploymentFqn<A> {
+  get id(): aux.DeploymentFqn<A> {
     return this.instance.id
   }
 
-  get _literalId(): Aux.DeploymentId<A> {
+  get _literalId(): aux.DeploymentId<A> {
     return this.instance.id
   }
 
@@ -502,7 +504,7 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     const parent = commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.$model.node(parent) : null
   }
-  get id(): Aux.StrictRelationId<A> {
+  get id(): scalar.RelationId {
     return this.$relationship.id
   }
 
@@ -531,11 +533,11 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     return this.$relationship.description
   }
 
-  get tags(): Aux.Tags<A> {
+  get tags(): aux.Tags<A> {
     return this.$relationship.tags ?? []
   }
 
-  get kind(): Aux.RelationKind<A> | null {
+  get kind(): aux.RelationKind<A> | null {
     return this.$relationship.kind ?? null
   }
 
@@ -572,9 +574,9 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
     return false
   }
 
-  public getMetadata(): Aux.StrictMetadata<A>
-  public getMetadata(field: Aux.MetadataKey<A>): string | undefined
-  public getMetadata(field?: Aux.MetadataKey<A>) {
+  public getMetadata(): aux.Metadata<A>
+  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$relationship.metadata?.[field]
     }

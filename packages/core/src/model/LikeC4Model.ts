@@ -1,4 +1,4 @@
-import { entries, isNullish, map, pipe, prop, sort, sortBy, values } from 'remeda'
+import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
   AnyAux,
@@ -7,8 +7,6 @@ import type {
   Element,
   IteratorLike,
   LayoutedLikeC4ModelData,
-  LikeC4ModelData,
-  LikeC4ModelDump,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -16,7 +14,7 @@ import type {
   Specification,
   Unknown,
 } from '../types'
-import { type ProjectId, GlobalFqn, isGlobalFqn } from '../types'
+import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage } from '../types'
 import { compareNatural, ifilter, memoizeProp } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
@@ -29,73 +27,151 @@ import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
 import {
+  type $ModelData,
   type $View,
+  type $ViewModel,
   type ElementOrFqn,
   type IncomingFilter,
-  type LikeC4ModelFromDump,
   type OutgoingFilter,
+  type RelationOrId,
   getId,
 } from './types'
-import { type ViewsIterator, LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-abstract class BoundLikeC4Model<
+export class LikeC4Model<
   A extends AnyAux,
-  ElementId extends string,
-  ViewId extends string,
-  Tag extends string,
-  Fqn extends scalar.Fqn,
-> // Fqn extends scalar.Fqn,
-// StrViewId extends scalar.ViewId = scalar.ViewId<ElementId>,
+> // Fqn extends scalar.Fqn = aux.Fqn<A>,
+// ElementOrFqn extends string | { id: scalar.Fqn  } = aux.ElementId<A> | { id: aux.Fqn<A> },
 {
   /**
    * Don't use in runtime, only for type inference
    */
   readonly Aux!: A
-  /**
-  /**
-   * Don't use in runtime, only for type inference
-   */
-  readonly ViewType!: $View<A>
 
-  protected readonly _elements = new Map<Fqn, ElementModel<A>>()
+  protected readonly _elements = new Map<aux.Fqn<A>, ElementModel<A>>()
   // Parent element for given FQN
-  protected readonly _parents = new Map<ElementId, ElementModel<A>>()
+  protected readonly _parents = new Map<aux.Fqn<A>, ElementModel<A>>()
   // Children elements for given FQN
-  protected readonly _children = new DefaultMap<ElementId, Set<ElementModel<A>>>(() => new Set())
+  protected readonly _children = new DefaultMap<aux.Fqn<A>, Set<ElementModel<A>>>(() => new Set())
 
   protected readonly _rootElements = new Set<ElementModel<A>>()
 
   protected readonly _relations = new Map<scalar.RelationId, RelationshipModel<A>>()
 
   // Incoming to an element or its descendants
-  protected readonly _incoming = new DefaultMap<ElementId, Set<RelationshipModel<A>>>(() => new Set())
+  protected readonly _incoming = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
   // Outgoing from an element or its descendants
-  protected readonly _outgoing = new DefaultMap<ElementId, Set<RelationshipModel<A>>>(() => new Set())
+  protected readonly _outgoing = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
   // Relationships inside the element, among descendants
-  protected readonly _internal = new DefaultMap<ElementId, Set<RelationshipModel<A>>>(() => new Set())
+  protected readonly _internal = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
-  protected readonly _views = new Map<ViewId, LikeC4ViewModel<A>>()
+  protected readonly _views = new Map<aux.ViewId<A>, LikeC4ViewModel<A>>()
 
-  protected readonly _allTags = new DefaultMap<Tag, Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>>(
+  protected readonly _allTags = new DefaultMap<
+    aux.Tag<A>,
+    Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
+  >(
     () => new Set(),
   )
 
-  public abstract readonly $model: LikeC4ModelData<A>
-  public abstract readonly deployment: LikeC4DeploymentModel<A>
+  /**
+   * Creates a new LikeC4Model instance from a parsed model data.\
+   * This model omits the views, as they must be computed (or layouted)
+   * Parsed model is used for computing views
+   */
+  static fromParsed<T extends AnyAux>(parsed: ParsedLikeC4ModelData<T>): LikeC4Model<T> {
+    const { views: _omit, ...rest } = parsed
+    return new LikeC4Model({
+      ...rest,
+      views: {},
+    } as any)
+  }
 
-  get type(): 'computed' | 'layouted' {
-    return this.$model.__ ?? 'computed'
+  /**
+   * Creates a new LikeC4Model instance from the provided model data.
+   *
+   * @typeParam M - Type parameter constrained to AnyLikeC4Model
+   * @param model - The model data to create a LikeC4Model from
+   * @returns A new LikeC4Model instance with the type derived from the input model
+   */
+
+  static create<T extends AnyAux>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
+  static create<T extends AnyAux>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
+  static create<T extends AnyAux>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
+  static create<T extends AnyAux>(model: $ModelData<T>): LikeC4Model<T> {
+    return new LikeC4Model(model)
+  }
+
+  /**
+   * Creates a new LikeC4Model instance and infers types from a model dump.\
+   * Model dump expected to be computed or layouted.
+   *
+   * @typeParam D - A constant type parameter extending LikeC4ModelDump
+   * @param dump - The model dump to create the instance from
+   * @returns A  new LikeC4Model instance with types inferred from the dump
+   */
+  // static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4ModelFromDump<D> {
+  //   return new LikeC4Model(dump as any) as any
+  // }
+
+  public readonly deployment: LikeC4DeploymentModel<A>
+
+  constructor(
+    public readonly $data: $ModelData<A>,
+  ) {
+    for (const element of values($data.elements as Record<string, Element<A>>)) {
+      const el = this.addElement(element)
+      for (const tag of el.tags) {
+        this._allTags.get(tag).add(el)
+      }
+    }
+    for (const [projectId, elements] of entries($data.imports ?? {})) {
+      for (const element of sortParentsFirst(elements)) {
+        const el = this.addImportedElement(projectId as unknown as ProjectId<A>, element)
+        for (const tag of el.tags) {
+          this._allTags.get(tag).add(el)
+        }
+      }
+    }
+    for (const relation of values($data.relations)) {
+      const el = this.addRelation(relation)
+      for (const tag of el.tags) {
+        this._allTags.get(tag).add(el)
+      }
+    }
+
+    this.deployment = new LikeC4DeploymentModel<A>(this, $data.deployments)
+
+    if (isOnStage($data, 'parsed')) {
+      // Skip views
+      return
+    }
+    const views = pipe(
+      values($data.views as Record<string, $View<A>>),
+      sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
+    )
+    for (const view of views) {
+      const vm = new LikeC4ViewModel<A>(this, view)
+      this._views.set(view.id, vm)
+      for (const tag of vm.tags) {
+        this._allTags.get(tag).add(vm)
+      }
+    }
+  }
+
+  get stage(): aux.Stage<A> {
+    return this.$data[_stage] as aux.Stage<A>
   }
 
   get projectId(): aux.ProjectId<A> {
-    return this.$model.projectId ?? 'unknown' as any
+    return this.$data.projectId ?? 'unknown' as any
   }
 
   get specification(): Specification<A> {
-    return this.$model.specification
+    return this.$data.specification
   }
 
   /**
@@ -103,27 +179,18 @@ abstract class BoundLikeC4Model<
    * (not computed or layouted)
    */
   get isFromParsed(): boolean {
-    return isNullish(this.$model.__)
+    return isOnStage(this.$data, 'parsed')
   }
 
-  // isLayouted<This extends LikeC4Model<A>>(this: This): this is LikeC4Model.Layouted<A> {
-  isLayouted(): this is LikeC4Model.Layouted<A> {
-    return this.type === 'layouted'
-  }
-
-  isComputed(): this is LikeC4Model.Computed<A> {
-    return this.type === 'computed'
-  }
-
-  public element(el: ElementOrFqn<ElementId>): ElementModel<A> {
+  public element(el: ElementOrFqn<A>): ElementModel<A> {
     if (el instanceof ElementModel) {
-      return el as ElementModel<A>
+      return el
     }
     const id = getId(el)
-    return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
+    return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: aux.complete<ElementId>): ElementModel<A> | null {
-    return this._elements.get(el as any) ?? null
+  public findElement(el: aux.LiteralElementId<A>): ElementModel<A> | null {
+    return this._elements.get(getId(el)) ?? null
   }
 
   /**
@@ -152,19 +219,20 @@ abstract class BoundLikeC4Model<
    * If the relationship is not found in the model, it will be searched in the deployment model.
    * Search can be limited to the model or deployment model only.
    */
-  public relationship(id: scalar.RelationId, type: 'model'): RelationshipModel<A>
-  public relationship(id: scalar.RelationId, type: 'deployment'): DeploymentRelationModel<A>
+  public relationship(rel: RelationOrId, type: 'model'): RelationshipModel<A>
+  public relationship(rel: RelationOrId, type: 'deployment'): DeploymentRelationModel<A>
   public relationship(
-    id: scalar.RelationId,
+    rel: scalar.RelationId,
     type?: 'model' | 'deployment',
   ): RelationshipModel<A> | DeploymentRelationModel<A>
   public relationship(
-    id: scalar.RelationId,
+    rel: scalar.RelationId,
     type: 'model' | 'deployment' | undefined,
   ): RelationshipModel<A> | DeploymentRelationModel<A> {
     if (type === 'deployment') {
-      return this.deployment.relationship(id)
+      return this.deployment.relationship(rel)
     }
+    const id = getId(rel)
     let model = this._relations.get(id) ?? null
     if (model || type === 'model') {
       return nonNullable(model, `Model relation ${id} not found`)
@@ -173,20 +241,20 @@ abstract class BoundLikeC4Model<
     return nonNullable(this.deployment.findRelationship(id), `No model/deployment relation ${id} not found`)
   }
 
-  public findRelationship(id: scalar.RelationId, type: 'model'): RelationshipModel<A> | null
-  public findRelationship(id: scalar.RelationId, type: 'deployment'): DeploymentRelationModel<A> | null
+  public findRelationship(id: string, type: 'model'): RelationshipModel<A> | null
+  public findRelationship(id: string, type: 'deployment'): DeploymentRelationModel<A> | null
   public findRelationship(
-    id: scalar.RelationId,
+    id: string,
     type?: 'model' | 'deployment',
   ): RelationshipModel<A> | DeploymentRelationModel<A> | null
   public findRelationship(
-    id: scalar.RelationId,
+    id: string,
     type: 'model' | 'deployment' | undefined,
   ): RelationshipModel<A> | DeploymentRelationModel<A> | null {
     if (type === 'deployment') {
       return this.deployment.findRelationship(id)
     }
-    let model = this._relations.get(id) ?? null
+    let model = this._relations.get(getId(id)) ?? null
     if (model || type === 'model') {
       return model
     }
@@ -203,18 +271,19 @@ abstract class BoundLikeC4Model<
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: ViewId): LikeC4ViewModel<A> {
-    return nonNullable(this._views.get(viewId), `View ${viewId} not found`)
+  public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A> {
+    const id = getId(viewId)
+    return nonNullable(this._views.get(id), `View ${id} not found`)
   }
-  public findView(viewId: aux.complete<ViewId>): LikeC4ViewModel<A> | null {
-    return this._views.get(viewId as any) ?? null
+  public findView(viewId: aux.LiteralViewId<A>): LikeC4ViewModel<A> | null {
+    return this._views.get(getId(viewId)) ?? null
   }
 
   /**
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: ElementOrFqn<ElementId>): ElementModel<A> | null {
+  public parent(element: ElementOrFqn<A>): ElementModel<A> | null {
     const id = getId(element)
     return this._parents.get(id) || null
   }
@@ -223,7 +292,7 @@ abstract class BoundLikeC4Model<
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: ElementOrFqn<ElementId>): ReadonlySet<ElementModel<A>> {
+  public children(element: ElementOrFqn<A>): ReadonlySet<ElementModel<A>> {
     const id = getId(element)
     return this._children.get(id)
   }
@@ -231,7 +300,7 @@ abstract class BoundLikeC4Model<
   /**
    * Get all sibling (i.e. same parent)
    */
-  public *siblings(element: ElementOrFqn<ElementId>): ElementsIterator<A> {
+  public *siblings(element: ElementOrFqn<A>): ElementsIterator<A> {
     const id = getId(element)
     const parent = this._parents.get(id)
     const siblings = parent ? this._children.get(parent.id).values() : this.roots()
@@ -247,7 +316,7 @@ abstract class BoundLikeC4Model<
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(element: ElementOrFqn<ElementId>): ElementsIterator<A> {
+  public *ancestors(element: ElementOrFqn<A>): ElementsIterator<A> {
     let id = getId(element)
     let parent
     while (parent = this._parents.get(id)) {
@@ -260,7 +329,7 @@ abstract class BoundLikeC4Model<
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: ElementOrFqn<ElementId>): ElementsIterator<A> {
+  public *descendants(element: ElementOrFqn<A>): ElementsIterator<A> {
     for (const child of this.children(element)) {
       yield child
       yield* this.descendants(child.id)
@@ -273,7 +342,7 @@ abstract class BoundLikeC4Model<
    * @see incomers
    */
   public *incoming(
-    element: ElementOrFqn<ElementId>,
+    element: ElementOrFqn<A>,
     filter: IncomingFilter = 'all',
   ): RelationshipsIterator<A> {
     const id = getId(element)
@@ -294,7 +363,7 @@ abstract class BoundLikeC4Model<
    * @see outgoers
    */
   public *outgoing(
-    element: ElementOrFqn<ElementId>,
+    element: ElementOrFqn<A>,
     filter: OutgoingFilter = 'all',
   ): RelationshipsIterator<A> {
     const id = getId(element)
@@ -313,13 +382,13 @@ abstract class BoundLikeC4Model<
   public globals(): ModelGlobals {
     return {
       predicates: {
-        ...this.$model.globals?.predicates,
+        ...this.$data.globals?.predicates,
       },
       dynamicPredicates: {
-        ...this.$model.globals?.dynamicPredicates,
+        ...this.$data.globals?.dynamicPredicates,
       },
       styles: {
-        ...this.$model.globals?.styles,
+        ...this.$data.globals?.styles,
       },
     }
   }
@@ -328,7 +397,7 @@ abstract class BoundLikeC4Model<
    * Returns all tags used in the model.
    */
   get tags(): aux.Tags<A> {
-    return memoizeProp(this, Symbol('tags'), () => Array.from(this._allTags.keys())) as unknown as aux.Tags<A>
+    return memoizeProp(this, Symbol('tags'), () => Array.from(this._allTags.keys()))
   }
 
   /**
@@ -352,11 +421,11 @@ abstract class BoundLikeC4Model<
   /**
    * Returns all elements, relationships and views marked with the given tag.
    */
-  public findByTag(tag: Tag): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
-  public findByTag(tag: Tag, type: 'model-elements'): ElementsIterator<A>
-  public findByTag(tag: Tag, type: 'views'): ViewsIterator<A>
+  public findByTag(tag: aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
+  public findByTag(tag: aux.Tag<A>, type: 'model-elements'): IteratorLike<ElementModel<A>>
+  public findByTag(tag: aux.Tag<A>, type: 'views'): IteratorLike<LikeC4ViewModel<A>>
   public findByTag(
-    tag: Tag,
+    tag: aux.Tag<A>,
     type?: 'model-elements' | 'views' | undefined,
   ) {
     return ifilter(this._allTags.get(tag), (el) => {
@@ -369,88 +438,19 @@ abstract class BoundLikeC4Model<
       return true
     })
   }
-}
 
-export class LikeC4Model<A extends AnyAux = Unknown>
-  extends BoundLikeC4Model<A, aux.ElementId<A>, aux.ViewId<A>, aux.Tag<A>, aux.StrictFqn<A>>
-{
-  /**
-   * Creates a new LikeC4Model instance from a parsed model data.\
-   * This model omits the views, as they must be computed (or layouted)
-   * Parsed model is used for computing views
-   */
-  static fromParsed<T extends AnyAux>(parsed: ParsedLikeC4ModelData<T>): LikeC4Model<T> {
-    const { views: _omit, ...rest } = parsed
-    return new LikeC4Model({
-      ...rest,
-      views: {},
-    } as any)
+  // type $refine<M, S extends ViewStage> = M extends LikeC4Model<infer A>
+  //   ? LikeC4Model<aux.setStage<A, S>>
+  //   : never
+
+  // public isLayouted(): this is ConditionalPick<LikeC4Model<aux.setStage<A, 'layouted'>>, Function> {
+  // public isLayouted<T extends unknown>(this: ThisType<T>): this is LikeC4Model<aux.setStage<A, 'layouted'>> {
+  public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
+    return this.stage === 'layouted'
   }
 
-  /**
-   * Creates a new LikeC4Model instance from the provided model data.
-   *
-   * @typeParam M - Type parameter constrained to AnyLikeC4Model
-   * @param model - The model data to create a LikeC4Model from
-   * @returns A new LikeC4Model instance with the type derived from the input model
-   */
-
-  static create<T extends AnyAux>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
-  static create<T extends AnyAux>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
-  static create<T extends AnyAux>(model: LikeC4ModelData<T>): LikeC4Model<T> {
-    return new LikeC4Model(model)
-  }
-
-  /**
-   * Creates a new LikeC4Model instance and infers types from a model dump.\
-   * Model dump expected to be computed or layouted.
-   *
-   * @typeParam D - A constant type parameter extending LikeC4ModelDump
-   * @param dump - The model dump to create the instance from
-   * @returns A  new LikeC4Model instance with types inferred from the dump
-   */
-  static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4ModelFromDump<D> {
-    return new LikeC4Model(dump as any) as any
-  }
-
-  public readonly deployment: LikeC4DeploymentModel<A>
-
-  constructor(
-    public readonly $model: LikeC4ModelData<A>,
-  ) {
-    super()
-    for (const element of values($model.elements as Record<string, Element<A>>)) {
-      const el = this.addElement(element)
-      for (const tag of el.tags) {
-        this._allTags.get(tag).add(el)
-      }
-    }
-    for (const [projectId, elements] of entries($model.imports ?? {})) {
-      for (const element of sortParentsFirst(elements)) {
-        const el = this.addImportedElement(projectId as unknown as ProjectId<A>, element)
-        for (const tag of el.tags) {
-          this._allTags.get(tag).add(el)
-        }
-      }
-    }
-    for (const relation of values($model.relations)) {
-      const el = this.addRelation(relation)
-      for (const tag of el.tags) {
-        this._allTags.get(tag).add(el)
-      }
-    }
-    this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
-    const views = pipe(
-      values($model.views as any as Record<string, $View<A>>),
-      sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
-    )
-    for (const view of views) {
-      const vm = new LikeC4ViewModel(this, Object.freeze(view) as $View<A>)
-      this._views.set(view.id, vm)
-      for (const tag of vm.tags) {
-        this._allTags.get(tag).add(vm)
-      }
-    }
+  public isComputed(this: LikeC4Model<any>): this is LikeC4Model<aux.toComputed<A>> {
+    return this.stage === 'computed'
   }
 
   private addElement(element: Element<A>) {
@@ -574,7 +574,7 @@ export namespace LikeC4Model {
   export type Node<A = Unknown> = A extends AnyAux ? NodeModel<A> : never
   export type Element<A = Unknown> = A extends AnyAux ? ElementModel<A> : never
   export type Relationship<A = Unknown> = A extends AnyAux ? RelationshipModel<A> : never
-  export type View<A = Unknown> = A extends AnyAux ? LikeC4ViewModel<A> : never
+  export type View<A = Unknown> = A extends AnyAux ? $ViewModel<A> : never
 
   export type DeploymentNode<A = Unknown> = A extends AnyAux ? DeploymentNodeModel<A> : never
   export type DeployedInstance<A = Unknown> = A extends AnyAux ? DeployedInstanceModel<A> : never

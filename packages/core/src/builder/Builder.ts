@@ -5,18 +5,18 @@ import { computeLikeC4Model } from '../compute-view/compute-view'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import type {
+  Any,
   DeployedInstance,
   DeploymentFqn,
+  ParsedElementView,
   ParsedLikeC4ModelData,
-  ScopedElementView,
+  ParsedScopedElementView,
   Specification,
-  UnscopedElementView,
 } from '../types'
 import {
   type Color,
   type DeploymentElement,
   type DeploymentRelation,
-  type DeploymentView,
   type Element,
   type ElementShape,
   type Fqn,
@@ -26,12 +26,15 @@ import {
   type ModelGlobals,
   type ModelRelation,
   type NonEmptyArray,
+  type ParsedDeploymentView as DeploymentView,
   type RelationId,
+  _stage,
+  _type,
   DefaultElementShape,
   DefaultThemeColor,
   FqnRef,
   isDeployedInstance,
-  isScopedElementView,
+  isElementView,
 } from '../types'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
@@ -140,7 +143,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): ParsedLikeC4ModelData<Types.ToAux<T, 'parsed'>>
+  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
    * Returns LikeC4Model with computed views
@@ -155,7 +158,7 @@ type Op<T> = (b: T) => T
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
-  _elements = new Map<string, Element>(),
+  _elements = new Map<string, Element<Any>>(),
   _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
   _globals = {
@@ -166,7 +169,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
-  const toLikeC4Specification = (): Specification<Types.ToAux<T, any>> => ({
+  const toLikeC4Specification = (): Specification<Types.ToAux<T>> => ({
     elements: {
       ...structuredClone(spec.elements) as any,
     },
@@ -195,7 +198,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     id: string,
     _props: T['NewViewProps'] | string | B | null,
     builder: B,
-  ): [Omit<LikeC4View, 'rules' | '__'>, B] => {
+  ): [Omit<LikeC4View, 'rules' | '_type'>, B] => {
     if (isFunction(_props)) {
       builder = _props as B
       _props = {}
@@ -216,6 +219,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       description,
       tags,
       links,
+      _stage: 'parsed',
       // customColorDefinitions: {},
       ...props,
     }, builder]
@@ -281,7 +285,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       if (_views.has(view.id)) {
         throw new Error(`View with id "${view.id}" already exists`)
       }
-      if (isScopedElementView(view)) {
+      if (isElementView(view) && 'viewOf' in view) {
         invariant(
           _elements.get(view.viewOf),
           `Invalid scoped view ${view.id}, wlement with id "${view.viewOf}" not found`,
@@ -334,6 +338,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return self
     },
     build: () => ({
+      [_stage]: 'parsed',
       projectId: 'from-builder',
       specification: toLikeC4Specification(),
       elements: fromEntries(
@@ -500,9 +505,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<UnscopedElementView> = {
+          const view: Writable<ParsedElementView> = {
             ...generic,
-            __: 'element',
+            [_type]: 'element',
             rules: [],
           }
 
@@ -531,10 +536,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ScopedElementView> = {
+          const view: Writable<ParsedScopedElementView> = {
             ...generic,
             viewOf: viewOf as Fqn,
-            __: 'element',
+            [_type]: 'element',
             rules: [],
           }
 
@@ -566,7 +571,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           const [generic, builder] = createGenericView(id, _props, _builder)
           const view: Writable<DeploymentView> = {
             ...generic,
-            __: 'deployment',
+            [_type]: 'deployment',
             rules: [],
           }
 

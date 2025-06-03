@@ -1,6 +1,7 @@
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
+import type { _stage, _type, ModelStage } from './const'
 
 import type { BBox, Point, XYPoint } from './geometry'
 import type { GlobalStyleID } from './global'
@@ -93,24 +94,23 @@ export type ViewManualLayout = {
   }>
 }
 
-export type ViewStage = 'parsed' | 'computed' | 'layouted'
-export type ViewTypeDiscriminator = 'element' | 'dynamic' | 'deployment'
+export type ViewType = 'element' | 'dynamic' | 'deployment'
 
-export interface ViewBaseProperties<
+export interface BaseViewProperties<
   A extends AnyAux,
-  Stage extends ViewStage,
-  Type extends ViewTypeDiscriminator,
+  Stage extends ModelStage,
+  Type extends ViewType,
 > extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   /**
    * Internal field to identify the type of the view.
    * This is used to create the correct type of the view.
    */
-  readonly _type: Type
+  readonly [_type]: Type
   /**
    * Internal field to identify the stage of the view.
    * This is used to create the correct type of the view.
    */
-  readonly _stage: Stage
+  readonly [_stage]: Stage
 
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
@@ -126,8 +126,8 @@ export interface ViewBaseProperties<
   readonly relativePath?: string | undefined
 }
 
-export interface ParsedViewBaseProperties<A extends AnyAux, Type extends ViewTypeDiscriminator>
-  extends ViewBaseProperties<A, 'parsed', Type>
+export interface BaseParsedViewProperties<A extends AnyAux, Type extends ViewType>
+  extends BaseViewProperties<A, 'parsed', Type>
 {
   /**
    * URI to the source file of this view.

@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, Color, IteratorLike } from '../types'
+import type { AnyAux, aux, Color, IteratorLike, ViewWithType } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -17,19 +17,19 @@ import { commonAncestor, hierarchyLevel, isAncestor, memoizeProp, sortNaturalByF
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { IncomingFilter, OutgoingFilter } from './types'
+import type { $View, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux = AnyAux> {
-  readonly id: Aux.StrictFqn<A>
-  readonly _literalId: Aux.ElementId<A>
+export class ElementModel<A extends AnyAux> {
+  readonly id: aux.Fqn<A>
+  readonly _literalId: aux.ElementId<A>
   readonly hierarchyLevel: number
 
   readonly imported: null | {
     from: ProjectId
-    fqn: Aux.StrictFqn<A>
+    fqn: aux.Fqn<A>
   }
 
   constructor(
@@ -55,7 +55,7 @@ export class ElementModel<A extends AnyAux = AnyAux> {
     return memoizeProp(this, Symbol('parent'), () => this.$model.parent(this))
   }
 
-  get kind(): Aux.ElementKind<A> {
+  get kind(): aux.ElementKind<A> {
     return this.$element.kind
   }
 
@@ -71,8 +71,8 @@ export class ElementModel<A extends AnyAux = AnyAux> {
     return this.$element.icon ?? null
   }
 
-  get tags(): Aux.Tags<A> {
-    return this.$element.tags ?? []
+  get tags(): aux.Tags<A> {
+    return this.$element.tags ?? [] as unknown as aux.Tags<A>
   }
 
   get title(): string {
@@ -180,7 +180,7 @@ export class ElementModel<A extends AnyAux = AnyAux> {
     return this.$model.incoming(this, filter)
   }
   public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<A> {
-    const unique = new Set<Aux.StrictFqn<A>>()
+    const unique = new Set<aux.StrictFqn<A>>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -194,7 +194,7 @@ export class ElementModel<A extends AnyAux = AnyAux> {
     return this.$model.outgoing(this, filter)
   }
   public *outgoers(filter: OutgoingFilter = 'all'): ElementsIterator<A> {
-    const unique = new Set<Aux.StrictFqn<A>>()
+    const unique = new Set<aux.StrictFqn<A>>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue
@@ -229,7 +229,7 @@ export class ElementModel<A extends AnyAux = AnyAux> {
    * Iterate over all views that scope this element.
    * It is possible that element is not included in the view.
    */
-  public *scopedViews(): ViewsIterator<A> {
+  public *scopedViews(): ViewsIterator<A, ViewWithType<$View<A>, 'element'>> {
     for (const vm of this.$model.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm
@@ -249,9 +249,9 @@ export class ElementModel<A extends AnyAux = AnyAux> {
     return this.$model.deployment.instancesOf(this)
   }
 
-  public getMetadata(): Aux.Metadata<A>
-  public getMetadata(field: Aux.MetadataKey<A>): string | undefined
-  public getMetadata(field?: Aux.MetadataKey<A>) {
+  public getMetadata(): aux.Metadata<A>
+  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$element.metadata?.[field]
     }

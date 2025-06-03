@@ -1,5 +1,20 @@
 export * from './_common'
 
+export * as aux from './aux'
+export type {
+  Any,
+  AnyAux,
+  AnyComputed,
+  AnyLayouted,
+  AnyOnStage,
+  AnyParsed,
+  AnyProcessed,
+  Aux,
+  SpecAux,
+  Unknown,
+} from './aux'
+
+export * from './const'
 export * from './expression'
 export * from './expression-model'
 export * from './fqnRef'
@@ -11,6 +26,7 @@ export * from './model-dump'
 export * from './model-logical'
 export * from './model-spec'
 export * from './operators'
+export * from './scalar'
 export * from './styles'
 export * from './view'
 export * from './view-changes'
@@ -21,9 +37,4 @@ export * from './view-parsed.deployment'
 export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
-export * as aux from './aux'
-export type { AnyAux, Aux, SpecAux, Unknown } from './aux'
-
 export * as scalar from './scalar'
-
-export * from './scalar'

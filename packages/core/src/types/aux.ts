@@ -1,7 +1,7 @@
-import type { IfAny, IsAny } from 'type-fest'
+import type { IsAny, IsNever } from 'type-fest'
 import type { Link } from './_common'
+import type { ModelStage } from './const'
 import type * as scalar from './scalar'
-import type { ViewStage } from './view-common'
 /**
  * Specification types (kinds, tags, metadata keys)
  *
@@ -26,6 +26,8 @@ export interface SpecAux<
 }
 export type AnySpec = SpecAux<any, any, any, any, any>
 
+type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V
+
 /**
  * Auxilary interface to keep inferred types
  *
@@ -37,91 +39,141 @@ export type AnySpec = SpecAux<any, any, any, any, any>
  * @typeParam Spec - Specification types (kinds, tags, metadata keys)
  */
 export interface Aux<
-  Stage extends ViewStage,
+  Stage extends ModelStage,
   Element extends string,
   Deployment extends string,
   View extends string,
   Project extends string,
   Spec extends SpecAux<string, string, string, string, string>,
 > {
-  Stage: Stage
-  ProjectId: Project
-  ElementId: Element
-  DeploymentId: Deployment
-  ViewId: View
-  Spec: Spec
+  Stage: Coalesce<Stage, ModelStage>
+  ProjectId: Coalesce<Project, string>
+  ElementId: Coalesce<Element, string>
+  DeploymentId: Coalesce<Deployment, string>
 
-  ElementKind: Spec['ElementKind']
-  DeploymentKind: Spec['DeploymentKind']
-  RelationKind: Spec['RelationKind']
-  Tag: Spec['Tag']
-  MetadataKey: Spec['MetadataKey']
+  ViewId: Coalesce<View, string>
+
+  Spec: Spec
+  ElementKind: Coalesce<Spec['ElementKind']>
+  DeploymentKind: Coalesce<Spec['DeploymentKind']>
+  RelationKind: Coalesce<Spec['RelationKind']>
+  Tag: Coalesce<Spec['Tag']>
+  MetadataKey: Coalesce<Spec['MetadataKey']>
+
+  // Strict: {
+  //   ProjectId: scalar.ProjectId<Coalesce<Project>>
+  //   Fqn: scalar.Fqn<Coalesce<Element>>
+  //   DeploymentFqn: scalar.DeploymentFqn<Coalesce<Deployment>>
+  //   ViewId: scalar.ViewId<Coalesce<View>>
+
+  //   ElementKind: scalar.ElementKind<Coalesce<Spec['ElementKind']>>
+  //   DeploymentKind: scalar.DeploymentKind<Coalesce<Spec['DeploymentKind']>>
+  //   RelationKind: scalar.RelationshipKind<Coalesce<Spec['RelationKind']>>
+  //   Tag: scalar.Tag<Coalesce<Spec['Tag']>>
+  // }
 }
 
-export type Any = Aux<any, any, any, any, any, AnySpec>
-export type AnyAux = Aux<any, any, any, any, any, AnySpec>
+export type Any = Aux<any, any, any, any, any, SpecAux<any, any, any, any, any>>
+
+export type AnyOnStage<Stage extends ModelStage> = Aux<Stage, any, any, any, any, SpecAux<any, any, any, any, any>>
+
+export type AnyParsed = AnyOnStage<'parsed'>
+export type AnyProcessed = AnyOnStage<'computed'> | AnyOnStage<'layouted'>
+export type AnyComputed = AnyOnStage<'computed'>
+export type AnyLayouted = AnyOnStage<'layouted'>
+
+// export type AnyAux = Aux<any, any, any, any, any, AnySpec>
+export type AnyAux = Any
 
 export type Never = Aux<never, never, never, never, never, SpecAux<never, never, never, never, never>>
 
 /**
- * Fallback when {@link Aux} can't be inferred
+ * Fallback when {@link Aux} can't be inferred.
  * By default assumes layouted view
  */
-export type Unknown = Aux<'layouted', string, string, string, string, SpecAux<string, string, string, string, string>>
+export type Unknown = AnyOnStage<'layouted'>
+//   'layouted' | 'computed',
+//   string,
+//   string,
+//   string,
+//   string,
+//   SpecAux<string, string, string, string, string>
+// >
 
-// export type Stage<A> = A extends Aux<infer S extends ViewStage, any, any, any, any, any> ? S : never
-export type Stage<A> =
+/**
+ * Reads stage from Aux
+ */
+export type Stage<A extends AnyAux | unknown> = A['Stage']
+
+/**
+ * Picks type based on stage from Aux
+ */
+export type PickByStage<A extends AnyAux, OnParsed, OnComputed, OnLayouted = OnComputed> = {
+  parsed: OnParsed
+  computed: OnComputed
+  layouted: OnLayouted
+}[A['Stage']]
+
+export type setStage<A, S extends ModelStage> =
   // dprint-ignore
-  A extends AnyAux
-    ? IfAny<A['Stage'], ViewStage, A['Stage']>
-    : never
+  A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+      ? Aux<S, E, D, V, P, Spec>
+      : A
 
-export type setStage<A, S extends ViewStage> =
+export type narrowStage<A, S extends ModelStage> =
   // dprint-ignore
-  A extends AnyAux
-    ? Aux<S, A['ElementId'], A['DeploymentId'], A['ViewId'], A['ProjectId'], A['Spec']>
-    : never
+  A extends Aux<S, infer E, infer D, infer V, infer P, infer Spec>
+      ? Aux<S, E, D, V, P, Spec>
+      : A
 
-export type read<A, F extends keyof AnyAux, OnAny = string> =
-  // dprint-ignore
-  A extends AnyAux
-    ? (IsAny<A[F]> extends false ? A[F] : OnAny)
-    : never
+export type toLayouted<A extends AnyAux> = setStage<A, 'layouted'>
 
-export type ValueOrString<T> = IsAny<T> extends false ? T : string
+export type asLayouted<A extends AnyAux> = A extends AnyLayouted ? setStage<A, 'layouted'> : A
+
+export type toComputed<A extends AnyAux> = setStage<A, 'computed'>
+
+export type asComputed<A extends AnyAux> = ['computed'] extends [A['Stage']] ? setStage<A, 'computed'> : never
+
+// export type read<A, F extends keyof AnyAux, OnAny = string> =
+//   // dprint-ignore
+//   A extends AnyAux
+//     ? (IsAny<A[F]> extends false ? A[F] : OnAny)
+//     : never
+
+// type ValueOrString<T> = IsAny<T> extends false ? T : string
 
 /**
  * Project identifier from Aux
  */
-export type ProjectId<A> = A extends AnyAux ? ValueOrString<A['ProjectId']> : never
+export type ProjectId<A extends AnyAux> = A['ProjectId']
 /**
- * Element FQN from Aux as a literal union
+ * Element FQN from Aux as branded type
  * @alias {@link ElementId}
  */
-export type Fqn<A> = A extends AnyAux ? ValueOrString<A['ElementId']> : never
+export type Fqn<A> = A extends infer T extends AnyAux ? scalar.Fqn<ElementId<T>> : never
 
 /**
  * Element FQN from Aux as a literal union
  * @alias {@link Fqn}
  */
-export type ElementId<A> = Fqn<A>
+export type ElementId<A> = A extends infer T extends AnyAux ? T['ElementId'] : never
 
 /**
- * Deployment FQN from Aux as a literal union
+ * Deployment FQN from Aux as branded type
  * @alias {@link DeploymentId}
  */
-export type DeploymentFqn<A> = A extends AnyAux ? ValueOrString<A['DeploymentId']> : never
+export type DeploymentFqn<A extends AnyAux> = scalar.DeploymentFqn<DeploymentId<A>>
 
 /**
  * Deployment FQN from Aux as a literal union
  * @alias {@link DeploymentFqn}
  */
-export type DeploymentId<A> = DeploymentFqn<A>
+export type DeploymentId<A extends AnyAux> = A['DeploymentId']
 
 /**
  * View identifier from Aux as a literal union
  */
-export type ViewId<A> = A extends AnyAux ? ValueOrString<A['ViewId']> : never
+export type ViewId<A extends AnyAux> = A['ViewId']
 
 /**
  * Relation identifier from Aux as a literal union
@@ -141,42 +193,44 @@ export type EdgeId = scalar.EdgeId
 /**
  * ElementKind from Aux as a literal union
  */
-export type ElementKind<A> = A extends AnyAux ? ValueOrString<A['ElementKind']> : never
+export type ElementKind<A extends AnyAux> = A['ElementKind']
 
 /**
  * DeploymentKind from Aux as a literal union
  */
-export type DeploymentKind<A> = A extends AnyAux ? ValueOrString<A['DeploymentKind']> : never
+export type DeploymentKind<A extends AnyAux> = A['DeploymentKind']
 
 /**
  * RelationKind from Aux as a literal union
  */
-export type RelationKind<A> = A extends AnyAux ? ValueOrString<A['RelationKind']> : never
+export type RelationKind<A extends AnyAux> = A['RelationKind']
 
 /**
  * Tag from Aux as a literal union
  */
-export type Tag<A> = read<A, 'Tag'>
+export type Tag<A extends AnyAux> = A['Tag']
 
 /**
  * Array of tags from Aux
  */
-export type Tags<A> = readonly Tag<A>[]
+export type Tags<A extends AnyAux> = readonly Tag<A>[]
 
 /**
  * Metadata key from Aux
  */
-export type MetadataKey<A> = A extends AnyAux ? ValueOrString<A['MetadataKey']> : never
+export type MetadataKey<A extends AnyAux> = A['MetadataKey']
 
 /**
  * Metadata object from Aux
  */
-export type Metadata<A> =
+export type Metadata<A extends AnyAux> =
   // dprint-ignore
-  A extends AnyAux
-    ? {
-        [key in ValueOrString<A['MetadataKey']>]?: string
-    }
+  MetadataKey<A> extends infer K extends string
+    ? IsNever<K> extends false
+      ? ({
+          [key in K]?: string | undefined
+        })
+      : never
     : never
 
 /**
@@ -184,29 +238,30 @@ export type Metadata<A> =
  */
 export type Spec<A> = A extends AnyAux ? A['Spec'] : never
 
-export type setSpec<A, S extends AnySpec> =
-  // dprint-ignore
-  A extends AnyAux
-    ? Aux<A['Stage'], A['ElementId'], A['DeploymentId'], A['ViewId'], A['ProjectId'], S>
-    : never
+// export type setSpec<A, S extends AnySpec> =
+//   // dprint-ignore
+//   A extends AnyAux
+//     ? Aux<A['Stage'], A['ElementId'], A['DeploymentId'], A['ViewId'], A['ProjectId'], S>
+//     : never
 
-export type StrictProjectId<A> = ProjectId<A> extends infer P extends string ? scalar.ProjectId<P> : never
+export type StrictProjectId<A extends AnyAux> = A extends AnyAux ? scalar.ProjectId<A['ProjectId']> : never
 
-export type StrictFqn<A> = Fqn<A> extends infer F extends string ? scalar.Fqn<F> : never
-export type { StrictFqn as StrictElementId }
+export type {
+  DeploymentFqn as StrictDeploymentFqn,
+  Fqn as StrictFqn,
+}
+// export type StrictFqn<A extends AnyAux> = Fqn<A>
 
-export type StrictDeploymentFqn<A> = DeploymentFqn<A> extends infer F extends string ? scalar.DeploymentFqn<F> : never
-export type { StrictDeploymentFqn as StrictDeploymentId }
+// export type StrictDeploymentFqn<A extends AnyAux> = A extends AnyAux ? scalar.DeploymentFqn<A['DeploymentId']> : never
 
-export type StrictViewId<A> = ViewId<A> extends infer V extends string ? scalar.ViewId<V> : never
+export type StrictViewId<A extends AnyAux> = scalar.ViewId<ViewId<A>>
 
-export type StrictTag<A> = Tag<A> extends infer T extends string ? scalar.Tag<T> : never
+export type StrictTag<A extends AnyAux> = scalar.Tag<Tag<A>>
 
 // dprint-ignore
-export type StrictElementKind<A> = ElementKind<A> extends infer E extends string ? scalar.ElementKind<E> : never
-export type StrictDeploymentKind<A> = DeploymentKind<A> extends infer D extends string ? scalar.DeploymentKind<D>
-  : never
-export type StrictRelationKind<A> = RelationKind<A> extends infer R extends string ? scalar.RelationshipKind<R> : never
+export type StrictElementKind<A extends AnyAux> = scalar.ElementKind<ElementKind<A>>
+export type StrictDeploymentKind<A extends AnyAux> = scalar.DeploymentKind<DeploymentKind<A>>
+export type StrictRelationKind<A extends AnyAux> = scalar.RelationshipKind<RelationKind<A>>
 
 type StringPrimitive = string & Record<never, never>
 
@@ -215,22 +270,22 @@ type StringPrimitive = string & Record<never, never>
  */
 export type complete<V> = V | StringPrimitive
 
-export type LiteralElementId<A> = ElementId<A> | StringPrimitive
-export type LiteralFqn<A> = Fqn<A> | StringPrimitive
-export type LiteralDeploymentId<A> = DeploymentId<A> | StringPrimitive
-export type LiteralDeploymentFqn<A> = DeploymentFqn<A> | StringPrimitive
-export type LiteralViewId<A> = ViewId<A> | StringPrimitive
-export type LiteralTag<A> = Tag<A> | StringPrimitive
+export type LiteralElementId<A extends AnyAux> = ElementId<A> | StringPrimitive
+export type LiteralFqn<A extends AnyAux> = Fqn<A> | StringPrimitive
+export type LiteralDeploymentId<A extends AnyAux> = DeploymentId<A> | StringPrimitive
+export type LiteralDeploymentFqn<A extends AnyAux> = DeploymentFqn<A> | StringPrimitive
+export type LiteralViewId<A extends AnyAux> = ViewId<A> | StringPrimitive
+export type LiteralTag<A extends AnyAux> = Tag<A> | StringPrimitive
 
-export type LiteralElementKind<A> = ElementKind<A> | StringPrimitive
-export type LiteralDeploymentKind<A> = DeploymentKind<A> | StringPrimitive
-export type LiteralRelationKind<A> = RelationKind<A> | StringPrimitive
+export type LiteralElementKind<A extends AnyAux> = ElementKind<A> | StringPrimitive
+export type LiteralDeploymentKind<A extends AnyAux> = DeploymentKind<A> | StringPrimitive
+export type LiteralRelationKind<A extends AnyAux> = RelationKind<A> | StringPrimitive
 
-export type WithTags<A> = {
+export type WithTags<A extends AnyAux> = {
   readonly tags: Tags<A>
 }
 
-export type WithOptionalTags<A> = {
+export type WithOptionalTags<A extends AnyAux> = {
   readonly tags?: Tags<A> | null
 }
 
@@ -242,6 +297,6 @@ export type WithOptionalLinks = {
   readonly links?: readonly Link[] | null
 }
 
-export type WithMetadata<A> = {
+export type WithMetadata<A extends AnyAux> = {
   readonly metadata?: Metadata<A>
 }

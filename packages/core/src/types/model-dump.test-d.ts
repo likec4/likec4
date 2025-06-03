@@ -2,6 +2,7 @@ import { describe, expectTypeOf, it } from 'vitest'
 import type * as aux from './aux'
 import type { Aux, SpecAux } from './aux'
 import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
+import type { ComputedView, DiagramView } from './view'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
   return value
@@ -107,7 +108,7 @@ describe('SpecTypesFromDump', () => {
 describe('AuxFromDump', () => {
   it('should convert empty LikeC4ModelDump to Aux with never types', () => {
     const emptyModel = castModel({
-      __: 'computed',
+      _stage: 'computed',
       projectId: 'test-project',
       elements: {},
       views: {},
@@ -133,6 +134,8 @@ describe('AuxFromDump', () => {
     expectTypeOf<aux.Tag<Result>>().toBeNever()
     expectTypeOf<aux.Tags<Result>>().items.toBeNever()
     expectTypeOf<aux.MetadataKey<Result>>().toBeNever()
+
+    expectTypeOf<PickLikeC4ViewByStage<Result>>().toEqualTypeOf<ComputedView<Result>>()
   })
 
   it('should convert complete LikeC4ModelDump to Aux with correct types', () => {
@@ -275,6 +278,8 @@ describe('AuxFromDump', () => {
         >
       >
     >()
+
+    expectTypeOf<PickLikeC4ViewByStage<Result>>().toEqualTypeOf<DiagramView<Result>>()
   })
 
   it('should return default Aux type for non-LikeC4ModelDump types', () => {

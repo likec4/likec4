@@ -13,10 +13,10 @@ import type {
   RelationshipLineType,
 } from './styles'
 import type {
+  BaseViewProperties,
   ViewAutoLayout,
-  ViewBaseProperties,
   ViewManualLayout,
-  ViewTypeDiscriminator,
+  ViewType,
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
@@ -29,12 +29,12 @@ export interface ComputedNode<A extends AnyAux = Unknown> extends aux.WithOption
    * Reference to model element
    * If 1 - node id is a reference
    */
-  modelRef?: aux.StrictFqn<A> | undefined
+  modelRef?: aux.Fqn<A> | undefined
   /**
    * Reference to deployment element
    * If 1 - node id is a reference
    */
-  deploymentRef?: aux.StrictDeploymentFqn<A> | undefined
+  deploymentRef?: aux.DeploymentFqn<A> | undefined
   title: string
   description?: string | null
   technology?: string | null
@@ -86,8 +86,8 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
   dir?: 'forward' | 'back' | 'both'
 }
 
-interface AnyComputedView<A extends AnyAux, Type extends ViewTypeDiscriminator>
-  extends ViewBaseProperties<A, 'computed', Type>, ViewWithHash, ViewWithNotation
+interface BaseComputedViewProperties<A extends AnyAux, Type extends ViewType>
+  extends BaseViewProperties<A, 'computed', Type>, ViewWithHash, ViewWithNotation
 {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode<A>[]
@@ -99,13 +99,21 @@ interface AnyComputedView<A extends AnyAux, Type extends ViewTypeDiscriminator>
   readonly manualLayout?: ViewManualLayout | undefined
 }
 
-export interface ComputedElementView<A extends AnyAux = Unknown> extends AnyComputedView<A, 'element'> {
+export interface ComputedElementView<A extends AnyAux = Unknown> extends BaseComputedViewProperties<A, 'element'> {
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ComputedDeploymentView<A extends AnyAux = Unknown> extends AnyComputedView<A, 'deployment'> {
+export interface ComputedScopedElementView<A extends AnyAux = Unknown>
+  extends BaseComputedViewProperties<A, 'element'>
+{
+  readonly viewOf: aux.StrictFqn<A>
 }
 
-export interface ComputedDynamicView<A extends AnyAux = Unknown> extends AnyComputedView<A, 'dynamic'> {
+export interface ComputedDeploymentView<A extends AnyAux = Unknown>
+  extends BaseComputedViewProperties<A, 'deployment'>
+{
+}
+
+export interface ComputedDynamicView<A extends AnyAux = Unknown> extends BaseComputedViewProperties<A, 'dynamic'> {
 }

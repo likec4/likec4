@@ -1,7 +1,7 @@
 import type { KeysOf } from './_common'
 import type * as aux from './aux'
+import type { _stage } from './const'
 import type { ParsedLikeC4ModelData } from './model-data'
-import type { ViewStage } from './view-common'
 
 /**
  * JSON representation of {@link Specification}
@@ -34,7 +34,7 @@ export type SpecTypesFromDump<J> = J extends SpecificationDump ? aux.SpecAux<
  * Dump differs from {@link ParsedLikeC4ModelData} by the fact that it is computed or layouted
  */
 export type LikeC4ModelDump = {
-  __: 'computed' | 'layouted'
+  [_stage]: 'computed' | 'layouted'
   projectId?: string
   specification: SpecificationDump
   elements: {
@@ -51,7 +51,7 @@ export type LikeC4ModelDump = {
 }
 
 export type AuxFromDump<D> = D extends LikeC4ModelDump ? aux.Aux<
-    D['__'] extends ViewStage ? D['__'] : never,
+    D[_stage],
     KeysOf<D['elements']>,
     KeysOf<D['deployments']['elements']>,
     KeysOf<D['views']>,

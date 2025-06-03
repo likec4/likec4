@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { AnyAux, Color, IteratorLike, Link, Unknown } from '../types'
+import type { AnyAux, aux, Color, IteratorLike, Link, scalar, Unknown } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
@@ -20,22 +20,22 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * A relationship between two elements (in logical or deployment model)
  * use {@link isDeploymentRelation} guard to check if the relationship is a deployment relationship
  */
-export interface AnyRelationshipModel<A extends AnyAux = Unknown> {
-  get id(): Aux.StrictRelationId<A>
+export interface AnyRelationshipModel<A extends AnyAux> {
+  get id(): scalar.RelationId
   get expression(): string
   get title(): string | null
   get technology(): string | null
   get description(): string | null
   get navigateTo(): LikeC4ViewModel<A> | null
-  get tags(): Aux.Tags<A>
-  get kind(): Aux.RelationKind<A> | null
+  get tags(): aux.Tags<A>
+  get kind(): aux.RelationKind<A> | null
   get links(): ReadonlyArray<Link>
   get color(): Color
   get line(): RelationshipLineType
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
-  getMetadata(): Aux.StrictMetadata<A>
-  getMetadata(field: Aux.MetadataKey<A>): string | undefined
+  getMetadata(): aux.Metadata<A>
+  getMetadata(field: aux.MetadataKey<A>): string | undefined
 }
 
 export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelationshipModel<A> {
@@ -58,7 +58,7 @@ export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelatio
     this.boundary = parent ? this.model.element(parent) : null
   }
 
-  get id(): Aux.StrictRelationId<A> {
+  get id(): scalar.RelationId {
     return this.$relationship.id
   }
 
@@ -91,11 +91,11 @@ export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelatio
     return this.$relationship.navigateTo ? this.model.view(this.$relationship.navigateTo) : null
   }
 
-  get tags(): Aux.Tags<A> {
+  get tags(): aux.Tags<A> {
     return this.$relationship.tags ?? []
   }
 
-  get kind(): Aux.RelationKind<A> | null {
+  get kind(): aux.RelationKind<A> | null {
     return this.$relationship.kind ?? null
   }
 
@@ -131,9 +131,9 @@ export class RelationshipModel<A extends AnyAux = Unknown> implements AnyRelatio
     return true
   }
 
-  public getMetadata(): Aux.StrictMetadata<A>
-  public getMetadata(field: Aux.MetadataKey<A>): string | undefined
-  public getMetadata(field?: Aux.MetadataKey<A>) {
+  public getMetadata(): aux.Metadata<A>
+  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$relationship.metadata?.[field]
     }

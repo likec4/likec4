@@ -1,4 +1,4 @@
-import { indexBy, values } from 'remeda'
+import { indexBy, isString, values } from 'remeda'
 import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
@@ -62,13 +62,13 @@ export function computeView<A extends AnyAux>(
 }
 
 export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): ComputedLikeC4ModelData<A> {
-  const likec4model = LikeC4Model.fromParsed(parsed)
+  const likec4model = LikeC4Model.create(parsed)
   const views = values(parsed.views as Record<string, LikeC4View<typeof likec4model.Aux>>).map(v =>
     unsafeComputeView(v, likec4model)
   )
   return {
-    __: 'computed',
     ...parsed,
+    __: 'computed',
     views: indexBy(views, v => v.id),
   } as unknown as ComputedLikeC4ModelData<A>
 }

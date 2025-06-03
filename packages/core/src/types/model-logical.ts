@@ -48,7 +48,7 @@ export interface ElementStyle {
 }
 
 // dprint-ignore
-export interface Element<A extends AnyAux = Unknown>
+export interface Element<A extends AnyAux>
   extends
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,
@@ -99,7 +99,7 @@ export interface AbstractRelationship<A extends AnyAux>
 /**
  * Relationship between two model elements
  */
-export interface Relationship<A extends AnyAux = Unknown> extends AbstractRelationship<A> {
+export interface Relationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.ModelRef<A>
   readonly target: FqnRef.ModelRef<A>
 }
@@ -108,4 +108,4 @@ export interface Relationship<A extends AnyAux = Unknown> extends AbstractRelati
  * Backward compatibility alias
  * @deprecated Use {@link Relationship} instead
  */
-export type ModelRelation<A extends AnyAux = Unknown> = Relationship<A>
+export type ModelRelation<A extends AnyAux = AnyAux> = Relationship<A>

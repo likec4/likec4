@@ -2,6 +2,7 @@
 
 exports[`Builder (style 2) > should build  1`] = `
 {
+  "_stage": "parsed",
   "deployments": {
     "elements": {
       "dev": {
@@ -111,6 +112,7 @@ exports[`Builder (style 2) > should build  1`] = `
   "projectId": "from-builder",
   "relations": {},
   "specification": {
+    "customColors": {},
     "deployments": {
       "env": {
         "style": {
@@ -141,8 +143,8 @@ exports[`Builder (style 2) > should build  1`] = `
   },
   "views": {
     "cloud": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "cloud",
       "links": null,
@@ -168,8 +170,8 @@ exports[`Builder (style 2) > should build  1`] = `
       "viewOf": "cloud.ui",
     },
     "deployment": {
-      "__": "deployment",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "deployment",
       "description": null,
       "id": "deployment",
       "links": null,
@@ -178,7 +180,7 @@ exports[`Builder (style 2) > should build  1`] = `
           "include": [
             {
               "ref": {
-                "deployment": "prod",
+                "model": "prod",
               },
               "selector": "descendants",
             },
@@ -189,8 +191,8 @@ exports[`Builder (style 2) > should build  1`] = `
       "title": "Deployment",
     },
     "index": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "index",
       "links": null,
