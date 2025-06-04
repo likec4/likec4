@@ -108,7 +108,7 @@ export interface ActiveGroupCtx extends Ctx {
 export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
   static enter(
     memory: Memory,
-    rule: ViewRuleGroup,
+    rule: ViewRuleGroup<any>,
   ): ActiveGroupMemory {
     const groupId = `@gr${memory.groups.length + 1}` as NodeId
     if (memory instanceof ActiveGroupMemory) {
