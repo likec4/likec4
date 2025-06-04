@@ -14,9 +14,8 @@ const builder = Builder.specification({
 })
 
 function compute<const T extends AnyTypes>(builder: Builder<T>) {
-  const parsed = builder.build()
-  const likec4model = LikeC4Model.fromParsed(parsed)
-  const view = only(values(parsed.views as Record<string, ElementView<any>>))
+  const likec4model = LikeC4Model.create(builder.build())
+  const view = only(values(likec4model.$data.views))
   invariant(view && isElementView(view), 'Must have one element view')
   return withReadableEdges(computeElementView(likec4model, view))
 }

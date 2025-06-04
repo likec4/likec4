@@ -4,14 +4,14 @@ import type { Any } from './aux'
 /**
  * @see {@link LiteralUnion} from type-fest (https://github.com/sindresorhus/type-fest/blob/main/source/literal-union.d.ts)
  */
-type StringPrimitive = string & Record<never, never>
+export type OrString = string & Record<never, never>
 
-export type ElementId<A extends Any> = Coalesce<A['ElementId']> | StringPrimitive
-export type DeploymentId<A extends Any> = Coalesce<A['DeploymentId']> | StringPrimitive
-export type ViewId<A extends Any> = Coalesce<A['ViewId']> | StringPrimitive
-export type Tag<A extends Any> = Coalesce<A['Tag']> | StringPrimitive
-export type Tags<A extends Any> = Array<Coalesce<A['Tag']> | StringPrimitive>
+export type ElementId<A extends Any> = Coalesce<A['ElementId']> | OrString
+export type DeploymentId<A extends Any> = Coalesce<A['DeploymentId']> | OrString
+export type ViewId<A extends Any> = Coalesce<A['ViewId']> | OrString
+export type Tag<A extends Any> = Coalesce<A['Tag']> | OrString
+export type Tags<A extends Any> = readonly (Coalesce<A['Tag']> | OrString)[]
 
-export type ElementKind<A extends Any> = Coalesce<A['ElementKind']> | StringPrimitive
-export type DeploymentKind<A extends Any> = Coalesce<A['DeploymentKind']> | StringPrimitive
-export type RelationKind<A extends Any> = Coalesce<A['RelationKind']> | StringPrimitive
+export type ElementKind<A extends Any> = Coalesce<A['ElementKind']> | OrString
+export type DeploymentKind<A extends Any> = Coalesce<A['DeploymentKind']> | OrString
+export type RelationKind<A extends Any> = Coalesce<A['RelationKind']> | OrString

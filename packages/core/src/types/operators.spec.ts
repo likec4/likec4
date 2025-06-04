@@ -2,10 +2,20 @@ import { describe, it } from 'vitest'
 import type { Aux, SpecAux } from './aux'
 import { type Filterable, whereOperatorAsPredicate } from './operators'
 
-type FTag = 'old' | 'new'
-type FKind = 'a' | 'b'
-
-type A = Aux<'computed', string, string, string, string, SpecAux<FKind, string, string, FTag, string>>
+type A = Aux<
+  'computed',
+  string,
+  string,
+  string,
+  string,
+  SpecAux<
+    'a' | 'b',
+    'deployment1' | 'deployment2',
+    string,
+    'old' | 'new',
+    string
+  >
+>
 
 function item(props: Filterable<A>): Filterable<A> {
   return props
@@ -18,7 +28,7 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ tags: ['new'] })
     const nonMatchingItem2 = item({})
 
-    const predicate = whereOperatorAsPredicate({ tag: { eq: <FTag> 'old' } })
+    const predicate = whereOperatorAsPredicate<A>({ tag: { eq: 'old' } })
 
     expect(predicate(matchingItem1)).toBe(true)
     expect(predicate(matchingItem2)).toBe(true)
@@ -32,7 +42,7 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ tags: ['new'] })
     const nonMatchingItem2 = item({ tags: ['old', 'new'] })
 
-    const predicate = whereOperatorAsPredicate({ tag: { neq: <FTag> 'new' } })
+    const predicate = whereOperatorAsPredicate<A>({ tag: { neq: 'new' } })
 
     expect(predicate(matchingItem1)).toBe(true)
     expect(predicate(matchingItem2)).toBe(true)
@@ -45,7 +55,7 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ kind: 'b' })
     const nonMatchingItem2 = item({})
 
-    const predicate = whereOperatorAsPredicate({ kind: { eq: <FKind> 'a' } })
+    const predicate = whereOperatorAsPredicate<A>({ kind: { eq: 'a' } })
 
     expect(predicate(matchingItem)).toBe(true)
     expect(predicate(nonMatchingItem1)).toBe(false)
@@ -57,7 +67,7 @@ describe('expression operators', () => {
     const matchingItem2 = item({})
     const nonMatchingItem = item({ kind: 'b' })
 
-    const predicate = whereOperatorAsPredicate({ kind: { neq: <FKind> 'b' } })
+    const predicate = whereOperatorAsPredicate<A>({ kind: { neq: 'b' } })
 
     expect(predicate(matchingItem1)).toBe(true)
     expect(predicate(matchingItem2)).toBe(true)
@@ -68,7 +78,7 @@ describe('expression operators', () => {
     const matchingItem1 = item({ kind: 'a' })
     const nonMatchingItem = item({ kind: 'b' })
 
-    const predicate = whereOperatorAsPredicate({ not: { kind: { eq: <FKind> 'b' } } })
+    const predicate = whereOperatorAsPredicate<A>({ not: { kind: { eq: 'b' } } })
 
     expect(predicate(matchingItem1)).toBe(true)
     expect(predicate(nonMatchingItem)).toBe(false)
@@ -79,10 +89,10 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ kind: 'a', tags: ['new'] })
     const nonMatchingItem2 = item({ kind: 'b', tags: ['new'] })
 
-    const predicate = whereOperatorAsPredicate({
+    const predicate = whereOperatorAsPredicate<A>({
       and: [
-        { kind: { eq: <FKind> 'a' } },
-        { tag: { eq: <FTag> 'old' } },
+        { kind: { eq: 'a' } },
+        { tag: { eq: 'old' } },
       ],
     })
 
@@ -97,10 +107,10 @@ describe('expression operators', () => {
     const matchingItem3 = item({ kind: 'b', tags: ['old'] })
     const nonMatchingItem = item({ kind: 'b', tags: ['new'] })
 
-    const predicate = whereOperatorAsPredicate({
+    const predicate = whereOperatorAsPredicate<A>({
       or: [
-        { kind: { eq: <FKind> 'a' } },
-        { tag: { eq: <FTag> 'old' } },
+        { kind: { eq: 'a' } },
+        { tag: { eq: 'old' } },
       ],
     })
 
@@ -117,10 +127,10 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ source: {}, target: { kind: 'a', tags: ['old'] } })
     const nonMatchingItem2 = item({ source: { kind: 'b', tags: ['new'] }, target: {} })
 
-    const predicate = whereOperatorAsPredicate({
+    const predicate = whereOperatorAsPredicate<A>({
       or: [
-        { participant: 'source', operator: { kind: { eq: <FKind> 'a' } } },
-        { participant: 'source', operator: { tag: { eq: <FTag> 'old' } } },
+        { participant: 'source', operator: { kind: { eq: 'a' } } },
+        { participant: 'source', operator: { tag: { eq: 'old' } } },
       ],
     })
 
@@ -138,10 +148,10 @@ describe('expression operators', () => {
     const nonMatchingItem1 = item({ source: { kind: 'a', tags: ['old'] }, target: {} })
     const nonMatchingItem2 = item({ source: {}, target: { kind: 'b', tags: ['new'] } })
 
-    const predicate = whereOperatorAsPredicate({
+    const predicate = whereOperatorAsPredicate<A>({
       or: [
-        { participant: 'target', operator: { kind: { eq: <FKind> 'a' } } },
-        { participant: 'target', operator: { tag: { eq: <FTag> 'old' } } },
+        { participant: 'target', operator: { kind: { eq: 'a' } } },
+        { participant: 'target', operator: { tag: { eq: 'old' } } },
       ],
     })
 

@@ -1,4 +1,5 @@
 import { allPass, anyPass, isNot, isNullish } from 'remeda'
+import type { IsLiteral } from 'type-fest'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
@@ -28,8 +29,14 @@ export function isTagEqual<A extends AnyAux>(operator: WhereOperator<A>): operat
   return 'tag' in operator
 }
 
+type KnownLiterals<A extends AnyAux> = [
+  IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
+  IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
+  IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
+][number]
+
 export type KindEqual<A extends AnyAux> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<aux.loose.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A>>
+  kind: EqualOperator<KnownLiterals<A> | aux.loose.OrString>
 }
 export function isKindEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
@@ -77,7 +84,7 @@ export type WhereOperator<A extends AnyAux = Unknown> =
 
 export type Filterable<A extends AnyAux> = {
   tags?: aux.loose.Tags<A> | null | undefined
-  kind?: aux.loose.ElementKind<A> | aux.loose.DeploymentKind<A> | aux.loose.RelationKind<A> | null
+  kind?: KnownLiterals<A> | aux.loose.OrString | null
   source?: Filterable<A>
   target?: Filterable<A>
 }

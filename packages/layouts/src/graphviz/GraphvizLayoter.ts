@@ -126,7 +126,7 @@ export class GraphvizLayouter {
   async dot(computedView: ComputedView): Promise<DotSource> {
     const printer = getPrinter(computedView)
     let dot = printer.print()
-    if (!ComputedView.isElement(computedView)) {
+    if (!isElementView(computedView)) {
       return dot
     }
     try {

@@ -1,6 +1,6 @@
 import { isNot } from 'remeda'
 import { invariant } from '../../../errors'
-import type { AnyAux, Aux, Unknown } from '../../../types'
+import type { AnyAux, Aux, aux, Unknown } from '../../../types'
 import { customInspectSymbol } from '../../../utils/const'
 import { ifilter, isome } from '../../../utils/iterable'
 import { difference, equals, intersection, union } from '../../../utils/set'
@@ -17,15 +17,15 @@ import { findConnection } from './find'
  *
  * Merges relationships together to an single edge on the diagram.
  */
-export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<ElementModel<A>, Aux.EdgeId> {
-  public readonly id: Aux.EdgeId
+export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<ElementModel<A>, aux.EdgeId> {
+  public readonly id: aux.EdgeId
 
   constructor(
     public readonly source: ElementModel<A>,
     public readonly target: ElementModel<A>,
     public readonly relations: ReadonlySet<RelationshipModel<A>> = new Set(),
   ) {
-    this.id = stringHash(`model:${source.id}:${target.id}`) as Aux.EdgeId
+    this.id = stringHash(`model:${source.id}:${target.id}`) as aux.EdgeId
   }
 
   private _boundary: ElementModel<A> | null | undefined

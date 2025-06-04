@@ -65,24 +65,24 @@ export type ViewRulePredicate<A extends AnyAux = AnyAux> = Extract<
   { include: any[] } | { exclude: any[] }
 >
 
-export function isViewRulePredicate<R extends ViewRule<any>>(rule: R): rule is Extract<
-  R,
+export function isViewRulePredicate<V extends ViewRule<any>>(rule: V): rule is Extract<
+  V,
   { include: any[] } | { exclude: any[] }
 > {
   return 'include' in rule || 'exclude' in rule
 }
 
-export function isViewRuleStyle<R extends ViewRule<AnyAux>>(
-  rule: R,
-): rule is Extract<R, { targets: any[]; style: {} }> {
+export function isViewRuleStyle<V extends ViewRule<any>>(
+  rule: V,
+): rule is Extract<V, { targets: any[]; style: {} }> {
   return 'targets' in rule && 'style' in rule
 }
 
-export function isComputedView<V extends AnyView<AnyAux>>(view: V): view is ExtractOnStage<V, 'computed'> {
+export function isComputedView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'computed'> {
   return view._stage === 'computed'
 }
 
-export function isDiagramView<V extends AnyView<AnyAux>>(view: V): view is ExtractOnStage<V, 'layouted'> {
+export function isDiagramView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'layouted'> {
   return view._stage === 'layouted'
 }
 export { isDiagramView as isLayoutedView }

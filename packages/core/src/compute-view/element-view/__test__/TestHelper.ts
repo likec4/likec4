@@ -14,6 +14,7 @@ import { mkViewBuilder } from '../../../builder/Builder.views'
 import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import {
+  type Any,
   type ComputedElementView,
   type ComputedView,
   type ParsedElementView as ElementView,
@@ -47,12 +48,12 @@ type ConnectionEqual<T extends AnyTypes> = [ConnectionsDeepMatcher<ConnectionExp
 ]
 
 export class TestHelper<T extends AnyTypes> {
-  Aux!: Types.ToAux<T>
+  model: LikeC4Model.Computed<Types.ToAux<T>>
+
+  Aux!: typeof this.model.Aux
   Elem!: ElementModel<typeof this.Aux>
   Connection!: ConnectionModel<typeof this.Aux>
   CompView!: ComputedElementView<typeof this.Aux>
-
-  model: LikeC4Model.Computed<typeof this.Aux>
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
@@ -63,7 +64,10 @@ export class TestHelper<T extends AnyTypes> {
   $exclude = viewhelpers.$exclude
   $style = viewhelpers.$style
 
-  static from<const T extends AnyTypes>(builder: Builder<T>, expect = vitestExpect): TestHelper<T> {
+  static from<const T extends AnyTypes>(
+    builder: Builder<T>,
+    expect = vitestExpect,
+  ): TestHelper<T> {
     return new TestHelper(builder, expect)
   }
 
@@ -130,7 +134,7 @@ export class TestHelper<T extends AnyTypes> {
     },
   })
 
-  expectElements = (elements: ReadonlySet<typeof this.Elem>) => ({
+  expectElements = (elements: ReadonlySet<ElementModel<Any>>) => ({
     toEqual: <const Id extends ViewPredicate.DeploymentConnectionExpression<T>>(...ids: Id[]) => {
       this._expect(toArray(imap(elements, prop('id')))).toEqual(ids)
     },
@@ -161,14 +165,14 @@ export class TestHelper<T extends AnyTypes> {
   })
 
   expect(value: typeof this.CompView): ReturnType<typeof this['expectView']>
-  expect(value: Set<typeof this.Elem>): ReturnType<typeof this['expectElements']>
+  expect(value: Set<ElementModel<Any>>): ReturnType<typeof this['expectElements']>
   expect(value: ReadonlyArray<typeof this.Connection>): ReturnType<typeof this['expectConnections']>
   expect(value: Memory | ProcessPredicates<T>): ReturnType<typeof this['expectMemory']>
   expect(
     value:
       | Memory
       | ProcessPredicates<T>
-      | Set<typeof this.Elem>
+      | Set<ElementModel<Any>>
       | typeof this.CompView
       | ReadonlyArray<typeof this.Connection>,
   ) {
@@ -276,3 +280,4 @@ class ProcessPredicates<T extends AnyTypes> {
     return this
   }
 }
+z
