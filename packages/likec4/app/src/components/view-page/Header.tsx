@@ -177,6 +177,19 @@ function ExportButton({ diagram }: HeaderProps) {
           )}>
           Export as .mmd
         </MenuItem>
+        <MenuItem
+          disabled={isInsideProject}
+          renderRoot={(props) => (
+            <Link
+              to={'/view/$viewId/puml'}
+              search
+              params={{
+                viewId,
+              }}
+              {...props} />
+          )}>
+          Export as .puml
+        </MenuItem>
         <MenuItem disabled>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
