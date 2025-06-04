@@ -76,6 +76,10 @@ export class LikeC4Model<A extends AnyAux = Any> {
     () => new Set(),
   )
 
+  static fromParsed<T extends AnyAux>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T> {
+    return new LikeC4Model(model).asParsed<T>()
+  }
+
   /**
    * Creates a new LikeC4Model instance from the provided model data.
    * Model with parsed data will not have views, as they must be computed
@@ -157,6 +161,21 @@ export class LikeC4Model<A extends AnyAux = Any> {
         this._allTags.get(tag).add(vm)
       }
     }
+  }
+
+  asParsed<T = A>(noCheck?: false): LikeC4Model.Parsed<T> {
+    invariant(noCheck || this.stage === 'parsed', 'Model is not in parsed stage')
+    return this as any
+  }
+
+  asComputed<T = A>(noCheck?: false): LikeC4Model.Computed<T> {
+    invariant(noCheck || this.stage === 'computed', 'Model is not in computed stage')
+    return this as any
+  }
+
+  asLayouted<T = A>(noCheck?: false): LikeC4Model.Layouted<T> {
+    invariant(noCheck || this.stage === 'layouted', 'Model is not in layouted stage')
+    return this as any
   }
 
   /**
@@ -566,9 +585,11 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Parsed<A = Unknown> = A extends AnyAux ? LikeC4Model<aux.setStage<A, 'parsed'>> : never
-  export type Computed<A = Unknown> = A extends AnyAux ? LikeC4Model<aux.setStage<A, 'computed'>> : never
-  export type Layouted<A = Unknown> = A extends AnyAux ? LikeC4Model<aux.setStage<A, 'layouted'>> : never
+  export type Parsed<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'parsed'>> : never
+  export type Computed<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'computed'>>
+    : never
+  export type Layouted<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'layouted'>>
+    : never
 
   export type Node<A = Unknown> = A extends AnyAux ? NodeModel<A> : never
   export type Element<A = Unknown> = A extends AnyAux ? ElementModel<A> : never

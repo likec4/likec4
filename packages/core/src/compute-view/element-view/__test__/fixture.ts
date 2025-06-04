@@ -681,14 +681,14 @@ export function $exclude(
     exclude: [_expr],
   }
 }
-export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
+export function $group(groupRules: ViewRuleGroup<$Aux>['groupRules']): ViewRuleGroup<$Aux> {
   return {
     title: null,
     groupRules,
   }
 }
 
-export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
+export function $style(element: ElementRefExpr, style: ViewRuleStyle<$Aux>['style']): ViewRuleStyle<$Aux> {
   return {
     targets: [$expr(element) as ModelFqnExpr<$Aux>],
     style: Object.assign({}, style),
