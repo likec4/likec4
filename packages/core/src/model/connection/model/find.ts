@@ -69,7 +69,7 @@ export function findConnection<A extends AnyAux>(
  */
 export function findConnectionsBetween<M extends AnyAux>(
   element: ElementModel<M>,
-  others: Iterable<ElementModel<NoInfer<M>>>,
+  others: Iterable<ElementModel<M>>,
   direction: 'directed' | 'both' = 'both',
 ): readonly ConnectionModel<M>[] {
   if (element.allIncoming.size === 0 && element.allOutgoing.size === 0) {

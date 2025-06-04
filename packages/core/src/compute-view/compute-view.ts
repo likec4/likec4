@@ -7,6 +7,7 @@ import {
   type ComputedView,
   type LikeC4View,
   type ParsedLikeC4ModelData,
+  _stage,
   isDeploymentView,
   isDynamicView,
   isElementView,
@@ -68,7 +69,7 @@ export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>)
   )
   return {
     ...parsed,
-    __: 'computed',
+    [_stage]: 'computed',
     views: indexBy(views, v => v.id),
   } as unknown as ComputedLikeC4ModelData<A>
 }

@@ -10,7 +10,6 @@ import type {
   DeploymentFqn,
   ParsedElementView,
   ParsedLikeC4ModelData,
-  ParsedScopedElementView,
   Specification,
 } from '../types'
 import {
@@ -449,7 +448,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 title: title ?? nameFromFqn(_id),
                 description: null,
                 technology: null,
-                tags: null,
+                tags: [],
                 color: specStyle?.color ?? DefaultThemeColor as Color,
                 shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
                 style: pickBy({
@@ -536,7 +535,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ParsedScopedElementView> = {
+          const view: Writable<ParsedElementView> = {
             ...generic,
             viewOf: viewOf as Fqn,
             [_type]: 'element',

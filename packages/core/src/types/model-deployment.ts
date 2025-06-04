@@ -1,3 +1,4 @@
+import { isTruthy } from 'remeda'
 import type { Link } from './_common'
 import type * as aux from './aux'
 import type { AnyAux, Unknown } from './aux'
@@ -65,11 +66,11 @@ export type DeploymentElementRef<A extends AnyAux = Unknown> = {
 }
 
 export function isDeploymentNode<A extends AnyAux>(el: DeploymentElement<A>): el is DeploymentNode<A> {
-  return 'kind' in el && !('element' in el)
+  return 'kind' in el && !isTruthy(el.element)
 }
 
 export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): el is DeployedInstance<A> {
-  return 'element' in el && !('kind' in el)
+  return 'element' in el && isTruthy(el.element)
 }
 
 /**

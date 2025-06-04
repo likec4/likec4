@@ -1,5 +1,5 @@
 import { partition } from 'remeda'
-import { mergeConnections } from '../../model/connection'
+import { mergeConnections } from '../../model'
 import { intersection, isIterable, union } from '../../utils'
 import type {
   AnyCtx,

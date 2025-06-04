@@ -77,20 +77,9 @@ export class LikeC4Model<A extends AnyAux = Any> {
   )
 
   /**
-   * Creates a new LikeC4Model instance from a parsed model data.\
-   * This model omits the views, as they must be computed (or layouted)
-   * Parsed model is used for computing views
-   */
-  static fromParsed<T extends AnyAux>(parsed: ParsedLikeC4ModelData<T>): LikeC4Model<T> {
-    const { views: _omit, ...rest } = parsed
-    return new LikeC4Model({
-      ...rest,
-      views: {},
-    } as any)
-  }
-
-  /**
    * Creates a new LikeC4Model instance from the provided model data.
+   * Model with parsed data will not have views, as they must be computed
+   * (this model is used for computing views)
    *
    * @typeParam M - Type parameter constrained to AnyLikeC4Model
    * @param model - The model data to create a LikeC4Model from
@@ -170,6 +159,14 @@ export class LikeC4Model<A extends AnyAux = Any> {
     }
   }
 
+  /**
+   * Keeping here for backward compatibility
+   * @deprecated use {@link $data}
+   */
+  get $model(): $ModelData<A> {
+    return this.$data
+  }
+
   get stage(): aux.Stage<A> {
     return this.$data[_stage] as aux.Stage<A>
   }
@@ -197,7 +194,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
     const id = getId(el)
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: aux.LiteralElementId<A>): ElementModel<A> | null {
+  public findElement(el: aux.loose.ElementId<A>): ElementModel<A> | null {
     return this._elements.get(getId(el)) ?? null
   }
 
@@ -283,7 +280,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
     const id = getId(viewId)
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
-  public findView(viewId: aux.LiteralViewId<A>): LikeC4ViewModel<A> | null {
+  public findView(viewId: aux.loose.ViewId<A>): LikeC4ViewModel<A> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
   }
 
@@ -546,7 +543,7 @@ export type AnyLikeC4Model = LikeC4Model<Any>
 
 export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create<Unknown>({
-    _stage: 'parsed',
+    _stage: 'computed',
     projectId: 'default' as never,
     specification: {
       elements: {},

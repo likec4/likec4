@@ -2,11 +2,11 @@ import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
   type AnyAux,
+  type AnyViewRuleStyle as ViewRuleStyle,
   type AutoLayoutDirection,
   type Expression,
   type ModelRelationExpr,
   type NonEmptyArray,
-  type ViewRuleStyle,
   type WhereOperator,
   ModelFqnExpr,
 } from '../types'
@@ -27,7 +27,7 @@ export interface LikeC4ViewBuilder<
   $expr(expr: Expr | TypedExpr): TypedExpr
   include(...exprs: Expr[]): this
   exclude(...exprs: Expr[]): this
-  style(rule: ViewRuleStyle): this
+  style(rule: ViewRuleStyle<any>): this
   autoLayout(layout: AutoLayoutDirection): this
 }
 
@@ -231,7 +231,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
 function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
-  { notation, ...style }: ViewRuleStyle['style'] & { notation?: string },
+  { notation, ...style }: ViewRuleStyle<any>['style'] & { notation?: string },
 ): (b: B) => B {
   return (b) =>
     b.style({

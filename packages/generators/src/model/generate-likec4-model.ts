@@ -39,7 +39,7 @@ export function generateLikeC4Model(model: AnyLikeC4Model) {
     ${aux}
 
     export const likec4model: LikeC4Model${refined}<$Aux> = LikeC4Model.${method}(${
-    JSON5.stringify(model.$model, { space: 2, quote: '\'' })
+    JSON5.stringify(model.$data, { space: 2, quote: '\'' })
   } as any)
 
     /* prettier-ignore-end */

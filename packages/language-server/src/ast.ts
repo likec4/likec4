@@ -138,7 +138,7 @@ export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & {
 export type ParsedAstGlobals = Writable<c4.ModelGlobals>
 
 export interface ParsedAstElementView {
-  __: 'element'
+  [c4._type]: 'element'
   id: c4.ViewId
   viewOf?: c4.Fqn
   extends?: c4.ViewId
@@ -147,12 +147,12 @@ export interface ParsedAstElementView {
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
-  rules: c4.ViewRule[]
+  rules: c4.ElementViewRule[]
   manualLayout?: c4.ViewManualLayout
 }
 
 export interface ParsedAstDynamicView {
-  __: 'dynamic'
+  [c4._type]: 'dynamic'
   id: c4.ViewId
   astPath: string
   title: string | null
@@ -165,7 +165,7 @@ export interface ParsedAstDynamicView {
 }
 
 export interface ParsedAstDeploymentView {
-  __: 'deployment'
+  [c4._type]: 'deployment'
   id: c4.ViewId
   astPath: string
   title: string | null

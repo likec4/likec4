@@ -120,7 +120,7 @@ export class MergedSpecification {
           ...(isNumber(opacity) && { opacity }),
         },
         links: links ?? null,
-        tags: tags ?? null,
+        tags: tags ?? [],
         technology: technology ?? null,
         description: description ?? null,
         title,

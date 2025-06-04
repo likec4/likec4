@@ -13,12 +13,14 @@ import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
 import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
-import type {
-  ComputedElementView,
-  ComputedView,
-  ParsedElementView as ElementView,
-  ViewId,
-  ViewRule,
+import {
+  type ComputedElementView,
+  type ComputedView,
+  type ParsedElementView as ElementView,
+  type ViewId,
+  type ViewRule,
+  _stage,
+  _type,
 } from '../../../types'
 import { compareNatural } from '../../../utils'
 import { imap, toArray } from '../../../utils/iterable'
@@ -248,9 +250,12 @@ class ProcessPredicates<T extends AnyTypes> {
   next(...predicates: ElementViewRulesBuilder<T>[]): this {
     const view = {
       id: 'test' as ViewId,
-      __: 'element',
+      [_stage]: 'parsed',
+      [_type]: 'element',
       rules: [],
-    } as any as Writable<ElementView<typeof this.t.model.Aux>>
+      title: null,
+      description: null,
+    } as Writable<ElementView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,

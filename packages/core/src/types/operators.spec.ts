@@ -5,7 +5,7 @@ import { type Filterable, whereOperatorAsPredicate } from './operators'
 type FTag = 'old' | 'new'
 type FKind = 'a' | 'b'
 
-type A = Aux<string, string, string, string, SpecAux<FKind, string, string, FTag, string>>
+type A = Aux<'computed', string, string, string, string, SpecAux<FKind, string, string, FTag, string>>
 
 function item(props: Filterable<A>): Filterable<A> {
   return props

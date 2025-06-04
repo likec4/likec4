@@ -1,5 +1,5 @@
-import { LikeC4DeploymentModel } from '../../model/DeploymentModel'
-import type { RelationshipModel } from '../../model/RelationModel'
+import type { RelationshipModel } from '../../model'
+import { LikeC4DeploymentModel } from '../../model'
 import type { AnyAux, Expression, OperatorPredicate } from '../../types'
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
 

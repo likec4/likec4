@@ -7,6 +7,7 @@ import { invariant } from '../../errors'
  * @signature
  *   ifind(predicate)(data)
  */
+export function ifind<T, S extends T>(predicate: (item: T) => item is S): (iterable: Iterable<T>) => S | undefined
 export function ifind<T>(predicate: (item: T) => boolean): (iterable: Iterable<T>) => T | undefined
 /**
  * Finds the first element in the iterable that satisfies the predicate.
@@ -14,6 +15,7 @@ export function ifind<T>(predicate: (item: T) => boolean): (iterable: Iterable<T
  * @signature
  *  ifind(data, predicate)
  */
+export function ifind<T, S extends T>(iterable: Iterable<T>, predicate: (item: T) => item is S): S | undefined
 export function ifind<T>(iterable: Iterable<T>, predicate: (item: T) => boolean): T | undefined
 
 export function ifind(arg1: unknown, arg2?: unknown) {

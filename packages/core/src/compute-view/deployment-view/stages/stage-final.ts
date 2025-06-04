@@ -1,6 +1,6 @@
 import { forEach, only, pipe } from 'remeda'
-import { differenceConnections } from '../../../model/connection'
-import type { RelationshipModel } from '../../../model/RelationModel'
+import { differenceConnections } from '../../../model'
+import type { RelationshipModel } from '../../../model'
 import { isAncestor, sortByFqnHierarchically } from '../../../utils/fqn'
 import { ifilter, isome, toArray } from '../../../utils/iterable'
 import { DefaultMap } from '../../../utils/mnemonist'

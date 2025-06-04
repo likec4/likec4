@@ -27,14 +27,8 @@ describe('BBox', () => {
       expect(result).toEqual(box)
     })
 
-    it('should return an empty box at origin for no inputs', () => {
-      const result = BBox.merge()
-      expect(result).toEqual({
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-      })
+    it('should fail for no inputs', () => {
+      expect(() => BBox.merge()).toThrow('No boxes provided')
     })
   })
 
@@ -88,13 +82,27 @@ describe('RectBox', () => {
       expect(result).toEqual(rect)
     })
 
-    it('should return a zero-sized box at origin for no inputs', () => {
-      const result = RectBox.merge()
+    it('should fail for no inputs', () => {
+      expect(() => RectBox.merge()).toThrow('No boxes provided')
+    })
+  })
+
+  describe('fromPoints', () => {
+    it('should create a box from points', () => {
+      const points: [number, number][] = [
+        [0, 0],
+        [10, 20],
+        [5, 5],
+        [-5, -5],
+      ]
+
+      const result = RectBox.fromPoints(points)
+
       expect(result).toEqual({
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0,
+        x1: -5,
+        y1: -5,
+        x2: 10,
+        y2: 20,
       })
     })
   })
@@ -129,13 +137,21 @@ describe('RectBox', () => {
       })
     })
 
-    it('should return zero-sized box at origin for empty input', () => {
-      const result = RectBox.fromPoints([])
+    it('should fail for empty input', () => {
+      expect(() => RectBox.fromPoints([])).toThrow('At least one point is required')
+    })
+  })
+
+  describe('toBBox', () => {
+    it('should convert RectBox to BBox correctly', () => {
+      const rect: RectBox = { x1: 10, y1: 20, x2: 40, y2: 60 }
+      const result = RectBox.toBBox(rect)
+
       expect(result).toEqual({
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0,
+        x: 10,
+        y: 20,
+        width: 30,
+        height: 40,
       })
     })
   })

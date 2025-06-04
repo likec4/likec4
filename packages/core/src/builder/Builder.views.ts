@@ -1,5 +1,10 @@
 import type { Simplify, Writable } from 'type-fest'
-import type { DeploymentView, ElementView, LikeC4View } from '../types'
+import {
+  type LikeC4View,
+  type ParsedDeploymentView as DeploymentView,
+  type ParsedElementView as ElementView,
+  _type,
+} from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
 import type { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
@@ -358,7 +363,7 @@ export function mkViewBuilder(
   view: Writable<ElementView<any> | DeploymentView<any>>,
 ): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
-    $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
+    $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(autoLayout: unknown) {
       view.rules.push({
         direction: autoLayout,

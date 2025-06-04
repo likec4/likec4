@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
 import { isTruthy } from 'remeda'
-import { ast, type ParsedAstGlobals } from '../../ast'
+import { type ParsedAstGlobals, ast } from '../../ast'
 import { logger, logWarnError } from '../../logger'
 import type { WithViewsParser } from './ViewsParser'
 
@@ -56,7 +56,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
     parseAndStoreGlobalPredicateGroupOrDynamic(
       astRule: ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup,
       id: c4.GlobalPredicateId,
-      c4Globals: ParsedAstGlobals
+      c4Globals: ParsedAstGlobals,
     ) {
       if (ast.isGlobalPredicateGroup(astRule)) {
         const predicates = this.parseGlobalPredicateGroup(astRule)
@@ -83,7 +83,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
       return astRule.predicates.map(p => this.parseDynamicViewIncludePredicate(p))
     }
 
-    parseGlobalStyleOrGroup(astRule: ast.GlobalStyle | ast.GlobalStyleGroup): c4.ViewRuleStyle[] {
+    parseGlobalStyleOrGroup(astRule: ast.GlobalStyle | ast.GlobalStyleGroup): c4.ElementViewRuleStyle[] {
       if (ast.isGlobalStyle(astRule)) {
         return [this.parseViewRuleStyle(astRule)]
       }

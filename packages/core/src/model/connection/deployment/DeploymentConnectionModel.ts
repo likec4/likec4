@@ -1,5 +1,5 @@
 import { invariant } from '../../../errors'
-import type { AnyAux, Aux, IteratorLike, Unknown } from '../../../types'
+import type { AnyAux, Aux, aux, IteratorLike, Unknown } from '../../../types'
 import { stringHash } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
@@ -16,17 +16,17 @@ import type { Connection } from '../Connection'
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
  * Includes direct relationships and/or between their nested elements.
  */
-export class DeploymentConnectionModel<A extends AnyAux = Unknown>
-  implements Connection<DeploymentElementModel<A>, Aux.EdgeId>
+export class DeploymentConnectionModel<A extends AnyAux = AnyAux>
+  implements Connection<DeploymentElementModel<A>, aux.EdgeId>
 {
-  readonly id: Aux.EdgeId
+  readonly id: aux.EdgeId
 
   constructor(
     public readonly source: DeploymentElementModel<A>,
     public readonly target: DeploymentElementModel<A>,
     public readonly relations: RelationshipsAccum<A>,
   ) {
-    this.id = stringHash(`deployment:${source.id}:${target.id}`) as Aux.EdgeId
+    this.id = stringHash(`deployment:${source.id}:${target.id}`) as aux.EdgeId
   }
 
   /**

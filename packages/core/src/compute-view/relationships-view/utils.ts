@@ -1,6 +1,6 @@
 import { nonNullable } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux } from '../../types'
+import type { AnyAux, Aux, aux } from '../../types'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { DefaultMap } from '../../utils/mnemonist'
 
@@ -32,7 +32,7 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
 
   return {
     sorted,
-    byId: (id: Aux.ElementId<M>): ElementModel<M> => nonNullable(map.get(id), `Element not found by id: ${id}`),
+    byId: (id: aux.ElementId<M>): ElementModel<M> => nonNullable(map.get(id), `Element not found by id: ${id}`),
     root: root as ReadonlySet<ElementModel<M>>,
     parent: (el: ElementModel<M>): ElementModel<M> | null => parents.get(el),
     children: (el: ElementModel<M>): ReadonlyArray<ElementModel<M>> => children.get(el),

@@ -110,4 +110,38 @@ describe('Builder (style 2)', () => {
       'node.ui': expect.objectContaining({ id: 'node.ui', element: 'cloud.ui' }),
     })
   })
+
+  it('should build and compute LikeC4Model', async ({ expect }) => {
+    const m = spec.clone()
+      .model(({ system, actor, component, relTo, rel }, _) =>
+        _(
+          actor('customer'),
+          system('cloud').with(
+            component('ui'),
+            component('api'),
+          ),
+          rel('customer', 'cloud.ui', {
+            title: 'uses',
+            tags: ['tag1'],
+          }),
+          rel('cloud.ui', 'cloud.api', {
+            title: 'calls',
+            tags: ['tag2'],
+          }),
+        )
+      )
+      .views(({ view, viewOf, $include }, _) =>
+        _(
+          view('index', 'Index').with(
+            $include('*'),
+          ),
+          viewOf('cloudui', 'cloud.ui').with(
+            $include('*'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    await expect(m.$data).toMatchFileSnapshot('__snapshots__/Builder-style2.compute-model.json5')
+  })
 })

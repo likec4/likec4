@@ -17,11 +17,8 @@ import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import {
   type $View,
-  type DeploymentOrFqn,
   type EdgeOrId,
-  type ElementOrFqn,
   type NodeOrId,
-  type RelationOrId,
   getId,
 } from '../types'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
@@ -85,7 +82,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     }
   }
 
-  get __type(): InferViewType<V> {
+  get _type(): InferViewType<V> {
     return this.$view[_type] as InferViewType<V>
   }
 
@@ -152,9 +149,12 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return this.#nodes.get(getId(node)) ?? null
   }
 
-  public findNodeWithElement(fqn: ElementOrFqn<A>): NodeModel.WithElement<A, V> | null {
-    const nd = ifind(this.#nodes.values(), node => node.element?.id === fqn) ?? null
-    return nd && nd.hasElement() ? nd : null
+  public findNodeWithElement(element: aux.loose.ElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
+    const id = getId(element)
+    return ifind(
+      this.#nodes.values(),
+      (node): node is NodeModel.WithElement<A, V> => node.hasElement() && node.element.id === id,
+    ) ?? null
   }
 
   /**
@@ -208,15 +208,15 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return
   }
 
-  public includesElement(element: ElementOrFqn<A>): boolean {
+  public includesElement(element: aux.loose.ElementId<A> | { id: aux.Fqn<A> }): boolean {
     return this.#includeElements.has(getId(element))
   }
 
-  public includesDeployment(deployment: DeploymentOrFqn<A>): boolean {
+  public includesDeployment(deployment: aux.loose.DeploymentId<A> | { id: aux.DeploymentFqn<A> }): boolean {
     return this.#includeDeployments.has(getId(deployment))
   }
 
-  public includesRelation(relation: RelationOrId): boolean {
+  public includesRelation(relation: scalar.RelationId | { id: scalar.RelationId }): boolean {
     return this.#includeRelations.has(getId(relation))
   }
 
@@ -241,7 +241,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
 
   public isScopedElementView(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<A, Extract<V, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> {
+  ): this is LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.Fqn<A> }> {
     return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
   }
 

@@ -50,7 +50,7 @@ export type BuildModelData = {
 export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
-  const customColorDefinitions: c4.CustomColorDefinitions = mapValues(
+  const customColors: c4.CustomColorDefinitions = mapValues(
     c4Specification.specs.colors,
     c => computeColorValues(c.color),
   )
@@ -180,7 +180,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
         ...model
       } = parsedAstView
 
-      if (parsedAstView.__ === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
+      if (parsedAstView[c4._type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null
       }
 
@@ -190,7 +190,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
 
       return {
         ...model,
-        customColorDefinitions,
+        [c4._stage]: 'parsed',
         docUri,
         description,
         title,
@@ -208,13 +208,13 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
-      __: 'element',
+      [c4._stage]: 'parsed',
+      [c4._type]: 'element',
       id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
       tags: null,
       links: null,
-      customColorDefinitions: customColorDefinitions,
       rules: [
         {
           include: [
@@ -235,6 +235,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
 
   return {
     data: {
+      [c4._stage]: 'parsed',
       projectId,
       specification: {
         tags: assignTagColors(c4Specification),
@@ -246,6 +247,7 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
         })),
         deployments: c4Specification.specs.deployments,
         ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(c4.compareNatural) }),
+        customColors,
       },
       elements,
       relations,

@@ -1,4 +1,4 @@
-import type { Simplify, UnionToIntersection } from 'type-fest'
+import type { IsAny, Simplify, UnionToIntersection } from 'type-fest'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
@@ -67,3 +67,8 @@ export interface Link {
   // Relative to workspace root (if url is relative),
   relative?: string
 }
+
+/**
+ * Coalesce `V` to a string if it is `any`
+ */
+export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V

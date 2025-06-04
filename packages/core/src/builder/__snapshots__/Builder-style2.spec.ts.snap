@@ -74,7 +74,7 @@ exports[`Builder (style 2) > should build  1`] = `
         "size": "lg",
         "textSize": "sm",
       },
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "cloud",
     },
@@ -86,7 +86,7 @@ exports[`Builder (style 2) > should build  1`] = `
       "links": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "ui",
     },
@@ -98,7 +98,7 @@ exports[`Builder (style 2) > should build  1`] = `
       "links": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "customer",
     },
@@ -180,7 +180,7 @@ exports[`Builder (style 2) > should build  1`] = `
           "include": [
             {
               "ref": {
-                "model": "prod",
+                "deployment": "prod",
               },
               "selector": "descendants",
             },

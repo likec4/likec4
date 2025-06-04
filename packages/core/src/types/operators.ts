@@ -22,14 +22,14 @@ type AllNever = {
 }
 
 export type TagEqual<A extends AnyAux> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<aux.Tag<A>>
+  tag: EqualOperator<aux.loose.Tag<A>>
 }
 export function isTagEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
 export type KindEqual<A extends AnyAux> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<aux.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A>>
+  kind: EqualOperator<aux.loose.ElementKind<A> | aux.DeploymentKind<A> | aux.RelationKind<A>>
 }
 export function isKindEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
@@ -76,8 +76,8 @@ export type WhereOperator<A extends AnyAux = Unknown> =
   | OrOperator<A>
 
 export type Filterable<A extends AnyAux> = {
-  tags?: aux.Tags<A> | null | undefined
-  kind?: aux.LiteralElementKind<A> | aux.LiteralDeploymentKind<A> | aux.LiteralRelationKind<A> | null
+  tags?: aux.loose.Tags<A> | null | undefined
+  kind?: aux.loose.ElementKind<A> | aux.loose.DeploymentKind<A> | aux.loose.RelationKind<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }

@@ -33,6 +33,8 @@ export type ColorLiteral =
 
 export type CustomColor<T = string> = Tagged<T, 'CustomColor'>
 
+export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
+
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 
 // reference: https://graphviz.org/docs/attr-types/arrowType/

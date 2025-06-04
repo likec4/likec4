@@ -1,18 +1,27 @@
 import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
+import type {
+  DeploymentConnectionModel,
+  DeploymentElementModel,
+  DeploymentRelationModel,
+  LikeC4DeploymentModel,
+  RelationshipModel,
+} from '../../../model'
 import {
   type ConnectionModel,
   findConnectionsBetween as findModelConnectionsBetween,
 } from '../../../model/connection/model'
-import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
-import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
-import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../types'
 import { type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
-import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
+import {
+  deploymentExpressionToPredicate,
+  findConnection,
+  findConnectionsBetween,
+  findConnectionsWithin,
+  resolveElements,
+  resolveModelElements,
+} from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
 import { applyPredicate, excludeModelRelations } from './utils'
@@ -210,23 +219,23 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   },
 }
 
-function resolveRelationsBetweenModelElements({
+function resolveRelationsBetweenModelElements<A extends AnyAux>({
   source,
   target,
   expr,
   model,
 }: {
-  source: FqnExpr.ModelRef
-  target: FqnExpr.ModelRef
-  expr: RelationExpr.Direct
-  model: LikeC4DeploymentModel
+  source: FqnExpr.ModelRef<A>
+  target: FqnExpr.ModelRef<A>
+  expr: RelationExpr.Direct<A>
+  model: LikeC4DeploymentModel<A>
 }) {
   const sources = resolveModelElements(model, source)
   const targets = resolveModelElements(model, target)
 
   const dir = expr.isBidirectional ? 'both' : 'directed'
 
-  const modelConnections = [] as ConnectionModel[]
+  const modelConnections = [] as ConnectionModel<A>[]
   for (const source of sources) {
     modelConnections.push(...findModelConnectionsBetween(source, targets, dir))
   }

@@ -11,12 +11,10 @@ import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
 
-type CommonViewRuleStyle = Pick<AnyViewRuleStyle<any>, 'style' | 'notation'>
-
-export function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
-  rule: Rule,
-  predicates: Predicate<ComputedNode<any>>[],
-  nodes: ComputedNode<any>[],
+export function applyViewRuleStyle<A extends AnyAux>(
+  rule: Pick<AnyViewRuleStyle<A>, 'style' | 'notation'>,
+  predicates: Predicate<ComputedNode<A>>[],
+  nodes: ComputedNode<A>[],
 ): void {
   pipe(
     nodes,

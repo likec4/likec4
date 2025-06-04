@@ -43,7 +43,7 @@ const Sizes = {
 }
 type NodeData = {
   portId: string
-  element: ElementModel
+  element: ElementModel<any>
   isCompound: boolean
 }
 function createGraph() {
@@ -80,7 +80,7 @@ const PortSuffix = '-port'
 
 function createNodes(
   prefix: string,
-  elements: ReadonlySet<ElementModel>,
+  elements: ReadonlySet<ElementModel<any>>,
   g: G,
 ) {
   const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
@@ -315,8 +315,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     return {
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
-      position: [position.x, position.y],
       title: element.title,
+      ...position,
+      position: [position.x, position.y],
       description: element.description,
       technology: element.technology,
       tags: [],

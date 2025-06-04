@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { _type, AnyAux, aux, Color, IteratorLike } from '../types'
+import type { AnyAux, aux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -17,7 +17,7 @@ import { commonAncestor, hierarchyLevel, isAncestor, memoizeProp, sortNaturalByF
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { $View, IncomingFilter, OutgoingFilter } from './types'
+import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
@@ -91,7 +91,7 @@ export class ElementModel<A extends AnyAux> {
     return this.$element.links ?? []
   }
 
-  get defaultView(): LikeC4ViewModel<A, Extract<$View<A>, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> | null {
+  get defaultView(): LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.Fqn<A> }> | null {
     return memoizeProp(this, Symbol('defaultView'), () => this.scopedViews().next().value ?? null)
   }
 
@@ -231,7 +231,7 @@ export class ElementModel<A extends AnyAux> {
    */
   public *scopedViews(
     this: ElementModel<A>,
-  ): ViewsIterator<A, Extract<$View<A>, { [_type]: 'element'; viewOf: aux.Fqn<A> }>> {
+  ): ViewsIterator<A, $ViewWithType<A, 'element'> & { viewOf: aux.Fqn<A> }> {
     for (const vm of this.$model.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm

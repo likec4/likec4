@@ -1,4 +1,11 @@
-import { type DiagramView, ComputedView, nonexhaustive } from '@likec4/core'
+import {
+  type DiagramView,
+  ComputedView,
+  isDeploymentView,
+  isDynamicView,
+  isElementView,
+  nonexhaustive,
+} from '@likec4/core'
 import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
@@ -17,11 +24,11 @@ export interface GraphvizPort {
 
 const getPrinter = (computedView: ComputedView) => {
   switch (true) {
-    case ComputedView.isDynamic(computedView):
+    case isDynamicView(computedView):
       return new DynamicViewPrinter(computedView)
-    case ComputedView.isDeployment(computedView):
+    case isDeploymentView(computedView):
       return new DeploymentViewPrinter(computedView)
-    case ComputedView.isElement(computedView):
+    case isElementView(computedView):
       return new ElementViewPrinter(computedView)
     default:
       nonexhaustive(computedView)

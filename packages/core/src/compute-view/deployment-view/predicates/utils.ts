@@ -1,5 +1,11 @@
 import { filter, isArray, map, pick, pipe } from 'remeda'
 import { nonexhaustive } from '../../../errors'
+import type {
+  DeploymentElementModel,
+  DeploymentRelationEndpoint,
+  DeploymentRelationModel,
+  RelationshipModel,
+} from '../../../model'
 import {
   type DeploymentConnectionModel,
   ElementModel,
@@ -9,12 +15,6 @@ import {
   isElementModel,
   isNestedElementOfDeployedInstanceModel,
 } from '../../../model'
-import type {
-  DeploymentElementModel,
-  DeploymentRelationEndpoint,
-  DeploymentRelationModel,
-} from '../../../model/DeploymentElementModel'
-import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
 import { hasIntersection, intersection } from '../../../utils/set'
@@ -71,13 +71,13 @@ export function excludeModelRelations<M extends AnyAux>(
   { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
   where: OperatorPredicate<M> | null,
   // Optional filter to scope the connections to exclude
-  filterConnections: (c: DeploymentConnectionModel) => boolean = () => true,
+  filterConnections: (c: DeploymentConnectionModel<M>) => boolean = () => true,
 ): StageExclude {
   if (relationsToExclude.size === 0) {
     return stage
   }
   const toExclude = pipe(
-    memory.connections,
+    memory.connections as unknown as readonly DeploymentConnectionModel<M>[],
     filter(c => filterConnections(c)),
     // Find connections that have at least one relation in common with the excluded relations
     filter(c => hasIntersection(c.relations.model, relationsToExclude)),
@@ -93,7 +93,7 @@ export function excludeModelRelations<M extends AnyAux>(
   if (toExclude.length === 0) {
     return stage
   }
-  return stage.excludeConnections(toExclude)
+  return stage.excludeConnections(toExclude as unknown as DeploymentConnectionModel[])
 }
 
 export function matchConnection<M extends AnyAux>(

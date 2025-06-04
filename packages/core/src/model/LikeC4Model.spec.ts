@@ -1,6 +1,7 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { type TestFqn, computed, model } from './__test__/fixture'
+import { type TestFqn, computed, model, parsed } from './__test__/fixture'
+import { LikeC4Model } from './LikeC4Model'
 
 describe('LikeC4Model', () => {
   const els = computed.elements
@@ -164,6 +165,18 @@ describe('LikeC4Model', () => {
       'cloud.backend.api',
       'cloud.media',
       'cloud.backend',
+    ])
+  })
+
+  it('should not include views if built from parsed data ', () => {
+    const m = LikeC4Model.create(parsed)
+    expect([...m.views()].map(prop('id'))).toEqual([])
+
+    // But computed model should have views
+    expect([...model.views()].map(prop('id'))).toEqual([
+      'index',
+      'cloud',
+      'prod',
     ])
   })
 

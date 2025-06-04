@@ -1,30 +1,41 @@
-import { hasAtLeast, isEmpty, isNumber, isString } from 'remeda'
+import { hasAtLeast, isEmpty } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
-import type { DeployedInstanceModel, DeploymentNodeModel, LikeC4DeploymentModel } from '../../model'
-import type { DeploymentConnectionModel } from '../../model/connection/deployment'
-import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux, Unknown } from '../../types'
+import type {
+  DeployedInstanceModel,
+  DeploymentConnectionModel,
+  DeploymentElementModel,
+  DeploymentNodeModel,
+  ElementModel,
+  LikeC4DeploymentModel,
+} from '../../model'
+import { deploymentConnection } from '../../model'
 import {
+  type AnyAux,
+  type aux,
   type ComputedEdge,
   type ComputedNode,
   type DeploymentViewRule,
+  type Unknown,
   DefaultArrowType,
   FqnExpr,
   isViewRuleStyle,
+  scalar,
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import { uniqueTags } from '../utils/uniqueTags'
-import type { Elem, Memory } from './_types'
+import type { Memory } from './_types'
+
+export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
 
 type Predicate<T> = (x: T) => boolean
 
-export function resolveElements(
-  model: LikeC4DeploymentModel,
-  expr: FqnExpr.DeploymentRef,
-): Elem[] {
+export function resolveElements<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  expr: FqnExpr.DeploymentRef<A>,
+): DeploymentElementModel<A>[] {
   const ref = model.element(expr.ref.deployment)
   if (ref.isDeploymentNode()) {
     if (expr.selector === 'children') {
@@ -40,10 +51,10 @@ export function resolveElements(
   return [ref]
 }
 
-export function resolveModelElements(
-  model: LikeC4DeploymentModel,
-  expr: FqnExpr.ModelRef,
-): ElementModel[] {
+export function resolveModelElements<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  expr: FqnExpr.ModelRef<A>,
+): ElementModel<A>[] {
   const ref = model.$model.element(expr.ref.model)
   if (expr.selector === 'children') {
     return [...ref.children()]
@@ -57,9 +68,12 @@ export function resolveModelElements(
   return [ref]
 }
 
-export function deploymentExpressionToPredicate<T extends { id: string; modelRef?: number | string }>(
-  target: FqnExpr,
-): Predicate<T> {
+export function deploymentExpressionToPredicate<
+  A extends AnyAux,
+  N extends { id: string | aux.DeploymentFqn<A>; modelRef?: aux.Fqn<A> | undefined },
+>(
+  target: FqnExpr<A>,
+): Predicate<N> {
   if (FqnExpr.isWildcard(target)) {
     return () => true
   }
@@ -82,21 +96,11 @@ export function deploymentExpressionToPredicate<T extends { id: string; modelRef
     return n => n.id === fqn
   }
   if (FqnExpr.isModelRef(target)) {
-    const modelFqn = (node: T) => {
-      if (isString(node.modelRef)) {
-        return node.modelRef
-      }
-      if (isNumber(node.modelRef)) {
-        return node.id
-      }
-      return null
-    }
-
     const fqn = target.ref.model
     if (target.selector === 'expanded') {
       const fqnWithDot = fqn + '.'
-      return (n) => {
-        const m = modelFqn(n)
+      return (n: N) => {
+        const m = n.modelRef ?? null
         if (!m) {
           return true
         }
@@ -105,8 +109,8 @@ export function deploymentExpressionToPredicate<T extends { id: string; modelRef
     }
     if (target.selector === 'descendants') {
       const fqnWithDot = fqn + '.'
-      return (n) => {
-        const m = modelFqn(n)
+      return (n: N) => {
+        const m = n.modelRef ?? null
         if (!m) {
           return true
         }
@@ -114,16 +118,16 @@ export function deploymentExpressionToPredicate<T extends { id: string; modelRef
       }
     }
     if (target.selector === 'children') {
-      return (n) => {
-        const m = modelFqn(n)
+      return (n: N) => {
+        const m = n.modelRef ?? null
         if (!m) {
           return true
         }
         return parentFqn(m) === fqn
       }
     }
-    return (n) => {
-      const m = modelFqn(n)
+    return (n: N) => {
+      const m = n.modelRef ?? null
       if (!m) {
         return true
       }
@@ -159,9 +163,9 @@ export function toNodeSource<A extends AnyAux>(
       style: {
         ...style,
       },
-      deploymentRef: 1,
+      deploymentRef: id,
       kind,
-      id: id as unknown as Aux.NodeId,
+      id: id as scalar.NodeId,
     }
   }
   invariant(el.isInstance(), 'Expected Instance')
@@ -185,8 +189,8 @@ export function toNodeSource<A extends AnyAux>(
   const notation = instance.notation ?? element.$element.notation
 
   return {
-    id: el.id as unknown as Aux.NodeId,
-    kind: 'instance' as Aux.DeploymentKind<A>,
+    id: el.id as scalar.NodeId,
+    kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: instance.title ?? element.title,
     description: instance.description ?? element.description,
     technology: instance.technology ?? element.technology,
@@ -199,7 +203,7 @@ export function toNodeSource<A extends AnyAux>(
       ...element.style,
       ...instance.style,
     },
-    deploymentRef: el.id === instance.id ? 1 : instance.id,
+    deploymentRef: instance.id,
     modelRef: element.id,
     ...notation && { notation },
     ...!isEmpty(metadata) && ({ metadata }),
@@ -218,8 +222,8 @@ export function toComputedEdges<A extends AnyAux>(
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
-    const source = e.source.id as unknown as Aux.NodeId
-    const target = e.target.id as unknown as Aux.NodeId
+    const source = e.source.id as scalar.NodeId
+    const target = e.target.id as scalar.NodeId
 
     const {
       title,
@@ -228,7 +232,7 @@ export function toComputedEdges<A extends AnyAux>(
 
     const edge: ComputedEdge<A> = {
       id: e.id,
-      parent: e.boundary?.id as unknown as Aux.NodeId ?? null,
+      parent: e.boundary?.id as scalar.NodeId ?? null,
       source,
       target,
       label: title ?? null,
@@ -260,7 +264,7 @@ export function toComputedEdges<A extends AnyAux>(
 
 export function buildNodes<A extends AnyAux = Unknown>(
   memory: Memory,
-): ReadonlyMap<Aux.NodeId, ComputedNode<A>> {
+): ReadonlyMap<aux.NodeId, ComputedNode<A>> {
   return buildComputedNodes([...memory.final].map(toNodeSource))
 }
 

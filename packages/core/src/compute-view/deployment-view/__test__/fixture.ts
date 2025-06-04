@@ -2,7 +2,7 @@ import { map, prop } from 'remeda'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
 import { Builder } from '../../../builder'
 import { LikeC4Model } from '../../../model'
-import type { DeploymentView } from '../../../types'
+import type { ParsedDeploymentView as DeploymentView } from '../../../types'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeDeploymentView } from '../compute'
 

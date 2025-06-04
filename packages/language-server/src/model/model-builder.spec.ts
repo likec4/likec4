@@ -149,7 +149,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'component',
-        tags: null,
+        tags: [],
       },
       system2: {
         kind: 'component',
@@ -397,7 +397,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
       system2: {
         kind: 'component',
-        tags: null,
+        tags: [],
         links: [
           { url: './samefolder.js', relative: 'src/samefolder.js' },
           { url: './sub/folder.js#L1-2', relative: 'src/sub/folder.js#L1-2' },
@@ -1089,9 +1089,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewId]!
-    expect(indexView).toBeDefined()
-    expect(indexView).toHaveProperty('customColorDefinitions', {
+    expect(model.specification).toHaveProperty('customColors', {
       'custom-color1': {
         elements: {
           fill: '#ff00ff',
@@ -1267,6 +1265,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     const model = await buildModel()
     expect(model.specification).toEqual({
+      customColors: {},
       deployments: {},
       elements: {
         system: {
@@ -1328,6 +1327,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     const model = await buildModel()
     expect(model.specification).toEqual({
+      customColors: {},
       elements: {
         component: {
           style: {

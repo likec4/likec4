@@ -1,3 +1,5 @@
+import { invariant } from '../errors'
+
 export type Point = readonly [x: number, y: number]
 
 export interface XYPoint {
@@ -32,6 +34,7 @@ export namespace BBox {
   }
 
   export function merge(...boxes: BBox[]): BBox {
+    invariant(boxes.length > 0, 'No boxes provided')
     let minX = Infinity
     let minY = Infinity
     let maxX = -Infinity
@@ -78,6 +81,7 @@ export namespace RectBox {
   }
 
   export function fromPoints(points: Point[]): RectBox {
+    invariant(points.length > 0, 'At least one point is required')
     let minX = Infinity
     let minY = Infinity
     let maxX = -Infinity
@@ -97,6 +101,7 @@ export namespace RectBox {
   }
 
   export function merge(...boxes: RectBox[]): RectBox {
+    invariant(boxes.length > 0, 'No boxes provided')
     let minX = Infinity
     let minY = Infinity
     let maxX = -Infinity

@@ -1,12 +1,10 @@
 import { anyPass, filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
-import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
-import type { RelationshipModel } from '../../../model/RelationModel'
+import type { AnyAux, LikeC4DeploymentModel, RelationshipModel } from '../../../model'
 import { type RelationExpr, FqnExpr } from '../../../types'
 import { isAncestor } from '../../../utils'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
-import { resolveElements, resolveModelElements } from '../utils'
+import { findConnection, findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
 import { applyPredicate, excludeModelRelations } from './utils'
 
@@ -89,10 +87,10 @@ export function filterOutgoingConnections(
   // }
 }
 
-export function resolveAllOutgoingRelations(
-  model: LikeC4DeploymentModel,
-  moodelRef: FqnExpr.ModelRef,
-): Set<RelationshipModel> {
+export function resolveAllOutgoingRelations<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  moodelRef: FqnExpr.ModelRef<A>,
+): Set<RelationshipModel<A>> {
   const targets = resolveModelElements(model, moodelRef)
   return new Set(targets.flatMap(e => [...e.allOutgoing]))
 }

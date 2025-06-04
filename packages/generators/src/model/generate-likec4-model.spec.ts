@@ -172,7 +172,7 @@ const builder = b
 describe('generateLikeC4Model', () => {
   it('parsed-model', async ({ expect }) => {
     const parsed = builder.build()
-    const m = LikeC4Model.fromParsed(parsed)
+    const m = LikeC4Model.create(parsed)
     await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4.parsed-model.snap')
   })
 

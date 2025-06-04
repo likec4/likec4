@@ -106,7 +106,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | undefined>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
   })
 
   it('should work with NEVER', () => {
@@ -165,8 +165,8 @@ describe('Aux', () => {
     expectTypeOf<aux.Metadata<never>>().toBeNever()
   })
 
-  it('should work with AnyAux (fallback to Unknown)', () => {
-    type A = aux.AnyAux
+  it('should work with Any (fallback to Unknown)', () => {
+    type A = aux.Any
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: ModelStage
       projectId: string
@@ -192,7 +192,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | undefined>>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
   })
 
   it('should work with any', () => {
@@ -221,7 +221,7 @@ describe('Aux', () => {
       }
     }>()
     expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
-    expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | undefined>>()
+    expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string>>()
 
     // Check StrictTypes from aux.*
     expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()

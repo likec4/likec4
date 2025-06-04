@@ -14,6 +14,7 @@ import {
   type AnyFqn,
   type Color,
   type ComputedEdge,
+  type ComputedNode,
   type ComputedView,
   type DeploymentFqn,
   type EdgeId,
@@ -23,7 +24,6 @@ import {
   type RelationshipLineType,
   type RelationshipThemeColorValues,
   type XYPoint,
-  ComputedNode,
   DefaultPaddingSize,
   DefaultShapeSize,
   DefaultTextSize,
@@ -134,8 +134,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         origin: node,
         level: node.level,
         depth: node.depth ?? 0,
-        modelRef: ComputedNode.modelRef(node),
-        deploymentRef: ComputedNode.deploymentRef(node),
+        modelRef: node.modelRef ?? null,
+        deploymentRef: node.deploymentRef ?? null,
         maxConnectedHierarchyDistance: 0,
       })
     }

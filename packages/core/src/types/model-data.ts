@@ -1,14 +1,14 @@
 import type { IsAny } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
-import type { _stage, ExtractOnStage, ModelStage } from './const'
+import type { Any, AnyAux, Unknown } from './aux'
+import type { _stage } from './const'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
 import type * as scalar from './scalar'
-import type { AnyView } from './view'
+import type { ComputedView, LayoutedView, ParsedView } from './view'
 
 // type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
 
@@ -45,8 +45,7 @@ import type { AnyView } from './view'
 // }
 // type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
 
-interface BaseLikeC4ModelData<A extends AnyAux, Stage extends ModelStage> {
-  [_stage]: Stage
+interface BaseLikeC4ModelData<A extends AnyAux> {
   projectId: aux.ProjectId<A>
   specification: Specification<A>
   elements: Record<aux.ElementId<A>, Element<A>>
@@ -57,12 +56,11 @@ interface BaseLikeC4ModelData<A extends AnyAux, Stage extends ModelStage> {
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
   imports: Record<scalar.ProjectId<any>, NonEmptyArray<Element<A>>>
-  views: Record<aux.ViewId<A>, ExtractOnStage<AnyView<A>, Stage>>
 }
 
 export type AuxFromLikeC4ModelData<D> =
   // dprint-ignore
-  D extends BaseLikeC4ModelData<infer A extends AnyAux, any>
+  D extends BaseLikeC4ModelData<infer A extends AnyAux>
     ? IsAny<A> extends true
       ? Unknown
       : A
@@ -82,18 +80,19 @@ export type AuxFromLikeC4ModelData<D> =
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'parsed'> {
+export interface ParsedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'parsed'
+  views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
-// export interface LikeC4ModelData<A extends AnyAux, V = ProcessedView<A>> {
-//   __: 'computed' | 'layouted'
-//   views: Record<aux.ViewId<A>, V>
-// }
-
-export interface ComputedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'computed'> {
+export interface ComputedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'computed'
+  views: Record<aux.ViewId<A>, ComputedView<A>>
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = Unknown> extends BaseLikeC4ModelData<A, 'layouted'> {
+export interface LayoutedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'layouted'
+  views: Record<aux.ViewId<A>, LayoutedView<A>>
 }
 
 export type LikeC4ModelData<A extends AnyAux> =

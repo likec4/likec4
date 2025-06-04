@@ -28,7 +28,9 @@ export {
   DeployedInstanceModel,
   type DeploymentElementModel,
   DeploymentNodeModel,
+  type DeploymentRelationEndpoint,
   DeploymentRelationModel,
+  RelationshipsAccum,
 } from './DeploymentElementModel'
 export { LikeC4DeploymentModel } from './DeploymentModel'
 

@@ -1,5 +1,4 @@
-import { type ElementModel } from '../../model/ElementModel'
-import type { RelationshipModel } from '../../model/RelationModel'
+import type { ElementModel, RelationshipModel } from '../../model'
 import type { AnyAux, Unknown } from '../../types'
 
 // type Pair = {

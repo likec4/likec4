@@ -97,7 +97,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     const id = getId(el)
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: aux.LiteralDeploymentId<A>): DeploymentElementModel<A> | null {
+  public findElement(el: aux.loose.DeploymentId<A>): DeploymentElementModel<A> | null {
     return this.#elements.get(el as aux.DeploymentFqn<A>) ?? null
   }
 
@@ -106,7 +106,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     invariant(element.isDeploymentNode(), `Element ${element.id} is not a deployment node`)
     return element
   }
-  public findNode(el: aux.LiteralDeploymentId<A>): DeploymentNodeModel<A> | null {
+  public findNode(el: aux.loose.DeploymentId<A>): DeploymentNodeModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null
@@ -120,7 +120,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     invariant(element.isInstance(), `Element ${element.id} is not a deployed instance`)
     return element
   }
-  public findInstance(el: aux.LiteralDeploymentId<A>): DeployedInstanceModel<A> | null {
+  public findInstance(el: aux.loose.DeploymentId<A>): DeployedInstanceModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null

@@ -2,7 +2,7 @@
 
 exports[`LikeC4ModelBuilder > builds model with description and technology 1`] = `
 {
-  "__": "computed",
+  "_stage": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -17,7 +17,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "style": {
         "opacity": 40,
       },
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "client",
     },
@@ -27,7 +27,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "kind": "component",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "system",
     },
@@ -40,7 +40,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "style": {
         "border": "dashed",
       },
-      "tags": null,
+      "tags": [],
       "technology": "NodeJS",
       "title": "Backend",
     },
@@ -52,7 +52,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "links": null,
       "shape": "browser",
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "frontend",
     },
@@ -87,6 +87,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "component": {
@@ -104,11 +105,11 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
   },
   "views": {
     "index": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -135,7 +136,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "kind": "user",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "client",
           "outEdges": [
             "client:system",
           ],
@@ -159,7 +160,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -178,7 +179,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
 
 exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
-  "__": "computed",
+  "_stage": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -190,7 +191,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "kind": "user",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "client",
     },
@@ -200,7 +201,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "kind": "component",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "system",
     },
@@ -210,7 +211,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "kind": "component",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "backend",
     },
@@ -220,7 +221,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "kind": "component",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "api",
     },
@@ -230,7 +231,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "kind": "component",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "frontend",
     },
@@ -265,6 +266,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "component": {
@@ -283,11 +285,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   },
   "views": {
     "frontend": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -324,7 +326,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "user",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "client",
           "outEdges": [
             "client:system.frontend",
           ],
@@ -346,7 +348,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system.frontend",
           "outEdges": [
             "system.frontend:system.backend",
           ],
@@ -368,7 +370,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system.backend",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -384,11 +386,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "viewOf": "system.frontend",
     },
     "index": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -415,7 +417,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "user",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "client",
           "outEdges": [
             "client:system",
           ],
@@ -437,7 +439,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -452,11 +454,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "title": "Index",
     },
     "v1": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "LR",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -483,7 +485,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system.frontend",
           "navigateTo": "frontend",
           "outEdges": [
             "system.frontend:system.backend.api",
@@ -509,7 +511,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system.backend",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -529,7 +531,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "kind": "component",
           "level": 1,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "system.backend.api",
           "outEdges": [],
           "parent": "system.backend",
           "shape": "rectangle",
@@ -550,7 +552,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = `
 {
-  "__": "computed",
+  "_stage": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -562,7 +564,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user1",
     },
@@ -572,7 +574,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user2",
     },
@@ -601,6 +603,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "person": {
@@ -620,11 +623,11 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
   },
   "views": {
     "index": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -655,7 +658,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user1",
           "outEdges": [
             "user1:user2",
           ],
@@ -677,7 +680,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user2",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -696,7 +699,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
 
 exports[`LikeC4ModelBuilder > builds model with relationship spec with technology 1`] = `
 {
-  "__": "computed",
+  "_stage": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -708,7 +711,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user1",
     },
@@ -718,7 +721,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user2",
     },
@@ -745,6 +748,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "person": {
@@ -761,11 +765,11 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
   },
   "views": {
     "index": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -794,7 +798,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user1",
           "outEdges": [
             "user1:user2",
           ],
@@ -816,7 +820,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user2",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
@@ -835,7 +839,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
 
 exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
 {
-  "__": "computed",
+  "_stage": "computed",
   "deployments": {
     "elements": {},
     "relations": {},
@@ -847,7 +851,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user1",
     },
@@ -857,7 +861,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
       "kind": "person",
       "links": null,
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "user2",
     },
@@ -886,6 +890,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     },
   },
   "specification": {
+    "customColors": {},
     "deployments": {},
     "elements": {
       "person": {
@@ -897,11 +902,11 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
   },
   "views": {
     "index": {
-      "__": "element",
+      "_stage": "computed",
+      "_type": "element",
       "autoLayout": {
         "direction": "TB",
       },
-      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -932,7 +937,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user1",
           "outEdges": [
             "user1:user2",
           ],
@@ -954,7 +959,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "kind": "person",
           "level": 0,
           "links": null,
-          "modelRef": 1,
+          "modelRef": "user2",
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",

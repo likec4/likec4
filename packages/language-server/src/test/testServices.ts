@@ -7,7 +7,6 @@ import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { createLanguageServices } from '../module'
-import { ProjectsManager } from '../workspace'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
   const services = createLanguageServices(EmptyFileSystem).likec4
@@ -117,13 +116,13 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     }
   }
 
-  const buildModel = async () => {
+  const buildModel = async (): Promise<ComputedLikeC4ModelData> => {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
     const likec4model = await modelBuilder.buildLikeC4Model()
     if (!likec4model) throw new Error('No model found')
-    return likec4model.$model as ComputedLikeC4ModelData
+    return likec4model.$data
   }
 
   const buildLikeC4Model = async () => {

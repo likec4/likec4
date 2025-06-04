@@ -1,5 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { AnyAux } from './aux'
+import * as aux from './aux'
 import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
 import type { ViewType } from './view-common'
 import type {
@@ -86,26 +87,26 @@ export function isDiagramView<V extends AnyView<AnyAux>>(view: V): view is Extra
 }
 export { isDiagramView as isLayoutedView }
 
-export function isElementView<V extends AnyView<any>>(view: V): view is V & { [_type]: 'element' } {
-  return view._type === 'element' || !('_type' in view)
+export function isElementView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'element'> {
+  return view._type === 'element'
 }
 
 export function isScopedElementView<V extends AnyView<any>>(
   view: V,
-): view is V & { [_type]: 'element'; viewOf: string } {
+): view is ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<AnyAux> } {
   return isElementView(view) && isTruthy(view.viewOf)
 }
 
 export function isExtendsElementView<V extends AnyView<any>>(
   view: V,
-): view is V & { [_type]: 'element'; extends: string } {
+): view is ViewWithType<V, 'element'> & { extends: aux.StrictViewId<AnyAux> } {
   return isElementView(view) && isTruthy(view.extends)
 }
 
-export function isDeploymentView<V extends AnyView<any>>(view: V): view is V & { [_type]: 'deployment' } {
+export function isDeploymentView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'deployment'> {
   return view._type === 'deployment'
 }
 
-export function isDynamicView<V extends AnyView<any>>(view: V): view is V & { [_type]: 'dynamic' } {
+export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'dynamic'> {
   return view._type === 'dynamic'
 }

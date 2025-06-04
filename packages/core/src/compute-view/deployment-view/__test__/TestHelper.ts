@@ -12,9 +12,16 @@ import {
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
 import { invariant } from '../../../errors'
-import type { LikeC4Model } from '../../../model'
+import type { AnyAux, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
-import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
+import {
+  type ComputedDeploymentView,
+  type DeploymentViewRule,
+  type ParsedDeploymentView as DeploymentView,
+  type ViewId,
+  _stage,
+  _type,
+} from '../../../types'
 import { imap, toArray } from '../../../utils/iterable'
 import { difference as differenceSet } from '../../../utils/set'
 import { withReadableEdges } from '../../utils/with-readable-edges'
@@ -180,7 +187,7 @@ class ProcessPredicates<T extends AnyTypes> {
     return processor
   }
 
-  public viewrules: ReadonlyArray<DeploymentViewRule<typeof this.t.Aux>> = []
+  public viewrules: ReadonlyArray<DeploymentViewRule<AnyAux>> = []
 
   public previousMemory: Memory = Memory.empty()
   public memory: Memory = Memory.empty()
@@ -221,9 +228,12 @@ class ProcessPredicates<T extends AnyTypes> {
   next(...predicates: DeploymentRulesBuilderOp<T>[]): this {
     const view = {
       id: 'test' as ViewId,
-      __: 'deployment',
+      [_stage]: 'parsed',
+      [_type]: 'deployment',
       rules: [],
-    } as any as Writable<DeploymentView<typeof this.t.Aux>>
+      title: null,
+      description: null,
+    } as Writable<DeploymentView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,
