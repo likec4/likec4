@@ -1,4 +1,4 @@
-import type { ViewChange, ViewId } from '@likec4/core'
+import type { ViewChange, ViewId } from '@likec4/core/types'
 import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, reduce } from 'remeda'
 import {

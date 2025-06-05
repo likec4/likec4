@@ -1,4 +1,4 @@
-import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
+import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType, ViewId } from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 

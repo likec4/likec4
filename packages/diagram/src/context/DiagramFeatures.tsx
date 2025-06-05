@@ -1,4 +1,4 @@
-import type { ExclusiveUnion } from '@likec4/core'
+import type { ExclusiveUnion } from '@likec4/core/types'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
 import { mapToObj } from 'remeda'

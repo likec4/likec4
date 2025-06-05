@@ -1,11 +1,11 @@
-import type { Any, aux, DiagramView } from '@likec4/core'
-import { type CSSProperties } from 'react'
-import { ShadowRoot } from './ShadowRoot'
-
+import type { Any, DiagramView } from '@likec4/core/types'
+import type * as aux from '@likec4/core/types/aux'
 import { cx } from '@likec4/styles/css'
+import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'
 import { type LikeC4DiagramProps, LikeC4Diagram } from '../LikeC4Diagram'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 

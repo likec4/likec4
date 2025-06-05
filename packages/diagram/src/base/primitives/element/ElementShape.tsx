@@ -1,4 +1,5 @@
-import { type ElementShape, type ElementStyle, nonexhaustive } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core'
+import type { ElementShape, ElementStyle } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
 import { toDomPrecision } from '../../../utils/xyflow'
 import * as css from './ElementShape.css'

@@ -1,5 +1,5 @@
-import { type DiagramView, type Fqn, type NodeId } from '@likec4/core'
-import { type Rect } from '@xyflow/system'
+import type { DiagramView, Fqn, NodeId } from '@likec4/core/types'
+import type { Rect } from '@xyflow/system'
 import {
   type ActorLogicFrom,
   type ActorRefFromLogic,

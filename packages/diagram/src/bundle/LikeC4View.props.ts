@@ -1,4 +1,5 @@
-import type { aux, WhereOperator } from '@likec4/core/types'
+import type { WhereOperator } from '@likec4/core/types'
+import type * as aux from '@likec4/core/types/aux'
 import type { CSSProperties } from 'react'
 import type { CustomNodes, ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
 

@@ -1,4 +1,4 @@
-import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
+import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'

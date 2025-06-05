@@ -1,4 +1,5 @@
-import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
+import { extractStep, isStepEdgeId } from '@likec4/core'
+import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { Text } from '@mantine/core'

@@ -1,4 +1,4 @@
-import type { ViewId, WhereOperator } from '@likec4/core'
+import type { WhereOperator } from '@likec4/core/types'
 import { useDeepCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'

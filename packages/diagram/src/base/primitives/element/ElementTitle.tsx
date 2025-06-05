@@ -1,4 +1,4 @@
-import { type DiagramNode } from '@likec4/core'
+import type { DiagramNode } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box, Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
