@@ -6,9 +6,10 @@ import {
   nonexhaustive,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
-import { deepEqual } from 'fast-equals'
-import { memo } from 'react'
+import { useDeepCompareEffect } from '@react-hookz/web'
+import { memo, useState } from 'react'
 import { entries } from 'remeda'
+import { useLikeC4Model } from './likec4model/useLikeC4Model'
 
 interface LikeC4CustomColorsProperties {
   customColors: CustomColorDefinitions
@@ -54,10 +55,17 @@ function toStyle(name: String, colors: ThemeColorValues): String {
   `
 }
 
-export const LikeC4CustomColors = memo<LikeC4CustomColorsProperties>(({ customColors }) => {
-  const styles = entries(customColors)
-    .map(([name, color]) => toStyle(name, color))
-    .join('\n')
+export const LikeC4CustomColors = memo(() => {
+  const customColors = useLikeC4Model().$data.specification.customColors ?? {}
+  const [styles, setStyles] = useState('')
+
+  useDeepCompareEffect(() => {
+    setStyles(
+      entries(customColors)
+        .map(([name, color]) => toStyle(name, color))
+        .join('\n'),
+    )
+  }, [customColors])
 
   const nonce = useMantineStyleNonce()?.()
 
@@ -66,5 +74,5 @@ export const LikeC4CustomColors = memo<LikeC4CustomColorsProperties>(({ customCo
       <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} nonce={nonce} />
     </>
   )
-}, deepEqual)
+})
 LikeC4CustomColors.displayName = 'LikeC4CustomColors'

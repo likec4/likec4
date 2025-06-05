@@ -42,7 +42,7 @@ function RouteComponent() {
     throw notFound()
   }
 
-  const notations = view.notation?.elements ?? []
+  const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
 
   return (

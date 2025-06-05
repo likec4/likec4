@@ -2,7 +2,8 @@
 
 exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 {
-  "__": "element",
+  "_stage": "layouted",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
@@ -12,7 +13,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
     "x": 0,
     "y": 0,
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -75,7 +75,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud",
       "outEdges": [
         "cloud.backend:amazon.s3",
       ],
@@ -90,6 +90,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "technology": null,
       "title": "cloud",
       "width": 384,
+      "x": 8,
+      "y": 8,
     },
     {
       "children": [],
@@ -107,7 +109,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend",
       "outEdges": [
         "cloud.backend:amazon.s3",
       ],
@@ -122,6 +124,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "technology": null,
       "title": "Backend",
       "width": 320,
+      "x": 40,
+      "y": 61,
     },
     {
       "children": [
@@ -144,7 +148,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
       "position": [
@@ -157,6 +161,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "technology": null,
       "title": "Amazon",
       "width": 384,
+      "x": 545,
+      "y": 8,
     },
     {
       "children": [],
@@ -176,7 +182,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon.s3",
       "outEdges": [],
       "parent": "amazon",
       "position": [
@@ -189,6 +195,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "technology": null,
       "title": "S3",
       "width": 320,
+      "x": 577,
+      "y": 61,
     },
   ],
   "tags": null,
@@ -199,7 +207,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 
 exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
 {
-  "__": "element",
+  "_stage": "layouted",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
@@ -209,7 +218,6 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     "x": 0,
     "y": 0,
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -440,7 +448,7 @@ sso authentification",
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "customer",
       "outEdges": [
         "customer:cloud.frontend.dashboard",
       ],
@@ -455,6 +463,8 @@ sso authentification",
       "technology": null,
       "title": "customer",
       "width": 320,
+      "x": 68,
+      "y": 0,
     },
     {
       "children": [],
@@ -472,7 +482,7 @@ sso authentification",
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "support",
       "outEdges": [
         "support:cloud.frontend.adminPanel",
       ],
@@ -487,6 +497,8 @@ sso authentification",
       "technology": null,
       "title": "Support Engineer",
       "width": 320,
+      "x": 498,
+      "y": 0,
     },
     {
       "children": [
@@ -512,7 +524,7 @@ sso authentification",
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud",
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -527,6 +539,8 @@ sso authentification",
       "technology": null,
       "title": "cloud",
       "width": 910,
+      "x": 8,
+      "y": 271,
     },
     {
       "children": [],
@@ -546,7 +560,7 @@ sso authentification",
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend.dashboard",
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
@@ -561,6 +575,8 @@ sso authentification",
       "technology": null,
       "title": "Customer Dashboard Webapp",
       "width": 320,
+      "x": 68,
+      "y": 332,
     },
     {
       "children": [],
@@ -580,7 +596,7 @@ sso authentification",
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend.adminPanel",
       "outEdges": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
@@ -595,6 +611,8 @@ sso authentification",
       "technology": null,
       "title": "Admin Panel Webapp",
       "width": 320,
+      "x": 498,
+      "y": 332,
     },
     {
       "children": [
@@ -619,7 +637,7 @@ sso authentification",
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend",
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -634,6 +652,8 @@ sso authentification",
       "technology": null,
       "title": "Backend",
       "width": 830,
+      "x": 48,
+      "y": 620,
     },
     {
       "children": [],
@@ -654,7 +674,7 @@ sso authentification",
       },
       "level": 2,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend.graphql",
       "outEdges": [
         "cloud.backend.graphql:cloud.backend.storage",
       ],
@@ -669,6 +689,8 @@ sso authentification",
       "technology": null,
       "title": "Graphql API",
       "width": 320,
+      "x": 88,
+      "y": 681,
     },
     {
       "children": [],
@@ -688,7 +710,7 @@ sso authentification",
       },
       "level": 2,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend.storage",
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -703,6 +725,8 @@ sso authentification",
       "technology": null,
       "title": "Backend Storage",
       "width": 320,
+      "x": 518,
+      "y": 681,
     },
     {
       "children": [],
@@ -722,7 +746,7 @@ sso authentification",
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
       "position": [
@@ -735,6 +759,8 @@ sso authentification",
       "technology": null,
       "title": "Amazon",
       "width": 320,
+      "x": 1055,
+      "y": 681,
     },
   ],
   "tags": null,
@@ -745,7 +771,8 @@ sso authentification",
 
 exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 {
-  "__": "element",
+  "_stage": "layouted",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
@@ -755,7 +782,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     "x": 0,
     "y": 0,
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -921,7 +947,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "customer",
       "outEdges": [
         "customer:cloud.frontend",
       ],
@@ -936,6 +962,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "customer",
       "width": 320,
+      "x": 0,
+      "y": 0,
     },
     {
       "children": [],
@@ -953,7 +981,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "support",
       "outEdges": [
         "support:cloud.frontend",
       ],
@@ -968,6 +996,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "Support Engineer",
       "width": 320,
+      "x": 430,
+      "y": 0,
     },
     {
       "children": [
@@ -992,7 +1022,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud",
       "outEdges": [
         "cloud.backend:amazon",
       ],
@@ -1007,6 +1037,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "cloud",
       "width": 857,
+      "x": 175,
+      "y": 271,
     },
     {
       "children": [],
@@ -1027,7 +1059,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.frontend",
       "outEdges": [
         "cloud.frontend:cloud.backend",
       ],
@@ -1042,6 +1074,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "Frontend",
       "width": 320,
+      "x": 215,
+      "y": 332,
     },
     {
       "children": [],
@@ -1061,7 +1095,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 1,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud.backend",
       "outEdges": [
         "cloud.backend:amazon",
       ],
@@ -1076,6 +1110,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "Backend",
       "width": 320,
+      "x": 672,
+      "y": 332,
     },
     {
       "children": [],
@@ -1095,7 +1131,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
       "position": [
@@ -1108,6 +1144,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "technology": null,
       "title": "Amazon",
       "width": 320,
+      "x": 1209,
+      "y": 332,
     },
   ],
   "tags": null,
@@ -1118,7 +1156,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 
 exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
 {
-  "__": "element",
+  "_stage": "layouted",
+  "_type": "element",
   "autoLayout": {
     "direction": "TB",
   },
@@ -1128,7 +1167,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     "x": 0,
     "y": 0,
   },
-  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -1258,7 +1296,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "customer",
       "outEdges": [
         "customer:cloud",
       ],
@@ -1273,6 +1311,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "technology": null,
       "title": "customer",
       "width": 320,
+      "x": 0,
+      "y": 0,
     },
     {
       "children": [],
@@ -1290,7 +1330,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "support",
       "outEdges": [
         "support:cloud",
       ],
@@ -1305,6 +1345,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "technology": null,
       "title": "Support Engineer",
       "width": 320,
+      "x": 430,
+      "y": 0,
     },
     {
       "children": [],
@@ -1325,7 +1367,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "cloud",
       "outEdges": [
         "cloud:amazon",
       ],
@@ -1340,6 +1382,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "technology": null,
       "title": "cloud",
       "width": 320,
+      "x": 215,
+      "y": 323,
     },
     {
       "children": [],
@@ -1359,7 +1403,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
-      "modelRef": 1,
+      "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
       "position": [
@@ -1372,6 +1416,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "technology": null,
       "title": "Amazon",
       "width": 320,
+      "x": 752,
+      "y": 323,
     },
   ],
   "tags": null,

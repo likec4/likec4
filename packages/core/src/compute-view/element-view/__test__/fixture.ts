@@ -1,12 +1,11 @@
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
-  type AnyAux,
   type Aux,
   type aux,
   type BorderStyle,
   type Color,
-  type ComputedView,
+  type ComputedElementView,
   type Element,
   type ElementShape,
   type ElementViewPredicate,
@@ -716,23 +715,26 @@ export function computeView(
   ...args: [FakeElementIds, ElementViewRule<$Aux> | ElementViewRule<$Aux>[]] | [
     ElementViewRule<$Aux> | ElementViewRule<$Aux>[],
   ]
-) {
-  let result: ComputedView
+): ComputedElementView<$Aux> & {
+  nodeIds: string[]
+  edgeIds: string[]
+} {
+  let result: ComputedElementView<$Aux>
   if (args.length === 1) {
-    result = computeElementView(
-      fakeModel,
+    result = computeElementView<$Aux>(
+      fakeModel as unknown as LikeC4Model<$Aux>,
       {
         ...emptyView,
-        rules: [args[0]].flat() as ElementViewRule[],
+        rules: [args[0]].flat() as ElementViewRule<$Aux>[],
       },
     )
   } else {
     result = computeElementView(
-      fakeModel,
+      fakeModel as unknown as LikeC4Model<$Aux>,
       {
         ...emptyView,
-        viewOf: args[0] as aux.Fqn<AnyAux>,
-        rules: [args[1]].flat() as ElementViewRule[],
+        viewOf: args[0] as aux.Fqn<$Aux>,
+        rules: [args[1]].flat() as ElementViewRule<$Aux>[],
       },
     )
   }

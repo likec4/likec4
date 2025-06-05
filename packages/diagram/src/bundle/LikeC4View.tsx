@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
-import type { DiagramView, ViewId } from '@likec4/core'
+import type { Any, aux, DiagramView, ViewId } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
@@ -15,14 +15,10 @@ import type { LikeC4ViewProps } from './LikeC4View.props'
 import { cssInteractive, useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export function LikeC4View<
-  ViewId extends string = string,
-  Tag = string,
-  Kind = string,
->({
+export function LikeC4View<A extends aux.Any = aux.UnknownLayouted>({
   viewId,
   ...props
-}: LikeC4ViewProps<ViewId, Tag, Kind>) {
+}: LikeC4ViewProps<A>) {
   const likec4model = useLikeC4Model()
   const view = likec4model?.findView(viewId)
 
@@ -33,7 +29,7 @@ export function LikeC4View<
       </ErrorMessage>
     )
   }
-  if (likec4model.type !== 'layouted') {
+  if (likec4model.stage !== 'layouted') {
     return (
       <ErrorMessage>
         LikeC4Model is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
@@ -48,10 +44,10 @@ export function LikeC4View<
   return <LikeC4ViewInner view={view.$view} {...props} />
 }
 
-type LikeC4ViewInnerProps = Omit<LikeC4ViewProps<any, any, any>, 'viewId'> & {
-  view: DiagramView
+type LikeC4ViewInnerProps<A extends aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
+  view: DiagramView<A>
 }
-const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
+const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
   view,
   className,
   pannable = false,
@@ -85,11 +81,11 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
 
-  const [browserViewId, onNavigateTo] = useState(null as ViewId | null)
+  const [browserViewId, onNavigateTo] = useState(null as aux.ViewId<Any> | null)
 
   const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
 
-  const notations = view.notation?.elements ?? []
+  const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
 
   let nonce
@@ -124,7 +120,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
         style={style}>
         <FramerMotionConfig>
           <LikeC4Diagram
-            view={view as any}
+            view={view}
             readonly
             pannable={pannable}
             zoomable={zoomable}
@@ -178,7 +174,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                 {...props}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&
-                  (browserView.notation?.elements.length ?? 0) > 0}
+                  (browserView.notation?.nodes.length ?? 0) > 0}
               />
               <Box pos="absolute" top={'1rem'} right={'1rem'}>
                 <ActionIcon

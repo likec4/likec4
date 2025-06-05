@@ -1,12 +1,12 @@
-import { indexBy, isString, values } from 'remeda'
+import { indexBy, values } from 'remeda'
 import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
   type AnyAux,
   type ComputedLikeC4ModelData,
   type ComputedView,
-  type LikeC4View,
   type ParsedLikeC4ModelData,
+  type ParsedView,
   _stage,
   isDeploymentView,
   isDynamicView,
@@ -29,8 +29,8 @@ export type ComputeViewResult<V> =
   }
 
 export function unsafeComputeView<A extends AnyAux>(
-  viewsource: LikeC4View<NoInfer<A>>,
-  likec4model: LikeC4Model<A>,
+  viewsource: ParsedView<A>,
+  likec4model: LikeC4Model<any>,
 ): ComputedView<A> {
   switch (true) {
     case isElementView(viewsource):
@@ -45,7 +45,7 @@ export function unsafeComputeView<A extends AnyAux>(
 }
 
 export function computeView<A extends AnyAux>(
-  viewsource: LikeC4View<A>,
+  viewsource: ParsedView<A>,
   likec4model: LikeC4Model<A>,
 ): ComputeViewResult<ComputedView<A>> {
   try {
@@ -62,18 +62,19 @@ export function computeView<A extends AnyAux>(
   }
 }
 
-export function computeViews<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): ComputedLikeC4ModelData<A> {
+export function computeParsedModelData<A extends AnyAux>(
+  parsed: ParsedLikeC4ModelData<A>,
+): ComputedLikeC4ModelData<A> {
   const likec4model = LikeC4Model.create(parsed)
-  const views = values(parsed.views as Record<string, LikeC4View<typeof likec4model.Aux>>).map(v =>
-    unsafeComputeView(v, likec4model)
-  )
+  const views = values(parsed.views as Record<string, ParsedView<A>>)
+    .map(v => unsafeComputeView(v, likec4model))
   return {
     ...parsed,
     [_stage]: 'computed',
     views: indexBy(views, v => v.id),
-  } as unknown as ComputedLikeC4ModelData<A>
+  } as ComputedLikeC4ModelData<A>
 }
 
 export function computeLikeC4Model<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): LikeC4Model.Computed<A> {
-  return LikeC4Model.create(computeViews(parsed))
+  return LikeC4Model.create(computeParsedModelData(parsed))
 }

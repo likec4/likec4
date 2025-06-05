@@ -11,6 +11,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import {
+  type AnyAux,
   type AnyFqn,
   type Color,
   type ComputedEdge,
@@ -23,6 +24,7 @@ import {
   type NodeId,
   type RelationshipLineType,
   type RelationshipThemeColorValues,
+  type Specification as LikeC4Specification,
   type XYPoint,
   DefaultPaddingSize,
   DefaultShapeSize,
@@ -104,7 +106,7 @@ type GraphologyEdgeAttributes = {
   hierarchyDistance: number
 }
 
-export abstract class DotPrinter<V extends ComputedView = ComputedView> {
+export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   private ids = new Set<string>()
   private subgraphs = new Map<NodeId, SubgraphModel>()
   private nodes = new Map<NodeId, NodeModel>()
@@ -120,7 +122,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   public readonly graphvizModel: RootGraphModel
 
-  constructor(protected view: V) {
+  constructor(
+    protected view: V,
+    protected specification: LikeC4Specification<A>,
+  ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
       this.compoundIds.size > 0
@@ -513,9 +518,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    const parent = this.computedNode(parentId)
+    const parent = this.computedNode(parentId as NodeId)
     return pipe(
-      this.descendants(parentId),
+      this.descendants(parentId as NodeId),
       flatMap(child => {
         return concat(child.inEdges, child.outEdges)
       }),
@@ -584,7 +589,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     const isShifted = offsetX > 0 || offsetY > 0
     for (const { id, ...manual } of layout.nodes) {
       // we pin only nodes, not clusters
-      const model = this.getGraphNode(id as Fqn)
+      const model = this.getGraphNode(id as NodeId)
       if (!model) {
         continue
       }
@@ -657,11 +662,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
     return isThemeColor(color)
       ? Theme.relationships[color]
-      : this.view.customColorDefinitions[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
+      : this.specification.customColors?.[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
   }
   protected getElementColorValues(color: Color): ElementThemeColorValues {
     return isThemeColor(color)
       ? Theme.elements[color]
-      : this.view.customColorDefinitions[color]?.elements ?? Theme.elements[DefaultThemeColor]
+      : this.specification.customColors?.[color]?.elements ?? Theme.elements[DefaultThemeColor]
   }
 }

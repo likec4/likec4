@@ -1,5 +1,5 @@
 import { Builder } from '../../builder/Builder'
-import { computeViews } from '../../compute-view/compute-view'
+import { computeParsedModelData } from '../../compute-view/compute-view'
 import { LikeC4Model } from '../LikeC4Model'
 
 const {
@@ -153,6 +153,6 @@ export const builder = local.clone()
 export const parsed = local.build()
 export type TestFqn = typeof local.Types.Fqn
 
-export const computed = computeViews(parsed)
+export const computed = computeParsedModelData(parsed)
 
 export const model = LikeC4Model.create(computed)

@@ -1,24 +1,21 @@
 import type {
-  DeploymentFqn,
+  Any,
+  aux,
   DiagramEdge,
   DiagramNode,
-  DiagramView,
-  Fqn,
-  RelationId,
+  LayoutedView,
   ViewChange,
-  ViewId,
   WhereOperator,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 import type { CustomNodes } from './custom/customNodes'
 
 export type { CustomNodes, WhereOperator }
 
-export type DiagramNodeWithNavigate<ID = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
-  navigateTo: ID
-}
+export type DiagramNodeWithNavigate<A extends Any> = SetRequired<DiagramNode<A>, 'navigateTo'>
 
 type ElementIconRendererProps = {
   node: {
@@ -26,24 +23,25 @@ type ElementIconRendererProps = {
     title: string
     icon?: string | null | undefined
   }
+  className?: string
 }
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
-export type OnNavigateTo<ID = ViewId> = (
-  to: ID,
+export type OnNavigateTo<A extends Any> = (
+  to: aux.StrictViewId<A>,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
-  element?: DiagramNodeWithNavigate<ID>,
+  element?: SetRequired<DiagramNode<A>, 'navigateTo'>,
 ) => void
 
-export type OnNodeClick = (
-  node: DiagramNode,
+export type OnNodeClick<A extends Any> = (
+  node: DiagramNode<A>,
   event: ReactMouseEvent,
 ) => void
 
-export type OnEdgeClick = (
-  edge: DiagramEdge,
+export type OnEdgeClick<A extends Any> = (
+  edge: DiagramEdge<A>,
   event: ReactMouseEvent,
 ) => void
 
@@ -88,8 +86,8 @@ export type OverrideReactFlowProps = Pick<
 export type PaddingUnit = 'px' | '%'
 export type PaddingWithUnit = `${number}${PaddingUnit}` | number
 
-export interface LikeC4DiagramProperties {
-  view: DiagramView
+export interface LikeC4DiagramProperties<A extends aux.Any> {
+  view: LayoutedView<A>
 
   className?: string | undefined
 
@@ -238,7 +236,7 @@ export interface LikeC4DiagramProperties {
   /**
    * Dynamic filter, applies both to nodes and edges
    */
-  where?: WhereOperator | undefined
+  where?: WhereOperator<A> | undefined
 
   /**
    * Override ReactFlow props
@@ -246,35 +244,35 @@ export interface LikeC4DiagramProperties {
   reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
-export type OpenSourceParams =
+export type OpenSourceParams<A extends aux.Any = aux.Any> =
   | {
-    element: Fqn
+    element: aux.Fqn<A>
     property?: string
   }
   | {
-    relation: RelationId
+    relation: aux.RelationId
   }
   | {
-    deployment: DeploymentFqn
+    deployment: aux.DeploymentFqn<A>
     property?: string
   }
   | {
-    view: ViewId
+    view: aux.StrictViewId<A>
   }
 
-export interface LikeC4DiagramEventHandlers {
+export interface LikeC4DiagramEventHandlers<A extends aux.Any> {
   onChange?: OnChange | null | undefined
-  onNavigateTo?: OnNavigateTo | null | undefined
-  onNodeClick?: OnNodeClick | null | undefined
-  onNodeContextMenu?: OnNodeClick | null | undefined
+  onNavigateTo?: OnNavigateTo<A> | null | undefined
+  onNodeClick?: OnNodeClick<A> | null | undefined
+  onNodeContextMenu?: OnNodeClick<A> | null | undefined
   onCanvasContextMenu?: OnCanvasClick | null | undefined
-  onEdgeClick?: OnEdgeClick | null | undefined
-  onEdgeContextMenu?: OnEdgeClick | null | undefined
+  onEdgeClick?: OnEdgeClick<A> | null | undefined
+  onEdgeContextMenu?: OnEdgeClick<A> | null | undefined
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
 
   // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
 
-  onOpenSource?: null | undefined | ((params: OpenSourceParams) => void)
+  onOpenSource?: null | undefined | ((params: OpenSourceParams<A>) => void)
 }

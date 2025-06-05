@@ -1,7 +1,7 @@
 import {
   type DiagramEdge,
+  type DiagramNode,
   type EdgeId,
-  DiagramNode,
   nameFromFqn,
 } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
@@ -62,11 +62,13 @@ export const RelationshipsDropdownMenu = memo((
   }>,
 ) => {
   const { diagramEdge, sourceNode, targetNode } = useDiagramContext(
-    useCallback(ctx => ({
+    ctx => ({
       diagramEdge: findDiagramEdge(ctx, edgeId),
       sourceNode: findDiagramNode(ctx, source),
       targetNode: findDiagramNode(ctx, target),
-    }), [edgeId, source, target]),
+    }),
+    undefined,
+    [edgeId, source, target],
   )
   const likec4model = useLikeC4Model()
   const diagram = useDiagram()
@@ -273,7 +275,7 @@ function getShortId(
     // Relation defined in deployment model. Use id of the deployment node as is.
     ? diagramNode.id
     // Relation defined in model. Get id of the model element
-    : DiagramNode.modelRef(diagramNode) || ''
+    : diagramNode.modelRef || ''
 
   return nameFromFqn(diagramNodeId) + actualEndpointId.slice(diagramNodeId.length)
 }

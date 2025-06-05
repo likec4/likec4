@@ -1,9 +1,8 @@
 import { allPass, anyPass, isNot, isNullish } from 'remeda'
-import type { IsLiteral } from 'type-fest'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
-import type { AnyAux, Unknown } from './aux'
-import type * as auxloose from './aux.loose'
+import type { Any } from './aux'
+import type * as aux from './aux'
 
 export type EqualOperator<V> = {
   eq: V
@@ -22,53 +21,53 @@ type AllNever = {
   participant?: never
 }
 
-export type TagEqual<A extends AnyAux> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<auxloose.Tag<A>>
+export type TagEqual<A extends Any> = Omit<AllNever, 'tag'> & {
+  tag: EqualOperator<aux.LooseTag<A>>
 }
-export function isTagEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is TagEqual<A> {
+export function isTagEqual<A extends Any>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
-export type KindEqual<A extends AnyAux> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<auxloose.AllKinds<A>>
+export type KindEqual<A extends Any> = Omit<AllNever, 'kind'> & {
+  kind: EqualOperator<aux.LooseAllKinds<A>>
 }
-export function isKindEqual<A extends AnyAux>(operator: WhereOperator<A>): operator is KindEqual<A> {
+export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
 }
 
 export type Participant = 'source' | 'target'
-export type ParticipantOperator<A extends AnyAux> = Omit<AllNever, 'participant'> & {
+export type ParticipantOperator<A extends Any> = Omit<AllNever, 'participant'> & {
   participant: Participant
   operator: KindEqual<A> | TagEqual<A>
 }
-export function isParticipantOperator<A extends AnyAux>(
+export function isParticipantOperator<A extends Any>(
   operator: WhereOperator<A>,
 ): operator is ParticipantOperator<A> {
   return 'participant' in operator
 }
 
-export type NotOperator<A extends AnyAux> = Omit<AllNever, 'not'> & {
+export type NotOperator<A extends Any> = Omit<AllNever, 'not'> & {
   not: WhereOperator<A>
 }
-export function isNotOperator<A extends AnyAux>(operator: WhereOperator<A>): operator is NotOperator<A> {
+export function isNotOperator<A extends Any>(operator: WhereOperator<A>): operator is NotOperator<A> {
   return 'not' in operator
 }
 
-export type AndOperator<A extends AnyAux> = Omit<AllNever, 'and'> & {
+export type AndOperator<A extends Any> = Omit<AllNever, 'and'> & {
   and: NonEmptyArray<WhereOperator<A>>
 }
-export function isAndOperator<A extends AnyAux>(operator: WhereOperator<A>): operator is AndOperator<A> {
+export function isAndOperator<A extends Any>(operator: WhereOperator<A>): operator is AndOperator<A> {
   return 'and' in operator
 }
 
-export type OrOperator<A extends AnyAux> = Omit<AllNever, 'or'> & {
+export type OrOperator<A extends Any> = Omit<AllNever, 'or'> & {
   or: NonEmptyArray<WhereOperator<A>>
 }
-export function isOrOperator<A extends AnyAux>(operator: WhereOperator<A>): operator is OrOperator<A> {
+export function isOrOperator<A extends Any>(operator: WhereOperator<A>): operator is OrOperator<A> {
   return 'or' in operator
 }
 
-export type WhereOperator<A extends AnyAux = Unknown> =
+export type WhereOperator<A extends Any = Any> =
   | TagEqual<A>
   | KindEqual<A>
   | ParticipantOperator<A>
@@ -76,16 +75,16 @@ export type WhereOperator<A extends AnyAux = Unknown> =
   | AndOperator<A>
   | OrOperator<A>
 
-export type Filterable<A extends AnyAux> = {
-  tags?: auxloose.Tags<A> | null | undefined
-  kind?: auxloose.AllKinds<A> | null
+export type Filterable<A extends Any> = {
+  tags?: aux.LooseTags<A> | null | undefined
+  kind?: aux.LooseAllKinds<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }
 
-export type OperatorPredicate<A extends AnyAux> = (value: Filterable<A>) => boolean
+export type OperatorPredicate<A extends Any> = (value: Filterable<A>) => boolean
 
-export function whereOperatorAsPredicate<A extends AnyAux = Unknown>(
+export function whereOperatorAsPredicate<A extends Any>(
   operator: WhereOperator<A>,
 ): OperatorPredicate<A> {
   switch (true) {
@@ -136,7 +135,7 @@ export function whereOperatorAsPredicate<A extends AnyAux = Unknown>(
   }
 }
 
-function participantIs<A extends AnyAux>(
+function participantIs<A extends Any>(
   participant: Participant,
   predicate: OperatorPredicate<A>,
 ): OperatorPredicate<A> {

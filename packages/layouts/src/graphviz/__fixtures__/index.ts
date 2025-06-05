@@ -1,12 +1,12 @@
-import type { ComputedElementView, LikeC4View } from '@likec4/core'
 import { computeView, withReadableEdges } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
+import type { ComputedElementView, LikeC4View } from '@likec4/core/types'
 import { omit } from 'remeda'
 import { amazonView, cloud3levels, cloudView, FakeModel, indexView, issue577View } from './model'
 
-const parsed = LikeC4Model.fromDump(FakeModel)
-const computeElementView = (view: LikeC4View): ComputedElementView => {
-  const result = computeView(view as any, parsed)
+export const parsedModel = LikeC4Model.fromDump(FakeModel)
+export const computeElementView = (view: LikeC4View): ComputedElementView => {
+  const result = computeView(view as any, parsedModel)
   if (!result.isSuccess) {
     throw result.error
   }

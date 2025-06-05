@@ -50,9 +50,11 @@ export type {
 export * from './guards'
 
 export type {
+  Any,
   AnyAux,
   Aux,
+  aux,
   AuxFromDump,
+  AuxFromLikeC4ModelData,
   SpecAux,
-  Unknown,
 } from '../types'

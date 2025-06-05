@@ -1,16 +1,15 @@
 import { filter, findLast, forEach, map, pipe } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
-import { type ElementModel } from '../../model/ElementModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
   type AnyAux,
   type ComputedElementView,
-  type ElementViewRule as ViewRule,
+  type ElementViewRule,
   type ModelGlobals,
   type NodeId,
-  type ParsedElementView as ElementView,
+  type ParsedElementView,
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
@@ -130,7 +129,7 @@ function processRelationtPredicate(
 export function processPredicates<A extends AnyAux>(
   model: LikeC4Model<A>,
   memory: Memory,
-  rules: ViewRule<A>[],
+  rules: ElementViewRule<A>[],
 ): Memory {
   const ctx = {
     model,
@@ -177,15 +176,18 @@ export function processPredicates<A extends AnyAux>(
 }
 
 export function computeElementView<A extends AnyAux>(
-  likec4model: LikeC4Model<A>,
+  likec4model: LikeC4Model<any>,
   {
     docUri: _docUri, // exclude docUri
-    rules, // exclude rules
+    rules: _rules, // exclude rules
     ...view
-  }: ElementView<A>,
+  }: ParsedElementView<A>,
 ): ComputedElementView<A> {
-  rules = resolveGlobalRulesInElementView(rules, likec4model.globals as unknown as ModelGlobals<A>)
-  const scope = view.viewOf ? likec4model.element(view.viewOf) as ElementModel<any> : null
+  const rules = resolveGlobalRulesInElementView(
+    _rules,
+    likec4model.globals as unknown as ModelGlobals<A>,
+  )
+  const scope = view.viewOf ? likec4model.asComputed.element(view.viewOf) : null
   let memory = processPredicates(
     likec4model,
     Memory.empty(scope),

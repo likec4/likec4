@@ -59,10 +59,11 @@ export type MetadataKey =
   | 'key2';
 
 export type $Aux = Aux<
-  'from-builder',
+  'computed',
   ElementId,
   DeploymentId,
   ViewId,
+  'from-builder',
   SpecAux<
     ElementKind,
     DeploymentKind,

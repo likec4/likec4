@@ -1,9 +1,9 @@
 import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { type AnyTypes, Builder } from '../../builder'
+import { type AnyTypes, type Types, Builder } from '../../builder'
 import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
-import { type ParsedElementView as ElementView, isElementView } from '../../types'
+import { type ParsedView, isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
 
@@ -14,8 +14,9 @@ const builder = Builder.specification({
 })
 
 function compute<const T extends AnyTypes>(builder: Builder<T>) {
-  const likec4model = LikeC4Model.create(builder.build())
-  const view = only(values(likec4model.$data.views))
+  const parsed = builder.build()
+  const likec4model = LikeC4Model.create(parsed)
+  const view = only(values(parsed.views as Record<string, ParsedView<Types.ToAux<T>>>))
   invariant(view && isElementView(view), 'Must have one element view')
   return withReadableEdges(computeElementView(likec4model, view))
 }

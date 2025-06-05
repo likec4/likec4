@@ -2,8 +2,7 @@ import { isTruthy, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
-  type AnyAux,
-  type aux,
+  type Any,
   type Color,
   type DeployedInstance,
   type DeploymentElement,
@@ -15,12 +14,12 @@ import {
   type Link,
   type RelationshipLineType,
   type scalar,
-  type Unknown,
   DefaultElementShape,
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
 } from '../types'
+import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, memoizeProp } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
@@ -29,13 +28,13 @@ import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } f
 import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export type DeploymentElementsIterator<A extends AnyAux> = IteratorLike<DeploymentElementModel<A>>
-export type DeployedInstancesIterator<A extends AnyAux> = IteratorLike<DeployedInstanceModel<A>>
-export type DeploymentNodesIterator<A extends AnyAux> = IteratorLike<DeploymentNodeModel<A>>
+export type DeploymentElementsIterator<A extends Any> = IteratorLike<DeploymentElementModel<A>>
+export type DeployedInstancesIterator<A extends Any> = IteratorLike<DeployedInstanceModel<A>>
+export type DeploymentNodesIterator<A extends Any> = IteratorLike<DeploymentNodeModel<A>>
 
-export type DeploymentElementModel<A extends AnyAux = AnyAux> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
+export type DeploymentElementModel<A extends Any = Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
-abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
+abstract class AbstractDeploymentElementModel<A extends Any> {
   abstract readonly id: aux.DeploymentFqn<A>
   abstract readonly _literalId: aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
@@ -214,7 +213,7 @@ abstract class AbstractDeploymentElementModel<A extends AnyAux = AnyAux> {
   }
 }
 
-export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDeploymentElementModel<A> {
+export class DeploymentNodeModel<A extends Any = Any> extends AbstractDeploymentElementModel<A> {
   override id: aux.DeploymentFqn<A>
   override _literalId: aux.DeploymentId<A>
   override title: string
@@ -332,7 +331,7 @@ export class DeploymentNodeModel<A extends AnyAux = AnyAux> extends AbstractDepl
   }
 }
 
-export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractDeploymentElementModel<A> {
+export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeploymentElementModel<A> {
   override readonly id: aux.DeploymentFqn<A>
   override readonly _literalId: aux.DeploymentId<A>
   override readonly title: string
@@ -433,7 +432,7 @@ export class DeployedInstanceModel<A extends AnyAux = Unknown> extends AbstractD
   }
 }
 
-export class NestedElementOfDeployedInstanceModel<A extends AnyAux = Unknown> {
+export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
   constructor(
     public readonly instance: DeployedInstanceModel<A>,
     public readonly element: ElementModel<A>,
@@ -486,11 +485,11 @@ export class NestedElementOfDeployedInstanceModel<A extends AnyAux = Unknown> {
   }
 }
 
-export type DeploymentRelationEndpoint<A extends AnyAux = Unknown> =
+export type DeploymentRelationEndpoint<A extends Any = Any> =
   | DeploymentElementModel<A>
   | NestedElementOfDeployedInstanceModel<A>
 
-export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyRelationshipModel<A> {
+export class DeploymentRelationModel<A extends Any = Any> implements AnyRelationshipModel<A> {
   public boundary: DeploymentNodeModel<A> | null
   public source: DeploymentRelationEndpoint<A>
   public target: DeploymentRelationEndpoint<A>
@@ -584,11 +583,11 @@ export class DeploymentRelationModel<A extends AnyAux = Unknown> implements AnyR
   }
 }
 
-export class RelationshipsAccum<A extends AnyAux = Unknown> {
-  static empty<A extends AnyAux>(): RelationshipsAccum<A> {
+export class RelationshipsAccum<A extends Any = Any> {
+  static empty<A extends Any>(): RelationshipsAccum<A> {
     return new RelationshipsAccum()
   }
-  static from<A extends AnyAux>(
+  static from<A extends Any>(
     model: Iterable<RelationshipModel<A>> | undefined,
     deployment?: Iterable<DeploymentRelationModel<A>>,
   ): RelationshipsAccum<A> {

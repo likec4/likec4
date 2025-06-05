@@ -1,4 +1,3 @@
-import { compareNatural } from '@likec4/core'
 import {
   Combobox,
   ComboboxDropdown,
@@ -12,11 +11,11 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core'
-import { useDebouncedValue, useFocusWithin, useIsFirstRender, useWindowEvent } from '@mantine/hooks'
+import { useDebouncedValue, useFocusWithin, useWindowEvent } from '@mantine/hooks'
 import { usePreviousDistinct } from '@react-hookz/web'
 import { IconSearch } from '@tabler/icons-react'
 import { type ReactNode, memo } from 'react'
-import { isString, keys, only } from 'remeda'
+import { keys, only } from 'remeda'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { useSearch, useSearchActor } from '../hooks'
 import * as css from './styles.css'
@@ -30,25 +29,32 @@ const SEARCH_PREFIXES = ['#', 'kind:']
 
 export const LikeC4SearchInput = memo(() => {
   const { close, searchActorRef } = useSearchActor()
-  const isPickViewActive = false
   const likec4model = useLikeC4Model()
-  const combobox = useCombobox({
-    scrollBehavior: 'smooth',
-    loop: false,
-  })
   const { ref, focused } = useFocusWithin<HTMLInputElement>()
   const [search, setSearch] = useSearch()
   const previous = usePreviousDistinct(search)
-  const isFirstRender = useIsFirstRender()
 
-  const [isEmptyForSomeTime] = useDebouncedValue(search === '' && !isFirstRender, isString(previous) ? 500 : 2000)
+  const [isEmptyForSomeTime, cancel] = useDebouncedValue(
+    search === '' && (previous === '' || SEARCH_PREFIXES.includes(previous ?? '')),
+    2000,
+  )
+  // useF
+  // const isEmptyForSomeTime = debouncedSearch === ''
+
+  const combobox = useCombobox({
+    scrollBehavior: 'smooth',
+    loop: false,
+    onDropdownClose(eventSource) {
+      cancel()
+    },
+  })
 
   useWindowEvent(
     'keydown',
     (event) => {
       try {
         if (
-          !focused && !isPickViewActive && (
+          !focused && (
             event.key === 'Backspace' ||
             event.key.startsWith('Arrow') ||
             event.key.match(/^\p{L}$/u)
@@ -66,7 +72,7 @@ export const LikeC4SearchInput = memo(() => {
   let isExactMatch = false
 
   switch (true) {
-    case search === '' && (isEmptyForSomeTime || SEARCH_PREFIXES.includes(previous ?? '')): {
+    case search === '' && isEmptyForSomeTime: {
       options = SEARCH_PREFIXES.map((prefix) => (
         <ComboboxOption value={prefix} key={prefix}>
           <Text component="span" opacity={.5} mr={4} fz={'sm'}>Search by</Text>
@@ -77,9 +83,7 @@ export const LikeC4SearchInput = memo(() => {
     }
     case search.startsWith('#'): {
       const searchTag = search.toLocaleLowerCase().slice(1)
-      const alloptions = likec4model.tags.filter((tag) => tag.toLocaleLowerCase().includes(searchTag)).sort(
-        compareNatural,
-      )
+      const alloptions = likec4model.tags.filter((tag) => tag.toLocaleLowerCase().includes(searchTag))
       isExactMatch = only(alloptions)?.toLocaleLowerCase() === searchTag
       if (alloptions.length === 0) {
         options = [
@@ -100,7 +104,7 @@ export const LikeC4SearchInput = memo(() => {
     case search.startsWith('kind:'):
     case startingWithKind(search): {
       const term = search.length > 5 ? search.slice(5).toLocaleLowerCase() : ''
-      let alloptions = keys(likec4model.$model.specification.elements)
+      let alloptions = keys(likec4model.specification.elements)
       if (term) {
         alloptions = alloptions.filter((kind) => kind.toLocaleLowerCase().includes(term))
         isExactMatch = only(alloptions)?.toLocaleLowerCase() === term

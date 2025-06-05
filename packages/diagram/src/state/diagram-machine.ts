@@ -1,16 +1,15 @@
 import {
-  type BBox,
+  type DiagramNode,
   type DiagramView,
   type EdgeId,
-  type ElementNotation,
   type Fqn,
   type NodeId,
+  type NodeNotation as ElementNotation,
   type StepEdgeId,
   type ViewChange,
   type ViewId,
   type XYPoint,
-  DiagramNode,
-  getBBoxCenter,
+  BBox,
   getParallelStepsPrefix,
   invariant,
   isStepEdgeId,
@@ -209,7 +208,7 @@ const _diagramMachine = setup({
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
-    'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
+    'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {
@@ -264,10 +263,10 @@ const _diagramMachine = setup({
       const diagramNode = findDiagramNode(context, nodeId)
       if (!diagramNode) return
 
-      if (DiagramNode.deploymentRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', deployment: DiagramNode.deploymentRef(diagramNode)! })
-      } else if (DiagramNode.modelRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', element: DiagramNode.modelRef(diagramNode)! })
+      if (diagramNode.deploymentRef) {
+        enqueue.raise({ type: 'open.source', deployment: diagramNode.deploymentRef })
+      } else if (diagramNode.modelRef) {
+        enqueue.raise({ type: 'open.source', element: diagramNode.modelRef })
       }
     }),
 
@@ -651,7 +650,7 @@ const _diagramMachine = setup({
               node: NodeId
               clientRect: Rect
             }
-            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => DiagramNode.modelRef(n) === event.fqn)?.id
+            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.modelRef === event.fqn)?.id
             const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
             if (fromNodeId && internalNode) {
               const nodeRect = nodeToRect(internalNode)
@@ -1049,7 +1048,7 @@ const _diagramMachine = setup({
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
-                params: getBBoxCenter(event.view.bounds),
+                params: BBox.center(event.view.bounds),
               })
             }
             enqueue.assign(updateNavigationHistory)
@@ -1123,7 +1122,7 @@ const _diagramMachine = setup({
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
-                params: getBBoxCenter(event.view.bounds),
+                params: BBox.center(event.view.bounds),
               })
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
@@ -1174,7 +1173,9 @@ const _diagramMachine = setup({
   ],
 })
 
-const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
+function nodeRef(node: DiagramNode) {
+  return node.modelRef ?? node.deploymentRef
+}
 function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   const fromNodeId = context.lastOnNavigate?.fromNode
   const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)

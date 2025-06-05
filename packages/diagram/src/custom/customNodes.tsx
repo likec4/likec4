@@ -1,5 +1,5 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
-import type { AnyAux, Unknown } from '@likec4/core/types'
+import type { Any } from '@likec4/core/types'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
@@ -22,7 +22,7 @@ function customDiagramNode<
   }) as (props: P['nodeProps']) => ReactNode
 }
 
-export type CustomElementNodeProps<M extends AnyAux = Unknown> = {
+export type CustomElementNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.ElementNodeData, 'element'>
   nodeModel: NodeModel.WithElement<M>
 }
@@ -76,7 +76,7 @@ export type CustomElementNodeProps<M extends AnyAux = Unknown> = {
  */
 export const elementNode = customDiagramNode<CustomElementNodeProps>
 
-export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomDeploymentNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.DeploymentElementNodeData, 'deployment'>
   nodeModel: NodeModel.WithDeploymentElement<M>
 }
@@ -130,7 +130,7 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const deploymentNode = customDiagramNode<CustomDeploymentNodeProps>
 
-export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomCompoundElementNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.CompoundElementNodeData, 'compound-element'>
   nodeModel: NodeModel.WithElement<M>
 }
@@ -174,7 +174,7 @@ export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const compoundElementNode = customDiagramNode<CustomCompoundElementNodeProps>
 
-export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomCompoundDeploymentNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>
   nodeModel: NodeModel.WithDeploymentElement<M>
 }
@@ -212,7 +212,7 @@ export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const compoundDeploymentNode = customDiagramNode<CustomCompoundDeploymentNodeProps>
 
-export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomViewGroupNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.ViewGroupNodeData, 'view-group'>
   nodeModel: NodeModel.IsGroup<M>
 }

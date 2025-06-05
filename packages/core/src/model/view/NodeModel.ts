@@ -1,7 +1,6 @@
 import { isTruthy } from 'remeda'
 import {
-  type AnyAux,
-  type aux,
+  type Any,
   type Color,
   type ElementShape as C4ElementShape,
   type ElementStyle,
@@ -13,40 +12,41 @@ import {
   GroupElementKind,
   isGroupElementKind,
 } from '../../types'
+import type * as aux from '../../types/aux'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
 import type { $View, IncomingFilter, OutgoingFilter } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export type NodesIterator<M extends AnyAux, V extends $View<M>> = IteratorLike<NodeModel<M, V>>
+export type NodesIterator<M extends Any, V extends $View<M>> = IteratorLike<NodeModel<M, V>>
 
 export namespace NodeModel {
-  export interface WithParent<M extends AnyAux, V extends $View<M>> extends NodeModel<M, V> {
-    parent: NodeModel<M, V>
+  export interface WithParent<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+    parent: NodeModel<A, V>
   }
-  export interface WithElement<M extends AnyAux, V extends $View<M>> extends NodeModel<M, V> {
-    kind: aux.ElementKind<M>
-    element: ElementModel<M>
+  export interface WithElement<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+    kind: aux.ElementKind<A>
+    element: ElementModel<A>
   }
-  export interface WithDeploymentElement<M extends AnyAux, V extends $View<M>> extends NodeModel<M, V> {
-    kind: aux.DeploymentKind<M>
-    deployment: DeploymentElementModel<M>
+  export interface WithDeploymentElement<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+    kind: aux.DeploymentKind<A>
+    deployment: DeploymentElementModel<A>
   }
-  export interface WithDeployedInstance<M extends AnyAux, V extends $View<M>> extends NodeModel<M, V> {
+  export interface WithDeployedInstance<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
     kind: 'instance'
-    element: ElementModel<M>
-    deployment: DeployedInstanceModel<M>
+    element: ElementModel<A>
+    deployment: DeployedInstanceModel<A>
   }
 
-  export interface IsGroup<M extends AnyAux, V extends $View<M>> extends NodeModel<M, V> {
+  export interface IsGroup<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
     kind: typeof GroupElementKind
     element: null
     deployment: null
   }
 }
 
-export class NodeModel<A extends AnyAux, V extends $View<A> = $View<A>> {
+export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> {
   constructor(
     public readonly $view: LikeC4ViewModel<A, V>,
     public readonly $node: V['nodes'][number],

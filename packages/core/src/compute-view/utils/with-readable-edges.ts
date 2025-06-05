@@ -5,7 +5,10 @@ import type { AnyAux, ComputedLikeC4ModelData, ComputedView, EdgeId } from '../.
  * Convert hashed edge ids to human-readable
  * Mostly for testing purposes
  */
-export function withReadableEdges<T extends ComputedView<any>>({ edges, nodes, ...view }: T, separator = ':'): T & {
+export function withReadableEdges<V extends ComputedView<any>>(
+  { edges, nodes, ...view }: V,
+  separator = ':',
+): V & {
   nodeIds: string[]
   edgeIds: string[]
 } {

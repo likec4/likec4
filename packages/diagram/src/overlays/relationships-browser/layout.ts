@@ -459,6 +459,8 @@ export function layoutRelationshipsView(
       return {
         id: id as NodeId,
         parent: null,
+        x: position.x,
+        y: position.y,
         position: [position.x, position.y],
         title: 'empty node',
         description: null,
@@ -508,6 +510,8 @@ export function layoutRelationshipsView(
     return {
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
+      x: position.x,
+      y: position.y,
       position: [position.x, position.y],
       title: element.title,
       description: element.description,

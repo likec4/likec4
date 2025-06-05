@@ -47,7 +47,7 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Pick<
-    LikeC4DiagramProperties,
+    LikeC4DiagramProperties<any>,
     | 'background'
     | 'nodesDraggable'
     | 'nodesSelectable'

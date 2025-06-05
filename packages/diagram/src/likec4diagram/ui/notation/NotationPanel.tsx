@@ -1,4 +1,4 @@
-import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
+import { type ComputedNode, type NodeNotation as ElementNotationData } from '@likec4/core'
 import { css, cx, cx as clsx } from '@likec4/styles/css'
 import {
   ActionIcon,
@@ -122,7 +122,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
 
 const selector = (s: DiagramContext) => ({
   id: s.view.id,
-  notations: s.view.notation?.elements ?? [],
+  notations: s.view.notation?.nodes ?? [],
   isVisible: true,
   // isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
 })

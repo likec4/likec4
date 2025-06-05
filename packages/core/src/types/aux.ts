@@ -58,11 +58,11 @@ export interface Aux<
   MetadataKey: Spec['MetadataKey']
 }
 
-export type AnyOnStage<Stage extends ModelStage> = Aux<Stage, any, any, any, any, SpecAux<any, any, any, any, any>>
+// export type AnyOnStage<Stage extends ModelStage> = Aux<Stage, any, any, any, any, SpecAux<any, any, any, any, any>>
 
-export type AnyParsed = AnyOnStage<'parsed'>
-export type AnyComputed = AnyOnStage<'computed'>
-export type AnyLayouted = AnyOnStage<'layouted'>
+// export type AnyParsed = AnyOnStage<'parsed'>
+// export type AnyComputed = AnyOnStage<'computed'>
+// export type AnyLayouted = AnyOnStage<'layouted'>
 
 export type Any = Aux<any, any, any, any, any, SpecAux<any, any, any, any, any>>
 export type { Any as AnyAux }
@@ -82,13 +82,40 @@ export type Unknown = Aux<
   SpecAux<string, string, string, string, string>
 >
 
+export type UnknownParsed = Aux<
+  'parsed',
+  string,
+  string,
+  string,
+  string,
+  SpecAux<string, string, string, string, string>
+>
+
+export type UnknownComputed = Aux<
+  'computed',
+  string,
+  string,
+  string,
+  string,
+  SpecAux<string, string, string, string, string>
+>
+export type UnknownLayouted = Aux<
+  'layouted',
+  string,
+  string,
+  string,
+  string,
+  SpecAux<string, string, string, string, string>
+>
+
 /**
  * Reads stage from Aux
  */
-export type Stage<A> = A extends infer T extends Any
+export type Stage<A> =
   // dprint-ignore
-  ? IfNever<T['Stage'], never, Coalesce<T['Stage'], ModelStage>>
-  : never
+  A extends Aux<infer S, any, any, any, any, any>
+    ? IfNever<S, never, Coalesce<S, ModelStage>>
+    : never
 
 /**
  * Picks type based on stage from Aux
@@ -103,7 +130,7 @@ export type setStage<A, S extends ModelStage> =
   // dprint-ignore
   A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
       ? Aux<S, E, D, V, P, Spec>
-      : A
+      : never
 
 export type toParsed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
   ? Aux<'parsed', E, D, V, P, Spec>
@@ -217,8 +244,6 @@ export type StrictDeploymentKind<A> = A extends infer T extends Any ? scalar.Dep
   : never
 export type StrictRelationKind<A> = A extends infer T extends Any ? scalar.RelationshipKind<RelationKind<T>> : never
 
-export type * as loose from './aux.loose'
-
 export type WithTags<A extends Any> = {
   readonly tags: Tags<A>
 }
@@ -238,3 +263,29 @@ export type WithOptionalLinks = {
 export type WithMetadata<A extends Any> = {
   readonly metadata?: Metadata<A>
 }
+
+/**
+ * @see {@link LiteralUnion} from type-fest (https://github.com/sindresorhus/type-fest/blob/main/source/literal-union.d.ts)
+ */
+export type OrString = string & Record<never, never>
+
+export type LooseElementId<A extends Any> = Coalesce<A['ElementId']> | OrString
+export type LooseDeploymentId<A extends Any> = Coalesce<A['DeploymentId']> | OrString
+export type LooseViewId<A extends Any> = Coalesce<A['ViewId']> | OrString
+export type LooseTag<A extends Any> = Coalesce<A['Tag']> | OrString
+export type LooseTags<A extends Any> = readonly (Coalesce<A['Tag']> | OrString)[]
+
+export type LooseElementKind<A extends Any> = Coalesce<A['ElementKind']> | OrString
+export type LooseDeploymentKind<A extends Any> = Coalesce<A['DeploymentKind']> | OrString
+export type LooseRelationKind<A extends Any> = Coalesce<A['RelationKind']> | OrString
+
+/**
+ * All known kinds from Aux as a literal union.
+ */
+export type LooseAllKinds<A extends Any> =
+  | OrString
+  | [
+    IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
+    IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
+    IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
+  ][number]

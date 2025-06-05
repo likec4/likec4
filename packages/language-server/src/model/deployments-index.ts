@@ -1,4 +1,4 @@
-import { type Fqn, ancestorsFqn, AsFqn } from '@likec4/core'
+import { ancestorsFqn, Fqn } from '@likec4/core'
 import { MultiMap } from '@likec4/core/utils'
 import { isDefined, isTruthy } from 'remeda'
 import {
@@ -57,7 +57,7 @@ export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
         if (!isTruthy(name)) {
           return []
         }
-        thisFqn = AsFqn(name, parentFqn)
+        thisFqn = Fqn(name, parentFqn)
         const desc = createAndSaveDescription(node, name, thisFqn)
         if (!parentFqn) {
           root.push(desc)

@@ -96,8 +96,8 @@ export class Rpc extends ADisposable {
         const diagrams = await views.diagrams(projectId as ProjectId, cancelToken)
         return {
           model: {
-            ...model,
-            __: 'layouted' as const,
+            ...model.$data,
+            _stage: 'layouted' as const,
             views: indexBy(diagrams, d => d.id),
           } satisfies LayoutedLikeC4ModelData,
         }

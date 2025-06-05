@@ -1,8 +1,9 @@
+import type { aux } from '@likec4/core/types'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 
-export type StaticLikeC4DiagramProps = Pick<
-  LikeC4DiagramProperties,
+export type StaticLikeC4DiagramProps<A extends aux.Any> = Pick<
+  LikeC4DiagramProperties<A>,
   | 'view'
   | 'className'
   | 'fitView'
@@ -20,7 +21,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'where'
 >
 
-export function StaticLikeC4Diagram({
+export function StaticLikeC4Diagram<A extends aux.Any = aux.UnknownLayouted>({
   view,
   fitView = true,
   fitViewPadding = '8px',
@@ -28,7 +29,7 @@ export function StaticLikeC4Diagram({
   enableRelationshipBrowser = enableRelationshipDetails,
   background = 'transparent',
   ...rest
-}: StaticLikeC4DiagramProps) {
+}: StaticLikeC4DiagramProps<A>) {
   return (
     <LikeC4Diagram
       view={view}

@@ -62,7 +62,7 @@ describe('DeploymentViewPrinter', () => {
 
   it('print deployment view', async ({ expect }) => {
     const computedIndexView = model.view('index').$view as ComputedDeploymentView
-    const dot = new DeploymentViewPrinter(computedIndexView).print()
+    const dot = new DeploymentViewPrinter(computedIndexView, model.specification).print()
     await expect(dot).toMatchFileSnapshot('__snapshots__/DeploymentViewPrinter-index.dot')
   })
 })

@@ -22,7 +22,7 @@ type Metadata = {
 type ModelSchema = v.InferOutput<typeof ModelSchema>
 const RecordAny = v.record(v.string(), v.any())
 const ModelSchema = v.object({
-  __: v.literal('layouted'),
+  _stage: v.literal('layouted'),
   projectId: v.optional(v.string()),
   specification: v.object({
     tags: v.optional(RecordAny),
@@ -99,13 +99,12 @@ export const sharesKV = (c: HonoContext) => {
    */
   async function find(shareId: string) {
     const data = await c.env.KV.getWithMetadata<SharedPlayground, Metadata>(`share:${shareId}`, 'json')
-    if (!data.value || !data.metadata) {
+    const { value, metadata } = data ?? {}
+    if (!value || !metadata) {
       return throwShareNotFound(c, shareId)
     }
-    return {
-      value: data.value!,
-      metadata: data.metadata!,
-    }
+
+    return { value, metadata }
   }
 
   /**

@@ -1,19 +1,20 @@
 import {
+  type AnyAux,
   type ComputedDeploymentView,
   type ComputedEdge,
-  ComputedNode,
+  type ComputedNode,
   DefaultArrowType,
   nonNullable,
 } from '@likec4/core'
 import { filter, first, forEach, groupBy, hasAtLeast, isNonNullish, last, map, pipe, tap, values } from 'remeda'
-import type { EdgeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
+import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { pxToInch, pxToPoints, toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
-export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
+export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedDeploymentView<A>> {
   protected override createGraph(): RootGraphModel {
     const G = super.createGraph()
     const autoLayout = this.view.autoLayout
@@ -36,11 +37,17 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         if (graphvizNode == null) {
           return undefined
         }
-        return ComputedNode.modelRef(node) ?? undefined
+        return node.modelRef
       }),
       values(),
+      map(nodes =>
+        nodes as Array<{
+          node: ComputedNode<A>
+          graphvizNode: NodeModel
+        }>
+      ),
       filter(hasAtLeast(2)),
-      forEach(nodes => {
+      forEach((nodes) => {
         G.subgraph({
           [_.rank]: 'same',
         }, subgraph => {
@@ -125,7 +132,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         // [_.constraint]: false,
         // [_.minlen]: 0
       })
-      if (!hasCompoundEndpoint && ComputedNode.modelRef(sourceNode) !== ComputedNode.modelRef(targetNode)) {
+      if (!hasCompoundEndpoint && sourceNode.modelRef !== targetNode.modelRef) {
         e.attributes.set(_.constraint, false)
       }
       return e

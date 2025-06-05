@@ -1,12 +1,12 @@
-import type { WhereOperator } from '@likec4/core'
+import type { aux, WhereOperator } from '@likec4/core/types'
 import type { CSSProperties } from 'react'
 import type { CustomNodes, ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
 
-export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
+export interface LikeC4ViewProps<A extends aux.Any> {
   /**
    * View to display.
    */
-  viewId: ViewId
+  viewId: aux.ViewId<A>
 
   /**
    * Enable/disable panning
@@ -136,7 +136,7 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
-  where?: WhereOperator | undefined
+  where?: WhereOperator<A> | undefined
 
   /**
    * Override some react flow props

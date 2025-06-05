@@ -4,6 +4,8 @@
 //   export const projects: NonEmptyReadonlyArray<ProjectId>
 // }
 
+import 'likec4/model'
+
 // declare module 'virtual:likec4/dot-sources/*.js' {
 //   export function dotSource(viewId: string): string
 
@@ -40,21 +42,11 @@
 // }
 
 declare module 'likec4/model' {
-  import type { LikeC4Model } from '@likec4/core/model'
-  import type { Unknown } from '@likec4/core/types'
-  export function createLikeC4Model(data: any): LikeC4Model.Layouted<Unknown>
-  export type {
-    LikeC4Model,
-  } from '@likec4/core/model'
-  export type {
-    AnyAux,
-    Aux,
-    ComputedLikeC4ModelData,
-    ComputedView,
-    DiagramView,
-    LayoutedLikeC4ModelData,
-    Unknown,
-  } from '@likec4/core/types'
+  import { aux } from '@likec4/core/types'
+
+  export { LikeC4Model } from '@likec4/core/model'
+  export type * from '@likec4/core/types'
+  export type UnknownLayouted = aux.UnknownLayouted
 }
 // declare module 'virtual:likec4/model/*.js' {
 //   import type { DiagramView as CoreDiagramView, LikeC4Model } from '@likec4/core'

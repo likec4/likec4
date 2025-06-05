@@ -36,7 +36,7 @@ export function DiagramActorProvider({
         'trigger:NavigateTo': ((_, { viewId }) => {
           // Slightly defer callback for better responsiveness
           setTimeout(() => {
-            handlersRef.current.onNavigateTo?.(viewId as ViewId)
+            handlersRef.current.onNavigateTo?.(viewId)
           }, 70)
         }),
 

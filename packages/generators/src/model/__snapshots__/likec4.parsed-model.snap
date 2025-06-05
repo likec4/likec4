@@ -68,10 +68,11 @@ export type MetadataKey =
   | 'key1';
 
 export type $Aux = Aux<
-  'from-builder',
+  'parsed',
   ElementId,
   DeploymentId,
   ViewId,
+  'from-builder',
   SpecAux<
     ElementKind,
     DeploymentKind,
@@ -82,7 +83,7 @@ export type $Aux = Aux<
 >
 
 
-export const likec4model: LikeC4Model<$Aux> = LikeC4Model.fromParsed({
+export const likec4model: LikeC4Model.Layouted<$Aux> = LikeC4Model.create({
   _stage: 'parsed',
   projectId: 'from-builder',
   specification: {

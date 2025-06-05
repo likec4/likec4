@@ -1,11 +1,12 @@
+import { LikeC4Model } from '@likec4/core/model'
 import {
+  type aux,
   type ComputedLikeC4ModelData,
+  type DiagramNode,
   type DiagramView,
   type ProjectId,
   type ViewId,
-  DiagramNode,
-} from '@likec4/core'
-import { LikeC4Model } from '@likec4/core/model'
+} from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
@@ -115,8 +116,8 @@ export const $likeC4Diagrams = map<LikeC4DiagramsAtom>(
     : {},
 )
 
-const EMPTY: ComputedLikeC4ModelData = {
-  __: 'computed',
+const EMPTY: ComputedLikeC4ModelData<aux.Unknown> = {
+  _stage: 'computed',
   projectId: 'default',
   specification: {
     tags: {},
@@ -318,7 +319,7 @@ export const setLastClickedNode = (node?: DiagramNode) => {
 messenger.onRequest(GetLastClickedNode, () => {
   const node = $lastClickedNode.get()
   return {
-    element: node ? DiagramNode.modelRef(node) : null,
-    deployment: node ? DiagramNode.deploymentRef(node) : null,
+    element: node?.modelRef ?? null,
+    deployment: node?.deploymentRef ?? null,
   }
 })

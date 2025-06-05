@@ -1,5 +1,5 @@
 import { Builder } from '@likec4/core/builder'
-import { computeViews, viewsWithReadableEdges } from '@likec4/core/compute-view'
+import { computeParsedModelData, viewsWithReadableEdges } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { describe, it } from 'vitest'
 import { generateLikeC4Model } from './generate-likec4-model'
@@ -177,7 +177,7 @@ describe('generateLikeC4Model', () => {
   })
 
   it('computed-model', async ({ expect }) => {
-    const computed = viewsWithReadableEdges(computeViews(builder.build()))
+    const computed = viewsWithReadableEdges(computeParsedModelData(builder.build()))
     const m = LikeC4Model.create(computed)
     await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4.computed-model.snap')
   })

@@ -1,4 +1,4 @@
-import { type TagSpecification, isCustomTagColor } from '@likec4/core'
+import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
 import { type PropsWithChildren, createContext, useContext } from 'react'
@@ -7,13 +7,35 @@ import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
+const radixColors = [
+  'yellow',
+  'orange',
+  'amber',
+  'tomato',
+  'red',
+  'ruby',
+  'crimson',
+  'pink',
+  'pink',
+  'purple',
+  'violet',
+  'indigo',
+  'blue',
+  'teal',
+  'grass',
+  'lime',
+]
+
 const generateColorVars = (spec: TagSpecification) => {
   const color = spec.color
-  if (isCustomTagColor(spec)) {
+  if (isTagColorSpecified(spec)) {
     return `
       --colors-likec4-tag-bg: ${color};
       --colors-likec4-tag-bg-hover: color-mix(in srgb, ${color}, var(--colors-likec4-mix-color) 20%);
     `
+  }
+  if (!radixColors.includes(color)) {
+    return ''
   }
   let textcolor = '12'
   if (['mint', 'grass', 'lime', 'yellow', 'amber'].includes(color)) {

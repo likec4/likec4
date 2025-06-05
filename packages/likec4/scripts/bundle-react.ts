@@ -69,9 +69,16 @@ try {
     {
       filePath: './react/index.ts',
       libraries: {
+        importedLibraries: [
+          'react',
+          '@likec4/core/model',
+          '@likec4/core/types',
+          '@likec4/core',
+          'likec4/model',
+        ],
         inlinedLibraries: [
-          '@likec4/diagram',
-          '@likec4/diagram/bundle',
+          // '@likec4/diagram',
+          // '@likec4/diagram/bundle',
           'nanostores',
           '@nanostores/react',
           '@xyflow/react',

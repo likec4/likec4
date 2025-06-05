@@ -1,12 +1,12 @@
 import type { Connection } from '../../model/connection'
 import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Unknown } from '../../types'
+import type { AnyAux } from '../../types'
 
 type Element<A extends AnyAux> = ElementModel<A> | DeploymentElementModel<A>
 
 export interface ComputeCtx<
-  E extends Element<Unknown>,
+  E extends Element<AnyAux>,
   C extends Connection<E, any>,
   M extends ComputeMemory<any>,
   Inc extends StageInclude<any>,

@@ -174,6 +174,7 @@ export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: Comp
 
   const diagram: DiagramView = {
     ...view,
+    _stage: 'layouted',
     bounds: page,
     nodes: [],
     edges: [],
@@ -190,6 +191,8 @@ export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: Comp
 
       diagram.nodes.push({
         ...computed,
+        x,
+        y,
         position,
         width,
         height,

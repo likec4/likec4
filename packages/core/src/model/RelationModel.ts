@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { AnyAux, aux, Color, IteratorLike, Link, scalar, Unknown } from '../types'
+import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
@@ -7,6 +7,7 @@ import {
   DefaultRelationshipColor,
   FqnRef,
 } from '../types'
+import type * as aux from '../types/aux'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'

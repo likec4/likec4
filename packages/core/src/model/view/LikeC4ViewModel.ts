@@ -1,19 +1,15 @@
 import { isTruthy } from 'remeda'
 import { nonNullable } from '../../errors'
 import type {
-  AnyAux,
+  Any,
   AnyView,
-  aux,
-  auxloose,
-  ComputedView,
-  DiagramView,
-  ExtractOnStage,
   IteratorLike,
   Link,
   scalar,
   ViewWithType,
 } from '../../types'
 import { _stage, _type } from '../../types'
+import type * as aux from '../../types/aux'
 import { DefaultMap, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
@@ -26,11 +22,11 @@ import {
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
-export type ViewsIterator<A extends AnyAux, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
+export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
 
 export type InferViewType<V> = V extends AnyView<any> ? V[_type] : never
 
-export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
+export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -84,8 +80,8 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     }
   }
 
-  get _type(): InferViewType<V> {
-    return this.$view[_type] as InferViewType<V>
+  get _type(): V[_type] {
+    return this.$view[_type]
   }
 
   get id(): aux.StrictViewId<A> {
@@ -151,7 +147,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return this.#nodes.get(getId(node)) ?? null
   }
 
-  public findNodeWithElement(element: auxloose.ElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
+  public findNodeWithElement(element: aux.LooseElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
     const id = getId(element)
     return ifind(
       this.#nodes.values(),
@@ -210,11 +206,11 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return
   }
 
-  public includesElement(element: auxloose.ElementId<A> | { id: aux.Fqn<A> }): boolean {
+  public includesElement(element: aux.LooseElementId<A> | { id: aux.Fqn<A> }): boolean {
     return this.#includeElements.has(getId(element))
   }
 
-  public includesDeployment(deployment: auxloose.DeploymentId<A> | { id: aux.DeploymentFqn<A> }): boolean {
+  public includesDeployment(deployment: aux.LooseDeploymentId<A> | { id: aux.DeploymentFqn<A> }): boolean {
     return this.#includeDeployments.has(getId(deployment))
   }
 

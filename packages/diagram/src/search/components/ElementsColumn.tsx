@@ -254,6 +254,7 @@ function ElementTreeNode(
         component={m.button}
         layout
         tabIndex={-1}
+        data-value={element.id}
         className={clsx(btn.root, 'group', 'likec4-element-button')}
         {...views.length > 0 && {
           onClick: (e) => {

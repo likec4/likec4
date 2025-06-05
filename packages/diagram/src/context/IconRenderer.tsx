@@ -99,10 +99,7 @@ export function IconOrShapeRenderer({
   }
   className: string
 }) {
-  const icon = IconRenderer({
-    element,
-    className,
-  })
+  const icon = <IconRenderer element={element} className={className} />
   if (icon) {
     return icon
   }

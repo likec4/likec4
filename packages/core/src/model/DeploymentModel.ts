@@ -1,9 +1,7 @@
 import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
-  type AnyAux,
-  type aux,
-  type auxloose,
+  type Any,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
@@ -11,6 +9,7 @@ import {
   FqnRef,
   isDeploymentNode,
 } from '../types'
+import * as aux from '../types/aux'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'
@@ -26,6 +25,7 @@ import {
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import {
+  type $ViewWithType,
   type DeploymentOrFqn,
   type ElementOrFqn,
   type IncomingFilter,
@@ -35,7 +35,7 @@ import {
 } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<A extends AnyAux> {
+export class LikeC4DeploymentModel<A extends Any = Any> {
   readonly #elements = new Map<aux.DeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
   readonly #parents = new Map<aux.DeploymentFqn<A>, DeploymentNodeModel<A>>()
@@ -98,7 +98,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     const id = getId(el)
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: auxloose.DeploymentId<A>): DeploymentElementModel<A> | null {
+  public findElement(el: aux.LooseDeploymentId<A>): DeploymentElementModel<A> | null {
     return this.#elements.get(el as aux.DeploymentFqn<A>) ?? null
   }
 
@@ -107,7 +107,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     invariant(element.isDeploymentNode(), `Element ${element.id} is not a deployment node`)
     return element
   }
-  public findNode(el: auxloose.DeploymentId<A>): DeploymentNodeModel<A> | null {
+  public findNode(el: aux.LooseDeploymentId<A>): DeploymentNodeModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null
@@ -121,7 +121,7 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
     invariant(element.isInstance(), `Element ${element.id} is not a deployed instance`)
     return element
   }
-  public findInstance(el: auxloose.DeploymentId<A>): DeployedInstanceModel<A> | null {
+  public findInstance(el: aux.LooseDeploymentId<A>): DeployedInstanceModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null
@@ -209,9 +209,10 @@ export class LikeC4DeploymentModel<A extends AnyAux> {
   /**
    * Returns all deployment views in the model.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A>> {
+  public *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
     for (const view of this.$model.views()) {
       if (view.isDeploymentView()) {
+        view._type
         yield view
       }
     }

@@ -1,4 +1,13 @@
-import { type DeploymentFqn, type Fqn, type NonEmptyArray, type ViewChange, invariant, isAncestor } from '@likec4/core'
+import {
+  type DeploymentFqn,
+  type Fqn,
+  type NonEmptyArray,
+  type ViewChange,
+  _type,
+  invariant,
+  isAncestor,
+  isScopedElementView,
+} from '@likec4/core'
 import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-types'
@@ -74,7 +83,7 @@ export function changeElementStyle(services: LikeC4Services, {
     (r: AstNode): r is ast.ViewRuleStyle | ast.DeploymentViewRuleStyle =>
       ast.isViewRuleStyle(r) || ast.isDeploymentViewRuleStyle(r),
   )
-  const viewOf = view.__ === 'element' ? view.viewOf : null
+  const viewOf = view[_type] === 'element' ? view.viewOf ?? null : null
   // Find existing rules
   const existing = [] as Array<{ fqn: Fqn; rule: ast.ViewRuleStyle | ast.DeploymentViewRuleStyle }>
   const insert = [] as Array<{ fqn: Fqn }>

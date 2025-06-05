@@ -1,13 +1,12 @@
 import {
+  type Any,
+  type ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
-  type LikeC4View,
   type NodeId,
   type ViewId,
-  ComputedView,
-  isScopedElementView,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import {
   type TextProps,
@@ -122,10 +121,7 @@ export function ElementDetailsCard({
   const [viewsOf, otherViews] = pipe(
     [...elementModel.views()],
     map(v => v.$view),
-    partition(view => {
-      const v = view as LikeC4View
-      return isScopedElementView(v) && v.viewOf === fqn
-    }),
+    partition(v => v._type === 'element' && v.viewOf === fqn),
   )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? elementModel.defaultView?.$view ?? null
@@ -511,18 +507,18 @@ export function ElementDetailsCard({
   )
 }
 
-const ViewButton = ({
+const ViewButton = <A extends Any>({
   view,
   onNavigateTo,
 }: {
-  view: ComputedView | DiagramView
-  onNavigateTo: OnNavigateTo
+  view: ComputedView<A> | DiagramView<A>
+  onNavigateTo: OnNavigateTo<A>
 }) => {
   return (
     <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
-          {ComputedView.isDeployment(view)
+          {view._type === 'deployment'
             ? <IconStack2 stroke={1.8} />
             : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>

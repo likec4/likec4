@@ -211,8 +211,8 @@ ${k.red('Please specify a project folder')}
     }
     const diagrams = await this.viewsService.diagrams(projectId)
     return LikeC4Model.create({
-      ...parsed,
-      __: 'layouted' as const,
+      ...parsed.$data,
+      _stage: 'layouted' as const,
       views: indexBy(diagrams, prop('id')),
     })
   }

@@ -1,11 +1,11 @@
-import { type ProjectId, imap, toArray } from '@likec4/core'
-import { type ElementModel, type LikeC4Model, type LikeC4ViewModel } from '@likec4/core/model'
+import { type Any, type aux, type ProjectId, _type, imap, toArray } from '@likec4/core'
+import { type ElementModel, type LikeC4ViewModel } from '@likec4/core/model'
 import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
 
-export function elementResource(
+export function elementResource<A extends Any = Any>(
   languageServices: LikeC4LanguageServices,
-  el: ElementModel,
-  projectId?: ProjectId,
+  el: ElementModel<A>,
+  projectId?: aux.ProjectId<A>,
 ) {
   return {
     id: el.id,
@@ -87,14 +87,14 @@ export function elementResource(
 
 export function modelViewResource(
   languageServices: LikeC4LanguageServices,
-  view: LikeC4ViewModel,
+  view: LikeC4ViewModel<aux.Any>,
   projectId?: ProjectId,
 ) {
   return {
     id: view.id,
     title: view.title,
     projectId,
-    viewType: view.__,
+    viewType: view[_type],
     description: view.$view.description ?? '',
     tags: view.tags,
     nodes: toArray(imap(view.nodes(), node => ({

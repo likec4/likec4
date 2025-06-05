@@ -1,6 +1,5 @@
 import {
   type Fqn,
-  DiagramNode,
   GroupElementKind,
   invariant,
   nonNullable,
@@ -83,7 +82,7 @@ export function viewToNodesEdge(
       }),
     } satisfies Omit<RelationshipsBrowserTypes.Node, 'data' | 'type'>
 
-    const fqn = DiagramNode.modelRef(node)
+    const fqn = node.modelRef ?? null
     // const deploymentRef = DiagramNode.deploymentRef(node)
     // if (!fqn) {
     //   console.error('Invalid node', node)

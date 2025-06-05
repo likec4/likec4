@@ -1,4 +1,4 @@
-import { type DiagramNode, isCustomTagColor } from '@likec4/core'
+import { isTagColorSpecified } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box, HStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -19,14 +19,14 @@ export type ElementTagProps = {
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, className, ...props }, ref) => {
-    const { color } = useTagSpecification(tag)
+    const spec = useTagSpecification(tag)
     return (
       <Box
         ref={ref}
         data-likec4-tag={tag}
         className={cx(
           likec4tag({
-            autoTextColor: isCustomTagColor(color),
+            autoTextColor: isTagColorSpecified(spec),
           }),
           className,
         )}
@@ -39,7 +39,10 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   },
 )
 
-type Data = Pick<DiagramNode, 'tags' | 'width'>
+type Data = {
+  tags: readonly string[] | null | undefined
+  width: number
+}
 type ElementTagsProps = NodeProps<Data>
 
 const propsAreEqual = (prev: ElementTagsProps, next: ElementTagsProps) => {

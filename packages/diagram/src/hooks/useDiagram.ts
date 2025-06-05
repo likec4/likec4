@@ -3,15 +3,15 @@ import {
   type DiagramNode,
   type DiagramView,
   type EdgeId,
-  type ElementNotation,
   type Fqn,
   type NodeId,
+  type NodeNotation as ElementNotation,
   type ViewId,
 } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useMemo } from 'react'
+import { type DependencyList, useCallback, useMemo } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -264,7 +264,9 @@ export function useDiagramSyncLayoutState<T = unknown>(
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+  deps?: DependencyList,
 ): T {
   const actorRef = useDiagramActorRef()
-  return useXstateSelector(actorRef, useCallbackRef(s => selector(s.context)), compare)
+  const select = useCallback((s: DiagramActorSnapshot) => selector(s.context), deps ?? [])
+  return useXstateSelector(actorRef, select, compare)
 }

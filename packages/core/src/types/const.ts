@@ -13,7 +13,7 @@ export type ExtractOnStage<T, S extends ModelStage> = Extract<T, { [_stage]: S }
 export function isOnStage<T extends { [_stage]: ModelStage }, S extends ModelStage>(
   value: T,
   stage: S,
-): value is T & { [_stage]: S } {
+): value is ExtractOnStage<T, S> {
   return value[_stage] === stage
 }
 

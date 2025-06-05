@@ -1,4 +1,3 @@
-import type { Simplify } from 'type-fest'
 import type { ExclusiveUnion } from './_common'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'

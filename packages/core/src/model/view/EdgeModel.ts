@@ -1,5 +1,5 @@
 import {
-  type AnyAux,
+  type Any,
   type aux,
   type Color,
   type IteratorLike,
@@ -15,9 +15,9 @@ import type { $View } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<A extends AnyAux, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
+export type EdgesIterator<A extends Any, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
 
-export class EdgeModel<A extends AnyAux, View extends $View<A> = $View<A>> {
+export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
   constructor(
     public readonly view: LikeC4ViewModel<A, View>,
     public readonly $edge: View['edges'][number],
@@ -101,11 +101,11 @@ export class EdgeModel<A extends AnyAux, View extends $View<A> = $View<A>> {
 }
 
 namespace EdgeModel {
-  export interface StepEdge<A extends AnyAux, V extends $View<A>> extends EdgeModel<A, V> {
+  export interface StepEdge<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<A extends AnyAux, V extends $View<A>> extends EdgeModel<A, V> {
+  export interface WithParent<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
     parent: NodeModel<A, V>
   }
 }

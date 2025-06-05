@@ -7,7 +7,7 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import * as css from './view.css'
 
 export const Route = createFileRoute('/_single')({
-  loader: async ({ params }) => {
+  loader: async () => {
     return await import('likec4:single-project')
   },
   component: RouteComponent,

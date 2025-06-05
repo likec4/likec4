@@ -30,14 +30,14 @@ function elementIdToUnion(elements: Record<string, { id: string }>) {
 
 export function generateAux(model: AnyLikeC4Model) {
   const lines = [
-    `export type ElementId = ${elementIdToUnion(model.$model.elements)}`,
-    `export type DeploymentId = ${elementIdToUnion(model.$model.deployments.elements)}`,
-    `export type ViewId = ${toUnion(keys(model.$model.views))}`,
-    `export type ElementKind = ${toUnion(keys(model.$model.specification.elements))}`,
-    `export type RelationshipKind = ${toUnion(keys(model.$model.specification.relationships ?? {}))}`,
-    `export type DeploymentKind = ${toUnion(keys(model.$model.specification.deployments ?? {}))}`,
-    `export type Tag = ${toUnion(keys(model.$model.specification.tags ?? {}))}`,
-    `export type MetadataKey = ${toUnion(model.$model.specification.metadataKeys ?? [])}`,
+    `export type ElementId = ${elementIdToUnion(model.$data.elements)}`,
+    `export type DeploymentId = ${elementIdToUnion(model.$data.deployments.elements)}`,
+    `export type ViewId = ${toUnion(keys(model.$data.views))}`,
+    `export type ElementKind = ${toUnion(keys(model.$data.specification.elements))}`,
+    `export type RelationshipKind = ${toUnion(keys(model.$data.specification.relationships ?? {}))}`,
+    `export type DeploymentKind = ${toUnion(keys(model.$data.specification.deployments ?? {}))}`,
+    `export type Tag = ${toUnion(keys(model.$data.specification.tags ?? {}))}`,
+    `export type MetadataKey = ${toUnion(model.$data.specification.metadataKeys ?? [])}`,
   ]
 
   return `
@@ -46,10 +46,11 @@ import type { Aux, SpecAux } from '@likec4/core/types';
 ${lines.join('\n\n')}
 
 export type $Aux = Aux<
-  '${model.projectId}',
+  '${model.stage}',
   ElementId,
   DeploymentId,
   ViewId,
+  '${model.projectId}',
   SpecAux<
     ElementKind,
     DeploymentKind,

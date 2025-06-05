@@ -1,9 +1,6 @@
 import type { Tagged } from 'type-fest'
 import type {
-  _type,
   AnyAux,
-  aux,
-  Coalesce,
   ComputedLikeC4ModelData,
   ComputedView,
   DiagramView,
@@ -11,7 +8,9 @@ import type {
   ParsedLikeC4ModelData,
   scalar,
   ViewType,
+  ViewWithType,
 } from '../types'
+import type * as aux from '../types/aux'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
@@ -49,22 +48,25 @@ export type $View<A> = A extends infer T extends AnyAux ? {
   }[T['Stage']] :
   never
 
-export type $ViewWithType<A extends AnyAux, T extends ViewType> =
-  & {
-    parsed: never
-    computed: ComputedView<A>
-    layouted: DiagramView<A>
-  }[A['Stage']]
-  & { [_type]: T }
+export type $ViewWithType<A extends AnyAux, V extends ViewType> = A extends infer T extends AnyAux ? ViewWithType<
+    {
+      parsed: never
+      computed: ComputedView<T>
+      layouted: DiagramView<T>
+    }[T['Stage']],
+    V
+  > :
+  never
 
 export type $ViewModel<A extends AnyAux> = {
   parsed: never
   computed: LikeC4ViewModel<A>
   layouted: LikeC4ViewModel<A>
-}[A['Stage']]
+}[aux.Stage<A>]
 
+// export type $ModelData<A> = A extends infer T extends Any ? {
 export type $ModelData<A extends AnyAux> = {
   parsed: ParsedLikeC4ModelData<A>
   computed: ComputedLikeC4ModelData<A>
   layouted: LayoutedLikeC4ModelData<A>
-}[Coalesce<A['Stage'], 'parsed' | 'computed' | 'layouted'>]
+}[aux.Stage<A>]

@@ -2,23 +2,27 @@ import { type DiagramNode } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { Box, Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
+import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
-import type { NodeProps } from '../../types'
+import type { NodeProps, NonOptional } from '../../types'
 import { nodeSizes } from './ElementNodeContainer'
 import * as styles from './ElementTitle.css'
 
-type Data =
-  & Pick<
-    DiagramNode,
-    | 'title'
-    | 'technology'
-    | 'description'
-    | 'color'
-    | 'style'
+type Data = Simplify<
+  & NonOptional<
+    Pick<
+      DiagramNode,
+      | 'title'
+      | 'technology'
+      | 'description'
+      | 'color'
+      | 'style'
+    >
   >
   & {
     icon?: string | null
   }
+>
 
 type ElementTitleProps = NodeProps<Data> & {
   iconSize?: number

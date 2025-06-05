@@ -7,7 +7,8 @@ import which from 'which'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
 
-const limit = pLimit(Math.max(1, os.cpus().length))
+const concurrency = Math.max(1, os.cpus().length)
+const limit = pLimit(concurrency)
 
 export class GraphvizBinaryAdapter implements GraphvizPort {
   private dotpath: string
@@ -19,6 +20,10 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   ) {
     this.dotpath = path || which.sync('dot')
     this.unflattenpath = which.sync('unflatten')
+  }
+
+  get concurrency() {
+    return concurrency
   }
 
   async unflatten(dot: DotSource): Promise<DotSource> {

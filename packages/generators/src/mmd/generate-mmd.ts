@@ -1,16 +1,19 @@
-import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
-import { CompositeGeneratorNode, expandToNode, joinToNode, NL, NLEmpty, toString } from 'langium/generate'
+import type { NodeId, ProcessedView as AnyView } from '@likec4/core/types'
+import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
 const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
 
-const nodeName = (node: ComputedNode): string => {
+type Node = AnyView['nodes'][number]
+type Edge = AnyView['edges'][number]
+
+const nodeName = (node: Node): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
 }
 
-const mmdshape = ({ shape }: ComputedNode): [start: string, end: string] => {
+const mmdshape = ({ shape }: Node): [start: string, end: string] => {
   switch (shape) {
     case 'queue':
     case 'cylinder':
@@ -28,11 +31,11 @@ const mmdshape = ({ shape }: ComputedNode): [start: string, end: string] => {
   }
 }
 
-export function generateMermaid<V extends ComputedView>(view: V) {
+export function generateMermaid(view: AnyView) {
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 
-  const printNode = (node: ComputedNode, parentName?: string): CompositeGeneratorNode => {
+  const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
     const name = nodeName(node)
     const fqnName = (parentName ? parentName + '.' : '') + name
     names.set(node.id, fqnName)
@@ -50,11 +53,11 @@ export function generateMermaid<V extends ComputedView>(view: V) {
               nodes.filter(n => n.parent === node.id),
               n => printNode(n, fqnName),
               {
-                appendNewLineIfNotEmpty: true
-              }
-            )
+                appendNewLineIfNotEmpty: true,
+              },
+            ),
           ],
-          indentation: 2
+          indentation: 2,
         })
         .append('end', NL)
     } else {
@@ -63,13 +66,13 @@ export function generateMermaid<V extends ComputedView>(view: V) {
     return baseNode
   }
   //     return `${names.get(edge.source)} -> ${names.get(edge.target)}${edge.label ? ': ' + edge.label : ''}`
-  const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
+  const printEdge = (edge: Edge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode().append(
       names.get(edge.source),
       ' -.',
       edge.label ? ' "' + edge.label.replaceAll('\n', '\\n') + '" .-' : '-',
       '> ',
-      names.get(edge.target)
+      names.get(edge.target),
     )
   }
 
@@ -82,7 +85,7 @@ export function generateMermaid<V extends ComputedView>(view: V) {
         `title: ${JSON.stringify(view.title)}`,
         NL,
         '---',
-        NL
+        NL,
       )
       .append('graph ', view.autoLayout.direction, NL)
       .indent({
@@ -93,18 +96,18 @@ export function generateMermaid<V extends ComputedView>(view: V) {
                 nodes.filter(n => isNil(n.parent)),
                 n => printNode(n),
                 {
-                  appendNewLineIfNotEmpty: true
-                }
-              )
+                  appendNewLineIfNotEmpty: true,
+                },
+              ),
             )
             .appendIf(
               edges.length > 0,
               joinToNode(edges, e => printEdge(e), {
-                appendNewLineIfNotEmpty: true
-              })
+                appendNewLineIfNotEmpty: true,
+              }),
             )
         },
-        indentation: 2
-      })
+        indentation: 2,
+      }),
   )
 }

@@ -1,15 +1,15 @@
 import type {
   Element,
   ElementKind,
-  ElementView,
   Fqn,
   IconUrl,
   ModelRelation,
   NonEmptyArray,
-  ParsedScopedElementView,
+  ParsedElementView,
+  ParsedElementView as ElementView,
   RelationId,
   ViewId,
-} from '@likec4/core'
+} from '@likec4/core/types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -221,13 +221,13 @@ const fakeRelations = {
 } satisfies Record<string, ModelRelation>
 
 export const indexView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'index' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -240,13 +240,13 @@ export const indexView = {
 } satisfies ElementView
 
 export const cloudView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'cloudView' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   viewOf: 'cloud' as Fqn,
   rules: [
     {
@@ -256,14 +256,14 @@ export const cloudView = {
 } satisfies ElementView
 
 export const cloud3levels = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'cloud3levels' as ViewId,
   title: '',
   viewOf: 'cloud' as Fqn,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -291,14 +291,14 @@ export const cloud3levels = {
 } satisfies ElementView
 
 export const amazonView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'amazon' as ViewId,
   title: '',
   viewOf: 'amazon' as Fqn,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -318,13 +318,13 @@ export const amazonView = {
 
 // see https://github.com/likec4/likec4/issues/577
 export const issue577View = (icon: string) => ({
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'issue577' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   viewOf: 'amazon' as Fqn,
   rules: [
     {
@@ -343,10 +343,10 @@ export const issue577View = (icon: string) => ({
       },
     },
   ],
-} satisfies ParsedScopedElementView)
+} satisfies ParsedElementView)
 
 export const FakeModel = {
-  __: 'computed',
+  _type: 'computed',
   projectId: 'test',
   elements: fakeElements,
   relations: fakeRelations,

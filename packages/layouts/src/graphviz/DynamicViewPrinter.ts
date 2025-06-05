@@ -1,18 +1,13 @@
-import type { ComputedDynamicView, ComputedEdge } from '@likec4/core'
-import { DefaultArrowType, DefaultRelationshipColor, extractStep, isome } from '@likec4/core'
+import type { AnyAux, ComputedDynamicView, ComputedEdge } from '@likec4/core'
+import { DefaultArrowType, DefaultRelationshipColor, extractStep } from '@likec4/core'
 import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
-import type { DotSource } from './types'
 import { toArrowType } from './utils'
 
-export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
-  static toDot(view: ComputedDynamicView): DotSource {
-    return new DynamicViewPrinter(view).print()
-  }
-
+export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedDynamicView<A>> {
   protected override postBuild(G: RootGraphModel): void {
     G.delete(_.TBbalance)
   }

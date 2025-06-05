@@ -1,7 +1,8 @@
-import { invariant, nonexhaustive } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generateViewsDataTs } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
+import { values } from 'remeda'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 import { LikeC4 } from '../../LikeC4'
@@ -58,11 +59,15 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.viewsService.computedViews()
+  const model = languageServices.computedModel()
+  const views = values(model.$data.views)
   let succeeded = 0
   for (const view of views) {
     try {
-      const dot = await languageServices.viewsService.layouter.dot(view)
+      const dot = await languageServices.viewsService.layouter.dot({
+        view,
+        specification: model.specification,
+      })
       const relativePath = view.relativePath ?? ''
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })

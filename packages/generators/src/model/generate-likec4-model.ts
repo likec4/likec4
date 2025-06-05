@@ -1,29 +1,30 @@
-import type { AnyLikeC4Model } from '@likec4/core/model'
+import { nonexhaustive } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
 import { generateAux } from './generate-aux'
 
-export function generateLikeC4Model(model: AnyLikeC4Model) {
+export function generateLikeC4Model(model: LikeC4Model<any>) {
   const out = new CompositeGeneratorNode()
 
   const aux = generateAux(model)
 
-  let method = 'create', refined = ''
-  switch (true) {
-    case model.isFromParsed: {
-      method = 'fromParsed'
-      break
-    }
-    case model.isLayouted(): {
+  let refined = ''
+  switch (model.stage) {
+    case 'parsed': {
       refined = '.Layouted'
       break
     }
-    case model.isComputed(): {
+    case 'computed': {
       refined = '.Computed'
       break
     }
+    case 'layouted': {
+      refined = '.Layouted'
+      break
+    }
     default:
-      throw new Error('Invalid model type, expected parsed, computed or layouted')
+      nonexhaustive(model.stage)
   }
 
   out.appendTemplate`
@@ -38,7 +39,7 @@ export function generateLikeC4Model(model: AnyLikeC4Model) {
     import { LikeC4Model } from '@likec4/core/model'
     ${aux}
 
-    export const likec4model: LikeC4Model${refined}<$Aux> = LikeC4Model.${method}(${
+    export const likec4model: LikeC4Model<$Aux> = LikeC4Model.create(${
     JSON5.stringify(model.$data, { space: 2, quote: '\'' })
   } as any)
 

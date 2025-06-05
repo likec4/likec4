@@ -1,7 +1,6 @@
 import { describe, expectTypeOf, it } from 'vitest'
+import type * as aux from './aux'
 import type { Aux, SpecAux } from './aux'
-import * as aux from './aux'
-import * as auxloose from './aux.loose'
 import type { ModelStage } from './const'
 import * as scalar from './scalar'
 
@@ -79,7 +78,7 @@ describe('Aux', () => {
       k2?: string
     }>()
 
-    expectTypeOf<auxloose.AllKinds<A>>().toEqualTypeOf<
+    expectTypeOf<aux.LooseAllKinds<A>>().toEqualTypeOf<
       | 'system'
       | 'container'
       | 'pod'

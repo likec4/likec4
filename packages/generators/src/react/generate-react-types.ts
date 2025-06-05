@@ -27,8 +27,8 @@ ${aux}
 
 declare function isLikeC4ViewId(value: unknown): value is ViewId;
 
-declare const likec4model: LikeC4Model.Layouted<$Aux>;
-declare function useLikeC4Model(): LikeC4Model.Layouted<$Aux>;
+declare const likec4model: LikeC4Model<$Aux>;
+declare function useLikeC4Model(): LikeC4Model<$Aux>;
 declare function useLikeC4View(viewId: ViewId): DiagramView<$Aux>;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
@@ -42,10 +42,10 @@ type IconRendererProps = {
 }
 declare function RenderIcon(props: IconRendererProps): JSX.Element;
 
-type LikeC4ViewProps = GenericLikeC4ViewProps<ViewId, Tag, ElementKind>;
+type LikeC4ViewProps = GenericLikeC4ViewProps<$Aux>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
-type ReactLikeC4Props = GenericReactLikeC4Props<ViewId, Tag, ElementKind>
+type ReactLikeC4Props = GenericReactLikeC4Props<$Aux>
 declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
 
 export {

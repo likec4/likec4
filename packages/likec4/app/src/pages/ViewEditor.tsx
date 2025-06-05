@@ -1,4 +1,4 @@
-import type { ViewId } from '@likec4/core'
+import type { ViewId } from '@likec4/core/types'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
@@ -27,7 +27,7 @@ export function ViewEditor() {
     return <NotFound />
   }
 
-  const notations = view.notation?.elements ?? []
+  const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
 
   return (

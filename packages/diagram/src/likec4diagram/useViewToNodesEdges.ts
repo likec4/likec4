@@ -1,25 +1,26 @@
 import {
   type DiagramEdge,
+  type DiagramNode,
   type DiagramView,
   type EdgeId,
   type Fqn,
   type NodeId,
   type WhereOperator,
-  DiagramNode,
   GroupElementKind,
   invariant,
   nonNullable,
   Queue,
   whereOperatorAsPredicate,
 } from '@likec4/core'
-import { useDeepCompareMemo } from '@react-hookz/web'
+import { useCustomCompareMemo } from '@react-hookz/web'
+import { shallowEqual } from 'fast-equals'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../base/const'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 function viewToNodesEdge(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
   where: WhereOperator | undefined
   nodesSelectable: boolean
 }): {
@@ -30,7 +31,7 @@ function viewToNodesEdge(opts: {
     view,
     nodesSelectable: selectable,
   } = opts
-  const isDynamicView = view.__ === 'dynamic',
+  const isDynamicView = view._type === 'dynamic',
     xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
     nodeLookup = new Map<Fqn, DiagramNode>()
@@ -154,8 +155,8 @@ function viewToNodesEdge(opts: {
       continue
     }
 
-    const modelFqn = DiagramNode.modelRef(node)
-    const deploymentFqn = DiagramNode.deploymentRef(node)
+    const modelFqn = node.modelRef ?? null
+    const deploymentFqn = node.deploymentRef ?? null
     if (!modelFqn && !deploymentFqn) {
       console.error('Invalid node', node)
       throw new Error('Element should have either modelRef or deploymentRef')
@@ -277,7 +278,7 @@ export function useViewToNodesEdges({
     id,
     nodes,
     edges,
-    __ = 'element',
+    _type = 'element',
   },
   ...opts
 }: {
@@ -285,15 +286,18 @@ export function useViewToNodesEdges({
   where: WhereOperator | undefined
   nodesSelectable: boolean
 }) {
-  return useDeepCompareMemo(() => {
-    return viewToNodesEdge({
-      view: {
-        id,
-        nodes,
-        edges,
-        __,
-      },
-      ...opts,
-    })
-  }, [id, __, nodes, edges, opts])
+  return useCustomCompareMemo(
+    () =>
+      viewToNodesEdge({
+        view: {
+          id,
+          nodes,
+          edges,
+          _type,
+        },
+        ...opts,
+      }),
+    [id, _type, nodes, edges, opts],
+    shallowEqual,
+  )
 }

@@ -2,10 +2,8 @@ import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import type {
   Any,
-  AnyAux,
-  aux,
+  Aux,
   AuxFromDump,
-  auxloose,
   ComputedLikeC4ModelData,
   Element,
   IteratorLike,
@@ -16,9 +14,9 @@ import type {
   Relationship,
   scalar,
   Specification,
-  Unknown,
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage } from '../types'
+import type * as aux from '../types/aux'
 import { compareNatural, ifilter, memoizeProp } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
@@ -43,7 +41,7 @@ import {
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends Any = Any> {
+export class LikeC4Model<A extends Any = aux.Unknown> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -77,8 +75,8 @@ export class LikeC4Model<A extends Any = Any> {
     () => new Set(),
   )
 
-  static fromParsed<T extends AnyAux>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T> {
-    return new LikeC4Model<T>(model).asParsed
+  static fromParsed<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T> {
+    return new LikeC4Model<T>(model as any).asParsed
   }
 
   /**
@@ -91,10 +89,10 @@ export class LikeC4Model<A extends Any = Any> {
    * @returns A new LikeC4Model instance with the type derived from the input model
    */
 
-  static create<T extends AnyAux>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
-  static create<T extends AnyAux>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
-  static create<T extends AnyAux>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
-  static create<T extends AnyAux>(model: $ModelData<T>): LikeC4Model<T> {
+  static create<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
+  static create<T extends Any>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
+  static create<T extends Any>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
+  static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T> {
     return new LikeC4Model(model)
   }
 
@@ -143,7 +141,7 @@ export class LikeC4Model<A extends Any = Any> {
 
   constructor($data: $ModelData<A>) {
     this.$data = $data
-    for (const element of values($data.elements as Record<string, Element<A>>)) {
+    for (const [, element] of entries($data.elements)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this._allTags.get(tag).add(el)
@@ -166,19 +164,17 @@ export class LikeC4Model<A extends Any = Any> {
 
     this.deployment = new LikeC4DeploymentModel<A>(this, $data.deployments)
 
-    if (isOnStage($data, 'parsed')) {
-      // Skip views
-      return
-    }
-    const views = pipe(
-      values($data.views as Record<string, $View<A>>),
-      sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
-    )
-    for (const view of views) {
-      const vm = new LikeC4ViewModel<A>(this, view)
-      this._views.set(view.id, vm)
-      for (const tag of vm.tags) {
-        this._allTags.get(tag).add(vm)
+    if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
+      const views = pipe(
+        values($data.views as Record<string, $View<A>>),
+        sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
+      )
+      for (const view of views) {
+        const vm = new LikeC4ViewModel(this, view)
+        this._views.set(view.id, vm)
+        for (const tag of vm.tags) {
+          this._allTags.get(tag).add(vm)
+        }
       }
     }
   }
@@ -233,7 +229,7 @@ export class LikeC4Model<A extends Any = Any> {
   }
 
   get stage(): aux.Stage<A> {
-    return this.$data[_stage]
+    return this.$data[_stage] as aux.Stage<A>
   }
 
   get projectId(): aux.ProjectId<A> {
@@ -273,7 +269,7 @@ export class LikeC4Model<A extends Any = Any> {
     const id = getId(el)
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: auxloose.ElementId<A>): ElementModel<A> | null {
+  public findElement(el: aux.LooseElementId<A>): ElementModel<A> | null {
     return this._elements.get(getId(el)) ?? null
   }
 
@@ -359,7 +355,7 @@ export class LikeC4Model<A extends Any = Any> {
     const id = getId(viewId)
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
-  public findView(viewId: auxloose.ViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
+  public findView(viewId: aux.LooseViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
   }
 
@@ -597,10 +593,10 @@ export class LikeC4Model<A extends Any = Any> {
 /**
  *  When you do not need types in the model
  */
-export type AnyLikeC4Model = LikeC4Model<Any>
+export type AnyLikeC4Model = LikeC4Model<any>
 
 export namespace LikeC4Model {
-  export const EMPTY = LikeC4Model.create<Unknown>({
+  export const EMPTY = LikeC4Model.create<aux.UnknownComputed>({
     _stage: 'computed',
     projectId: 'default' as never,
     specification: {
@@ -624,19 +620,38 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Parsed<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'parsed'>> : never
-  export type Computed<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'computed'>>
+  export type Parsed<A = aux.Unknown> =
+    // dprint-ignore
+    aux.Unknown extends A
+      ? LikeC4Model<aux.UnknownParsed>
+      : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+        ? LikeC4Model<Aux<'parsed', E, D, V, P, Spec>>
+        : never
+
+  export type Computed<A = aux.Unknown> =
+    // dprint-ignore
+    aux.Unknown extends A
+    ? LikeC4Model<aux.UnknownComputed>
+    : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+      ? LikeC4Model<Aux<'computed', E, D, V, P, Spec>>
+      : never
+
+  export type Layouted<A = aux.Unknown> =
+    // dprint-ignore
+    aux.Unknown extends A
+      ? LikeC4Model<aux.UnknownLayouted>
+      : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+        ? LikeC4Model<Aux<'layouted', E, D, V, P, Spec>>
+        : never
+
+  export type Node<A = aux.Unknown> = A extends aux.AnyAux ? NodeModel<A> : never
+  export type Element<A = aux.Unknown> = A extends aux.AnyAux ? ElementModel<A> : never
+  export type Relationship<A = aux.Unknown> = A extends aux.AnyAux ? RelationshipModel<A> : never
+  export type View<A = aux.Unknown> = A extends aux.AnyAux ? $ViewModel<A> : never
+
+  export type DeploymentNode<A = aux.Unknown> = A extends aux.AnyAux ? DeploymentNodeModel<A> : never
+  export type DeployedInstance<A = aux.Unknown> = A extends aux.AnyAux ? DeployedInstanceModel<A> : never
+
+  export type AnyRelation<M = aux.Unknown> = M extends aux.AnyAux ? RelationshipModel<M> | DeploymentRelationModel<M>
     : never
-  export type Layouted<A = Unknown> = A extends infer T extends AnyAux ? LikeC4Model<aux.setStage<T, 'layouted'>>
-    : never
-
-  export type Node<A = Unknown> = A extends AnyAux ? NodeModel<A> : never
-  export type Element<A = Unknown> = A extends AnyAux ? ElementModel<A> : never
-  export type Relationship<A = Unknown> = A extends AnyAux ? RelationshipModel<A> : never
-  export type View<A = Unknown> = A extends AnyAux ? $ViewModel<A> : never
-
-  export type DeploymentNode<A = Unknown> = A extends AnyAux ? DeploymentNodeModel<A> : never
-  export type DeployedInstance<A = Unknown> = A extends AnyAux ? DeployedInstanceModel<A> : never
-
-  export type AnyRelation<M = Unknown> = M extends AnyAux ? RelationshipModel<M> | DeploymentRelationModel<M> : never
 }

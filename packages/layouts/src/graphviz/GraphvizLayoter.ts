@@ -1,6 +1,8 @@
 import {
+  type AnyAux,
+  type ComputedView,
   type DiagramView,
-  ComputedView,
+  type Specification,
   isDeploymentView,
   isDynamicView,
   isElementView,
@@ -16,23 +18,29 @@ import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
 
 export interface GraphvizPort {
+  get concurrency(): number
   unflatten(dot: DotSource): Promise<DotSource>
   acyclic(dot: DotSource): Promise<DotSource>
   layoutJson(dot: DotSource): Promise<string>
   svg(dot: DotSource): Promise<string>
 }
 
-const getPrinter = (computedView: ComputedView) => {
+const getPrinter = <A extends AnyAux>({ view, specification }: Params<A>) => {
   switch (true) {
-    case isDynamicView(computedView):
-      return new DynamicViewPrinter(computedView)
-    case isDeploymentView(computedView):
-      return new DeploymentViewPrinter(computedView)
-    case isElementView(computedView):
-      return new ElementViewPrinter(computedView)
+    case isDynamicView(view):
+      return new DynamicViewPrinter(view, specification)
+    case isDeploymentView(view):
+      return new DeploymentViewPrinter(view, specification)
+    case isElementView(view):
+      return new ElementViewPrinter(view, specification)
     default:
-      nonexhaustive(computedView)
+      nonexhaustive(view)
   }
+}
+
+export type Params<A extends AnyAux = AnyAux> = {
+  view: ComputedView<A>
+  specification: Specification<A>
 }
 
 export type LayoutResult = {
@@ -70,9 +78,10 @@ export class GraphvizLayouter {
     }
   }
 
-  async layout(view: ComputedView): Promise<LayoutResult> {
+  async layout<A extends AnyAux>(params: Params<A>): Promise<LayoutResult> {
     try {
-      let dot = await this.dot(view)
+      let dot = await this.dot(params)
+      const { view } = params
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
 
@@ -84,7 +93,7 @@ export class GraphvizLayouter {
           // apply manual layout if only new diagram has some nodes
           // from the previous layout
           if (result.relayout.nodes.length > 0) {
-            const printer = getPrinter(view)
+            const printer = getPrinter(params)
             // TODO: apply manual layout fails when there are edges with compounds
             if (printer.hasEdgesWithCompounds) {
               // edges with coumpoudns are using _.ltail, _.lhead
@@ -106,12 +115,12 @@ export class GraphvizLayouter {
         .join('\n') as DotSource
       return { dot, diagram }
     } catch (e) {
-      throw new Error(`Error during layout: ${view.id}`, { cause: e })
+      throw new Error(`Error during layout: ${params.view.id}`, { cause: e })
     }
   }
 
-  async svg(view: ComputedView) {
-    let dot = await this.dot(view)
+  async svg<A extends AnyAux>(params: Params<A>) {
+    let dot = await this.dot(params)
     dot = dot
       .split('\n')
       .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
@@ -123,16 +132,16 @@ export class GraphvizLayouter {
     }
   }
 
-  async dot(computedView: ComputedView): Promise<DotSource> {
-    const printer = getPrinter(computedView)
+  async dot<A extends AnyAux>(params: Params<A>): Promise<DotSource> {
+    const printer = getPrinter(params)
     let dot = printer.print()
-    if (!isElementView(computedView)) {
+    if (!isElementView(params.view)) {
       return dot
     }
     try {
       return await this.graphviz.unflatten(dot)
     } catch (error) {
-      logger.warn(`Error during unflatten: ${computedView.id}`, { error })
+      logger.warn(`Error during unflatten: ${params.view.id}`, { error })
       return dot
     }
   }
