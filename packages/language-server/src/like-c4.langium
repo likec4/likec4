@@ -91,7 +91,7 @@ Imported:
 // Model -------------------------------------
 
 Tags:
-  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
+  (Hash values+=[Tag:Id])+ ({infer Tags.prev=current} ',' (Hash values+=[Tag:Id])*)* ';'?
 ;
 
 Model:
@@ -184,7 +184,7 @@ StrictFqnRef:
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   (
-    kind=[RelationshipKind:DotId] |
+    Dot kind=[RelationshipKind:Id] |
     '-[' kind=[RelationshipKind] ']->' |
     '->'
   )
@@ -342,7 +342,7 @@ DynamicViewParallelSteps:
 
 DynamicViewStep:
   source=ElementRef
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
+  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | Dot kind=[RelationshipKind:Id] )
   target=ElementRef
   title=String?
   custom=CustomRelationProperties?
@@ -448,8 +448,8 @@ RelationExprOrWhere:
 FqnExpr:
   {infer WildcardExpression} isWildcard?='*' |
   // These are not valid in FqnExpr, but we keep for backward compatibility
-  {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
-  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]? |
+  {infer ElementTagExpression} 'element.tag' IsEqual Hash tag=[Tag:Id] |
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind] |
   FqnRefExpr
 ;
 
@@ -475,7 +475,7 @@ DirectedRelationExpr infers RelationExpr:
 
 OutgoingRelationExpr:
   from=FqnExpr
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | Dot kind=[RelationshipKind:Id])
 ;
 
 FqnExpressions:
@@ -502,8 +502,8 @@ WhereElementNegation:
   'not' value=WhereElementExpression;
 
 WhereElement:
-  {infer WhereElementTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]?
+  {infer WhereElementTag} 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]
 ;
 
 WhereRelationExpression:
@@ -527,10 +527,10 @@ WhereRelationNegation:
   'not' value=WhereRelationExpression;
 
 WhereRelation:
-  {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]? |
-  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]?
+  {infer WhereRelationTag} 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
@@ -606,7 +606,7 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | Dot kind=[RelationshipKind:Id])
   target=FqnRef
   (
     title=String
@@ -802,12 +802,6 @@ IconId returns string:
 
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
-
-TagId returns string:
-  Hash Id;
-
-DotId returns string:
-  Dot Id;
 
 CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
