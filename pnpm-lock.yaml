@@ -117,8 +117,8 @@ catalogs:
       specifier: 1.0.0
       version: 1.0.0
     '@tabler/icons-react':
-      specifier: 3.31.0
-      version: 3.31.0
+      specifier: 3.34.0
+      version: 3.34.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -478,7 +478,7 @@ importers:
         version: 0.4.0(ws@8.18.1)(xstate@5.19.3)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.31.0(react@19.1.0)
+        version: 3.34.0(react@19.1.0)
       '@tanstack/react-router':
         specifier: catalog:router
         version: 1.114.27(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -728,7 +728,7 @@ importers:
         version: 25.1.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.31.0(react@19.1.0)
+        version: 3.34.0(react@19.1.0)
       '@xstate/react':
         specifier: ^5.0.4
         version: 5.0.4(@types/react@19.1.5)(react@19.1.0)(xstate@5.19.3)
@@ -1171,7 +1171,7 @@ importers:
         version: 25.1.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.31.0(react@19.1.0)
+        version: 3.34.0(react@19.1.0)
       '@tanstack/react-router':
         specifier: catalog:router
         version: 1.114.27(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1610,7 +1610,7 @@ importers:
         version: 25.1.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.31.0(react@19.1.0)
+        version: 3.34.0(react@19.1.0)
       '@types/node':
         specifier: 'catalog:'
         version: 20.17.30
@@ -3502,13 +3502,13 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@tabler/icons-react@3.31.0':
-    resolution: {integrity: sha512-2rrCM5y/VnaVKnORpDdAua9SEGuJKVqPtWxeQ/vUVsgaUx30LDgBZph7/lterXxDY1IKR6NO//HDhWiifXTi3w==}
+  '@tabler/icons-react@3.34.0':
+    resolution: {integrity: sha512-OpEIR2iZsIXECtAIMbn1zfKfQ3zKJjXyIZlkgOGUL9UkMCFycEiF2Y8AVfEQsyre/3FnBdlWJvGr0NU47n2TbQ==}
     peerDependencies:
       react: ^19.1.0
 
-  '@tabler/icons@3.31.0':
-    resolution: {integrity: sha512-dblAdeKY3+GA1U+Q9eziZ0ooVlZMHsE8dqP0RkwvRtEsAULoKOYaCUOcJ4oW1DjWegdxk++UAt2SlQVnmeHv+g==}
+  '@tabler/icons@3.34.0':
+    resolution: {integrity: sha512-jtVqv0JC1WU2TTEBN32D9+R6mc1iEBuPwLnBsWaR02SIEciu9aq5806AWkCHuObhQ4ERhhXErLEK7Fs+tEZxiA==}
 
   '@tanstack/history@1.114.22':
     resolution: {integrity: sha512-CNwKraj/Xa8H7DUyzrFBQC3wL96JzIxT4i9CW0hxqFNNmLDyUcMJr8264iqqfxC0u1lFSG96URad08T2Qhadpw==}
@@ -11182,12 +11182,12 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tabler/icons-react@3.31.0(react@19.1.0)':
+  '@tabler/icons-react@3.34.0(react@19.1.0)':
     dependencies:
-      '@tabler/icons': 3.31.0
+      '@tabler/icons': 3.34.0
       react: 19.1.0
 
-  '@tabler/icons@3.31.0': {}
+  '@tabler/icons@3.34.0': {}
 
   '@tanstack/history@1.114.22': {}
 
