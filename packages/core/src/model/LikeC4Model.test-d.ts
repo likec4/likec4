@@ -2,6 +2,7 @@ import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
 import {
   type AnyAux,
+  type aux,
   type AuxFromLikeC4ModelData,
   type ComputedDeploymentView,
   type ComputedElementView,
@@ -18,7 +19,6 @@ import {
   type scalar,
   type ViewWithType,
   _stage,
-  aux,
 } from '../types'
 // import { isLayoutedLikeC4Model } from './guards'
 import { LikeC4Model } from './LikeC4Model'

@@ -9,7 +9,7 @@ import {
   isElementView,
   isViewRulePredicate,
   isViewRuleStyle,
-  scalar,
+  ViewId,
 } from '../../types'
 import type { $Aux } from '../element-view/__test__/fixture'
 import { resolveGlobalRules } from './resolve-global-rules'
@@ -19,7 +19,7 @@ describe('resolveGlobalRulesInViews', () => {
     return {
       _stage: 'parsed',
       _type: 'element',
-      id: scalar.ViewId('viewId'),
+      id: ViewId('viewId'),
       title: 'View Title',
       description: 'View Description',
       tags: null,

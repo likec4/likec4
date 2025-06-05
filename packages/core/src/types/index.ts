@@ -36,4 +36,4 @@ export * from './view-parsed.deployment'
 export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
-export * as scalar from './scalar'
+export type * as scalar from './scalar'

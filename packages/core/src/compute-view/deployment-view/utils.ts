@@ -15,11 +15,11 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type DeploymentViewRule,
+  type scalar,
   type Unknown,
   DefaultArrowType,
   FqnExpr,
   isViewRuleStyle,
-  scalar,
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
