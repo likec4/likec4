@@ -11,7 +11,7 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core'
-import { useDebouncedValue, useFocusWithin, useWindowEvent } from '@mantine/hooks'
+import { useFocusWithin, useWindowEvent } from '@mantine/hooks'
 import { usePreviousDistinct } from '@react-hookz/web'
 import { IconSearch } from '@tabler/icons-react'
 import { type ReactNode, memo } from 'react'
@@ -34,19 +34,19 @@ export const LikeC4SearchInput = memo(() => {
   const [search, setSearch] = useSearch()
   const previous = usePreviousDistinct(search)
 
-  const [isEmptyForSomeTime, cancel] = useDebouncedValue(
-    search === '' && (previous === '' || SEARCH_PREFIXES.includes(previous ?? '')),
-    2000,
-  )
-  // useF
-  // const isEmptyForSomeTime = debouncedSearch === ''
+  // const [isEmptyForSomeTime, cancel] = useDebouncedValue(
+  //   focused ? search : 'rstrs',
+  //   2000,
+  // )
+  // // useF
+  // // const isEmptyForSomeTime = debouncedSearch === ''
+  // useEffect(() => {
+  //   // cancel()
+  // }, [])
 
   const combobox = useCombobox({
     scrollBehavior: 'smooth',
     loop: false,
-    onDropdownClose(eventSource) {
-      cancel()
-    },
   })
 
   useWindowEvent(
@@ -72,15 +72,15 @@ export const LikeC4SearchInput = memo(() => {
   let isExactMatch = false
 
   switch (true) {
-    case search === '' && isEmptyForSomeTime: {
-      options = SEARCH_PREFIXES.map((prefix) => (
-        <ComboboxOption value={prefix} key={prefix}>
-          <Text component="span" opacity={.5} mr={4} fz={'sm'}>Search by</Text>
-          {prefix}
-        </ComboboxOption>
-      ))
-      break
-    }
+    // case search === '' && isEmptyForSomeTime === '': {
+    //   options = SEARCH_PREFIXES.map((prefix) => (
+    //     <ComboboxOption value={prefix} key={prefix}>
+    //       <Text component="span" opacity={.5} mr={4} fz={'sm'}>Search by</Text>
+    //       {prefix}
+    //     </ComboboxOption>
+    //   ))
+    //   break
+    // }
     case search.startsWith('#'): {
       const searchTag = search.toLocaleLowerCase().slice(1)
       const alloptions = likec4model.tags.filter((tag) => tag.toLocaleLowerCase().includes(searchTag))

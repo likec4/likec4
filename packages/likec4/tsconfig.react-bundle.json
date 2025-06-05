@@ -9,6 +9,9 @@
       "likec4/model": [
         "./src/model/index.ts"
       ],
+      "@likec4/core/*": [
+        "../core/dist/*"
+      ],
       "@likec4/diagram/*": [
         "../diagram/dist/*"
       ],

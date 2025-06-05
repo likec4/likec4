@@ -7,7 +7,7 @@ import {
   type NodeId,
   type NodeNotation as ElementNotation,
   type ViewId,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'

@@ -1,11 +1,11 @@
 import {
-  type Fqn,
   ifilter,
   isAncestor,
   nameFromFqn,
   sortParentsFirst,
 } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
+import type { Fqn } from '@likec4/core/types'
 import { cx, cx as clsx } from '@likec4/styles/css'
 import {
   type RenderTreeNodePayload,
