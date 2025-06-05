@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { type ElementKind, type Fqn, type IconUrl, type Tag } from '../../../types'
+import { type IconUrl } from '../../../types'
 import { $exclude, $expr, $include, computeView } from './fixture'
 
 describe('compute-element-view', () => {

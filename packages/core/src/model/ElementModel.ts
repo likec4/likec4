@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { AnyAux, aux, Color, IteratorLike } from '../types'
+import type { Any, AnyAux, aux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -17,12 +17,12 @@ import { commonAncestor, hierarchyLevel, isAncestor, memoizeProp, sortNaturalByF
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
+import type { $View, $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux> {
+export class ElementModel<A extends AnyAux = Any> {
   readonly id: aux.Fqn<A>
   readonly _literalId: aux.ElementId<A>
   readonly hierarchyLevel: number
@@ -216,7 +216,7 @@ export class ElementModel<A extends AnyAux> {
   /**
    * Iterate over all views that include this element.
    */
-  public *views(): ViewsIterator<A> {
+  public *views(): ViewsIterator<A, $View<A>> {
     for (const view of this.$model.views()) {
       if (view.includesElement(this.id)) {
         yield view

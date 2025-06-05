@@ -1,6 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
-import { computeLikeC4Model } from '../compute-view'
 import {
   type _type,
   type AnyAux,
@@ -18,6 +17,7 @@ import {
   type ParsedLikeC4ModelData,
   type scalar,
   type Unknown,
+  type ViewWithType,
   _stage,
   aux,
 } from '../types'
@@ -196,7 +196,7 @@ test('LikeC4Model.create: should have all types', () => {
     .build()
 
   const parsed = LikeC4Model.create(source)
-  expectTypeOf(parsed.stage).toEqualTypeOf<'parsed'>()
+  expectTypeOf(parsed.$data[_stage]).toEqualTypeOf<'parsed'>()
 
   // Check view types
   expectTypeOf(parsed.view('index')).toEqualTypeOf<
@@ -205,62 +205,6 @@ test('LikeC4Model.create: should have all types', () => {
   expectTypeOf(parsed.element('cloud').scopedViews()).toEqualTypeOf<
     IteratorLike<LikeC4ViewModel<typeof parsed.Aux, never>>
   >()
-
-  const empty = {} as LikeC4Model<Unknown>
-  if (empty.isLayouted()) {
-    expectTypeOf(empty.view('index')).toEqualTypeOf<LikeC4ViewModel<typeof empty.Aux, DiagramView<typeof empty.Aux>>>()
-    expectTypeOf(empty.element('cloud.backend.api').defaultView).toExtend<
-      null | LikeC4ViewModel<typeof empty.Aux, LayoutedElementView<typeof empty.Aux>>
-    >()
-    expectTypeOf(empty.element('cloud.backend.api').defaultView!.$view).toExtend<{
-      viewOf: aux.Fqn<typeof empty.Aux>
-    }>()
-  }
-
-  const computed = computeLikeC4Model(source)
-  type A = typeof computed.Aux
-  expectTypeOf(computed.view('index')).toEqualTypeOf<LikeC4ViewModel<A, ComputedView<A>>>()
-  expectTypeOf(computed.element('cloud.backend.api').defaultView).toEqualTypeOf<
-    null | LikeC4ViewModel<A, ComputedElementView<A> & { [_type]: 'element' } & { viewOf: aux.Fqn<A> }>
-  >()
-
-  if (computed.isLayouted()) {
-    expectTypeOf(computed).toBeNever()
-  }
-
-  const layouted = LikeC4Model.create(
-    {} as LayoutedLikeC4ModelData<typeof parsed.Aux>,
-  )
-
-  if (layouted.isComputed()) {
-    expectTypeOf(layouted).toBeNever()
-  }
-
-  const v = layouted.view('index')
-  type L = typeof layouted.Aux
-  expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, DiagramView<L>>>()
-  if (v.isDynamicView()) {
-    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDynamicView<L>>>()
-  }
-  if (v.isDeploymentView()) {
-    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDeploymentView<L>>>()
-  }
-  if (v.isElementView()) {
-    expectTypeOf(v).toEqualTypeOf<
-      LikeC4ViewModel<
-        L,
-        LayoutedElementView<L>
-      >
-    >()
-  }
-  if (v.isScopedElementView()) {
-    expectTypeOf(v).toEqualTypeOf<
-      LikeC4ViewModel<
-        L,
-        LayoutedElementView<L> & { viewOf: aux.Fqn<A> }
-      >
-    >()
-  }
 
   // @ts-expect-error
   parsed.element('wrong')
@@ -301,6 +245,96 @@ test('LikeC4Model.create: should have all types', () => {
   expectTypeOf(parsed.Aux.RelationKind).toEqualTypeOf<'like' | 'dislike'>()
   expectTypeOf(parsed.Aux.Tag).toEqualTypeOf<'tag1' | 'tag2'>()
   expectTypeOf(parsed.Aux.MetadataKey).toEqualTypeOf<'key1' | 'key2'>()
+})
+
+test('LikeC4Model type guards', () => {
+  const unknownModel = {} as LikeC4Model<Unknown>
+  expectTypeOf(unknownModel.stage).toEqualTypeOf<'computed' | 'layouted'>()
+  if (unknownModel.isParsed()) {
+    expectTypeOf(unknownModel).toBeNever()
+  }
+  if (unknownModel.isComputed()) {
+    type A = typeof unknownModel.Aux
+    expectTypeOf(unknownModel.stage).toEqualTypeOf<'computed'>()
+    expectTypeOf(unknownModel.view('index')).toEqualTypeOf<LikeC4ViewModel<A, ComputedView<A>>>()
+    expectTypeOf(unknownModel.element('cloud').defaultView).toEqualTypeOf<
+      | null
+      | LikeC4ViewModel<A, ComputedElementView<A> & { [_type]: 'element' } & { viewOf: aux.Fqn<A> }>
+    >()
+  }
+  if (unknownModel.isLayouted()) {
+    type A = typeof unknownModel.Aux
+    expectTypeOf(unknownModel.stage).toEqualTypeOf<'layouted'>()
+    expectTypeOf(unknownModel.view('index')).toEqualTypeOf<LikeC4ViewModel<A, DiagramView<A>>>()
+    expectTypeOf(unknownModel.element('cloud').defaultView).toEqualTypeOf<
+      | null
+      | LikeC4ViewModel<A, LayoutedElementView<A> & { [_type]: 'element' } & { viewOf: aux.Fqn<A> }>
+    >()
+
+    const v = unknownModel.view('index')
+    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, DiagramView<A>>>()
+    expectTypeOf<ViewWithType<DiagramView<A>, 'deployment'>>().toEqualTypeOf<LayoutedDeploymentView<A>>()
+    expectTypeOf<ViewWithType<DiagramView<A>, 'element'>>().toEqualTypeOf<LayoutedElementView<A>>()
+    expectTypeOf<ViewWithType<DiagramView<A>, 'dynamic'>>().toEqualTypeOf<LayoutedDynamicView<A>>()
+    if (v.isDiagram()) {
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, DiagramView<A>>>()
+    }
+    if (v.isScopedElementView()) {
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedElementView<A> & { viewOf: aux.Fqn<A> }>>()
+    }
+    if (v.isDynamicView()) {
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedDynamicView<A>>>()
+    }
+  }
+
+  const computed = {} as LikeC4Model.Computed<Unknown>
+  type A = typeof computed.Aux
+  expectTypeOf(computed.view('index')).toEqualTypeOf<LikeC4ViewModel<A, ComputedView<A>>>()
+  expectTypeOf(computed.element('cloud.backend.api').defaultView).toEqualTypeOf<
+    null | LikeC4ViewModel<A, ComputedElementView<A> & { [_type]: 'element' } & { viewOf: aux.Fqn<A> }>
+  >()
+
+  if (computed.isLayouted()) {
+    expectTypeOf(computed).toBeNever()
+  }
+  if (computed.isParsed()) {
+    expectTypeOf(computed).toBeNever()
+  }
+
+  const layouted = {} as LikeC4Model.Layouted<Unknown>
+
+  if (layouted.isComputed()) {
+    expectTypeOf(layouted).toBeNever()
+  }
+  if (layouted.isParsed()) {
+    expectTypeOf(layouted).toBeNever()
+  }
+
+  const v = layouted.view('index')
+  type L = typeof layouted.Aux
+  expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, DiagramView<L>>>()
+  if (v.isDynamicView()) {
+    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDynamicView<L>>>()
+  }
+  if (v.isDeploymentView()) {
+    expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<L, LayoutedDeploymentView<L>>>()
+  }
+  if (v.isElementView()) {
+    expectTypeOf(v).toEqualTypeOf<
+      LikeC4ViewModel<
+        L,
+        LayoutedElementView<L>
+      >
+    >()
+  }
+  if (v.isScopedElementView()) {
+    expectTypeOf(v).toEqualTypeOf<
+      LikeC4ViewModel<
+        L,
+        LayoutedElementView<L> & { viewOf: aux.Fqn<A> }
+      >
+    >()
+  }
 })
 
 test('LikeC4Model.create: should have defined types and never for missing', () => {

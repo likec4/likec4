@@ -1,4 +1,4 @@
-import type { IsLiteral, IsNever } from 'type-fest'
+import type { IfNever, IsLiteral, IsNever } from 'type-fest'
 import type { Coalesce, Link } from './_common'
 import type { ModelStage } from './const'
 import type * as scalar from './scalar'
@@ -51,7 +51,6 @@ export interface Aux<
 
   ViewId: View
 
-  Spec: Spec
   ElementKind: Spec['ElementKind']
   DeploymentKind: Spec['DeploymentKind']
   RelationKind: Spec['RelationKind']
@@ -62,7 +61,6 @@ export interface Aux<
 export type AnyOnStage<Stage extends ModelStage> = Aux<Stage, any, any, any, any, SpecAux<any, any, any, any, any>>
 
 export type AnyParsed = AnyOnStage<'parsed'>
-export type AnyProcessed = AnyOnStage<'computed'> | AnyOnStage<'layouted'>
 export type AnyComputed = AnyOnStage<'computed'>
 export type AnyLayouted = AnyOnStage<'layouted'>
 
@@ -87,7 +85,10 @@ export type Unknown = Aux<
 /**
  * Reads stage from Aux
  */
-export type Stage<A> = A extends infer T extends Any ? Coalesce<T['Stage'], ModelStage> : never
+export type Stage<A> = A extends infer T extends Any
+  // dprint-ignore
+  ? IfNever<T['Stage'], never, Coalesce<T['Stage'], ModelStage>>
+  : never
 
 /**
  * Picks type based on stage from Aux
@@ -104,17 +105,17 @@ export type setStage<A, S extends ModelStage> =
       ? Aux<S, E, D, V, P, Spec>
       : A
 
-export type narrowStage<A, S extends ModelStage> =
-  // dprint-ignore
-  A extends Aux<S, infer E, infer D, infer V, infer P, infer Spec>
-      ? Aux<S, E, D, V, P, Spec>
-      : A
+export type toParsed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+  ? Aux<'parsed', E, D, V, P, Spec>
+  : never
 
-export type toComputed<A> = A extends infer T extends Any ? setStage<T, 'computed'> : never
-export type asComputed<A> = A extends infer T extends Any ? narrowStage<T, 'computed'> : never
+export type toComputed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+  ? Aux<'computed', E, D, V, P, Spec>
+  : never
 
-export type toLayouted<A> = A extends infer T extends Any ? setStage<T, 'layouted'> : never
-export type asLayouted<A> = A extends infer T extends Any ? narrowStage<T, 'layouted'> : never
+export type toLayouted<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
+  ? Aux<'layouted', E, D, V, P, Spec>
+  : never
 
 /**
  * Project identifier from Aux
@@ -197,7 +198,7 @@ export type Metadata<A extends Any> =
 /**
  * Specification from Aux
  */
-export type Spec<A> = A extends infer T extends Any ? T['Spec'] : never
+export type Spec<A> = A extends Aux<any, any, any, any, any, infer S> ? S : never
 
 export type StrictProjectId<A> = A extends infer T extends Any ? scalar.ProjectId<ProjectId<T>> : never
 

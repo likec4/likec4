@@ -3,6 +3,7 @@ import type {
   _type,
   AnyAux,
   aux,
+  Coalesce,
   ComputedLikeC4ModelData,
   ComputedView,
   DiagramView,
@@ -41,11 +42,12 @@ export type NodeOrId = string | { id: scalar.NodeId }
 export type EdgeOrId = string | { id: scalar.EdgeId }
 export type RelationOrId = string | { id: scalar.RelationId }
 
-export type $View<A extends AnyAux> = {
-  parsed: never
-  computed: ComputedView<A>
-  layouted: DiagramView<A>
-}[A['Stage']]
+export type $View<A> = A extends infer T extends AnyAux ? {
+    parsed: never
+    computed: ComputedView<T>
+    layouted: DiagramView<T>
+  }[T['Stage']] :
+  never
 
 export type $ViewWithType<A extends AnyAux, T extends ViewType> =
   & {
@@ -65,4 +67,4 @@ export type $ModelData<A extends AnyAux> = {
   parsed: ParsedLikeC4ModelData<A>
   computed: ComputedLikeC4ModelData<A>
   layouted: LayoutedLikeC4ModelData<A>
-}[A['Stage']]
+}[Coalesce<A['Stage'], 'parsed' | 'computed' | 'layouted'>]

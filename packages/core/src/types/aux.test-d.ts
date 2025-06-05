@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import type { Aux, SpecAux } from './aux'
 import * as aux from './aux'
+import * as auxloose from './aux.loose'
 import type { ModelStage } from './const'
 import * as scalar from './scalar'
 
@@ -76,6 +77,58 @@ describe('Aux', () => {
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<{
       k1?: string
       k2?: string
+    }>()
+
+    expectTypeOf<auxloose.AllKinds<A>>().toEqualTypeOf<
+      | 'system'
+      | 'container'
+      | 'pod'
+      | 'node'
+      | 'http'
+      | 'grpc'
+      | string & Record<never, never>
+    >()
+  })
+
+  it('replace with never missing tupes', () => {
+    type A = Aux<
+      'computed',
+      'e1' | 'e2' | 'e3',
+      never,
+      'v1' | 'v2' | 'v3',
+      never,
+      SpecAux<
+        'system' | 'container',
+        never,
+        'http' | 'grpc',
+        'tag1' | 'tag2',
+        never
+      >
+    >
+
+    expectAuxTypes<A>().toEqualTypeOf<{
+      stage: 'computed'
+      projectId: never
+      fqn: scalar.Fqn<'e1' | 'e2' | 'e3'>
+      elementId: 'e1' | 'e2' | 'e3'
+      viewId: 'v1' | 'v2' | 'v3'
+      deploymentId: never
+      deploymentFqn: never
+      elementKind: 'system' | 'container'
+      deploymentKind: never
+      relationKind: 'http' | 'grpc'
+      tag: 'tag1' | 'tag2'
+      metadataKey: never
+      strict: {
+        projectId: never
+        fqn: scalar.Fqn<'e1' | 'e2' | 'e3'>
+        deploymentFqn: never
+        viewId: scalar.ViewId<'v1' | 'v2' | 'v3'>
+        elementKind: scalar.ElementKind<'system' | 'container'>
+        deploymentKind: never
+        relationKind: scalar.RelationshipKind<'http' | 'grpc'>
+        tag: scalar.Tag<'tag1' | 'tag2'>
+      }
     }>()
   })
 

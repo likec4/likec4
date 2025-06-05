@@ -1,3 +1,4 @@
+import type { IsLiteral } from 'type-fest'
 import type { Coalesce } from './_common'
 import type { Any } from './aux'
 
@@ -15,3 +16,14 @@ export type Tags<A extends Any> = readonly (Coalesce<A['Tag']> | OrString)[]
 export type ElementKind<A extends Any> = Coalesce<A['ElementKind']> | OrString
 export type DeploymentKind<A extends Any> = Coalesce<A['DeploymentKind']> | OrString
 export type RelationKind<A extends Any> = Coalesce<A['RelationKind']> | OrString
+
+/**
+ * All known kinds from Aux as a literal union.
+ */
+export type AllKinds<A extends Any> =
+  | OrString
+  | [
+    IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
+    IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
+    IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
+  ][number]

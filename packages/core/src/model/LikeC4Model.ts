@@ -5,6 +5,7 @@ import type {
   AnyAux,
   aux,
   AuxFromDump,
+  auxloose,
   ComputedLikeC4ModelData,
   Element,
   IteratorLike,
@@ -42,7 +43,7 @@ import {
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends AnyAux = Any> {
+export class LikeC4Model<A extends Any = Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -77,7 +78,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
   )
 
   static fromParsed<T extends AnyAux>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T> {
-    return new LikeC4Model(model).asParsed<T>()
+    return new LikeC4Model<T>(model).asParsed
   }
 
   /**
@@ -106,23 +107,42 @@ export class LikeC4Model<A extends AnyAux = Any> {
    * @returns A  new LikeC4Model instance with types inferred from the dump
    */
   static fromDump<const D extends LikeC4ModelDump>(dump: D): LikeC4Model<AuxFromDump<D>> {
+    const {
+      _stage: stage = 'layouted',
+      projectId = 'unknown',
+      globals,
+      imports,
+      deployments,
+      views,
+      relations,
+      elements,
+      specification,
+    } = dump
     return new LikeC4Model({
-      imports: {},
-      projectId: 'unknown',
+      [_stage]: stage as 'layouted',
+      projectId,
       globals: {
-        predicates: {},
-        dynamicPredicates: {},
-        styles: {},
+        predicates: globals?.predicates ?? {},
+        dynamicPredicates: globals?.dynamicPredicates ?? {},
+        styles: globals?.styles ?? {},
       },
-      ...dump,
-    }) as any
+      imports: imports ?? {},
+      deployments: {
+        elements: deployments?.elements ?? {},
+        relations: deployments?.relations ?? {},
+      },
+      views: views ?? {},
+      relations: relations ?? {},
+      elements: elements ?? {},
+      specification,
+    } as any)
   }
 
   public readonly deployment: LikeC4DeploymentModel<A>
+  public readonly $data: $ModelData<A>
 
-  constructor(
-    public readonly $data: $ModelData<A>,
-  ) {
+  constructor($data: $ModelData<A>) {
+    this.$data = $data
     for (const element of values($data.elements as Record<string, Element<A>>)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
@@ -163,19 +183,45 @@ export class LikeC4Model<A extends AnyAux = Any> {
     }
   }
 
-  asParsed<T = A>(noCheck?: false): LikeC4Model.Parsed<T> {
-    invariant(noCheck || this.stage === 'parsed', 'Model is not in parsed stage')
+  /**
+   * Type narrows the model to the parsed stage.
+   * This is useful for tests
+   */
+  get asParsed(): LikeC4Model.Parsed<A> {
+    return this as any
+  }
+  /**
+   * Type narrows the model to the layouted stage.
+   * This is useful for tests
+   */
+  get asComputed(): LikeC4Model.Computed<A> {
+    return this as any
+  }
+  /**
+   * Type narrows the model to the layouted stage.
+   * This is useful for tests
+   */
+  get asLayouted(): LikeC4Model.Layouted<A> {
     return this as any
   }
 
-  asComputed<T = A>(noCheck?: false): LikeC4Model.Computed<T> {
-    invariant(noCheck || this.stage === 'computed', 'Model is not in computed stage')
-    return this as any
+  /**
+   * Type guard the model to the parsed stage.
+   */
+  public isParsed(this: LikeC4Model<any>): this is LikeC4Model<aux.toParsed<A>> {
+    return this.$data[_stage] === 'parsed'
   }
-
-  asLayouted<T = A>(noCheck?: false): LikeC4Model.Layouted<T> {
-    invariant(noCheck || this.stage === 'layouted', 'Model is not in layouted stage')
-    return this as any
+  /**
+   * Type guard the model to the layouted stage.
+   */
+  public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
+    return this.$data[_stage] === 'layouted'
+  }
+  /**
+   * Type guard the model to the computed stage.
+   */
+  public isComputed(this: LikeC4Model<any>): this is LikeC4Model<aux.toComputed<A>> {
+    return this.$data[_stage] === 'computed'
   }
 
   /**
@@ -187,7 +233,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
   }
 
   get stage(): aux.Stage<A> {
-    return this.$data[_stage] as aux.Stage<A>
+    return this.$data[_stage]
   }
 
   get projectId(): aux.ProjectId<A> {
@@ -196,6 +242,20 @@ export class LikeC4Model<A extends AnyAux = Any> {
 
   get specification(): Specification<A> {
     return this.$data.specification
+  }
+
+  get globals(): ModelGlobals {
+    return memoizeProp(this, Symbol('globals'), (): ModelGlobals => ({
+      predicates: {
+        ...this.$data.globals?.predicates,
+      },
+      dynamicPredicates: {
+        ...this.$data.globals?.dynamicPredicates,
+      },
+      styles: {
+        ...this.$data.globals?.styles,
+      },
+    }))
   }
 
   /**
@@ -213,7 +273,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
     const id = getId(el)
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: aux.loose.ElementId<A>): ElementModel<A> | null {
+  public findElement(el: auxloose.ElementId<A>): ElementModel<A> | null {
     return this._elements.get(getId(el)) ?? null
   }
 
@@ -288,18 +348,18 @@ export class LikeC4Model<A extends AnyAux = Any> {
   /**
    * Returns all views in the model.
    */
-  public views(): IteratorLike<LikeC4ViewModel<A>> {
+  public views(): IteratorLike<LikeC4ViewModel<A, $View<A>>> {
     return this._views.values()
   }
 
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A> {
+  public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A, $View<A>> {
     const id = getId(viewId)
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
-  public findView(viewId: aux.loose.ViewId<A>): LikeC4ViewModel<A> | null {
+  public findView(viewId: auxloose.ViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
   }
 
@@ -403,29 +463,15 @@ export class LikeC4Model<A extends AnyAux = Any> {
     return
   }
 
-  public globals(): ModelGlobals {
-    return {
-      predicates: {
-        ...this.$data.globals?.predicates,
-      },
-      dynamicPredicates: {
-        ...this.$data.globals?.dynamicPredicates,
-      },
-      styles: {
-        ...this.$data.globals?.styles,
-      },
-    }
-  }
-
   /**
-   * Returns all tags used in the model.
+   * Returns all tags used in the model, sorted alphabetically.
    */
   get tags(): aux.Tags<A> {
-    return memoizeProp(this, Symbol('tags'), () => Array.from(this._allTags.keys()))
+    return memoizeProp(this, Symbol('tags'), () => sort([...this._allTags.keys()], compareNatural))
   }
 
   /**
-   * Returns all tags used in the model, sorted by usagecount (descending).
+   * Returns all tags used in the model, sorted by usage count (descending).
    */
   get tagsSortedByUsageCount(): aux.Tags<A> {
     return memoizeProp(this, Symbol('tagsSortedByUsageCount'), () =>
@@ -435,6 +481,7 @@ export class LikeC4Model<A extends AnyAux = Any> {
           tag,
           count: marked.size,
         })),
+        sort((a, b) => compareNatural(a.tag, b.tag)),
         sortBy(
           [prop('count'), 'desc'],
         ),
@@ -461,14 +508,6 @@ export class LikeC4Model<A extends AnyAux = Any> {
       }
       return true
     })
-  }
-
-  public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
-    return this.stage === 'layouted'
-  }
-
-  public isComputed(this: LikeC4Model<any>): this is LikeC4Model<aux.toComputed<A>> {
-    return this.stage === 'computed'
   }
 
   private addElement(element: Element<A>) {

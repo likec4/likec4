@@ -5,6 +5,7 @@ import {
   type Color,
   type ElementShape as C4ElementShape,
   type ElementStyle,
+  type ExtractOnStage,
   type IconUrl,
   type IteratorLike,
   type Link,
@@ -196,7 +197,7 @@ export class NodeModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return
   }
 
-  public isDiagramNode(this: NodeModel<any, any>): this is NodeModel<aux.toLayouted<A>> {
+  public isDiagramNode(this: NodeModel<any, any>): this is NodeModel<aux.toLayouted<A>, ExtractOnStage<V, 'layouted'>> {
     return 'width' in this.$node && 'height' in this.$node
   }
 

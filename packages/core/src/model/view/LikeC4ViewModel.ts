@@ -4,8 +4,10 @@ import type {
   AnyAux,
   AnyView,
   aux,
+  auxloose,
   ComputedView,
   DiagramView,
+  ExtractOnStage,
   IteratorLike,
   Link,
   scalar,
@@ -43,7 +45,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
   readonly #allTags = new DefaultMap((_key: aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
 
   public readonly $view: V
-  public readonly $model: LikeC4Model<typeof this.Aux>
+  public readonly $model: LikeC4Model<A>
 
   constructor(model: LikeC4Model<A>, view: V) {
     this.$model = model
@@ -149,7 +151,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return this.#nodes.get(getId(node)) ?? null
   }
 
-  public findNodeWithElement(element: aux.loose.ElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
+  public findNodeWithElement(element: auxloose.ElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
     const id = getId(element)
     return ifind(
       this.#nodes.values(),
@@ -208,11 +210,11 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
     return
   }
 
-  public includesElement(element: aux.loose.ElementId<A> | { id: aux.Fqn<A> }): boolean {
+  public includesElement(element: auxloose.ElementId<A> | { id: aux.Fqn<A> }): boolean {
     return this.#includeElements.has(getId(element))
   }
 
-  public includesDeployment(deployment: aux.loose.DeploymentId<A> | { id: aux.DeploymentFqn<A> }): boolean {
+  public includesDeployment(deployment: auxloose.DeploymentId<A> | { id: aux.DeploymentFqn<A> }): boolean {
     return this.#includeDeployments.has(getId(deployment))
   }
 
@@ -225,13 +227,13 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
    */
   public isComputed(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<aux.toComputed<A>, ComputedView<aux.toComputed<A>> & { [_type]: InferViewType<V> }> {
+  ): this is LikeC4ViewModel<aux.toComputed<A>> {
     return this.$view[_stage] === 'computed'
   }
 
   public isDiagram(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<aux.toLayouted<A>, ViewWithType<DiagramView<aux.toLayouted<A>>, V[_type]>> {
+  ): this is LikeC4ViewModel<aux.toLayouted<A>> {
     return this.$view[_stage] === 'layouted'
   }
 
@@ -241,7 +243,7 @@ export class LikeC4ViewModel<A extends AnyAux, V extends $View<A> = $View<A>> {
 
   public isScopedElementView(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.Fqn<A> }> {
+  ): this is LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<A> }> {
     return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
   }
 

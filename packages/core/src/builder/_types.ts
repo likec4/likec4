@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
 import type {
   AnyAux,
   Aux,
@@ -108,7 +108,7 @@ export type Warn<Id, Existing> = IsLiteral<Existing> extends true ? Id extends E
 export type ValidId<Id> =
   // Id extends `${string}.${string}` ? Invalid<'Id must not contain dot'>
   Id extends `${number}${string}` ? Invalid<'Id must not start with number'>
-    : IsStringLiteral<Id> extends true ? Id
+    : IsLiteral<Id> extends true ? Id
     : Invalid<'Id must be a literal'>
 
 /**

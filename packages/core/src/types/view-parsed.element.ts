@@ -1,4 +1,5 @@
 import type { Simplify } from 'type-fest'
+import type { ExclusiveUnion } from './_common'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
 import type { _type } from './const'
@@ -24,10 +25,9 @@ export interface ElementViewExcludePredicate<A extends AnyAux = AnyAux>
   extends AnyExcludePredicate<ModelExpression<A>>
 {}
 
-export type ElementViewPredicate<A extends AnyAux = AnyAux> = Simplify<
+export type ElementViewPredicate<A extends AnyAux = AnyAux> =
   | ElementViewIncludePredicate<A>
   | ElementViewExcludePredicate<A>
->
 
 export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
   groupRules: Array<ElementViewPredicate<A> | ElementViewRuleGroup<A>>
@@ -48,14 +48,15 @@ export function isViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rul
 
 export interface ElementViewRuleStyle<A extends AnyAux = AnyAux> extends AnyViewRuleStyle<ModelFqnExpr<A>> {}
 
-export type ElementViewRule<A extends AnyAux = AnyAux> =
-  | ElementViewIncludePredicate<A>
-  | ElementViewExcludePredicate<A>
-  | ElementViewRuleGroup<A>
-  | ElementViewRuleStyle<A>
-  | ViewRuleGlobalStyle
-  | ViewRuleGlobalPredicateRef
-  | ViewRuleAutoLayout
+export type ElementViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+  IncludePredicate: ElementViewIncludePredicate<A>
+  ExcludePredicate: ElementViewExcludePredicate<A>
+  Group: ElementViewRuleGroup<A>
+  Style: ElementViewRuleStyle<A>
+  GlobalStyle: ViewRuleGlobalStyle
+  GlobalPredicateRef: ViewRuleGlobalPredicateRef
+  AutoLayout: ViewRuleAutoLayout
+}>
 
 export interface ParsedElementView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'element'

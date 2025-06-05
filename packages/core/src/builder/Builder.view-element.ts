@@ -1,5 +1,5 @@
 import { isString } from 'remeda'
-import type { IsStringLiteral } from 'type-fest/source/is-literal'
+import type { IsLiteral } from 'type-fest'
 import { type Expression, type Fqn } from '../types'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
@@ -60,8 +60,8 @@ export interface AddViewHelper {
   }
 }
 
-type ValidFqn<T extends AnyTypes> = IsStringLiteral<T['Fqn']> extends true ? T['Fqn']
-  : Invalid<'Fqn must be from known'>
+type ValidFqn<T extends AnyTypes> = IsLiteral<T['Fqn']> extends true ? T['Fqn']
+  : Invalid<'Fqn must be a literal'>
 
 export interface AddViewOfHelper {
   <

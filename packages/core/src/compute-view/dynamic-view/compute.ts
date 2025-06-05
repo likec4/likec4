@@ -135,7 +135,7 @@ class DynamicViewCompute<A extends AnyAux> {
       stepNum++
     }
 
-    const rules = resolveGlobalRulesInDynamicView(_rules, this.model.globals())
+    const rules = resolveGlobalRulesInDynamicView(_rules, this.model.globals)
 
     for (const rule of rules) {
       if (isViewRulePredicate(rule)) {

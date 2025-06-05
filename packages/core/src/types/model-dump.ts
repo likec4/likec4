@@ -40,7 +40,7 @@ export type LikeC4ModelDump = {
   [_stage]?: 'computed' | 'layouted'
   projectId?: string
   specification: SpecificationDump
-  elements: {
+  elements?: {
     [kind: string]: object
   }
   deployments: {
@@ -53,7 +53,11 @@ export type LikeC4ModelDump = {
     [kind: string]: object
   }
   relations?: {}
-  globals?: {}
+  globals?: {
+    predicates?: {}
+    dynamicPredicates?: {}
+    styles?: {}
+  }
   imports?: {}
 }
 

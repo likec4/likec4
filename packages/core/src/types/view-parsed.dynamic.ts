@@ -1,5 +1,6 @@
 import { isArray } from 'remeda'
 import type { MergeExclusive, Simplify } from 'type-fest'
+import type { ExclusiveUnion } from './_common'
 import type * as aux from './aux'
 import type { AnyAux } from './aux'
 import type { _type } from './const'
@@ -56,12 +57,13 @@ export interface DynamicViewIncludeRule<A extends AnyAux = AnyAux> {
   include: ModelFqnExpr.Any<A>[]
 }
 
-export type DynamicViewRule<A extends AnyAux = AnyAux> =
-  | DynamicViewIncludeRule<A>
-  | ViewRuleGlobalPredicateRef
-  | ElementViewRuleStyle<A>
-  | ViewRuleGlobalStyle
-  | ViewRuleAutoLayout
+export type DynamicViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+  Include: DynamicViewIncludeRule<A>
+  GlobalPredicateRef: ViewRuleGlobalPredicateRef
+  ElementViewRuleStyle: ElementViewRuleStyle<A>
+  GlobalStyle: ViewRuleGlobalStyle
+  AutoLayout: ViewRuleAutoLayout
+}>
 
 export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'dynamic'

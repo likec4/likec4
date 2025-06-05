@@ -1,6 +1,6 @@
 import type { IsAny } from 'type-fest'
 import type * as aux from './aux'
-import type { AnyAux } from './aux'
+import type { Any, AnyAux } from './aux'
 import type {
   Icon,
 } from './scalar'
@@ -59,7 +59,7 @@ export interface RelationshipSpecification {
   tail?: RelationshipArrowType
 }
 
-export interface Specification<A extends AnyAux> {
+export interface Specification<A extends AnyAux = Any> {
   tags?: {
     [key in aux.Tag<A>]: TagSpecification
   }

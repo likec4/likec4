@@ -8,7 +8,6 @@ import {
   type Color,
   type ComputedView,
   type Element,
-  type ElementKind,
   type ElementShape,
   type ElementViewPredicate,
   type ElementViewPredicate as ViewRulePredicate,
@@ -30,7 +29,6 @@ import {
   type RelationshipLineType,
   type scalar,
   type SpecAux,
-  type Tag,
   type TagEqual,
   type ViewRuleGlobalPredicateRef,
   type ViewRuleGlobalStyle,
@@ -136,12 +134,12 @@ const el = ({
   kind: string
   tags?: NonEmptyArray<TestTag>
 }): Element => ({
-  id: id as Fqn,
-  kind: kind as ElementKind,
+  id: id as scalar.Fqn,
+  kind: kind as scalar.ElementKind,
   title: title ?? id,
   description: null,
   technology: null,
-  tags: tags as NonEmptyArray<Tag> ?? null,
+  tags: tags as NonEmptyArray<scalar.Tag> ?? null,
   links: null,
   style: {
     ...style,

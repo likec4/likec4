@@ -21,6 +21,10 @@ export type IconUrl = Icon
  * ```
  */
 export type Fqn<Id = string> = Tagged<Id, 'Fqn'>
+export function Fqn(name: string, parent?: Fqn | null): Fqn {
+  return (parent ? parent + '.' + name : name) as unknown as Fqn
+}
+
 export type ElementKind<Kinds = string> = Tagged<Kinds, 'ElementKind'>
 export const GroupElementKind = '@group' as ElementKind<'@group'>
 export type GroupElementKind = typeof GroupElementKind
@@ -33,6 +37,10 @@ export function isGroupElementKind<V extends { kind?: any }>(v: V): v is V & { k
  * Full-qualified-name for deployment elements
  */
 export type DeploymentFqn<T = string> = Tagged<T, 'DeploymentFqn'>
+export function DeploymentFqn(name: string, parent?: DeploymentFqn | null): DeploymentFqn {
+  return (parent ? parent + '.' + name : name) as unknown as DeploymentFqn
+}
+
 export type DeploymentKind<Kinds = string> = Tagged<Kinds, 'DeploymentKind'>
 export type ViewId<Id = string> = Tagged<Id, 'ViewId'>
 export function ViewId(id: string): ViewId {
@@ -48,12 +56,11 @@ export type RelationKind<Kinds = string> = RelationshipKind<Kinds>
 
 export type RelationshipKind<Kinds = string> = Tagged<Kinds, 'RelationshipKind'>
 export type RelationId<Id = string> = Tagged<Id, 'RelationId'>
+export function RelationId(id: string): RelationId {
+  return id as any
+}
 
 export type Tag<T = string> = Tagged<T, 'Tag'>
-
-export function AsFqn(name: string, parent?: Fqn | null): Fqn {
-  return (parent ? parent + '.' + name : name) as unknown as Fqn
-}
 
 export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
 export function GlobalFqn<A>(projectId: A | ProjectId<A>, name: string): GlobalFqn<A> {
@@ -83,6 +90,9 @@ export function NodeId(id: string): NodeId {
   return id as any
 }
 export type EdgeId = Tagged<string, 'EdgeId'>
+export function EdgeId(id: string): EdgeId {
+  return id as any
+}
 
 export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>

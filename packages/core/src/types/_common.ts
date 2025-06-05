@@ -37,10 +37,10 @@ type AllNever<Expressions> = UnionToIntersection<
  *   }
  * ```
  */
-export type ExclusiveUnion<Expressions> = Expressions extends object ? {
-    [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
+export type ExclusiveUnion<Expressions, All = AllNever<Expressions>> = Expressions extends object ? {
+    [Name in keyof Expressions]: Simplify<Omit<All, keyof Expressions[Name]> & Expressions[Name]>
   }[keyof Expressions]
-  : Expressions
+  : never
 
 /**
  * Copy from https://github.com/remeda/remeda/blob/main/src/internal/types/NTuple.ts

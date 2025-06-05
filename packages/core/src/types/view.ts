@@ -1,5 +1,5 @@
 import { isTruthy } from 'remeda'
-import type { AnyAux } from './aux'
+import type { Any } from './aux'
 import * as aux from './aux'
 import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
 import type { ViewType } from './view-common'
@@ -17,31 +17,52 @@ import type { ParsedDeploymentView } from './view-parsed.deployment'
 import type { ParsedDynamicView } from './view-parsed.dynamic'
 import type { ParsedElementView } from './view-parsed.element'
 
-export type ParsedView<A extends AnyAux = AnyAux> =
+export type ParsedView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
+
+// export type ParsedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: ParsedElementView<A>
+//   Deployment: ParsedDeploymentView<A>
+//   Dynamic: ParsedDynamicView<A>
+// }>
 /**
  * Should be `ParsedView` but keep it for backward compatibility
  * @deprecated use `ParsedView`
  */
 export type { ParsedView as LikeC4View }
 
-export type ComputedView<A extends AnyAux = AnyAux> =
+export type ComputedView<A extends Any = Any> =
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
+// export type ComputedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: ComputedElementView<A>
+//   Deployment: ComputedDeploymentView<A>
+//   Dynamic: ComputedDynamicView<A>
+// }>
 
-export type LayoutedView<A extends AnyAux = AnyAux> =
+// export type LayoutedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: LayoutedElementView<A>
+//   Deployment: LayoutedDeploymentView<A>
+//   Dynamic: LayoutedDynamicView<A>
+// }>
+
+export type LayoutedView<A extends Any = Any> =
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
+
+export type ProcessedView<A extends Any = Any> =
+  | ComputedView<A>
+  | LayoutedView<A>
+
 /**
  * @alias DiagramView
  */
 export type { LayoutedView as DiagramView }
-
-export type AnyView<A extends AnyAux = AnyAux> =
+export type AnyView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
@@ -51,16 +72,23 @@ export type AnyView<A extends AnyAux = AnyAux> =
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
+// export type AnyView<A extends Any = Any> = ExclusiveUnion<{
+//   ParsedElement: ParsedElementView<A>
+//   ParsedDeployment: ParsedDeploymentView<A>
+//   ParsedDynamic: ParsedDynamicView<A>
+//   ComputedElement: ComputedElementView<A>
+//   ComputedDeployment: ComputedDeploymentView<A>
+//   ComputedDynamic: ComputedDynamicView<A>
+//   LayoutedElement: LayoutedElementView<A>
+//   LayoutedDeployment: LayoutedDeploymentView<A>
+//   LayoutedDynamic: LayoutedDynamicView<A>
+// }>
 
-export type AnyViews<S extends ModelStage, T extends ViewType = ViewType, A extends AnyAux = AnyAux> = AnyView<A> & {
-  [_stage]: S
-  [_type]: T
-}
+export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
+export type ViewWithType<V extends AnyView<Any>, T extends ViewType> = Extract<V, { [_type]: T }>
 
-export type ViewWithType<V extends AnyView<AnyAux>, T extends ViewType> = Extract<V, { [_type]: T }>
-
-export type ViewRule<A extends AnyAux = AnyAux> = ParsedView<A>['rules'][number]
-export type ViewRulePredicate<A extends AnyAux = AnyAux> = Extract<
+export type ViewRule<A extends Any = Any> = ParsedView<A>['rules'][number]
+export type ViewRulePredicate<A extends Any = Any> = Extract<
   ViewRule<A>,
   { include: any[] } | { exclude: any[] }
 >
@@ -93,13 +121,13 @@ export function isElementView<V extends AnyView<any>>(view: V): view is ViewWith
 
 export function isScopedElementView<V extends AnyView<any>>(
   view: V,
-): view is ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<AnyAux> } {
+): view is ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<Any> } {
   return isElementView(view) && isTruthy(view.viewOf)
 }
 
 export function isExtendsElementView<V extends AnyView<any>>(
   view: V,
-): view is ViewWithType<V, 'element'> & { extends: aux.StrictViewId<AnyAux> } {
+): view is ViewWithType<V, 'element'> & { extends: aux.StrictViewId<Any> } {
   return isElementView(view) && isTruthy(view.extends)
 }
 

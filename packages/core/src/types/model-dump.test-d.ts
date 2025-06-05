@@ -208,7 +208,7 @@ describe('AuxFromDump', () => {
     expectTypeOf<aux.ViewId<A>>().toEqualTypeOf<'view1' | 'view2'>()
 
     // Verify Spec properties
-    expectTypeOf<A['Spec']>().toEqualTypeOf<
+    expectTypeOf<aux.Spec<A>>().toEqualTypeOf<
       SpecAux<
         'system' | 'container',
         'k8s' | 'aws',

@@ -8,6 +8,7 @@ import {
   type AnyAux,
   type ComputedElementView,
   type ElementViewRule as ViewRule,
+  type ModelGlobals,
   type NodeId,
   type ParsedElementView as ElementView,
   isViewRuleAutoLayout,
@@ -183,7 +184,7 @@ export function computeElementView<A extends AnyAux>(
     ...view
   }: ElementView<A>,
 ): ComputedElementView<A> {
-  rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
+  rules = resolveGlobalRulesInElementView(rules, likec4model.globals as unknown as ModelGlobals<A>)
   const scope = view.viewOf ? likec4model.element(view.viewOf) as ElementModel<any> : null
   let memory = processPredicates(
     likec4model,

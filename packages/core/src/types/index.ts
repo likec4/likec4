@@ -1,6 +1,8 @@
 export * from './_common'
 
 export * as aux from './aux'
+export type * as auxloose from './aux.loose'
+
 export type {
   Any,
   AnyAux,
@@ -8,7 +10,6 @@ export type {
   AnyLayouted,
   AnyOnStage,
   AnyParsed,
-  AnyProcessed,
   Aux,
   SpecAux,
   Unknown,
@@ -26,7 +27,26 @@ export * from './model-dump'
 export * from './model-logical'
 export * from './model-spec'
 export * from './operators'
-export * from './scalar'
+export {
+  DeploymentFqn,
+  EdgeId,
+  extractStep,
+  Fqn,
+  GlobalFqn,
+  GroupElementKind,
+  type Icon,
+  type IconUrl,
+  isGlobalFqn,
+  isGroupElementKind,
+  isStepEdgeId,
+  NodeId,
+  type ProjectId,
+  RelationId,
+  splitGlobalFqn,
+  type StepEdgeId,
+  stepEdgeId,
+  ViewId,
+} from './scalar'
 export * from './styles'
 export * from './view'
 export * from './view-changes'

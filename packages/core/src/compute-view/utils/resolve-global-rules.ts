@@ -19,7 +19,7 @@ import {
 
 export function resolveGlobalRules<A extends AnyAux>(
   view: ParsedElementView<A> | ParsedDynamicView<A>,
-  globals: ModelGlobals,
+  globals: ModelGlobals<A>,
 ) {
   if (isElementView(view)) {
     return {
@@ -41,7 +41,7 @@ type ViewRuleGlobal = ViewRuleGlobalPredicateRef | ViewRuleGlobalStyle
 
 export function resolveGlobalRulesInElementView<M extends AnyAux>(
   rules: ElementViewRule<M>[],
-  globals: ModelGlobals,
+  globals: ModelGlobals<M>,
 ): Array<Exclude<ElementViewRule<M>, ViewRuleGlobal>> {
   return rules.reduce((acc, rule) => {
     if (isViewRuleGlobalPredicateRef(rule)) {
@@ -65,7 +65,7 @@ export function resolveGlobalRulesInElementView<M extends AnyAux>(
 
 export function resolveGlobalRulesInDynamicView<M extends AnyAux>(
   rules: DynamicViewRule<M>[],
-  globals: ModelGlobals,
+  globals: ModelGlobals<M>,
 ): Array<Exclude<DynamicViewRule<M>, ViewRuleGlobal>> {
   return rules.reduce((acc, rule) => {
     if (isViewRuleGlobalPredicateRef(rule)) {

@@ -1,7 +1,7 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2024",
     "rootDir": "src",
     "incremental": true,
     "composite": true,

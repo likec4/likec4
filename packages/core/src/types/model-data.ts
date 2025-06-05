@@ -10,41 +10,6 @@ import type { Specification } from './model-spec'
 import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
 
-// type MakeEntry<Key, Value> = Key extends infer K extends string ? { [key in K]: Value } : {}
-
-// type TupleToObject<T, Value, L = LastOfUnion<T>> =
-// IsNever<T> extends false
-// 	? [...UnionToTuple<Exclude<T, L>>, L]
-// 	: [];
-
-// type UnionToRecord<Keys, Value, L = LastOfUnion<Keys>> = IsNever<Keys> extends false
-//   ? MakeEntry<L, Value> | UnionToRecord<Exclude<Keys, L>, Value>
-//   : {}
-
-// type Entries<KeysObject extends object, Value> = {
-//   [K in keyof KeysObject]: KeysObject[K] extends infer S extends string ? {
-//       [key in S]: Value
-//     } :
-//     never
-// }[keyof KeysObject]
-
-// // type StrictRecord<Keys, Value> = IsNever<Keys> extends true ? Record<any, Value> : Simplify<Entries<Keys, Value>>
-
-// // type Entries<Keys, Value> = IsNever<Keys> extends false ? { [K in Keys as `${K & string}`]: Value }
-// //   : { [key: string]: Value }
-
-// type KeysOf<T> = IsStringLiteral<T> extends true ? `${T & string}` : string
-
-// type StrictRecord<Keys, Value> = Simplify<UnionToRecord<Keys, Value>>
-// type StrictRecord<Keys, Value> = Record<`${Keys & string}`, Value>
-// & {
-//   [key in KeysOf<Keys>]: Value
-// }
-// & {
-//   [key: string]: Value
-// }
-// type StrictRecord<Keys, Value> = Simplify<UnionToIntersection<Entries<TupleToObject<UnionToTuple<Keys>>, Value>>>
-
 interface BaseLikeC4ModelData<A extends AnyAux> {
   projectId: aux.ProjectId<A>
   specification: Specification<A>
@@ -82,16 +47,20 @@ export type AuxFromLikeC4ModelData<D> =
  */
 export interface ParsedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
   [_stage]: 'parsed'
+  // globals: ModelGlobals<A
   views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
 export interface ComputedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
   [_stage]: 'computed'
+  // specification: Specification<A>
+  // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, ComputedView<A>>
 }
 
 export interface LayoutedLikeC4ModelData<A extends AnyAux = Any> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
+  // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, LayoutedView<A>>
 }
 
@@ -99,3 +68,8 @@ export type LikeC4ModelData<A extends AnyAux> =
   | ParsedLikeC4ModelData<A>
   | ComputedLikeC4ModelData<A>
   | LayoutedLikeC4ModelData<A>
+// ExclusiveUnion<{
+//   Parsed: ParsedLikeC4ModelData<A>
+//   Computed: ComputedLikeC4ModelData<A>
+//   Layouted: LayoutedLikeC4ModelData<A>
+// }>
