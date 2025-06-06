@@ -193,6 +193,10 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       }
       setIsControlPointDragging(false)
     }
+    const onClick = (e: MouseEvent) => {
+      e.stopPropagation()
+      e.preventDefault()
+    }
 
     domNode.addEventListener('pointermove', onPointerMove, {
       capture: true,
@@ -200,6 +204,11 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     domNode.addEventListener('pointerup', onPointerUp, {
       once: true,
       capture: true,
+    })
+    // Handle click to prevent it from being handled by the edge #1945
+    domNode.addEventListener('click', onClick, {
+      capture: true,
+      once: true,
     })
   }
 

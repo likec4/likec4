@@ -87,6 +87,11 @@ declare module 'likec4:mmd' {
     mmdSource(viewId: string): string
   }>
 }
+declare module 'likec4:puml' {
+  export function loadPumlSources(projectId: string): Promise<{
+    pumlSource(viewId: string): string
+  }>
+}
 
 // Per project
 

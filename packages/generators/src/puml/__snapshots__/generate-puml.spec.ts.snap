@@ -1,0 +1,184 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generate puml - fakeComputedView 3 Levels 1`] = `
+"@startuml
+title "Context: Cloud"
+top to bottom direction
+
+hide stereotype
+skinparam ranksep 60
+skinparam nodesep 30
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  shadowing false
+}
+
+skinparam rectangle<<Amazon>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<Customer>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<Support>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudBackendGraphql>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudBackendStorage>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudFrontendAdminPanel>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudFrontendDashboard>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+rectangle "==amazon" <<Amazon>> as Amazon
+rectangle "cloud" <<Cloud>> as Cloud {
+  skinparam RectangleBorderColor<<Cloud>> #3b82f6
+  skinparam RectangleFontColor<<Cloud>> #3b82f6
+  skinparam RectangleBorderStyle<<Cloud>> dashed
+
+  rectangle "backend" <<CloudBackend>> as CloudBackend {
+    skinparam RectangleBorderColor<<CloudBackend>> #3b82f6
+    skinparam RectangleFontColor<<CloudBackend>> #3b82f6
+    skinparam RectangleBorderStyle<<CloudBackend>> dashed
+
+    rectangle "==graphql" <<CloudBackendGraphql>> as CloudBackendGraphql
+    rectangle "==storage" <<CloudBackendStorage>> as CloudBackendStorage
+  }
+  rectangle "==adminPanel" <<CloudFrontendAdminPanel>> as CloudFrontendAdminPanel
+  rectangle "==dashboard" <<CloudFrontendDashboard>> as CloudFrontendDashboard
+}
+rectangle "==customer" <<Customer>> as Customer
+rectangle "==support" <<Support>> as Support
+
+CloudFrontendDashboard .[#777777,thickness=2].> CloudBackendGraphql
+CloudFrontendAdminPanel .[#777777,thickness=2].> CloudBackendGraphql
+CloudBackendStorage .[#777777,thickness=2].> Amazon
+CloudBackendGraphql .[#777777,thickness=2].> CloudBackendStorage
+Support .[#777777,thickness=2].> CloudFrontendAdminPanel
+Customer .[#777777,thickness=2].> CloudFrontendDashboard
+@enduml
+"
+`;
+
+exports[`generate puml - fakeDiagram 1`] = `
+"@startuml
+title "fakeView"
+top to bottom direction
+
+hide stereotype
+skinparam ranksep 60
+skinparam nodesep 30
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  shadowing false
+}
+
+skinparam rectangle<<Amazon>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<Customer>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<Support>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudBackend>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<CloudFrontend>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+rectangle "==amazon" <<Amazon>> as Amazon
+rectangle "cloud" <<Cloud>> as Cloud {
+  skinparam RectangleBorderColor<<Cloud>> #3b82f6
+  skinparam RectangleFontColor<<Cloud>> #3b82f6
+  skinparam RectangleBorderStyle<<Cloud>> dashed
+
+  rectangle "==backend" <<CloudBackend>> as CloudBackend
+  rectangle "==frontend" <<CloudFrontend>> as CloudFrontend
+}
+rectangle "==customer" <<Customer>> as Customer
+rectangle "==support" <<Support>> as Support
+
+CloudFrontend .[#777777,thickness=2].> CloudBackend : "<color:#777777>requests<color:#777777>"
+CloudBackend .[#777777,thickness=2].> Amazon
+Support .[#777777,thickness=2].> CloudFrontend
+Customer .[#777777,thickness=2].> CloudFrontend : "<color:#777777>opens<color:#777777>"
+@enduml
+"
+`;
+
+exports[`generate puml - fakeDiagram2 1`] = `
+"@startuml
+title "frontend"
+top to bottom direction
+
+hide stereotype
+skinparam ranksep 60
+skinparam nodesep 30
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  shadowing false
+}
+
+skinparam rectangle<<Client>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<SystemBackend>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+skinparam rectangle<<SystemFrontend>>{
+  BackgroundColor #3b82f6
+  FontColor #FFFFFF
+  BorderColor #3b82f6
+}
+rectangle "==client" <<Client>> as Client
+rectangle "==backend" <<SystemBackend>> as SystemBackend
+rectangle "==frontend" <<SystemFrontend>> as SystemFrontend
+
+SystemFrontend .[#777777,thickness=2].> SystemBackend : "<color:#777777>requests<color:#777777>"
+Client .[#777777,thickness=2].> SystemFrontend : "<color:#777777>opens<color:#777777>"
+@enduml
+"
+`;

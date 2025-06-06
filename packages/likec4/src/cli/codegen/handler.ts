@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import { generateD2, generateMermaid, generateViewsDataTs } from '@likec4/generators'
+import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { values } from 'remeda'
@@ -22,7 +22,7 @@ type HandlerParams =
       outfile: string | undefined
     }
     | {
-      format: 'dot' | 'd2' | 'mermaid'
+      format: 'dot' | 'd2' | 'mermaid' | 'plantuml'
       outdir: string | undefined
     }
   )
@@ -89,7 +89,7 @@ async function dotCodegenAction(
 
 async function multipleFilesCodegenAction(
   languageServices: LikeC4,
-  format: 'd2' | 'mermaid',
+  format: 'd2' | 'mermaid' | 'plantuml',
   outdir: string,
   logger: Logger,
 ) {
@@ -108,6 +108,10 @@ async function multipleFilesCodegenAction(
     case 'mermaid':
       ext = '.mmd'
       generator = generateMermaid
+      break
+    case 'plantuml':
+      ext = '.puml'
+      generator = generatePuml
       break
     default:
       nonexhaustive(format)
@@ -169,7 +173,8 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
       break
     }
     case 'd2':
-    case 'mermaid': {
+    case 'mermaid':
+    case 'plantuml': {
       await multipleFilesCodegenAction(
         languageServices,
         outparams.format,
