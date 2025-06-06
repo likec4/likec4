@@ -105,9 +105,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "vscode-jsonrpc": "catalog:vscode",
-    "vscode-uri": "catalog:vscode"
+    "@hpcc-js/wasm-graphviz": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
@@ -147,9 +145,11 @@
     "valibot": "catalog:utils",
     "zod": "catalog:utils",
     "vitest": "catalog:vitest",
+    "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
     "which": "^5.0.0"
   },
   "packageManager": "pnpm@10.11.0"
