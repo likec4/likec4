@@ -78,14 +78,13 @@ describe('Aux', () => {
       k2?: string
     }>()
 
-    expectTypeOf<aux.LooseAllKinds<A>>().toEqualTypeOf<
+    expectTypeOf<aux.AllKinds<A>>().toEqualTypeOf<
       | 'system'
       | 'container'
       | 'pod'
       | 'node'
       | 'http'
       | 'grpc'
-      | string & Record<never, never>
     >()
   })
 

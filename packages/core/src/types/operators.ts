@@ -1,8 +1,8 @@
 import { allPass, anyPass, isNot, isNullish } from 'remeda'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
-import type { Any } from './aux'
 import type * as aux from './aux'
+import type { Any } from './aux'
 
 export type EqualOperator<V> = {
   eq: V
@@ -19,24 +19,25 @@ type AllNever = {
   tag?: never
   kind?: never
   participant?: never
+  operator?: never
 }
 
 export type TagEqual<A extends Any> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<aux.LooseTag<A>>
+  tag: EqualOperator<aux.Tag<A>>
 }
 export function isTagEqual<A extends Any>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
 export type KindEqual<A extends Any> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<aux.LooseAllKinds<A>>
+  kind: EqualOperator<aux.AllKinds<A>>
 }
 export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
 }
 
 export type Participant = 'source' | 'target'
-export type ParticipantOperator<A extends Any> = Omit<AllNever, 'participant'> & {
+export type ParticipantOperator<A extends Any> = Omit<AllNever, 'participant' | 'operator'> & {
   participant: Participant
   operator: KindEqual<A> | TagEqual<A>
 }
@@ -76,8 +77,8 @@ export type WhereOperator<A extends Any = Any> =
   | OrOperator<A>
 
 export type Filterable<A extends Any> = {
-  tags?: aux.LooseTags<A> | null | undefined
-  kind?: aux.LooseAllKinds<A> | null
+  tags?: aux.Tags<A> | null | undefined
+  kind?: aux.AllKinds<A> | null
   source?: Filterable<A>
   target?: Filterable<A>
 }

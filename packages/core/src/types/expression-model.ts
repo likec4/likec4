@@ -18,7 +18,7 @@ export namespace ModelFqnExpr {
   export type Wildcard = {
     wildcard: true
   }
-  export function isWildcard(expr: ModelExpression<any>): expr is ModelFqnExpr.Wildcard {
+  export function isWildcard<A extends AnyAux>(expr: ModelExpression<A>): expr is ModelFqnExpr.Wildcard {
     return 'wildcard' in expr && expr.wildcard === true
   }
 

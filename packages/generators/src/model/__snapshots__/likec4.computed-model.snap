@@ -7,83 +7,83 @@
  ******************************************************************************/
 
 import { LikeC4Model } from '@likec4/core/model'
+import type { ComputedLikeC4ModelData } from '@likec4/core/types'
 import type { Aux, SpecAux } from '@likec4/core/types';
 
-export type ElementId = 
-  | 'aws'
-  | 'cloud'
-  | 'customer'
-  | 'email'
-  | 'aws.rds'
-  | 'aws.s3'
-  | 'cloud.auth'
-  | 'cloud.backend'
-  | 'cloud.frontend'
-  | 'cloud.media'
-  | 'cloud.backend.api'
-  | 'cloud.backend.graphql'
-  | 'cloud.frontend.dashboard'
-  | 'cloud.frontend.mobile';
-
-export type DeploymentId = 
-  | 'customer'
-  | 'prod'
-  | 'customer.instance'
-  | 'prod.eu'
-  | 'prod.us'
-  | 'prod.eu.db'
-  | 'prod.eu.media'
-  | 'prod.eu.zone1'
-  | 'prod.eu.zone2'
-  | 'prod.us.db'
-  | 'prod.eu.zone1.api'
-  | 'prod.eu.zone1.ui'
-  | 'prod.eu.zone2.api'
-  | 'prod.eu.zone2.ui';
-
-export type ViewId = 
-  | 'cloud'
-  | 'index'
-  | 'prod';
-
-export type ElementKind = 
-  | 'component'
-  | 'mobile'
-  | 'person'
-  | 'system'
-  | 'webapp';
-
-export type RelationshipKind = never;
-
-export type DeploymentKind = 
-  | 'env'
-  | 'node'
-  | 'zone';
-
-export type Tag = 
-  | 'external'
-  | 'internal';
-
-export type MetadataKey = 
-  | 'key1';
-
-export type $Aux = Aux<
-  'computed',
-  ElementId,
-  DeploymentId,
-  ViewId,
-  'from-builder',
-  SpecAux<
-    ElementKind,
-    DeploymentKind,
-    RelationshipKind,
-    Tag,
-    MetadataKey
-  >
+export type $Specs = SpecAux<
+  // Element kinds
+  | "component"
+  | "mobile"
+  | "person"
+  | "system"
+  | "webapp",
+  // Deployment kinds
+  | "env"
+  | "node"
+  | "zone",
+  // Relationship kinds
+  never,
+  // Tags
+  | "external"
+  | "internal",
+  // Metadata keys
+  | "key1"
 >
 
+export type $Aux = Aux<
+  "computed",
+  // Elements
+  | "aws"
+  | "cloud"
+  | "customer"
+  | "email"
+  | "aws.rds"
+  | "aws.s3"
+  | "cloud.auth"
+  | "cloud.backend"
+  | "cloud.frontend"
+  | "cloud.media"
+  | "cloud.backend.api"
+  | "cloud.backend.graphql"
+  | "cloud.frontend.dashboard"
+  | "cloud.frontend.mobile",
+  // Deployments
+  | "customer"
+  | "prod"
+  | "customer.instance"
+  | "prod.eu"
+  | "prod.us"
+  | "prod.eu.db"
+  | "prod.eu.media"
+  | "prod.eu.zone1"
+  | "prod.eu.zone2"
+  | "prod.us.db"
+  | "prod.eu.zone1.api"
+  | "prod.eu.zone1.ui"
+  | "prod.eu.zone2.api"
+  | "prod.eu.zone2.ui",
+  // Views
+  | "cloud"
+  | "index"
+  | "prod",
+  // Project ID
+  "from-builder",
+  $Specs
+>
 
-export const likec4model: LikeC4Model.Computed<$Aux> = LikeC4Model.create({
+export type $ElementId = $Aux['ElementId']
+export type $DeploymentId = $Aux['DeploymentId']
+export type $ViewId = $Aux['ViewId']
+
+export type $ElementKind = $Aux['ElementKind']
+export type $RelationKind = $Aux['RelationKind']
+export type $DeploymentKind = $Aux['DeploymentKind']
+export type $Tag = $Aux['Tag']
+export type $Tags = readonly $Aux['Tag'][]
+export type $MetadataKey = $Aux['MetadataKey']
+
+
+export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4ModelData<$Aux>>({
   _stage: 'computed',
   projectId: 'from-builder',
   specification: {
@@ -1162,6 +1162,6 @@ export const likec4model: LikeC4Model.Computed<$Aux> = LikeC4Model.create({
       ],
     },
   },
-} as any)
+} as unknown))
 
 /* prettier-ignore-end */

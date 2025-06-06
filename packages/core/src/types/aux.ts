@@ -223,6 +223,15 @@ export type Metadata<A extends Any> =
       : Record<string, string>
 
 /**
+ * All known kinds from Aux as a literal union.
+ */
+export type AllKinds<A extends Any> = [
+  IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
+  IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
+  IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
+][number]
+
+/**
  * Specification from Aux
  */
 export type Spec<A> = A extends Aux<any, any, any, any, any, infer S> ? S : never
@@ -278,14 +287,3 @@ export type LooseTags<A extends Any> = readonly (Coalesce<A['Tag']> | OrString)[
 export type LooseElementKind<A extends Any> = Coalesce<A['ElementKind']> | OrString
 export type LooseDeploymentKind<A extends Any> = Coalesce<A['DeploymentKind']> | OrString
 export type LooseRelationKind<A extends Any> = Coalesce<A['RelationKind']> | OrString
-
-/**
- * All known kinds from Aux as a literal union.
- */
-export type LooseAllKinds<A extends Any> =
-  | OrString
-  | [
-    IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
-    IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
-    IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
-  ][number]

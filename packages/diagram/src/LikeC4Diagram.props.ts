@@ -29,10 +29,10 @@ type ElementIconRendererProps = {
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
 export type OnNavigateTo<A extends Any> = (
-  to: aux.StrictViewId<A>,
+  to: aux.ViewId<A>,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
-  element?: SetRequired<DiagramNode<A>, 'navigateTo'>,
+  element?: DiagramNodeWithNavigate<A>,
 ) => void
 
 export type OnNodeClick<A extends Any> = (

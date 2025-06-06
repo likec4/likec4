@@ -412,7 +412,7 @@ const fakeParsedModel = {
           },
         }),
       ],
-    } satisfies Record<string, NonEmptyArray<ViewRulePredicate>>,
+    } as Record<string, NonEmptyArray<ElementViewPredicate<$Aux>>>,
     dynamicPredicates: {},
     styles: globalStyles,
   },

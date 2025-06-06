@@ -9,6 +9,7 @@
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import type { LikeC4Model } from '@likec4/core/model'
+import type { DiagramView } from '@likec4/core/types'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ReactLikeC4Props as GenericReactLikeC4Props
@@ -16,69 +17,67 @@ import type {
 
 import type { Aux, SpecAux } from '@likec4/core/types';
 
-export type ElementId = 
-  | 'alice'
-  | 'bob'
-  | 'cloud'
-  | 'cloud.backend'
-  | 'cloud.frontend'
-  | 'cloud.backend.api'
-  | 'cloud.backend.db';
-
-export type DeploymentId = 
-  | 'dev'
-  | 'prod'
-  | 'dev.api'
-  | 'dev.vm1'
-  | 'prod.vm1'
-  | 'prod.vm2';
-
-export type ViewId = 
-  | 'view1'
-  | 'view2';
-
-export type ElementKind = 
-  | 'actor'
-  | 'component'
-  | 'system';
-
-export type RelationshipKind = 
-  | 'dislike'
-  | 'like';
-
-export type DeploymentKind = 
-  | 'env'
-  | 'vm';
-
-export type Tag = 
-  | 'tag1'
-  | 'tag2';
-
-export type MetadataKey = 
-  | 'key1'
-  | 'key2';
-
-export type $Aux = Aux<
-  'computed',
-  ElementId,
-  DeploymentId,
-  ViewId,
-  'from-builder',
-  SpecAux<
-    ElementKind,
-    DeploymentKind,
-    RelationshipKind,
-    Tag,
-    MetadataKey
-  >
+export type $Specs = SpecAux<
+  // Element kinds
+  | "actor"
+  | "component"
+  | "system",
+  // Deployment kinds
+  | "env"
+  | "vm",
+  // Relationship kinds
+  | "dislike"
+  | "like",
+  // Tags
+  | "tag1"
+  | "tag2",
+  // Metadata keys
+  | "key1"
+  | "key2"
 >
 
+export type $Aux = Aux<
+  "computed",
+  // Elements
+  | "alice"
+  | "bob"
+  | "cloud"
+  | "cloud.backend"
+  | "cloud.frontend"
+  | "cloud.backend.api"
+  | "cloud.backend.db",
+  // Deployments
+  | "dev"
+  | "prod"
+  | "dev.api"
+  | "dev.vm1"
+  | "prod.vm1"
+  | "prod.vm2",
+  // Views
+  | "view1"
+  | "view2",
+  // Project ID
+  "from-builder",
+  $Specs
+>
 
-declare function isLikeC4ViewId(value: unknown): value is ViewId;
+export type $ElementId = $Aux['ElementId']
+export type $DeploymentId = $Aux['DeploymentId']
+export type $ViewId = $Aux['ViewId']
 
-declare const likec4model: LikeC4Model.Layouted<$Aux>;
-declare function useLikeC4Model(): LikeC4Model.Layouted<$Aux>;
-declare function useLikeC4View(viewId: ViewId): DiagramView<$Aux>;
+export type $ElementKind = $Aux['ElementKind']
+export type $RelationKind = $Aux['RelationKind']
+export type $DeploymentKind = $Aux['DeploymentKind']
+export type $Tag = $Aux['Tag']
+export type $Tags = readonly $Aux['Tag'][]
+export type $MetadataKey = $Aux['MetadataKey']
+
+
+declare function isLikeC4ViewId(value: unknown): value is $ViewId;
+
+declare const likec4model: LikeC4Model<$Aux>;
+declare function useLikeC4Model(): LikeC4Model<$Aux>;
+declare function useLikeC4View(viewId: $ViewId): DiagramView<$Aux>;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 
@@ -91,10 +90,10 @@ type IconRendererProps = {
 }
 declare function RenderIcon(props: IconRendererProps): JSX.Element;
 
-type LikeC4ViewProps = GenericLikeC4ViewProps<ViewId, Tag, ElementKind>;
+type LikeC4ViewProps = GenericLikeC4ViewProps<$Aux>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
-type ReactLikeC4Props = GenericReactLikeC4Props<ViewId, Tag, ElementKind>
+type ReactLikeC4Props = GenericReactLikeC4Props<$Aux>
 declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
 
 export {

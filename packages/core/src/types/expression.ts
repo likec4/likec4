@@ -22,7 +22,7 @@ export namespace FqnExpr {
   export type Wildcard = {
     wildcard: true
   }
-  export function isWildcard(expr: Expression<any>): expr is FqnExpr.Wildcard {
+  export function isWildcard<A extends AnyAux>(expr: Expression<A>): expr is FqnExpr.Wildcard {
     return 'wildcard' in expr && expr.wildcard === true
   }
 
