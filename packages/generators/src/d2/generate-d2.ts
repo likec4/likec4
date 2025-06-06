@@ -1,4 +1,5 @@
-import type { ComputedNode, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
+import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { aux, ComputedNode, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 
@@ -48,7 +49,8 @@ const d2shape = ({ shape }: Node) => {
   }
 }
 
-export function generateD2(view: AnyView) {
+export function generateD2(viewmodel: LikeC4ViewModel<aux.Unknown>) {
+  const view = viewmodel.$view
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 

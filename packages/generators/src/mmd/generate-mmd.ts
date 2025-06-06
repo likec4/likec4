@@ -1,4 +1,5 @@
-import type { NodeId, ProcessedView as AnyView } from '@likec4/core/types'
+import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { aux, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 
@@ -31,7 +32,8 @@ const mmdshape = ({ shape }: Node): [start: string, end: string] => {
   }
 }
 
-export function generateMermaid(view: AnyView) {
+export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
+  const view = viewmodel.$view
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 

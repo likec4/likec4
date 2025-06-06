@@ -1,5 +1,65 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generate D2 - element view 1`] = `
+"direction: down
+
+Alice: {
+  label: "Alice"
+}
+Bob: {
+  label: "Bob"
+}
+Cloud: {
+  label: "Cloud"
+
+  Frontend: {
+    label: "frontend"
+  }
+  Backend: {
+    label: "Backend"
+  }
+}
+
+Alice -> Cloud.Frontend: "uses \\n at home"
+Bob -> Cloud.Frontend: "uses \\n at work"
+Cloud.Frontend -> Cloud.Backend: "requests"
+"
+`;
+
+exports[`generate D2 - element view 3 levels 1`] = `
+"direction: down
+
+Alice: {
+  label: "Alice"
+}
+Bob: {
+  label: "Bob"
+}
+Cloud: {
+  label: "Cloud"
+
+  Frontend: {
+    label: "frontend"
+  }
+  Backend: {
+    label: "Backend"
+
+    Api: {
+      label: "API"
+    }
+    Db: {
+      label: "DB"
+    }
+  }
+}
+
+Cloud.Frontend -> Cloud.Backend.Api: "requests"
+Cloud.Backend.Api -> Cloud.Backend.Db
+Alice -> Cloud.Frontend: "uses \\n at home"
+Bob -> Cloud.Frontend: "uses \\n at work"
+"
+`;
+
 exports[`generate D2 - fakeComputedView 3 Levels 1`] = `
 "direction: down
 
@@ -87,5 +147,23 @@ SystemFrontend: {
 
 SystemFrontend -> SystemBackend: "requests"
 Client -> SystemFrontend: "opens"
+"
+`;
+
+exports[`generate D2 - landscape 1`] = `
+"direction: down
+
+Alice: {
+  label: "Alice"
+}
+Bob: {
+  label: "Bob"
+}
+Cloud: {
+  label: "Cloud"
+}
+
+Alice -> Cloud: "uses \\n at home"
+Bob -> Cloud: "uses \\n at work"
 "
 `;

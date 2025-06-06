@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView } from '@likec4/core'
+import type { ComputedView, DiagramView } from '@likec4/core/types'
 
 export const fakeDiagram: DiagramView = {
   edges: [

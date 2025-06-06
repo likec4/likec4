@@ -1,13 +1,14 @@
+import type { aux, LikeC4ViewModel } from '@likec4/core/model'
 import type {
   ComputedEdge,
   ComputedNode,
-  ComputedView,
   ElementThemeColorValues,
   KeysOf,
   NodeId,
+  ProcessedView,
   RelationshipThemeColorValues,
   ThemeColorValues,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 
@@ -61,7 +62,7 @@ const pumlColor = (
   }
 }
 
-const pumlDirection = ({ autoLayout }: ComputedView) => {
+const pumlDirection = ({ autoLayout }: ProcessedView) => {
   switch (autoLayout.direction) {
     case 'TB': {
       return 'top to bottom'
@@ -100,9 +101,11 @@ const pumlShape = ({ shape }: ComputedNode) => {
 
 const escapeLabel = (label: string | null | undefined) => isNil(label) ? null : JSON.stringify(label).slice(1, -1)
 
-export function generatePuml<V extends ComputedView>(view: V) {
-  const { nodes, edges, customColorDefinitions } = view
-  const customColors = new Map<string, ThemeColorValues>(Object.entries(customColorDefinitions || {}))
+export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
+  const view = viewmodel.$view
+  const customColorDefinitions = viewmodel.$model.specification.customColors ?? {}
+  const { nodes, edges } = view
+  const customColors = new Map<string, ThemeColorValues>(Object.entries(customColorDefinitions))
   const elemntColorProvider = (key: KeysOf<ElementThemeColorValues>) => (colorKey: string) =>
     customColors.get(colorKey)?.elements[key]
   const relationshipsColorProvider = (key: KeysOf<RelationshipThemeColorValues>) => (colorKey: string) =>

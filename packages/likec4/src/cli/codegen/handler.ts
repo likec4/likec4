@@ -118,9 +118,10 @@ async function multipleFilesCodegenAction(
   }
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.diagrams()
+  const model = await languageServices.layoutedModel()
   let succeeded = 0
-  for (const view of views) {
+  for (const vm of model.views()) {
+    const view = vm.$view
     try {
       let relativePath = view.relativePath ?? '.'
       if (relativePath.includes('/')) {
@@ -133,7 +134,7 @@ async function multipleFilesCodegenAction(
         createdDirs.add(relativePath)
       }
       const outfile = resolve(outdir, relativePath, view.id + ext)
-      const generatedSource = generator(view)
+      const generatedSource = generator(vm)
       await writeFile(outfile, generatedSource)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
