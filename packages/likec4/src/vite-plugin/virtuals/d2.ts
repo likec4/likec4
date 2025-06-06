@@ -1,10 +1,10 @@
-import type { ComputedView } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { generateD2 } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import k from 'tinyrainbow'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
 
-const code = (views: ComputedView[]) => {
+function code(model: LikeC4Model.Computed) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
@@ -22,7 +22,7 @@ const code = (views: ComputedView[]) => {
       indentedChildren(indented) {
         indented.append(
           joinToNode(
-            views,
+            [...model.views()],
             view =>
               expandToNode`
               case ${JSON.stringify(view.id)}: {
@@ -50,8 +50,8 @@ export const projectD2Module = {
   ...generateMatches('d2'),
   async load({ likec4, projectId, logger }) {
     logger.info(k.dim(`generating likec4:d2/${projectId}`))
-    const views = await likec4.views.computedViews(projectId)
-    return code(views)
+    const model = await likec4.computedModel(projectId)
+    return code(model)
   },
 } satisfies ProjectVirtualModule
 

@@ -1,4 +1,5 @@
 import {
+  type aux,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -6,6 +7,7 @@ import {
   type Fqn,
   type NodeId,
   type NodeNotation as ElementNotation,
+  type scalar,
   type ViewId,
 } from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
@@ -43,7 +45,7 @@ export interface DiagramApi {
   /**
    * Navigate to view
    */
-  navigateTo(viewId: ViewId, fromNode?: NodeId): void
+  navigateTo(viewId: scalar.ViewId, fromNode?: scalar.NodeId): void
   /**
    * Navigate back or forward in history
    */
@@ -55,18 +57,18 @@ export interface DiagramApi {
   /**
    * Open relationships browser
    */
-  openRelationshipsBrowser(fqn: Fqn): void
+  openRelationshipsBrowser(fqn: scalar.Fqn): void
   /**
    * If running in editor, trigger opening source file
    */
-  openSource(params: OpenSourceParams): void
+  openSource(params: OpenSourceParams<aux.Unknown>): void
   /**
    * Open element details card
    */
-  openElementDetails(fqn: Fqn, fromNode?: NodeId): void
-  openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]): void
-  updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
-  updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
+  openElementDetails(fqn: scalar.Fqn, fromNode?: scalar.NodeId): void
+  openRelationshipDetails(...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]): void
+  updateNodeData(nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>): void
+  updateEdgeData(edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>): void
   /**
    * Schedule save manual layout
    */
@@ -119,7 +121,7 @@ export interface DiagramApi {
  */
 export function useDiagram(): DiagramApi {
   const actor = useDiagramActorRef()
-  return useMemo(() => ({
+  return useMemo((): DiagramApi => ({
     actor,
     send: (event: DiagramActorEvent) => actor.send(event),
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
@@ -135,16 +137,16 @@ export function useDiagram(): DiagramApi {
     fitDiagram: (duration = 350) => {
       actor.send({ type: 'fitDiagram', duration })
     },
-    openRelationshipsBrowser: (fqn: Fqn) => {
+    openRelationshipsBrowser: (fqn) => {
       actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
-    openSource: (params: OpenSourceParams) => {
+    openSource: (params: OpenSourceParams<aux.Unknown>) => {
       actor.send({ type: 'open.source', ...params })
     },
-    openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
+    openElementDetails: (fqn, fromNode?: scalar.NodeId) => {
       actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+    openRelationshipDetails: (...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]) => {
       if (params.length === 1) {
         actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
       } else {
@@ -152,10 +154,10 @@ export function useDiagram(): DiagramApi {
       }
     },
 
-    updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
+    updateNodeData: (nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
-    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
+    updateEdgeData: (edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>) => {
       actor.send({
         type: 'update.edgeData',
         edgeId,

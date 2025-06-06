@@ -5,6 +5,7 @@ import {
   type Element,
   type Fqn,
   type NodeId,
+  type scalar,
   type ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
@@ -460,7 +461,7 @@ export function ElementDetailsCard({
                           <ViewButton
                             key={view.id}
                             view={view}
-                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
                         ))}
                       </Stack>
                     </Box>
@@ -473,7 +474,7 @@ export function ElementDetailsCard({
                           <ViewButton
                             key={view.id}
                             view={view}
-                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
                         ))}
                       </Stack>
                     </Box>

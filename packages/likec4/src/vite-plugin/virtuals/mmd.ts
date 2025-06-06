@@ -1,9 +1,9 @@
+import type { LikeC4Model } from '@likec4/core/model'
 import { generateMermaid } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
-import type { ComputedView } from '../../model'
 import { type ProjectVirtualModule, generateCombinedProjects, generateMatches, k } from './_shared'
 
-function code(views: ComputedView[]) {
+function code(model: LikeC4Model.Computed) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
@@ -21,7 +21,7 @@ function code(views: ComputedView[]) {
       indentedChildren(indented) {
         indented.append(
           joinToNode(
-            views,
+            [...model.views()],
             view =>
               expandToNode`
               case ${JSON.stringify(view.id)}: {
@@ -50,8 +50,8 @@ export const projectMmdSourcesModule = {
   ...generateMatches('mmd'),
   async load({ likec4, projectId, logger }) {
     logger.info(k.dim(`generating virtual:likec4/mmd/${projectId}`))
-    const views = await likec4.views.computedViews(projectId)
-    return code(views)
+    const model = await likec4.computedModel(projectId)
+    return code(model)
   },
 } satisfies ProjectVirtualModule
 

@@ -78,7 +78,7 @@ export type WhereOperator<A extends Any = Any> =
 
 export type Filterable<A extends Any> = {
   tags?: aux.Tags<A> | null | undefined
-  kind?: aux.AllKinds<A> | null
+  kind?: aux.AllKinds<A> | null | undefined
   source?: Filterable<A>
   target?: Filterable<A>
 }

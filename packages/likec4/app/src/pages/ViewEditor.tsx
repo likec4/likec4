@@ -1,4 +1,3 @@
-import type { ViewId } from '@likec4/core/types'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
@@ -11,7 +10,7 @@ export function ViewEditor() {
   const router = useRouter()
   const view = useCurrentDiagram()
 
-  const onNavigateTo = useCallbackRef((viewId: ViewId) => {
+  const onNavigateTo = useCallbackRef((viewId: string) => {
     const loc = router.buildLocation({
       to: '.',
       params: (current: any) => ({

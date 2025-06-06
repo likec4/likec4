@@ -4,7 +4,7 @@ import {
   type ComputedLikeC4ModelData,
   type DiagramNode,
   type DiagramView,
-  type ProjectId,
+  type scalar,
   type ViewId,
 } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
@@ -56,7 +56,7 @@ export const useIsModelLoaded = () => useStore($initialized)
 export const $viewId = atom(viewId)
 export const $projectId = atom(projectId)
 
-export const changeViewId = (viewId: ViewId, projectId?: ProjectId) => {
+export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId) => {
   const diagramState = $likeC4Diagrams.get()[viewId]
   if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {

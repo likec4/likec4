@@ -1,9 +1,8 @@
-import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
+import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type {
   DeploymentConnectionModel,
   DeploymentElementModel,
-  DeploymentRelationModel,
   LikeC4DeploymentModel,
   RelationshipModel,
 } from '../../../model'
@@ -12,7 +11,7 @@ import {
   findConnectionsBetween as findModelConnectionsBetween,
 } from '../../../model/connection/model'
 import type { AnyAux } from '../../../types'
-import { type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
+import { type RelationExpr, FqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import {
   deploymentExpressionToPredicate,
@@ -241,37 +240,4 @@ function resolveRelationsBetweenModelElements<A extends AnyAux>({
   }
 
   return new Set(modelConnections.flatMap(c => [...c.relations]))
-}
-
-function elementToFilterable<M extends AnyAux>(element: DeploymentElementModel<M>) {
-  return pick(element, ['tags', 'kind'])
-}
-
-function toFilterableRelation<M extends AnyAux>(
-  source: DeploymentElementModel<M>,
-  target: DeploymentElementModel<M>,
-) {
-  return (
-    relation: RelationshipModel<M> | DeploymentRelationModel<M>,
-  ) => ({
-    tags: relation.tags,
-    kind: relation.kind,
-    source: elementToFilterable(source),
-    target: elementToFilterable(target),
-  })
-}
-
-function matchConnection<M extends AnyAux>(
-  c: DeploymentConnectionModel<M>,
-  where: OperatorPredicate<M> | null,
-): boolean {
-  if (!where) {
-    return true
-  }
-
-  return [
-    ...Array.from(c.relations.deployment.values()).map(toFilterableRelation(c.source, c.target)),
-    ...Array.from(c.relations.model.values()).map(toFilterableRelation(c.source, c.target)),
-  ]
-    .filter(where).length > 0
 }

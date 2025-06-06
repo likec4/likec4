@@ -1,3 +1,4 @@
+import type { scalar } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { IconRenderer } from '@likec4/icons/all'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
@@ -90,7 +91,8 @@ export default function App() {
           enableRelationshipDetails
           showDiagramTitle={false}
           renderIcon={IconRenderer}
-          onNavigateTo={(to, event) => {
+          onNavigateTo={(_to, event) => {
+            const to = _to as scalar.ViewId
             setLastClickedNode()
             extensionApi.locate({ view: to })
             extensionApi.navigateTo(to)

@@ -58,8 +58,7 @@
     "apps/*/lib": true,
     "apps/*/styled-system": true,
     "styled-system/*/node_modules": true,
-    "styled-system/*/lib": true,
-    "e2e/node_modules/**": true
+    "styled-system/*/lib": true
   },
   "json.schemas": [
     {

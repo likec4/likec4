@@ -5,7 +5,6 @@ import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
 import {
   type Icon,
-  GroupElementKind,
 } from './scalar'
 import type {
   Color,
@@ -23,7 +22,7 @@ import type {
 
 export interface ComputedNode<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   id: scalar.NodeId
-  kind: aux.ElementKind<A> | aux.DeploymentKind<A> | typeof GroupElementKind
+  kind: aux.ElementKind<A> | aux.DeploymentKind<A> | '@group'
   parent: scalar.NodeId | null
   /**
    * Reference to model element

@@ -23,10 +23,10 @@ export function relationExpressionToPredicates<A extends AnyAux, T extends Filte
       const where = whereOperatorAsPredicate(expr.where.condition)
       return e =>
         predicate(e) && where({
-          source: { tags: e.source.tags, kind: e.source.kind },
-          target: { tags: e.target.tags, kind: e.target.kind },
+          source: { tags: e.source.tags, kind: e.source.kind as aux.AllKinds<A> },
+          target: { tags: e.target.tags, kind: e.target.kind as aux.AllKinds<A> },
           ...(e.tags && { tags: e.tags }),
-          ...(e.kind && { kind: e.kind }),
+          ...(e.kind && { kind: e.kind as aux.AllKinds<A> }),
         })
     }
     case ModelRelationExpr.isDirect(expr): {

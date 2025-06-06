@@ -2,7 +2,7 @@ import type { LocalWorkspace } from '#worker/types'
 import { IconRenderer } from '$components/IconRenderer'
 import { Logo } from '$components/Logo'
 import { useWorkspaces } from '$hooks/useWorkspaces'
-import type { DiagramView, ViewId } from '@likec4/core'
+import type { DiagramView } from '@likec4/core'
 import { type ControlsCustomLayout, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { css } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
@@ -29,7 +29,7 @@ function RouteComponent() {
   const view = useLikeC4DiagramView(viewId)
   const sharedPlayground = Route.parentRoute.useLoaderData()
 
-  const onNavigateTo = useCallbackRef((viewId: ViewId) => {
+  const onNavigateTo = useCallbackRef((viewId: string) => {
     router.navigate({
       to: '/share/$shareId/view/$viewId/',
       params: { shareId, viewId },
