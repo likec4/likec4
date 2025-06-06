@@ -895,12 +895,6 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
-      vscode-jsonrpc:
-        specifier: 8.2.0
-        version: 8.2.0
-      vscode-uri:
-        specifier: 3.1.0
-        version: 3.1.0
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1016,6 +1010,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.1.4(@types/debug@4.1.12)(@types/node@20.17.30)(@vitest/ui@3.1.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
+      vscode-jsonrpc:
+        specifier: 8.2.0
+        version: 8.2.0
       vscode-languageserver:
         specifier: 9.0.1
         version: 9.0.1
@@ -1025,6 +1022,9 @@ importers:
       vscode-languageserver-types:
         specifier: 3.17.5
         version: 3.17.5
+      vscode-uri:
+        specifier: 3.1.0
+        version: 3.1.0
       which:
         specifier: ^5.0.0
         version: 5.0.0

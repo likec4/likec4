@@ -105,9 +105,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "vscode-jsonrpc": "catalog:vscode",
-    "vscode-uri": "catalog:vscode"
+    "@hpcc-js/wasm-graphviz": "catalog:utils"
   },
   "devDependencies": {
     "@types/chroma-js": "^3.1.1",
@@ -148,9 +146,11 @@
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
     "vitest": "catalog:vitest",
+    "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-protocol": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "zod": "catalog:utils"
   },
