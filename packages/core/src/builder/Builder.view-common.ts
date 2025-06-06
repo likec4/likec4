@@ -1,6 +1,7 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
+  type Any,
   type AnyAux,
   type AnyViewRuleStyle as ViewRuleStyle,
   type AutoLayoutDirection,
@@ -96,7 +97,7 @@ export namespace ViewPredicate {
   }
 }
 
-function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator {
+function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<Any> {
   if (isString(where)) {
     const op = where as LiteralUnion<ViewPredicate.WhereEq<AnyTypes>, string>
     switch (true) {

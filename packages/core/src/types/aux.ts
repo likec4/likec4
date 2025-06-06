@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, IsNever } from 'type-fest'
+import type { IfNever, IsAny, IsLiteral, IsNever } from 'type-fest'
 import type { Coalesce, Link } from './_common'
 import type { ModelStage } from './const'
 import type * as scalar from './scalar'
@@ -222,14 +222,19 @@ export type Metadata<A extends Any> =
       }
       : Record<string, string>
 
+type StringIfNever<A> = IsNever<A> extends true ? string :
+  IsAny<A> extends true ? string
+  : A
 /**
  * All known kinds from Aux as a literal union.
  */
-export type AllKinds<A extends Any> = [
-  IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
-  IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
-  IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
-][number]
+export type AllKinds<A extends Any> = StringIfNever<
+  [
+    IsLiteral<A['ElementKind']> extends true ? A['ElementKind'] : never,
+    IsLiteral<A['DeploymentKind']> extends true ? A['DeploymentKind'] : never,
+    IsLiteral<A['RelationKind']> extends true ? A['RelationKind'] : never,
+  ][number]
+>
 
 /**
  * Specification from Aux
