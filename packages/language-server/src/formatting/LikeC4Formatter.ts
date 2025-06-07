@@ -167,13 +167,9 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isDynamicViewStep, (n, f) => {
       f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
 
-      const kind = GrammarUtils.findNodeForProperty(n.$cstNode, 'kind')
-      const dot = kind && CstUtils.getPreviousNode(kind)
-      if (dot?.text == '.') {
-        f.cst([dot])
-          .prepend(FormattingOptions.oneSpace)
-        f.cst([kind!]).append(FormattingOptions.oneSpace)
-      }
+      f.property('dotKind')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.oneSpace)
 
       f.keywords(']->')
         .prepend(FormattingOptions.noSpace)
@@ -623,13 +619,9 @@ export class LikeC4Formatter extends AbstractFormatter {
         .prepend(FormattingOptions.noSpace)
         .append(FormattingOptions.oneSpace)
 
-      const kind = GrammarUtils.findNodeForProperty(n.$cstNode, 'kind')
-      const dot = kind && CstUtils.getPreviousNode(kind)
-      if (dot?.text == '.') {
-        f.cst([dot])
-          .prepend(FormattingOptions.oneSpace)
-        f.cst([kind!]).append(FormattingOptions.oneSpace)
-      }
+      f.property('dotKind')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.oneSpace)
     })
     this.on(node, ast.isDirectedRelationExpr, (n, f) => {
       f.property('target').prepend(FormattingOptions.oneSpace)

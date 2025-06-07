@@ -184,7 +184,7 @@ StrictFqnRef:
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
   (
-    Dot kind=[RelationshipKind:Id] |
+    dotKind=RelationKindDotRef |
     '-[' kind=[RelationshipKind] ']->' |
     '->'
   )
@@ -342,7 +342,7 @@ DynamicViewParallelSteps:
 
 DynamicViewStep:
   source=ElementRef
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | Dot kind=[RelationshipKind:Id] )
+  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
   target=ElementRef
   title=String?
   custom=CustomRelationProperties?
@@ -475,7 +475,7 @@ DirectedRelationExpr infers RelationExpr:
 
 OutgoingRelationExpr:
   from=FqnExpr
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | Dot kind=[RelationshipKind:Id])
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
 ;
 
 FqnExpressions:
@@ -606,7 +606,7 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | Dot kind=[RelationshipKind:Id])
+  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
   target=FqnRef
   (
     title=String
@@ -768,6 +768,10 @@ RelationshipStyleProperty:
 
 TagRef :
   Hash tag=[Tag:Id]
+;
+
+RelationKindDotRef :
+  Dot kind=[RelationshipKind:Id]
 ;
 
 Boolean returns boolean: 'true' | 'false';
