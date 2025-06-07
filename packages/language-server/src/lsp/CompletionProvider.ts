@@ -28,7 +28,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
   }
 
   override readonly completionOptions = {
-    triggerCharacters: ['.'],
+    triggerCharacters: ['.', '#'],
   } satisfies CompletionProviderOptions
 
   protected override completionForKeyword(

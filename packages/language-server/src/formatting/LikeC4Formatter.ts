@@ -1,5 +1,12 @@
 import { nonexhaustive } from '@likec4/core'
-import { type AstNode, type CompositeCstNode, type LangiumDocument, GrammarUtils } from 'langium'
+import {
+  type AstNode,
+  type CompositeCstNode,
+  type CstNode,
+  type LangiumDocument,
+  CstUtils,
+  GrammarUtils,
+} from 'langium'
 import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } from 'langium/lsp'
 import { filter, isTruthy } from 'remeda'
 import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
@@ -102,7 +109,11 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatTags(node: AstNode) {
     this.on(node, ast.isTags, (n, f) => {
-      f.cst(GrammarUtils.findNodesForProperty(n.$cstNode, 'values').slice(1))
+      const tags = GrammarUtils.findNodesForProperty(n.$cstNode, 'values')
+        .filter(x => x!!)
+        .slice(1) as CstNode[]
+
+      f.cst(tags)
         .prepend(FormattingOptions.oneSpace)
 
       f.keywords(',')
@@ -156,8 +167,10 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isDynamicViewStep, (n, f) => {
       f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
 
-      const kind = f.property('kind')
-      kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
+      f.property('dotKind')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.oneSpace)
+
       f.keywords(']->')
         .prepend(FormattingOptions.noSpace)
         .append(FormattingOptions.oneSpace)
@@ -606,8 +619,9 @@ export class LikeC4Formatter extends AbstractFormatter {
         .prepend(FormattingOptions.noSpace)
         .append(FormattingOptions.oneSpace)
 
-      const kind = f.property('kind')
-      kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
+      f.property('dotKind')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.oneSpace)
     })
     this.on(node, ast.isDirectedRelationExpr, (n, f) => {
       f.property('target').prepend(FormattingOptions.oneSpace)
