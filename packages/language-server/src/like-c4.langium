@@ -91,7 +91,7 @@ Imported:
 // Model -------------------------------------
 
 Tags:
-  (Hash values+=[Tag:Id])+ ({infer Tags.prev=current} ',' (Hash values+=[Tag:Id])*)* ';'?
+  (values+=TagRef)+ ({infer Tags.prev=current} ',' (values+=TagRef)*)* ';'?
 ;
 
 Model:
@@ -448,7 +448,7 @@ RelationExprOrWhere:
 FqnExpr:
   {infer WildcardExpression} isWildcard?='*' |
   // These are not valid in FqnExpr, but we keep for backward compatibility
-  {infer ElementTagExpression} 'element.tag' IsEqual Hash tag=[Tag:Id] |
+  {infer ElementTagExpression} 'element.tag' IsEqual tag=TagRef |
   {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind] |
   FqnRefExpr
 ;
@@ -502,7 +502,7 @@ WhereElementNegation:
   'not' value=WhereElementExpression;
 
 WhereElement:
-  {infer WhereElementTag} 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereElementTag} 'tag' EqOperator value=TagRef |
   {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]
 ;
 
@@ -527,9 +527,9 @@ WhereRelationNegation:
   'not' value=WhereRelationExpression;
 
 WhereRelation:
-  {infer WhereRelationTag} 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereRelationTag} 'tag' EqOperator value=TagRef |
   {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
-  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator Hash value=[Tag:Id] |
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
   {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
@@ -765,6 +765,10 @@ ArrowProperty:
 
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
+
+TagRef :
+  Hash tag=[Tag:Id]
+;
 
 Boolean returns boolean: 'true' | 'false';
 

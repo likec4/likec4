@@ -109,13 +109,11 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatTags(node: AstNode) {
     this.on(node, ast.isTags, (n, f) => {
-      const tagNames = GrammarUtils.findNodesForProperty(n.$cstNode, 'values')
-      const hashes = tagNames
-        .map(x => CstUtils.getPreviousNode(x))
+      const tags = GrammarUtils.findNodesForProperty(n.$cstNode, 'values')
         .filter(x => x!!)
         .slice(1) as CstNode[]
 
-      f.cst(hashes)
+      f.cst(tags)
         .prepend(FormattingOptions.oneSpace)
 
       f.keywords(',')

@@ -208,11 +208,8 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         }
       }
       if (ast.isElementTagExpression(astNode)) {
-        invariant(astNode.tag?.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
-        let elementTag = astNode.tag.$refText
-        if (elementTag.startsWith('#')) {
-          elementTag = elementTag.slice(1)
-        }
+        invariant(astNode.tag.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+        let elementTag = astNode.tag.tag.$refText
         return {
           elementTag: elementTag as c4.Tag,
           isEqual: astNode.isEqual,
