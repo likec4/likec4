@@ -30,7 +30,8 @@
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
-    "test:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\" && cd e2e && pnpm install && pnpm install:chromium && pnpm bootstrap && pnpm test",
+    "pretest:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\"",
+    "test:e2e": "cd e2e && pnpm install && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {

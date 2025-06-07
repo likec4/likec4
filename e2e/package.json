@@ -10,6 +10,7 @@
     "generate:png": "likec4 export png -o ./generated/images --flat",
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",
+    "start": "likec4 start",
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots"
   },
