@@ -9,9 +9,9 @@ import type {
 import {
   type DeploymentConnectionModel,
   ElementModel,
-  isDeployedInstance,
+  isDeployedInstanceModel as isDeployedInstance,
   isDeploymentElementModel,
-  isDeploymentNode,
+  isDeploymentNodeModel as isDeploymentNode,
   isElementModel,
   isNestedElementOfDeployedInstanceModel,
 } from '../../../model'

@@ -184,7 +184,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     })) as any,
     ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
     customColors: {},
-  })
+  } as Specification<Types.ToAux<T>>)
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
     if (!links || !hasAtLeast(links, 1)) {

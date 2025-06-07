@@ -1,6 +1,6 @@
-import type { UnionToTuple } from 'type-fest'
+import type { IsNever } from 'type-fest'
 import type * as aux from './aux'
-import type { Any, AnyAux } from './aux'
+import type { Any } from './aux'
 import type {
   Icon,
 } from './scalar'
@@ -38,7 +38,7 @@ export interface ElementSpecification {
 }
 
 export interface TagSpecification {
-  color: ColorLiteral | ThemeColor
+  color: ThemeColor | ColorLiteral
 }
 
 /**
@@ -59,20 +59,21 @@ export interface RelationshipSpecification {
   tail?: RelationshipArrowType
 }
 
-export interface Specification<A extends AnyAux = Any> {
-  tags?: {
-    [key in aux.Tag<A>]: TagSpecification
-  }
-  elements: {
-    [key in aux.ElementKind<A>]: Partial<ElementSpecification>
-  }
-  deployments: {
-    [key in aux.DeploymentKind<A>]: Partial<ElementSpecification>
-  }
-  relationships: {
-    [key in aux.RelationKind<A>]: Partial<RelationshipSpecification>
-  }
-  // dprint-ignore
-  metadataKeys?: UnionToTuple<aux.MetadataKey<A>>
-  customColors?: CustomColorDefinitions
-}
+export type Specification<A> = A extends Any ? {
+    tags: {
+      [key in aux.Tag<A>]: TagSpecification
+    }
+    elements: {
+      [key in aux.ElementKind<A>]: Partial<ElementSpecification>
+    }
+    deployments: {
+      [key in aux.DeploymentKind<A>]: Partial<ElementSpecification>
+    }
+    relationships: {
+      [key in aux.RelationKind<A>]: Partial<RelationshipSpecification>
+    }
+    // dprint-ignore
+    metadataKeys?: IsNever<aux.MetadataKey<A>> extends true ? never : aux.MetadataKey<A>[]
+    customColors?: CustomColorDefinitions
+  } :
+  never

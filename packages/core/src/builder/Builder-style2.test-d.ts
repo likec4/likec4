@@ -4,7 +4,7 @@ import type { Aux, ParsedLikeC4ModelData, SpecAux } from '../types'
 import { Builder } from './Builder'
 
 test('Builder types - style 2', () => {
-  const m = Builder
+  const b1 = Builder
     .specification({
       elements: {
         actor: {
@@ -27,6 +27,7 @@ test('Builder types - style 2', () => {
         tag1: {},
         tag2: {},
       },
+      metadataKeys: ['key1', 'key2', 'key1', 'key3'],
     })
     .model(({ actor, system, component, relTo }, _) =>
       _(
@@ -147,17 +148,18 @@ test('Builder types - style 2', () => {
       )
     )
 
-  expectTypeOf(m.Types.Fqn).toEqualTypeOf<
+  expectTypeOf(b1.Types.Fqn).toEqualTypeOf<
     'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
   >()
-  expectTypeOf(m.Types.ViewId).toEqualTypeOf<
+  expectTypeOf(b1.Types.ViewId).toEqualTypeOf<
     'view' | 'view-of' | 'deployment'
   >()
-  expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf<
+  expectTypeOf(b1.Types.DeploymentFqn).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
   >()
+  expectTypeOf(b1.Types.MetadataKey).toEqualTypeOf<'key1' | 'key2' | 'key3'>()
 
-  expectTypeOf(m.build()).toEqualTypeOf<
+  expectTypeOf(b1.build()).toEqualTypeOf<
     ParsedLikeC4ModelData<
       Aux<
         'parsed',
@@ -170,13 +172,14 @@ test('Builder types - style 2', () => {
           'env' | 'vm',
           'like' | 'dislike',
           'tag1' | 'tag2',
-          never
+          'key1' | 'key2' | 'key3'
         >
       >
     >
   >()
 
-  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf<
+  const m = b1.toLikeC4Model()
+  expectTypeOf(m).toEqualTypeOf<
     LikeC4Model<
       Aux<
         'computed',
@@ -189,7 +192,40 @@ test('Builder types - style 2', () => {
           'env' | 'vm',
           'like' | 'dislike',
           'tag1' | 'tag2',
-          never
+          'key1' | 'key2' | 'key3'
+        >
+      >
+    >
+  >()
+
+  const b2 = Builder.specification(m.specification)
+    .model(({ actor }, _) =>
+      _(
+        actor('alice2'),
+        actor('bob2'),
+      )
+    )
+    .deployment(({ env, instanceOf }, _) =>
+      _(
+        env('out').with(
+          instanceOf('bob2'),
+        ),
+      )
+    )
+  expectTypeOf(b2.build()).toEqualTypeOf<
+    ParsedLikeC4ModelData<
+      Aux<
+        'parsed',
+        'alice2' | 'bob2',
+        'out' | 'out.bob2',
+        never,
+        'from-builder',
+        SpecAux<
+          'actor' | 'system' | 'component',
+          'env' | 'vm',
+          'like' | 'dislike',
+          'tag1' | 'tag2',
+          'key1' | 'key2' | 'key3'
         >
       >
     >

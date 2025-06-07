@@ -59,9 +59,10 @@ test('Builder types - style 1', () => {
       },
       tag2: {},
     },
+    metadataKeys: ['key1', 'key2'],
   })
 
-  const m = builder
+  const b1 = builder
     .with(
       model(
         actor('alice'),
@@ -172,20 +173,20 @@ test('Builder types - style 1', () => {
       ),
     )
 
-  expectTypeOf(m.Types.Fqn).toEqualTypeOf<
+  expectTypeOf(b1.Types.Fqn).toEqualTypeOf<
     'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
   >()
-  expectTypeOf(m.Types.ViewId).toEqualTypeOf<'view' | 'view-of' | 'deployment'>()
-  expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf<
+  expectTypeOf(b1.Types.ViewId).toEqualTypeOf<'view' | 'view-of' | 'deployment'>()
+  expectTypeOf(b1.Types.DeploymentFqn).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
   >()
-  expectTypeOf(m.Types.ElementKind).toEqualTypeOf<'actor' | 'system' | 'component'>()
-  expectTypeOf(m.Types.DeploymentKind).toEqualTypeOf<'env' | 'vm'>()
-  expectTypeOf(m.Types.RelationshipKind).toEqualTypeOf<'like' | 'dislike'>()
-  expectTypeOf(m.Types.Tag).toEqualTypeOf<'tag1' | 'tag2'>()
-  expectTypeOf(m.Types.MetadataKey).toBeNever()
+  expectTypeOf(b1.Types.ElementKind).toEqualTypeOf<'actor' | 'system' | 'component'>()
+  expectTypeOf(b1.Types.DeploymentKind).toEqualTypeOf<'env' | 'vm'>()
+  expectTypeOf(b1.Types.RelationshipKind).toEqualTypeOf<'like' | 'dislike'>()
+  expectTypeOf(b1.Types.Tag).toEqualTypeOf<'tag1' | 'tag2'>()
+  expectTypeOf(b1.Types.MetadataKey).toEqualTypeOf<'key1' | 'key2'>()
 
-  expectTypeOf(m.build()).toEqualTypeOf<
+  expectTypeOf(b1.build()).toEqualTypeOf<
     ParsedLikeC4ModelData<
       Aux<
         'parsed',
@@ -198,13 +199,14 @@ test('Builder types - style 1', () => {
           'env' | 'vm',
           'like' | 'dislike',
           'tag1' | 'tag2',
-          never
+          'key1' | 'key2'
         >
       >
     >
   >()
 
-  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf<
+  const m = b1.toLikeC4Model()
+  expectTypeOf(m).toEqualTypeOf<
     LikeC4Model<
       Aux<
         'computed',
@@ -217,7 +219,43 @@ test('Builder types - style 1', () => {
           'env' | 'vm',
           'like' | 'dislike',
           'tag1' | 'tag2',
-          never
+          'key1' | 'key2'
+        >
+      >
+    >
+  >()
+
+  const {
+    builder: b2,
+    ..._b2
+  } = Builder.forSpecification(m.specification)
+
+  const m2 = b2.with(
+    model(
+      actor('alice2'),
+      actor('bob2'),
+    ),
+    deployment(
+      env('out').with(
+        vm('bob2'),
+      ),
+    ),
+  ).toLikeC4Model()
+
+  expectTypeOf(m2).toEqualTypeOf<
+    LikeC4Model<
+      Aux<
+        'computed',
+        'alice2' | 'bob2',
+        'out' | 'out.bob2',
+        never,
+        'from-builder',
+        SpecAux<
+          'actor' | 'system' | 'component',
+          'env' | 'vm',
+          'like' | 'dislike',
+          'tag1' | 'tag2',
+          'key1' | 'key2'
         >
       >
     >

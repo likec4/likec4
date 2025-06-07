@@ -35,7 +35,7 @@ export type BuilderSpecification = {
   tags?: {
     [kind: string]: Partial<TagSpecification>
   }
-  metadataKeys?: [string, ...string[]]
+  metadataKeys?: string[]
 }
 
 export type Metadata<MetadataKey extends string> = IfNever<MetadataKey, never, Record<MetadataKey, string>>
