@@ -163,7 +163,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
       }
     }
 
-    this.deployment = new LikeC4DeploymentModel<A>(this, $data.deployments)
+    this.deployment = new LikeC4DeploymentModel(this)
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
       const views = pipe(

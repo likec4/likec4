@@ -1,6 +1,6 @@
 import { filter, forEach, pipe, reduce } from 'remeda'
 import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model'
-import { isDeployedInstance } from '../../../model'
+import { isDeployedInstanceModel as isDeployedInstance } from '../../../model'
 import type { AnyAux, FqnExpr } from '../../../types'
 import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'

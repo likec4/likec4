@@ -166,7 +166,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
    */
   public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
-      if (!view.isDeploymentView()) {
+      if (view._type !== 'deployment') {
         continue
       }
       if (view.includesDeployment(this.id)) {
@@ -421,7 +421,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
    */
   public override *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
-      if (!view.isDeploymentView()) {
+      if (view._type !== 'deployment') {
         continue
       }
       if (view.includesDeployment(this.id)) {
