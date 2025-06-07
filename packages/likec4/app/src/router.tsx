@@ -5,6 +5,7 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import { useMemo } from 'react'
+import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
 import { basepath, useHashHistory } from './const'
 import { routeTree } from './routeTree.gen'
@@ -32,11 +33,9 @@ function createRouter() {
     defaultNotFoundComponent: () => {
       return <NotFound />
     },
-    // defaultPendingComponent: () => (
-    //   <Box p={'md'}>
-    //     <Loader type="dots" />
-    //   </Box>
-    // )
+    defaultErrorComponent: ({ error, reset }) => {
+      return <Fallback error={error} resetErrorBoundary={reset} />
+    },
   })
 }
 

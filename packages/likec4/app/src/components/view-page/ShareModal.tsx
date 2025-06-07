@@ -1,4 +1,3 @@
-import type { DiagramView } from '@likec4/core'
 import {
   Button,
   Group,
@@ -9,29 +8,29 @@ import {
   Tabs,
   TabsList,
   TabsPanel,
-  TabsTab
+  TabsTab,
 } from '@mantine/core'
 import { useState } from 'react'
+import { useCurrentDiagram } from '../../hooks'
 import { EmbedPanel } from './share-modal/EmbedPanel'
 import { WebcomponentsPanel } from './share-modal/WebcomponentsPanel'
 
 type ShareModalOpts = {
-  diagram: DiagramView
-  opened: boolean
   onClose: () => void
 }
 
 export function ShareModal({
-  opened,
   onClose,
-  diagram
 }: ShareModalOpts) {
+  const diagram = useCurrentDiagram()
   const [activeTab, setActiveTab] = useState('webcomponent')
+  if (!diagram) {
+    return null
+  }
   return (
     <ModalRoot
       size={'xl'}
-      opened={opened}
-      keepMounted
+      opened
       onClose={onClose}>
       <ModalOverlay backgroundOpacity={0.5} blur={3} />
       <ModalContent>

@@ -103,7 +103,6 @@ export const likec4tag = defineRecipe({
     px: 5,
     border: 'none',
     borderRadius: 3,
-    color: 'likec4.tag.text',
     backgroundColor: {
       base: 'likec4.tag.bg',
       _hover: 'likec4.tag.bg.hover',
@@ -111,14 +110,18 @@ export const likec4tag = defineRecipe({
   },
   variants: {
     autoTextColor: {
-      false: {},
+      false: {
+        '& > span': {
+          color: 'likec4.tag.text',
+        },
+      },
       true: {
         '& > span': {
           color: '[transparent]',
-          filter: 'invert(1) grayscale(.8) brightness(1.3) contrast(1000)',
+          filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
           background: 'inherit',
           backgroundClip: 'text',
-          mixBlendMode: 'hard-light',
+          mixBlendMode: 'plus-lighter',
         },
       },
     },
@@ -127,7 +130,7 @@ export const likec4tag = defineRecipe({
     autoTextColor: false,
   },
   staticCss: [{
-    autoTextColor: ['true'],
+    autoTextColor: ['true', 'false'],
     conditions: ['hover'],
   }],
 })

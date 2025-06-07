@@ -13,7 +13,7 @@ import {
   whereOperatorAsPredicate,
 } from '@likec4/core'
 import { useCustomCompareMemo } from '@react-hookz/web'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../base/const'
 import type { Types } from './types'
@@ -21,7 +21,7 @@ import type { Types } from './types'
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 function viewToNodesEdge(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
-  where: WhereOperator | undefined
+  where: WhereOperator | null
   nodesSelectable: boolean
 }): {
   xynodes: Types.Node[]
@@ -272,32 +272,24 @@ function viewToNodesEdge(opts: {
     xyedges,
   }
 }
-
-export function useViewToNodesEdges({
-  view: {
-    id,
-    nodes,
-    edges,
-    _type = 'element',
-  },
-  ...opts
-}: {
+type ViewToNodesEdgeInput = {
   view: DiagramView
-  where: WhereOperator | undefined
+  where: WhereOperator | null
   nodesSelectable: boolean
-}) {
+}
+const viewToNodesEdgeEqual = (a: ViewToNodesEdgeInput, b: ViewToNodesEdgeInput) => (
+  a.view.id === b.view.id
+  && a.view._type === b.view._type
+  && a.nodesSelectable === b.nodesSelectable
+  && shallowEqual(a.view.nodes, b.view.nodes)
+  && shallowEqual(a.view.edges, b.view.edges)
+  && deepEqual(a.where, b.where)
+)
+
+export function useViewToNodesEdges(params: ViewToNodesEdgeInput) {
   return useCustomCompareMemo(
-    () =>
-      viewToNodesEdge({
-        view: {
-          id,
-          nodes,
-          edges,
-          _type,
-        },
-        ...opts,
-      }),
-    [id, _type, nodes, edges, opts],
-    shallowEqual,
+    () => viewToNodesEdge(params),
+    [params],
+    ([a], [b]) => !!a && !!b && viewToNodesEdgeEqual(a, b),
   )
 }

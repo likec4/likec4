@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
-import { ActionIcon, Box } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import * as m from 'motion/react-m'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
@@ -48,8 +49,7 @@ export function ElementActionButtons({
   }
   return (
     <Box className={container}>
-      <Box
-        component={m.div}
+      <m.div
         layoutRoot
         key={`${id}-action-buttons`}
         initial={false}
@@ -83,7 +83,7 @@ export function ElementActionButtons({
             {button.icon}
           </ActionIcon>
         ))}
-      </Box>
+      </m.div>
     </Box>
   )
 }

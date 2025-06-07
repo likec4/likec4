@@ -1,22 +1,19 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useParams, useRouter } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { SidebarDrawerOps } from '../components/sidebar/state'
 import { useCurrentDiagram } from '../hooks'
 
 export function ViewReact() {
-  const viewId = useParams({
-    select: (params) => params.viewId ?? 'index',
-    strict: false,
-  })
-  const router = useRouter()
+  const navigate = useNavigate()
   const view = useCurrentDiagram()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    router.buildAndCommitLocation({
+    navigate({
+      to: './',
       viewTransition: false,
-      params: (current: any) => ({
+      params: (current) => ({
         ...current,
         viewId,
       }),
@@ -24,7 +21,7 @@ export function ViewReact() {
     })
   })
 
-  const title = view ? (view.title ?? view.id) : `${viewId} not found`
+  const title = view ? (view.title ?? view.id) : `View not found`
   useDocumentTitle(title + ' - LikeC4')
 
   if (!view) {

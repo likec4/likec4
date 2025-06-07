@@ -1,6 +1,7 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import { Box, Text } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
+import { Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
@@ -51,11 +52,12 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         classes.root,
         'likec4-element',
       )}
-      style={{
-        ...isNumber(iconSize) && {
+      style={isNumber(iconSize)
+        ? {
+          // @ts-ignore
           [styles.iconSize]: `${iconSize}px`,
-        },
-      }}
+        }
+        : undefined}
     >
       {elementIcon}
       <Box className={cx(classes.textContainer, 'likec4-element-main-props')}>

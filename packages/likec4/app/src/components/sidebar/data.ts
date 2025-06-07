@@ -1,5 +1,6 @@
-import { type DiagramView, compareNatural, isDeploymentView, nonexhaustive } from '@likec4/core'
+import { compareNatural, isDeploymentView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
+import { type DiagramView } from 'likec4/model'
 import { useMemo } from 'react'
 import { find } from 'remeda'
 import { useLikeC4Views } from '../../hooks'

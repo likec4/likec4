@@ -136,14 +136,12 @@ export function LikeC4Diagram<A extends Any = Any>({
                     {...initialRef.current}
                   >
                     <DiagramActorProvider
-                      input={{
-                        view,
-                        pannable,
-                        zoomable,
-                        nodesSelectable,
-                        fitViewPadding,
-                      }}
-                      where={where}
+                      view={view}
+                      zoomable={zoomable}
+                      pannable={pannable}
+                      fitViewPadding={fitViewPadding}
+                      nodesSelectable={nodesSelectable}
+                      where={where ?? null}
                     >
                       <ControlsCustomLayoutProvider value={renderControls ?? null}>
                         <LikeC4DiagramXYFlow

@@ -3,7 +3,7 @@ import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { notFound, useSearch } from '@tanstack/react-router'
+import { useSearch } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
 import { cssExportView } from './styles.css'
@@ -105,7 +105,7 @@ export function ExportPage() {
   )
 
   if (!diagram) {
-    throw notFound()
+    return <div>Loading...</div>
   }
 
   // @see https://github.com/likec4/likec4/issues/1857

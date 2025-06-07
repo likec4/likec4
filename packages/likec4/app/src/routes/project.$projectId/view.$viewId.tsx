@@ -12,16 +12,8 @@ function ViewLayout() {
   return (
     <>
       <Outlet />
-      <ViewHeader />
+      <Header />
       {!withOverviewGraph && <SidebarDrawer />}
     </>
   )
-}
-
-function ViewHeader() {
-  const view = useCurrentDiagram()
-  if (!view) {
-    return null
-  }
-  return <Header diagram={view} />
 }

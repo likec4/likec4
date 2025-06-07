@@ -18,6 +18,9 @@
     "paths": {
       "likec4/react": [
         "../react/index.ts"
+      ],
+      "likec4/model": [
+        "../model/index.ts"
       ]
     },
   },

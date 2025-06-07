@@ -1,8 +1,8 @@
-import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import { LikeC4ModelProvider } from '@likec4/diagram'
-import { LikeC4Model } from 'likec4/model'
+import { useLogger } from '@mantine/hooks'
+import type { LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
 import { nano } from 'likec4/react'
-import { type PropsWithChildren, createContext, useContext, useMemo } from 'react'
+import { type PropsWithChildren, createContext, useContext } from 'react'
 
 const LikeC4ModelDataContext = createContext<nano.Atom<LayoutedLikeC4ModelData>>(null as any)
 
@@ -11,11 +11,13 @@ export function useLikeC4ModelDataAtom() {
 }
 
 export function LikeC4ModelContext(
-  { likec4data, children }: PropsWithChildren<{ likec4data: nano.ReadableAtom<LayoutedLikeC4ModelData> }>,
+  { likec4data, likec4model, children }: PropsWithChildren<{
+    likec4data: nano.ReadableAtom<LayoutedLikeC4ModelData>
+    likec4model: nano.ReadableAtom<LikeC4Model.Layouted>
+  }>,
 ) {
-  const $likec4model = useMemo(() => nano.batched(likec4data, (data) => LikeC4Model.create(data)), [likec4data])
-
-  const model = nano.useStore($likec4model)
+  useLogger('LikeC4ModelContext', [likec4data, likec4model])
+  const model = nano.useStore(likec4model)
 
   return (
     <LikeC4ModelDataContext.Provider value={likec4data}>

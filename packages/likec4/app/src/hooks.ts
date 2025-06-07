@@ -39,14 +39,18 @@ export function useLikeC4Views(): ReadonlyArray<DiagramView> {
   return views
 }
 
-export function useCurrentDiagram(): DiagramView | null {
-  const viewId = useParams({
+export function useCurrentViewId(): string {
+  return useParams({
     select: (params) => params.viewId ?? 'index',
     strict: false,
   })
-  const [view, setView] = useState<DiagramView | null>(null)
+}
 
+export function useCurrentDiagram(): DiagramView | null {
+  const viewId = useCurrentViewId()
   const $likec4data = useLikeC4ModelDataAtom()
+
+  const [view, setView] = useState<DiagramView | null>($likec4data.value?.views[viewId] ?? null)
 
   useEffect(() => {
     return $likec4data.subscribe((next) => {

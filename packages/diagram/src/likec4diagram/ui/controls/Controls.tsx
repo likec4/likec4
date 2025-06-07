@@ -68,8 +68,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
 )
 
 export const Controls = memo(() => {
-  const { viewId, hasLayoutDrift, viewportChanged, isNotActiveWalkthrough } = useDiagramContext(c => ({
-    viewId: c.view.id,
+  const { hasLayoutDrift, viewportChanged, isNotActiveWalkthrough } = useDiagramContext(c => ({
     hasLayoutDrift: c.view.hasLayoutDrift ?? false,
     viewportChanged: c.viewportChangedManually,
     isNotActiveWalkthrough: c.activeWalkthrough === null,
@@ -119,6 +118,7 @@ export const Controls = memo(() => {
                   <ActionIcon
                     onClick={e => {
                       e.stopPropagation()
+                      const viewId = diagram.currentView.id
                       onOpenSource?.({ view: viewId })
                     }}>
                     <IconFileSymlink stroke={1.5} />

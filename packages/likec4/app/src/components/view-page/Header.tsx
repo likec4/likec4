@@ -1,4 +1,3 @@
-import type { DiagramView } from '@likec4/core'
 import {
   Button,
   Divider,
@@ -15,33 +14,29 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconChevronDown, IconShare } from '@tabler/icons-react'
 import {
-  type RegisteredRouter,
-  type RouteIds,
   Link,
+  useMatches,
   useParams,
   useParentMatches,
-  useRouterState,
 } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
+import { memo } from 'react'
+import { useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as styles from './Header.css'
 import { SelectProject } from './SelectProject'
 import { ShareModal } from './ShareModal'
 
-type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
-
-type HeaderProps = {
-  diagram: DiagramView
-}
-
-export function Header({ diagram }: HeaderProps) {
-  const routerState = useRouterState()
-  const isReactDiagramRoute = routerState.matches.some(({ routeId }) =>
-    routeId === '/_single/view/$viewId/'
-    || routeId === '/_single/view/$viewId/editor'
-    || routeId === '/project/$projectId/view/$viewId'
-  )
-
+export const Header = memo(() => {
+  const isReactDiagramRoute = useMatches({
+    select(matches) {
+      return matches.some(({ routeId }) =>
+        routeId === '/_single/view/$viewId/'
+        || routeId === '/_single/view/$viewId/editor'
+        || routeId === '/project/$projectId/view/$viewId'
+      )
+    },
+  })
   const { breakpoints } = useMantineTheme()
   const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
@@ -66,7 +61,7 @@ export function Header({ diagram }: HeaderProps) {
                   Share
                 </Button>
               )}
-              <ExportButton diagram={diagram} />
+              <ExportButton />
             </>
           )
           : (
@@ -84,21 +79,18 @@ export function Header({ diagram }: HeaderProps) {
         <ColorSchemeToggle />
         <Space />
       </Group>
-      <ShareModal
-        opened={opened}
-        onClose={close}
-        diagram={diagram} />
+      {opened && <ShareModal onClose={close} />}
     </Paper>
   )
-}
+})
 
-function ExportButton({ diagram }: HeaderProps) {
+function ExportButton() {
   const params = useParams({ strict: false })
   const m = useParentMatches()
   const isInsideProject = m.some((match) => match.routeId === '/project/$projectId')
   // const previewUrl = usePreviewUrl(params.viewId)
   const previewUrl = undefined
-  const viewId = diagram.id
+  const viewId = useCurrentViewId()
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -121,7 +113,7 @@ function ExportButton({ diagram }: HeaderProps) {
             <MenuItem
               component={'a'}
               href={previewUrl}
-              download={`${diagram.id}.png`}
+              download={`${viewId}.png`}
               target="_blank">
               Export as .png
             </MenuItem>

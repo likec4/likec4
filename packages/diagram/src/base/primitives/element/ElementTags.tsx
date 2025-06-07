@@ -48,7 +48,7 @@ type ElementTagsProps = NodeProps<Data>
 const propsAreEqual = (prev: ElementTagsProps, next: ElementTagsProps) => {
   return prev.data.width === next.data.width && deepEqual(prev.data.tags, next.data.tags)
 }
-export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) => {
+export const ElementTags = memo(({ id, data: { tags, width } }: ElementTagsProps) => {
   const zoom = useCurrentZoom()
   const zoomIsLargeEnough = zoom > 1.2
   const portalProps = useMantinePortalProps()
@@ -100,7 +100,7 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
         >
           {tags.map((tag) => (
             <Box
-              key={tag}
+              key={id + '#' + tag}
               data-likec4-tag={tag}
               className={css({
                 layerStyle: 'likec4.tag',
@@ -109,9 +109,11 @@ export const ElementTags = memo(({ data: { tags, width } }: ElementTagsProps) =>
                 alignItems: 'center',
                 justifyContent: 'center',
                 maxWidth: 50,
-                minHeight: 5,
+                height: 5,
                 _whenHovered: {
-                  minHeight: 10,
+                  height: 12,
+                  borderRadius: 4,
+                  transitionDelay: '.08s',
                 },
                 transition: 'fast',
               })}

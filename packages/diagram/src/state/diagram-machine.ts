@@ -275,7 +275,7 @@ const _diagramMachine = setup({
         bounds = context.view.bounds,
         duration = 450,
       } = params ?? {}
-      const { width, height, panZoom, transform } = context.xystore.getState()
+      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
       const viewport = getViewportForBounds(
@@ -293,7 +293,7 @@ const _diagramMachine = setup({
 
     'xyflow:fitFocusedBounds': ({ context }) => {
       const { bounds, duration = 450 } = focusedBounds({ context })
-      const { width, height, panZoom, transform } = context.xystore.getState()
+      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
       const viewport = getViewportForBounds(
@@ -321,7 +321,7 @@ const _diagramMachine = setup({
         viewport,
         duration = 350,
       } = params
-      const { panZoom } = context.xystore.getState()
+      const panZoom = context.xystore?.getState().panZoom
       panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
     },
 
@@ -338,12 +338,12 @@ const _diagramMachine = setup({
           x: Math.round(fromPos.x - toPos.x),
           y: Math.round(fromPos.y - toPos.y),
         }
-      context.xystore.getState().panBy(diff)
+      context.xystore!.getState().panBy(diff)
     },
 
     'layout.align': ({ context }, params: { mode: AlignmentMode }) => {
       const { mode } = params
-      const { xystore } = context
+      const xystore = nonNullable(context.xystore, 'xystore is not initialized')
       const { nodeLookup, parentLookup } = xystore.getState()
 
       const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
@@ -514,7 +514,7 @@ const _diagramMachine = setup({
   },
 }).createMachine({
   initial: 'initializing',
-  context: ({ input, self, spawn }) => ({
+  context: ({ input }): Context => ({
     ...input,
     xyedges: [],
     xynodes: [],
@@ -651,7 +651,7 @@ const _diagramMachine = setup({
               clientRect: Rect
             }
             const fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.modelRef === event.fqn)?.id
-            const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
+            const internalNode = fromNodeId ? nonNullable(context.xystore).getState().nodeLookup.get(fromNodeId) : null
             if (fromNodeId && internalNode) {
               const nodeRect = nodeToRect(internalNode)
               const zoom = context.xyflow!.getZoom()

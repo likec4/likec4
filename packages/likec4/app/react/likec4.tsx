@@ -1,4 +1,4 @@
-import type { ViewId } from '@likec4/core'
+import type { ViewId } from 'likec4/model'
 import { $likec4data, $likec4model } from 'likec4:single-project'
 
 export const likec4model = $likec4model.get()
