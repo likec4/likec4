@@ -206,6 +206,13 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return
   }
 
+  /**
+   * Checks if the view has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
+  }
+
   public includesElement(element: aux.LooseElementId<A> | { id: aux.Fqn<A> }): boolean {
     return this.#includeElements.has(getId(element))
   }
@@ -233,21 +240,44 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return this.$view[_stage] === 'layouted'
   }
 
-  public isElementView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel<A, ViewWithType<V, 'element'>> {
+  public isElementView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.ElementView<A, V> {
     return this.$view[_type] === 'element'
   }
 
   public isScopedElementView(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<A> }> {
+  ): this is LikeC4ViewModel.ScopedElementView<A, V> {
     return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
   }
 
-  public isDeploymentView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel<A, ViewWithType<V, 'deployment'>> {
+  public isDeploymentView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DeploymentView<A, V> {
     return this.$view[_type] === 'deployment'
   }
 
-  public isDynamicView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>> {
+  public isDynamicView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DynamicView<A, V> {
     return this.$view[_type] === 'dynamic'
+  }
+}
+
+export namespace LikeC4ViewModel {
+  export interface ElementView<A extends Any, V extends $View<A> = $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'element'>>
+  {
+  }
+
+  export interface ScopedElementView<A extends Any, V extends $View<A> = $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<A> }>
+  {
+    viewOf: ElementModel<A>
+  }
+
+  export interface DeploymentView<A extends Any, V extends $View<A> = $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'deployment'>>
+  {
+  }
+
+  export interface DynamicView<A extends Any, V extends $View<A> = $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  {
   }
 }

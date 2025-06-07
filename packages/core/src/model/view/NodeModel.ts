@@ -232,4 +232,11 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> {
   public isGroup(): this is NodeModel.IsGroup<A, V> {
     return isGroupElementKind(this.$node)
   }
+
+  /**
+   * Checks if the node has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
+  }
 }

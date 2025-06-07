@@ -1,4 +1,4 @@
-import type { IsAny } from 'type-fest'
+import type { UnionToTuple } from 'type-fest'
 import type * as aux from './aux'
 import type { Any, AnyAux } from './aux'
 import type {
@@ -73,6 +73,6 @@ export interface Specification<A extends AnyAux = Any> {
     [key in aux.RelationKind<A>]: Partial<RelationshipSpecification>
   }
   // dprint-ignore
-  metadataKeys?: IsAny<aux.MetadataKey<A>> extends true ? string[] : aux.MetadataKey<A>[]
+  metadataKeys?: UnionToTuple<aux.MetadataKey<A>>
   customColors?: CustomColorDefinitions
 }

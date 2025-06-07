@@ -260,4 +260,11 @@ export class ElementModel<A extends AnyAux = Any> {
     }
     return this.$element.metadata ?? {}
   }
+
+  /**
+   * Checks if the element has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
+  }
 }

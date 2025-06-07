@@ -25,7 +25,7 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
+import type { IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends Any> = IteratorLike<DeploymentElementModel<A>>
@@ -164,7 +164,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
   /**
    * Iterate over all views that include this deployment element.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
+  public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -210,6 +210,13 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
       return this.$node.metadata?.[field]
     }
     return this.$node.metadata ?? {}
+  }
+
+  /**
+   * Checks if the deployment element has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
   }
 }
 
@@ -412,7 +419,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
    * Iterate over all views that include this instance.
    * (Some views may include the parent deployment node instead of the instance.)
    */
-  public override *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
+  public override *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (!view.isDeploymentView()) {
         continue
@@ -556,7 +563,7 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
     return this.$relationship.line ?? DefaultLineStyle
   }
 
-  public *views(): IteratorLike<LikeC4ViewModel<A>> {
+  public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
         yield view
@@ -580,6 +587,13 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
       return this.$relationship.metadata?.[field]
     }
     return this.$relationship.metadata ?? {}
+  }
+
+  /**
+   * Checks if the relationship has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
   }
 }
 

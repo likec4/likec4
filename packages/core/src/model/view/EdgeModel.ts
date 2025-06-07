@@ -98,6 +98,10 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
     const id = typeof rel === 'string' ? rel : rel.id
     return this.$edge.relations.includes(id)
   }
+
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
+  }
 }
 
 namespace EdgeModel {

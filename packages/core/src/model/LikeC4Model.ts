@@ -14,8 +14,9 @@ import type {
   Relationship,
   scalar,
   Specification,
+  WhereOperator,
 } from '../types'
-import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage } from '../types'
+import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/aux'
 import { compareNatural, ifilter, memoizeProp } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
@@ -491,9 +492,10 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   public findByTag(tag: aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
   public findByTag(tag: aux.Tag<A>, type: 'model-elements'): IteratorLike<ElementModel<A>>
   public findByTag(tag: aux.Tag<A>, type: 'views'): IteratorLike<LikeC4ViewModel<A>>
+  public findByTag(tag: aux.Tag<A>, type: 'relationships'): IteratorLike<RelationshipModel<A>>
   public findByTag(
     tag: aux.Tag<A>,
-    type?: 'model-elements' | 'views' | undefined,
+    type?: 'model-elements' | 'views' | 'relationships' | undefined,
   ) {
     return ifilter(this._allTags.get(tag), (el) => {
       if (type === 'model-elements') {
@@ -502,8 +504,79 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
       if (type === 'views') {
         return el instanceof LikeC4ViewModel
       }
+      if (type === 'relationships') {
+        return el instanceof RelationshipModel
+      }
       return true
     })
+  }
+
+  /**
+   * Returns all elements of the given kind.
+   */
+  public *elementsOfKind(kind: aux.ElementKind<A>): IteratorLike<ElementModel<A>> {
+    for (const el of this._elements.values()) {
+      if (el.kind === kind) {
+        yield el
+      }
+    }
+    return
+  }
+
+  /**
+   * Returns all elements that match the given where operator.
+   *
+   * @example
+   * ```ts
+   * model.where({
+   *   and: [
+   *     { kind: 'component' },
+   *     {
+   *       or: [
+   *         { tag: 'old' },
+   *         { tag: { neq: 'new' } },
+   *       ],
+   *     },
+   *   ],
+   * })
+   * ```
+   */
+  public *elementsWhere(where: WhereOperator<A>): IteratorLike<ElementModel<A>> {
+    const predicate = whereOperatorAsPredicate(where)
+    for (const el of this._elements.values()) {
+      if (predicate(el)) {
+        yield el
+      }
+    }
+    return
+  }
+
+  /**
+   * Returns all **model** relationships that match the given where operator.
+   *
+   * @example
+   * ```ts
+   * model.relationshipsWhere({
+   *   and: [
+   *     { kind: 'uses' },
+   *     {
+   *       or: [
+   *         { tag: 'old' },
+   *         { tag: { neq: 'new' } },
+   *       ],
+   *     },
+   *   ],
+   * })
+   * ```
+   */
+  public *relationshipsWhere(where: WhereOperator<A>): IteratorLike<RelationshipModel<A>> {
+    const predicate = whereOperatorAsPredicate(where)
+    for (const rel of this._relations.values()) {
+      if (predicate(rel)) {
+        yield rel
+      }
+    }
+    return
   }
 
   private addElement(element: Element<A>) {

@@ -1,4 +1,4 @@
-import { allPass, anyPass, isNot, isNullish } from 'remeda'
+import { allPass, anyPass, isNot, isNullish, isString } from 'remeda'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
@@ -23,14 +23,14 @@ type AllNever = {
 }
 
 export type TagEqual<A extends Any> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<aux.Tag<A>>
+  tag: EqualOperator<aux.Tag<A>> | aux.Tag<A>
 }
 export function isTagEqual<A extends Any>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
 export type KindEqual<A extends Any> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<aux.AllKinds<A>>
+  kind: EqualOperator<aux.AllKinds<A>> | aux.AllKinds<A>
 }
 export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
@@ -96,8 +96,8 @@ export function whereOperatorAsPredicate<A extends Any>(
       return participantIs(participant, participantPredicate)
     }
     case isTagEqual(operator): {
-      if ('eq' in operator.tag) {
-        const tag = operator.tag.eq
+      if (isString(operator.tag) || 'eq' in operator.tag) {
+        const tag = isString(operator.tag) ? operator.tag : operator.tag.eq
         return (value) => {
           return Array.isArray(value.tags) && value.tags.includes(tag)
         }
@@ -108,8 +108,8 @@ export function whereOperatorAsPredicate<A extends Any>(
       }
     }
     case isKindEqual(operator): {
-      if ('eq' in operator.kind) {
-        const kind = operator.kind.eq
+      if (isString(operator.kind) || 'eq' in operator.kind) {
+        const kind = isString(operator.kind) ? operator.kind : operator.kind.eq
         return (value) => {
           return value.kind === kind
         }

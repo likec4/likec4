@@ -295,7 +295,9 @@ test('LikeC4Model type guards', () => {
       expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, DiagramView<A>>>()
     }
     if (v.isScopedElementView()) {
-      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedElementView<A> & { viewOf: aux.Fqn<A> }>>()
+      expectTypeOf(v).toEqualTypeOf<
+        LikeC4ViewModel.ScopedElementView<A, LayoutedElementView<A> & { viewOf: aux.Fqn<A> }>
+      >()
     }
     if (v.isDynamicView()) {
       expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, LayoutedDynamicView<A>>>()
@@ -351,7 +353,7 @@ test('LikeC4Model type guards', () => {
   }
   if (v.isScopedElementView()) {
     expectTypeOf(v).toEqualTypeOf<
-      LikeC4ViewModel<
+      LikeC4ViewModel.ScopedElementView<
         L,
         LayoutedElementView<L> & { viewOf: aux.Fqn<A> }
       >

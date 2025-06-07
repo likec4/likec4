@@ -36,6 +36,20 @@ describe('expression operators', () => {
     expect(predicate(nonMatchingItem2)).toBe(false)
   })
 
+  it('tag eq string', ({ expect }) => {
+    const matchingItem1 = item({ tags: ['old'] })
+    const matchingItem2 = item({ tags: ['old', 'new'] })
+    const nonMatchingItem1 = item({ tags: ['new'] })
+    const nonMatchingItem2 = item({})
+
+    const predicate = whereOperatorAsPredicate<A>({ tag: 'old' })
+
+    expect(predicate(matchingItem1)).toBe(true)
+    expect(predicate(matchingItem2)).toBe(true)
+    expect(predicate(nonMatchingItem1)).toBe(false)
+    expect(predicate(nonMatchingItem2)).toBe(false)
+  })
+
   it('tag neq', ({ expect }) => {
     const matchingItem1 = item({ tags: ['old'] })
     const matchingItem2 = item({})
@@ -56,6 +70,18 @@ describe('expression operators', () => {
     const nonMatchingItem2 = item({})
 
     const predicate = whereOperatorAsPredicate<A>({ kind: { eq: 'a' } })
+
+    expect(predicate(matchingItem)).toBe(true)
+    expect(predicate(nonMatchingItem1)).toBe(false)
+    expect(predicate(nonMatchingItem2)).toBe(false)
+  })
+
+  it('kind eq string', ({ expect }) => {
+    const matchingItem = item({ kind: 'a' })
+    const nonMatchingItem1 = item({ kind: 'b' })
+    const nonMatchingItem2 = item({})
+
+    const predicate = whereOperatorAsPredicate<A>({ kind: 'a' })
 
     expect(predicate(matchingItem)).toBe(true)
     expect(predicate(nonMatchingItem1)).toBe(false)
@@ -91,7 +117,7 @@ describe('expression operators', () => {
 
     const predicate = whereOperatorAsPredicate<A>({
       and: [
-        { kind: { eq: 'a' } },
+        { kind: 'a' },
         { tag: { eq: 'old' } },
       ],
     })

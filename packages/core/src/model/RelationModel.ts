@@ -11,7 +11,7 @@ import type * as aux from '../types/aux'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
-import type { isDeploymentRelation } from './guards'
+import type { isDeploymentRelationModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
@@ -19,7 +19,7 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
 
 /**
  * A relationship between two elements (in logical or deployment model)
- * use {@link isDeploymentRelation} guard to check if the relationship is a deployment relationship
+ * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
 export interface AnyRelationshipModel<A extends AnyAux> {
   get id(): scalar.RelationId
@@ -37,6 +37,8 @@ export interface AnyRelationshipModel<A extends AnyAux> {
   isModelRelation(): this is RelationshipModel<A>
   getMetadata(): aux.Metadata<A>
   getMetadata(field: aux.MetadataKey<A>): string | undefined
+  views(): ViewsIterator<A>
+  isTagged(tag: aux.LooseTag<A>): boolean
 }
 
 export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelationshipModel<A> {
@@ -139,5 +141,12 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
       return this.$relationship.metadata?.[field]
     }
     return this.$relationship.metadata ?? {}
+  }
+
+  /**
+   * Checks if the relationship has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
   }
 }

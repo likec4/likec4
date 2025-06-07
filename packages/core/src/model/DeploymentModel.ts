@@ -5,7 +5,6 @@ import {
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
-  type LikeC4ModelData,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -25,7 +24,7 @@ import {
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import {
-  type $ViewWithType,
+  type $ModelData,
   type DeploymentOrFqn,
   type ElementOrFqn,
   type IncomingFilter,
@@ -69,10 +68,12 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     NestedElementOfDeployedInstanceModel<A>
   >()
 
+  public readonly $deployments: $ModelData<A>['deployments']
+
   constructor(
     public readonly $model: LikeC4Model<A>,
-    public readonly $deployments: LikeC4ModelData<A>['deployments'],
   ) {
+    const $deployments = this.$deployments = $model.$data.deployments
     const elements = values($deployments.elements as Record<string, DeploymentElement<A>>)
     for (const element of sortParentsFirst(elements)) {
       const el = this.addElement(element)
@@ -156,6 +157,15 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     return
   }
 
+  public *nodesOfKind(kind: aux.DeploymentKind<A>): DeploymentNodesIterator<A> {
+    for (const node of this.#elements.values()) {
+      if (node.isDeploymentNode() && node.kind === kind) {
+        yield node
+      }
+    }
+    return
+  }
+
   public *instances(): DeployedInstancesIterator<A> {
     for (const element of this.#elements.values()) {
       if (element.isInstance()) {
@@ -209,10 +219,9 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
   /**
    * Returns all deployment views in the model.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<A, $ViewWithType<A, 'deployment'>>> {
+  public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (view.isDeploymentView()) {
-        view._type
         yield view
       }
     }
