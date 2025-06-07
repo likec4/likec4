@@ -21,7 +21,7 @@ jobs:
     name: publish
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
-    if: "github.ref == 'refs/heads/main'"
+    if: ${{ github.repository_owner == 'likec4' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: wow-actions/use-app-token@9e8487c993ab4085b2dd8cb90ab446b6a18cf834 # v2
         with:
