@@ -110,7 +110,7 @@ catalogs:
     shiki: "^3.3.0"
 
   mcp:
-    "@modelcontextprotocol/sdk": "^1.10.2"
+    "@modelcontextprotocol/sdk": "^1.12.1"
   hono:
     hono: "^4.7.10"
     hono-sessions: "^0.7.2"
