@@ -188,7 +188,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
       const links = this.convertLinks(astNode.body)
-      const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
+      const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = mapToObj(

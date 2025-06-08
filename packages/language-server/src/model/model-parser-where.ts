@@ -31,7 +31,7 @@ function parseParticipant(astNode: ast.WhereExpression): ast.Participant | null 
 export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator<string, string> {
   switch (true) {
     case ast.isWhereTagEqual(astNode): {
-      const tag = astNode.value?.ref?.name
+      const tag = astNode.value.tag.ref?.name
       const participant = parseParticipant(astNode)
       invariant(tag, 'Expected tag name')
       const tagOperator = { tag: parseEquals(astNode, tag) }

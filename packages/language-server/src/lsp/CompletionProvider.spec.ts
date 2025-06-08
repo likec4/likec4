@@ -183,7 +183,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       }
       model {
         actor customer {
-          <|>#tag1 #tag2 <|>
+          <|>#tag1 #tag2 #<|>tag3
         }
         <|>
       }
@@ -197,9 +197,6 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         expect(completions.items).not.to.be.empty
         const labels = pluck('label', completions.items)
         expect(labels).to.include.members([
-          '#tag1',
-          '#tag2',
-          '#tag3',
           'title',
           'technology',
           'description',
@@ -219,9 +216,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         expect(completions.items).not.to.be.empty
         const labels = pluck('label', completions.items)
         expect(labels).to.include.members([
-          '#tag1',
-          '#tag2',
-          '#tag3',
+          'tag1',
+          'tag2',
+          'tag3',
         ])
         expect(labels).not.to.include.members(['extend'])
       },
@@ -417,8 +414,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           expect(completions.items).not.to.be.empty
           const first = take(completions.items, 2)
           expect(pluck('label', first)).toEqual([
-            '#tag1',
-            '#tag2',
+            'tag1',
+            'tag2',
           ])
         },
         disposeAfterCheck: true,
@@ -427,8 +424,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         text,
         index: 1,
         expectedItems: [
-          '#tag1',
-          '#tag2',
+          'tag1',
+          'tag2',
         ],
         disposeAfterCheck: true,
       })
@@ -471,7 +468,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           view {
             include
               * where (
-                tag == <|>#tag1 and
+                tag == #<|>tag1 and
                 tag is not #<|>tag2 or
                 kind != <|>service
               )
@@ -507,7 +504,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
             group {
               include
                 * where (
-                  tag == <|>#tag1 and
+                  tag == #<|>tag1 and
                   tag is not #<|>tag2 or
                   kind != <|>service
                 )
@@ -663,44 +660,30 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       model {
         c1 = component
         c2 = component {
-          <|>#<|>deprecated
-          -> c1 <|>
+          #<|>deprecated
+          -> c1 #<|>
         }
       }
 
     `
     const completion = expectCompletion()
 
-    await completion({
-      text,
-      index: 0,
-      assert: completions => {
-        expect(completions.items).not.to.be.empty
-        const first = take(completions.items, 2)
-        expect(pluck('label', first)).toEqual([
-          '#deprecated',
-          '#experimental',
-        ])
-      },
-      disposeAfterCheck: true,
-    })
-
     // #<|>deprecated
     await completion({
       text,
-      index: 1,
-      expectedItems: ['#deprecated', '#experimental'],
+      index: 0,
+      expectedItems: ['deprecated', 'experimental'],
     })
     // > c1 <|>
     await completion({
       text,
-      index: 2,
+      index: 1,
       assert: completions => {
         expect(completions.items).not.to.be.empty
         const first = take(completions.items, 2)
         expect(pluck('label', first)).toEqual([
-          '#deprecated',
-          '#experimental',
+          'deprecated',
+          'experimental',
         ])
       },
       disposeAfterCheck: true,
