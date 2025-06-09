@@ -82,7 +82,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.1",
   "dependencies": {
     "@cloudflare/vite-plugin": "1.2.4",
     "@codingame/esbuild-import-meta-url-plugin": "~1.0.3",
@@ -111,7 +111,7 @@
     "@mantine/notifications": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
-    "@react-hookz/web": "catalog:utils",
+    "@react-hookz/web": "catalog:react",
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "catalog:react",
     "@tanstack/react-router": "catalog:router",

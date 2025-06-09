@@ -65,7 +65,7 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.1",
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
@@ -83,7 +83,7 @@
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
-    "@react-hookz/web": "catalog:utils",
+    "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
     "@xstate/react": "^5.0.4",
     "@xyflow/react": "catalog:xyflow",

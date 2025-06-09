@@ -27,7 +27,7 @@
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
-    "@react-hookz/web": "catalog:utils",
+    "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
     "@types/node": "catalog:",
     "@types/object-hash": "^3.0.6",

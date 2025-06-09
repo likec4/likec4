@@ -3,7 +3,7 @@
   "version": "1.31.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.1",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -66,6 +66,7 @@
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
       "type-fest": "catalog:utils",
+      "sharp": "catalog:utils",
       "mnemonist": "0.40.3"
     },
     "patchedDependencies": {
