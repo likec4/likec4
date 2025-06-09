@@ -78,7 +78,7 @@ catalogs:
     vitest: ^3.2.3
     "@vitest/ui": ^3.2.3
   css:
-    postcss: ^8.5.3
+    postcss: ^8.5.4
     "@pandacss/dev": ^0.53.6
     "@pandacss/preset-panda": ^0.53.6
   vscode:

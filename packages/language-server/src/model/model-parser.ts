@@ -115,12 +115,16 @@ export class LikeC4ModelParser {
     }
     doc = Object.assign(doc, props)
     const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
-    parser.parseSpecification()
-    parser.parseImports()
-    parser.parseModel()
-    parser.parseGlobals()
-    parser.parseDeployment()
-    parser.parseViews()
+    try {
+      parser.parseSpecification()
+      parser.parseImports()
+      parser.parseModel()
+      parser.parseGlobals()
+      parser.parseDeployment()
+      parser.parseViews()
+    } catch (e) {
+      logger.error(`Error parsing document ${doc.uri.toString()}`, { cause: e })
+    }
     return parser
   }
 }

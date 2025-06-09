@@ -111,7 +111,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
             return map
           }, new MultiMap<string, AstNodeDescriptionWithFqn>())
         return uniqueByName(allchildren)
-          .sort((a, b) => compareNatural(a.name, b.name))
       }),
     )
   }
@@ -127,7 +126,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
             return map
           }, new MultiMap<string, AstNodeDescriptionWithFqn>())
         return uniqueByName(allchildren)
-          .sort((a, b) => compareNatural(a.name, b.name))
       }),
     )
   }
@@ -154,7 +152,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
           })
 
         const uniqueChildren = uniqueByName(children)
-          .sort((a, b) => compareNatural(a.name, b.name))
 
         const uniqueDescendants = [...descendants.associations()]
           .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
@@ -256,6 +253,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
   return [...multimap.associations()]
     .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
+    .sort((a, b) => compareNatural(a.name, b.name))
 }
 
 export class DocumentFqnIndex {

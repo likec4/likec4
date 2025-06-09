@@ -1,14 +1,15 @@
 import { compareNatural, nonNullable } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
-import { MergedSpecification } from './MergedSpecification'
+import type { ParsedAstSpecification } from '../../ast'
 
 /**
  * Colors are taken from the styles presets of the LikeC4
  */
-const colors = [
+export const radixColors = [
   'tomato',
   'grass',
+  'blue',
   'ruby',
   'orange',
   'indigo',
@@ -20,14 +21,13 @@ const colors = [
   'red',
   'lime',
   'yellow',
-  'blue',
   'violet',
 ]
 
-export function assignTagColors(specification: MergedSpecification) {
+export function assignTagColors(tags: ParsedAstSpecification['tags']): Record<c4.Tag, c4.TagSpecification> {
   const tagsWithColors = [] as { tag: c4.Tag; spec: c4.TagSpecification }[]
   const tagsWithoutColors = [] as c4.Tag[]
-  for (const [tag, spec] of entries(specification.specs.tags)) {
+  for (const [tag, spec] of entries(tags)) {
     if (isTruthy(spec.color)) {
       tagsWithColors.push({
         tag: tag as c4.Tag,
@@ -43,7 +43,7 @@ export function assignTagColors(specification: MergedSpecification) {
     tagsWithoutColors,
     sort(compareNatural),
     map((tag, idx) => {
-      const color = nonNullable(colors[idx % colors.length] as c4.ColorLiteral)
+      const color = nonNullable(radixColors[idx % radixColors.length] as c4.ColorLiteral)
       return {
         tag,
         spec: {

@@ -6,10 +6,10 @@ import {
   nonexhaustive,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
-import { useDeepCompareEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
-import { entries } from 'remeda'
-import { useLikeC4Model } from './likec4model/useLikeC4Model'
+import { entries, isEmpty } from 'remeda'
+import { useUpdateEffect } from './hooks'
+import { useLikeC4Specification } from './likec4model/useLikeC4Model'
 
 interface LikeC4CustomColorsProperties {
   customColors: CustomColorDefinitions
@@ -55,19 +55,26 @@ function toStyle(name: String, colors: ThemeColorValues): String {
   `
 }
 
-export const LikeC4CustomColors = memo(() => {
-  const customColors = useLikeC4Model().$data.specification.customColors ?? {}
-  const [styles, setStyles] = useState('')
+function generateCustomColorStyles(customColors: CustomColorDefinitions) {
+  return entries(customColors)
+    .map(([name, color]) => toStyle(name, color))
+    .join('\n')
+    .trim()
+}
 
-  useDeepCompareEffect(() => {
-    setStyles(
-      entries(customColors)
-        .map(([name, color]) => toStyle(name, color))
-        .join('\n'),
-    )
+export const LikeC4CustomColors = memo(() => {
+  const customColors = useLikeC4Specification().customColors ?? {}
+  const [styles, setStyles] = useState(() => generateCustomColorStyles(customColors))
+
+  useUpdateEffect(() => {
+    setStyles(generateCustomColorStyles(customColors))
   }, [customColors])
 
   const nonce = useMantineStyleNonce()?.()
+
+  if (isEmpty(customColors)) {
+    return null
+  }
 
   return (
     <>

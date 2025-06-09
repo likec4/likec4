@@ -157,6 +157,20 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 }
 
+/**
+ * @example
+ * ```ts
+ * const { projects } = await createMultiProjectTestServices({
+ *   project1: {
+ *     doc1: `...`,
+ *     doc2: `...`,
+ *   },
+ *   project2: {
+ *     doc1: `...`,
+ *   },
+ * })
+ * ```
+ */
 export async function createMultiProjectTestServices<const Projects extends Record<string, Record<string, string>>>(
   data: Projects,
 ) {

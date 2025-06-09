@@ -3,7 +3,7 @@ import { useMantineStyleNonce } from '@mantine/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
 import { type PropsWithChildren, createContext, useContext } from 'react'
 import { entries, flatMap, join, pipe } from 'remeda'
-import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { useLikeC4Specification } from '../likec4model/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
@@ -50,8 +50,7 @@ const generateColorVars = (spec: TagSpecification) => {
 }
 
 export function TagStylesProvider({ children, rootSelector }: PropsWithChildren<{ rootSelector: string }>) {
-  const likec4model = useLikeC4Model()
-  const tags = likec4model.specification.tags ?? null
+  const tags = useLikeC4Specification().tags
   const { specs, stylesheet } = useDeepCompareMemo(() => {
     if (!tags) {
       return { specs: {}, stylesheet: '' }

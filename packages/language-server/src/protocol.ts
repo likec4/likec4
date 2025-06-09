@@ -1,5 +1,4 @@
 import type {
-  ColorLiteral,
   ComputedLikeC4ModelData,
   ComputedView,
   DeploymentFqn,
@@ -245,7 +244,7 @@ export namespace GetDocumentTags {
     tags: Array<{
       name: string
       range: Range
-      color: ColorLiteral
+      color: string
       isSpecification?: boolean
     }>
   }

@@ -18,6 +18,7 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
+import { assignTagColors } from './assignTagColors'
 
 /**
  * The `MergedSpecification` class is responsible for merging multiple parsed
@@ -26,13 +27,14 @@ import { logger, logWarnError } from '../../logger'
  * and provides methods to convert parsed models into C4 model elements and relations.
  */
 export class MergedSpecification {
-  public readonly specs: ParsedAstSpecification = {
-    tags: {},
+  public readonly specs: Omit<ParsedAstSpecification, 'tags'> = {
     elements: {},
     deployments: {},
     relationships: {},
     colors: {},
   }
+
+  public readonly tags: Readonly<Record<c4.Tag, c4.TagSpecification>>
 
   public readonly globals: c4.ModelGlobals = {
     predicates: {},
@@ -43,6 +45,7 @@ export class MergedSpecification {
   public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
 
   constructor(docs: ParsedLikeC4LangiumDocument[]) {
+    const tags = {} as ParsedAstSpecification['tags']
     for (const doc of docs) {
       const {
         c4Specification: spec,
@@ -50,7 +53,7 @@ export class MergedSpecification {
         c4Imports,
       } = doc
 
-      Object.assign(this.specs.tags, spec.tags)
+      Object.assign(tags, spec.tags)
       Object.assign(this.specs.elements, spec.elements)
       Object.assign(this.specs.relationships, spec.relationships)
       Object.assign(this.specs.colors, spec.colors)
@@ -63,6 +66,7 @@ export class MergedSpecification {
         this.imports.set(projectId, fqn)
       }
     }
+    this.tags = assignTagColors(tags)
   }
 
   /**

@@ -1,18 +1,17 @@
 import type * as c4 from '@likec4/core'
-import { ifilter, splitGlobalFqn, toArray } from '@likec4/core'
+import { ifilter, invariant, splitGlobalFqn, toArray } from '@likec4/core'
 import { loggable } from '@likec4/log'
-import type { Cancellation, LangiumDocuments, Reference } from 'langium'
+import type { Cancellation, CstNode, LangiumDocuments } from 'langium'
 import { AstUtils, DocumentState, GrammarUtils } from 'langium'
 import { flatMap, isString, pipe } from 'remeda'
 import type { Location, Range } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
 import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
 import { ast, isLikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { logger as serverLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import type { ProjectsManager } from '../workspace'
-import { assignTagColors } from './builder/assignTagColors'
 import { MergedSpecification } from './builder/MergedSpecification'
 import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
@@ -20,6 +19,8 @@ import type { LikeC4ModelParser } from './model-parser'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 const { getDocument, streamAllContents } = AstUtils
+
+const logger = serverLogger.getChild('ModelLocator')
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
@@ -122,6 +123,7 @@ export class LikeC4ModelLocator {
 
       let targetNode = node.title ? findNodeForProperty(node.$cstNode, 'title') : undefined
       targetNode ??= node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
+      targetNode ??= findNodeForKeyword(node.$cstNode, '->')
       targetNode ??= findNodeForProperty(node.$cstNode, 'target')
       targetNode ??= node.$cstNode
 
@@ -183,7 +185,14 @@ export class LikeC4ModelLocator {
   public async locateDocumentTags(
     documentUri: URI,
     cancelToken?: Cancellation.CancellationToken,
-  ): Promise<Array<{ name: string; color: string; range: Range; isSpecification?: boolean }>> {
+  ): Promise<
+    Array<{
+      name: string
+      color: string
+      range: Range
+      isSpecification: boolean
+    }>
+  > {
     const doc = this.langiumDocuments.getDocument(documentUri)
     if (!doc || !isLikeC4LangiumDocument(doc)) {
       return []
@@ -191,40 +200,35 @@ export class LikeC4ModelLocator {
     if (doc.state < DocumentState.Validated) {
       logger.debug(`Waiting for document ${doc.uri.path} to be Validated`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
-      logger.debug(`Document is validated`)
     }
     const projectId = projectIdFrom(doc)
+    logger.debug(`locate document tags for ${doc.uri.path} in project ${projectId}`)
     try {
-      const c4Specification = new MergedSpecification(this.documents(projectId).toArray())
-      const tagColors = assignTagColors(c4Specification)
-      logger.debug(`Assigned colors to tags`, { tagColors })
+      const tagSpecs = new MergedSpecification(this.documents(projectId).toArray()).tags
+      logger.debug(`Assigned colors to tags`, { tagSpecs })
       const tags = pipe(
         streamAllContents(doc.parseResult.value),
-        ifilter(astNode => ast.isTag(astNode) || ast.isTags(astNode)),
+        ifilter(astNode => ast.isTag(astNode) || ast.isTagRef(astNode)),
         toArray(),
-        flatMap((astNode): Array<ast.Tag | Reference<ast.Tag>> => {
-          if (ast.isTag(astNode)) {
-            return [astNode]
-          }
-          return astNode.values
-        }),
         flatMap(tagRef => {
           let name: c4.Tag | undefined
+          let $cstNode: CstNode | undefined
           try {
             if (ast.isTag(tagRef)) {
               name = tagRef.name as c4.Tag
-              return {
-                name,
-                color: tagColors[name]!.color,
-                range: findNodeForProperty(tagRef.$cstNode, 'name')!.range,
-                isSpecification: true,
-              }
+              $cstNode = tagRef.$cstNode
+            } else {
+              name = tagRef.tag.$refText as c4.Tag
+              $cstNode = tagRef.tag.$refNode
             }
-            name = tagRef.$refText.slice(1) as c4.Tag
+            const specification = tagSpecs[name]
+            invariant(specification, `Tag ${name} not found in merged specification`)
+            invariant($cstNode, `Tag ${name} does not have a $cstNode`)
             return {
               name,
-              color: tagColors[name]!.color,
-              range: tagRef.$refNode!.range,
+              color: specification.color,
+              range: $cstNode.range,
+              isSpecification: ast.isTag(tagRef),
             }
           } catch (err) {
             logger.warn(`Fail on tag ${name}`, { err })

@@ -79,6 +79,15 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       }
     }
 
+    if (ast.isRelationshipKind(node)) {
+      return {
+        contents: {
+          kind: 'markdown',
+          value: 'relationship kind `' + node.name + '`',
+        },
+      }
+    }
+
     if (ast.isElement(node)) {
       const el = this.locator.getParsedElement(node)
       if (!el) {
