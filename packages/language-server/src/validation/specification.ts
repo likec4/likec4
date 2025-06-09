@@ -112,7 +112,7 @@ export const checkDeploymentNodeKind = (services: LikeC4Services): ValidationChe
 export const checkTag = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
-    const tagname = '#' + node.name
+    const tagname = node.name
     const projectId = projectIdFrom(node)
     const sameTag = index
       .projectElements(projectId, ast.Tag)
