@@ -1023,12 +1023,14 @@ const _diagramMachine = setup({
         'closeAllOverlays',
         'closeSearch',
         'stopSyncLayout',
-        {
-          type: 'trigger:NavigateTo',
-          params: ({ context }) => ({
-            viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
-          }),
-        },
+        enqueueActions(({ enqueue, context }) => {
+          enqueue({
+            type: 'trigger:NavigateTo',
+            params: {
+              viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
+            },
+          })
+        }),
       ],
       on: {
         'update.view': {

@@ -8,7 +8,6 @@ import {
 import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
-import { memo, useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { isTruthy } from 'remeda'
 import { ErrorFallback } from '../components/ErrorFallback'
@@ -63,27 +62,15 @@ const body = css({
 
 const selectIsOpened = (s: SearchActorSnapshot) => !s.matches('inactive')
 
-export const Search = memo<{ searchActorRef: SearchActorRef }>(({ searchActorRef }) => {
+export function Search({ searchActorRef }: { searchActorRef: SearchActorRef }) {
   const isOpened = useSelector(searchActorRef, selectIsOpened)
 
   const openSearch = () => {
     searchActorRef.send({ type: 'open' })
   }
 
-  const sendClose = () => {
+  const close = useCallbackRef(() => {
     searchActorRef.send({ type: 'close' })
-  }
-
-  const afterCloseCbRef = useRef<(() => void)>(null)
-  const close = useCallbackRef((cb?: () => void) => {
-    afterCloseCbRef.current = cb ?? null
-    sendClose()
-  })
-  const onExitComplete = useCallbackRef(() => {
-    if (afterCloseCbRef.current) {
-      afterCloseCbRef.current()
-      afterCloseCbRef.current = null
-    }
   })
 
   useHotkeys([
@@ -96,40 +83,34 @@ export const Search = memo<{ searchActorRef: SearchActorRef }>(({ searchActorRef
   ])
 
   return (
-    <SearchActorContext
-      value={{
-        searchActorRef,
-        close,
-      }}>
+    <SearchActorContext value={searchActorRef}>
       <DiagramFeatures.Overlays>
-        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={sendClose}>
-          <LayoutGroup>
-            <AnimatePresence onExitComplete={onExitComplete}>
-              {isOpened && (
-                <Overlay
-                  fullscreen
-                  withBackdrop={false}
-                  backdrop={{
-                    opacity: 0.9,
-                  }}
-                  classes={{
-                    dialog,
-                    body,
-                  }}
-                  openDelay={0}
-                  onClose={close}
-                  data-likec4-search="true"
-                >
-                  <SearchOverlay close={close} searchActorRef={searchActorRef} />
-                </Overlay>
-              )}
-            </AnimatePresence>
-          </LayoutGroup>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={close}>
+          <AnimatePresence>
+            {isOpened && (
+              <Overlay
+                fullscreen
+                withBackdrop={false}
+                backdrop={{
+                  opacity: 0.9,
+                }}
+                classes={{
+                  dialog,
+                  body,
+                }}
+                openDelay={0}
+                onClose={close}
+                data-likec4-search="true"
+              >
+                <SearchOverlay searchActorRef={searchActorRef} />
+              </Overlay>
+            )}
+          </AnimatePresence>
         </ErrorBoundary>
       </DiagramFeatures.Overlays>
     </SearchActorContext>
   )
-})
+}
 
 const scrollArea = css({
   height: [
@@ -145,7 +126,7 @@ const scrollArea = css({
   },
 })
 
-const SearchOverlay = ({ close, searchActorRef }: { close: () => void; searchActorRef: SearchActorRef }) => {
+const SearchOverlay = ({ searchActorRef }: { searchActorRef: SearchActorRef }) => {
   const pickViewFor = usePickViewFor()
 
   useTimeoutEffect(() => {

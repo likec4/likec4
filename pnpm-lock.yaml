@@ -533,6 +533,9 @@ importers:
       langium:
         specifier: catalog:langium
         version: 3.5.0
+      likec4-core-legacy:
+        specifier: npm:@likec4/core@1.31.0
+        version: '@likec4/core@1.31.0'
       monaco-editor-wrapper:
         specifier: 6.7.0
         version: 6.7.0
@@ -3181,6 +3184,9 @@ packages:
 
   '@jspm/core@2.1.0':
     resolution: {integrity: sha512-3sRl+pkyFY/kLmHl0cgHiFp2xEqErA8N3ECjMs7serSUBmoJ70lBa0PG5t0IM6WJgdZNyyI0R8YFfi5wM8+mzg==}
+
+  '@likec4/core@1.31.0':
+    resolution: {integrity: sha512-LUoiHyqEaXifq9Me47Ew9InemS5qaUwl1piNkUwtLOGTvNR0Cyrs6dybkyTijm6Smi7qcMAVj0tuPk8nEf5m+w==}
 
   '@logtape/logtape@0.9.2':
     resolution: {integrity: sha512-ehmMe+Oe7ldApaAytWguHI5O74TVeCqWFdW5FYVfu7ytdcUzbO79qTFHBm2aoM0ELt7j1zSFcxqNCozxieCQCw==}
@@ -10998,6 +11004,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@jspm/core@2.1.0': {}
+
+  '@likec4/core@1.31.0':
+    dependencies:
+      type-fest: 4.41.0
 
   '@logtape/logtape@0.9.2': {}
 

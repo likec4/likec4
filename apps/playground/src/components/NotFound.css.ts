@@ -4,8 +4,7 @@ export const content = css({
   paddingTop: '120px',
   position: 'relative',
   zIndex: '1',
-  border: '1px solid',
-  borderColor: 'mantine.colors.dimmed',
+  border: 'none',
 })
 
 export const image = css({

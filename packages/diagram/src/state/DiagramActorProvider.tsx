@@ -1,4 +1,5 @@
 import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import { useLogger } from '@mantine/hooks'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -41,7 +42,7 @@ export function DiagramActorProvider({
           // Slightly defer callback for better responsiveness
           setTimeout(() => {
             handlersRef.current.onNavigateTo?.(viewId)
-          }, 30)
+          }, 40)
         }),
 
         'trigger:OnChange': ((_, params) => {

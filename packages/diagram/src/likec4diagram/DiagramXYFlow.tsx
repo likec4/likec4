@@ -92,13 +92,13 @@ export function LikeC4DiagramXYFlow({
     $isPanning = usePanningAtom(),
     isPanning = useTimeout(() => {
       $isPanning.set(true)
-    }, isReducedGraphics ? 100 : 200),
+    }, isReducedGraphics ? 120 : 200),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       if ($isPanning.get()) {
         $isPanning.set(false)
       }
-    }, 200),
+    }, isReducedGraphics ? 350 : 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
         return
@@ -109,7 +109,7 @@ export function LikeC4DiagramXYFlow({
       notPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      if (!!event) {
+      if (!!event && !isReducedGraphics) {
         notPanning.flush()
       }
       diagram.send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })

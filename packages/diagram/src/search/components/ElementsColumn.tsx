@@ -22,7 +22,7 @@ import {
 import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { type KeyboardEventHandler, memo, useCallback, useEffect, useMemo } from 'react'
+import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
 import { first, isEmpty, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useDiagram } from '../../hooks/useDiagram'
@@ -299,23 +299,22 @@ function ElementTreeNode(
 
 function useHandleElementSelection() {
   const diagram = useDiagram()
-  const { searchActorRef } = useSearchActor()
-  // const naviconst { searchActorRef } = useSearchActor(gateTo = useCloseSearchAndNavigateTo()
-
-  return useCallback((element: LikeC4Model.Element) => {
+  const searchActorRef = useSearchActor()
+  return useCallbackRef((element: LikeC4Model.Element) => {
     const views = [...element.views()]
     if (views.length === 0) {
       return
     }
     const singleView = only(views)
     if (singleView) {
-      if (singleView.id === diagram.currentView.id) {
-        searchActorRef.send({ type: 'close' })
-      } else {
-        diagram.navigateTo(singleView.id)
+      searchActorRef.send({ type: 'close' })
+      if (singleView.id !== diagram.currentView.id) {
+        setTimeout(() => {
+          diagram.navigateTo(singleView.id)
+        }, 100)
       }
       return
     }
     searchActorRef.send({ type: 'pickview.open', elementFqn: element.id })
-  }, [])
+  })
 }

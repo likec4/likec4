@@ -98,6 +98,7 @@
     "@hono/valibot-validator": "^0.5.2",
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
+    "likec4-core-legacy": "npm:@likec4/core@1.31.0",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",

@@ -10,14 +10,8 @@ import * as styles from './styles.css'
 import { ViewButton } from './ViewsColum'
 
 export function PickView({ elementFqn }: { elementFqn: Fqn }) {
-  const { searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   const element = useLikeC4Model().element(elementFqn)
-  // const pickview = usePickView()
-  // const navigateTo = useCloseSearchAndNavigateTo()
-  // const focusTrapRef = useFocusTrap(!!pickview)
-  // useFocusReturn({
-  //   opened: !!pickview,
-  // })
   const scoped = [] as LikeC4ViewModel[]
   const others = [] as LikeC4ViewModel[]
 

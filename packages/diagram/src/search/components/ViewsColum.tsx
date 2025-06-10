@@ -20,7 +20,7 @@ import { first } from 'remeda'
 import { useCurrentViewId } from '../../hooks/useCurrentViewId'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
-import { useNormalizedSearch } from '../hooks'
+import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import { centerY, moveFocusToSearchInput } from './utils'
 import * as styles from './ViewsColumn.css'
@@ -107,10 +107,18 @@ export function ViewButton(
     & UnstyledButtonProps
     & ElementProps<'button'>,
 ) {
+  const searchActorRef = useSearchActor()
   const diagram = useDiagram()
-  // const navigateTo = useCloseSearchAndNavigateTo()
   const currentViewId = useCurrentViewId()
   const isCurrentView = view.id === currentViewId
+
+  const navigate = () => {
+    searchActorRef.send({ type: 'close' })
+    setTimeout(() => {
+      diagram.navigateTo(view.id)
+    }, 100)
+  }
+
   return (
     <UnstyledButton
       {...props}
@@ -119,7 +127,7 @@ export function ViewButton(
       {...isCurrentView && { 'data-disabled': true }}
       onClick={(e) => {
         e.stopPropagation()
-        diagram.navigateTo(view.id)
+        navigate()
       }}
       onKeyDown={createScopedKeydownHandler({
         siblingSelector: '[data-likec4-view]',
@@ -130,7 +138,7 @@ export function ViewButton(
         onKeyDown: (e) => {
           if (e.nativeEvent.code === 'Space') {
             e.stopPropagation()
-            diagram.navigateTo(view.id)
+            navigate()
           }
         },
       })}>

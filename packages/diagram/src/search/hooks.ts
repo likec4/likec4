@@ -3,14 +3,11 @@ import { useSelector } from '@xstate/react'
 import { useCallback, useDeferredValue } from 'react'
 import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 
-export const [SearchActorContext, useSearchActor] = createSafeContext<{
-  searchActorRef: SearchActorRef
-  close: (cb?: () => void) => void
-}>('SearchActorContext')
+export const [SearchActorContext, useSearchActor] = createSafeContext<SearchActorRef>('SearchActorContext')
 
 const selectSearchValue = (s: SearchActorSnapshot) => s.context.searchValue
 export function useSearch(): [string, (search: string) => void] {
-  const { searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   const searchValue = useSelector(searchActorRef, selectSearchValue)
   const updateSearch = useCallback((search: string) => {
     searchActorRef.send({ type: 'change.search', search })
@@ -23,12 +20,12 @@ const selectNormalizedSearchValue = (s: SearchActorSnapshot) => {
   return v.length > 1 ? v : ''
 }
 export function useNormalizedSearch() {
-  const { searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   return useDeferredValue(useSelector(searchActorRef, selectNormalizedSearchValue))
 }
 
 export function useUpdateSearch() {
-  const { searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   return useCallback((search: string) => {
     searchActorRef.send({ type: 'change.search', search })
   }, [searchActorRef])
@@ -36,6 +33,6 @@ export function useUpdateSearch() {
 
 const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor
 export function usePickViewFor() {
-  const { searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   return useSelector(searchActorRef, selectPickViewFor)
 }

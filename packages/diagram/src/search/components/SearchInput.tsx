@@ -28,7 +28,7 @@ function startingWithKind(search: string) {
 const SEARCH_PREFIXES = ['#', 'kind:']
 
 export const LikeC4SearchInput = memo(() => {
-  const { close, searchActorRef } = useSearchActor()
+  const searchActorRef = useSearchActor()
   const likec4model = useLikeC4Model()
   const { ref, focused } = useFocusWithin<HTMLInputElement>()
   const [search, setSearch] = useSearch()
@@ -169,7 +169,7 @@ export const LikeC4SearchInput = memo(() => {
                 e.stopPropagation()
                 const openedWithSearch = searchActorRef.getSnapshot().context.openedWithSearch
                 if (search === '' || search === openedWithSearch) {
-                  close()
+                  searchActorRef.send({ type: 'close' })
                 } else {
                   setSearch('')
                 }

@@ -1,9 +1,25 @@
+import type {
+  DiagramEdge,
+  DiagramNode,
+  Element,
+  ElementSpecification,
+  LayoutedLikeC4ModelData,
+  LayoutedView,
+  NodeNotation,
+  Relationship,
+  RelationshipSpecification,
+  scalar,
+  Tag,
+  TagSpecification,
+} from '@likec4/core/types'
 import { addDays, addMonths, getUnixTime, startOfMinute } from 'date-fns'
 import { HTTPException } from 'hono/http-exception'
+import type { LayoutedLikeC4ModelData as LayoutedLikeC4ModelDataLegacy } from 'likec4-core-legacy/types'
 import { nanoid } from 'nanoid'
 import * as v from 'valibot'
 import { readUserSession } from './auth'
 import {
+  type GithubLogin,
   type HonoContext,
   type LocalWorkspace,
   type SharedPlayground,
@@ -55,6 +71,130 @@ type UserShares = {
   expiresAt: ISODatetime
 }
 
+type StoredSharedPlayground = {
+  forkable: true
+  localWorkspace: LocalWorkspace
+  title: string
+  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy
+  author: GithubLogin | null
+  createdAt: ISODatetime
+  expiresAt: ISODatetime
+} | {
+  forkable: false
+  title: string
+  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy
+  author: GithubLogin | null
+  createdAt: ISODatetime
+  expiresAt: ISODatetime
+}
+
+function isDataLegacy(
+  model: LayoutedLikeC4ModelData<any> | LayoutedLikeC4ModelDataLegacy,
+): model is LayoutedLikeC4ModelDataLegacy {
+  return '__' in model && model.__ === 'layouted'
+}
+
+import { compareNatural, nonNullable } from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
+import { first, map, mapValues, pipe, prop, pullObject, sort, values } from 'remeda'
+
+/**
+ * Colors are taken from the styles presets of the LikeC4
+ */
+export const radixColors = [
+  'tomato',
+  'grass',
+  'blue',
+  'ruby',
+  'orange',
+  'indigo',
+  'pink',
+  'teal',
+  'purple',
+  'amber',
+  'crimson',
+  'red',
+  'lime',
+  'yellow',
+  'violet',
+]
+
+function assignTagColors(tags: string[]): Record<Tag, TagSpecification> {
+  return pipe(
+    tags,
+    sort(compareNatural),
+    map((tag, idx) => {
+      const color = nonNullable(radixColors[idx % radixColors.length] as c4.ColorLiteral)
+      return {
+        tag,
+        spec: {
+          color,
+        } as c4.TagSpecification,
+      }
+    }),
+    pullObject(prop('tag'), prop('spec')),
+  )
+}
+
+function convertLegacyModel(
+  { specification, relations, views, elements, deployments, globals, imports }: LayoutedLikeC4ModelDataLegacy,
+): LayoutedLikeC4ModelData<any> {
+  return {
+    _stage: 'layouted',
+    projectId: 'default',
+    specification: {
+      relationships: specification.relationships as Record<string, Partial<RelationshipSpecification>>,
+      elements: specification.elements as Record<string, Partial<ElementSpecification>>,
+      deployments: specification.deployments as Record<string, Partial<ElementSpecification>>,
+      tags: assignTagColors(specification.tags),
+      customColors: first(values(views))?.customColorDefinitions ?? {},
+    },
+    elements: elements as Record<string, Element<any>>,
+    deployments: deployments as any,
+    relations: mapValues(relations, ({ id, source, target, color, ...rest }): Relationship => ({
+      ...rest,
+      id: id as unknown as scalar.RelationId,
+      ...(color && { color: color as any }),
+      source: {
+        model: source,
+      },
+      target: {
+        model: target,
+      },
+    })),
+    views: mapValues(views, ({ __, id, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
+      ...rest,
+      ...(notation
+        ? {
+          notation: {
+            nodes: notation.elements as NodeNotation[],
+          },
+        }
+        : {}),
+      edges: edges.map(({ tags, ...rest }): DiagramEdge<any> => ({
+        ...rest as unknown as DiagramEdge<any>,
+        tags: tags ? [...tags] : [],
+      })),
+      nodes: nodes.map(({ id, modelRef, deploymentRef, tags, ...rest }): DiagramNode<any> => ({
+        ...rest as unknown as DiagramNode<any>,
+        id: id as unknown as scalar.NodeId,
+        x: rest.position[0],
+        y: rest.position[1],
+        tags: tags ? [...tags] : [],
+        ...(modelRef && { modelRef: (modelRef === 1 ? id : modelRef) as unknown as scalar.Fqn }),
+        ...(deploymentRef &&
+          { deploymentRef: (deploymentRef === 1 ? id : deploymentRef) as unknown as scalar.DeploymentFqn }),
+      })),
+      tags: tags ? [...tags] : [],
+      id: id as unknown as scalar.ViewId<string>,
+      _type: (__ ?? 'element' as const) as any,
+      _stage: 'layouted',
+    })),
+    imports: imports as any,
+    globals: globals as any,
+  }
+}
+
 export const sharesKV = (c: HonoContext) => {
   /**
    * Check if a share exists in KV, but don't read the value.
@@ -97,14 +237,30 @@ export const sharesKV = (c: HonoContext) => {
    * Find a share in KV.
    * @param shareId The ID of the share to find.
    */
-  async function find(shareId: string) {
-    const data = await c.env.KV.getWithMetadata<SharedPlayground, Metadata>(`share:${shareId}`, 'json')
+  async function find(shareId: string): Promise<{ value: SharedPlayground; metadata: Metadata }> {
+    const data = await c.env.KV.getWithMetadata<StoredSharedPlayground, Metadata>(`share:${shareId}`, 'json')
     const { value, metadata } = data ?? {}
     if (!value || !metadata) {
       return throwShareNotFound(c, shareId)
     }
-
-    return { value, metadata }
+    const { model } = value
+    if (isDataLegacy(model)) {
+      return {
+        value: {
+          ...value,
+          model: convertLegacyModel(model),
+        },
+        metadata,
+      }
+    } else {
+      return {
+        value: {
+          ...value,
+          model,
+        },
+        metadata,
+      }
+    }
   }
 
   /**
