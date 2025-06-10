@@ -1,19 +1,20 @@
-import { filter, isString, isTruthy, pipe, unique } from 'remeda'
+import type { ComputedView } from '@likec4/core/types'
+import { compareNatural } from '@likec4/core/utils'
+import { filter, isTruthy, pipe, sort, unique } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
-import type { ComputedView } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
 
 function code(views: ComputedView[]) {
   const icons = pipe(
-    views.flatMap(v => v.nodes.map(n => n.icon)),
-    filter(isString),
-    filter(s =>
+    views.flatMap(v => v.nodes.map(n => n.icon as string | undefined)),
+    filter((s): s is string =>
       isTruthy(s) &&
       !(s.toLowerCase().startsWith('http:') || s.toLowerCase().startsWith('https:'))
     ),
     unique(),
-  ).sort()
+    sort(compareNatural),
+  )
 
   const {
     imports,

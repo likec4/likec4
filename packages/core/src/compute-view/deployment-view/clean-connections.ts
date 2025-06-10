@@ -28,8 +28,6 @@ import { intersection, union } from '../../utils/set'
 import type { Connection, Connections } from './_types'
 import { findConnection } from './utils'
 
-const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
-
 type MapOfExcludesFromConnection = DefaultMap<DeploymentConnectionModel, Set<RelationshipModel>>
 function findCrossBoundarySameSourceOrTarget(connections: Connections): MapOfExcludesFromConnection {
   // Also find connections based on same relation

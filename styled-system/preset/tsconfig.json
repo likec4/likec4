@@ -4,12 +4,15 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "bundler",
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    "declarationMap": false,
+    "composite": true,
     "outDir": "dist"
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core/tsconfig.json"
+    }
   ]
 }

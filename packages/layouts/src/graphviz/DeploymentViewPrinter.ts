@@ -6,7 +6,7 @@ import {
   DefaultArrowType,
   nonNullable,
 } from '@likec4/core'
-import { filter, first, forEach, groupBy, hasAtLeast, isNonNullish, last, map, pipe, tap, values } from 'remeda'
+import { first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
@@ -46,8 +46,10 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
           graphvizNode: NodeModel
         }>
       ),
-      filter(hasAtLeast(2)),
       forEach((nodes) => {
+        if (nodes.length < 2) {
+          return
+        }
         G.subgraph({
           [_.rank]: 'same',
         }, subgraph => {

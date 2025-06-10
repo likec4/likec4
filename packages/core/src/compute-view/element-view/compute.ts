@@ -58,8 +58,10 @@ function processElementPredicate(
     }
     case ModelFqnExpr.isWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
-      const filterWhere = filter<Elem>(where)
-      return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
+      const filterWhere = (elements: ReadonlyArray<Elem>) => {
+        return filter(elements, where)
+      }
+      return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere })
     }
     case ModelFqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
       return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage

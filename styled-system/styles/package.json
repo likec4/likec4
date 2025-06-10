@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --build --verbose",
     "build": "unbuild",
     "generate": "panda codegen && panda cssgen",
     "emit-pkg": "panda emit-pkg --base dist"

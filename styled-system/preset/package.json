@@ -9,7 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "generate": "tsx --conditions=sources ./generate.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --build --verbose",
     "prebuild": "rm -rf dist/*",
     "build": "tsc"
   },

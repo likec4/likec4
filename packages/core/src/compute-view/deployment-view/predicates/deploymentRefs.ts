@@ -1,7 +1,7 @@
 import { filter, forEach, pipe, reduce } from 'remeda'
 import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model'
 import { isDeployedInstanceModel as isDeployedInstance } from '../../../model'
-import type { AnyAux, FqnExpr } from '../../../types'
+import type { FqnExpr } from '../../../types'
 import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import type { StageInclude } from '../memory'
@@ -45,7 +45,7 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
     const exprPredicate = deploymentExpressionToPredicate(expr)
     const toExclude = pipe(
       [...memory.elements],
-      filter<DeploymentElementModel<AnyAux>>(exprPredicate),
+      filter(exprPredicate),
       applyElementPredicate(where),
     )
     stage.exclude(toExclude)

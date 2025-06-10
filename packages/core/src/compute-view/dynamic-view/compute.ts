@@ -257,7 +257,7 @@ class DynamicViewCompute<A extends AnyAux> {
       flatMap(r => r.tags),
       filter(isTruthy),
       unique(),
-    )
+    ) as aux.Tags<A>
     const tags = hasAtLeast(alltags, 1) ? alltags : null
     const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
 
