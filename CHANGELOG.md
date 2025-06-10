@@ -1,31 +1,50 @@
 # [1.32.0](https://github.com/likec4/likec4/compare/v1.31.0...v1.32.0) (2025-06-10)
 
+### 🚀 Features
+
+* **Tag colors**  
+  Now it is possible to assign colors to tags:
+  ```zig
+  specification {
+    tag deprecated {
+      color #FF0000
+    }
+  }
+  ```
+  Tags are displayed by default (you can disable by `enableElementTags={false}` on React component):  
+  <img width="297" alt="SCR-20250610-moth" src="https://github.com/user-attachments/assets/9cab8ac1-1ca5-4881-ab67-0cbf1af6fffc" />
+
+  [📖 Documentation](https://likec4.dev/dsl/specification/#tag)
+
+* **Tags for kinds**  
+
+  ```zig
+  specification {
+    // Now every kafka-topic will be marked with the infra and data-lake tags
+    element kafka-topic {
+      #infra #data-lake
+    }
+    tag infra
+    tag data-lake
+  }
+  ```
+
+* **Export to PlantUML**
+  ```sh
+  likec4 gen plantuml
+  ```
+  thanks @pavelpykhtin, closes [#1953](https://github.com/likec4/likec4/issues/1953) 
 
 ### Bug Fixes
 
-* add type assertion for flattened view rules in test fixture ([474252a](https://github.com/likec4/likec4/commit/474252af14d6da425511bca2256fe5de7c029d40))
-* **deps:** update dependency @cloudflare/vite-plugin to v1.2.4 ([#1978](https://github.com/likec4/likec4/issues/1978)) ([edffe9d](https://github.com/likec4/likec4/commit/edffe9de0560bedf3b040d6aecb389439b805936))
-* **deps:** update dependency react-resizable-panels to v3 ([#1964](https://github.com/likec4/likec4/issues/1964)) ([7c25350](https://github.com/likec4/likec4/commit/7c2535074461013c2d6ae965740df400c2f2b633))
-* **deps:** update dependency sharp to ^0.34.2 ([#1972](https://github.com/likec4/likec4/issues/1972)) ([ec2f2d7](https://github.com/likec4/likec4/commit/ec2f2d77a4f6e89de45bac50ec9680505544caee))
-* **deps:** update xstate monorepo ([#1974](https://github.com/likec4/likec4/issues/1974)) ([e22b6eb](https://github.com/likec4/likec4/commit/e22b6ebf2eb235f4a7c6492e42f1614a26071f68))
-* handle document parse errors and improve tag colors management ([2084a13](https://github.com/likec4/likec4/commit/2084a133a0ff20cf232173db7c74f97cddb29104))
-* HMR warning ([067895a](https://github.com/likec4/likec4/commit/067895ad40da8620f8482cabcd1b204026410fc6))
-* **language-server:** resolving dependency issue ([#1989](https://github.com/likec4/likec4/issues/1989)) ([8804808](https://github.com/likec4/likec4/commit/8804808fd8d2cade94c138750494c88207c205ba))
-* **lsp:** Fixed lsp renaming for tags and relation kinds [#1819](https://github.com/likec4/likec4/issues/1819) ([#1988](https://github.com/likec4/likec4/issues/1988)) ([7fa1e06](https://github.com/likec4/likec4/commit/7fa1e063fed7e71a5bd2c15c3a8a37fbc38c549a))
-* update ViewRuleGroup type to accept generic parameter in ActiveGroupMemory.enter ([ce85d0d](https://github.com/likec4/likec4/commit/ce85d0d6c5974f1c0a11d898a081ecc00b3c52b0))
+* **language-server:** resolving dependency issue, thanks @mattwahl ([#1989](https://github.com/likec4/likec4/issues/1989)) ([8804808](https://github.com/likec4/likec4/commit/8804808fd8d2cade94c138750494c88207c205ba))
+* **lsp:** Fixed lsp renaming for tags and relation kinds, thanks @pavelpykhtin [#1819](https://github.com/likec4/likec4/issues/1819) ([#1988](https://github.com/likec4/likec4/issues/1988)) ([7fa1e06](https://github.com/likec4/likec4/commit/7fa1e063fed7e71a5bd2c15c3a8a37fbc38c549a))
 * **vscode:** VS Code plugin shows `[object Object]` for instanceOf target in hover tooltip ([#1955](https://github.com/likec4/likec4/issues/1955)) ([0334a7d](https://github.com/likec4/likec4/commit/0334a7dcfca122c0806db7d4585e754f4f0a08d1)), closes [#1948](https://github.com/likec4/likec4/issues/1948)
 
+### Improvements
 
-### Features
-
-* add isTagged method and enhance model query API with elementsWhere and relationshipsWhere ([570c4a2](https://github.com/likec4/likec4/commit/570c4a2bb31563b28d0fb08456fe9b0937dc07d9))
-* **codegen:** Implemented export to PlantUml [#1953](https://github.com/likec4/likec4/issues/1953) ([#1984](https://github.com/likec4/likec4/issues/1984)) ([89c143b](https://github.com/likec4/likec4/commit/89c143bc2594083807ce4a8a64e0c1e1e5ee7193))
-* **dsl:** assign tags to element kinds ([0c4ca0b](https://github.com/likec4/likec4/commit/0c4ca0b8cf475aa88031c69929b958a45600e83e))
-* implement search by tags with clickable tag chips and view picker ([38e5f65](https://github.com/likec4/likec4/commit/38e5f6574468c02f70284f5d77b5a2ac2fa332c5))
-* implement tag colors and decorations in VSCode extension ([8cce4ad](https://github.com/likec4/likec4/commit/8cce4ad061b5b3773c123acdf4047fa5a4184267))
-* replace notFound() with Alert component for missing views in share route ([b6eda3b](https://github.com/likec4/likec4/commit/b6eda3b6c14e7d70792e6707efbe6c02b5591e89))
-
-
+Refactored `@likec4/core`, providing type-safe models.  
+[📖 Documentation](https://github.com/likec4/likec4/blob/main/packages/core/README.md)
 
 # [1.31.0](https://github.com/likec4/likec4/compare/v1.30.0...v1.31.0) (2025-05-25)
 
