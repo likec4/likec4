@@ -4,7 +4,11 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "bundler",
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "declarationMap": false,
     "composite": true,
+    "rootDir": "src",
     "outDir": "dist"
   },
   "include": [
