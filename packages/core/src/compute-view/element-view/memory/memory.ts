@@ -1,6 +1,6 @@
-import { nonNullable } from '../../../errors'
 import type { ConnectionModel, ElementModel } from '../../../model'
 import type { aux, ElementViewRuleGroup as ViewRuleGroup, ModelExpression, NodeId, scalar } from '../../../types'
+import { nonNullable } from '../../../utils'
 import { Stack } from '../../../utils/mnemonist'
 import { type ComputeCtx, type CtxElement, type MutableState, type StageExpression, AbstractMemory } from '../../memory'
 import { NodesGroup } from './NodeGroup'

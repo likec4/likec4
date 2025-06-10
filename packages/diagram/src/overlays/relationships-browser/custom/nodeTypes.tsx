@@ -8,8 +8,10 @@ import {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  ElementTags,
   ElementTitle,
 } from '../../../base/primitives'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
@@ -32,10 +34,12 @@ const ElementDetailsButtonWithHandler = (
 }
 
 export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
+  const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
       <ElementShape {...props} />
       <ElementTitle {...props} />
+      {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
       <ElementPorts {...props} />

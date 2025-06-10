@@ -5,19 +5,26 @@
  * @example
  * ```ts
  * class Model {
- *   get computed() {
- *     return memoizeProp(this, Symbol('computed'), () => doOnce())
+ *   // using same Symbol
+ *   get computed1() {
+ *     return memoizeProp(this, Symbol.for('computed1'), () => doOnce())
  *   }
+ *   // using string
+ *   get computed2() {
+ *     return memoizeProp(this, 'computed2', () => doOnce())
+ *   }
+ *
  * }
  * ```
  */
-export function memoizeProp<Tag extends symbol, Res>(obj: object, tag: Tag, fn: () => Res): Res {
-  if (!obj.hasOwnProperty(tag)) {
-    Object.defineProperty(obj, tag, {
+export function memoizeProp<Tag extends symbol | string, Res>(obj: object, tag: Tag, fn: () => Res): Res {
+  const tagSymbol = typeof tag === 'symbol' ? tag : Symbol.for(tag)
+  if (!obj.hasOwnProperty(tagSymbol)) {
+    Object.defineProperty(obj, tagSymbol, {
       enumerable: false,
       writable: false,
       value: fn(),
     })
   }
-  return (obj as any)[tag]!
+  return (obj as any)[tagSymbol]!
 }

@@ -12,7 +12,9 @@ describe('Builder (style 2)', () => {
           },
         },
         component: {},
-        actor: {},
+        actor: {
+          tags: ['tag3'],
+        },
       },
       deployments: {
         env: {
@@ -27,8 +29,40 @@ describe('Builder (style 2)', () => {
           color: '#FFF',
         },
         tag2: {},
+        tag3: {},
       },
     })
+
+  it('should fail on invalid tag in element spec', () => {
+    expect(() => {
+      Builder.specification({
+        elements: {
+          system: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for element kind "system": tag "tag2" not found')
+  })
+
+  it('should fail on invalid tag in deployment spec', () => {
+    expect(() => {
+      Builder.specification({
+        elements: {},
+        deployments: {
+          node: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for deployment kind "node": tag "tag2" not found')
+  })
 
   it('should build ', () => {
     const b = spec.clone()

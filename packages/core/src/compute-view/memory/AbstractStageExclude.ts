@@ -1,7 +1,6 @@
 import { isBoolean, pipe } from 'remeda'
-import { invariant } from '../../errors'
 import { findAscendingConnections } from '../../model'
-import { difference, intersection, isDescendantOf, isIterable } from '../../utils'
+import { difference, intersection, invariant, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
 import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 

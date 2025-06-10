@@ -23,6 +23,7 @@ import {
   DefaultMap,
   ifind,
   invariant,
+  nonNullable,
   toArray,
 } from '@likec4/core'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
@@ -465,8 +466,8 @@ export function layoutRelationshipsView(
         title: 'empty node',
         description: null,
         technology: null,
-        tags: null,
-        links: null,
+        tags: [],
+        links: [],
         color: 'muted',
         shape: 'rectangle',
         style: {
@@ -516,7 +517,7 @@ export function layoutRelationshipsView(
       title: element.title,
       description: element.description,
       technology: element.technology,
-      tags: null,
+      tags: [...element.tags],
       links: null,
       color: inheritFromNodeOrAncestor?.color ?? element.color,
       shape: inheritFromNode?.shape ?? element.shape,
@@ -572,7 +573,7 @@ export function layoutRelationshipsView(
         relations,
         sourceHandle,
         targetHandle,
-      } = find(edges, e => e.name === ename)!
+      } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1

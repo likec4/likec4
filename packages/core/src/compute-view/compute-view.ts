@@ -1,5 +1,4 @@
 import { indexBy, values } from 'remeda'
-import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
   type AnyAux,
@@ -12,6 +11,7 @@ import {
   isDynamicView,
   isElementView,
 } from '../types'
+import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
 import { computeElementView } from './element-view/compute'

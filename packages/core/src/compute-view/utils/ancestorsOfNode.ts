@@ -1,5 +1,5 @@
-import { nonNullable } from '../../errors'
 import type { AnyAux, ComputedNode } from '../../types'
+import { nonNullable } from '../../utils'
 
 /**
  * Returns the ancestors of given computed node, starting with the direct parent and ending with the root node.

@@ -1,6 +1,6 @@
-import { nonexhaustive } from '../../errors'
 import type { AnyAux, aux, ComputedNode } from '../../types'
 import { ModelRelationExpr, whereOperatorAsPredicate } from '../../types'
+import { nonexhaustive } from '../../utils'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean

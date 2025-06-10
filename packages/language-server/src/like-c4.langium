@@ -43,6 +43,7 @@ SpecificationRule:
 
 SpecificationElementKind:
   'element' kind=ElementKind ('{'
+    tags=Tags?
     props+=(
       SpecificationElementStringProperty |
       ElementStyleProperty
@@ -54,6 +55,7 @@ SpecificationElementStringProperty:
 
 SpecificationDeploymentNodeKind:
   'deploymentNode' kind=DeploymentNodeKind ('{'
+    tags=Tags?
     props+=(
       SpecificationElementStringProperty |
       ElementStyleProperty

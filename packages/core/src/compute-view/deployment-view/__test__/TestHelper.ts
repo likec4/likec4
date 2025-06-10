@@ -11,7 +11,6 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
-import { invariant } from '../../../errors'
 import type { AnyAux, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import {
@@ -22,8 +21,7 @@ import {
   _stage,
   _type,
 } from '../../../types'
-import { imap, toArray } from '../../../utils/iterable'
-import { difference as differenceSet } from '../../../utils/set'
+import { difference as differenceSet, imap, invariant, toArray } from '../../../utils'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { processPredicates as processPredicatesImpl } from '../compute'
 import { Memory } from '../memory'

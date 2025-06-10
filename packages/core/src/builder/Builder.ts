@@ -1,8 +1,18 @@
 import defu from 'defu'
-import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
+import {
+  entries,
+  fromEntries,
+  hasAtLeast,
+  isFunction,
+  isNonNullish,
+  isNullish,
+  map,
+  mapToObj,
+  mapValues,
+  pickBy,
+} from 'remeda'
 import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
-import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import type {
   Any,
@@ -35,6 +45,7 @@ import {
   isDeployedInstance,
   isElementView,
 } from '../types'
+import { invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
@@ -108,10 +119,11 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    *    )
    *  )
    *
+   * @example
    *  builder.deployment((_,d) =>
    *    d(
    *      _.node('node1'),
-   *       _.node('node1.child1').with(
+   *      _.node('node1.child1').with(
    *        _.instanceOf('model.element')
    *      )
    *    )
@@ -125,11 +137,34 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds views
    *
    * @example
-   *  builder.views(({ view, $include }, _) =>
+   *  builder.views(({ view, viewOf, deploymentView, $include, $style, $rules }, _) =>
    *    _(
-   *      view('index').with(
+   *      view('view1').with(
+   *        $include('a -> b'),
+   *      ),
+   *      view('view2', {
+   *        title: 'View 2',
+   *      }).with(
+   *        $include('*')
+   *      ),
+   *      view(
+   *        'view3',
+   *        {
+   *          title: 'View 3',
+   *        },
+   *        $rules(
+   *          $include('*'),
+   *          $style(['*', 'alice'], {
+   *            color: 'red',
+   *          }),
+   *        ),
+   *      ),
+   *      viewOf('viewOfA', 'a').with(
+   *        $include('*')
+   *      ),
+   *      deploymentView('deploymentView1').with(
    *        $include('a -> b')
-   *      )
+   *      ),
    *    )
    *  )
    */
@@ -145,7 +180,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   build(): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
-   * Returns LikeC4Model with computed views
+   * Returns Computed LikeC4Model
    */
   toLikeC4Model(): LikeC4Model.Computed<Types.ToAux<T>>
 }
@@ -154,6 +189,28 @@ interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>
 }
 
 type Op<T> = (b: T) => T
+
+function validateSpec(specification: BuilderSpecification) {
+  for (const [kind, spec] of entries(specification.elements)) {
+    if (spec.tags) {
+      for (const tag of spec.tags) {
+        invariant(specification.tags?.[tag], `Invalid specification for element kind "${kind}": tag "${tag}" not found`)
+      }
+    }
+  }
+  if (specification.deployments) {
+    for (const [kind, spec] of entries(specification.deployments)) {
+      if (spec.tags) {
+        for (const tag of spec.tags) {
+          invariant(
+            specification.tags?.[tag],
+            `Invalid specification for deployment kind "${kind}": tag "${tag}" not found`,
+          )
+        }
+      }
+    }
+  }
+}
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
@@ -168,23 +225,26 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
-  const toLikeC4Specification = (): Specification<Types.ToAux<T>> => ({
-    elements: {
-      ...structuredClone(spec.elements) as any,
-    },
-    deployments: {
-      ...structuredClone(spec.deployments) as any,
-    },
-    relationships: {
-      ...structuredClone(spec.relationships) as any,
-    },
-    tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
-      color: DefaultThemeColor,
-      ...tagSpec,
-    })) as any,
-    ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
-    customColors: {},
-  } as Specification<Types.ToAux<T>>)
+  const toLikeC4Specification = (): Specification<Types.ToAux<T>> => {
+    validateSpec(spec)
+    return ({
+      elements: {
+        ...structuredClone(spec.elements) as any,
+      },
+      deployments: {
+        ...structuredClone(spec.deployments) as any,
+      },
+      relationships: {
+        ...structuredClone(spec.relationships) as any,
+      },
+      tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
+        color: DefaultThemeColor,
+        ...tagSpec,
+      })) as any,
+      ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
+      customColors: {},
+    } as Specification<Types.ToAux<T>>)
+  }
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
     if (!links || !hasAtLeast(links, 1)) {
@@ -770,6 +830,7 @@ export namespace Builder {
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
     views: ViewsHelpers
   } {
+    validateSpec(spec)
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
@@ -780,6 +841,7 @@ export namespace Builder {
   export function specification<const Spec extends BuilderSpecification>(
     spec: Spec,
   ): Builder<Types.FromSpecification<Spec>> {
+    validateSpec(spec)
     return builder<Spec, Types.FromSpecification<Spec>>(spec)
   }
 }

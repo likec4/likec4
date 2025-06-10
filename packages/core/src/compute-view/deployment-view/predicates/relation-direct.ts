@@ -1,5 +1,4 @@
 import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
-import { invariant } from '../../../errors'
 import type {
   DeploymentConnectionModel,
   DeploymentElementModel,
@@ -12,6 +11,7 @@ import {
 } from '../../../model/connection/model'
 import type { AnyAux } from '../../../types'
 import { type RelationExpr, FqnExpr } from '../../../types'
+import { invariant } from '../../../utils'
 import type { PredicateExecutor } from '../_types'
 import {
   deploymentExpressionToPredicate,

@@ -1,6 +1,7 @@
 import type { IsNever } from 'type-fest'
 import type * as aux from './aux'
 import type { Any } from './aux'
+import type * as scalar from './scalar'
 import type {
   Icon,
 } from './scalar'
@@ -22,6 +23,7 @@ import type {
  * Element and deployment kind specification
  */
 export interface ElementSpecification {
+  tags?: scalar.Tag[]
   technology?: string
   notation?: string
   style: {

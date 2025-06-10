@@ -1,7 +1,7 @@
 import { filter, pipe } from 'remeda'
-import { invariant } from '../../../errors'
 import type { RelationshipModel } from '../../../model'
 import { type RelationExpr, FqnExpr } from '../../../types'
+import { invariant } from '../../../utils'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'

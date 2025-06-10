@@ -400,7 +400,7 @@ export function layoutRelationshipDetails(
       title: element.title,
       description: element.description,
       technology: element.technology,
-      tags: null,
+      tags: [...element.tags],
       links: null,
       color: inheritFromNodeOrAncestor?.color ?? element.color,
       shape: inheritFromNode?.shape ?? element.shape,

@@ -2,8 +2,8 @@ import Graph from 'graphology'
 import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
 import { forEach, map, partition, pipe, takeWhile } from 'remeda'
-import { invariant, nonNullable } from '../../errors'
-import type { AnyAux, ComputedEdge, ComputedNode, NodeId, Unknown } from '../../types'
+import type { AnyAux, ComputedEdge, ComputedNode, NodeId } from '../../types'
+import { invariant, nonNullable } from '../../utils'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**

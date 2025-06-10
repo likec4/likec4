@@ -26,6 +26,7 @@ export namespace RelationshipDetailsTypes {
         | 'height'
         | 'navigateTo'
         | 'style'
+        | 'tags'
       >
     >
     & {

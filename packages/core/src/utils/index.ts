@@ -8,6 +8,8 @@ export {
   Stack,
 } from './mnemonist'
 
+export { invariant, nonexhaustive, nonNullable } from './invariant'
+
 export { commonHead } from './common-head'
 export { compareNatural, compareNaturalHierarchically } from './compare-natural'
 export {
@@ -40,6 +42,7 @@ export {
   ifilter,
   ifind,
   iflat,
+  ihead,
   imap,
   ireduce,
   isIterable,

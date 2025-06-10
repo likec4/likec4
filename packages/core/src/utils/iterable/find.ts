@@ -1,5 +1,5 @@
 import { isFunction } from 'remeda'
-import { invariant } from '../../errors'
+import { invariant } from '../../utils/invariant'
 
 /**
  * Finds the first element in the iterable that satisfies the predicate.

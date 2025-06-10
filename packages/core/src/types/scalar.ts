@@ -1,6 +1,6 @@
 import { isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
-import { invariant } from '../errors'
+import { invariant } from '../utils/invariant'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 

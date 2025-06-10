@@ -1,6 +1,6 @@
 import objecthash from 'object-hash'
 import { isNonNullish } from 'remeda'
-import { invariant } from '../errors'
+import { invariant } from '../utils/invariant'
 
 export function objectHash(value: any): string {
   invariant(

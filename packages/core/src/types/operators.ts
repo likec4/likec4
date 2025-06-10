@@ -1,5 +1,5 @@
 import { allPass, anyPass, isNot, isNullish, isString } from 'remeda'
-import { nonexhaustive } from '../errors'
+import { nonexhaustive } from '../utils/invariant'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
 import type { Any } from './aux'

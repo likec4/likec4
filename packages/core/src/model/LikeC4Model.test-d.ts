@@ -215,7 +215,7 @@ test('LikeC4Model.create: should have all types', () => {
     LikeC4ViewModel<typeof parsed.Aux, never>
   >()
   expectTypeOf(parsed.element('cloud').scopedViews()).toEqualTypeOf<
-    IteratorLike<LikeC4ViewModel<typeof parsed.Aux, never>>
+    ReadonlySet<LikeC4ViewModel<typeof parsed.Aux, never>>
   >()
 
   // @ts-expect-error
@@ -271,7 +271,7 @@ test('LikeC4Model type guards', () => {
     expectTypeOf(unknownModel.view('index')).toEqualTypeOf<LikeC4ViewModel<A, ComputedView<A>>>()
     expectTypeOf(unknownModel.element('cloud').defaultView).toEqualTypeOf<
       | null
-      | LikeC4ViewModel<A, ComputedElementView<A> & { viewOf: aux.Fqn<A> }>
+      | LikeC4ViewModel<A, ComputedElementView<A> & { viewOf: aux.StrictFqn<A> }>
     >()
     expectTypeOf(unknownModel.deployment.views()).toEqualTypeOf<
       IteratorLike<LikeC4ViewModel<A, ComputedDeploymentView<A>>>
@@ -283,7 +283,7 @@ test('LikeC4Model type guards', () => {
     expectTypeOf(unknownModel.view('index')).toEqualTypeOf<LikeC4ViewModel<A, DiagramView<A>>>()
     expectTypeOf(unknownModel.element('cloud').defaultView).toEqualTypeOf<
       | null
-      | LikeC4ViewModel<A, LayoutedElementView<A> & { viewOf: aux.Fqn<A> }>
+      | LikeC4ViewModel<A, LayoutedElementView<A> & { viewOf: aux.StrictFqn<A> }>
     >()
 
     const v = unknownModel.view('index')
@@ -400,7 +400,6 @@ test('LikeC4Model.create: should have defined types and never for missing', () =
 
   type A = typeof computed.Aux
   expectTypeOf(computed.tags).toEqualTypeOf<readonly never[]>()
-  expectTypeOf(computed.tagsSortedByUsageCount).toEqualTypeOf<readonly never[]>()
 
   expectTypeOf(computed.view).parameter(0).toEqualTypeOf<'view1' | { id: scalar.ViewId<'view1'> }>()
   expectTypeOf(computed.findView).parameter(0).toEqualTypeOf<'view1' | string & Record<never, never>>()

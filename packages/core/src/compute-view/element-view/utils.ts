@@ -1,27 +1,18 @@
 import { filter, hasAtLeast, only } from 'remeda'
-import { invariant } from '../../errors'
-import type { ConnectionModel, ElementModel } from '../../model'
+import type { ConnectionModel } from '../../model'
 import {
   type AnyAux,
   type ComputedEdge,
   type ComputedNode,
-  type Element,
   type scalar,
 } from '../../types'
-import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
+import { invariant } from '../../utils'
+import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Memory } from './_types'
 
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
-
-export function toNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
-  return {
-    ...el.$element as Element<A>,
-    id: el.id as scalar.NodeId,
-    modelRef: el.id,
-  }
-}
 
 export function toComputedEdges<A extends AnyAux>(
   connections: ReadonlyArray<ConnectionModel<A>>,
@@ -68,7 +59,7 @@ export function buildNodes<A extends AnyAux>(
   memory: Memory,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
   return buildComputedNodes(
-    [...memory.final].map(n => toNodeSource(n)),
+    [...memory.final].map(elementModelToNodeSource),
     memory.groups,
   )
 }

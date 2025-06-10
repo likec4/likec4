@@ -153,6 +153,7 @@ function ElementTagsDropdown({ tags, zoomIsLargeEnough }: { tags: readonly strin
       css={{
         gap: 4,
         flexWrap: 'wrap',
+        pb: 'sm',
       }}
     >
       {tags.map((tag) => (

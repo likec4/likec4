@@ -147,6 +147,7 @@ export function viewToNodesEdge(
               ports: node.ports,
               style: node.style,
               existsInCurrentView: node.existsInCurrentView,
+              tags: node.tags,
               ...navigateTo,
             },
           },

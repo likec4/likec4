@@ -1,5 +1,4 @@
 import { isNullish } from 'remeda'
-import { nonexhaustive } from '../../errors'
 import {
   type AnyAux,
   type DynamicViewIncludeRule,
@@ -16,6 +15,7 @@ import {
   isViewRuleGlobalPredicateRef,
   isViewRuleGlobalStyle,
 } from '../../types'
+import { nonexhaustive } from '../../utils'
 
 export function resolveGlobalRules<A extends AnyAux>(
   view: ParsedElementView<A> | ParsedDynamicView<A>,

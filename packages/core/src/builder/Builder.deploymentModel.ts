@@ -328,7 +328,23 @@ export function deployment(...ops: any[]) {
 type NameFromFqn<FQN extends string> = LastArrayElement<Split<FQN, '.'>>
 
 export type AddDeployedInstance<Props = unknown> = {
-  //  instanceOf(target, titleOrProps?)
+  /**
+   * @example
+   * ```ts
+   * builder.deployment(({ node, instanceOf }, _) =>
+   *    _(
+   *      node('node1').with(
+   *        // Only FQN of the element
+   *        instanceOf('cloud.backend'),
+   *        // ID, FQN of the element and additional props
+   *        instanceOf('b2', 'cloud.backend', {
+   *          tags: ['tag2'],
+   *        }),
+   *      ),
+   *    )
+   *  )
+   * ```
+   */
   <
     const T extends AnyTypes,
     Id extends string & T['Fqn'],
@@ -336,7 +352,23 @@ export type AddDeployedInstance<Props = unknown> = {
     target: Id,
   ): (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, NameFromFqn<Id>>>
 
-  //  instanceOf(id, target, titleOrProps?)
+  /**
+   * @example
+   * ```ts
+   * builder.deployment(({ node, instanceOf }, _) =>
+   *    _(
+   *      node('node1').with(
+   *        // Only FQN of the element
+   *        instanceOf('cloud.backend'),
+   *        // ID, FQN of the element and additional props
+   *        instanceOf('b2', 'cloud.backend', {
+   *          tags: ['tag2'],
+   *        }),
+   *      ),
+   *    )
+   *  )
+   * ```
+   */
   <
     const Id extends string,
     T extends AnyTypes,
@@ -348,10 +380,32 @@ export type AddDeployedInstance<Props = unknown> = {
   ): (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
 }
 
-type AddDeploymentNodeHelper<T = unknown> = <const Id extends string>(
-  id: ValidId<Id>,
-  titleOrProps?: string | T,
-) => AddDeploymentNode<Id>
+type AddDeploymentNodeHelper<T = unknown> =
+  /**
+   * Adds deployment model
+   *
+   * @example
+   *  builder.deployment(({ node }, _) =>
+   *    _(
+   *      node('node1').with(
+   *        node('child1')
+   *      ),
+   *    )
+   *  )
+   *
+   * @example
+   *  builder.deployment((_,d) =>
+   *    d(
+   *      _.node('node1').with(
+   *        _.node('child1')
+   *      ),
+   *    )
+   *  )
+   */
+  <const Id extends string>(
+    id: ValidId<Id>,
+    titleOrProps?: string | T,
+  ) => AddDeploymentNode<Id>
 
 export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
   Types<any, any, any, any, any, any, infer Kinds extends string, any> ? {
@@ -359,15 +413,25 @@ export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
   }
   : Invalid<'No Deployment Kinds'>
 
-export type AddDeploymentRelation<Props = unknown> = <
-  T extends AnyTypes,
-  Source extends string & T['DeploymentFqn'],
-  Target extends string & T['DeploymentFqn'],
->(
-  source: Source,
-  target: Target,
-  titleOrProps?: string | Props,
-) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>
+export type AddDeploymentRelation<Props = unknown> =
+  /**
+   * @example
+   * ```ts
+   * rel('source.deployment', 'target.deployment', {
+   *   title: 'title',
+   *   tags: ['tag1'],
+   * })
+   * ```
+   */
+  <
+    T extends AnyTypes,
+    Source extends string & T['DeploymentFqn'],
+    Target extends string & T['DeploymentFqn'],
+  >(
+    source: Source,
+    target: Target,
+    titleOrProps?: string | Props,
+  ) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>
 
 export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers<T> & {
   instanceOf: AddDeployedInstance<T['NewDeploymentNodeProps']>

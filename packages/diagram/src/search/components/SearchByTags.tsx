@@ -8,12 +8,13 @@ import { useNormalizedSearch, useUpdateSearch } from '../hooks'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './utils'
 
 export function SearchByTags() {
-  let tags = useLikeC4Model().tagsSortedByUsageCount
+  let tags = useLikeC4Model().tagsSortedByUsage
   let setSearch = useUpdateSearch()
   let search = useNormalizedSearch()
   let countBefore = tags.length
   if (search.startsWith('#')) {
-    tags = tags.filter((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
+    const searchTag = search.slice(1)
+    tags = tags.filter(({ tag }) => tag.toLocaleLowerCase().includes(searchTag))
   }
   if (tags.length === 0) {
     return null
@@ -47,7 +48,7 @@ export function SearchByTags() {
           },
         }}
       >
-        {tags.map((tag) => (
+        {tags.map(({ tag }) => (
           // <Pill
           //   key={tag}
           //   data-likec4-tag={tag}

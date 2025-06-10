@@ -1,5 +1,4 @@
 import { describe, it } from 'vitest'
-import { invariant } from '../../errors'
 import {
   type aux,
   type GlobalPredicateId,
@@ -11,6 +10,7 @@ import {
   isViewRuleStyle,
   ViewId,
 } from '../../types'
+import { invariant } from '../../utils'
 import type { $Aux } from '../element-view/__test__/fixture'
 import { resolveGlobalRules } from './resolve-global-rules'
 

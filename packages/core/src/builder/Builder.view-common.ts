@@ -230,6 +230,21 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   }
 }
 
+/**
+ * @example
+ *  builder.views(({ view, $style }, _) =>
+ *    _(
+ *      view('view1').with(
+ *        $style('*', {
+ *          color: 'red',
+ *        }),
+ *        $style(['bob', 'alice'], {
+ *          color: 'blue',
+ *        }),
+ *      ),
+ *    )
+ *  )
+ */
 function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
   { notation, ...style }: ViewRuleStyle<any>['style'] & { notation?: string },

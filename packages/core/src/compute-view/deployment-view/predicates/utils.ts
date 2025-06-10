@@ -1,5 +1,4 @@
 import { filter, isArray, map, pick, pipe } from 'remeda'
-import { nonexhaustive } from '../../../errors'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
@@ -17,6 +16,7 @@ import {
 } from '../../../model'
 import type { AnyAux } from '../../../types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
+import { nonexhaustive } from '../../../utils'
 import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
 import type { StageExclude, StageInclude } from '../memory'

@@ -1,6 +1,5 @@
-import { invariant } from '../../../errors'
-import type { AnyAux, Aux, aux, IteratorLike, Unknown } from '../../../types'
-import { stringHash } from '../../../utils'
+import type { AnyAux, aux, IteratorLike } from '../../../types'
+import { invariant, stringHash } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
 import {

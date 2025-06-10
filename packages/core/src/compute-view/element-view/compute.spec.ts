@@ -1,15 +1,22 @@
 import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { type AnyTypes, type Types, Builder } from '../../builder'
-import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
 import { type ParsedView, isElementView } from '../../types'
+import { invariant } from '../../utils'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
 
 const builder = Builder.specification({
   elements: {
     el: {},
+    actor: {
+      tags: ['tag1'],
+    },
+  },
+  tags: {
+    tag1: {},
+    tag2: {},
   },
 })
 
@@ -22,6 +29,35 @@ function compute<const T extends AnyTypes>(builder: Builder<T>) {
 }
 
 describe('compute', () => {
+  it('adds tags to node from element and spec', () => {
+    const context = compute(
+      builder
+        .model(({ el, actor, rel }, _) =>
+          _(
+            actor('alice'),
+            actor('bob', {
+              tags: ['tag2'],
+            }),
+          )
+        )
+        .views(({ view, $include, $rules, $style }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('*'),
+                $style(['*', 'alice'], {}),
+              ),
+            ),
+          )
+        ),
+    )
+    expect(context.nodes.find(n => n.id === 'alice')?.tags).toEqual(['tag1'])
+    // Tags are merged, order is important (tag2 comes from element, tag1 comes from spec)
+    expect(context.nodes.find(n => n.id === 'bob')?.tags).toEqual(['tag2', 'tag1'])
+  })
+
   it('pushes edge to outbound collection of the source and its ancestors', () => {
     const context = compute(
       builder

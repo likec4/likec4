@@ -1,5 +1,5 @@
 import type { Simplify } from 'type-fest'
-import { nonNullable } from '../../errors'
+import type { ElementModel } from '../../model'
 import {
   type AnyAux,
   type aux,
@@ -11,6 +11,7 @@ import {
   DefaultThemeColor,
   GroupElementKind,
 } from '../../types'
+import { nonNullable } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'
 
@@ -27,25 +28,18 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, C
   }
 }
 
-const modelElementAsNodeSource = <A extends AnyAux>({ id, ...element }: Element<A>): ComputedNodeSource<A> => {
-  return {
-    id: id as scalar.NodeId,
-    modelRef: id,
-    ...element,
-  }
-}
-
-// type ComputedNodeSource = Simplify<SetRequired<Partial<Omit<ComputedNode, 'parent' | 'children' | 'inEdges' | 'outEdges' | 'level' | 'depth'>>, 'id' | 'title' | 'kind'>>
 export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
   & Pick<ComputedNode<A>, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
   & Partial<Omit<Element<A>, 'id' | 'title' | 'kind'>>
 >
 
-export function buildComputedNodesFromElements<A extends AnyAux>(
-  elements: ReadonlyArray<Element<A>>,
-  groups?: NodesGroup<A>[],
-): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
-  return buildComputedNodes(elements.map(modelElementAsNodeSource), groups)
+export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
+  return {
+    ...el.$element,
+    tags: [...el.tags],
+    id: el.id as scalar.NodeId,
+    modelRef: el.id,
+  }
 }
 
 export function buildComputedNodes<A extends AnyAux>(

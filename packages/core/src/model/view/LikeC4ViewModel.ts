@@ -1,5 +1,4 @@
 import { isTruthy } from 'remeda'
-import { nonNullable } from '../../errors'
 import type {
   Any,
   AnyView,
@@ -10,7 +9,7 @@ import type {
 } from '../../types'
 import { _stage, _type } from '../../types'
 import type * as aux from '../../types/aux'
-import { DefaultMap, ifind } from '../../utils'
+import { DefaultMap, ifind, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import {

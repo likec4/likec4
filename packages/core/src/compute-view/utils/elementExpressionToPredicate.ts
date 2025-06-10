@@ -1,15 +1,13 @@
-import { isNullish } from 'remeda'
-import { nonexhaustive } from '../../errors'
 import {
   FqnRef,
   ModelFqnExpr,
   whereOperatorAsPredicate,
 } from '../../types'
-import { parentFqn } from '../../utils'
+import { nonexhaustive, parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
-export function elementExprToPredicate<T extends { id: string; tags?: readonly string[] | null; kind: string }>(
+export function elementExprToPredicate<T extends { id: string; tags: readonly string[]; kind: string }>(
   target: ModelFqnExpr.Any,
 ): Predicate<T> {
   if (ModelFqnExpr.isCustom(target)) {
@@ -25,8 +23,8 @@ export function elementExprToPredicate<T extends { id: string; tags?: readonly s
   }
   if (ModelFqnExpr.isElementTagExpr(target)) {
     return target.isEqual
-      ? ({ tags }) => !!tags && tags.includes(target.elementTag)
-      : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
+      ? ({ tags }) => tags.includes(target.elementTag)
+      : ({ tags }) => !tags.includes(target.elementTag)
   }
   if (ModelFqnExpr.isWildcard(target)) {
     return () => true

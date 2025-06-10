@@ -1,5 +1,4 @@
 import { filter, findLast, forEach, map, pipe } from 'remeda'
-import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
@@ -18,7 +17,7 @@ import {
   ModelRelationExpr,
   whereOperatorAsPredicate,
 } from '../../types'
-import { sortParentsFirst } from '../../utils'
+import { invariant, nonexhaustive, nonNullable, sortParentsFirst } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'

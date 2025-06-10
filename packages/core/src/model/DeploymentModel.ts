@@ -1,5 +1,4 @@
 import { values } from 'remeda'
-import { invariant, nonNullable } from '../errors'
 import {
   type Any,
   type DeploymentElement,
@@ -9,6 +8,7 @@ import {
   isDeploymentNode,
 } from '../types'
 import * as aux from '../types/aux'
+import { invariant, nonNullable } from '../utils'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'

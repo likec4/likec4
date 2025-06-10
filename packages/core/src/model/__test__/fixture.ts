@@ -38,6 +38,7 @@ const {
     system: {},
     component: {},
     webapp: {
+      tags: ['internal'],
       style: {
         shape: 'browser',
       },
@@ -51,6 +52,8 @@ const {
   tags: {
     internal: {},
     external: {},
+    tag1: {},
+    tag2: {},
   },
   deployments: {
     env: {},
@@ -65,7 +68,9 @@ const local = b
       person('customer'),
       system('cloud').with(
         component('frontend').with(
-          webapp('dashboard'),
+          webapp('dashboard', {
+            tags: ['tag1'],
+          }),
           mobile('mobile'),
         ),
         component('auth'),
@@ -74,18 +79,23 @@ const local = b
           component('graphql'),
         ),
         component('media', {
+          tags: ['tag2'],
           shape: 'storage',
         }),
       ),
       system('aws').with(
         component('rds', {
+          tags: ['tag2'],
           shape: 'storage',
         }),
         component('s3', {
+          tags: ['tag2'],
           shape: 'storage',
         }),
       ),
-      system('email'),
+      system('email', {
+        tags: ['external'],
+      }),
     ),
     $m.model(
       $m.rel('customer', 'cloud', 'uses services'),

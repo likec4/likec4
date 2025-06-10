@@ -55,10 +55,30 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F
  * Chainable builder to create element
  */
 export interface AddElement<Id extends string> {
+  /**
+   * @example
+   * ```ts
+   * el('a')
+   * ```
+   */
   <T extends AnyTypes>(builder: ModelBuilder<T>): ModelBuilder<Types.AddFqn<T, Id>>
 
+  /**
+   * @example
+   * ```ts
+   * el('a').with()
+   * ```
+   */
   with<T extends AnyTypes>(): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddFqn<T, Id>>
 
+  /**
+   * @example
+   * ```ts
+   * el('a').with(
+   *   relTo('b')
+   * )
+   * ```
+   */
   with<
     T extends AnyTypes,
     A extends AnyTypes,

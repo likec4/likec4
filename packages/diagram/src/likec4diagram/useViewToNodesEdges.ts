@@ -137,7 +137,7 @@ function viewToNodesEdge(opts: {
       shape: node.shape,
       style: node.style,
       icon: node.icon ?? null,
-      tags: node.tags ?? null,
+      tags: node.tags,
       position: node.position,
       isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData

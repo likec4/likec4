@@ -1,6 +1,6 @@
 import { isNot } from 'remeda'
-import { invariant } from '../../../errors'
-import type { AnyAux, Aux, aux, Unknown } from '../../../types'
+import type { AnyAux, aux, Unknown } from '../../../types'
+import { invariant } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { ifilter, isome } from '../../../utils/iterable'
 import { difference, equals, intersection, union } from '../../../utils/set'

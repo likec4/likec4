@@ -1,13 +1,13 @@
 import type { IsAny } from 'type-fest'
-import type { scalar } from '.'
 import type { NonEmptyArray } from './_common'
 import type * as aux from './aux'
-import type { AnyAux } from './aux'
+import type { Any } from './aux'
 import type { _stage } from './const'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
+import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
 
 interface BaseLikeC4ModelData<A extends aux.Any> {
@@ -25,7 +25,7 @@ interface BaseLikeC4ModelData<A extends aux.Any> {
 
 export type AuxFromLikeC4ModelData<D> =
   // dprint-ignore
-  D extends BaseLikeC4ModelData<infer A extends AnyAux>
+  D extends BaseLikeC4ModelData<infer A extends Any>
     ? IsAny<A> extends true
       ? never
       : A
@@ -45,26 +45,26 @@ export type AuxFromLikeC4ModelData<D> =
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends AnyAux = aux.UnknownParsed> extends BaseLikeC4ModelData<A> {
+export interface ParsedLikeC4ModelData<A extends Any = aux.UnknownParsed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'parsed'
   // globals: ModelGlobals<A
   views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
-export interface ComputedLikeC4ModelData<A extends AnyAux = aux.UnknownComputed> extends BaseLikeC4ModelData<A> {
+export interface ComputedLikeC4ModelData<A extends Any = aux.UnknownComputed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'computed'
   // specification: Specification<A>
   // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, ComputedView<A>>
 }
 
-export interface LayoutedLikeC4ModelData<A extends AnyAux = aux.UnknownLayouted> extends BaseLikeC4ModelData<A> {
+export interface LayoutedLikeC4ModelData<A extends Any = aux.UnknownLayouted> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
   // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, LayoutedView<A>>
 }
 
-export type LikeC4ModelData<A extends AnyAux> =
+export type LikeC4ModelData<A extends Any> =
   | ParsedLikeC4ModelData<A>
   | ComputedLikeC4ModelData<A>
   | LayoutedLikeC4ModelData<A>

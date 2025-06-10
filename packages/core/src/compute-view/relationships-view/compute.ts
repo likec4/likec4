@@ -1,7 +1,7 @@
 import { pipe } from 'remeda'
-import { invariant } from '../../errors'
 import type { ElementModel, LikeC4Model, LikeC4ViewModel, RelationshipModel } from '../../model'
 import type { AnyAux, aux } from '../../types'
+import { invariant } from '../../utils'
 import { isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { ifilter, imap, toArray, toSet } from '../../utils/iterable'
 import type { RelationshipsViewData } from './_types'

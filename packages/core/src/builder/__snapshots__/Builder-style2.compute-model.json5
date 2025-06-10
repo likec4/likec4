@@ -52,7 +52,9 @@
       "links": null,
       "shape": "rectangle",
       "style": {},
-      "tags": [],
+      "tags": [
+        "tag3",
+      ],
       "technology": null,
       "title": "customer",
     },
@@ -103,7 +105,11 @@
       "node": {},
     },
     "elements": {
-      "actor": {},
+      "actor": {
+        "tags": [
+          "tag3",
+        ],
+      },
       "component": {},
       "system": {
         "style": {
@@ -118,6 +124,9 @@
         "color": "#FFF",
       },
       "tag2": {
+        "color": "primary",
+      },
+      "tag3": {
         "color": "primary",
       },
     },
@@ -178,7 +187,9 @@
           "parent": null,
           "shape": "rectangle",
           "style": {},
-          "tags": [],
+          "tags": [
+            "tag3",
+          ],
           "technology": null,
           "title": "customer",
         },
@@ -271,7 +282,9 @@
           "parent": null,
           "shape": "rectangle",
           "style": {},
-          "tags": [],
+          "tags": [
+            "tag3",
+          ],
           "technology": null,
           "title": "customer",
         },

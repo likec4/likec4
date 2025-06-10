@@ -1,4 +1,4 @@
-import { invariant } from '../errors'
+import { invariant } from '../utils/invariant'
 
 export type Point = readonly [x: number, y: number]
 

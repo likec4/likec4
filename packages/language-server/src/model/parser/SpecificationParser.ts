@@ -17,27 +17,17 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       } = this.doc
       const isValid = this.isValid
 
-      const element_specs = specifications.flatMap(s => s.elements.filter(this.isValid))
-      for (const { kind, props } of element_specs) {
+      for (const elementSpec of specifications.flatMap(s => s.elements.filter(isValid))) {
         try {
-          const kindName = kind.name as c4.ElementKind
-          if (!isTruthy(kindName)) {
-            continue
-          }
-          if (kindName in c4Specification.elements) {
-            logger.warn(`Element kind "${kindName}" is already defined`)
-            continue
-          }
-          const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
-          const bodyProps = pipe(
-            props.filter(ast.isSpecificationElementStringProperty) ?? [],
-            filter(p => this.isValid(p) && isNonNullish(p.value)),
-            mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
-          )
-          c4Specification.elements[kindName] = {
-            ...bodyProps,
-            style,
-          }
+          Object.assign(c4Specification.elements, this.parseElementSpecificationNode(elementSpec))
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+
+      for (const deploymentNodeSpec of specifications.flatMap(s => s.deploymentNodes.filter(isValid))) {
+        try {
+          Object.assign(c4Specification.deployments, this.parseElementSpecificationNode(deploymentNodeSpec))
         } catch (e) {
           logWarnError(e)
         }
@@ -80,15 +70,6 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         }
       }
 
-      const deploymentNodes_specs = specifications.flatMap(s => s.deploymentNodes.filter(isValid))
-      for (const deploymentNode of deploymentNodes_specs) {
-        try {
-          Object.assign(c4Specification.deployments, this.parseSpecificationDeploymentNodeKind(deploymentNode))
-        } catch (e) {
-          logWarnError(e)
-        }
-      }
-
       const colors_specs = specifications.flatMap(s => s.colors.filter(isValid))
       for (const { name, color } of colors_specs) {
         try {
@@ -107,14 +88,19 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseSpecificationDeploymentNodeKind(
-      { kind, props }: ast.SpecificationDeploymentNodeKind,
-    ): { [key: c4.DeploymentKind]: c4.ElementSpecification } {
-      const kindName = kind.name as c4.DeploymentKind
+    parseElementSpecificationNode(
+      specAst: ast.SpecificationElementKind,
+    ): { [key: c4.ElementKind]: c4.ElementSpecification }
+    parseElementSpecificationNode(
+      specAst: ast.SpecificationDeploymentNodeKind,
+    ): { [key: c4.DeploymentKind]: c4.ElementSpecification }
+    parseElementSpecificationNode(specAst: ast.SpecificationDeploymentNodeKind | ast.SpecificationElementKind) {
+      const { kind, props } = specAst
+      const kindName = kind.name
       if (!isTruthy(kindName)) {
         throw new Error('DeploymentNodeKind name is not resolved')
       }
-
+      const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
       const bodyProps = pipe(
         props.filter(ast.isSpecificationElementStringProperty) ?? [],
@@ -124,8 +110,9 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       return {
         [kindName]: {
           ...bodyProps,
+          ...(tags && { tags }),
           style,
-        },
+        } satisfies c4.ElementSpecification,
       }
     }
   }

@@ -2,6 +2,8 @@ import {
   type Any,
   type aux,
   type Color,
+  type ComputedEdge,
+  type DiagramEdge,
   type IteratorLike,
   type RelationshipLineType,
   type scalar,
@@ -18,40 +20,42 @@ import type { NodeModel } from './NodeModel'
 export type EdgesIterator<A extends Any, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
 
 export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
+  #edge: ComputedEdge<A> | DiagramEdge<A>
   constructor(
     public readonly view: LikeC4ViewModel<A, View>,
     public readonly $edge: View['edges'][number],
     public readonly source: NodeModel<A, View>,
     public readonly target: NodeModel<A, View>,
   ) {
+    this.#edge = $edge
   }
 
   get id(): scalar.EdgeId {
-    return this.$edge.id
+    return this.#edge.id
   }
 
   get parent(): NodeModel<A, View> | null {
-    return this.$edge.parent ? this.view.node(this.$edge.parent) : null
+    return this.#edge.parent ? this.view.node(this.#edge.parent) : null
   }
 
   get label(): string | null {
-    return this.$edge.label
+    return this.#edge.label
   }
 
   get description(): string | null {
-    return this.$edge.description ?? null
+    return this.#edge.description ?? null
   }
 
   get technology(): string | null {
-    return this.$edge.technology ?? null
+    return this.#edge.technology ?? null
   }
 
   public hasParent(): this is EdgeModel.WithParent<A, View> {
-    return this.$edge.parent !== null
+    return this.#edge.parent !== null
   }
 
   get tags(): aux.Tags<A> {
-    return this.$edge.tags ?? []
+    return this.#edge.tags ?? []
   }
 
   get stepNumber(): number | null {
@@ -59,15 +63,15 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {
-    return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
+    return this.#edge.navigateTo ? this.view.$model.view(this.#edge.navigateTo) : null
   }
 
   get color(): Color {
-    return this.$edge.color ?? 'gray'
+    return this.#edge.color ?? 'gray'
   }
 
   get line(): RelationshipLineType {
-    return this.$edge.line ?? 'dashed'
+    return this.#edge.line ?? 'dashed'
   }
 
   public isStep(): this is EdgeModel.StepEdge<A, View> {
@@ -80,7 +84,7 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
   public *relationships(
     type: 'model' | 'deployment' | undefined,
   ): IteratorLike<RelationshipModel<A> | DeploymentRelationModel<A>> {
-    for (const id of this.$edge.relations) {
+    for (const id of this.#edge.relations) {
       // if type is provided, then we need to filter relationships
       if (type) {
         const rel = this.view.$model.findRelationship(id, type)
@@ -96,7 +100,7 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
 
   public includesRelation(rel: aux.RelationId | { id: aux.RelationId }): boolean {
     const id = typeof rel === 'string' ? rel : rel.id
-    return this.$edge.relations.includes(id)
+    return this.#edge.relations.includes(id)
   }
 
   public isTagged(tag: aux.LooseTag<A>): boolean {

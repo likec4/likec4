@@ -1,4 +1,4 @@
-import { isTruthy } from 'remeda'
+import { isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
@@ -14,12 +14,12 @@ import {
   splitGlobalFqn,
 } from '../types'
 import * as aux from '../types/aux'
-import { commonAncestor, hierarchyLevel, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
+import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { $View, $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
-import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
+import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
+import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
@@ -53,7 +53,7 @@ export class ElementModel<A extends AnyAux = Any> {
   }
 
   get parent(): ElementModel<A> | null {
-    return memoizeProp(this, Symbol('parent'), () => this.$model.parent(this))
+    return this.$model.parent(this)
   }
 
   get kind(): aux.ElementKind<A> {
@@ -72,8 +72,17 @@ export class ElementModel<A extends AnyAux = Any> {
     return this.$element.icon ?? null
   }
 
+  /**
+   * Returns all tags of the element.
+   * It includes tags from the element and its kind.
+   */
   get tags(): aux.Tags<A> {
-    return this.$element.tags ?? ([] as any)
+    return memoizeProp(this, Symbol.for('tags'), () => {
+      return unique([
+        ...(this.$element.tags ?? []),
+        ...(this.$model.specification.elements[this.$element.kind]?.tags ?? []),
+      ] as aux.Tags<A>)
+    })
   }
 
   get title(): string {
@@ -92,8 +101,8 @@ export class ElementModel<A extends AnyAux = Any> {
     return this.$element.links ?? []
   }
 
-  get defaultView(): LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.Fqn<A> }> | null {
-    return memoizeProp(this, Symbol('defaultView'), () => this.scopedViews().next().value ?? null)
+  get defaultView(): LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }> | null {
+    return memoizeProp(this, Symbol.for('defaultView'), () => ihead(this.scopedViews()) ?? null)
   }
 
   get isRoot(): boolean {
@@ -207,45 +216,51 @@ export class ElementModel<A extends AnyAux = Any> {
   }
 
   public get allOutgoing(): ReadonlySet<RelationshipModel<A>> {
-    return memoizeProp(this, Symbol('allOutgoing'), () => new Set(this.outgoing()))
+    return memoizeProp(this, Symbol.for('allOutgoing'), () => new Set(this.outgoing()))
   }
 
   public get allIncoming(): ReadonlySet<RelationshipModel<A>> {
-    return memoizeProp(this, Symbol('allIncoming'), () => new Set(this.incoming()))
+    return memoizeProp(this, Symbol.for('allIncoming'), () => new Set(this.incoming()))
   }
 
   /**
    * Iterate over all views that include this element.
    */
-  public *views(): ViewsIterator<A, $View<A>> {
-    for (const view of this.$model.views()) {
-      if (view.includesElement(this.id)) {
-        yield view
+  public views(): ReadonlySet<LikeC4ViewModel<A>> {
+    return memoizeProp(this, Symbol.for('views'), () => {
+      const views = new Set<LikeC4ViewModel<A>>()
+      for (const view of this.$model.views()) {
+        if (view.includesElement(this.id)) {
+          views.add(view)
+        }
       }
-    }
-    return
+      return views
+    })
   }
 
   /**
    * Iterate over all views that scope this element.
    * It is possible that element is not included in the view.
    */
-  public *scopedViews(
-    this: ElementModel<A>,
-  ): ViewsIterator<A, $ViewWithType<A, 'element'> & { viewOf: aux.Fqn<A> }> {
-    for (const vm of this.$model.views()) {
-      if (vm.isElementView() && vm.$view.viewOf === this.id) {
-        yield vm
+  public scopedViews(): ReadonlySet<
+    LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }>
+  > {
+    return memoizeProp(this, Symbol.for('scopedViews'), () => {
+      const views = new Set<LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }>>()
+      for (const vm of this.$model.views()) {
+        if (vm.isScopedElementView() && vm.viewOf.id === this.id) {
+          views.add(vm)
+        }
       }
-    }
-    return
+      return views
+    })
   }
 
   /**
    * @returns true if the element is deployed
    */
   public isDeployed(): boolean {
-    return isTruthy(this.deployments().next().value)
+    return isTruthy(ihead(this.deployments()))
   }
 
   public deployments(): DeployedInstancesIterator<A> {

@@ -3,7 +3,7 @@ import type { AnyLikeC4Model } from '@likec4/core/model'
 import { generateAux } from '../model/generate-aux'
 
 export function generateReactTypes(model: AnyLikeC4Model) {
-  invariant(!model.isFromParsed, 'can not generate react types for parsed model')
+  invariant(!model.isParsed(), 'can not generate react types for parsed model')
   const aux = generateAux(model)
 
   return `

@@ -1,6 +1,6 @@
-import { nonNullable } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, Aux, aux } from '../../types'
+import type { AnyAux, aux } from '../../types'
+import { nonNullable } from '../../utils'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { DefaultMap } from '../../utils/mnemonist'
 

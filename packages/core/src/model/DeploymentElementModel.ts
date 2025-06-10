@@ -1,6 +1,5 @@
-import { isTruthy, only } from 'remeda'
+import { isTruthy, only, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import { nonNullable } from '../errors'
 import {
   type Any,
   type Color,
@@ -20,7 +19,7 @@ import {
   DefaultThemeColor,
 } from '../types'
 import * as aux from '../types/aux'
-import { commonAncestor, hierarchyLevel, memoizeProp } from '../utils'
+import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
@@ -43,6 +42,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
 
   abstract readonly $model: LikeC4DeploymentModel<A>
   abstract readonly $node: DeploymentElement<A>
+  abstract readonly tags: aux.Tags<A>
 
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     return {
@@ -59,10 +59,6 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
 
   get color(): Color {
     return this.$node.style?.color as Color ?? DefaultThemeColor
-  }
-
-  get tags(): aux.Tags<A> {
-    return this.$node.tags ?? []
   }
 
   get description(): string | null {
@@ -188,7 +184,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
   public abstract incomingModelRelationships(): RelationshipsIterator<A>
 
   public get allOutgoing(): RelationshipsAccum<A> {
-    return memoizeProp(this, Symbol('allOutgoing'), () =>
+    return memoizeProp(this, Symbol.for('allOutgoing'), () =>
       RelationshipsAccum.from(
         new Set(this.outgoingModelRelationships()),
         new Set(this.outgoing()),
@@ -196,7 +192,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> {
   }
 
   public get allIncoming(): RelationshipsAccum<A> {
-    return memoizeProp(this, Symbol('allIncoming'), () =>
+    return memoizeProp(this, Symbol.for('allIncoming'), () =>
       RelationshipsAccum.from(
         new Set(this.incomingModelRelationships()),
         new Set(this.incoming()),
@@ -243,6 +239,15 @@ export class DeploymentNodeModel<A extends Any = Any> extends AbstractDeployment
 
   get kind(): aux.DeploymentKind<A> {
     return this.$node.kind
+  }
+
+  override get tags(): aux.Tags<A> {
+    return memoizeProp(this, Symbol.for('tags'), () => {
+      return unique([
+        ...(this.$node.tags ?? []),
+        ...(this.$model.$model.specification.deployments[this.kind]?.tags ?? []),
+      ] as aux.Tags<A>)
+    })
   }
 
   public children(): ReadonlySet<DeploymentElementModel<A>> {
@@ -385,7 +390,12 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
   }
 
   override get tags(): aux.Tags<A> {
-    return this.$instance.tags ?? []
+    return memoizeProp(this, Symbol.for('tags'), () => {
+      return unique([
+        ...(this.$instance.tags ?? []),
+        ...this.element.tags,
+      ] as aux.Tags<A>)
+    })
   }
 
   get kind(): aux.ElementKind<A> {

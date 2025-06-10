@@ -1,5 +1,5 @@
 import { isDefined, isFunction } from 'remeda'
-import { invariant } from '../../errors'
+import { invariant } from '../../utils/invariant'
 
 export function ireduce<T, R>(reducer: (acc: R, item: T) => R, initialValue: R): (iterable: Iterable<T>) => R
 export function ireduce<T, R>(iterable: Iterable<T>, reducer: (acc: R, item: T) => R, initialValue: R): R

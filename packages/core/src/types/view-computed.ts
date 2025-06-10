@@ -1,5 +1,5 @@
 import type * as aux from './aux'
-import type { AnyAux } from './aux'
+import type { Any } from './aux'
 import type { _stage, _type } from './const'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
@@ -20,7 +20,7 @@ import type {
   ViewWithNotation,
 } from './view-common'
 
-export interface ComputedNode<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
+export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks {
   id: scalar.NodeId
   kind: aux.ElementKind<A> | aux.DeploymentKind<A> | '@group'
   parent: scalar.NodeId | null
@@ -41,6 +41,7 @@ export interface ComputedNode<A extends AnyAux = AnyAux> extends aux.WithOptiona
   children: scalar.NodeId[]
   inEdges: scalar.EdgeId[]
   outEdges: scalar.EdgeId[]
+  tags: aux.Tags<A>
   shape: ElementShape
   color: Color
   icon?: Icon
@@ -55,7 +56,7 @@ export interface ComputedNode<A extends AnyAux = AnyAux> extends aux.WithOptiona
   isCustomized?: boolean
 }
 
-export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A> {
+export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<A> {
   id: scalar.EdgeId
   parent: scalar.NodeId | null
   source: scalar.NodeId
@@ -85,7 +86,7 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
   dir?: 'forward' | 'back' | 'both'
 }
 
-interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
+interface BaseComputedViewProperties<A extends Any> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'computed'
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode<A>[]
@@ -97,16 +98,16 @@ interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewPropertie
   readonly manualLayout?: ViewManualLayout | undefined
 }
 
-export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
+export interface ComputedElementView<A extends Any = Any> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'element'
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
+export interface ComputedDeploymentView<A extends Any = Any> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'deployment'
 }
 
-export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
+export interface ComputedDynamicView<A extends Any = Any> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'dynamic'
 }

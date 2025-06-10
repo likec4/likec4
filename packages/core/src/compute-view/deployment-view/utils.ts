@@ -1,5 +1,4 @@
-import { hasAtLeast, isEmpty } from 'remeda'
-import { invariant, nonexhaustive } from '../../errors'
+import { hasAtLeast, isEmpty, unique } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -21,11 +20,10 @@ import {
   FqnExpr,
   isViewRuleStyle,
 } from '../../types'
-import { nameFromFqn, parentFqn } from '../../utils'
+import { invariant, nameFromFqn, nonexhaustive, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
-import { uniqueTags } from '../utils/uniqueTags'
 import type { Memory } from './_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
@@ -144,10 +142,14 @@ export function toNodeSource<A extends AnyAux>(
     const onlyOneInstance = el.onlyOneInstance()
     let { title, kind, id, ...$node } = el.$node
     const { icon, color, shape, ...style } = el.$node.style ?? {}
-
-    // If there is only one instance and title was not overriden
-    if (onlyOneInstance && title === nameFromFqn(el.id)) {
-      title = onlyOneInstance.title
+    let tags = [...el.tags]
+    // If there is only one instance
+    if (onlyOneInstance) {
+      tags = unique([...tags, ...onlyOneInstance.tags])
+      // If title was not overriden
+      if (title === nameFromFqn(el.id)) {
+        title = onlyOneInstance.title
+      }
     }
 
     return {
@@ -160,6 +162,7 @@ export function toNodeSource<A extends AnyAux>(
       ...(icon && { icon }),
       ...(color && { color }),
       ...(shape && { shape }),
+      tags,
       style: {
         ...style,
       },
@@ -194,7 +197,7 @@ export function toNodeSource<A extends AnyAux>(
     title: instance.title ?? element.title,
     description: instance.description ?? element.description,
     technology: instance.technology ?? element.technology,
-    tags: uniqueTags([element, el]) ?? [],
+    tags: [...el.tags],
     links: hasAtLeast(links, 1) ? links : null,
     ...icon && { icon },
     ...color && { color },

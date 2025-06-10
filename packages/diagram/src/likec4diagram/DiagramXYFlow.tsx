@@ -135,7 +135,7 @@ export function LikeC4DiagramXYFlow({
 
   useUpdateEffect(() => {
     console.warn('renderNodes changed - this might degrade performance')
-  }, [renderNodes])
+  }, [nodeTypes])
 
   return (
     <>

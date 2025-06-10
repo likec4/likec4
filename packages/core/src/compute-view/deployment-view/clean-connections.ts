@@ -12,7 +12,6 @@ import {
   reduce,
   values,
 } from 'remeda'
-import { invariant } from '../../errors'
 import type { RelationshipModel } from '../../model'
 import {
   DeploymentConnectionModel,
@@ -22,6 +21,7 @@ import {
   RelationshipsAccum,
   sortConnectionsByBoundaryHierarchy,
 } from '../../model'
+import { invariant } from '../../utils'
 import { imap, toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import { intersection, union } from '../../utils/set'

@@ -1,9 +1,8 @@
 import { anyPass } from 'remeda'
-import { nonexhaustive } from '../../../errors'
 import type { ElementModel, LikeC4Model } from '../../../model'
 import { modelConnection } from '../../../model'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
-import { ifilter, isDescendantOf, toArray } from '../../../utils'
+import { ifilter, isDescendantOf, nonexhaustive, toArray } from '../../../utils'
 import type { Elem, Memory, PredicateCtx } from '../_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = modelConnection

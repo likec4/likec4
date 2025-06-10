@@ -41,22 +41,13 @@ export type NodeOrId = string | { id: scalar.NodeId }
 export type EdgeOrId = string | { id: scalar.EdgeId }
 export type RelationOrId = string | { id: scalar.RelationId }
 
-export type $View<A> = A extends infer T extends AnyAux ? {
-    parsed: never
-    computed: ComputedView<T>
-    layouted: DiagramView<T>
-  }[T['Stage']] :
-  never
+export type $View<A extends AnyAux> = {
+  parsed: never
+  computed: ComputedView<A>
+  layouted: DiagramView<A>
+}[aux.Stage<A>]
 
-export type $ViewWithType<A extends AnyAux, V extends ViewType> = A extends infer T extends AnyAux ? ViewWithType<
-    {
-      parsed: never
-      computed: ComputedView<T>
-      layouted: DiagramView<T>
-    }[T['Stage']],
-    V
-  > :
-  never
+export type $ViewWithType<A extends AnyAux, V extends ViewType> = ViewWithType<$View<A>, V>
 
 export type $ViewModel<A extends AnyAux> = {
   parsed: never

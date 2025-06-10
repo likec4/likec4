@@ -25,8 +25,18 @@ export function applyCustomRelationProperties<A extends AnyAux>(
     const props = omitBy(customprops, isNullish)
     const satisfies = relationExpressionToPredicates(expr)
     edges.forEach((edge, i) => {
-      const source = nodes.find(n => n.id === edge.source)
-      const target = nodes.find(n => n.id === edge.target)
+      let source, target
+      for (const node of nodes) {
+        if (node.id === edge.source) {
+          source = node
+        }
+        if (node.id === edge.target) {
+          target = node
+        }
+        if (source && target) {
+          break
+        }
+      }
       if (!source || !target) {
         return
       }

@@ -1,5 +1,4 @@
 import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
-import { invariant, nonNullable } from '../errors'
 import type {
   Any,
   Aux,
@@ -18,7 +17,7 @@ import type {
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/aux'
-import { compareNatural, ifilter, memoizeProp } from '../utils'
+import { compareNatural, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
@@ -206,19 +205,19 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    * Type guard the model to the parsed stage.
    */
   public isParsed(this: LikeC4Model<any>): this is LikeC4Model<aux.toParsed<A>> {
-    return this.$data[_stage] === 'parsed'
+    return this.stage === 'parsed'
   }
   /**
    * Type guard the model to the layouted stage.
    */
   public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
-    return this.$data[_stage] === 'layouted'
+    return this.stage === 'layouted'
   }
   /**
    * Type guard the model to the computed stage.
    */
   public isComputed(this: LikeC4Model<any>): this is LikeC4Model<aux.toComputed<A>> {
-    return this.$data[_stage] === 'computed'
+    return this.stage === 'computed'
   }
 
   /**
@@ -242,7 +241,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
 
   get globals(): ModelGlobals {
-    return memoizeProp(this, Symbol('globals'), (): ModelGlobals => ({
+    return memoizeProp(this, Symbol.for('globals'), (): ModelGlobals => ({
       predicates: {
         ...this.$data.globals?.predicates,
       },
@@ -253,14 +252,6 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
         ...this.$data.globals?.styles,
       },
     }))
-  }
-
-  /**
-   * Returns true if the model was created from a parsed data
-   * (not computed or layouted)
-   */
-  get isFromParsed(): boolean {
-    return isOnStage(this.$data, 'parsed')
   }
 
   public element(el: ElementOrFqn<A>): ElementModel<A> {
@@ -464,41 +455,45 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    * Returns all tags used in the model, sorted alphabetically.
    */
   get tags(): aux.Tags<A> {
-    return memoizeProp(this, Symbol('tags'), () => sort([...this._allTags.keys()], compareNatural))
+    return memoizeProp(this, 'tags', () => sort([...this._allTags.keys()], compareNatural))
   }
 
   /**
    * Returns all tags used in the model, sorted by usage count (descending).
    */
-  get tagsSortedByUsageCount(): aux.Tags<A> {
-    return memoizeProp(this, Symbol('tagsSortedByUsageCount'), () =>
+  get tagsSortedByUsage(): ReadonlyArray<{
+    tag: aux.Tag<A>
+    count: number
+    tagged: ReadonlySet<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
+  }> {
+    return memoizeProp(this, 'tagsSortedByUsage', () =>
       pipe(
         [...this._allTags.entries()],
-        map(([tag, marked]) => ({
+        map(([tag, tagged]) => ({
           tag,
-          count: marked.size,
+          count: tagged.size,
+          tagged,
         })),
         sort((a, b) => compareNatural(a.tag, b.tag)),
         sortBy(
           [prop('count'), 'desc'],
         ),
-        map(prop('tag')),
-      )) as unknown as aux.Tags<A>
+      ))
   }
 
   /**
    * Returns all elements, relationships and views marked with the given tag.
    */
   public findByTag(tag: aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
-  public findByTag(tag: aux.Tag<A>, type: 'model-elements'): IteratorLike<ElementModel<A>>
+  public findByTag(tag: aux.Tag<A>, type: 'elements'): IteratorLike<ElementModel<A>>
   public findByTag(tag: aux.Tag<A>, type: 'views'): IteratorLike<LikeC4ViewModel<A>>
   public findByTag(tag: aux.Tag<A>, type: 'relationships'): IteratorLike<RelationshipModel<A>>
   public findByTag(
     tag: aux.Tag<A>,
-    type?: 'model-elements' | 'views' | 'relationships' | undefined,
+    type?: 'elements' | 'views' | 'relationships' | undefined,
   ) {
     return ifilter(this._allTags.get(tag), (el) => {
-      if (type === 'model-elements') {
+      if (type === 'elements') {
         return el instanceof ElementModel
       }
       if (type === 'views') {

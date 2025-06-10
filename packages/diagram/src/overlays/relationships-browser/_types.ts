@@ -35,6 +35,7 @@ export namespace RelationshipsBrowserTypes {
         | 'style'
         | 'width'
         | 'height'
+        | 'tags'
         | 'navigateTo'
       >
     >

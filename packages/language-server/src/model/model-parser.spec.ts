@@ -8,7 +8,44 @@ import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
   describe('parses specification', () => {
-    it('parses tags', async ({ expect }) => {
+    it('parses tags in elements', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          element system {
+            #tag1 #tag2
+          }
+          deploymentNode vm {
+            #tag2
+          }
+          tag tag1
+          tag tag2
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        elements: {
+          system: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        deployments: {
+          vm: {
+            tags: ['tag2'],
+          },
+        },
+        tags: {
+          tag1: {
+            astPath: expect.any(String),
+          },
+          tag2: {
+            astPath: expect.any(String),
+          },
+        },
+      })
+    })
+
+    it('parses tags specification', async ({ expect }) => {
       const { validate, services } = createTestServices()
       const { document } = await validate(`
         specification {

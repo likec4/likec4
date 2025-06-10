@@ -1,5 +1,4 @@
 import { filter, findLast, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
-import { nonNullable } from '../../errors'
 import type { ElementModel, LikeC4Model } from '../../model'
 import { modelConnection } from '../../model'
 import type { AnyAux, aux, scalar } from '../../types'
@@ -23,10 +22,11 @@ import {
   isViewRulePredicate,
   stepEdgeId,
 } from '../../types'
+import { nonNullable } from '../../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
-import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
+import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
@@ -150,10 +150,11 @@ class DynamicViewCompute<A extends AnyAux> {
       }
     }
 
-    const elements = [...this.explicits].map(e => e.$element)
-    const nodesMap = buildComputedNodesFromElements(elements)
+    const nodesMap = buildComputedNodes(
+      [...this.explicits].map(elementModelToNodeSource),
+    )
 
-    const edges = this.steps.map(({ id, source, target, relations, title, isBackward, ...step }) => {
+    const edges = this.steps.map(({ id, source, target, relations, title, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
@@ -166,6 +167,7 @@ class DynamicViewCompute<A extends AnyAux> {
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
         head: DefaultArrowType,
+        tags: tags ?? [],
         ...step,
       }
       if (isBackward) {
@@ -199,7 +201,7 @@ class DynamicViewCompute<A extends AnyAux> {
       applyViewRuleStyles(
         rules,
         // Keep order of elements
-        elements.map(e => nonNullable(nodesMap.get(e.id as scalar.NodeId))),
+        [...this.explicits].map(e => nonNullable(nodesMap.get(e.id as scalar.NodeId))),
       ),
     )
 

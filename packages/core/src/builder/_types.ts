@@ -4,7 +4,6 @@ import type {
   Aux,
   BorderStyle,
   ElementShape,
-  ElementSpecification as DeploymentNodeKindSpecification,
   ElementSpecification as ElementKindSpecification,
   Expression,
   KeysOf,
@@ -22,15 +21,19 @@ import type {
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
+type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
+  tags?: string[]
+}
+
 export type BuilderSpecification = {
   elements: {
-    [kind: string]: Partial<ElementKindSpecification>
+    [kind: string]: Partial<ElementSpecification>
   }
   relationships?: {
     [kind: string]: Partial<RelationshipKindSpecification>
   }
   deployments?: {
-    [kind: string]: Partial<DeploymentNodeKindSpecification>
+    [kind: string]: Partial<ElementSpecification>
   }
   tags?: {
     [kind: string]: Partial<TagSpecification>

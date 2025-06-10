@@ -119,6 +119,7 @@ export function layoutResultToXYFlow(
               icon: node.icon ?? 'none',
               ports: node.ports,
               style: node.style,
+              tags: node.tags,
               ...navigateTo,
             },
           },

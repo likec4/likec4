@@ -1,6 +1,6 @@
 import { isFunction } from 'remeda'
-import { invariant } from '../../errors'
 import type { IteratorLike } from '../../types'
+import { invariant } from '../../utils/invariant'
 
 /**
  * Filters an iterable based on a predicate.
