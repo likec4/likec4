@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.12.1",
   "type": "module",
   "scripts": {
-    "install:chromium": "playwright install chromium --with-deps",
+    "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",
