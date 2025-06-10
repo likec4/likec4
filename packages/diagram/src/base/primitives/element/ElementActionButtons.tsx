@@ -1,6 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
-import { ActionIcon, Box } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import * as m from 'motion/react-m'
 import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
@@ -13,11 +14,12 @@ type ElementActionButtonsProps = NodeProps & {
 
 const container = css({
   position: 'absolute',
-  top: `calc(100% - 28px)`,
-  // transform: 'translateY(-100%)',
-  left: 0,
-  width: '100%',
-  minHeight: '28px',
+  zIndex: 1,
+  top: `calc(100% - 30px)`,
+  transform: 'translateX(-50%)',
+  left: `50%`,
+  width: 'auto',
+  minHeight: '30px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -47,14 +49,13 @@ export function ElementActionButtons({
   }
   return (
     <Box className={container}>
-      <Box
-        component={m.div}
+      <m.div
         layoutRoot
         key={`${id}-action-buttons`}
         initial={false}
         style={{
           originY: 0,
-          gap: '8px',
+          gap: 6,
         }}
         animate={{
           opacity: (isHovered || selected) ? 1 : 0.75,
@@ -82,7 +83,7 @@ export function ElementActionButtons({
             {button.icon}
           </ActionIcon>
         ))}
-      </Box>
+      </m.div>
     </Box>
   )
 }

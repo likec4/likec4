@@ -27,7 +27,7 @@ function buildNode(
  * If `viewId` is provided, returns the tree of elements in the view.
  */
 export function useLikeC4ElementsTree(viewId?: ViewId): LikeC4ModelTreeNodeData[] {
-  const model = useLikeC4Model(true)
+  const model = useLikeC4Model()
   return useMemo(() => {
     if (viewId) {
       const view = model.view(viewId)

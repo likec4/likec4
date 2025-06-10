@@ -1,7 +1,7 @@
 {
   "name": "@likec4/style-preset",
   "license": "MIT",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -9,7 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "generate": "tsx --conditions=sources ./generate.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --build --verbose",
     "prebuild": "rm -rf dist/*",
     "build": "tsc"
   },
@@ -35,17 +35,21 @@
   "peerDependencies": {
     "@pandacss/dev": "catalog:css"
   },
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "pandacss-preset-radix-colors": "^0.2.0"
+  },
   "devDependencies": {
-    "remeda": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/vanilla-extract": "catalog:mantine",
     "@mantine/core": "catalog:mantine",
+    "@mantine/vanilla-extract": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
     "khroma": "^2.1.0",
     "json5": "catalog:utils",
+    "remeda": "catalog:utils",
     "tsx": "catalog:",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.12.1"
 }

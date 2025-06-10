@@ -80,16 +80,16 @@ When condition on element is checked the following rules are applied:
 
 ```likec4
 model {
-  el cloud {
-    el frontend {
+  element cloud {
+    element frontend {
       #next
       -> backend "rel1"
     }
-    el backend {
+    element backend {
       #next
       -> db "rel2"
     }
-    el db
+    element db
   }
 }
 deployment {

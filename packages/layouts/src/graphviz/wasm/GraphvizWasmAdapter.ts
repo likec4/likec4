@@ -10,6 +10,10 @@ const limit = pLimit(1)
 export class GraphvizWasmAdapter implements GraphvizPort {
   private static _graphviz: Promise<Graphviz> | null = null
 
+  get concurrency() {
+    return 1
+  }
+
   private graphviz(): Promise<Graphviz> {
     return Promise.resolve().then(() => GraphvizWasmAdapter._graphviz ??= Graphviz.load())
   }

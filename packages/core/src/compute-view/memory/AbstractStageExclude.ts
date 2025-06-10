@@ -1,7 +1,6 @@
 import { isBoolean, pipe } from 'remeda'
-import { invariant } from '../../errors'
-import { findAscendingConnections } from '../../model/connection'
-import { difference, intersection, isDescendantOf, isIterable } from '../../utils'
+import { findAscendingConnections } from '../../model'
+import { difference, intersection, invariant, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
 import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 
@@ -209,7 +208,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx> implements StageExc
       state = this.removeElements(state)
     }
 
-    //state = this.moveDisconnectedExplicitsToImplicits(state)
+    // state = this.moveDisconnectedExplicitsToImplicits(state)
 
     return this.memory.update(this.postcommit(state))
   }

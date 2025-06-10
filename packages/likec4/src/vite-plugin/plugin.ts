@@ -11,6 +11,7 @@ import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
 import { projectsModule } from './virtuals/projects'
+import { projectPumlModule, pumlModule } from './virtuals/puml'
 import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { singleProjectModule } from './virtuals/single-project'
 
@@ -64,6 +65,7 @@ const hmrProjectVirtuals = [
   projectD2Module,
   projectDotSourcesModule,
   projectMmdSourcesModule,
+  projectPumlModule,
 ]
 const projectVirtuals = [
   ...hmrProjectVirtuals,
@@ -78,6 +80,7 @@ const virtuals = [
   d2Module,
   dotModule,
   mmdModule,
+  pumlModule,
   iconsModule,
 ]
 

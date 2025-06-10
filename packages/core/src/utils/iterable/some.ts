@@ -1,5 +1,5 @@
 import { isFunction } from 'remeda'
-import { invariant } from '../../errors'
+import { invariant } from '../../utils/invariant'
 
 /**
  * Checks if at least one element in the iterable satisfies the predicate.

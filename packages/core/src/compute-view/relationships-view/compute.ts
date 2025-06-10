@@ -1,10 +1,7 @@
 import { pipe } from 'remeda'
-import { invariant } from '../../errors'
-import type { ElementModel } from '../../model/ElementModel'
-import type { LikeC4Model } from '../../model/LikeC4Model'
-import type { RelationshipModel } from '../../model/RelationModel'
-import type { AnyAux } from '../../model/types'
-import type { LikeC4ViewModel } from '../../model/view/LikeC4ViewModel'
+import type { ElementModel, LikeC4Model, LikeC4ViewModel, RelationshipModel } from '../../model'
+import type { AnyAux, aux } from '../../types'
+import { invariant } from '../../utils'
 import { isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { ifilter, imap, toArray, toSet } from '../../utils/iterable'
 import type { RelationshipsViewData } from './_types'
@@ -104,10 +101,10 @@ function computeRelationships<const M extends AnyAux>(
   }
 }
 
-export function computeRelationshipsView<const M extends AnyAux>(
-  subjectId: NoInfer<M['Element']>,
+export function computeRelationshipsView<M extends AnyAux>(
+  subjectId: aux.ElementId<M>,
   likec4model: LikeC4Model<M>,
-  scopeViewId: NoInfer<M['View']> | null,
+  scopeViewId: aux.ViewId<M> | null,
   scope: 'global' | 'view' = 'global',
 ): RelationshipsViewData<M> {
   let subjectExistsInScope = true
@@ -132,8 +129,8 @@ export function computeRelationshipsView<const M extends AnyAux>(
   )
 }
 
-function computeScopedRelationshipsView<const M extends AnyAux>(
-  subjectId: NoInfer<M['Element']>,
+function computeScopedRelationshipsView<M extends AnyAux>(
+  subjectId: NoInfer<aux.ElementId<M>>,
   view: LikeC4ViewModel<M>,
   likec4model: LikeC4Model<M>,
 ): RelationshipsViewData<M> {

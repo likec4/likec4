@@ -1,7 +1,7 @@
 import { map, pipe } from 'remeda'
-import { findConnectionsWithin } from '../../../model/connection/deployment'
 import type { FqnExpr } from '../../../types'
 import { type Elem, type PredicateExecutor } from '../_types'
+import { findConnectionsWithin } from '../utils'
 import { applyElementPredicate } from './utils'
 
 export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
@@ -16,7 +16,8 @@ export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
           children.push(...root.children())
         }
         return root
-      }))
+      }),
+    )
 
     stage.addExplicit(rootElements)
     if (children.length > 1) {

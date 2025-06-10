@@ -1,4 +1,3 @@
-import { fail } from 'assert'
 import { pick } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $include, $participant, $where, computeView } from './fixture'

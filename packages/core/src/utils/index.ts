@@ -8,13 +8,10 @@ export {
   Stack,
 } from './mnemonist'
 
-export {
-  commonHead,
-} from './common-head'
+export { invariant, nonexhaustive, nonNullable } from './invariant'
 
-export {
-  compareNatural,
-} from './compare-natural'
+export { commonHead } from './common-head'
+export { compareNatural, compareNaturalHierarchically } from './compare-natural'
 export {
   ancestorsFqn,
   commonAncestor,
@@ -34,9 +31,7 @@ export {
   sortParentsFirst,
 } from './fqn'
 
-export {
-  getOrCreate,
-} from './getOrCreate'
+export { getOrCreate } from './getOrCreate'
 
 export {
   hasAtLeast,
@@ -47,6 +42,7 @@ export {
   ifilter,
   ifind,
   iflat,
+  ihead,
   imap,
   ireduce,
   isIterable,
@@ -55,9 +51,8 @@ export {
   toArray,
   toSet,
 } from './iterable'
-export {
-  delay,
-} from './promises'
+export { memoizeProp } from './memoize-prop'
+export { delay } from './promises'
 
 export {
   compareRelations,

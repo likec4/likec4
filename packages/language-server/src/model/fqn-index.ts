@@ -1,8 +1,7 @@
 import { invariant, nonNullable } from '@likec4/core'
-import { type Fqn, type ProjectId, AsFqn } from '@likec4/core/types'
+import { type ProjectId, Fqn } from '@likec4/core/types'
 import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
 import {
-  type AstNode,
   type Stream,
   AstUtils,
   DocumentState,
@@ -112,7 +111,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
             return map
           }, new MultiMap<string, AstNodeDescriptionWithFqn>())
         return uniqueByName(allchildren)
-          .sort((a, b) => compareNatural(a.name, b.name))
       }),
     )
   }
@@ -128,7 +126,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
             return map
           }, new MultiMap<string, AstNodeDescriptionWithFqn>())
         return uniqueByName(allchildren)
-          .sort((a, b) => compareNatural(a.name, b.name))
       }),
     )
   }
@@ -155,7 +152,6 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
           })
 
         const uniqueChildren = uniqueByName(children)
-          .sort((a, b) => compareNatural(a.name, b.name))
 
         const uniqueDescendants = [...descendants.associations()]
           .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
@@ -197,7 +193,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     ): readonly AstNodeDescriptionWithFqn[] => {
       let thisFqn: Fqn
       if (ast.isElement(el)) {
-        thisFqn = AsFqn(el.name, parentFqn)
+        thisFqn = Fqn(el.name, parentFqn)
         const desc = createAndSaveDescription(el, el.name, thisFqn)
         if (!parentFqn) {
           root.push(desc)
@@ -257,6 +253,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
   return [...multimap.associations()]
     .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
+    .sort((a, b) => compareNatural(a.name, b.name))
 }
 
 export class DocumentFqnIndex {

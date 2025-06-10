@@ -1,9 +1,9 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import {
   type MultiMap,
   type ViewId,
   computeColorValues,
-  DeploymentElement,
+  isDeploymentNode,
   isGlobalFqn,
   parentFqn,
   sortByFqnHierarchically,
@@ -13,10 +13,12 @@ import type { LangiumDocument } from 'langium'
 import {
   filter,
   flatMap,
+  forEach,
   indexBy,
   isDefined,
   isNullish,
   isTruthy,
+  keys,
   map,
   mapValues,
   pipe,
@@ -44,16 +46,23 @@ export type BuildModelData = {
  * This function builds a model from all documents, merging the specifications
  * and globals, and applying the extends to the elements.
  */
-export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
+export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
-  const customColorDefinitions: c4.CustomColorDefinitions = mapValues(
+  const customColors: c4.CustomColorDefinitions = mapValues(
     c4Specification.specs.colors,
     c => computeColorValues(c.color),
   )
 
+  const metadataKeys = new Set<string>()
   const elementExtends = new MergedExtends()
   const deploymentExtends = new MergedExtends()
+
+  const scanMetadataKeys = (obj?: { metadata?: Record<string, unknown> }) => {
+    if (obj?.metadata) {
+      keys(obj.metadata).forEach(key => metadataKeys.add(key))
+    }
+  }
 
   const elements = pipe(
     docs,
@@ -72,7 +81,8 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
           logger.debug`No parent found for ${el.id}`
           return acc
         }
-        acc[el.id] = elementExtends.apply(el)
+        acc[el.id] = elementExtends.applyExtended<c4.Element>(el)
+        scanMetadataKeys(acc[el.id])
         return acc
       },
       {} as c4.ParsedLikeC4ModelData['elements'],
@@ -84,17 +94,21 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
     flatMap(d => map(d.c4Relations, c4Specification.toModelRelation)),
     filter((rel): rel is c4.ModelRelation => {
       if (!rel) return false
+      const source = c4.FqnRef.flatten(rel.source),
+        target = c4.FqnRef.flatten(rel.target)
+
       if (
-        (isNullish(elements[rel.source]) && !isGlobalFqn(rel.source)) ||
-        (isNullish(elements[rel.target]) && !isGlobalFqn(rel.target))
+        (isNullish(elements[source]) && !isGlobalFqn(source)) ||
+        (isNullish(elements[target]) && !isGlobalFqn(target))
       ) {
         logger.debug`Invalid relation ${rel.id}
-  source: ${rel.source} resolved: ${!!elements[rel.source]}
-  target: ${rel.target} resolved: ${!!elements[rel.target]}\n`
+  source: ${source} resolved: ${!!elements[source]}
+  target: ${target} resolved: ${!!elements[target]}\n`
         return false
       }
       return true
     }),
+    forEach(scanMetadataKeys),
     indexBy(prop('id')),
   )
 
@@ -115,7 +129,8 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
           logger.debug`No parent found for deployment element ${el.id}`
           return acc
         }
-        acc[el.id] = DeploymentElement.isDeploymentNode(el) ? deploymentExtends.apply(el) : el
+        acc[el.id] = isDeploymentNode(el) ? deploymentExtends.applyExtended<c4.DeploymentNode>(el) : el
+        scanMetadataKeys(acc[el.id])
         return acc
       },
       {} as Record<string, c4.DeploymentElement>,
@@ -125,12 +140,14 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
   const deploymentRelations = pipe(
     docs,
     flatMap(d => map(d.c4DeploymentRelations, c4Specification.toDeploymentRelation)),
-    filter((rel): rel is c4.DeploymentRelation => {
+    filter((rel): rel is c4.DeploymentRelationship => {
       if (!rel) return false
-      if (isNullish(deploymentElements[rel.source.id]) || isNullish(deploymentElements[rel.target.id])) {
+      if (
+        isNullish(deploymentElements[rel.source.deployment]) || isNullish(deploymentElements[rel.target.deployment])
+      ) {
         logger.debug`Invalid deployment relation ${rel.id}
-  source: ${rel.source.id} resolved: ${!!deploymentElements[rel.source.id]}
-  target: ${rel.target.id} resolved: ${!!deploymentElements[rel.target.id]}\n`
+  source: ${rel.source.deployment} resolved: ${!!deploymentElements[rel.source.deployment]}
+  target: ${rel.target.deployment} resolved: ${!!deploymentElements[rel.target.deployment]}\n`
         return false
       }
       return true
@@ -141,10 +158,11 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
           logger.debug`Duplicate deployment relation ${el.id}`
           return acc
         }
+        scanMetadataKeys(el)
         acc[el.id] = el
         return acc
       },
-      {} as Record<string, c4.DeploymentRelation>,
+      {} as Record<string, c4.DeploymentRelationship>,
     ),
   )
 
@@ -161,7 +179,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
         ...model
       } = parsedAstView
 
-      if (parsedAstView.__ === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
+      if (parsedAstView[c4._type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null
       }
 
@@ -171,7 +189,7 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
 
       return {
         ...model,
-        customColorDefinitions,
+        [c4._stage]: 'parsed',
         docUri,
         description,
         title,
@@ -189,13 +207,13 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
-      __: 'element',
+      [c4._stage]: 'parsed',
+      [c4._type]: 'element',
       id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
       tags: null,
       links: null,
-      customColorDefinitions: customColorDefinitions,
       rules: [
         {
           include: [
@@ -216,11 +234,19 @@ export function buildModelData(docs: ParsedLikeC4LangiumDocument[]): BuildModelD
 
   return {
     data: {
+      [c4._stage]: 'parsed',
+      projectId,
       specification: {
-        tags: Array.from(c4Specification.specs.tags),
+        tags: c4Specification.tags,
         elements: c4Specification.specs.elements,
-        relationships: c4Specification.specs.relationships,
+        relationships: mapValues(c4Specification.specs.relationships, ({ notation, technology, ...style }) => ({
+          ...(notation && { notation }),
+          ...(technology && { technology }),
+          style,
+        })),
         deployments: c4Specification.specs.deployments,
+        ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(c4.compareNatural) }),
+        customColors,
       },
       elements,
       relations,

@@ -12,7 +12,7 @@ export function EmbedPage() {
   useTransparentBackground(!!diagram)
 
   if (!diagram) {
-    throw notFound()
+    return <div>Loading...</div>
   }
 
   return (

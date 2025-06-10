@@ -11,10 +11,17 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
+import type { AnyAux, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
-import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
-import { imap, toArray } from '../../../utils/iterable'
-import { difference as differenceSet } from '../../../utils/set'
+import {
+  type ComputedDeploymentView,
+  type DeploymentViewRule,
+  type ParsedDeploymentView as DeploymentView,
+  type ViewId,
+  _stage,
+  _type,
+} from '../../../types'
+import { difference as differenceSet, imap, invariant, toArray } from '../../../utils'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { processPredicates as processPredicatesImpl } from '../compute'
 import { Memory } from '../memory'
@@ -36,7 +43,9 @@ type Elem = Memory['Ctx']['Element']
 type Connection = Memory['Ctx']['Connection']
 
 export class TestHelper<T extends AnyTypes> {
-  model: Types.ToLikeC4Model<T>
+  Aux!: Types.ToAux<T>
+
+  model: LikeC4Model.Computed<typeof this.Aux>
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
@@ -54,17 +63,18 @@ export class TestHelper<T extends AnyTypes> {
     private builder: Builder<T>,
     private _expect: ExpectStatic,
   ) {
-    this.model = builder.toLikeC4Model() as Types.ToLikeC4Model<T>
+    this.model = builder.toLikeC4Model()
   }
 
   computeView = (...rules: DeploymentRulesBuilderOp<T>[]) => {
+    const view = this.builder
+      .clone()
+      .views(_ => _.deploymentView('dev').with(...rules))
+      .toLikeC4Model()
+      .view('dev')
+    invariant(view.isDeploymentView())
     return withReadableEdges(
-      this.builder
-        .clone()
-        .views(_ => _.deploymentView('dev').with(...rules))
-        .toLikeC4Model()
-        .view('dev')
-        .$view as ComputedDeploymentView<'dev'>,
+      view.$view,
       ' -> ',
     )
   }
@@ -175,7 +185,7 @@ class ProcessPredicates<T extends AnyTypes> {
     return processor
   }
 
-  public viewrules: ReadonlyArray<DeploymentViewRule> = []
+  public viewrules: ReadonlyArray<DeploymentViewRule<AnyAux>> = []
 
   public previousMemory: Memory = Memory.empty()
   public memory: Memory = Memory.empty()
@@ -216,9 +226,12 @@ class ProcessPredicates<T extends AnyTypes> {
   next(...predicates: DeploymentRulesBuilderOp<T>[]): this {
     const view = {
       id: 'test' as ViewId,
-      __: 'deployment',
+      [_stage]: 'parsed',
+      [_type]: 'deployment',
       rules: [],
-    } as any as Writable<DeploymentView>
+      title: null,
+      description: null,
+    } as Writable<DeploymentView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,

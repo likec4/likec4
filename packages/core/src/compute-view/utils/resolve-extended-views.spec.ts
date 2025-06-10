@@ -1,7 +1,6 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn } from '../../types/scalars'
-import type { ElementView, ViewId, ViewRule } from '../../types/view'
+import { type Fqn, type ParsedElementView as ElementView, type ViewId, type ViewRule, _type } from '../../types'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 
 function views(...views: ElementView[]): Record<ViewId, ElementView> {
@@ -41,15 +40,17 @@ describe('resolveRulesExtendedViews', () => {
   }
 
   const index: ElementView = {
+    [_type]: 'element',
     id: 'index',
     title: null,
     description: null,
-    tags: null,
+    tags: [],
     links: null,
     rules: [viewRule1],
   } as any
 
   const index2: ElementView = {
+    [_type]: 'element',
     id: 'index2',
     extends: 'index',
     title: null,
@@ -60,6 +61,7 @@ describe('resolveRulesExtendedViews', () => {
   } as any
 
   const index3: ElementView = {
+    [_type]: 'element',
     id: 'index3',
     extends: 'index2',
     title: null,
@@ -91,12 +93,13 @@ describe('resolveRulesExtendedViews', () => {
 
   it('should merge other fields', () => {
     const index: ElementView = {
+      [_type]: 'element',
       id: 'index',
       title: 'Landscape',
       viewOf: 'cloud',
       rules: [viewRule1],
       links: null,
-      tags: null,
+      tags: [],
       description: null,
     } as any
     const result = resolveRulesExtendedViews(views(index3, index, index2))
@@ -104,22 +107,24 @@ describe('resolveRulesExtendedViews', () => {
     expect(result).toEqual({
       index,
       index2: {
+        [_type]: 'element',
         id: 'index2',
         extends: 'index',
         title: 'Landscape',
         viewOf: 'cloud',
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },
       index3: {
+        [_type]: 'element',
         id: 'index3',
         extends: 'index2',
         title: 'Landscape',
         viewOf: 'cloud',
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2, viewRule3],
       },
@@ -129,15 +134,18 @@ describe('resolveRulesExtendedViews', () => {
   it('should skip circular extends', () => {
     // Should be skipped because of circular extends
     const index3: ElementView = {
+      [_type]: 'element',
       id: 'index3',
       extends: 'index4',
     } as any
     const index4: ElementView = {
+      [_type]: 'element',
       id: 'index4',
       extends: 'index3',
     } as any
     // Should be dropped also, because parent is skipped
     const index5: ElementView = {
+      [_type]: 'element',
       id: 'index5',
       extends: 'index4',
     } as any
@@ -147,11 +155,12 @@ describe('resolveRulesExtendedViews', () => {
     expect(result).toEqual({
       index,
       index2: {
+        [_type]: 'element',
         id: 'index2',
         extends: 'index',
         title: null,
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },
@@ -161,20 +170,23 @@ describe('resolveRulesExtendedViews', () => {
   it('should inherit title, description', () => {
     // Should inherit title and description from the parent view
     const index: ElementView = {
+      [_type]: 'element',
       id: 'index',
       title: 'Root View',
       description: 'This is the root view',
       rules: [],
       links: null,
-      tags: null,
+      tags: [],
     } as any
     const index2: ElementView = {
+      [_type]: 'element',
       id: 'index2',
       extends: 'index',
       description: 'This is the index2 view',
       rules: [],
     } as any
     const index3: ElementView = {
+      [_type]: 'element',
       id: 'index3',
       extends: 'index2',
       rules: [],
@@ -185,21 +197,23 @@ describe('resolveRulesExtendedViews', () => {
     expect(result).toEqual({
       index,
       index2: {
+        [_type]: 'element',
         id: 'index2',
         extends: 'index',
         title: 'Root View',
         description: 'This is the index2 view',
         rules: [],
         links: null,
-        tags: null,
+        tags: [],
       },
       index3: {
+        [_type]: 'element',
         description: 'This is the index2 view',
         extends: 'index2',
         id: 'index3',
         links: null,
         rules: [],
-        tags: null,
+        tags: [],
         title: 'Root View',
       },
     })
@@ -207,6 +221,7 @@ describe('resolveRulesExtendedViews', () => {
 
   it('should skip with non-existing base', () => {
     const index3: ElementView = {
+      [_type]: 'element',
       id: 'index3',
       extends: 'oops',
     } as any
@@ -216,11 +231,12 @@ describe('resolveRulesExtendedViews', () => {
     expect(result).toEqual({
       index,
       index2: {
+        [_type]: 'element',
         id: 'index2',
         extends: 'index',
         title: null,
         links: null,
-        tags: null,
+        tags: [],
         description: null,
         rules: [viewRule1, viewRule2],
       },

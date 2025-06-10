@@ -1,4 +1,4 @@
-import type { Fqn } from '@likec4/core'
+import type { Fqn } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
 import { isString, last, reverse } from 'remeda'

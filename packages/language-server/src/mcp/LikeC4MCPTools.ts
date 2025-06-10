@@ -1,4 +1,4 @@
-import { type IteratorLike, type ProjectId } from '@likec4/core'
+import { type IteratorLike, type ProjectId, _type } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { flatMap } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -250,10 +250,11 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
         '',
       )
     }
-    if (model.allTags().length > 0) {
+    const tags = model.tags
+    if (tags.length > 0) {
       response.push(
         'tags:',
-        ...model.allTags().map(t => `- ${t}`),
+        ...tags.map(t => `- ${t}`),
         '',
       )
     }
@@ -283,7 +284,7 @@ export class DefaultLikeC4MCPTools implements LikeC4MCPTools {
       '<views>',
       ...outputEach(model.views(), 'No views', v => [
         `- id: ${v.id}`,
-        `  viewType: ${v.__}`,
+        `  viewType: ${v[_type]}`,
         `  title: ${singleLine(v.title)}`,
         '',
       ]),

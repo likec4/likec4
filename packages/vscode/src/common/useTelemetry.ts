@@ -1,6 +1,6 @@
 import { TelemetryReporter } from '@vscode/extension-telemetry'
 import { deepEqual } from 'fast-equals'
-import { tryOnScopeDispose } from 'reactive-vscode'
+import { createSingletonComposable, tryOnScopeDispose, useDisposable } from 'reactive-vscode'
 import { keys } from 'remeda'
 import { logger as root, logWarn } from '../logger'
 import type { Rpc } from '../Rpc'
@@ -9,13 +9,12 @@ import type { Rpc } from '../Rpc'
 const TelemetryConnectionString =
   'InstrumentationKey=36d9aa84-b503-45ea-ae34-b236e4f83bea;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/;ApplicationId=376f93d7-2977-4989-a2e7-d21b20b4984b' as const
 
-let instance: TelemetryReporter | null = null
-
-export const useTelemetry = () => {
-  return instance ??= new TelemetryReporter(TelemetryConnectionString)
-}
-
 const logger = root.getChild('telemetry')
+
+export const useTelemetry = createSingletonComposable(() => {
+  const reporter = new TelemetryReporter(TelemetryConnectionString)
+  return useDisposable(reporter)
+})
 
 export function activateTelemetry(rpc: Rpc) {
   const telemetry = useTelemetry()

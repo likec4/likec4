@@ -5,6 +5,7 @@ import {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  ElementTags,
   ElementTitle,
 } from '../../../base/primitives'
 import { ElementActions } from './ElementActions'
@@ -12,6 +13,7 @@ import { ElementActions } from './ElementActions'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { NodeProps } from '../../../base'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
@@ -30,10 +32,12 @@ const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTyp
 }
 
 export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
+  const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
       <ElementTitle {...props} />
+      {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
       <ElementPorts {...props} />

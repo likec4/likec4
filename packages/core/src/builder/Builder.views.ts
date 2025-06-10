@@ -1,15 +1,20 @@
 import type { Simplify, Writable } from 'type-fest'
-import type { DeploymentView, ElementView, LikeC4View } from '../types'
+import {
+  type LikeC4View,
+  type ParsedDeploymentView as DeploymentView,
+  type ParsedElementView as ElementView,
+  _type,
+} from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
 import type { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
-import { $deploymentExpr, type AddDeploymentViewHelper, type DeploymentViewBuilder } from './Builder.view-deployment'
+import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
 import {
-  $expr,
   type AddViewHelper,
   type AddViewOfHelper,
   type ElementViewBuilder,
   type TypedAddViewOfHelper,
+  $expr,
 } from './Builder.view-element'
 
 export interface ViewsBuilder<T extends AnyTypes> extends Builder<T> {
@@ -352,13 +357,13 @@ export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
   | ((builder: ViewsBuilder<A>) => ViewsBuilder<B>)
   | ((builder: Builder<A>) => Builder<B>)
 
-export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
-export function mkViewBuilder(view: Writable<ElementView>): ElementViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<DeploymentView<any>>): DeploymentViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<ElementView<any>>): ElementViewBuilder<AnyTypes>
 export function mkViewBuilder(
-  view: Writable<ElementView | DeploymentView>,
+  view: Writable<ElementView<any> | DeploymentView<any>>,
 ): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
-    $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
+    $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(autoLayout: unknown) {
       view.rules.push({
         direction: autoLayout,

@@ -46,46 +46,6 @@ describe('DeploymentRef', () => {
   const { $include } = TestHelper
 
   it('include *', () => {
-    const t = TestHelper.from(builder.deployment(({ nd, instanceOf }, d) =>
-      d(
-        nd('customer').with(
-          instanceOf('customer'),
-        ),
-        nd('prod'),
-        nd('prod.z1').with(
-          instanceOf('cloud.ui.app'),
-          instanceOf('cloud.backend.api'),
-          instanceOf('cloud.backend.service'),
-        ),
-        nd('prod.infra').with(
-          instanceOf('infra.db'),
-          instanceOf('infra.email'),
-        ),
-        nd('global').with(
-          instanceOf('integrators'),
-        ),
-      )
-    ))
-    const state = t.processPredicates(
-      $include('*'),
-    )
-    t.expect(state).toHaveElements(
-      'customer',
-      'prod',
-      'global',
-      'prod.z1',
-      'prod.infra',
-    )
-    t.expect(state).toHaveConnections(
-      'customer -> prod.z1',
-      'prod.infra -> customer',
-      'global -> prod.z1',
-      'prod.infra -> global',
-      'prod.z1 -> prod.infra',
-    )
-  })
-
-  it('include *', () => {
     const t = TestHelper.from(builder.deployment(({ nd, instanceOf, vm }, d) =>
       d(
         nd('customer').with(

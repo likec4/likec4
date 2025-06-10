@@ -1,14 +1,14 @@
 import { isNullish, omitBy, pick } from 'remeda'
-import { type ComputedEdge, type ComputedNode, type ViewRule, ModelLayer } from '../../types'
+import { type AnyAux, type ComputedEdge, type ComputedNode, type ElementViewRule, ModelRelationExpr } from '../../types'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { relationExpressionToPredicates } from './relationExpressionToPredicates'
 
-export function applyCustomRelationProperties(
-  _rules: ViewRule[],
-  nodes: ComputedNode[],
-  _edges: Iterable<ComputedEdge>,
-): ComputedEdge[] {
-  const rules = _rules.flatMap(flattenGroupRules(ModelLayer.RelationExpr.isCustom))
+export function applyCustomRelationProperties<A extends AnyAux>(
+  _rules: ElementViewRule<A>[],
+  nodes: ComputedNode<A>[],
+  _edges: Iterable<ComputedEdge<A>>,
+): ComputedEdge<A>[] {
+  const rules = _rules.flatMap(flattenGroupRules(ModelRelationExpr.isCustom))
   const edges = Array.from(_edges)
   if (rules.length === 0 || edges.length === 0) {
     return edges
@@ -25,8 +25,18 @@ export function applyCustomRelationProperties(
     const props = omitBy(customprops, isNullish)
     const satisfies = relationExpressionToPredicates(expr)
     edges.forEach((edge, i) => {
-      const source = nodes.find(n => n.id === edge.source)
-      const target = nodes.find(n => n.id === edge.target)
+      let source, target
+      for (const node of nodes) {
+        if (node.id === edge.source) {
+          source = node
+        }
+        if (node.id === edge.target) {
+          target = node
+        }
+        if (source && target) {
+          break
+        }
+      }
       if (!source || !target) {
         return
       }

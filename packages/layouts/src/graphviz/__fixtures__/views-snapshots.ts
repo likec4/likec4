@@ -1,10 +1,11 @@
-import type { ComputedElementView, ComputedView } from '@likec4/core'
+import { type ComputedElementView, _stage, _type } from '@likec4/core/types'
 
 /**
  * @see issue-911.spec.ts from packages/language-server/src/model/__tests__
  */
 export const viewIssue911: ComputedElementView = {
-  __: 'element',
+  [_stage]: 'computed',
+  [_type]: 'element',
   autoLayout: 'TB',
   description: null,
   edges: [
@@ -23,11 +24,11 @@ export const viewIssue911: ComputedElementView = {
       label: 'comment not included',
       parent: null,
       relations: [
-        'y6iwvm'
+        'y6iwvm',
       ],
       source: 'b1',
-      target: 'b2'
-    }
+      target: 'b2',
+    },
   ],
   hash: '7d53d820ca362e8e4e9c8c977de2abac55d597c6',
   id: 'issue911',
@@ -50,7 +51,7 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'a1'
+      title: 'a1',
     },
     {
       children: [],
@@ -69,12 +70,12 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'a2'
+      title: 'a2',
     },
     {
       children: [
         'b1.b12',
-        'b1.b11'
+        'b1.b11',
       ],
       color: 'primary',
       depth: 1,
@@ -85,14 +86,14 @@ export const viewIssue911: ComputedElementView = {
       level: 0,
       links: null,
       outEdges: [
-        'b1:b2'
+        'b1:b2',
       ],
       parent: null,
       shape: 'rectangle',
       style: {},
       tags: null,
       technology: null,
-      title: 'b1'
+      title: 'b1',
     },
     {
       children: [],
@@ -109,7 +110,7 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'b12'
+      title: 'b12',
     },
     {
       children: [],
@@ -126,19 +127,19 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'b11'
+      title: 'b11',
     },
     {
       children: [
         'b2.b22',
-        'b2.b21'
+        'b2.b21',
       ],
       color: 'primary',
       depth: 1,
       description: null,
       id: 'b2',
       inEdges: [
-        'b1:b2'
+        'b1:b2',
       ],
       kind: 'node',
       level: 0,
@@ -149,7 +150,7 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'b2'
+      title: 'b2',
     },
     {
       children: [],
@@ -166,7 +167,7 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'b22'
+      title: 'b22',
     },
     {
       children: [],
@@ -183,10 +184,10 @@ export const viewIssue911: ComputedElementView = {
       style: {},
       tags: null,
       technology: null,
-      title: 'b21'
-    }
+      title: 'b21',
+    },
   ],
   relativePath: '1.c4',
   tags: null,
-  title: 'Landscape view'
+  title: 'Landscape view',
 } as any

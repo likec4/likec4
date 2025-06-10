@@ -1,26 +1,28 @@
-import type { LikeC4Model } from '@likec4/core/model'
+import type { aux, LikeC4Model } from '@likec4/core/model'
 import { useContext } from 'react'
-import { isDefined, isNonNullish, isString } from 'remeda'
+import { isString } from 'remeda'
 import { LikeC4ModelContext } from './LikeC4ModelContext'
 
-export function useLikeC4Model(): LikeC4Model | null
-export function useLikeC4Model(strict: true): LikeC4Model
-export function useLikeC4Model(strict: boolean): LikeC4Model | null
-export function useLikeC4Model(strict: true, type: 'layouted'): LikeC4Model.Layouted
-export function useLikeC4Model(strict: true, type: 'computed'): LikeC4Model.Computed
-export function useLikeC4Model(strict: true, type: 'layouted' | 'computed' | undefined): LikeC4Model
-export function useLikeC4Model(strict: boolean, type: 'layouted'): LikeC4Model.Layouted | null
-export function useLikeC4Model(strict: boolean, type: 'computed'): LikeC4Model.Computed | null
-export function useLikeC4Model(strict: boolean, type: 'layouted' | 'computed' | undefined): LikeC4Model | null
-export function useLikeC4Model(strict?: boolean, type?: 'layouted' | 'computed') {
+export function useLikeC4Model<A extends aux.Any = aux.Unknown>(): LikeC4Model<A>
+export function useLikeC4Model<A extends aux.Any = aux.Unknown>(type: 'layouted'): LikeC4Model.Layouted<A>
+export function useLikeC4Model<A extends aux.Any = aux.Unknown>(type: 'computed'): LikeC4Model.Computed<A>
+// dprint-ignore
+export function useLikeC4Model<A extends aux.Any = aux.Unknown>(type: 'layouted' | 'computed' | undefined): LikeC4Model<A>
+export function useLikeC4Model(type?: 'layouted' | 'computed') {
   const model = useContext(LikeC4ModelContext)
 
-  if (isString(type) && isNonNullish(model) && model.type !== type) {
-    throw new Error(`Invalid LikeC4ModelContext, expected "${type}" but got "${model.type}" in context`)
-  }
-
-  if (isDefined(strict) && strict === true && !model) {
+  if (!model) {
     throw new Error('No LikeC4Model found in context')
   }
+
+  if (isString(type) && model.stage !== type) {
+    throw new Error(`Invalid LikeC4ModelContext, expected "${type}" but got "${model.stage}" in context`)
+  }
+
   return model
+}
+
+export function useLikeC4Specification() {
+  const model = useLikeC4Model()
+  return model.$data.specification
 }

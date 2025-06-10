@@ -2,6 +2,7 @@ import {
   type BuildDocuments,
   type ChangeView,
   type FetchViewsFromAllProjects,
+  type GetDocumentTags,
   type LayoutView,
   type Locate,
   type ValidateLayout,
@@ -27,6 +28,7 @@ const locate: Locate.Req = new RequestType('likec4/locate')
 const changeView: ChangeView.Req = new RequestType('likec4/change-view')
 const layoutView: LayoutView.Req = new RequestType('likec4/layout-view')
 const validateLayout: ValidateLayout.Req = new RequestType('likec4/validate-layout') as any
+const getDocumentTags: GetDocumentTags.Req = new RequestType('likec4/document-tags')
 
 // #endregion
 
@@ -40,6 +42,7 @@ const lsp = {
   changeView,
   layoutView,
   validateLayout,
+  getDocumentTags,
 }
 
 export function useRpc(client: BaseLanguageClient) {
@@ -97,6 +100,11 @@ export function useRpc(client: BaseLanguageClient) {
     return await client.sendRequest(lsp.changeView, req)
   }
 
+  async function getDocumentTags(params: GetDocumentTags.Params) {
+    const { tags } = await client.sendRequest(lsp.getDocumentTags, params)
+    return tags
+  }
+
   return {
     client,
     onDidChangeModel,
@@ -108,6 +116,7 @@ export function useRpc(client: BaseLanguageClient) {
     locate,
     changeView,
     fetchViewsFromAllProjects,
+    getDocumentTags,
   }
 }
 

@@ -1,10 +1,11 @@
 import { findLast, map } from 'remeda'
-import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux } from '../../model/types'
-import type { DeploymentViewRule } from '../../types'
+import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
+import type { AnyAux, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
-  type DeploymentView,
+  type ParsedDeploymentView as DeploymentView,
+  _stage,
+  _type,
   isViewRuleAutoLayout,
   isViewRulePredicate,
 } from '../../types'
@@ -17,9 +18,9 @@ import { predicateToPatch } from './predicates'
 import { StageFinal } from './stages/stage-final'
 import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
 
-export function processPredicates<M extends AnyAux>(
-  model: LikeC4DeploymentModel<M>,
-  rules: DeploymentViewRule[],
+export function processPredicates(
+  model: LikeC4DeploymentModel<any>,
+  rules: DeploymentViewRule<any>[],
 ) {
   let memory = Memory.empty()
 
@@ -44,13 +45,13 @@ export function computeDeploymentView<M extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: DeploymentView,
-): ComputedDeploymentView<M['ViewId']> {
-  const memory = processPredicates<M>(likec4model.deployment, rules)
+  }: DeploymentView<NoInfer<M>>,
+): ComputedDeploymentView<M> {
+  const memory = processPredicates(likec4model.deployment, rules)
 
-  const nodesMap = buildNodes(memory)
+  const nodesMap = buildNodes<M>(memory)
 
-  const computedEdges = toComputedEdges(memory.connections)
+  const computedEdges = toComputedEdges(memory.connections as unknown as DeploymentConnectionModel<M>[])
 
   linkNodesWithEdges(nodesMap, computedEdges)
 
@@ -70,6 +71,8 @@ export function computeDeploymentView<M extends AnyAux>(
 
   return calcViewLayoutHash({
     ...view,
+    [_stage]: 'computed',
+    [_type]: 'deployment',
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
@@ -84,7 +87,7 @@ export function computeDeploymentView<M extends AnyAux>(
     }),
     ...(elementNotations.length > 0 && {
       notation: {
-        elements: elementNotations,
+        nodes: elementNotations,
       },
     }),
   })

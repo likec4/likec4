@@ -7,7 +7,7 @@ import type {
   RelationId,
   RelationshipLineType,
   ViewId,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
@@ -35,6 +35,7 @@ export namespace RelationshipsBrowserTypes {
         | 'style'
         | 'width'
         | 'height'
+        | 'tags'
         | 'navigateTo'
       >
     >

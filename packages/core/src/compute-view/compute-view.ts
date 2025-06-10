@@ -1,20 +1,22 @@
-import { mapValues } from 'remeda'
-import { nonexhaustive } from '../errors'
+import { indexBy, values } from 'remeda'
 import { LikeC4Model } from '../model'
 import {
+  type AnyAux,
   type ComputedLikeC4ModelData,
   type ComputedView,
-  type LikeC4View,
   type ParsedLikeC4ModelData,
+  type ParsedView,
+  _stage,
   isDeploymentView,
   isDynamicView,
   isElementView,
 } from '../types'
+import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
 import { computeElementView } from './element-view/compute'
 
-export type ComputeViewResult<V extends ComputedView = ComputedView> =
+export type ComputeViewResult<V> =
   | {
     isSuccess: true
     error?: undefined
@@ -26,27 +28,26 @@ export type ComputeViewResult<V extends ComputedView = ComputedView> =
     view: undefined
   }
 
-export function unsafeComputeView(
-  viewsource: LikeC4View,
-  likec4model: LikeC4Model,
-): ComputedView {
+export function unsafeComputeView<A extends AnyAux>(
+  viewsource: ParsedView<A>,
+  likec4model: LikeC4Model<any>,
+): ComputedView<A> {
   switch (true) {
-    case isDeploymentView(viewsource): {
-      return computeDeploymentView(likec4model, viewsource)
-    }
-    case isDynamicView(viewsource):
-      return computeDynamicView(likec4model, viewsource)
     case isElementView(viewsource):
       return computeElementView(likec4model, viewsource)
+    case isDeploymentView(viewsource):
+      return computeDeploymentView(likec4model, viewsource)
+    case isDynamicView(viewsource):
+      return computeDynamicView(likec4model, viewsource)
     default:
       nonexhaustive(viewsource)
   }
 }
 
-export function computeView<V extends LikeC4View>(
-  viewsource: V,
-  likec4model: LikeC4Model,
-): ComputeViewResult {
+export function computeView<A extends AnyAux>(
+  viewsource: ParsedView<A>,
+  likec4model: LikeC4Model<A>,
+): ComputeViewResult<ComputedView<A>> {
   try {
     return {
       isSuccess: true,
@@ -61,23 +62,19 @@ export function computeView<V extends LikeC4View>(
   }
 }
 
-export function computeViews<P extends ParsedLikeC4ModelData>(parsed: P): ComputedLikeC4ModelData {
-  const { views, ...rest } = parsed as Omit<P, '__'>
-  const likec4model = LikeC4Model.create({
-    ...rest,
-    views: {},
-  })
-  const compute = (source: LikeC4View): ComputedView => {
-    const result = computeView(source, likec4model)
-    if (result.isSuccess) {
-      return result.view
-    } else {
-      throw result.error
-    }
-  }
+export function computeParsedModelData<A extends AnyAux>(
+  parsed: ParsedLikeC4ModelData<A>,
+): ComputedLikeC4ModelData<A> {
+  const likec4model = LikeC4Model.create(parsed)
+  const views = values(parsed.views as Record<string, ParsedView<A>>)
+    .map(v => unsafeComputeView(v, likec4model))
   return {
-    ...rest,
-    __: 'computed',
-    views: mapValues(parsed.views, compute),
-  }
+    ...parsed,
+    [_stage]: 'computed',
+    views: indexBy(views, v => v.id),
+  } as ComputedLikeC4ModelData<A>
+}
+
+export function computeLikeC4Model<A extends AnyAux>(parsed: ParsedLikeC4ModelData<A>): LikeC4Model.Computed<A> {
+  return LikeC4Model.create(computeParsedModelData(parsed))
 }

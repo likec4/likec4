@@ -1,10 +1,9 @@
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
-import { invariant } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { DiagramNode, DiagramView, Fqn, NodeId } from '../../types'
-import { sortParentsFirst } from '../../utils'
+import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import type { RelationshipsViewData } from './_types'
@@ -43,7 +42,7 @@ const Sizes = {
 }
 type NodeData = {
   portId: string
-  element: ElementModel
+  element: ElementModel<any>
   isCompound: boolean
 }
 function createGraph() {
@@ -80,7 +79,7 @@ const PortSuffix = '-port'
 
 function createNodes(
   prefix: string,
-  elements: ReadonlySet<ElementModel>,
+  elements: ReadonlySet<ElementModel<any>>,
   g: G,
 ) {
   const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
@@ -315,11 +314,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     return {
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
-      position: [position.x, position.y],
       title: element.title,
+      ...position,
+      position: [position.x, position.y],
       description: element.description,
       technology: element.technology,
-      tags: null,
+      tags: [],
       links: null,
       color: element.color,
       shape: element.shape,

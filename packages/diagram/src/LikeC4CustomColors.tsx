@@ -6,9 +6,10 @@ import {
   nonexhaustive,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
-import { deepEqual } from 'fast-equals'
-import { memo } from 'react'
-import { entries } from 'remeda'
+import { memo, useState } from 'react'
+import { entries, isEmpty } from 'remeda'
+import { useUpdateEffect } from './hooks'
+import { useLikeC4Specification } from './likec4model/useLikeC4Model'
 
 interface LikeC4CustomColorsProperties {
   customColors: CustomColorDefinitions
@@ -54,17 +55,31 @@ function toStyle(name: String, colors: ThemeColorValues): String {
   `
 }
 
-export const LikeC4CustomColors = memo<LikeC4CustomColorsProperties>(({ customColors }) => {
-  const styles = entries(customColors)
+function generateCustomColorStyles(customColors: CustomColorDefinitions) {
+  return entries(customColors)
     .map(([name, color]) => toStyle(name, color))
     .join('\n')
+    .trim()
+}
+
+export const LikeC4CustomColors = memo(() => {
+  const customColors = useLikeC4Specification().customColors ?? {}
+  const [styles, setStyles] = useState(() => generateCustomColorStyles(customColors))
+
+  useUpdateEffect(() => {
+    setStyles(generateCustomColorStyles(customColors))
+  }, [customColors])
 
   const nonce = useMantineStyleNonce()?.()
+
+  if (isEmpty(customColors)) {
+    return null
+  }
 
   return (
     <>
       <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} nonce={nonce} />
     </>
   )
-}, deepEqual)
+})
 LikeC4CustomColors.displayName = 'LikeC4CustomColors'

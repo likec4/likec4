@@ -13,7 +13,7 @@ import {
   useVscodeContext,
   watch,
 } from 'reactive-vscode'
-import { countBy, entries, flatMap, groupBy, keys, map, mapValues, pipe, piped, prop, sort } from 'remeda'
+import { countBy, entries, groupBy, keys, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
 import {
   type BaseLanguageClient,
@@ -27,7 +27,7 @@ import { useExtensionLogger } from './common/useExtensionLogger'
 import { activateMessenger } from './common/useMessenger'
 import { activateTelemetry } from './common/useTelemetry'
 import { languageId } from './const'
-import { logger, logWarn } from './logger'
+import { logError, logger, logWarn } from './logger'
 import { commands } from './meta'
 import { useRpc } from './Rpc'
 
@@ -54,9 +54,13 @@ export function activateLanguageClient(
   let activated = false
   function activate() {
     if (activated) return
-    activated = true
-    const result = activateLc(createLc)
-    onActivated?.(result)
+    try {
+      const result = activateLc(createLc)
+      activated = true
+      onActivated?.(result)
+    } catch (e) {
+      logError(e)
+    }
   }
 
   useDisposable(vscode.window.registerWebviewPanelSerializer(
@@ -88,9 +92,9 @@ export function activateLanguageClient(
 function activateLc(
   createLc: CreateLanguageClient,
 ) {
+  const output = useExtensionLogger()
   useBuiltinFileSystem()
   useVscodeContext('likec4.activated', true)
-  const output = useExtensionLogger()
   logger.info('starting language server')
   const documentSelector = useDocumentSelector()
 
@@ -209,6 +213,7 @@ function activateLc(
   })
 
   activateMessenger(rpc)
+  // activateTagDecoration(rpc)
 
   const layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
     'likec4:layout',

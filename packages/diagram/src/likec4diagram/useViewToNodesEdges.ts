@@ -1,26 +1,27 @@
 import {
   type DiagramEdge,
+  type DiagramNode,
   type DiagramView,
   type EdgeId,
   type Fqn,
   type NodeId,
   type WhereOperator,
-  DiagramNode,
-  ElementKind,
+  GroupElementKind,
   invariant,
   nonNullable,
   Queue,
   whereOperatorAsPredicate,
 } from '@likec4/core'
-import { useDeepCompareMemo } from '@react-hookz/web'
+import { useCustomCompareMemo } from '@react-hookz/web'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../base/const'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 function viewToNodesEdge(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
-  where: WhereOperator<string, string> | undefined
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
+  where: WhereOperator | null
   nodesSelectable: boolean
 }): {
   xynodes: Types.Node[]
@@ -30,7 +31,7 @@ function viewToNodesEdge(opts: {
     view,
     nodesSelectable: selectable,
   } = opts
-  const isDynamicView = view.__ === 'dynamic',
+  const isDynamicView = view._type === 'dynamic',
     xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
     nodeLookup = new Map<Fqn, DiagramNode>()
@@ -73,7 +74,7 @@ function viewToNodesEdge(opts: {
   let next: TraverseItem | undefined
   while ((next = queue.dequeue())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == GroupElementKind
     if (isCompound) {
       for (const child of node.children) {
         queue.enqueue({ node: nodeById(child), parent: node })
@@ -93,8 +94,8 @@ function viewToNodesEdge(opts: {
 
     const base = {
       id,
-      selectable: selectable && node.kind !== ElementKind.Group,
-      focusable: selectable && node.kind !== ElementKind.Group,
+      selectable: selectable && node.kind !== GroupElementKind,
+      focusable: selectable && node.kind !== GroupElementKind,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -104,7 +105,7 @@ function viewToNodesEdge(opts: {
       },
       initialWidth: node.width,
       initialHeight: node.height,
-      hidden: node.kind !== ElementKind.Group && !visiblePredicate(node),
+      hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
       ...(parent && {
         parentId: ns + parent.id,
       }),
@@ -119,6 +120,7 @@ function viewToNodesEdge(opts: {
       style: node.style,
       depth: node.depth ?? 0,
       icon: node.icon ?? 'none',
+      tags: node.tags ?? null,
       position: node.position,
     } satisfies Types.CompoundNodeData
 
@@ -135,11 +137,12 @@ function viewToNodesEdge(opts: {
       shape: node.shape,
       style: node.style,
       icon: node.icon ?? null,
+      tags: node.tags,
       position: node.position,
       isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData
 
-    if (node.kind === ElementKind.Group) {
+    if (node.kind === GroupElementKind) {
       xynodes.push({
         ...base,
         type: 'view-group',
@@ -152,8 +155,8 @@ function viewToNodesEdge(opts: {
       continue
     }
 
-    const modelFqn = DiagramNode.modelRef(node)
-    const deploymentFqn = DiagramNode.deploymentRef(node)
+    const modelFqn = node.modelRef ?? null
+    const deploymentFqn = node.deploymentRef ?? null
     if (!modelFqn && !deploymentFqn) {
       console.error('Invalid node', node)
       throw new Error('Element should have either modelRef or deploymentRef')
@@ -269,29 +272,24 @@ function viewToNodesEdge(opts: {
     xyedges,
   }
 }
-
-export function useViewToNodesEdges({
-  view: {
-    id,
-    nodes,
-    edges,
-    __ = 'element',
-  },
-  ...opts
-}: {
+type ViewToNodesEdgeInput = {
   view: DiagramView
-  where: WhereOperator<string, string> | undefined
+  where: WhereOperator | null
   nodesSelectable: boolean
-}) {
-  return useDeepCompareMemo(() => {
-    return viewToNodesEdge({
-      view: {
-        id,
-        nodes,
-        edges,
-        __,
-      },
-      ...opts,
-    })
-  }, [id, __, nodes, edges, opts])
+}
+const viewToNodesEdgeEqual = (a: ViewToNodesEdgeInput, b: ViewToNodesEdgeInput) => (
+  a.view.id === b.view.id
+  && a.view._type === b.view._type
+  && a.nodesSelectable === b.nodesSelectable
+  && shallowEqual(a.view.nodes, b.view.nodes)
+  && shallowEqual(a.view.edges, b.view.edges)
+  && deepEqual(a.where, b.where)
+)
+
+export function useViewToNodesEdges(params: ViewToNodesEdgeInput) {
+  return useCustomCompareMemo(
+    () => viewToNodesEdge(params),
+    [params],
+    ([a], [b]) => !!a && !!b && viewToNodesEdgeEqual(a, b),
+  )
 }

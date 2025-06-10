@@ -1,9 +1,9 @@
 {
   "name": "root",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.1",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -30,19 +30,19 @@
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
-    "test:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\" && cd e2e && pnpm install && pnpm install:chromium && pnpm bootstrap && pnpm test",
+    "pretest:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\"",
+    "test:e2e": "cd e2e && pnpm install && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
-    "esbuild": "catalog:esbuild",
-    "execa": "^9.5.3",
+    "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
-    "npm-run-all2": "^7.0.1",
+    "npm-run-all2": "^7.0.2",
     "shipjs": "^0.27.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
@@ -52,7 +52,6 @@
   },
   "pnpm": {
     "overrides": {
-      "esbuild": "catalog:esbuild",
       "react": "catalog:react",
       "react-dom": "catalog:react",
       "@types/react": "catalog:react",
@@ -65,10 +64,15 @@
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
       "type-fest": "catalog:utils",
+      "turbo": "catalog:",
+      "sharp": "catalog:utils",
       "mnemonist": "0.40.3"
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch"
+    },
+    "configDependencies": {
+      "@pnpm/types-fixer": "0.1.0+sha512-h8iYCPyf0FrMH/pyu3EYryOaGUEI8NsQxsCcdp+XO9sYqUr9jw3ARTEv0Ifl4WHhoLhdxud2zwto1Y9WuOT3QA=="
     }
   },
   "nano-staged": {

@@ -1,7 +1,7 @@
-import type { ExclusiveUnion, NonEmptyArray } from '@likec4/core'
+import type { ExclusiveUnion } from '@likec4/core/types'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
-import { map, mapToObj, pick } from 'remeda'
+import { mapToObj } from 'remeda'
 
 const FeatureNames = [
   'Controls',
@@ -19,13 +19,10 @@ const FeatureNames = [
   'ViewTitle',
   'FitView',
   /**
-   * LikeC4Model is available in context
-   */
-  'LikeC4Model',
-  /**
    * Running in VSCode
    */
   'Vscode',
+  'ElementTags',
 ] as const
 export type FeatureName = typeof FeatureNames[number]
 export type EnabledFeatures = {
@@ -41,20 +38,9 @@ const DiagramFeaturesContext = createContext<EnabledFeatures>(AllDisabled)
 const validate = (features: EnabledFeatures) => {
   let {
     enableReadOnly,
-    enableLikeC4Model,
-    enableElementDetails,
-    enableRelationshipDetails,
-    enableRelationshipBrowser,
-    enableSearch,
     enableEdgeEditing,
     ...rest
   } = features
-  if (!enableLikeC4Model) {
-    enableElementDetails = false
-    enableRelationshipDetails = false
-    enableRelationshipBrowser = false
-    enableSearch = false
-  }
 
   if (enableReadOnly) {
     enableEdgeEditing = false
@@ -62,11 +48,6 @@ const validate = (features: EnabledFeatures) => {
 
   return {
     enableReadOnly,
-    enableLikeC4Model,
-    enableElementDetails,
-    enableRelationshipDetails,
-    enableRelationshipBrowser,
-    enableSearch,
     enableEdgeEditing,
     ...rest,
   }

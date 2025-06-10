@@ -113,7 +113,7 @@ likec4 export png -o ./assets
 This command starts the local web server and uses Playwright to take screenshots.\
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
 
-### Export to Mermaid, Dot, D2
+### Export to Mermaid, Dot, D2, PlantUml
 
 Export to various formats via codegen:
 
@@ -122,6 +122,7 @@ likec4 codegen mmd
 likec4 codegen mermaid
 likec4 codegen dot
 likec4 codegen d2
+likec4 codegen plantuml
 ```
 
 [📖 Read documentation](https://likec4.dev/tooling/cli/) for other CLI usage

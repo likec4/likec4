@@ -6,9 +6,6 @@ export default defineBuildConfig({
   declaration: 'node16',
   rollup: {
     inlineDependencies: true,
-    output: {
-      hoistTransitiveImports: false,
-    },
     resolve: {
       browser: true,
     },

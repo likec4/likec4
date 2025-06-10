@@ -1,12 +1,12 @@
-import type { ApiType } from '#worker'
+import { type Client as WorkerApi, hcWithType } from '#worker/client'
 import type { SharedPlayground } from '#worker/types'
 import { notFound } from '@tanstack/react-router'
-import { type ClientResponse, type InferRequestType, type InferResponseType, hc } from 'hono/client'
+import { type ClientResponse, type InferRequestType, type InferResponseType } from 'hono/client'
 import type { Get } from 'type-fest'
 
-const workerApi = hc<ApiType>('')
+const workerApi = hcWithType('')
 
-type WorkerApi = typeof workerApi
+// type WorkerApi = typeof workerApi
 
 export function json<T, A extends any[]>(
   req: (...a: A) => Promise<ClientResponse<T, any, 'json'>>,
@@ -52,6 +52,15 @@ export const api = {
       return await response.json()
     },
     // Force type cast to make TypeScript happy
-    get: json<SharedPlayground, [{ param: { shareId: string } }]>(workerApi.api.share[':shareId'].$get as any),
+    get: async (shareId: string): Promise<SharedPlayground> => {
+      const response = await workerApi.api.share[':shareId'].$get({ param: { shareId } })
+      if (response.status === 404) {
+        throw notFound()
+      }
+      if (!response.ok) {
+        throw new Error(`Request ${response.url} failed with status ${response.status}`)
+      }
+      return await response.json() as any
+    },
   },
 }

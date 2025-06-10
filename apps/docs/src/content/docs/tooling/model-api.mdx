@@ -90,6 +90,10 @@ Two types of model (with similar API):
 - **LikeC4Model.Computed** - includes computed views (from predicates), fast, synchronous, enough to traverse but not ready for rendering.
 - **LikeC4Model.Layouted** - extends computed model with layout data (dimensions, positions), that is needed for rendering.
 
+:::note
+Low-level API is available from [`@likec4/core/model`](https://github.com/likec4/likec4/blob/main/packages/core/README.md).
+:::
+
 ### Example
 
 ```ts
@@ -102,10 +106,38 @@ console.log(likec4.getErrors())
 
 // Traverse the model
 const model = likec4.computedModel()
+
+// Get elements of some kind
+const elements = model.elementsOfKind('kind1')
+
+// Use where operator to filter elements:
+//  kind is 'kind1' and (tag is 'tag2' or tag is not 'tag3')
+const elements = model.elementsWhere({
+  and: [
+    { kind: 'kind1' },
+    {
+      or: [
+        { tag: 'tag2' },
+        {
+          tag: {
+            neq: 'tag3',
+          },
+        },
+      ],
+    },
+  ],
+})
+
+// Get views that include the element
+model
+  .element('cloud.backend.api')
+  .views()
+
+// Get source elements of incoming relationships (filter by tags)
 model
   .element('cloud.backend.api')
   .incoming() // relationships incoming to the element
-  .filter(r => r.tags.includes('http')) // filter by tags
+  .filter(r => r.isTagged('http')) // filter by tags
   .map(r => r.source) // get source elements
 
 const diagram = await likec4.layoutedModel().view('index')
@@ -191,21 +223,10 @@ interface LikeC4Model {
    * Target elements of outgoing relationships
    */
   outgoers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Element[];
-  /**
-   * Relationships inside the element, among descendants
-   */
-  internal(element: ElementOrFqn): Relationship[];
-  /**
-   * Resolve siblings of the element and siblings of ancestors
-   *  (from closest to root)
-   */
-  ascendingSiblings(element: ElementOrFqn): Element[];
-  /**
-   * Resolve all views that contain the element
-   */
-  viewsWithElement(element: ElementOrFqn): ViewModel[];
 }
 ```
+
+Check sources for methods - [LikeC4Model](https://github.com/likec4/likec4/blob/main/packages/core/src/model/LikeC4Model.ts)
 
 ### LikeC4ViewModel
 

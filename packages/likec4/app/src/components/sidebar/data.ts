@@ -1,5 +1,6 @@
-import { type DiagramView, compareNatural, ComputedView, nonexhaustive } from '@likec4/core'
+import { compareNatural, isDeploymentView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
+import { type DiagramView } from 'likec4/model'
 import { useMemo } from 'react'
 import { find } from 'remeda'
 import { useLikeC4Views } from '../../hooks'
@@ -81,7 +82,7 @@ function buildDiagramTreeData(views: readonly DiagramView[], groupBy: GroupBy): 
     parent.children.push({
       value: view.id,
       label: view.title ?? view.id,
-      type: ComputedView.isDeployment(view) ? 'deployment-view' : 'view',
+      type: isDeploymentView(view) ? 'deployment-view' : 'view',
       children: [],
     })
     if (parent !== root) {

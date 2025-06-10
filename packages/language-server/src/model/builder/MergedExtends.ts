@@ -42,11 +42,11 @@ export class MergedExtends {
     }
   }
 
-  apply<
+  applyExtended<
     E extends {
-      id: c4.Fqn
-      tags?: c4.NonEmptyArray<c4.Tag> | null
-      links?: c4.NonEmptyArray<c4.Link> | null
+      id: string
+      tags?: readonly string[] | null
+      links?: readonly c4.Link[] | null
       metadata?: Record<string, string>
     },
   >(el: E): E {
@@ -66,7 +66,7 @@ export class MergedExtends {
     let tags = extendData.tags
     if (el.tags && el.tags.length > 0) {
       tags = unique([
-        ...el.tags,
+        ...el.tags as c4.Tag[],
         ...tags,
       ])
     }

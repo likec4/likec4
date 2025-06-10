@@ -14,7 +14,7 @@ export function EnsureMantine({ children }: EnsureMantineProps) {
 
   if (!mantineCtx) {
     return (
-      <MantineProvider>
+      <MantineProvider defaultColorScheme="auto">
         {children}
       </MantineProvider>
     )

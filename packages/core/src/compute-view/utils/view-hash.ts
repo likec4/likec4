@@ -1,12 +1,12 @@
 import { isTruthy, map, mapToObj, pick, pipe } from 'remeda'
 import type { SetOptional } from 'type-fest'
 import type { ComputedView } from '../../types'
-import { objectHash } from '../../utils/object-hash'
+import { objectHash } from '../../utils'
 
 export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 'hash'>): V {
   const tohash = {
     id: view.id,
-    __: view.__ ?? 'element',
+    __: view._type ?? 'element',
     autoLayout: view.autoLayout,
     nodes: pipe(
       view.nodes,

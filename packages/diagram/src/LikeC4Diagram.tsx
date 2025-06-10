@@ -1,6 +1,6 @@
+import type { Any } from '@likec4/core/types'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { type PropsWithChildren, useRef } from 'react'
-import { isEmpty } from 'remeda'
 import {
   DiagramEventHandlers,
   DiagramFeatures,
@@ -15,11 +15,14 @@ import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
-import { useLikeC4Model } from './likec4model'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
-export type LikeC4DiagramProps = PropsWithChildren<LikeC4DiagramProperties & LikeC4DiagramEventHandlers>
-export function LikeC4Diagram({
+export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
+  & LikeC4DiagramProperties<A>
+  & LikeC4DiagramEventHandlers<A>
+>
+
+export function LikeC4Diagram<A extends Any = Any>({
   onCanvasClick,
   onCanvasContextMenu,
   onCanvasDblClick,
@@ -39,6 +42,7 @@ export function LikeC4Diagram({
   pannable = true,
   zoomable = true,
   background = 'dots',
+  enableElementTags = true,
   enableFocusMode = false,
   enableElementDetails = false,
   enableRelationshipDetails = enableElementDetails,
@@ -61,16 +65,13 @@ export function LikeC4Diagram({
   reactFlowProps = {},
   renderNodes,
   children,
-}: LikeC4DiagramProps) {
-  const hasLikec4model = !!useLikeC4Model()
+}: LikeC4DiagramProps<A>) {
   const initialRef = useRef<{
     defaultNodes: Types.Node[]
     defaultEdges: Types.Edge[]
     initialWidth: number
     initialHeight: number
   }>(null)
-
-  const isDynamicView = view.__ === 'dynamic'
 
   if (initialRef.current == null) {
     initialRef.current = {
@@ -104,13 +105,13 @@ export function LikeC4Diagram({
               enableRelationshipBrowser,
               enableSearch,
               enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
-              enableDynamicViewWalkthrough: isDynamicView && enableDynamicViewWalkthrough,
+              enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
               enableEdgeEditing: experimentalEdgeEditing,
               enableNotations: showNotations,
               enableVscode: !!onOpenSource,
               enableControls: controls,
               enableViewTitle: showDiagramTitle,
-              enableLikeC4Model: hasLikec4model,
+              enableElementTags,
             }}
           >
             <DiagramEventHandlers
@@ -129,21 +130,19 @@ export function LikeC4Diagram({
               }}>
               <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
                 <RootContainer className={className} reduceGraphics={isReducedGraphicsMode}>
-                  {!isEmpty(view.customColorDefinitions) && (
-                    <LikeC4CustomColors customColors={view.customColorDefinitions} />
-                  )}
+                  <LikeC4CustomColors />
                   <XYFlowProvider
                     fitView={fitView}
                     {...initialRef.current}
                   >
                     <DiagramActorProvider
-                      input={{
-                        view,
-                        pannable,
-                        zoomable,
-                        nodesSelectable,
-                        fitViewPadding,
-                      }}>
+                      view={view}
+                      zoomable={zoomable}
+                      pannable={pannable}
+                      fitViewPadding={fitViewPadding}
+                      nodesSelectable={nodesSelectable}
+                      where={where ?? null}
+                    >
                       <ControlsCustomLayoutProvider value={renderControls ?? null}>
                         <LikeC4DiagramXYFlow
                           nodesDraggable={nodesDraggable}

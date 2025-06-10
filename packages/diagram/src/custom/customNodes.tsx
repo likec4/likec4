@@ -1,5 +1,5 @@
-import type { AnyAux, DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
-import type { DiagramView } from '@likec4/core/types'
+import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
+import type { Any } from '@likec4/core/types'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
@@ -9,22 +9,22 @@ import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 function customDiagramNode<
   P extends {
     nodeProps: NodeProps<Types.NodeData>
-    nodeModel: NodeModel<AnyAux>
+    nodeModel: NodeModel
   },
 >(
   Node: (props: P) => ReactNode,
 ): (props: P['nodeProps']) => ReactNode {
   return customNode((props) => {
-    const viewModel = useLikeC4Model(true).view(props.data.viewId)
+    const viewModel = useLikeC4Model().view(props.data.viewId)
     const model = viewModel.node(props.id)
     // @ts-ignore
     return <Node nodeProps={props} nodeModel={model} />
   }) as (props: P['nodeProps']) => ReactNode
 }
 
-export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomElementNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.ElementNodeData, 'element'>
-  nodeModel: NodeModel.WithElement<M, DiagramView>
+  nodeModel: NodeModel.WithElement<M>
 }
 /**
  * Node that will be used to render the element from the model.
@@ -33,6 +33,8 @@ export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx
@@ -74,9 +76,9 @@ export type CustomElementNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const elementNode = customDiagramNode<CustomElementNodeProps>
 
-export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomDeploymentNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.DeploymentElementNodeData, 'deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView>
+  nodeModel: NodeModel.WithDeploymentElement<M>
 }
 /**
  * Node that will be used to render the element from deployment model.
@@ -86,6 +88,8 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: {@link NodeModel.WithDeploymentElement}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx
@@ -126,9 +130,9 @@ export type CustomDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const deploymentNode = customDiagramNode<CustomDeploymentNodeProps>
 
-export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomCompoundElementNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.CompoundElementNodeData, 'compound-element'>
-  nodeModel: NodeModel.WithElement<M, DiagramView>
+  nodeModel: NodeModel.WithElement<M>
 }
 /**
  * Node that will be used to render the compound element from the model.
@@ -137,6 +141,8 @@ export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithElement}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx
@@ -168,9 +174,9 @@ export type CustomCompoundElementNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const compoundElementNode = customDiagramNode<CustomCompoundElementNodeProps>
 
-export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomCompoundDeploymentNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M, DiagramView>
+  nodeModel: NodeModel.WithDeploymentElement<M>
 }
 /**
  * Node that will be used to render the compound from the deployment model.
@@ -179,6 +185,8 @@ export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.WithDeploymentElement}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx
@@ -204,9 +212,9 @@ export type CustomCompoundDeploymentNodeProps<M extends AnyAux = AnyAux> = {
  */
 export const compoundDeploymentNode = customDiagramNode<CustomCompoundDeploymentNodeProps>
 
-export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
+export type CustomViewGroupNodeProps<M extends Any = Any> = {
   nodeProps: NodeProps<Types.ViewGroupNodeData, 'view-group'>
-  nodeModel: NodeModel.IsGroup<M, DiagramView>
+  nodeModel: NodeModel.IsGroup<M>
 }
 /**
  * Node that will be used to render the view group from the model.
@@ -214,6 +222,8 @@ export type CustomViewGroupNodeProps<M extends AnyAux = AnyAux> = {
  * Custom node renderer receives these props:
  * - `nodeProps`: props from XYFlow
  * - `nodeModel`: LikeC4 {@link NodeModel.IsGroup}
+ *
+ * @see [Default implementation](https://github.com/likec4/likec4/blob/main/packages/diagram/src/likec4diagram/custom/nodes/nodes.tsx)
  *
  * @example
  * ```tsx

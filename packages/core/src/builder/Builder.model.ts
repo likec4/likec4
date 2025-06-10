@@ -403,25 +403,74 @@ export function model(...ops: any[]) {
   }
 }
 
-export type RelationshipHelper<Props = unknown> = <
-  T extends AnyTypes,
-  From extends string & T['Fqn'],
-  To extends string & T['Fqn'],
->(
-  from: From,
-  to: To,
-  titleOrProps?: string | Props,
-) => (builder: ModelBuilder<T>) => ModelBuilder<T>
+export type RelationshipHelper<Props = unknown> =
+  /**
+   * @example
+   * ```ts
+   * rel('a', 'b')
+   * ```
+   *
+   * @example
+   * ```ts
+   * rel('a', 'b', {
+   *   title: 'title',
+   *   tags: ['tag1'],
+   * })
+   * ```
+   */
+  <
+    T extends AnyTypes,
+    From extends string & T['Fqn'],
+    To extends string & T['Fqn'],
+  >(
+    from: From,
+    to: To,
+    titleOrProps?: string | Props,
+  ) => (builder: ModelBuilder<T>) => ModelBuilder<T>
 
-export type NestedRelationshipHelper<Props = unknown> = <T extends AnyTypesNested, To extends string & T['Fqn']>(
-  to: To,
-  titleOrProps?: string | Props,
-) => (builder: ModelBuilder<T>) => ModelBuilder<T>
+export type NestedRelationshipHelper<Props = unknown> =
+  /**
+   * @example
+   * ```ts
+   * el('a').with(
+   *   relTo('b')
+   * )
+   * ```
+   *
+   * @example
+   * ```ts
+   * el('a').with(
+   *   relTo('b', {
+   *     title: 'title',
+   *     tags: ['tag1'],
+   *   })
+   * )
+   * ```
+   */
+  <T extends AnyTypesNested, To extends string & T['Fqn']>(
+    to: To,
+    titleOrProps?: string | Props,
+  ) => (builder: ModelBuilder<T>) => ModelBuilder<T>
 
-type AddElementHelper<T = unknown> = <const Id extends string>(
-  id: ValidId<Id>,
-  titleOrProps?: string | T,
-) => AddElement<Id>
+type AddElementHelper<T = unknown> =
+  /**
+   * @example
+   * ```ts
+   * el('some.id')
+   * ```
+   *
+   * @example
+   * ```ts
+   * el('some.id', {
+   *   title: 'title',
+   *   tags: ['tag1'],
+   * })
+   * ```
+   */
+  <const Id extends string>(
+    id: ValidId<Id>,
+    titleOrProps?: string | T,
+  ) => AddElement<Id>
 
 export type AddElementHelpers<T extends AnyTypes> = T extends
   Types<infer Kinds extends string, any, any, any, any, any, any, any> ? {

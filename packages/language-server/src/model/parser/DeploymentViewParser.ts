@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { type ParsedAstDeploymentView, ast, toAutoLayout, ViewOps } from '../../ast'
@@ -41,7 +41,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       const manualLayout = parseViewManualLayout(astNode)
 
       return {
-        __: 'deployment',
+        [c4._type]: 'deployment',
         id: id as c4.ViewId,
         astPath,
         title,
@@ -73,8 +73,8 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       nonexhaustive(astRule)
     }
 
-    parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
-      const exprs = [] as c4.ExpressionV2[]
+    parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewPredicate {
+      const exprs = [] as c4.Expression[]
       let iterator: ast.Expressions | undefined = astRule.expr
       while (iterator) {
         try {

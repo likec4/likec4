@@ -1,6 +1,7 @@
-import type { DiagramNode } from '@likec4/core'
+import type { DiagramNode } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { Box, Text } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
+import { Text } from '@mantine/core'
 import { IconRenderer } from '../../../context'
 import type { NodeProps } from '../../types'
 

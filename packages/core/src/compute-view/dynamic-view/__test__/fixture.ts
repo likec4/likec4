@@ -1,17 +1,24 @@
 import { partition } from 'remeda'
-import type { DynamicViewRule, DynamicViewStep, Fqn, ViewId, ViewRulePredicate } from '../../../types'
-import { type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
+import type {
+  DynamicViewIncludeRule,
+  DynamicViewRule,
+  DynamicViewStep,
+  ElementViewPredicate,
+  Fqn,
+  ParsedDynamicView as DynamicView,
+  ViewId,
+} from '../../../types'
+import { type $Aux, type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
 import { computeDynamicView } from '../compute'
 
 const emptyView = {
-  __: 'dynamic' as const,
+  _type: 'dynamic' as const,
   id: 'index' as ViewId,
   title: null,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
-  rules: []
+  rules: [],
 }
 
 type StepExpr = `${FakeElementIds} ${'->' | '<-'} ${FakeElementIds}`
@@ -25,7 +32,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       source: source as Fqn,
       target: target as Fqn,
       ...(typeof props === 'object' ? props : {}),
-      title: title ?? null
+      title: title ?? null,
     }
   }
   if (expr.includes(' <- ')) {
@@ -35,24 +42,26 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       target: target as Fqn,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
-      isBackward: true
+      isBackward: true,
     }
   }
   throw new Error(`Invalid step expression: ${expr}`)
 }
 
-export function compute(stepsAndRules: (DynamicViewStep | ViewRulePredicate)[]) {
+export function compute(
+  stepsAndRules: (DynamicViewStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
+) {
   const [steps, rules] = partition(stepsAndRules, (s): s is DynamicViewStep => 'source' in s)
   let view = computeDynamicView(
     fakeModel,
     {
       ...emptyView,
       steps,
-      rules: rules as DynamicViewRule[]
-    }
+      rules: rules as DynamicViewRule[],
+    } as DynamicView,
   )
   return Object.assign(view, {
     nodeIds: view.nodes.map((node) => node.id) as string[],
-    edgeIds: view.edges.map((edge) => edge.id) as string[]
+    edgeIds: view.edges.map((edge) => edge.id) as string[],
   })
 }

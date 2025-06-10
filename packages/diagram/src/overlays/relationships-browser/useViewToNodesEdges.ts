@@ -1,7 +1,6 @@
 import {
   type Fqn,
-  DiagramNode,
-  ElementKind,
+  GroupElementKind,
   invariant,
   nonNullable,
   Queue,
@@ -47,7 +46,7 @@ export function viewToNodesEdge(
   let next: TraverseItem | undefined
   while ((next = queue.dequeue())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == GroupElementKind
     if (isCompound) {
       for (const child of node.children) {
         queue.enqueue({ node: nodeById(child), parent: node })
@@ -83,7 +82,7 @@ export function viewToNodesEdge(
       }),
     } satisfies Omit<RelationshipsBrowserTypes.Node, 'data' | 'type'>
 
-    const fqn = DiagramNode.modelRef(node)
+    const fqn = node.modelRef ?? null
     // const deploymentRef = DiagramNode.deploymentRef(node)
     // if (!fqn) {
     //   console.error('Invalid node', node)
@@ -148,6 +147,7 @@ export function viewToNodesEdge(
               ports: node.ports,
               style: node.style,
               existsInCurrentView: node.existsInCurrentView,
+              tags: node.tags,
               ...navigateTo,
             },
           },

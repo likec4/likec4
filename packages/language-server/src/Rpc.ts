@@ -3,6 +3,7 @@ import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
+  type ComputedLikeC4ModelData,
   type DiagramView,
   type LayoutedLikeC4ModelData,
   type ProjectId,
@@ -21,6 +22,7 @@ import {
   FetchProjects,
   FetchTelemetryMetrics,
   FetchViewsFromAllProjects,
+  GetDocumentTags,
   LayoutView,
   Locate,
   ValidateLayout,
@@ -78,7 +80,7 @@ export class Rpc extends ADisposable {
         }
         const likec4model = await modelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
-          return { model: likec4model.$model }
+          return { model: likec4model.$model as ComputedLikeC4ModelData }
         }
         return { model: null }
       }),
@@ -94,8 +96,8 @@ export class Rpc extends ADisposable {
         const diagrams = await views.diagrams(projectId as ProjectId, cancelToken)
         return {
           model: {
-            ...model,
-            __: 'layouted' as const,
+            ...model.$data,
+            _stage: 'layouted' as const,
             views: indexBy(diagrams, d => d.id),
           } satisfies LayoutedLikeC4ModelData,
         }
@@ -215,7 +217,7 @@ export class Rpc extends ADisposable {
           return {
             elementKinds: keys(model.$model.specification.elements).length,
             relationshipKinds: keys(model.$model.specification.relationships).length,
-            tags: model.$model.specification.tags.length,
+            tags: keys(model.$model.specification.tags ?? {}).length,
             elements: keys(model.$model.elements).length,
             relationships: keys(model.$model.relations).length,
             views: keys(model.$model.views).length,
@@ -242,12 +244,18 @@ export class Rpc extends ADisposable {
           metrics,
         }
       }),
+      connection.onRequest(GetDocumentTags.req, async ({ documentUri }, cancelToken) => {
+        const tags = await modelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
+        return {
+          tags,
+        }
+      }),
       Disposable.create(() => {
         notifyModelParsed.cancel()
       }),
     )
 
-    function reportLayoutDrift(diagrams: DiagramView<string, string>[]) {
+    function reportLayoutDrift(diagrams: DiagramView[]) {
       return pipe(
         diagrams,
         filter(d => !!d.hasLayoutDrift),

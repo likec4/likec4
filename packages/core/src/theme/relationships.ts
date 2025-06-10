@@ -1,4 +1,4 @@
-import type { RelationshipThemeColors, RelationshipThemeColorValues } from '../types/theme'
+import type { RelationshipThemeColors, RelationshipThemeColorValues } from '../types/styles'
 
 const gray = {
   lineColor: '#6E6E6E',

@@ -1,560 +1,140 @@
-import { isArray, isNullish } from 'remeda'
-import type { Tagged } from 'type-fest'
-import type { NonEmptyArray, Point, XYPoint } from './_common'
-import {
-  type BorderStyle,
-  type ElementShape,
-  type ElementStyle,
-  type Link,
-  ElementKind,
-} from './element'
-import type { ExpressionV2, FqnExpr } from './expression-v2'
-import type { ModelLayer } from './expression-v2-model'
-import type { GlobalPredicateId, GlobalStyleID } from './global'
-import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
-import type { Fqn, IconUrl, Tag } from './scalars'
-import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColorValues } from './theme'
-import type { ElementNotation } from './view-notation'
+import { isTruthy } from 'remeda'
+import type { Any } from './aux'
+import * as aux from './aux'
+import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
+import type { ViewType } from './view-common'
+import type {
+  ComputedDeploymentView,
+  ComputedDynamicView,
+  ComputedElementView,
+} from './view-computed'
+import type {
+  LayoutedDeploymentView,
+  LayoutedDynamicView,
+  LayoutedElementView,
+} from './view-layouted'
+import type { ParsedDeploymentView } from './view-parsed.deployment'
+import type { ParsedDynamicView } from './view-parsed.dynamic'
+import type { ParsedElementView } from './view-parsed.element'
 
-export type ViewId<Id extends string = string> = Tagged<Id, 'ViewID'>
+export type ParsedView<A extends Any = Any> =
+  | ParsedElementView<A>
+  | ParsedDeploymentView<A>
+  | ParsedDynamicView<A>
 
-export type ViewRulePredicate =
-  | {
-    include: ModelLayer.Expression[]
-    exclude?: never
-  }
-  | {
-    include?: never
-    exclude: ModelLayer.Expression[]
-  }
+// export type ParsedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: ParsedElementView<A>
+//   Deployment: ParsedDeploymentView<A>
+//   Dynamic: ParsedDynamicView<A>
+// }>
+/**
+ * Should be `ParsedView` but keep it for backward compatibility
+ * @deprecated use `ParsedView`
+ */
+export type { ParsedView as LikeC4View }
 
-export function isViewRulePredicate(rule: DeploymentViewRule): rule is DeploymentViewRulePredicate
-export function isViewRulePredicate(rule: DynamicViewRule): rule is DynamicViewIncludeRule
-export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate
-export function isViewRulePredicate(rule: object) {
-  return (
-    ('include' in rule && Array.isArray(rule.include))
-    || ('exclude' in rule && Array.isArray(rule.exclude))
-  )
-}
+export type ComputedView<A extends Any = Any> =
+  | ComputedElementView<A>
+  | ComputedDeploymentView<A>
+  | ComputedDynamicView<A>
+// export type ComputedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: ComputedElementView<A>
+//   Deployment: ComputedDeploymentView<A>
+//   Dynamic: ComputedDynamicView<A>
+// }>
 
-export interface ViewRuleGlobalPredicateRef {
-  predicateId: GlobalPredicateId
-}
-export function isViewRuleGlobalPredicateRef(rule: ViewRule): rule is ViewRuleGlobalPredicateRef {
-  return 'predicateId' in rule
-}
+// export type LayoutedView<A extends Any = Any> = ExclusiveUnion<{
+//   Element: LayoutedElementView<A>
+//   Deployment: LayoutedDeploymentView<A>
+//   Dynamic: LayoutedDynamicView<A>
+// }>
 
-export interface ViewRuleStyle {
-  targets: ModelLayer.FqnExpr[]
-  notation?: string
-  style: ElementStyle & {
-    color?: Color
-    shape?: ElementShape
-    icon?: IconUrl
-  }
-}
-export function isViewRuleStyle(rule: DeploymentViewRule): rule is DeploymentViewRuleStyle
-export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle
-export function isViewRuleStyle(rule: object) {
-  return 'style' in rule && 'targets' in rule && Array.isArray(rule.targets)
-}
+export type LayoutedView<A extends Any = Any> =
+  | LayoutedElementView<A>
+  | LayoutedDeploymentView<A>
+  | LayoutedDynamicView<A>
 
-export interface ViewRuleGlobalStyle {
-  styleId: GlobalStyleID
-}
-export function isViewRuleGlobalStyle(rule: ViewRule): rule is ViewRuleGlobalStyle {
-  return 'styleId' in rule
-}
+export type ProcessedView<A extends Any = Any> =
+  | ComputedView<A>
+  | LayoutedView<A>
 
-export type ViewRuleStyleOrGlobalRef = ViewRuleStyle | ViewRuleGlobalStyle
+/**
+ * @alias DiagramView
+ */
+export type { LayoutedView as DiagramView }
+export type AnyView<A extends Any = Any> =
+  | ParsedElementView<A>
+  | ParsedDeploymentView<A>
+  | ParsedDynamicView<A>
+  | ComputedElementView<A>
+  | ComputedDeploymentView<A>
+  | ComputedDynamicView<A>
+  | LayoutedElementView<A>
+  | LayoutedDeploymentView<A>
+  | LayoutedDynamicView<A>
+// export type AnyView<A extends Any = Any> = ExclusiveUnion<{
+//   ParsedElement: ParsedElementView<A>
+//   ParsedDeployment: ParsedDeploymentView<A>
+//   ParsedDynamic: ParsedDynamicView<A>
+//   ComputedElement: ComputedElementView<A>
+//   ComputedDeployment: ComputedDeploymentView<A>
+//   ComputedDynamic: ComputedDynamicView<A>
+//   LayoutedElement: LayoutedElementView<A>
+//   LayoutedDeployment: LayoutedDeploymentView<A>
+//   LayoutedDynamic: LayoutedDynamicView<A>
+// }>
 
-export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
-export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
-  return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'
-}
+export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
+export type ViewWithType<V extends AnyView<Any>, T extends ViewType> = Extract<V, { [_type]: T }>
 
-export interface ViewRuleAutoLayout {
-  direction: AutoLayoutDirection
-  nodeSep?: number
-  rankSep?: number
-}
+export type ViewRule<A extends Any = Any> = ParsedView<A>['rules'][number]
+export type ViewRulePredicate<A extends Any = Any> = Extract<
+  ViewRule<A>,
+  { include: any[] } | { exclude: any[] }
+>
 
-export function isViewRuleAutoLayout(
-  rule: DeploymentViewRule | DynamicViewRule | ViewRule,
-): rule is ViewRuleAutoLayout {
-  return 'direction' in rule
-}
-
-export interface ViewRuleGroup {
-  groupRules: Array<ViewRulePredicate | ViewRuleGroup>
-  title: string | null
-  color?: Color
-  border?: BorderStyle
-  // 0-100
-  opacity?: number
-  multiple?: boolean
-  size?: ShapeSize
-  padding?: SpacingSize
-  textSize?: TextSize
-}
-
-export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
-  return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
-}
-
-export type ViewRule =
-  | ViewRulePredicate
-  | ViewRuleGlobalPredicateRef
-  | ViewRuleGroup
-  | ViewRuleStyle
-  | ViewRuleGlobalStyle
-  | ViewRuleAutoLayout
-
-export interface BasicView<
-  ViewType extends 'element' | 'dynamic' | 'deployment',
-  ViewIDs extends string,
-  Tags extends string,
+export function isViewRulePredicate<V extends ViewRule<any>>(rule: V): rule is Extract<
+  V,
+  { include: any[] } | { exclude: any[] }
 > {
-  readonly __?: ViewType
-  readonly id: ViewId<ViewIDs>
-  readonly title: string | null
-  readonly description: string | null
-  readonly tags: NonEmptyArray<Tag<Tags>> | null
-  readonly links: NonEmptyArray<Link> | null
-
-  /**
-   * URI to the source file of this view.
-   * Undefined if the view is auto-generated.
-   */
-  readonly docUri?: string
-  /**
-   * For all views we find common ancestor path.
-   * This is used to generate relative paths, i.e.:
-   * - "/home/project/index.c4" becomes "index.c4"
-   * - "/home/project/subdir/views.c4" becomes "subdir/views.c4"
-   *
-   * Undefined if the view is auto-generated.
-   */
-  readonly relativePath?: string
-
-  /**
-   * If the view is changed manually this field contains the layout data.
-   */
-  readonly manualLayout?: ViewManualLayout | undefined
-
-  readonly customColorDefinitions: CustomColorDefinitions
+  return 'include' in rule || 'exclude' in rule
 }
 
-export interface BasicElementView<ViewIDs extends string, Tags extends string>
-  extends BasicView<'element', ViewIDs, Tags>
-{
-  readonly viewOf?: Fqn
-  readonly rules: ViewRule[]
-}
-export interface ScopedElementView<ViewIDs extends string, Tags extends string>
-  extends BasicElementView<ViewIDs, Tags>
-{
-  readonly viewOf: Fqn
+export function isViewRuleStyle<V extends ViewRule<any>>(
+  rule: V,
+): rule is Extract<V, { targets: any[]; style: {} }> {
+  return 'targets' in rule && 'style' in rule
 }
 
-export interface ExtendsElementView<ViewIDs extends string, Tags extends string>
-  extends BasicElementView<ViewIDs, Tags>
-{
-  readonly extends: ViewId<ViewIDs>
-}
-export type ElementView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> =
-  | ScopedElementView<ViewIDs, Tags>
-  | ExtendsElementView<ViewIDs, Tags>
-  | BasicElementView<ViewIDs, Tags>
-
-export interface DynamicViewStep {
-  readonly source: Fqn
-  readonly target: Fqn
-  readonly title: string | null
-  readonly description?: string
-  readonly technology?: string
-  readonly notation?: string
-  // Notes for walkthrough
-  readonly notes?: string
-  readonly color?: Color
-  readonly line?: RelationshipLineType
-  readonly head?: RelationshipArrowType
-  readonly tail?: RelationshipArrowType
-  readonly isBackward?: boolean
-  // Link to dynamic view
-  readonly navigateTo?: ViewId
-  __parallel?: never
+export function isComputedView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'computed'> {
+  return view._stage === 'computed'
 }
 
-export interface DynamicViewParallelSteps {
-  readonly __parallel: DynamicViewStep[]
+export function isDiagramView<V extends AnyView<any>>(view: V): view is ExtractOnStage<V, 'layouted'> {
+  return view._stage === 'layouted'
+}
+export { isDiagramView as isLayoutedView }
+
+export function isElementView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'element'> {
+  return view._type === 'element'
 }
 
-export type DynamicViewStepOrParallel = DynamicViewStep | DynamicViewParallelSteps
-
-export type DynamicViewIncludeRule = {
-  include: ModelLayer.AnyFqnExpr[]
+export function isScopedElementView<V extends AnyView<any>>(
+  view: V,
+): view is ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<Any> } {
+  return isElementView(view) && isTruthy(view.viewOf)
 }
 
-export type DynamicViewRule =
-  | DynamicViewIncludeRule
-  | ViewRuleGlobalPredicateRef
-  | ViewRuleStyle
-  | ViewRuleGlobalStyle
-  | ViewRuleAutoLayout
-export interface DynamicView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends BasicView<'dynamic', ViewIDs, Tags> {
-  readonly __: 'dynamic'
-
-  readonly steps: DynamicViewStepOrParallel[]
-
-  readonly rules: DynamicViewRule[]
+export function isExtendsElementView<V extends AnyView<any>>(
+  view: V,
+): view is ViewWithType<V, 'element'> & { extends: aux.StrictViewId<Any> } {
+  return isElementView(view) && isTruthy(view.extends)
 }
 
-export function isDynamicViewParallelSteps(step: DynamicViewStepOrParallel): step is DynamicViewParallelSteps {
-  return '__parallel' in step && isArray(step.__parallel)
+export function isDeploymentView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'deployment'> {
+  return view._type === 'deployment'
 }
 
-export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
-
-export type DeploymentViewRulePredicate =
-  | {
-    include: ExpressionV2[]
-    exclude?: never
-  }
-  | {
-    include?: never
-    exclude: ExpressionV2[]
-  }
-export type DeploymentViewRuleStyle = {
-  targets: FqnExpr[]
-  notation?: string
-  style: ElementStyle & {
-    color?: Color
-    shape?: ElementShape
-    icon?: IconUrl
-  }
-}
-export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayout | DeploymentViewRuleStyle
-
-export interface DeploymentView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends BasicView<'deployment', ViewIDs, Tags> {
-  readonly __: 'deployment'
-  readonly rules: DeploymentViewRule[]
-}
-
-export type LikeC4View<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
-
-export function isDeploymentView(view: LikeC4View): view is DeploymentView
-export function isDeploymentView<V extends { __?: string }>(view: V): boolean
-export function isDeploymentView(view: LikeC4View): view is DeploymentView {
-  return view.__ === 'deployment'
-}
-
-export function isDynamicView(view: LikeC4View): view is DynamicView {
-  return view.__ === 'dynamic'
-}
-
-export function isElementView(view: LikeC4View): view is ElementView {
-  return isNullish(view.__) || view.__ === 'element'
-}
-
-export function isExtendsElementView(view: LikeC4View): view is ExtendsElementView<string, string> {
-  return isElementView(view) && 'extends' in view
-}
-
-export function isScopedElementView(view: LikeC4View): view is ScopedElementView<string, string> {
-  return isElementView(view) && 'viewOf' in view
-}
-
-export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
-
-export type EdgeId = Tagged<string, 'EdgeId'>
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
-export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
-export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
-}
-
-export function isStepEdgeId(id: string): id is StepEdgeId {
-  return id.startsWith('step-')
-}
-
-export function extractStep(id: EdgeId): number {
-  if (!isStepEdgeId(id)) {
-    throw new Error(`Invalid step edge id: ${id}`)
-  }
-  return parseFloat(id.slice('step-'.length))
-}
-
-// Get the prefix of the parallel steps
-// i.e. step-01.1 -> step-01.
-export function getParallelStepsPrefix(id: string): string | null {
-  if (isStepEdgeId(id) && id.includes('.')) {
-    return id.slice(0, id.indexOf('.') + 1)
-  }
-  return null
-}
-
-export interface ComputedNode {
-  id: NodeId
-  kind: string // TODO: fix ElementKind | DeploymentNodeKind
-  parent: NodeId | null
-  /**
-   * Reference to model element
-   * If 1 - node id is a reference
-   */
-  modelRef?: 1 | Fqn
-  /**
-   * Reference to deployment element
-   * If 1 - node id is a reference
-   */
-  deploymentRef?: 1 | Fqn
-  title: string
-  description: string | null
-  technology: string | null
-  notation?: string
-  tags: NonEmptyArray<Tag> | null
-  links: NonEmptyArray<Link> | null
-  children: NodeId[]
-  inEdges: EdgeId[]
-  outEdges: EdgeId[]
-  shape: ElementShape
-  color: Color
-  /**
-   * @deprecated Use `style` instead
-   */
-  icon?: IconUrl
-  style: ElementStyle
-  navigateTo?: ViewId | null
-  level: number
-  // For compound nodes, the max depth of nested nodes
-  depth?: number
-  /**
-   * If this node was customized in the view
-   */
-  isCustomized?: boolean
-}
-export namespace ComputedNode {
-  export function modelRef(node: ComputedNode): Fqn | null {
-    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
-  }
-  export function deploymentRef(node: ComputedNode): Fqn | null {
-    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
-  }
-  /**
-   * Nodes group is a special kind of node, exisiting only in view
-   */
-  export function isNodesGroup(node: ComputedNode): boolean {
-    return node.kind === ElementKind.Group
-  }
-}
-
-export interface ComputedEdge {
-  id: EdgeId
-  parent: NodeId | null
-  source: NodeId
-  target: NodeId
-  label: string | null
-  description?: string
-  technology?: string
-  relations: RelationId[]
-  kind?: RelationshipKind
-  notation?: string
-  // Notes for walkthrough
-  notes?: string
-  color?: Color
-  line?: RelationshipLineType
-  head?: RelationshipArrowType
-  tail?: RelationshipArrowType
-  tags?: NonEmptyArray<Tag>
-  // Link to dynamic view
-  navigateTo?: ViewId
-  /**
-   * If this edge is derived from custom relationship predicate
-   */
-  isCustomized?: boolean
-  /**
-   * For layouting purposes
-   * @default 'forward'
-   */
-  dir?: 'forward' | 'back' | 'both'
-}
-
-export interface ViewWithHash {
-  /**
-   * Hash of the view object.
-   * This is used to detect changes in layout
-   */
-  hash: string
-}
-
-export interface ViewWithNotation {
-  notation?: {
-    elements: ElementNotation[]
-  }
-}
-export interface ViewAutoLayout {
-  direction: ViewRuleAutoLayout['direction']
-  rankSep?: number
-  nodeSep?: number
-}
-export interface ComputedElementView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly extends?: ViewId<ViewIDs>
-  readonly autoLayout: ViewAutoLayout
-  readonly nodes: ComputedNode[]
-  readonly edges: ComputedEdge[]
-  rules?: never
-  docUri?: never
-}
-export interface ComputedDynamicView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends Omit<DynamicView<ViewIDs, Tags>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly autoLayout: ViewAutoLayout
-  readonly nodes: ComputedNode[]
-  readonly edges: ComputedEdge[]
-  steps?: never
-  rules?: never
-  docUri?: never
-}
-
-export interface ComputedDeploymentView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends Omit<DeploymentView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly autoLayout: ViewAutoLayout
-  readonly nodes: ComputedNode[]
-  readonly edges: ComputedEdge[]
-  rules?: never
-  docUri?: never
-}
-
-export type ComputedView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
-
-export namespace ComputedView {
-  export function isDeployment(view: ComputedView): view is ComputedDeploymentView {
-    return view.__ === 'deployment'
-  }
-  export function isDynamic(view: ComputedView): view is ComputedDynamicView {
-    return view.__ === 'dynamic'
-  }
-  export function isElement(view: ComputedView): view is ComputedElementView {
-    return isNullish(view.__) || view.__ === 'element'
-  }
-}
-
-// Bounding box
-export type BBox = {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-export function getBBoxCenter({
-  x,
-  y,
-  width,
-  height,
-}: BBox): XYPoint {
-  return {
-    x: x + width / 2,
-    y: y + height / 2,
-  }
-}
-
-export interface DiagramNode extends ComputedNode {
-  width: number
-  height: number
-  // Absolute position, top left
-  position: Point
-  labelBBox: BBox
-}
-
-export namespace DiagramNode {
-  export function modelRef(node: Pick<DiagramNode, 'id' | 'modelRef'>): Fqn | null {
-    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
-  }
-  export function deploymentRef(node: Pick<DiagramNode, 'id' | 'deploymentRef'>): Fqn | null {
-    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
-  }
-  /**
-   * Nodes group is a special kind of node, exisiting only in view
-   */
-  export function isNodesGroup(node: Pick<DiagramNode, 'kind'>): boolean {
-    return node.kind === ElementKind.Group
-  }
-}
-
-export interface DiagramEdge extends ComputedEdge {
-  // Bezier points
-  points: NonEmptyArray<Point>
-  // Control points to adjust the edge
-  controlPoints?: NonEmptyArray<XYPoint>
-  labelBBox?: BBox | null
-  // Graphviz edge POS
-  // TODO: temporary solution, should be moved out
-  dotpos?: string
-}
-
-export interface DiagramView<
-  ViewIDs extends string = string,
-  Tags extends string = string,
-> extends Omit<ComputedView<ViewIDs, Tags>, 'nodes' | 'edges' | 'manualLayout'> {
-  readonly nodes: DiagramNode[]
-  readonly edges: DiagramEdge[]
-  readonly bounds: BBox
-
-  /**
-   * If diagram has manual layout
-   * But was changed and layout should be recalculated
-   */
-  hasLayoutDrift?: boolean
-  // Should not exist in DiagramView
-  manualLayout?: never
-}
-
-export type ViewManualLayout = {
-  // Object hash of previous layout
-  readonly hash: string
-  readonly x: number
-  readonly y: number
-  readonly width: number
-  readonly height: number
-  readonly autoLayout: ViewAutoLayout
-  readonly nodes: Record<string, {
-    isCompound: boolean
-    x: number
-    y: number
-    width: number
-    height: number
-  }>
-  readonly edges: Record<string, {
-    // Graphviz edge POS
-    dotpos?: string
-    // Bezier points
-    points: NonEmptyArray<Point>
-    // Control points to adjust the edge
-    controlPoints?: NonEmptyArray<XYPoint>
-    labelBBox?: BBox
-  }>
+export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'dynamic'> {
+  return view._type === 'dynamic'
 }

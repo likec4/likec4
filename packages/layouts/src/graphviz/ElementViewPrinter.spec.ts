@@ -1,10 +1,16 @@
 import type { ComputedElementView } from '@likec4/core'
 import { describe, it } from 'vitest'
-import { computedAmazonView, computedCloud3levels, computedCloudView, computedIndexView } from './__fixtures__'
+import {
+  computedAmazonView,
+  computedCloud3levels,
+  computedCloudView,
+  computedIndexView,
+  parsedModel,
+} from './__fixtures__'
 import { ElementViewPrinter } from './ElementViewPrinter'
 
 function print(view: ComputedElementView) {
-  return new ElementViewPrinter(view).print()
+  return new ElementViewPrinter(view, parsedModel.specification).print()
 }
 
 describe('ElementViewPrinter', () => {

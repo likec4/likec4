@@ -1,0 +1,319 @@
+{
+  "_stage": "computed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {
+        "size": "lg",
+        "textSize": "sm",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "cloud",
+    },
+    "cloud.api": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.api",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "api",
+    },
+    "cloud.ui": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.ui",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "ui",
+    },
+    "customer": {
+      "color": "primary",
+      "description": null,
+      "id": "customer",
+      "kind": "actor",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [
+        "tag3",
+      ],
+      "technology": null,
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "projectId": "from-builder",
+  "relations": {
+    "rel1": {
+      "id": "rel1",
+      "source": {
+        "model": "customer",
+      },
+      "tags": [
+        "tag1",
+      ],
+      "target": {
+        "model": "cloud.ui",
+      },
+      "title": "uses",
+    },
+    "rel2": {
+      "id": "rel2",
+      "source": {
+        "model": "cloud.ui",
+      },
+      "tags": [
+        "tag2",
+      ],
+      "target": {
+        "model": "cloud.api",
+      },
+      "title": "calls",
+    },
+  },
+  "specification": {
+    "customColors": {},
+    "deployments": {
+      "env": {
+        "style": {
+          "size": "lg",
+        },
+      },
+      "node": {},
+    },
+    "elements": {
+      "actor": {
+        "tags": [
+          "tag3",
+        ],
+      },
+      "component": {},
+      "system": {
+        "style": {
+          "size": "lg",
+          "textSize": "sm",
+        },
+      },
+    },
+    "relationships": {},
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+      "tag3": {
+        "color": "primary",
+      },
+    },
+  },
+  "views": {
+    "cloudui": {
+      "_stage": "computed",
+      "_type": "element",
+      "autoLayout": {
+        "direction": "TB",
+      },
+      "description": null,
+      "edges": [
+        {
+          "id": "1r2spnx",
+          "label": "uses",
+          "parent": null,
+          "relations": [
+            "rel1",
+          ],
+          "source": "customer",
+          "tags": [
+            "tag1",
+          ],
+          "target": "cloud.ui",
+        },
+        {
+          "id": "9r1z3i",
+          "label": "calls",
+          "parent": null,
+          "relations": [
+            "rel2",
+          ],
+          "source": "cloud.ui",
+          "tags": [
+            "tag2",
+          ],
+          "target": "cloud.api",
+        },
+      ],
+      "hash": "e2efe9f71b40357a84c900d60e5332c97d0af742",
+      "id": "cloudui",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "customer",
+          "inEdges": [],
+          "kind": "actor",
+          "level": 0,
+          "links": null,
+          "modelRef": "customer",
+          "outEdges": [
+            "1r2spnx",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": [
+            "tag3",
+          ],
+          "technology": null,
+          "title": "customer",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "cloud.ui",
+          "inEdges": [
+            "1r2spnx",
+          ],
+          "kind": "component",
+          "level": 0,
+          "links": null,
+          "modelRef": "cloud.ui",
+          "outEdges": [
+            "9r1z3i",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": [],
+          "technology": null,
+          "title": "ui",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "cloud.api",
+          "inEdges": [
+            "9r1z3i",
+          ],
+          "kind": "component",
+          "level": 0,
+          "links": null,
+          "modelRef": "cloud.api",
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": [],
+          "technology": null,
+          "title": "api",
+        },
+      ],
+      "tags": [],
+      "title": null,
+      "viewOf": "cloud.ui",
+    },
+    "index": {
+      "_stage": "computed",
+      "_type": "element",
+      "autoLayout": {
+        "direction": "TB",
+      },
+      "description": null,
+      "edges": [
+        {
+          "id": "kzb1r3",
+          "label": "uses",
+          "parent": null,
+          "relations": [
+            "rel1",
+          ],
+          "source": "customer",
+          "tags": [
+            "tag1",
+          ],
+          "target": "cloud",
+        },
+      ],
+      "hash": "717ea7de18ab0b5f85bb78a612ad1644052ad367",
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "customer",
+          "inEdges": [],
+          "kind": "actor",
+          "level": 0,
+          "links": null,
+          "modelRef": "customer",
+          "outEdges": [
+            "kzb1r3",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": [
+            "tag3",
+          ],
+          "technology": null,
+          "title": "customer",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "cloud",
+          "inEdges": [
+            "kzb1r3",
+          ],
+          "kind": "system",
+          "level": 0,
+          "links": null,
+          "modelRef": "cloud",
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {
+            "size": "lg",
+            "textSize": "sm",
+          },
+          "tags": [],
+          "technology": null,
+          "title": "cloud",
+        },
+      ],
+      "tags": [],
+      "title": "Index",
+    },
+  },
+}

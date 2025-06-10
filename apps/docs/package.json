@@ -1,8 +1,8 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.31.0",
-  "packageManager": "pnpm@10.11.0",
+  "version": "1.32.0",
+  "packageManager": "pnpm@10.12.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -30,13 +30,13 @@
     "canvaskit-wasm": "^0.40.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "sharp": "^0.34.2",
+    "sharp": "catalog:utils",
     "starlight-heading-badges": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro"
   },
   "devDependencies": {
-    "@types/picomatch": "^4.0.0",
+    "@types/picomatch": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tsx": "catalog:",

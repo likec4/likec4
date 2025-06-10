@@ -12,7 +12,9 @@ describe('Builder (style 2)', () => {
           },
         },
         component: {},
-        actor: {},
+        actor: {
+          tags: ['tag3'],
+        },
       },
       deployments: {
         env: {
@@ -22,7 +24,45 @@ describe('Builder (style 2)', () => {
         },
         node: {},
       },
+      tags: {
+        tag1: {
+          color: '#FFF',
+        },
+        tag2: {},
+        tag3: {},
+      },
     })
+
+  it('should fail on invalid tag in element spec', () => {
+    expect(() => {
+      Builder.specification({
+        elements: {
+          system: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for element kind "system": tag "tag2" not found')
+  })
+
+  it('should fail on invalid tag in deployment spec', () => {
+    expect(() => {
+      Builder.specification({
+        elements: {},
+        deployments: {
+          node: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for deployment kind "node": tag "tag2" not found')
+  })
 
   it('should build ', () => {
     const b = spec.clone()
@@ -103,5 +143,39 @@ describe('Builder (style 2)', () => {
       // Take name from element
       'node.ui': expect.objectContaining({ id: 'node.ui', element: 'cloud.ui' }),
     })
+  })
+
+  it('should build and compute LikeC4Model', async ({ expect }) => {
+    const m = spec.clone()
+      .model(({ system, actor, component, relTo, rel }, _) =>
+        _(
+          actor('customer'),
+          system('cloud').with(
+            component('ui'),
+            component('api'),
+          ),
+          rel('customer', 'cloud.ui', {
+            title: 'uses',
+            tags: ['tag1'],
+          }),
+          rel('cloud.ui', 'cloud.api', {
+            title: 'calls',
+            tags: ['tag2'],
+          }),
+        )
+      )
+      .views(({ view, viewOf, $include }, _) =>
+        _(
+          view('index', 'Index').with(
+            $include('*'),
+          ),
+          viewOf('cloudui', 'cloud.ui').with(
+            $include('*'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    await expect(m.$data).toMatchFileSnapshot('__snapshots__/Builder-style2.compute-model.json5')
   })
 })

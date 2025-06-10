@@ -2,7 +2,7 @@ import {
   type DependenciesComparator,
   type EffectHook,
   useCustomCompareEffect,
-  useFirstMountState
+  useFirstMountState,
 } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, type EffectCallback } from 'react'
@@ -17,6 +17,9 @@ export const depsShallowEqual: DependenciesComparator = (d1, d2) => {
     return false
   }
   for (const [i, element] of d1.entries()) {
+    if (element === d2[i]) {
+      continue
+    }
     if (!shallowEqual(element, d2[i])) {
       return false
     }
@@ -26,18 +29,18 @@ export const depsShallowEqual: DependenciesComparator = (d1, d2) => {
 
 export function useUpdateEffect<
   Callback extends EffectCallback = EffectCallback,
-  Deps extends DependencyList = DependencyList
+  Deps extends DependencyList = DependencyList,
 >(
   callback: Callback,
   deps: Deps,
   equalityFn?: DependenciesComparator<Deps>,
-  effectHook?: EffectHook<Callback, Deps>
+  effectHook?: EffectHook<Callback, Deps>,
 ) {
   const isFirstMount = useFirstMountState()
   useCustomCompareEffect(
     isFirstMount ? noop as Callback : callback,
     deps,
     equalityFn ?? depsShallowEqual,
-    effectHook
+    effectHook,
   )
 }

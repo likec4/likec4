@@ -1,12 +1,13 @@
-import type { WhereOperator } from '@likec4/core'
+import type { WhereOperator } from '@likec4/core/types'
+import type * as aux from '@likec4/core/types/aux'
 import type { CSSProperties } from 'react'
 import type { CustomNodes, ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
 
-export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
+export interface LikeC4ViewProps<A extends aux.Any> {
   /**
    * View to display.
    */
-  viewId: ViewId
+  viewId: aux.ViewId<A>
 
   /**
    * Enable/disable panning
@@ -111,6 +112,12 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   enableElementDetails?: boolean | undefined
 
   /**
+   * Display element tags in the bottom left corner
+   * @default false
+   */
+  enableElementTags?: boolean | undefined
+
+  /**
    * Experimental feature to browse relationships
    *
    * @default enableElementDetails
@@ -130,7 +137,7 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
-  where?: WhereOperator<Tag, Kind> | undefined
+  where?: WhereOperator<A> | undefined
 
   /**
    * Override some react flow props
@@ -229,6 +236,12 @@ export interface LikeC4BrowserProps {
    * @default enableRelationshipBrowser
    */
   enableRelationshipDetails?: boolean | undefined
+
+  /**
+   * Display element tags in the bottom left corner
+   * @default true
+   */
+  enableElementTags?: boolean | undefined
 
   /**
    * Display notations of the view

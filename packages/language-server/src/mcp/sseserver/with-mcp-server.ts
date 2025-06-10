@@ -1,7 +1,8 @@
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../LikeC4MCPServerFactory'
-import { SSELikeC4MCPServer } from './SSELikeC4MCPServer'
+import { SSELikeC4MCPServer } from './MCPServer'
+import { LikeC4MCPServerFactory } from './MCPServerFactory'
 
 export const WithMCPServer = {
   mcp: {
@@ -39,6 +40,9 @@ export const WithMCPServer = {
       })
 
       return server
+    },
+    ServerFactory(services: LikeC4Services): LikeC4MCPServerFactory {
+      return new LikeC4MCPServerFactory(services)
     },
   },
 }

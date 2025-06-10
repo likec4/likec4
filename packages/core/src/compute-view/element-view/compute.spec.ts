@@ -1,27 +1,63 @@
 import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../../builder'
-import { invariant } from '../../errors'
+import { type AnyTypes, type Types, Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
-import { isElementView } from '../../types'
+import { type ParsedView, isElementView } from '../../types'
+import { invariant } from '../../utils'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { computeElementView } from './compute'
 
 const builder = Builder.specification({
   elements: {
-    el: {}
-  }
+    el: {},
+    actor: {
+      tags: ['tag1'],
+    },
+  },
+  tags: {
+    tag1: {},
+    tag2: {},
+  },
 })
 
-function compute(buider: Builder<any>) {
-  const { views, ...model } = buider.build()
-  const likec4model = LikeC4Model.create({ ...model, views: {} })
-  const view = only(values(views))
+function compute<const T extends AnyTypes>(builder: Builder<T>) {
+  const parsed = builder.build()
+  const likec4model = LikeC4Model.create(parsed)
+  const view = only(values(parsed.views as Record<string, ParsedView<Types.ToAux<T>>>))
   invariant(view && isElementView(view), 'Must have one element view')
   return withReadableEdges(computeElementView(likec4model, view))
 }
 
 describe('compute', () => {
+  it('adds tags to node from element and spec', () => {
+    const context = compute(
+      builder
+        .model(({ el, actor, rel }, _) =>
+          _(
+            actor('alice'),
+            actor('bob', {
+              tags: ['tag2'],
+            }),
+          )
+        )
+        .views(({ view, $include, $rules, $style }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('*'),
+                $style(['*', 'alice'], {}),
+              ),
+            ),
+          )
+        ),
+    )
+    expect(context.nodes.find(n => n.id === 'alice')?.tags).toEqual(['tag1'])
+    // Tags are merged, order is important (tag2 comes from element, tag1 comes from spec)
+    expect(context.nodes.find(n => n.id === 'bob')?.tags).toEqual(['tag2', 'tag1'])
+  })
+
   it('pushes edge to outbound collection of the source and its ancestors', () => {
     const context = compute(
       builder
@@ -30,11 +66,11 @@ describe('compute', () => {
             el('cloud').with(
               el('backend').with(
                 el('graphql'),
-                el('db')
-              )
+                el('db'),
+              ),
             ),
             el('amazon'),
-            rel('cloud.backend.graphql', 'amazon')
+            rel('cloud.backend.graphql', 'amazon'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -46,11 +82,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('amazon')
-              )
-            )
+                $include('amazon'),
+              ),
+            ),
           )
-        )
+        ),
     )
     const expected = ['cloud.backend.graphql:amazon']
     expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).toEqual(expected)
@@ -68,7 +104,7 @@ describe('compute', () => {
             el('cloud.backend.graphql'),
             el('cloud.frontend'),
             el('cloud.frontend.dashboard'),
-            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -80,11 +116,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('cloud.frontend.*')
-              )
-            )
+                $include('cloud.frontend.*'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     const expected = 'cloud.backend.graphq:cloud.frontend.dashboard'
@@ -101,7 +137,7 @@ describe('compute', () => {
             el('cloud.backend'),
             el('cloud.backend.graphql'),
             el('amazon'),
-            rel('amazon', 'cloud.backend.graphql')
+            rel('amazon', 'cloud.backend.graphql'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -113,11 +149,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('amazon')
-              )
-            )
+                $include('amazon'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     const expected = ['amazon:cloud.backend.graphql']
@@ -136,7 +172,7 @@ describe('compute', () => {
             el('cloud.backend.graphql'),
             el('cloud.frontend'),
             el('cloud.frontend.dashboard'),
-            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard'),
           )
         )
         .views(({ view, $include, $rules }, _) =>
@@ -148,11 +184,11 @@ describe('compute', () => {
                 $include('cloud'),
                 $include('cloud.*'),
                 $include('cloud.backend.*'),
-                $include('cloud.frontend.*')
-              )
-            )
+                $include('cloud.frontend.*'),
+              ),
+            ),
           )
-        )
+        ),
     )
 
     expect(context.edges[0]!.parent).toBe('cloud')

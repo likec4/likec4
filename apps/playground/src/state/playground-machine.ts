@@ -1,5 +1,6 @@
 import { type Api, api } from '$/api'
 import {
+  type aux,
   type ComputedView,
   type DiagramView,
   type ExclusiveUnion,
@@ -63,7 +64,7 @@ export interface PlaygroundContext {
   /**
    * Current LikeC4 model.
    */
-  likec4model: LikeC4Model.Computed | null
+  likec4model: LikeC4Model<aux.UnknownComputed> | null
 
   /**
    * Files in the workspace.

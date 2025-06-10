@@ -1,4 +1,5 @@
-import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
+import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { aux, ComputedNode, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 
@@ -10,7 +11,10 @@ const nodeName = (node: ComputedNode): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
 }
 
-const d2direction = ({ autoLayout }: ComputedView) => {
+type Node = AnyView['nodes'][number]
+type Edge = AnyView['edges'][number]
+
+const d2direction = ({ autoLayout }: AnyView) => {
   switch (autoLayout.direction) {
     case 'TB': {
       return 'down'
@@ -27,7 +31,7 @@ const d2direction = ({ autoLayout }: ComputedView) => {
   }
 }
 
-const d2shape = ({ shape }: ComputedNode) => {
+const d2shape = ({ shape }: Node) => {
   switch (shape) {
     case 'queue':
     case 'cylinder':
@@ -45,11 +49,12 @@ const d2shape = ({ shape }: ComputedNode) => {
   }
 }
 
-export function generateD2<V extends ComputedView>(view: V) {
+export function generateD2(viewmodel: LikeC4ViewModel<aux.Unknown>) {
+  const view = viewmodel.$view
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 
-  const printNode = (node: ComputedNode, parentName?: string): CompositeGeneratorNode => {
+  const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
     const name = nodeName(node)
     const fqnName = (parentName ? parentName + '.' : '') + name
     names.set(node.id, fqnName)
@@ -69,15 +74,15 @@ export function generateD2<V extends ComputedView>(view: V) {
               NL,
               joinToNode(
                 nodes.filter(n => n.parent === node.id),
-                n => printNode(n, fqnName)
-              )
+                n => printNode(n, fqnName),
+              ),
             ),
-        indentation: 2
+        indentation: 2,
       })
       .append('}', NL)
   }
   //     return `${names.get(edge.source)} -> ${names.get(edge.target)}${edge.label ? ': ' + edge.label : ''}`
-  const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
+  const printEdge = (edge: Edge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode()
       .append(names.get(edge.source), ' -> ', names.get(edge.target))
       .append(out => edge.label && out.append(': ', JSON.stringify(edge.label)))
@@ -91,16 +96,16 @@ export function generateD2<V extends ComputedView>(view: V) {
           nodes.filter(n => isNil(n.parent)),
           n => printNode(n),
           {
-            appendNewLineIfNotEmpty: true
-          }
-        )
+            appendNewLineIfNotEmpty: true,
+          },
+        ),
       )
       .appendIf(
         edges.length > 0,
         NL,
         joinToNode(edges, e => printEdge(e), {
-          appendNewLineIfNotEmpty: true
-        })
-      )
+          appendNewLineIfNotEmpty: true,
+        }),
+      ),
   )
 }

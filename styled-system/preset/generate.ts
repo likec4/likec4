@@ -3,7 +3,7 @@ import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
 import JSON5 from 'json5'
-import { mix, scale, toHex } from 'khroma'
+import { mix, scale, toHex, toRgba } from 'khroma'
 import { writeFileSync } from 'node:fs'
 import {
   capitalize,
@@ -100,8 +100,8 @@ const generateRelationColors = (color: ThemeColor) => ({
       DEFAULT: { value: defaultTheme.relationships[color].lineColor },
       selected: {
         value: {
-          _light: toHex(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
-          _dark: toHex(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
+          _light: toRgba(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
+          _dark: toRgba(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
         },
       },
     },

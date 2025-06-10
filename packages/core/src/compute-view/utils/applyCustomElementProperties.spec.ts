@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedNode, ViewRule } from '../../types'
-import { $custom, $exclude, $group, $include } from '../element-view/__test__/fixture'
+import type { ComputedNode, ElementViewRule as ViewRule } from '../../types'
+import { type $Aux, $custom, $exclude, $group, $include } from '../element-view/__test__/fixture'
 import { applyCustomElementProperties } from './applyCustomElementProperties'
 
-function nd(id: string): ComputedNode {
-  return { id } as ComputedNode
+function nd(id: string): ComputedNode<$Aux> {
+  return { id } as ComputedNode<$Aux>
 }
 
 describe('applyElementCustomProperties', () => {

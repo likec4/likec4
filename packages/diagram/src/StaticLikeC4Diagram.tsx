@@ -1,8 +1,9 @@
+import type * as aux from '@likec4/core/types/aux'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 
-export type StaticLikeC4DiagramProps = Pick<
-  LikeC4DiagramProperties,
+export type StaticLikeC4DiagramProps<A extends aux.Any> = Pick<
+  LikeC4DiagramProperties<A>,
   | 'view'
   | 'className'
   | 'fitView'
@@ -11,6 +12,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'enableElementDetails'
   | 'enableRelationshipDetails'
   | 'enableRelationshipBrowser'
+  | 'enableElementTags'
   | 'reduceGraphics'
   | 'initialWidth'
   | 'initialHeight'
@@ -19,16 +21,15 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'where'
 >
 
-export function StaticLikeC4Diagram({
+export function StaticLikeC4Diagram<A extends aux.Any = aux.UnknownLayouted>({
   view,
   fitView = true,
   fitViewPadding = '8px',
-  enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = enableRelationshipDetails,
   background = 'transparent',
   ...rest
-}: StaticLikeC4DiagramProps) {
+}: StaticLikeC4DiagramProps<A>) {
   return (
     <LikeC4Diagram
       view={view}
@@ -41,7 +42,7 @@ export function StaticLikeC4Diagram({
       background={background}
       showDiagramTitle={false}
       showNotations={false}
-      enableElementDetails={enableElementDetails}
+      enableElementDetails={false}
       enableRelationshipDetails={enableRelationshipDetails}
       enableRelationshipBrowser={enableRelationshipBrowser}
       enableDynamicViewWalkthrough={false}
@@ -51,6 +52,7 @@ export function StaticLikeC4Diagram({
       enableSearch={false}
       nodesSelectable={false}
       nodesDraggable={false}
+      enableElementTags={false}
       {...rest}
     />
   )

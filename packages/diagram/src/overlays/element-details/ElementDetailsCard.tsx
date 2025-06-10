@@ -1,14 +1,13 @@
 import {
+  type Any,
   type ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
-  type LikeC4View,
   type NodeId,
+  type scalar,
   type ViewId,
-  isDeploymentView,
-  isScopedElementView,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import {
   type TextProps,
@@ -41,6 +40,7 @@ import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
+import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
@@ -113,7 +113,7 @@ export function ElementDetailsCard({
     defaultValue: 'Properties',
   })
   const diagram = useDiagram()
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const viewModel = likec4model.view(viewId)
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
 
@@ -122,10 +122,7 @@ export function ElementDetailsCard({
   const [viewsOf, otherViews] = pipe(
     [...elementModel.views()],
     map(v => v.$view),
-    partition(view => {
-      const v = view as LikeC4View
-      return isScopedElementView(v) && v.viewOf === fqn
-    }),
+    partition(v => v._type === 'element' && v.viewOf === fqn),
   )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? elementModel.defaultView?.$view ?? null
@@ -331,16 +328,26 @@ export function ElementDetailsCard({
               </div>
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
-                <Flex gap={4} flex={1} mt={6}>
+                <Flex gap={4} flex={1} mt={6} wrap="wrap">
                   {elementModel.tags.map((tag) => (
-                    <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
+                    <ElementTag
+                      key={tag}
+                      tag={tag}
+                      css={{
+                        cursor: 'pointer',
+                      }}
+                      onClick={e => {
+                        e.stopPropagation()
+                        diagram.openSearch(`#${tag}`)
+                      }}
+                    />
                   ))}
                   {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                 </Flex>
               </div>
               <ActionIconGroup
                 style={{
-                  alignSelf: 'flex-end',
+                  alignSelf: 'flex-start',
                 }}>
                 {defaultLink && (
                   <ActionIcon
@@ -454,7 +461,7 @@ export function ElementDetailsCard({
                           <ViewButton
                             key={view.id}
                             view={view}
-                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
                         ))}
                       </Stack>
                     </Box>
@@ -467,7 +474,7 @@ export function ElementDetailsCard({
                           <ViewButton
                             key={view.id}
                             view={view}
-                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
                         ))}
                       </Stack>
                     </Box>
@@ -501,18 +508,18 @@ export function ElementDetailsCard({
   )
 }
 
-const ViewButton = ({
+const ViewButton = <A extends Any>({
   view,
   onNavigateTo,
 }: {
-  view: ComputedView | DiagramView
-  onNavigateTo: OnNavigateTo
+  view: ComputedView<A> | DiagramView<A>
+  onNavigateTo: OnNavigateTo<A>
 }) => {
   return (
     <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
-          {isDeploymentView(view)
+          {view._type === 'deployment'
             ? <IconStack2 stroke={1.8} />
             : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>

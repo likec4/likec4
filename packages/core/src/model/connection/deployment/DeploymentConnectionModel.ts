@@ -1,35 +1,32 @@
-import { invariant } from '../../../errors'
-import type { IteratorLike } from '../../../types'
-import { stringHash } from '../../../utils'
+import type { AnyAux, aux, IteratorLike } from '../../../types'
+import { invariant, stringHash } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
 import {
-  type DeployedInstanceModel,
   type DeploymentElementModel,
   type DeploymentRelationModel,
   DeploymentNodeModel,
   RelationshipsAccum,
 } from '../../DeploymentElementModel'
 import type { RelationshipModel } from '../../RelationModel'
-import type { AnyAux } from '../../types'
 import type { Connection } from '../Connection'
 
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
  * Includes direct relationships and/or between their nested elements.
  */
-export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
-  implements Connection<DeploymentElementModel<M>, M['EdgeId']>
+export class DeploymentConnectionModel<A extends AnyAux = AnyAux>
+  implements Connection<DeploymentElementModel<A>, aux.EdgeId>
 {
-  constructor(
-    public readonly source: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
-    public readonly target: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
-    public readonly relations: RelationshipsAccum<M>,
-  ) {
-    this.id = stringHash(`deployment:${source.id}:${target.id}`) as M['EdgeId']
-  }
+  readonly id: aux.EdgeId
 
-  readonly id: M['EdgeId']
+  constructor(
+    public readonly source: DeploymentElementModel<A>,
+    public readonly target: DeploymentElementModel<A>,
+    public readonly relations: RelationshipsAccum<A>,
+  ) {
+    this.id = stringHash(`deployment:${source.id}:${target.id}`) as aux.EdgeId
+  }
 
   /**
    * Human readable expression of the connection
@@ -39,12 +36,12 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return `${this.source.id} -> ${this.target.id}`
   }
 
-  private _boundary: DeploymentNodeModel<M> | null | undefined
+  private _boundary: DeploymentNodeModel<A> | null | undefined
   /**
    * Common ancestor of the source and target elements.
    * Represents the boundary of the connection.
    */
-  get boundary(): DeploymentNodeModel<M> | null {
+  get boundary(): DeploymentNodeModel<A> | null {
     this._boundary ??= this.source.commonAncestor(this.target)
     return this._boundary
   }
@@ -105,7 +102,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return false
   }
 
-  public *values(): IteratorLike<RelationshipModel<M> | DeploymentRelationModel<M>> {
+  public *values(): IteratorLike<RelationshipModel<A> | DeploymentRelationModel<A>> {
     yield* this.relations.model
     yield* this.relations.deployment
   }
@@ -114,13 +111,13 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
    * Merge with another connections, if it has the same source and target.
    * Returns new connection with union of relationships.
    */
-  public mergeWith(others: DeploymentConnectionModel<M>[]): DeploymentConnectionModel<M>
+  public mergeWith(others: DeploymentConnectionModel<A>[]): DeploymentConnectionModel<A>
   /**
    * Merge with another connection, if it has the same source and target.
    * Returns new connection with union of relationships.
    */
-  public mergeWith(other: DeploymentConnectionModel<M>): DeploymentConnectionModel<M>
-  public mergeWith(other: DeploymentConnectionModel<M> | DeploymentConnectionModel<M>[]): DeploymentConnectionModel<M> {
+  public mergeWith(other: DeploymentConnectionModel<A>): DeploymentConnectionModel<A>
+  public mergeWith(other: DeploymentConnectionModel<A> | DeploymentConnectionModel<A>[]): DeploymentConnectionModel<A> {
     if (Array.isArray(other)) {
       return other.reduce((acc, o) => acc.mergeWith(o), this)
     }
@@ -134,7 +131,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     )
   }
 
-  public difference(other: DeploymentConnectionModel<M>) {
+  public difference(other: DeploymentConnectionModel<A>) {
     return new DeploymentConnectionModel(
       this.source,
       this.target,
@@ -142,7 +139,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     )
   }
 
-  public intersect(other: DeploymentConnectionModel<M>) {
+  public intersect(other: DeploymentConnectionModel<A>) {
     return new DeploymentConnectionModel(
       this.source,
       this.target,
@@ -164,9 +161,9 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
    * if `null` is provided in overrides, the corresponding relation set will be empty.
    */
   public update(overrides?: {
-    model?: ReadonlySet<RelationshipModel<M>> | null
-    deployment?: ReadonlySet<DeploymentRelationModel<M>> | null
-  }): DeploymentConnectionModel<M> {
+    model?: ReadonlySet<RelationshipModel<A>> | null
+    deployment?: ReadonlySet<DeploymentRelationModel<A>> | null
+  }): DeploymentConnectionModel<A> {
     if (overrides) {
       overrides = {
         model: this.relations.model,

@@ -9,9 +9,10 @@ import {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  ElementTags,
   ElementTitle,
 } from '../../../base/primitives'
-import { IfEnabled, IfNotReadOnly, useEnabledFeatures } from '../../../context/DiagramFeatures'
+import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
@@ -57,63 +58,64 @@ export function CompoundDetailsButtonWithHandler(
   )
 }
 
-export const ElementNode = customNode<Types.ElementNodeData, 'element'>((props) => (
-  <ElementNodeContainer nodeProps={props}>
-    <ElementShape {...props} />
-    <ElementTitle {...props} />
-    <ElementActions {...props} />
-    <ElementDetailsButtonWithHandler {...props} />
-    <IfNotReadOnly>
-      <ElementToolbar {...props} />
-    </IfNotReadOnly>
-    <DefaultHandles />
-  </ElementNodeContainer>
-))
+export const ElementNode = customNode<Types.ElementNodeData, 'element'>(props => {
+  const { enableElementTags, enableReadOnly } = useEnabledFeatures()
+  return (
+    <ElementNodeContainer nodeProps={props}>
+      <ElementShape {...props} />
+      <ElementTitle {...props} />
+      {enableElementTags && <ElementTags {...props} />}
+      <ElementActions {...props} />
+      <ElementDetailsButtonWithHandler {...props} />
+      {!enableReadOnly && <ElementToolbar {...props} />}
+      <DefaultHandles />
+    </ElementNodeContainer>
+  )
+})
 ElementNode.displayName = 'ElementNode'
 
-export const DeploymentNode = customNode<Types.DeploymentElementNodeData, 'deployment'>((props) => (
-  <ElementNodeContainer nodeProps={props}>
-    <ElementShape {...props} />
-    <ElementTitle {...props} />
-    <DeploymentElementActions {...props} />
-    <ElementDetailsButtonWithHandler {...props} />
-    <IfNotReadOnly>
-      <DeploymentElementToolbar {...props} />
-    </IfNotReadOnly>
-    <DefaultHandles />
-  </ElementNodeContainer>
-))
+export const DeploymentNode = customNode<Types.DeploymentElementNodeData, 'deployment'>((props) => {
+  const { enableElementTags, enableReadOnly } = useEnabledFeatures()
+  return (
+    <ElementNodeContainer nodeProps={props}>
+      <ElementShape {...props} />
+      <ElementTitle {...props} />
+      {enableElementTags && <ElementTags {...props} />}
+      <DeploymentElementActions {...props} />
+      <ElementDetailsButtonWithHandler {...props} />
+      {!enableReadOnly && <DeploymentElementToolbar {...props} />}
+      <DefaultHandles />
+    </ElementNodeContainer>
+  )
+})
 DeploymentNode.displayName = 'DeploymentNode'
 
 export const CompoundElementNode = customNode<Types.CompoundElementNodeData, 'compound-element'>((props) => {
-  const diagram = useDiagram()
-
+  const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
   return (
     <CompoundNodeContainer nodeProps={props}>
       <CompoundTitle {...props} />
       <CompoundActions {...props} />
-      <IfEnabled feature="ElementDetails">
-        <CompoundDetailsButtonWithHandler {...props} />
-      </IfEnabled>
-      <IfNotReadOnly>
-        <CompoundElementToolbar {...props} />
-      </IfNotReadOnly>
+      {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
+      {!enableReadOnly && <CompoundElementToolbar {...props} />}
       <DefaultHandles />
     </CompoundNodeContainer>
   )
 })
 CompoundElementNode.displayName = 'CompoundElementNode'
 
-export const CompoundDeploymentNode = customNode<Types.CompoundDeploymentNodeData, 'compound-deployment'>((props) => (
-  <CompoundNodeContainer nodeProps={props}>
-    <CompoundTitle {...props} />
-    <CompoundActions {...props} />
-    <IfNotReadOnly>
-      <CompoundDeploymentToolbar {...props} />
-    </IfNotReadOnly>
-    <DefaultHandles />
-  </CompoundNodeContainer>
-))
+export const CompoundDeploymentNode = customNode<Types.CompoundDeploymentNodeData, 'compound-deployment'>((props) => {
+  const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
+  return (
+    <CompoundNodeContainer nodeProps={props}>
+      <CompoundTitle {...props} />
+      <CompoundActions {...props} />
+      {enableElementDetails && <CompoundDetailsButtonWithHandler {...props} />}
+      {!enableReadOnly && <CompoundDeploymentToolbar {...props} />}
+      <DefaultHandles />
+    </CompoundNodeContainer>
+  )
+})
 CompoundDeploymentNode.displayName = 'CompoundDeploymentNode'
 
 export const ViewGroupNode = customNode<Types.ViewGroupNodeData, 'view-group'>((props) => (

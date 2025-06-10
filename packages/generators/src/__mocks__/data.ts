@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView } from '@likec4/core'
+import type { ComputedView, DiagramView } from '@likec4/core/types'
 
 export const fakeDiagram: DiagramView = {
   edges: [
@@ -6,7 +6,7 @@ export const fakeDiagram: DiagramView = {
       headArrow: [
         [294, 487],
         [291, 496],
-        [288, 487]
+        [288, 487],
       ],
       id: 'cloud.frontend:cloud.backend',
       label: 'requests',
@@ -14,26 +14,26 @@ export const fakeDiagram: DiagramView = {
         align: 'left',
         width: 62,
         x: 295,
-        y: 459
+        y: 459,
       },
       points: [
         [291, 406],
         [291, 432],
         [291, 461],
-        [291, 487]
+        [291, 487],
       ],
       relations: [
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud.frontend.adminPanel:cloud.backend.graphql'
+        'cloud.frontend.adminPanel:cloud.backend.graphql',
       ],
       source: 'cloud.frontend',
-      target: 'cloud.backend'
+      target: 'cloud.backend',
     },
     {
       headArrow: [
         [294, 701],
         [291, 711],
-        [288, 701]
+        [288, 701],
       ],
       id: 'cloud.backend:amazon',
       label: null,
@@ -42,17 +42,17 @@ export const fakeDiagram: DiagramView = {
         [291, 641],
         [291, 660],
         [291, 681],
-        [291, 702]
+        [291, 702],
       ],
       relations: ['cloud.backend.storage:amazon.s3'],
       source: 'cloud.backend',
-      target: 'amazon'
+      target: 'amazon',
     },
     {
       headArrow: [
         [344, 257],
         [336, 263],
-        [338, 253]
+        [338, 253],
       ],
       id: 'support:cloud.frontend',
       label: null,
@@ -61,17 +61,17 @@ export const fakeDiagram: DiagramView = {
         [413, 141],
         [391, 176],
         [364, 218],
-        [342, 255]
+        [342, 255],
       ],
       relations: ['support:cloud.frontend.adminPanel'],
       source: 'support',
-      target: 'cloud.frontend'
+      target: 'cloud.frontend',
     },
     {
       headArrow: [
         [244, 253],
         [246, 263],
-        [239, 257]
+        [239, 257],
       ],
       id: 'customer:cloud.frontend',
       label: 'opens',
@@ -79,18 +79,18 @@ export const fakeDiagram: DiagramView = {
         align: 'left',
         width: 44,
         x: 208,
-        y: 193
+        y: 193,
       },
       points: [
         [169, 141],
         [191, 176],
         [218, 218],
-        [241, 255]
+        [241, 255],
       ],
       relations: ['customer:cloud.frontend.dashboard'],
       source: 'customer',
-      target: 'cloud.frontend'
-    }
+      target: 'cloud.frontend',
+    },
   ],
   height: 855,
   id: 'fakeView',
@@ -105,9 +105,9 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'amazon'
+      title: 'amazon',
     },
     {
       children: ['cloud.backend', 'cloud.frontend'],
@@ -119,9 +119,9 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 457,
-        width: 304
+        width: 304,
       },
-      title: 'cloud'
+      title: 'cloud',
     },
     {
       children: [],
@@ -133,9 +133,9 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'customer'
+      title: 'customer',
     },
     {
       children: [],
@@ -147,9 +147,9 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'support'
+      title: 'support',
     },
     {
       children: [],
@@ -161,9 +161,9 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'backend'
+      title: 'backend',
     },
     {
       children: [],
@@ -175,25 +175,25 @@ export const fakeDiagram: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'frontend'
-    }
+      title: 'frontend',
+    },
   ],
   autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [
         {
-          wildcard: true
-        }
+          wildcard: true,
+        },
       ],
-      isInclude: true
-    }
+      isInclude: true,
+    },
   ],
   title: '',
   viewOf: 'cloud',
-  width: 582
+  width: 582,
 } as any
 
 export const fakeDiagram2: DiagramView = {
@@ -202,7 +202,7 @@ export const fakeDiagram2: DiagramView = {
       headArrow: [
         [129, 456],
         [126, 465],
-        [123, 456]
+        [123, 456],
       ],
       id: 'system.frontend:system.backend',
       label: 'requests',
@@ -210,23 +210,23 @@ export const fakeDiagram2: DiagramView = {
         align: 'left',
         width: 62,
         x: 130,
-        y: 428
+        y: 428,
       },
       points: [
         [126, 375],
         [126, 400],
         [126, 429],
-        [126, 456]
+        [126, 456],
       ],
       relations: ['671e3db5eb605d5f245f247d95925bd0953e0e4c'],
       source: 'system.frontend',
-      target: 'system.backend'
+      target: 'system.backend',
     },
     {
       headArrow: [
         [129, 221],
         [126, 231],
-        [123, 221]
+        [123, 221],
       ],
       id: 'client:system.frontend',
       label: 'opens',
@@ -234,18 +234,18 @@ export const fakeDiagram2: DiagramView = {
         align: 'left',
         width: 44,
         x: 130,
-        y: 193
+        y: 193,
       },
       points: [
         [126, 141],
         [126, 166],
         [126, 195],
-        [126, 221]
+        [126, 221],
       ],
       relations: ['99bffdfd5c78e024393e6223cd9b19225321a5e3'],
       source: 'client',
-      target: 'system.frontend'
-    }
+      target: 'system.frontend',
+    },
   ],
   height: 609,
   id: '74f5364fa4b',
@@ -260,9 +260,9 @@ export const fakeDiagram2: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'client'
+      title: 'client',
     },
     {
       children: [],
@@ -274,9 +274,9 @@ export const fakeDiagram2: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'backend'
+      title: 'backend',
     },
     {
       children: [],
@@ -288,25 +288,25 @@ export const fakeDiagram2: DiagramView = {
       shape: 'rectangle',
       size: {
         height: 140,
-        width: 251
+        width: 251,
       },
-      title: 'frontend'
-    }
+      title: 'frontend',
+    },
   ],
   autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [
         {
-          wildcard: true
-        }
+          wildcard: true,
+        },
       ],
-      isInclude: true
-    }
+      isInclude: true,
+    },
   ],
   title: 'frontend',
   viewOf: 'system.frontend',
-  width: 251
+  width: 251,
 } as any
 
 export const fakeComputedView3Levels: ComputedView = {
@@ -316,43 +316,43 @@ export const fakeComputedView3Levels: ComputedView = {
       label: null,
       relations: ['cloud.frontend.dashboard:cloud.backend.graphql'],
       source: 'cloud.frontend.dashboard',
-      target: 'cloud.backend.graphql'
+      target: 'cloud.backend.graphql',
     },
     {
       id: 'cloud.frontend.adminPanel:cloud.backend.graphql',
       label: null,
       relations: ['cloud.frontend.adminPanel:cloud.backend.graphql'],
       source: 'cloud.frontend.adminPanel',
-      target: 'cloud.backend.graphql'
+      target: 'cloud.backend.graphql',
     },
     {
       id: 'cloud.backend.storage:amazon',
       label: null,
       relations: ['cloud.backend.storage:amazon.s3'],
       source: 'cloud.backend.storage',
-      target: 'amazon'
+      target: 'amazon',
     },
     {
       id: 'cloud.backend.graphql:cloud.backend.storage',
       label: null,
       relations: ['cloud.backend.graphql:cloud.backend.storage'],
       source: 'cloud.backend.graphql',
-      target: 'cloud.backend.storage'
+      target: 'cloud.backend.storage',
     },
     {
       id: 'support:cloud.frontend.adminPanel',
       label: null,
       relations: ['support:cloud.frontend.adminPanel'],
       source: 'support',
-      target: 'cloud.frontend.adminPanel'
+      target: 'cloud.frontend.adminPanel',
     },
     {
       id: 'customer:cloud.frontend.dashboard',
       label: null,
       relations: ['customer:cloud.frontend.dashboard'],
       source: 'customer',
-      target: 'cloud.frontend.dashboard'
-    }
+      target: 'cloud.frontend.dashboard',
+    },
   ],
   id: 'cloud3levels',
   nodes: [
@@ -362,7 +362,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'amazon',
       parent: null,
       shape: 'rectangle',
-      title: 'amazon'
+      title: 'amazon',
     },
     {
       children: ['cloud.backend', 'cloud.frontend.adminPanel', 'cloud.frontend.dashboard'],
@@ -371,7 +371,7 @@ export const fakeComputedView3Levels: ComputedView = {
       navigateTo: 'fakeView',
       parent: null,
       shape: 'rectangle',
-      title: 'cloud'
+      title: 'cloud',
     },
     {
       children: [],
@@ -379,7 +379,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'customer',
       parent: null,
       shape: 'rectangle',
-      title: 'customer'
+      title: 'customer',
     },
     {
       children: [],
@@ -387,7 +387,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'support',
       parent: null,
       shape: 'rectangle',
-      title: 'support'
+      title: 'support',
     },
     {
       children: ['cloud.backend.graphql', 'cloud.backend.storage'],
@@ -395,7 +395,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'cloud.backend',
       parent: 'cloud',
       shape: 'rectangle',
-      title: 'backend'
+      title: 'backend',
     },
     {
       children: [],
@@ -403,7 +403,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'cloud.backend.graphql',
       parent: 'cloud.backend',
       shape: 'rectangle',
-      title: 'graphql'
+      title: 'graphql',
     },
     {
       children: [],
@@ -411,7 +411,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'cloud.backend.storage',
       parent: 'cloud.backend',
       shape: 'rectangle',
-      title: 'storage'
+      title: 'storage',
     },
     {
       children: [],
@@ -419,7 +419,7 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'cloud.frontend.adminPanel',
       parent: 'cloud',
       shape: 'rectangle',
-      title: 'adminPanel'
+      title: 'adminPanel',
     },
     {
       children: [],
@@ -427,37 +427,37 @@ export const fakeComputedView3Levels: ComputedView = {
       id: 'cloud.frontend.dashboard',
       parent: 'cloud',
       shape: 'rectangle',
-      title: 'dashboard'
-    }
+      title: 'dashboard',
+    },
   ],
   autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [
         {
-          wildcard: true
+          wildcard: true,
         },
         {
           element: 'cloud.frontend',
-          isChildren: true
+          isChildren: true,
         },
         {
           element: 'cloud.backend',
-          isChildren: true
-        }
+          isChildren: true,
+        },
       ],
-      isInclude: true
+      isInclude: true,
     },
     {
       exprs: [
         {
           element: 'cloud.frontend',
-          isChildren: false
-        }
+          isChildren: false,
+        },
       ],
-      isInclude: false
-    }
+      isInclude: false,
+    },
   ],
   title: 'Context: Cloud',
-  viewOf: 'cloud'
+  viewOf: 'cloud',
 } as any

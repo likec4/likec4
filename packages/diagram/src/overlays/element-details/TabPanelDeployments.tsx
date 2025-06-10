@@ -1,4 +1,5 @@
-import type { Fqn, LikeC4Model } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
+import type { Fqn } from '@likec4/core/types'
 import { Alert, Box, Button, Group, Menu, rem, Text, ThemeIcon, Tree, useTree } from '@mantine/core'
 import { IconInfoCircle, IconTarget, IconZoomScan } from '@tabler/icons-react'
 import { type ReactNode, memo, useEffect, useMemo } from 'react'
@@ -107,7 +108,7 @@ const DeployedInstanceRenderer = (
 
 const setHoveredNode = () => {}
 export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn }) => {
-  const element = useLikeC4Model(true).element(elementFqn)
+  const element = useLikeC4Model().element(elementFqn)
   const deployments = [...element.deployments()]
 
   const tree = useTree({

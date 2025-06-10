@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { Builder } from '../builder'
 
 describe('LikeC4DeploymentModel', () => {
@@ -6,17 +6,30 @@ describe('LikeC4DeploymentModel', () => {
     .specification({
       elements: {
         el: {},
+        elWithTags: {
+          tags: ['tag1'],
+        },
       },
       deployments: {
         nd: {},
+        vm: {
+          tags: ['tag1'],
+        },
+      },
+      tags: {
+        tag1: {},
+        tag2: {},
+        tag3: {},
       },
     })
-    .model(({ el, rel }, _) =>
+    .model(({ el, elWithTags, rel }, _) =>
       _(
         el('customer'),
         el('cloud'),
         el('cloud.ui'),
-        el('cloud.backend'),
+        elWithTags('cloud.backend', {
+          tags: ['tag2'],
+        }),
         el('infra'),
         el('infra.db'),
         rel('customer', 'cloud'),
@@ -26,19 +39,31 @@ describe('LikeC4DeploymentModel', () => {
         rel('cloud', 'infra'),
       )
     )
-    .deployment(({ nd, instanceOf }, d) =>
+    .deployment(({ nd, vm, instanceOf }, d) =>
       d(
         nd('customer').with(
           instanceOf('customer'),
         ),
         nd('prod'),
         nd('prod.z1').with(
-          instanceOf('cloud.ui'),
-          instanceOf('cloud.backend'),
+          vm('vm1').with(
+            instanceOf('cloud.ui'),
+          ),
+          vm('vm2', {
+            tags: ['tag2'],
+          }).with(
+            instanceOf('backend-with-tags', 'cloud.backend', {
+              tags: ['tag3'],
+            }),
+          ),
         ),
         nd('prod.z2').with(
-          instanceOf('cloud.ui'),
-          instanceOf('cloud.backend'),
+          vm('vm1').with(
+            instanceOf('cloud.ui'),
+          ),
+          vm('vm2').with(
+            instanceOf('cloud.backend'),
+          ),
         ),
         nd('prod.infra').with(
           instanceOf('infra.db'),
@@ -59,35 +84,74 @@ describe('LikeC4DeploymentModel', () => {
     .toLikeC4Model()
   const d = model.deployment
 
-  it('roots', () => {
+  it('roots', ({ expect }) => {
     expect(d.roots()).to.have.same.members([
       d.element('customer'),
       d.element('prod'),
     ])
   })
 
-  it('instance ref', () => {
-    const el = d.instance('prod.z1.ui')
+  it('instance ref', ({ expect }) => {
+    const el = d.instance('prod.z1.vm1.ui')
     expect(el.element).toBe(model.element('cloud.ui'))
   })
 
-  it('parent and children', () => {
-    const el = d.instance('prod.z1.ui')
-    expect(el.parent).toBe(d.node('prod.z1'))
+  it('parent and children', ({ expect }) => {
+    const el = d.instance('prod.z1.vm1.ui')
+    expect(el.parent).toBe(d.node('prod.z1.vm1'))
     expect(el.parent.children()).to.have.same.members([
-      d.element('prod.z1.backend'),
-      d.element('prod.z1.ui'),
+      d.element('prod.z1.vm1.ui'),
+    ])
+    expect(d.node('prod.z1').children()).to.have.same.members([
+      d.element('prod.z1.vm1'),
+      d.element('prod.z1.vm2'),
     ])
   })
 
-  it('element deployments', () => {
+  it('element deployments', ({ expect }) => {
     expect(model.element('cloud.ui').deployments()).to.have.same.members([
-      d.instance('prod.z1.ui'),
-      d.instance('prod.z2.ui'),
+      d.instance('prod.z1.vm1.ui'),
+      d.instance('prod.z2.vm1.ui'),
     ])
   })
 
-  it('views with instance', () => {
+  it('deployment node tags', ({ expect }) => {
+    expect(d.node('prod.z1.vm1').tags).toEqual([
+      'tag1',
+    ])
+    expect(d.node('prod.z1.vm2').tags).toEqual([
+      'tag2',
+      'tag1',
+    ])
+  })
+
+  it('deployment instance tags', ({ expect }) => {
+    // Ensure Element tags
+    expect(model.element('cloud.backend').tags).toEqual([
+      'tag2',
+      'tag1',
+    ])
+    expect(d.element('prod.z1.vm2.backend-with-tags').isInstance()).toBe(true)
+    // Ensure Instance tags are inherited from the element
+    expect(d.element('prod.z1.vm2.backend-with-tags').tags).toEqual([
+      'tag3',
+      'tag2',
+      'tag1',
+    ])
+    expect(d.element('prod.z2.vm2.backend').tags).toEqual([
+      'tag2',
+      'tag1',
+    ])
+    // Check memoization
+    const tags1 = d.element('prod.z1.vm2.backend-with-tags').tags
+    const tags2 = d.element('prod.z1.vm2.backend-with-tags').tags
+    expect(tags1).toBe(tags2)
+
+    const tags3 = d.element('prod.z2.vm2.backend').tags
+    expect(tags3).not.toBe(tags2)
+  })
+
+  it('views with instance', ({ expect }) => {
     const [view] = [...model.deployment.instance('customer.customer').views()]
     expect(view).toBeDefined()
     // View includes parent of the instance, not the instance itself

@@ -1,8 +1,7 @@
 import type { NonEmptyArray } from './_common'
-import type { BorderStyle, ElementShape } from './element'
-import type { Fqn } from './scalars'
-import type { ThemeColor } from './theme'
-import type { AutoLayoutDirection, ViewManualLayout } from './view'
+import type * as scalar from './scalar'
+import type { BorderStyle, ElementShape, ThemeColor } from './styles'
+import type { AutoLayoutDirection, ViewManualLayout } from './view-common'
 
 export namespace ViewChange {
   export interface ChangeElementStyle {
@@ -13,7 +12,7 @@ export namespace ViewChange {
       shape?: ElementShape
       color?: ThemeColor
     }
-    targets: NonEmptyArray<Fqn>
+    targets: NonEmptyArray<scalar.Fqn | scalar.DeploymentFqn>
   }
 
   export interface SaveManualLayout {

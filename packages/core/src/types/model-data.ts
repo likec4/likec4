@@ -1,15 +1,35 @@
+import type { IsAny } from 'type-fest'
 import type { NonEmptyArray } from './_common'
-import type {
-  DeploymentElement,
-  DeploymentNodeKind,
-  DeploymentNodeKindSpecification,
-  DeploymentRelation,
-} from './deployments'
-import type { Element, ElementKindSpecification, TypedElement } from './element'
+import type * as aux from './aux'
+import type { Any } from './aux'
+import type { _stage } from './const'
 import type { ModelGlobals } from './global'
-import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
-import type { ProjectId, Tag } from './scalars'
-import type { ComputedView, DiagramView, LikeC4View } from './view'
+import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
+import type { Element, Relationship } from './model-logical'
+import type { Specification } from './model-spec'
+import type * as scalar from './scalar'
+import type { ComputedView, LayoutedView, ParsedView } from './view'
+
+interface BaseLikeC4ModelData<A extends aux.Any> {
+  projectId: aux.ProjectId<A>
+  specification: Specification<A>
+  elements: Record<aux.ElementId<A>, Element<A>>
+  deployments: {
+    elements: Record<aux.DeploymentId<A>, DeploymentElement<A>>
+    relations: Record<scalar.RelationId, DeploymentRelationship<A>>
+  }
+  relations: Record<scalar.RelationId, Relationship<A>>
+  globals: ModelGlobals
+  imports: Record<string, NonEmptyArray<Element<A>>>
+}
+
+export type AuxFromLikeC4ModelData<D> =
+  // dprint-ignore
+  D extends BaseLikeC4ModelData<infer A extends Any>
+    ? IsAny<A> extends true
+      ? never
+      : A
+    : never
 
 /**
  * Represents a LikeC4 model with customizable type parameters,
@@ -25,83 +45,31 @@ import type { ComputedView, DiagramView, LikeC4View } from './view'
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<
-  ElementKinds extends string = string,
-  RelationKinds extends string = string,
-  Tags extends string = string,
-  Fqns extends string = string,
-  Views extends string = string,
-  DeploymentFqns extends string = string,
-> {
-  // To prevent accidental use of this type
-  __?: never
-  specification: {
-    tags: Tag<Tags>[]
-    elements: Record<ElementKinds, ElementKindSpecification>
-    deployments: Record<DeploymentNodeKind, DeploymentNodeKindSpecification>
-    relationships: Record<RelationKinds, RelationshipKindSpecification>
-  }
-  elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
-  relations: Record<RelationId, ModelRelation>
-  globals: ModelGlobals
-  views: Record<Views, LikeC4View<Views, Tags>>
-  /**
-   * Deployment Model.
-   */
-  deployments: {
-    elements: Record<DeploymentFqns, DeploymentElement>
-    relations: Record<RelationId, DeploymentRelation>
-  }
-  imports: Record<ProjectId, NonEmptyArray<Element>>
+export interface ParsedLikeC4ModelData<A extends Any = aux.UnknownParsed> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'parsed'
+  // globals: ModelGlobals<A
+  views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
-export type AnyParsedLikeC4ModelData = ParsedLikeC4ModelData<any, any, any, any, any, any>
-/**
- * Hook to get types from dump
- */
-export type LikeC4ModelDump = {
-  elements: {
-    [kind: string]: object
-  }
-  deployments: {
-    elements: {
-      [kind: string]: object
-    }
-  }
-  views: {
-    [kind: string]: object
-  }
+export interface ComputedLikeC4ModelData<A extends Any = aux.UnknownComputed> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'computed'
+  // specification: Specification<A>
+  // globals: ModelGlobals<A>
+  views: Record<aux.ViewId<A>, ComputedView<A>>
 }
 
-/**
- * Same as {@link ParsedLikeC4ModelData}, but with computed views or layouted views.
- */
-export interface GenericLikeC4ModelData<
-  Fqns extends string = string,
-  DeploymentFqns extends string = string,
-  Views extends string = string,
-  Tags extends string = string,
-  T = 'computed' | 'layouted',
-> extends Omit<ParsedLikeC4ModelData<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views' | '__'> {
-  __?: T
-  views: Record<Views, ComputedView<Views> | DiagramView<Views>>
+export interface LayoutedLikeC4ModelData<A extends Any = aux.UnknownLayouted> extends BaseLikeC4ModelData<A> {
+  [_stage]: 'layouted'
+  // globals: ModelGlobals<A>
+  views: Record<aux.ViewId<A>, LayoutedView<A>>
 }
 
-export interface ComputedLikeC4ModelData<
-  Fqns extends string = string,
-  DeploymentFqns extends string = string,
-  Views extends string = string,
-  Tags extends string = string,
-> extends Omit<GenericLikeC4ModelData<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
-  views: Record<Views, ComputedView<Views>>
-}
-
-export interface LayoutedLikeC4ModelData<
-  Fqns extends string = string,
-  DeploymentFqns extends string = string,
-  Views extends string = string,
-  Tags extends string = string,
-> extends Omit<GenericLikeC4ModelData<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
-  __: 'layouted'
-  views: Record<Views, DiagramView<Views, Tags>>
-}
+export type LikeC4ModelData<A extends Any> =
+  | ParsedLikeC4ModelData<A>
+  | ComputedLikeC4ModelData<A>
+  | LayoutedLikeC4ModelData<A>
+// ExclusiveUnion<{
+//   Parsed: ParsedLikeC4ModelData<A>
+//   Computed: ComputedLikeC4ModelData<A>
+//   Layouted: LayoutedLikeC4ModelData<A>
+// }>

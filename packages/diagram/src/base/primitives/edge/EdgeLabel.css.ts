@@ -67,6 +67,7 @@ export const labelsva = sva({
   slots: ['root', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
   base: {
     root: {
+      pointerEvents: 'all',
       fontFamily: 'likec4.relation',
       padding: '3px 5px 5px 5px',
       display: 'flex',

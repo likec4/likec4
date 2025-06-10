@@ -1,18 +1,16 @@
 import { values } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
-import { invariant, nonNullable } from '../errors'
 import {
-  type ComputedDeploymentView,
-  type DeploymentRef,
-  type DeploymentRelation,
-  type GenericLikeC4ModelData,
+  type Any,
+  type DeploymentElement,
+  type DeploymentRelationship,
   type IteratorLike,
-  type Tag as C4Tag,
-  DeploymentElement,
+  FqnRef,
+  isDeploymentNode,
 } from '../types'
+import * as aux from '../types/aux'
+import { invariant, nonNullable } from '../utils'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
-import { isString } from '../utils/guards'
 import { DefaultMap } from '../utils/mnemonist'
 import {
   type DeployedInstancesIterator,
@@ -25,48 +23,59 @@ import {
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import { type AnyAux, type IncomingFilter, type OutgoingFilter, getId } from './types'
+import {
+  type $ModelData,
+  type DeploymentOrFqn,
+  type ElementOrFqn,
+  type IncomingFilter,
+  type OutgoingFilter,
+  type RelationOrId,
+  getId,
+} from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
-  readonly #elements = new Map<M['Deployment'], DeploymentElementModel<M>>()
+export class LikeC4DeploymentModel<A extends Any = Any> {
+  readonly #elements = new Map<aux.DeploymentFqn<A>, DeploymentElementModel<A>>()
   // Parent element for given FQN
-  readonly #parents = new Map<M['Deployment'], DeploymentNodeModel<M>>()
+  readonly #parents = new Map<aux.DeploymentFqn<A>, DeploymentNodeModel<A>>()
   // Children elements for given FQN
-  readonly #children = new DefaultMap<M['Deployment'], Set<DeploymentElementModel<M>>>(() => new Set())
+  readonly #children = new DefaultMap<aux.DeploymentFqn<A>, Set<DeploymentElementModel<A>>>(() => new Set())
 
   // Keep track of instances of the logical element
-  readonly #instancesOf = new DefaultMap<M['Element'], Set<DeployedInstanceModel<M>>>(() => new Set())
+  readonly #instancesOf = new DefaultMap<aux.Fqn<A>, Set<DeployedInstanceModel<A>>>(() => new Set())
 
-  readonly #rootElements = new Set<DeploymentNodeModel<M>>()
+  readonly #rootElements = new Set<DeploymentNodeModel<A>>()
 
-  readonly #relations = new Map<M['RelationId'], DeploymentRelationModel<M>>()
+  readonly #relations = new Map<aux.RelationId, DeploymentRelationModel<A>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
+  readonly #incoming = new DefaultMap<aux.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
+  readonly #outgoing = new DefaultMap<aux.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
   // Relationships inside the element, among descendants
-  readonly #internal = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
+  readonly #internal = new DefaultMap<aux.DeploymentFqn<A>, Set<DeploymentRelationModel<A>>>(() => new Set())
 
-  // readonly #views = new Map<ViewID, LikeC4ViewModel<M>>()
+  // readonly #views = new Map<ViewID, LikeC4ViewModel<A>>()
 
-  readonly #allTags = new DefaultMap<C4Tag, Set<DeploymentElementModel<M> | DeploymentRelationModel<M>>>(() =>
-    new Set()
+  readonly #allTags = new DefaultMap<aux.Tag<A>, Set<DeploymentElementModel<A> | DeploymentRelationModel<A>>>(
+    () => new Set(),
   )
 
   readonly #nestedElementsOfDeployment = new Map<
-    `${M['Deployment']}@${M['Element']}`,
-    NestedElementOfDeployedInstanceModel<M>
+    `${aux.DeploymentId<A>}@${aux.ElementId<A>}`,
+    NestedElementOfDeployedInstanceModel<A>
   >()
 
+  public readonly $deployments: $ModelData<A>['deployments']
+
   constructor(
-    public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: GenericLikeC4ModelData['deployments'],
+    public readonly $model: LikeC4Model<A>,
   ) {
-    for (const element of sortParentsFirst(values($deployments.elements))) {
+    const $deployments = this.$deployments = $model.$data.deployments
+    const elements = values($deployments.elements as Record<string, DeploymentElement<A>>)
+    for (const element of sortParentsFirst(elements)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
@@ -83,23 +92,23 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     }
   }
 
-  public element(el: M['DeploymentOrFqn']): DeploymentElementModel<M> {
+  public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {
     if (el instanceof DeploymentNodeModel || el instanceof DeployedInstanceModel) {
       return el
     }
     const id = getId(el)
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: M['Deployment']): DeploymentElementModel<M> | null {
-    return this.#elements.get(el) ?? null
+  public findElement(el: aux.LooseDeploymentId<A>): DeploymentElementModel<A> | null {
+    return this.#elements.get(el as aux.DeploymentFqn<A>) ?? null
   }
 
-  public node(el: M['DeploymentOrFqn']): DeploymentNodeModel<M> {
+  public node(el: DeploymentOrFqn<A>): DeploymentNodeModel<A> {
     const element = this.element(el)
     invariant(element.isDeploymentNode(), `Element ${element.id} is not a deployment node`)
     return element
   }
-  public findNode(el: M['Deployment']): DeploymentNodeModel<M> | null {
+  public findNode(el: aux.LooseDeploymentId<A>): DeploymentNodeModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null
@@ -108,12 +117,12 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     return element
   }
 
-  public instance(el: M['DeploymentOrFqn']): DeployedInstanceModel<M> {
+  public instance(el: DeploymentOrFqn<A>): DeployedInstanceModel<A> {
     const element = this.element(el)
     invariant(element.isInstance(), `Element ${element.id} is not a deployed instance`)
     return element
   }
-  public findInstance(el: M['Deployment']): DeployedInstanceModel<M> | null {
+  public findInstance(el: aux.LooseDeploymentId<A>): DeployedInstanceModel<A> | null {
     const element = this.findElement(el)
     if (!element) {
       return null
@@ -125,21 +134,21 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Returns the root elements of the model.
    */
-  public roots(): DeploymentNodesIterator<M> {
+  public roots(): DeploymentNodesIterator<A> {
     return this.#rootElements.values()
   }
 
   /**
    * Returns all elements in the model.
    */
-  public elements(): DeploymentElementsIterator<M> {
+  public elements(): DeploymentElementsIterator<A> {
     return this.#elements.values()
   }
 
   /**
    * Returns all elements in the model.
    */
-  public *nodes(): DeploymentNodesIterator<M> {
+  public *nodes(): DeploymentNodesIterator<A> {
     for (const element of this.#elements.values()) {
       if (element.isDeploymentNode()) {
         yield element
@@ -148,7 +157,16 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  public *instances(): DeployedInstancesIterator<M> {
+  public *nodesOfKind(kind: aux.DeploymentKind<A>): DeploymentNodesIterator<A> {
+    for (const node of this.#elements.values()) {
+      if (node.isDeploymentNode() && node.kind === kind) {
+        yield node
+      }
+    }
+    return
+  }
+
+  public *instances(): DeployedInstancesIterator<A> {
     for (const element of this.#elements.values()) {
       if (element.isInstance()) {
         yield element
@@ -160,7 +178,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Iterate over all instances of the given logical element.
    */
-  public *instancesOf(element: M['ElementOrFqn']): DeployedInstancesIterator<M> {
+  public *instancesOf(element: ElementOrFqn<A>): DeployedInstancesIterator<A> {
     const id = getId(element)
     const instances = this.#instancesOf.get(id)
     if (instances) {
@@ -169,37 +187,39 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  public deploymentRef(ref: DeploymentRef): DeploymentElementModel<M> | NestedElementOfDeployedInstanceModel<M> {
-    if ('element' in ref) {
-      const { id, element } = ref
-      return getOrCreate(this.#nestedElementsOfDeployment, `${id}@${element}`, () => {
-        return new NestedElementOfDeployedInstanceModel(this.instance(id), this.$model.element(element))
+  public deploymentRef(
+    ref: FqnRef.DeploymentRef<A>,
+  ): DeploymentElementModel<A> | NestedElementOfDeployedInstanceModel<A> {
+    if (FqnRef.isInsideInstanceRef(ref)) {
+      const { deployment, element } = ref
+      return getOrCreate(this.#nestedElementsOfDeployment, `${deployment}@${element}`, () => {
+        return new NestedElementOfDeployedInstanceModel(this.instance(deployment), this.$model.element(element))
       })
     }
-    return this.element(ref)
+    return this.element(ref.deployment)
   }
 
   /**
    * Returns all relationships in the model.
    */
-  public relationships(): IteratorLike<DeploymentRelationModel<M>> {
+  public relationships(): IteratorLike<DeploymentRelationModel<A>> {
     return this.#relations.values()
   }
 
   /**
    * Returns a specific relationship by its ID.
    */
-  public relationship(id: M['RelationId']): DeploymentRelationModel<M> {
-    return nonNullable(this.#relations.get(id), `DeploymentRelationModel ${id} not found`)
+  public relationship(id: RelationOrId): DeploymentRelationModel<A> {
+    return nonNullable(this.#relations.get(getId(id)), `DeploymentRelationModel ${id} not found`)
   }
-  public findRelationship(id: LiteralUnion<M['RelationId'], string>): DeploymentRelationModel<M> | null {
-    return this.#relations.get(id as M['RelationId']) ?? null
+  public findRelationship(id: string): DeploymentRelationModel<A> | null {
+    return this.#relations.get(id as aux.RelationId) ?? null
   }
 
   /**
    * Returns all deployment views in the model.
    */
-  public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
+  public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (view.isDeploymentView()) {
         yield view
@@ -212,7 +232,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: M['DeploymentOrFqn']): DeploymentNodeModel<M> | null {
+  public parent(element: DeploymentOrFqn<A>): DeploymentNodeModel<A> | null {
     const id = getId(element)
     return this.#parents.get(id) || null
   }
@@ -221,7 +241,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: M['DeploymentOrFqn']): ReadonlySet<DeploymentElementModel<M>> {
+  public children(element: DeploymentOrFqn<A>): ReadonlySet<DeploymentElementModel<A>> {
     const id = getId(element)
     return this.#children.get(id)
   }
@@ -229,7 +249,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all sibling (i.e. same parent)
    */
-  public *siblings(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
+  public *siblings(element: DeploymentOrFqn<A>): DeploymentElementsIterator<A> {
     const id = getId(element)
     const siblings = this.parent(element)?.children() ?? this.roots()
     for (const sibling of siblings) {
@@ -244,8 +264,8 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(element: M['DeploymentOrFqn']): DeploymentNodesIterator<M> {
-    let id = isString(element) ? element : element.id
+  public *ancestors(element: DeploymentOrFqn<A>): DeploymentNodesIterator<A> {
+    let id = getId(element)
     let parent
     while (parent = this.#parents.get(id)) {
       yield parent
@@ -257,7 +277,10 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: M['DeploymentOrFqn'], sort: 'asc' | 'desc' = 'desc'): DeploymentElementsIterator<M> {
+  public *descendants(
+    element: DeploymentOrFqn<A>,
+    sort: 'asc' | 'desc' = 'desc',
+  ): DeploymentElementsIterator<A> {
     for (const child of this.children(element)) {
       if (sort === 'asc') {
         yield child
@@ -275,9 +298,9 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * @see incomers
    */
   public *incoming(
-    element: M['DeploymentOrFqn'],
+    element: DeploymentOrFqn<A>,
     filter: IncomingFilter = 'all',
-  ): IteratorLike<DeploymentRelationModel<M>> {
+  ): IteratorLike<DeploymentRelationModel<A>> {
     const id = getId(element)
     for (const rel of this.#incoming.get(id)) {
       switch (true) {
@@ -296,9 +319,9 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * @see outgoers
    */
   public *outgoing(
-    element: M['DeploymentOrFqn'],
+    element: DeploymentOrFqn<A>,
     filter: OutgoingFilter = 'all',
-  ): IteratorLike<DeploymentRelationModel<M>> {
+  ): IteratorLike<DeploymentRelationModel<A>> {
     const id = getId(element)
     for (const rel of this.#outgoing.get(id)) {
       switch (true) {
@@ -312,11 +335,11 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  private addElement(element: DeploymentElement) {
+  private addElement(element: DeploymentElement<A>) {
     if (this.#elements.has(element.id)) {
       throw new Error(`Element ${element.id} already exists`)
     }
-    const el = DeploymentElement.isDeploymentNode(element)
+    const el = isDeploymentNode(element)
       ? new DeploymentNodeModel(this, Object.freeze(element))
       : new DeployedInstanceModel(this, Object.freeze(element), this.$model.element(element.element))
     this.#elements.set(el.id, el)
@@ -332,7 +355,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     return el
   }
 
-  private addRelation(relation: DeploymentRelation) {
+  private addRelation(relation: DeploymentRelationship<A>) {
     if (this.#relations.has(relation.id)) {
       throw new Error(`Relation ${relation.id} already exists`)
     }

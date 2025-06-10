@@ -70,6 +70,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (ast.isRelationKindDotRef(node)) {
+      acceptor({
+        cst: node.$cstNode!,
+        type: SemanticTokenTypes.function,
+      })
+      return 'prune'
+    }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
       acceptor({
         node,
@@ -210,6 +217,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
+    if (ast.isSpecificationTag(node) && isTruthy(node.color)) {
+      acceptor({
+        node,
+        keyword: 'color',
+        type: SemanticTokenTypes.property,
+      })
+      return
+    }
     if (
       ast.isSpecificationElementKind(node)
       || ast.isSpecificationRelationshipKind(node)
@@ -225,11 +240,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ],
       })
     }
-    if (ast.isTags(node)) {
+    if (ast.isTagRef(node)) {
       acceptor({
-        node,
-        property: 'values',
-        type: SemanticTokenTypes.interface,
+        cst: node.$cstNode!,
+        type: SemanticTokenTypes.type,
       })
       return 'prune'
     }

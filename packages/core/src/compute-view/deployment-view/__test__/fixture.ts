@@ -2,7 +2,7 @@ import { map, prop } from 'remeda'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
 import { Builder } from '../../../builder'
 import { LikeC4Model } from '../../../model'
-import type { DeploymentView } from '../../../types'
+import type { ParsedDeploymentView as DeploymentView } from '../../../types'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeDeploymentView } from '../compute'
 
@@ -57,7 +57,17 @@ const {
     zone: {},
     node: {},
   },
-  tags: ['old', 'next', 'temp'],
+  tags: {
+    old: {
+      color: 'red',
+    },
+    next: {
+      color: 'green',
+    },
+    temp: {
+      color: 'blue',
+    },
+  },
   relationships: { 'https': {} },
 })
 
@@ -194,12 +204,9 @@ export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
       ),
     ).build()
 
-  const model = LikeC4Model.create({
-    ...modelsource,
-    views: {},
-  })
+  const model = LikeC4Model.fromParsed(modelsource)
 
-  const view = withReadableEdges(computeDeploymentView(model, modelsource.views.index as DeploymentView))
+  const view = withReadableEdges(computeDeploymentView(model, modelsource.views.index as DeploymentView<any>))
 
   return Object.assign(view, {
     nodeIds: map(view.nodes, prop('id')) as string[],
@@ -217,10 +224,5 @@ export function computeNodesAndEdges(...rules: DeploymentRulesBuilderOp<Types>[]
 }
 
 export function createModel() {
-  const modelsource = builder.build()
-
-  return LikeC4Model.create({
-    ...modelsource,
-    views: {},
-  })
+  return LikeC4Model.fromParsed(builder.build())
 }

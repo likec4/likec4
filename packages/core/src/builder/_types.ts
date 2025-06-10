@@ -1,37 +1,44 @@
-import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
-import type { LikeC4Model } from '../model/LikeC4Model'
+import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
 import type {
+  AnyAux,
+  Aux,
   BorderStyle,
-  Color,
-  DeploymentNodeKindSpecification,
-  ElementKindSpecification,
   ElementShape,
+  ElementSpecification as ElementKindSpecification,
+  Expression,
   KeysOf,
   NonEmptyArray,
-  ParsedLikeC4ModelData,
   RelationshipArrowType,
-  RelationshipKindSpecification,
   RelationshipLineType,
+  RelationshipSpecification as RelationshipKindSpecification,
   ShapeSize,
   SpacingSize,
+  SpecAux,
+  TagSpecification,
   TextSize,
+  ThemeColor as Color,
 } from '../types'
-import type { ExpressionV2 } from '../types/expression-v2'
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
+type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
+  tags?: string[]
+}
+
 export type BuilderSpecification = {
   elements: {
-    [kind: string]: Partial<ElementKindSpecification>
+    [kind: string]: Partial<ElementSpecification>
   }
   relationships?: {
     [kind: string]: Partial<RelationshipKindSpecification>
   }
   deployments?: {
-    [kind: string]: Partial<DeploymentNodeKindSpecification>
+    [kind: string]: Partial<ElementSpecification>
   }
-  tags?: [string, ...string[]]
-  metadataKeys?: [string, ...string[]]
+  tags?: {
+    [kind: string]: Partial<TagSpecification>
+  }
+  metadataKeys?: string[]
 }
 
 export type Metadata<MetadataKey extends string> = IfNever<MetadataKey, never, Record<MetadataKey, string>>
@@ -104,7 +111,7 @@ export type Warn<Id, Existing> = IsLiteral<Existing> extends true ? Id extends E
 export type ValidId<Id> =
   // Id extends `${string}.${string}` ? Invalid<'Id must not contain dot'>
   Id extends `${number}${string}` ? Invalid<'Id must not start with number'>
-    : IsStringLiteral<Id> extends true ? Id
+    : IsLiteral<Id> extends true ? Id
     : Invalid<'Id must be a literal'>
 
 /**
@@ -196,7 +203,7 @@ export namespace Types {
       never,
       never,
       KeysOf<Spec['relationships']>,
-      TupleToUnion<Spec['tags']>,
+      KeysOf<Spec['tags']>,
       TupleToUnion<Spec['metadataKeys']>,
       KeysOf<Spec['deployments']>,
       never
@@ -275,23 +282,23 @@ export namespace Types {
       >
     : never
 
-  export type ToParsedLikeC4Model<T> = T extends AnyTypes ? ParsedLikeC4ModelData<
-      T['ElementKind'],
-      T['RelationshipKind'],
-      T['Tag'],
+  export type ToAux<T> = T extends AnyTypes ? Aux<
+      'parsed',
       T['Fqn'],
+      T['DeploymentFqn'],
       T['ViewId'],
-      T['DeploymentFqn']
+      'from-builder',
+      SpecAux<
+        T['ElementKind'],
+        T['DeploymentKind'],
+        T['RelationshipKind'],
+        T['Tag'],
+        T['MetadataKey']
+      >
     >
-    : never
+    : AnyAux
 
-  export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
-    T['Fqn'],
-    T['DeploymentFqn'],
-    T['ViewId']
-  >
-
-  export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
+  export type ToExpression<T> = T extends AnyTypes ? Expression<ToAux<T>> : never
 
   export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
 

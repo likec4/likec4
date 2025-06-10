@@ -1,6 +1,8 @@
-import { allPass, anyPass, isNot, isNullish } from 'remeda'
-import { nonexhaustive } from '../errors'
+import { allPass, anyPass, isNot, isNullish, isString } from 'remeda'
+import { nonexhaustive } from '../utils/invariant'
 import type { NonEmptyArray } from './_common'
+import type * as aux from './aux'
+import type { Any } from './aux'
 
 export type EqualOperator<V> = {
   eq: V
@@ -10,85 +12,82 @@ export type EqualOperator<V> = {
   neq: V
 }
 
-export type AllNever = {
+type AllNever = {
   not?: never
   and?: never
   or?: never
   tag?: never
   kind?: never
   participant?: never
+  operator?: never
 }
 
-export type TagEqual<Tag> = Omit<AllNever, 'tag'> & {
-  tag: EqualOperator<Tag>
+export type TagEqual<A extends Any> = Omit<AllNever, 'tag'> & {
+  tag: EqualOperator<aux.Tag<A>> | aux.Tag<A>
 }
-export const isTagEqual = <Tag>(operator: WhereOperator<Tag, any>): operator is TagEqual<Tag> => {
+export function isTagEqual<A extends Any>(operator: WhereOperator<A>): operator is TagEqual<A> {
   return 'tag' in operator
 }
 
-export type KindEqual<Kind> = Omit<AllNever, 'kind'> & {
-  kind: EqualOperator<Kind>
+export type KindEqual<A extends Any> = Omit<AllNever, 'kind'> & {
+  kind: EqualOperator<aux.AllKinds<A>> | aux.AllKinds<A>
 }
-export const isKindEqual = <Kind>(operator: WhereOperator<any, Kind>): operator is KindEqual<Kind> => {
+export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator is KindEqual<A> {
   return 'kind' in operator
 }
 
 export type Participant = 'source' | 'target'
-export type ParticipantOperator<Tag, Kind> = Omit<AllNever, 'participant'> & {
+export type ParticipantOperator<A extends Any> = Omit<AllNever, 'participant' | 'operator'> & {
   participant: Participant
-  operator: KindEqual<Kind> | TagEqual<Tag>
+  operator: KindEqual<A> | TagEqual<A>
 }
-export const isParticipantOperator = <Tag, Kind>(
-  operator: WhereOperator<Tag, any>,
-): operator is ParticipantOperator<Tag, Kind> => {
+export function isParticipantOperator<A extends Any>(
+  operator: WhereOperator<A>,
+): operator is ParticipantOperator<A> {
   return 'participant' in operator
 }
 
-export type NotOperator<Tag, Kind> = Omit<AllNever, 'not'> & {
-  not: WhereOperator<Tag, Kind>
+export type NotOperator<A extends Any> = Omit<AllNever, 'not'> & {
+  not: WhereOperator<A>
 }
-export const isNotOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is NotOperator<Tag, Kind> => {
+export function isNotOperator<A extends Any>(operator: WhereOperator<A>): operator is NotOperator<A> {
   return 'not' in operator
 }
 
-export type AndOperator<Tag, Kind> = Omit<AllNever, 'and'> & {
-  and: NonEmptyArray<WhereOperator<Tag, Kind>>
+export type AndOperator<A extends Any> = Omit<AllNever, 'and'> & {
+  and: NonEmptyArray<WhereOperator<A>>
 }
-export const isAndOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is AndOperator<Tag, Kind> => {
+export function isAndOperator<A extends Any>(operator: WhereOperator<A>): operator is AndOperator<A> {
   return 'and' in operator
 }
 
-export type OrOperator<Tag, Kind> = Omit<AllNever, 'or'> & {
-  or: NonEmptyArray<WhereOperator<Tag, Kind>>
+export type OrOperator<A extends Any> = Omit<AllNever, 'or'> & {
+  or: NonEmptyArray<WhereOperator<A>>
 }
-export const isOrOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is OrOperator<Tag, Kind> => {
+export function isOrOperator<A extends Any>(operator: WhereOperator<A>): operator is OrOperator<A> {
   return 'or' in operator
 }
 
-export type WhereOperator<Tag, Kind> =
-  | TagEqual<Tag>
-  | KindEqual<Kind>
-  | ParticipantOperator<Tag, Kind>
-  | NotOperator<Tag, Kind>
-  | AndOperator<Tag, Kind>
-  | OrOperator<Tag, Kind>
+export type WhereOperator<A extends Any = Any> =
+  | TagEqual<A>
+  | KindEqual<A>
+  | ParticipantOperator<A>
+  | NotOperator<A>
+  | AndOperator<A>
+  | OrOperator<A>
 
-export type Filterable<
-  FTag extends string | null = string | null,
-  FKind extends string | null = string | null,
-> = {
-  tags?: readonly FTag[] | null
-  kind?: FKind
-  source?: Filterable<FTag, FKind>
-  target?: Filterable<FTag, FKind>
+export type Filterable<A extends Any> = {
+  tags?: aux.Tags<A> | null | undefined
+  kind?: aux.AllKinds<A> | null | undefined
+  source?: Filterable<A>
+  target?: Filterable<A>
 }
 
-export type OperatorPredicate<V extends Filterable> = (value: V) => boolean
+export type OperatorPredicate<A extends Any> = (value: Filterable<A>) => boolean
 
-export function whereOperatorAsPredicate<
-  FTag extends string | null = string | null,
-  FKind extends string | null = string | null,
->(operator: WhereOperator<FTag, FKind>): OperatorPredicate<Filterable> {
+export function whereOperatorAsPredicate<A extends Any>(
+  operator: WhereOperator<A>,
+): OperatorPredicate<A> {
   switch (true) {
     case isParticipantOperator(operator): {
       const participant = operator.participant
@@ -97,20 +96,20 @@ export function whereOperatorAsPredicate<
       return participantIs(participant, participantPredicate)
     }
     case isTagEqual(operator): {
-      if ('eq' in operator.tag) {
-        const tag = operator.tag.eq
+      if (isString(operator.tag) || 'eq' in operator.tag) {
+        const tag = isString(operator.tag) ? operator.tag : operator.tag.eq
         return (value) => {
-          return Array.isArray(value.tags) && value.tags.includes(tag as FTag)
+          return Array.isArray(value.tags) && value.tags.includes(tag)
         }
       }
       const tag = operator.tag.neq
       return (value) => {
-        return !Array.isArray(value.tags) || !value.tags.includes(tag as FTag)
+        return !Array.isArray(value.tags) || !value.tags.includes(tag)
       }
     }
     case isKindEqual(operator): {
-      if ('eq' in operator.kind) {
-        const kind = operator.kind.eq
+      if (isString(operator.kind) || 'eq' in operator.kind) {
+        const kind = isString(operator.kind) ? operator.kind : operator.kind.eq
         return (value) => {
           return value.kind === kind
         }
@@ -137,10 +136,10 @@ export function whereOperatorAsPredicate<
   }
 }
 
-function participantIs<FTag extends string | null, FKind extends string | null>(
+function participantIs<A extends Any>(
   participant: Participant,
-  predicate: OperatorPredicate<Filterable<FTag, FKind>>,
-): OperatorPredicate<Filterable<FTag, FKind>> {
+  predicate: OperatorPredicate<A>,
+): OperatorPredicate<A> {
   return (value) => {
     if (!value.source || !value.target) {
       return false

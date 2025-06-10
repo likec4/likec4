@@ -1,7 +1,7 @@
 import { indexBy, map, mapValues, pipe, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { NTuple } from '../../../types'
-import type { ComputedNode } from '../../../types/view'
+import type { ComputedNode } from '../../../types'
 import { $exclude, $group, $include, computeView } from './fixture'
 
 function expectParents(nodes: ComputedNode[]) {
@@ -241,7 +241,7 @@ describe('groups', () => {
           $group([]),
           $group([]),
         ]),
-      ])
+      ]),
     ])
     expect.soft(nodeIds).toEqual([
       '@gr1',

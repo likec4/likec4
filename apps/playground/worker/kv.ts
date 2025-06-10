@@ -22,9 +22,10 @@ type Metadata = {
 type ModelSchema = v.InferOutput<typeof ModelSchema>
 const RecordAny = v.record(v.string(), v.any())
 const ModelSchema = v.object({
-  __: v.literal('layouted'),
+  _stage: v.literal('layouted'),
+  projectId: v.optional(v.string()),
   specification: v.object({
-    tags: v.array(v.string()),
+    tags: v.optional(RecordAny),
     elements: RecordAny,
     deployments: RecordAny,
     relationships: RecordAny,
@@ -98,13 +99,12 @@ export const sharesKV = (c: HonoContext) => {
    */
   async function find(shareId: string) {
     const data = await c.env.KV.getWithMetadata<SharedPlayground, Metadata>(`share:${shareId}`, 'json')
-    if (!data.value || !data.metadata) {
+    const { value, metadata } = data ?? {}
+    if (!value || !metadata) {
       return throwShareNotFound(c, shareId)
     }
-    return {
-      value: data.value!,
-      metadata: data.metadata!,
-    }
+
+    return { value, metadata }
   }
 
   /**
@@ -246,9 +246,9 @@ function throwShareNotFound(c: HonoContext, shareId: string): never {
     })
   }
 
-  console.warn(`throwing 307, share ${shareId} requires pincode`)
+  console.warn(`throwing 307, share ${shareId} not found or expired`)
   throw new HTTPException(307, {
-    message: 'Redirecting due to unauthorized access, requires pincode',
+    message: 'Redirecting due to not found',
     res: c.redirect(`/share/${shareId}/not-found`),
   })
 }

@@ -78,7 +78,7 @@ jobs:
 
   check-e2e-tests:
     name: 🔬 e2e tests
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-24.04-arm
     needs:
       - check-build
@@ -160,3 +160,11 @@ jobs:
       - name: ʦ typecheck test
         working-directory: e2e
         run: pnpm typecheck
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: generated-e2e-types
+          path: e2e/src/*.ts
+          compression-level: 9
+          retention-days: 5

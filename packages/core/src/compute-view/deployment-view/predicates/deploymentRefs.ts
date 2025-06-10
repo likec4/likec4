@@ -1,12 +1,11 @@
 import { filter, forEach, pipe, reduce } from 'remeda'
-import { isDeployedInstance } from '../../../model'
-import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
+import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model'
+import { isDeployedInstanceModel as isDeployedInstance } from '../../../model'
 import type { FqnExpr } from '../../../types'
 import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import type { StageInclude } from '../memory'
-import { deploymentExpressionToPredicate } from '../utils'
+import { deploymentExpressionToPredicate, findConnectionsBetween, findConnectionsWithin } from '../utils'
 import { applyElementPredicate } from './utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
@@ -46,7 +45,7 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
     const exprPredicate = deploymentExpressionToPredicate(expr)
     const toExclude = pipe(
       [...memory.elements],
-      filter<DeploymentElementModel>(exprPredicate),
+      filter(exprPredicate),
       applyElementPredicate(where),
     )
     stage.exclude(toExclude)

@@ -1,43 +1,47 @@
-import type { ViewId, WhereOperator } from '@likec4/core'
-import { useDeepCompareEffect } from '@react-hookz/web'
+import type { DiagramView, WhereOperator } from '@likec4/core/types'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect } from 'react'
+import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
-import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import type { PaddingWithUnit } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
-import { type Input, diagramMachine } from './diagram-machine'
+import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorSnapshot } from './types'
 
 const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
-type ActorContextInput = Omit<Input, 'xystore' | 'xynodes' | 'xyedges'>
 export function DiagramActorProvider({
-  input: {
-    view,
-    ...inputs
-  },
+  view,
+  zoomable,
+  pannable,
+  fitViewPadding,
+  nodesSelectable,
   where,
   children,
 }: PropsWithChildren<{
-  input: ActorContextInput
-  where?: WhereOperator<string, string> | undefined
+  view: DiagramView
+  zoomable: boolean
+  pannable: boolean
+  fitViewPadding: PaddingWithUnit
+  nodesSelectable: boolean
+  where: WhereOperator | null
 }>) {
   const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const actorRef = useActorRef(
-    diagramMachine.provide({
+  const machineRef = useRef<DiagramMachine | null>(null)
+  if (!machineRef.current) {
+    machineRef.current = diagramMachine.provide({
       actions: {
         'trigger:NavigateTo': ((_, { viewId }) => {
           // Slightly defer callback for better responsiveness
           setTimeout(() => {
-            handlersRef.current.onNavigateTo?.(viewId as ViewId)
-          }, 50)
+            handlersRef.current.onNavigateTo?.(viewId)
+          }, 30)
         }),
 
         'trigger:OnChange': ((_, params) => {
@@ -57,35 +61,42 @@ export function DiagramActorProvider({
           },
         }),
       },
-    }),
+    })
+  }
+
+  const actorRef = useActorRef(
+    machineRef.current,
     {
-      id: `diagram:${view.id}`,
+      id: `diagram`,
       systemId: 'diagram',
       // ...inspector,
       input: {
         xystore,
         view,
-        ...inputs,
+        zoomable,
+        pannable,
+        fitViewPadding,
+        nodesSelectable,
       },
     },
   )
 
   const features = useEnabledFeatures()
-  useUpdateEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs })
-  }, [inputs])
-
   useEffect(() => {
     actorRef.send({ type: 'update.features', features })
   }, [features])
 
+  useEffect(() => {
+    actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
+  }, [zoomable, pannable, fitViewPadding, nodesSelectable])
+
   const { xyedges, xynodes } = useViewToNodesEdges({
     view,
     where,
-    nodesSelectable: inputs.nodesSelectable,
+    nodesSelectable,
   })
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     actorRef.send({ type: 'update.view', view, xyedges, xynodes })
   }, [view, xyedges, xynodes])
 

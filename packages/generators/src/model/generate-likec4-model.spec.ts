@@ -1,5 +1,5 @@
 import { Builder } from '@likec4/core/builder'
-import { computeViews, viewsWithReadableEdges } from '@likec4/core/compute-view'
+import { computeParsedModelData, viewsWithReadableEdges } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { describe, it } from 'vitest'
 import { generateLikeC4Model } from './generate-likec4-model'
@@ -53,6 +53,11 @@ const {
       },
     },
   },
+  tags: {
+    internal: {},
+    external: {},
+  },
+  metadataKeys: ['key1'],
   deployments: {
     env: {},
     zone: {},
@@ -70,11 +75,17 @@ const builder = b
           mobile('mobile'),
         ),
         component('auth'),
-        component('backend').with(
+        component('backend', {
+          metadata: {
+            key1: 'value1',
+          },
+          tags: ['external'],
+        }).with(
           component('api'),
           component('graphql'),
         ),
         component('media', {
+          tags: ['internal'],
           shape: 'storage',
         }),
       ),
@@ -83,6 +94,9 @@ const builder = b
           shape: 'storage',
         }),
         component('s3', {
+          metadata: {
+            key1: 'value2',
+          },
           shape: 'storage',
         }),
       ),
@@ -103,7 +117,13 @@ const builder = b
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
       $m.rel('cloud.backend.api', 'email', 'sends emails'),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
-      $m.rel('email', 'customer', 'sends emails'),
+      $m.rel('email', 'customer', {
+        tags: ['external'],
+        title: 'sends emails',
+        metadata: {
+          key1: 'value3',
+        },
+      }),
     ),
     deployment(
       node('customer').with(
@@ -148,11 +168,17 @@ const builder = b
       ),
     ),
   )
-const computed = viewsWithReadableEdges(computeViews(builder.build()))
-const m = LikeC4Model.create(computed)
 
 describe('generateLikeC4Model', () => {
-  it('should generate', async ({ expect }) => {
-    await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4-model.snap')
+  it('parsed-model', async ({ expect }) => {
+    const parsed = builder.build()
+    const m = LikeC4Model.create(parsed)
+    await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4.parsed-model.snap')
+  })
+
+  it('computed-model', async ({ expect }) => {
+    const computed = viewsWithReadableEdges(computeParsedModelData(builder.build()))
+    const m = LikeC4Model.create(computed)
+    await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4.computed-model.snap')
   })
 })

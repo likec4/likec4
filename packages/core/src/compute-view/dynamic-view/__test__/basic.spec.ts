@@ -5,7 +5,7 @@ import { $step, compute } from './fixture'
 const defaultStepProps = {
   color: 'gray',
   head: 'normal',
-  line: 'dashed'
+  line: 'dashed',
 }
 
 describe('dynamic-view', () => {
@@ -13,24 +13,24 @@ describe('dynamic-view', () => {
     const { nodeIds, edgeIds, edges } = compute([
       $step('customer -> cloud.frontend.dashboard', 'open dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
-      $step('cloud.frontend.dashboard <- cloud.backend.graphql', 'return data')
+      $step('cloud.frontend.dashboard <- cloud.backend.graphql', 'return data'),
     ])
     expect(nodeIds).toEqual([
       'customer',
       'cloud.frontend.dashboard',
-      'cloud.backend.graphql'
+      'cloud.backend.graphql',
     ])
     expect(edgeIds).toEqual([
       'step-01',
       'step-02',
-      'step-03'
+      'step-03',
     ])
     expect(edges).toMatchObject([
       {
         id: 'step-01',
         source: 'customer',
         target: 'cloud.frontend.dashboard',
-        label: 'open dashboard'
+        label: 'open dashboard',
       },
       {
         id: 'step-02',
@@ -39,8 +39,8 @@ describe('dynamic-view', () => {
         label: 'requests', // inferred from relations,
         tags: ['next'],
         relations: [
-          'cloud.frontend.dashboard:cloud.backend.graphql'
-        ]
+          'cloud.frontend.dashboard:cloud.backend.graphql',
+        ],
       },
       {
         id: 'step-03',
@@ -48,8 +48,8 @@ describe('dynamic-view', () => {
         target: 'cloud.frontend.dashboard',
         dir: 'back',
         label: 'return data',
-        relations: []
-      }
+        relations: [],
+      },
     ])
     expect([edges[0], edges[1]]).have.not.a.property('dir')
   })
@@ -62,8 +62,8 @@ describe('dynamic-view', () => {
       $step('cloud.backend <- amazon'),
       $step('cloud.frontend <- cloud.backend', {
         line: 'dotted',
-        color: 'red'
-      })
+        color: 'red',
+      }),
     ])
     expect(nodeIds).toEqual([
       'customer',
@@ -71,14 +71,14 @@ describe('dynamic-view', () => {
       'cloud.backend.graphql',
       'cloud.backend',
       'amazon',
-      'cloud.frontend'
+      'cloud.frontend',
     ])
     expect(edgeIds).toEqual([
       'step-01',
       'step-02',
       'step-03',
       'step-04',
-      'step-05'
+      'step-05',
     ])
 
     expect(nodes).toMatchObject([
@@ -86,37 +86,37 @@ describe('dynamic-view', () => {
         id: 'customer',
         parent: null,
         outEdges: ['step-01'],
-        inEdges: []
+        inEdges: [],
       },
       {
         id: 'cloud.frontend.dashboard',
         parent: 'cloud.frontend',
         inEdges: ['step-01'],
-        outEdges: ['step-02']
+        outEdges: ['step-02'],
       },
       {
         id: 'cloud.backend.graphql',
         parent: 'cloud.backend',
         inEdges: ['step-02'],
-        outEdges: []
+        outEdges: [],
       },
       {
         id: 'cloud.backend',
         parent: null,
         inEdges: [
           'step-02',
-          'step-04'
+          'step-04',
         ],
         outEdges: [
           'step-03',
-          'step-05'
-        ]
+          'step-05',
+        ],
       },
       {
         id: 'amazon',
         parent: null,
         inEdges: ['step-03'],
-        outEdges: ['step-04']
+        outEdges: ['step-04'],
       },
       {
         id: 'cloud.frontend',
@@ -124,9 +124,9 @@ describe('dynamic-view', () => {
         outEdges: ['step-02'],
         inEdges: [
           'step-01',
-          'step-05'
-        ]
-      }
+          'step-05',
+        ],
+      },
     ])
     const [step1, step2, step3, step4, step5] = edges
     expect(step1).toMatchObject({
@@ -134,7 +134,7 @@ describe('dynamic-view', () => {
       source: 'customer',
       ...defaultStepProps,
       target: 'cloud.frontend.dashboard',
-      label: 'opens in browser' // inferred from relations
+      label: 'opens in browser', // inferred from relations
     })
     expect(step1).not.toHaveProperty('dir')
     expect(step2).toMatchObject({
@@ -143,7 +143,7 @@ describe('dynamic-view', () => {
       target: 'cloud.backend.graphql',
       ...defaultStepProps,
       line: 'solid', // inferred from relations
-      label: 'requests' // inferred from relations
+      label: 'requests', // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')
     expect(step3).toMatchObject({
@@ -151,7 +151,7 @@ describe('dynamic-view', () => {
       source: 'cloud.backend',
       target: 'amazon',
       ...defaultStepProps,
-      label: 'uploads' // inferred from relations
+      label: 'uploads', // inferred from relations
     })
     expect(step3).not.toHaveProperty('dir')
     expect(step4).toMatchObject({
@@ -160,7 +160,7 @@ describe('dynamic-view', () => {
       target: 'cloud.backend',
       ...defaultStepProps,
       label: null,
-      dir: 'back'
+      dir: 'back',
     })
     expect(step5).toMatchObject({
       id: 'step-05',
@@ -170,7 +170,7 @@ describe('dynamic-view', () => {
       color: 'red',
       line: 'dotted',
       label: null,
-      dir: 'back'
+      dir: 'back',
     })
 
     // expect(edges).toMatchObject([
@@ -205,15 +205,15 @@ describe('dynamic-view', () => {
         description: 'uploads1',
         head: 'open',
         tail: 'odot',
-        color: 'red'
-      })
+        color: 'red',
+      }),
     ])
     expect(nodeIds).toEqual([
       'cloud.backend',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([
-      'step-01'
+      'step-01',
     ])
     const [step1] = edges
     expect(step1).toMatchObject({
@@ -225,7 +225,7 @@ describe('dynamic-view', () => {
       'id': 'step-01',
       'label': 'uploads',
       'source': 'cloud.backend',
-      'target': 'amazon'
+      'target': 'amazon',
     })
   })
 
@@ -234,18 +234,18 @@ describe('dynamic-view', () => {
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
       $include('cloud'),
-      $step('cloud.frontend.dashboard <- cloud.backend.graphql')
+      $step('cloud.frontend.dashboard <- cloud.backend.graphql'),
     ])
     expect(nodeIds).toEqual([
       'customer',
       'cloud.frontend.dashboard',
       'cloud.backend.graphql',
-      'cloud'
+      'cloud',
     ])
     expect(edgeIds).toEqual([
       'step-01',
       'step-02',
-      'step-03'
+      'step-03',
     ])
 
     expect(nodes).toMatchObject([
@@ -253,31 +253,31 @@ describe('dynamic-view', () => {
         id: 'customer',
         parent: null,
         outEdges: ['step-01'],
-        inEdges: []
+        inEdges: [],
       },
       {
         id: 'cloud.frontend.dashboard',
         parent: 'cloud',
         inEdges: [
           'step-01',
-          'step-03'
+          'step-03',
         ],
-        outEdges: ['step-02']
+        outEdges: ['step-02'],
       },
       {
         id: 'cloud.backend.graphql',
         parent: 'cloud',
         inEdges: ['step-02'],
-        outEdges: ['step-03']
+        outEdges: ['step-03'],
       },
       {
         id: 'cloud',
         parent: null,
         inEdges: [
-          'step-01'
+          'step-01',
         ],
-        outEdges: []
-      }
+        outEdges: [],
+      },
     ])
     const [step1, step2, step3] = edges
     expect(step1).toMatchObject({
@@ -285,7 +285,7 @@ describe('dynamic-view', () => {
       id: 'step-01',
       source: 'customer',
       target: 'cloud.frontend.dashboard',
-      label: 'opens in browser' // inferred from relations
+      label: 'opens in browser', // inferred from relations
     })
     expect(step1).not.toHaveProperty('dir')
     expect(step2).toMatchObject({
@@ -294,7 +294,7 @@ describe('dynamic-view', () => {
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
       line: 'solid', // inferred from relations
-      label: 'requests' // inferred from relations
+      label: 'requests', // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')
     expect(step3).toMatchObject({
@@ -302,7 +302,7 @@ describe('dynamic-view', () => {
       id: 'step-03',
       source: 'cloud.backend.graphql',
       target: 'cloud.frontend.dashboard',
-      label: null
+      label: null,
     })
     expect(step3).toHaveProperty('dir', 'back')
   })
@@ -312,18 +312,18 @@ describe('dynamic-view', () => {
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
       // Include expanded node
-      $include('amazon._')
+      $include('amazon._'),
     ])
     expect(nodeIds).toEqual([
       'customer',
       'cloud.frontend.dashboard',
       'cloud.backend.graphql',
       'amazon',
-      'amazon.s3'
+      'amazon.s3',
     ])
     expect(edgeIds).toEqual([
       'step-01',
-      'step-02'
+      'step-02',
     ])
 
     const common = {
@@ -336,9 +336,9 @@ describe('dynamic-view', () => {
       'parent': null,
       'shape': expect.any(String),
       'style': expect.any(Object),
-      'tags': null,
+      'tags': [],
       'technology': null,
-      'title': expect.any(String)
+      'title': expect.any(String),
     }
 
     expect(nodes).toMatchObject([
@@ -347,24 +347,24 @@ describe('dynamic-view', () => {
         id: 'customer',
         parent: null,
         outEdges: ['step-01'],
-        inEdges: []
+        inEdges: [],
       },
       {
         ...common,
         id: 'cloud.frontend.dashboard',
         parent: null,
         inEdges: [
-          'step-01'
+          'step-01',
         ],
         outEdges: ['step-02'],
-        tags: ['next']
+        tags: ['next'],
       },
       {
         ...common,
         id: 'cloud.backend.graphql',
         parent: null,
         inEdges: ['step-02'],
-        outEdges: []
+        outEdges: [],
       },
       {
         ...common,
@@ -372,7 +372,7 @@ describe('dynamic-view', () => {
         parent: null,
         inEdges: [],
         outEdges: [],
-        tags: ['aws']
+        tags: ['aws'],
       },
       {
         ...common,
@@ -380,8 +380,8 @@ describe('dynamic-view', () => {
         parent: 'amazon',
         inEdges: [],
         outEdges: [],
-        tags: ['aws', 'storage']
-      }
+        tags: ['aws', 'storage'],
+      },
     ])
   })
 })

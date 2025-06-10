@@ -1,11 +1,10 @@
 import {
   type DiagramEdge,
+  type DiagramNode,
   type EdgeId,
-  type LikeC4Model,
-  type NodeId,
-  DiagramNode,
   nameFromFqn,
 } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
 import {
   type StackProps,
@@ -63,13 +62,15 @@ export const RelationshipsDropdownMenu = memo((
   }>,
 ) => {
   const { diagramEdge, sourceNode, targetNode } = useDiagramContext(
-    useCallback(ctx => ({
+    ctx => ({
       diagramEdge: findDiagramEdge(ctx, edgeId),
       sourceNode: findDiagramNode(ctx, source),
       targetNode: findDiagramNode(ctx, target),
-    }), [edgeId, source, target]),
+    }),
+    undefined,
+    [edgeId, source, target],
   )
-  const likec4model = useLikeC4Model(true)
+  const likec4model = useLikeC4Model()
   const diagram = useDiagram()
 
   const portalProps = useMantinePortalProps()
@@ -266,15 +267,15 @@ const Relationship = forwardRef<
 })
 
 function getShortId(
-  r: LikeC4Model.AnyRelation<LikeC4Model.Any>,
-  actualEndpointId: NodeId<string>,
+  r: LikeC4Model.AnyRelation,
+  actualEndpointId: string,
   diagramNode: DiagramNode,
 ) {
   const diagramNodeId = r.isDeploymentRelation()
     // Relation defined in deployment model. Use id of the deployment node as is.
     ? diagramNode.id
     // Relation defined in model. Get id of the model element
-    : DiagramNode.modelRef(diagramNode) || ''
+    : diagramNode.modelRef || ''
 
   return nameFromFqn(diagramNodeId) + actualEndpointId.slice(diagramNodeId.length)
 }

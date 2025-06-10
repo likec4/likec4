@@ -122,8 +122,8 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     }
     const diagrams = await this.views.diagrams(projectId)
     return LikeC4Model.create({
-      ...parsed,
-      __: 'layouted' as const,
+      ...parsed.$data,
+      _stage: 'layouted' as const,
       views: indexBy(diagrams, prop('id')),
     })
   }

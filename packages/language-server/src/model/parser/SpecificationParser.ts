@@ -1,5 +1,4 @@
 import type * as c4 from '@likec4/core'
-import type { HexColorLiteral } from '@likec4/core'
 import { filter, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import { ast, toRelationshipStyleExcludeDefaults } from '../../ast'
 import { logger, logWarnError } from '../../logger'
@@ -18,27 +17,17 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       } = this.doc
       const isValid = this.isValid
 
-      const element_specs = specifications.flatMap(s => s.elements.filter(this.isValid))
-      for (const { kind, props } of element_specs) {
+      for (const elementSpec of specifications.flatMap(s => s.elements.filter(isValid))) {
         try {
-          const kindName = kind.name as c4.ElementKind
-          if (!isTruthy(kindName)) {
-            continue
-          }
-          if (kindName in c4Specification.elements) {
-            logger.warn(`Element kind "${kindName}" is already defined`)
-            continue
-          }
-          const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
-          const bodyProps = pipe(
-            props.filter(ast.isSpecificationElementStringProperty) ?? [],
-            filter(p => this.isValid(p) && isNonNullish(p.value)),
-            mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
-          )
-          c4Specification.elements[kindName] = {
-            ...bodyProps,
-            style,
-          }
+          Object.assign(c4Specification.elements, this.parseElementSpecificationNode(elementSpec))
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+
+      for (const deploymentNodeSpec of specifications.flatMap(s => s.deploymentNodes.filter(isValid))) {
+        try {
+          Object.assign(c4Specification.deployments, this.parseElementSpecificationNode(deploymentNodeSpec))
         } catch (e) {
           logWarnError(e)
         }
@@ -72,17 +61,12 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       const tags_specs = specifications.flatMap(s => s.tags.filter(this.isValid))
       for (const tagSpec of tags_specs) {
         const tag = tagSpec.tag.name as c4.Tag
+        const astPath = this.getAstNodePath(tagSpec.tag)
         if (isTruthy(tag)) {
-          c4Specification.tags.add(tag)
-        }
-      }
-
-      const deploymentNodes_specs = specifications.flatMap(s => s.deploymentNodes.filter(isValid))
-      for (const deploymentNode of deploymentNodes_specs) {
-        try {
-          Object.assign(c4Specification.deployments, this.parseSpecificationDeploymentNodeKind(deploymentNode))
-        } catch (e) {
-          logWarnError(e)
+          c4Specification.tags[tag] = {
+            astPath,
+            ...(tagSpec.color ? { color: tagSpec.color as c4.ColorLiteral } : {}),
+          }
         }
       }
 
@@ -96,7 +80,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           }
 
           c4Specification.colors[colorName] = {
-            color: color as HexColorLiteral,
+            color: color as c4.ColorLiteral,
           }
         } catch (e) {
           logWarnError(e)
@@ -104,14 +88,19 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseSpecificationDeploymentNodeKind(
-      { kind, props }: ast.SpecificationDeploymentNodeKind,
-    ): { [key: c4.DeploymentNodeKind]: c4.DeploymentNodeKindSpecification } {
-      const kindName = kind.name as c4.DeploymentNodeKind
+    parseElementSpecificationNode(
+      specAst: ast.SpecificationElementKind,
+    ): { [key: c4.ElementKind]: c4.ElementSpecification }
+    parseElementSpecificationNode(
+      specAst: ast.SpecificationDeploymentNodeKind,
+    ): { [key: c4.DeploymentKind]: c4.ElementSpecification }
+    parseElementSpecificationNode(specAst: ast.SpecificationDeploymentNodeKind | ast.SpecificationElementKind) {
+      const { kind, props } = specAst
+      const kindName = kind.name
       if (!isTruthy(kindName)) {
         throw new Error('DeploymentNodeKind name is not resolved')
       }
-
+      const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
       const bodyProps = pipe(
         props.filter(ast.isSpecificationElementStringProperty) ?? [],
@@ -121,8 +110,9 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       return {
         [kindName]: {
           ...bodyProps,
+          ...(tags && { tags }),
           style,
-        },
+        } satisfies c4.ElementSpecification,
       }
     }
   }

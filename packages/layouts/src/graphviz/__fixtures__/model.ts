@@ -1,15 +1,15 @@
 import type {
   Element,
   ElementKind,
-  ElementView,
   Fqn,
   IconUrl,
   ModelRelation,
   NonEmptyArray,
-  ParsedLikeC4ModelData,
+  ParsedElementView,
+  ParsedElementView as ElementView,
   RelationId,
   ViewId,
-} from '@likec4/core'
+} from '@likec4/core/types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -183,51 +183,51 @@ export type FakeElementIds = keyof typeof fakeElements
 const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
     id: 'customer:cloud.frontend.dashboard' as RelationId,
-    source: 'customer' as Fqn,
-    target: 'cloud.frontend.dashboard' as Fqn,
+    source: { model: 'customer' as Fqn },
+    target: { model: 'cloud.frontend.dashboard' as Fqn },
     title: 'opens in browser',
   },
   'support:cloud.frontend.adminPanel': {
     id: 'support:cloud.frontend.adminPanel' as RelationId,
-    source: 'support' as Fqn,
-    target: 'cloud.frontend.adminPanel' as Fqn,
+    source: { model: 'support' as Fqn },
+    target: { model: 'cloud.frontend.adminPanel' as Fqn },
     title: 'manages',
   },
   'cloud.backend.storage:amazon.s3': {
     id: 'cloud.backend.storage:amazon.s3' as RelationId,
-    source: 'cloud.backend.storage' as Fqn,
-    target: 'amazon.s3' as Fqn,
+    source: { model: 'cloud.backend.storage' as Fqn },
+    target: { model: 'amazon.s3' as Fqn },
     title: 'persists artifacts',
     tail: 'odiamond',
   },
   'cloud.backend.graphql:cloud.backend.storage': {
     id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
-    source: 'cloud.backend.graphql' as Fqn,
-    target: 'cloud.backend.storage' as Fqn,
+    source: { model: 'cloud.backend.graphql' as Fqn },
+    target: { model: 'cloud.backend.storage' as Fqn },
     title: '',
   },
   'cloud.frontend.dashboard:cloud.backend.graphql': {
     id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.dashboard' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    source: { model: 'cloud.frontend.dashboard' as Fqn },
+    target: { model: 'cloud.backend.graphql' as Fqn },
     title: 'fetches data',
   },
   'cloud.frontend.adminPanel:cloud.backend.graphql': {
     id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.adminPanel' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    source: { model: 'cloud.frontend.adminPanel' as Fqn },
+    target: { model: 'cloud.backend.graphql' as Fqn },
     title: 'fetches data in zero trust network with sso authentification',
   },
 } satisfies Record<string, ModelRelation>
 
 export const indexView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'index' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -240,13 +240,13 @@ export const indexView = {
 } satisfies ElementView
 
 export const cloudView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'cloudView' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   viewOf: 'cloud' as Fqn,
   rules: [
     {
@@ -256,14 +256,14 @@ export const cloudView = {
 } satisfies ElementView
 
 export const cloud3levels = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'cloud3levels' as ViewId,
   title: '',
   viewOf: 'cloud' as Fqn,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -291,14 +291,14 @@ export const cloud3levels = {
 } satisfies ElementView
 
 export const amazonView = {
-  __: 'element',
+  _stage: 'parsed',
+  _type: 'element',
   id: 'amazon' as ViewId,
   title: '',
   viewOf: 'amazon' as Fqn,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -318,12 +318,13 @@ export const amazonView = {
 
 // see https://github.com/likec4/likec4/issues/577
 export const issue577View = (icon: string) => ({
+  _stage: 'parsed',
+  _type: 'element',
   id: 'issue577' as ViewId,
   title: '',
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   viewOf: 'amazon' as Fqn,
   rules: [
     {
@@ -342,17 +343,23 @@ export const issue577View = (icon: string) => ({
       },
     },
   ],
-} satisfies ElementView)
+} satisfies ParsedElementView)
 
-export const FakeModel: ParsedLikeC4ModelData = {
+export const FakeModel = {
+  _type: 'computed',
+  projectId: 'test',
   elements: fakeElements,
   relations: fakeRelations,
   views: {},
   specification: {
-    elements: {},
+    elements: {
+      actor: {},
+      system: {},
+      component: {},
+    },
     relationships: {},
     deployments: {},
-    tags: [],
+    tags: {},
   },
   deployments: {
     elements: {},
@@ -364,4 +371,4 @@ export const FakeModel: ParsedLikeC4ModelData = {
     styles: {},
   },
   imports: {},
-}
+} as const

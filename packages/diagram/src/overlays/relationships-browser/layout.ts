@@ -23,9 +23,10 @@ import {
   DefaultMap,
   ifind,
   invariant,
+  nonNullable,
   toArray,
 } from '@likec4/core'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   concat,
   filter,
@@ -216,7 +217,7 @@ export namespace LayoutRelationshipsViewResult {
 
 export function layoutRelationshipsView(
   data: RelationshipsViewData,
-  scope: LikeC4ViewModel<AnyAux> | null,
+  scope: LikeC4ViewModel | null,
 ): Omit<LayoutRelationshipsViewResult, 'subject'> {
   const g = createGraph()
 
@@ -459,12 +460,14 @@ export function layoutRelationshipsView(
       return {
         id: id as NodeId,
         parent: null,
+        x: position.x,
+        y: position.y,
         position: [position.x, position.y],
         title: 'empty node',
         description: null,
         technology: null,
-        tags: null,
-        links: null,
+        tags: [],
+        links: [],
         color: 'muted',
         shape: 'rectangle',
         style: {
@@ -508,11 +511,13 @@ export function layoutRelationshipsView(
     return {
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
+      x: position.x,
+      y: position.y,
       position: [position.x, position.y],
       title: element.title,
       description: element.description,
       technology: element.technology,
-      tags: null,
+      tags: [...element.tags],
       links: null,
       color: inheritFromNodeOrAncestor?.color ?? element.color,
       shape: inheritFromNode?.shape ?? element.shape,
@@ -568,7 +573,7 @@ export function layoutRelationshipsView(
         relations,
         sourceHandle,
         targetHandle,
-      } = find(edges, e => e.name === ename)!
+      } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1
@@ -602,7 +607,7 @@ export function useRelationshipsView(
   viewId: ViewId | null,
   scope: 'global' | 'view',
 ): LayoutRelationshipsViewResult {
-  const model = useLikeC4Model(true)
+  const model = useLikeC4Model()
   return useMemo(() => {
     const view = viewId ? model.findView(viewId) : null
     const data = layoutRelationshipsView(

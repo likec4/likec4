@@ -1,5 +1,5 @@
 export { ElementModel } from './ElementModel'
-export { LikeC4Model } from './LikeC4Model'
+export { type AnyLikeC4Model, LikeC4Model } from './LikeC4Model'
 export { RelationshipModel } from './RelationModel'
 
 export {
@@ -28,7 +28,9 @@ export {
   DeployedInstanceModel,
   type DeploymentElementModel,
   DeploymentNodeModel,
+  type DeploymentRelationEndpoint,
   DeploymentRelationModel,
+  RelationshipsAccum,
 } from './DeploymentElementModel'
 export { LikeC4DeploymentModel } from './DeploymentModel'
 
@@ -37,11 +39,22 @@ export { LikeC4ViewModel } from './view/LikeC4ViewModel'
 export { NodeModel } from './view/NodeModel'
 
 export type {
-  AnyAux,
-  Aux,
+  DeploymentOrFqn,
+  EdgeOrId,
+  ElementOrFqn,
+  IncomingFilter,
+  NodeOrId,
+  OutgoingFilter,
 } from './types'
 
-export {
-  isDeployedInstance,
-  isDeploymentNode,
-} from './guards'
+export * from './guards'
+
+export type {
+  Any,
+  AnyAux,
+  Aux,
+  aux,
+  AuxFromDump,
+  AuxFromLikeC4ModelData,
+  SpecAux,
+} from '../types'

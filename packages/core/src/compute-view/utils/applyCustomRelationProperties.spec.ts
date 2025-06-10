@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedEdge, ComputedNode, ViewId, ViewRule } from '../../types'
-import type { RelationExpr } from '../../types/expression-v2'
+import type { ComputedEdge, ComputedNode, ElementViewRule, ViewId } from '../../types'
+import type { RelationExpr } from '../../types/expression'
 import { $include, $inout, $where } from '../element-view/__test__/fixture'
 import { applyCustomRelationProperties } from './applyCustomRelationProperties'
 
@@ -19,7 +19,7 @@ describe('applyRelationCustomProperties', () => {
   it('should return edges if there are no rules', () => {
     const nodes = [nd('1'), nd('2')]
     const edges = [e('1:2')]
-    const rules = [] as ViewRule[]
+    const rules = [] as ElementViewRule[]
 
     expect(applyCustomRelationProperties(rules, nodes, edges)).toStrictEqual(edges)
   })
@@ -42,7 +42,7 @@ describe('applyRelationCustomProperties', () => {
     }
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
       {
@@ -60,7 +60,7 @@ describe('applyRelationCustomProperties', () => {
     const propsToOverride: CustomRelationProperties = { color: 'red' }
     const rules = [
       $include($where('-> support ->', { tag: { eq: 'old' } }), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     expect(applyCustomRelationProperties(rules, nodes, edges)).toStrictEqual([
       edges[0],
@@ -81,7 +81,7 @@ describe('applyRelationCustomProperties', () => {
     const rules = [
       $include($inout('-> support ->'), { with: firstRuleProps }),
       $include($inout('-> support ->'), { with: lastRuleProps }),
-    ] as ViewRule[]
+    ]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
       {
@@ -120,7 +120,7 @@ describe('applyRelationCustomProperties', () => {
     } as unknown) as CustomRelationProperties
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     expect(applyCustomRelationProperties(rules, nodes, [edge])).toStrictEqual([
       {
@@ -137,7 +137,7 @@ describe('applyRelationCustomProperties', () => {
     const propsToOverride: CustomRelationProperties = { title: 'some title' }
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])
 
@@ -150,7 +150,7 @@ describe('applyRelationCustomProperties', () => {
     const propsToOverride: CustomRelationProperties = { title: 'some title' }
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])
 
@@ -165,7 +165,7 @@ describe('applyRelationCustomProperties', () => {
     const propsToOverride: CustomRelationProperties = {}
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride }),
-    ] as ViewRule[]
+    ]
 
     const [customizedEdge] = applyCustomRelationProperties(rules, nodes, [edge])
 

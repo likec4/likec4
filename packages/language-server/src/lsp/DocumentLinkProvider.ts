@@ -57,10 +57,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return withoutLeadingSlash(link)
     }
     if (isRelative(link)) {
-      const base = new URL(doc.uri.toString(true))
-      const linkURL = new URL(link, base).toString()
+      const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folder.toString()
+      const docURL = new URL(doc.uri.toString())
+      const linkURL = new URL(link, docURL).toString()
       return withoutLeadingSlash(
-        withoutBase(linkURL, this.services.shared.workspace.WorkspaceManager.workspaceURL.toString()),
+        withoutBase(linkURL, base),
       )
     }
     return null

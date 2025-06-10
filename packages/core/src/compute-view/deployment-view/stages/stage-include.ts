@@ -1,10 +1,10 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
-import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import { isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type CtxElement, AbstractStageInclude } from '../../memory'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import { type Ctx } from '../memory/memory'
+import { findConnection, findConnectionsBetween } from '../utils'
 
 type Elem = CtxElement<Ctx>
 type Connection = CtxConnection<Ctx>

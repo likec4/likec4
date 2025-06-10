@@ -1,18 +1,10 @@
-import type { Simplify, Tagged, UnionToIntersection } from 'type-fest'
+import type { IsAny, Simplify, UnionToIntersection } from 'type-fest'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
 
-export type CustomColor = string
-
-export type Point = readonly [x: number, y: number]
-
-export interface XYPoint {
-  x: number
-  y: number
-}
-
+// dprint-ignore
 export type KeysOf<T> = keyof T extends infer K extends string ? K : never
 
 type AllNever<Expressions> = UnionToIntersection<
@@ -25,6 +17,7 @@ type AllNever<Expressions> = UnionToIntersection<
 
 /**
  * @example
+ * ```ts
  *   type Variant1 = {
  *     a: string
  *   }
@@ -37,17 +30,17 @@ type AllNever<Expressions> = UnionToIntersection<
  *     Variant2: Variant2
  *   }>
  *
- *   Fail here
+ *   // Fail here
  *   const variant1: Variants = {
  *      a: 'one',
  *      b: 1
  *   }
+ * ```
  */
-
-export type ExclusiveUnion<Expressions> = Expressions extends object ? {
-    [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
+export type ExclusiveUnion<Expressions, All = AllNever<Expressions>> = Expressions extends object ? {
+    [Name in keyof Expressions]: Simplify<Omit<All, keyof Expressions[Name]> & Expressions[Name]>
   }[keyof Expressions]
-  : Expressions
+  : never
 
 /**
  * Copy from https://github.com/remeda/remeda/blob/main/src/internal/types/NTuple.ts
@@ -66,3 +59,16 @@ export type NTuple<
 export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
 
 export type Predicate<T> = (x: T) => boolean
+
+export interface Link {
+  title?: string
+  // Value from Likec4 DSL
+  url: string
+  // Relative to workspace root (if url is relative),
+  relative?: string
+}
+
+/**
+ * Coalesce `V` to a string if it is `any`
+ */
+export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V

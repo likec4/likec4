@@ -112,7 +112,7 @@ export class BaseParser {
     while (iter) {
       try {
         if (this.isValid(iter)) {
-          const values = iter.values.map(t => t.ref?.name).filter(isTruthy) as c4.Tag[]
+          const values = iter.values.map(t => t.tag.ref?.name).filter(isTruthy) as c4.Tag[]
           if (values.length > 0) {
             tags.push(...values)
           }
@@ -122,8 +122,7 @@ export class BaseParser {
       }
       iter = iter.prev
     }
-    tags = unique(tags.reverse())
-    return isNonEmptyArray(tags) ? tags : null
+    return isNonEmptyArray(tags) ? unique(tags) : null
   }
 
   convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {

@@ -1,18 +1,26 @@
-import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
-import { invariant } from '../../../errors'
-import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
+import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
+import type {
+  DeploymentConnectionModel,
+  DeploymentElementModel,
+  LikeC4DeploymentModel,
+  RelationshipModel,
+} from '../../../model'
 import {
   type ConnectionModel,
   findConnectionsBetween as findModelConnectionsBetween,
 } from '../../../model/connection/model'
-import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
-import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
-import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { type Filterable, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
+import type { AnyAux } from '../../../types'
+import { type RelationExpr, FqnExpr } from '../../../types'
+import { invariant } from '../../../utils'
 import type { PredicateExecutor } from '../_types'
-import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
+import {
+  deploymentExpressionToPredicate,
+  findConnection,
+  findConnectionsBetween,
+  findConnectionsWithin,
+  resolveElements,
+  resolveModelElements,
+} from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
 import { applyPredicate, excludeModelRelations } from './utils'
@@ -30,7 +38,7 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   return siblings
 }
 
-const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
+const resolveWildcard = (model: LikeC4DeploymentModel<AnyAux>, nonWildcard: FqnExpr.DeploymentRef) => {
   const sources = resolveElements(model, nonWildcard)
   return sources.map(source => {
     const targets = resolveAscendingSiblings(source)
@@ -210,59 +218,26 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   },
 }
 
-function resolveRelationsBetweenModelElements({
+function resolveRelationsBetweenModelElements<A extends AnyAux>({
   source,
   target,
   expr,
   model,
 }: {
-  source: FqnExpr.ModelRef
-  target: FqnExpr.ModelRef
-  expr: RelationExpr.Direct
-  model: LikeC4DeploymentModel
+  source: FqnExpr.ModelRef<A>
+  target: FqnExpr.ModelRef<A>
+  expr: RelationExpr.Direct<A>
+  model: LikeC4DeploymentModel<A>
 }) {
   const sources = resolveModelElements(model, source)
   const targets = resolveModelElements(model, target)
 
   const dir = expr.isBidirectional ? 'both' : 'directed'
 
-  const modelConnections = [] as ConnectionModel[]
+  const modelConnections = [] as ConnectionModel<A>[]
   for (const source of sources) {
     modelConnections.push(...findModelConnectionsBetween(source, targets, dir))
   }
 
   return new Set(modelConnections.flatMap(c => [...c.relations]))
-}
-
-function elementToFilterable<M extends AnyAux>(element: DeploymentElementModel<M>) {
-  return pick(element, ['tags', 'kind'])
-}
-
-function toFilterableRelation<M extends AnyAux>(
-  source: DeploymentElementModel<M>,
-  target: DeploymentElementModel<M>,
-) {
-  return (
-    relation: RelationshipModel<M> | DeploymentRelationModel<M>,
-  ) => ({
-    tags: relation.tags,
-    kind: relation.kind,
-    source: elementToFilterable(source),
-    target: elementToFilterable(target),
-  })
-}
-
-function matchConnection<M extends AnyAux>(
-  c: DeploymentConnectionModel<M>,
-  where: OperatorPredicate<Filterable> | null,
-): boolean {
-  if (!where) {
-    return true
-  }
-
-  return [
-    ...Array.from(c.relations.deployment.values()).map(toFilterableRelation(c.source, c.target)),
-    ...Array.from(c.relations.model.values()).map(toFilterableRelation(c.source, c.target)),
-  ]
-    .filter(where).length > 0
 }

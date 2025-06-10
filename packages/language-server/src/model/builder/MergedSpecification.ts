@@ -1,7 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { MultiMap } from '@likec4/core'
 import {
-  DeploymentElement,
   FqnRef,
 } from '@likec4/core/types'
 import {
@@ -19,6 +18,7 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
+import { assignTagColors } from './assignTagColors'
 
 /**
  * The `MergedSpecification` class is responsible for merging multiple parsed
@@ -27,13 +27,14 @@ import { logger, logWarnError } from '../../logger'
  * and provides methods to convert parsed models into C4 model elements and relations.
  */
 export class MergedSpecification {
-  public readonly specs: ParsedAstSpecification = {
-    tags: new Set(),
+  public readonly specs: Omit<ParsedAstSpecification, 'tags'> = {
     elements: {},
     deployments: {},
     relationships: {},
     colors: {},
   }
+
+  public readonly tags: Readonly<Record<c4.Tag, c4.TagSpecification>>
 
   public readonly globals: c4.ModelGlobals = {
     predicates: {},
@@ -44,6 +45,7 @@ export class MergedSpecification {
   public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
 
   constructor(docs: ParsedLikeC4LangiumDocument[]) {
+    const tags = {} as ParsedAstSpecification['tags']
     for (const doc of docs) {
       const {
         c4Specification: spec,
@@ -51,7 +53,7 @@ export class MergedSpecification {
         c4Imports,
       } = doc
 
-      spec.tags.forEach(t => this.specs.tags.add(t))
+      Object.assign(tags, spec.tags)
       Object.assign(this.specs.elements, spec.elements)
       Object.assign(this.specs.relationships, spec.relationships)
       Object.assign(this.specs.colors, spec.colors)
@@ -64,6 +66,7 @@ export class MergedSpecification {
         this.imports.set(projectId, fqn)
       }
     }
+    this.tags = assignTagColors(tags)
   }
 
   /**
@@ -121,7 +124,7 @@ export class MergedSpecification {
           ...(isNumber(opacity) && { opacity }),
         },
         links: links ?? null,
-        tags: tags ?? null,
+        tags: tags ?? [],
         technology: technology ?? null,
         description: description ?? null,
         title,
@@ -139,15 +142,13 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath,
-    source: sourceFqnRef,
-    target: targetFqnRef,
+    source,
+    target,
     kind,
     links,
     id,
     ...model
-  }: ParsedAstRelation): c4.ModelRelation | null => {
-    const target = FqnRef.toModelFqn(targetFqnRef)
-    const source = FqnRef.toModelFqn(sourceFqnRef)
+  }: ParsedAstRelation): c4.Relationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       return {
         ...this.specs.relationships[kind],
@@ -157,7 +158,7 @@ export class MergedSpecification {
         target,
         kind,
         id,
-      } satisfies c4.ModelRelation
+      } satisfies c4.Relationship
     }
     return {
       ...(links && { links }),
@@ -165,7 +166,7 @@ export class MergedSpecification {
       source,
       target,
       id,
-    } satisfies c4.ModelRelation
+    } satisfies c4.Relationship
   }
 
   /**
@@ -175,14 +176,14 @@ export class MergedSpecification {
     if ('element' in parsed && !('kind' in parsed)) {
       return {
         ...parsed,
-        element: FqnRef.toModelFqn(parsed.element),
+        element: FqnRef.flatten(parsed.element),
       }
     }
     if ('element' in parsed) {
       return null
     }
     try {
-      const __kind = this.specs.deployments[parsed.kind]
+      const __kind = this.specs.deployments[parsed.kind as c4.DeploymentKind]
       if (!__kind) {
         logger.warn`No kind ${parsed.kind} found for ${parsed.id}`
         return null
@@ -220,17 +221,17 @@ export class MergedSpecification {
     links,
     id,
     ...model
-  }: ParsedAstDeploymentRelation): c4.DeploymentRelation | null => {
-    if (isNonNullish(kind) && this.specs.relationships[kind]) {
+  }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
+    if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       return {
-        ...this.specs.relationships[kind],
+        ...this.specs.relationships[kind as c4.RelationshipKind],
         ...model,
         ...(links && { links }),
         source,
         target,
         kind,
         id,
-      } satisfies c4.DeploymentRelation
+      } satisfies c4.DeploymentRelationship
     }
     return {
       ...(links && { links }),
@@ -238,6 +239,6 @@ export class MergedSpecification {
       source,
       target,
       id,
-    } satisfies c4.DeploymentRelation
+    } satisfies c4.DeploymentRelationship
   }
 }

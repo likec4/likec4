@@ -1,7 +1,7 @@
 import { map, prop } from 'remeda'
 import type { TupleToUnion } from 'type-fest'
 import { describe, expect, it } from 'vitest'
-import type { ComputedEdge, EdgeId, Fqn } from '../../types'
+import type { ComputedEdge, EdgeId, scalar } from '../../types'
 import { type ComputedNodeSource, buildComputedNodes } from './buildComputedNodes'
 import { linkNodesWithEdges } from './link-nodes-with-edges'
 import { topologicalSort } from './topological-sort'
@@ -20,7 +20,7 @@ describe('topologicalSort', () => {
       nodes.map(id => ({ id, title: id }) as any as ComputedNodeSource),
     )
     const _edges = edges.map(s => {
-      const [source, target] = s.split(' -> ') as [Fqn, Fqn]
+      const [source, target] = s.split(' -> ') as [scalar.NodeId, scalar.NodeId]
       return {
         id: `${source} -> ${target}` as EdgeId,
         source,

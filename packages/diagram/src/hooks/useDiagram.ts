@@ -1,17 +1,19 @@
 import {
+  type aux,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
   type EdgeId,
-  type ElementNotation,
   type Fqn,
   type NodeId,
+  type NodeNotation as ElementNotation,
+  type scalar,
   type ViewId,
-} from '@likec4/core'
+} from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useMemo } from 'react'
+import { type DependencyList, useCallback, useMemo } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -19,6 +21,7 @@ import type { Types } from '../likec4diagram/types'
 import type { AlignmentMode } from '../state/aligners'
 import type {
   DiagramActorEvent,
+  DiagramActorRef,
   DiagramActorSnapshot,
   DiagramContext,
   SyncLayoutActorRef,
@@ -29,13 +32,96 @@ import { useDiagramActorRef } from './safeContext'
 
 export { useDiagramActorRef }
 
+export interface DiagramApi {
+  readonly actor: DiagramActorRef
+  /**
+   * @warning Do not use in render phase
+   */
+  readonly currentView: DiagramView
+  /**
+   * Send event to diagram actor
+   */
+  send(event: DiagramActorEvent): void
+  /**
+   * Navigate to view
+   */
+  navigateTo(viewId: scalar.ViewId, fromNode?: scalar.NodeId): void
+  /**
+   * Navigate back or forward in history
+   */
+  navigate(direction: 'back' | 'forward'): void
+  /**
+   * Fit diagram to view
+   */
+  fitDiagram(duration?: number): void
+  /**
+   * Open relationships browser
+   */
+  openRelationshipsBrowser(fqn: scalar.Fqn): void
+  /**
+   * If running in editor, trigger opening source file
+   */
+  openSource(params: OpenSourceParams<aux.Unknown>): void
+  /**
+   * Open element details card
+   */
+  openElementDetails(fqn: scalar.Fqn, fromNode?: scalar.NodeId): void
+  openRelationshipDetails(...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]): void
+  updateNodeData(nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>): void
+  updateEdgeData(edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>): void
+  /**
+   * Schedule save manual layout
+   */
+  scheduleSaveManualLayout(): void
+  /**
+   * @returns true if there was pending request to save layout
+   */
+  cancelSaveManualLayout(): boolean
+  /**
+   * Align nodes
+   */
+  align(mode: AlignmentMode): void
+  /**
+   * Reset edge control points
+   */
+  resetEdgeControlPoints(): void
+  /**
+   * Focus node
+   */
+  focusNode(nodeId: NodeId): void
+
+  /**
+   * @warning Do not use in render phase
+   */
+  getSnapshot(): DiagramActorSnapshot
+  /**
+   * @warning Do not use in render phase
+   */
+  getContext(): DiagramContext
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramNode(xynodeId: string): DiagramNode | null
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramEdge(xyedgeId: string): DiagramEdge | null
+  startWalkthrough(): void
+  walkthroughStep(direction?: 'next' | 'previous'): void
+  stopWalkthrough(): void
+  toggleFeature(feature: FeatureName, forceValue?: boolean): void
+  highlightNotation(notation: ElementNotation, kind?: string): void
+  unhighlightNotation(): void
+  openSearch(searchValue?: string): void
+}
+
 /**
  * Diagram API
  * Mostly for internal use
  */
-export function useDiagram() {
+export function useDiagram(): DiagramApi {
   const actor = useDiagramActorRef()
-  return useMemo(() => ({
+  return useMemo((): DiagramApi => ({
     actor,
     send: (event: DiagramActorEvent) => actor.send(event),
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
@@ -51,16 +137,16 @@ export function useDiagram() {
     fitDiagram: (duration = 350) => {
       actor.send({ type: 'fitDiagram', duration })
     },
-    openRelationshipsBrowser: (fqn: Fqn) => {
+    openRelationshipsBrowser: (fqn) => {
       actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
-    openSource: (params: OpenSourceParams) => {
+    openSource: (params: OpenSourceParams<aux.Unknown>) => {
       actor.send({ type: 'open.source', ...params })
     },
-    openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
+    openElementDetails: (fqn, fromNode?: scalar.NodeId) => {
       actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn, target: Fqn]) => {
+    openRelationshipDetails: (...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]) => {
       if (params.length === 1) {
         actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
       } else {
@@ -68,10 +154,10 @@ export function useDiagram() {
       }
     },
 
-    updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
+    updateNodeData: (nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
-    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
+    updateEdgeData: (edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>) => {
       actor.send({
         type: 'update.edgeData',
         edgeId,
@@ -151,6 +237,10 @@ export function useDiagram() {
     unhighlightNotation: () => {
       actor.send({ type: 'notations.unhighlight' })
     },
+
+    openSearch: (searchValue?: string) => {
+      actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
+    },
   }), [actor])
 }
 
@@ -176,7 +266,9 @@ export function useDiagramSyncLayoutState<T = unknown>(
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+  deps?: DependencyList,
 ): T {
   const actorRef = useDiagramActorRef()
-  return useXstateSelector(actorRef, useCallbackRef(s => selector(s.context)), compare)
+  const select = useCallback((s: DiagramActorSnapshot) => selector(s.context), deps ?? [])
+  return useXstateSelector(actorRef, select, compare)
 }

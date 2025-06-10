@@ -1,4 +1,5 @@
-import { StaticLikeC4Diagram, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
+import type { DiagramView } from '@likec4/core/types'
+import { StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import {
   type BoxProps,
   type TreeNodeData,
@@ -22,7 +23,7 @@ import {
 } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
 import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
-import { useCurrentDiagram } from '../../hooks'
+import { useCurrentDiagram, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -42,6 +43,8 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
   )
 }
 
+const setHoveredNode = () => {}
+
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   groupBy: GroupBy | undefined
 }) => {
@@ -53,6 +56,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const tree = useTree({
     multiple: false,
   })
+  tree.setHoveredNode = setHoveredNode
 
   const relativePath = diagram?.relativePath ?? null
 
@@ -123,15 +127,14 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  router.commitLocation(
-                    router.buildLocation({
-                      to: '.',
-                      params: (p: any) => ({
-                        ...p,
-                        viewId: node.value,
-                      }),
+                  router.buildAndCommitLocation({
+                    to: '.',
+                    viewTransition: false,
+                    params: (p: any) => ({
+                      ...p,
+                      viewId: node.value,
                     }),
-                  )
+                  })
                 },
               })}
             >
@@ -147,52 +150,53 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
 function DiagramPreviewHoverCard({
   viewId,
   children,
+  onClick,
   ...props
 }: PropsWithChildren<BoxProps & { viewId: string | null; onClick: (event: MouseEvent) => void }>) {
-  if (!viewId) {
-    return <Box {...props}>{children}</Box>
-  }
+  const views = useLikeC4Views()
+  const diagram = views.find((v) => v.id === viewId)
+  const ratio = diagram ? Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300) : 1
+
+  const width = diagram ? Math.round(diagram.bounds.width / ratio) : 0
+  const height = diagram ? Math.round(diagram.bounds.height / ratio) : 0
   return (
     <Box {...props}>
-      <DiagramPreview viewId={viewId} onClick={props.onClick}>
-        {children}
-      </DiagramPreview>
+      {diagram && (
+        <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
+          <HoverCardTarget>
+            {children}
+          </HoverCardTarget>
+          <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
+            <DiagramPreview diagram={diagram} />
+          </HoverCardDropdown>
+        </HoverCard>
+      )}
+      {!diagram && (
+        <>
+          {children}
+        </>
+      )}
     </Box>
   )
 }
 
-function DiagramPreview({
-  viewId,
-  children,
-  onClick,
-}: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
-  const diagram = useLikeC4Model(true, 'layouted').view(viewId).$view
-
-  if (!diagram) {
-    return children
-  }
-
+const DiagramPreview = memo<{
+  diagram: DiagramView
+}>(({ diagram }) => {
   const ratio = Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300)
 
   const width = Math.round(diagram.bounds.width / ratio)
   const height = Math.round(diagram.bounds.height / ratio)
 
   return (
-    <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
-      <HoverCardTarget>
-        {children}
-      </HoverCardTarget>
-      <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
-        <StaticLikeC4Diagram
-          view={diagram}
-          fitView
-          fitViewPadding={'4px'}
-          enableElementDetails={false}
-          reduceGraphics
-          initialWidth={width}
-          initialHeight={height}
-        />
-      </HoverCardDropdown>
-    </HoverCard>
+    <StaticLikeC4Diagram
+      view={diagram}
+      fitView
+      fitViewPadding={'4px'}
+      enableElementDetails={false}
+      reduceGraphics
+      initialWidth={width}
+      initialHeight={height}
+    />
   )
-}
+}, (prev, next) => prev.diagram.id === next.diagram.id)

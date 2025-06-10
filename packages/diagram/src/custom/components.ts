@@ -8,6 +8,8 @@ export {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  ElementTag,
+  ElementTags,
   ElementTitle,
 } from '../base/primitives'
 

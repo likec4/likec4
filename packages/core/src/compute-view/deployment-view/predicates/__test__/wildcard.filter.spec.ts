@@ -7,9 +7,14 @@ describe('Wildcard', () => {
     .specification({
       elements: {
         el: {},
-        app: {}
+        app: {},
       },
-      tags: ['next', 'alpha', 'beta', 'omega'],
+      tags: {
+        next: {},
+        alpha: {},
+        beta: {},
+        omega: {},
+      },
       deployments: {
         nd: {},
         vm: {},

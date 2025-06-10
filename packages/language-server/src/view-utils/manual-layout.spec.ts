@@ -1,4 +1,4 @@
-import type { ElementView, Fqn, ViewId, ViewManualLayout } from '@likec4/core'
+import type { Fqn, ParsedElementView as ElementView, ViewId, ViewManualLayout } from '@likec4/core'
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { deserializeFromComment, serializeToComment } from './manual-layout'
@@ -17,14 +17,14 @@ describe('manual-layout', () => {
     width: 200,
     nodes: {
       'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false },
-      'sys2': { x: 20, y: 20, width: 30, height: 30, isCompound: true }
+      'sys2': { x: 20, y: 20, width: 30, height: 30, isCompound: true },
     },
     edges: {
       'edge1': {
         points: [[0, 0], [100, 100]],
-        controlPoints: [{ x: 10, y: 10 }]
-      }
-    }
+        controlPoints: [{ x: 10, y: 10 }],
+      },
+    },
   }
 
   it('serialize/deseriazize', () => {

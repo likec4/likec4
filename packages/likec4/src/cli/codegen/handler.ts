@@ -1,7 +1,8 @@
-import { invariant, nonexhaustive } from '@likec4/core'
-import { generateD2, generateMermaid, generateViewsDataTs } from '@likec4/generators'
+import { nonexhaustive } from '@likec4/core'
+import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
+import { values } from 'remeda'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 import { LikeC4 } from '../../LikeC4'
@@ -21,7 +22,7 @@ type HandlerParams =
       outfile: string | undefined
     }
     | {
-      format: 'dot' | 'd2' | 'mermaid'
+      format: 'dot' | 'd2' | 'mermaid' | 'plantuml'
       outdir: string | undefined
     }
   )
@@ -58,11 +59,15 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.viewsService.computedViews()
+  const model = languageServices.computedModel()
+  const views = values(model.$data.views)
   let succeeded = 0
   for (const view of views) {
     try {
-      const dot = await languageServices.viewsService.layouter.dot(view)
+      const dot = await languageServices.viewsService.layouter.dot({
+        view,
+        specification: model.specification,
+      })
       const relativePath = view.relativePath ?? ''
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })
@@ -84,7 +89,7 @@ async function dotCodegenAction(
 
 async function multipleFilesCodegenAction(
   languageServices: LikeC4,
-  format: 'd2' | 'mermaid',
+  format: 'd2' | 'mermaid' | 'plantuml',
   outdir: string,
   logger: Logger,
 ) {
@@ -104,14 +109,19 @@ async function multipleFilesCodegenAction(
       ext = '.mmd'
       generator = generateMermaid
       break
+    case 'plantuml':
+      ext = '.puml'
+      generator = generatePuml
+      break
     default:
       nonexhaustive(format)
   }
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.diagrams()
+  const model = await languageServices.layoutedModel()
   let succeeded = 0
-  for (const view of views) {
+  for (const vm of model.views()) {
+    const view = vm.$view
     try {
       let relativePath = view.relativePath ?? '.'
       if (relativePath.includes('/')) {
@@ -124,7 +134,7 @@ async function multipleFilesCodegenAction(
         createdDirs.add(relativePath)
       }
       const outfile = resolve(outdir, relativePath, view.id + ext)
-      const generatedSource = generator(view)
+      const generatedSource = generator(vm)
       await writeFile(outfile, generatedSource)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
@@ -164,7 +174,8 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
       break
     }
     case 'd2':
-    case 'mermaid': {
+    case 'mermaid':
+    case 'plantuml': {
       await multipleFilesCodegenAction(
         languageServices,
         outparams.format,

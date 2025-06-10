@@ -12,9 +12,8 @@ import {
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
-import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
-import { type Base, removeIndent, toSingleLine } from './Base'
+import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
@@ -158,7 +157,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body)
       const links = this.parseLinks(astNode.body)
-      const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
+      const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 

@@ -1,4 +1,4 @@
-import { Alert, Button, Code, Container, Text } from '@mantine/core'
+import { Alert, Button, Code, Container, Group, Text } from '@mantine/core'
 import { isNotFound, useRouter } from '@tanstack/react-router'
 import type { FallbackProps } from 'react-error-boundary'
 
@@ -45,7 +45,14 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         <Code block color="red">
           {error.stack ?? error.message}
         </Code>
-        <Button onClick={resetErrorBoundary} color="red" variant="white" mt={'lg'} size="xs">Try again</Button>
+        <Group mt={'lg'}>
+          <Button onClick={resetErrorBoundary} color="red" variant="white" size="xs">
+            Try again
+          </Button>
+          <Button onClick={() => router.navigate({ to: '/' })} color="red" size="xs">
+            Go to overview
+          </Button>
+        </Group>
       </Alert>
     </Container>
   )

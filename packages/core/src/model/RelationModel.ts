@@ -1,44 +1,67 @@
-import { isEmpty } from 'remeda'
-import type { IteratorLike } from '../types/_common'
-import type { Link } from '../types/element'
+import { isTruthy } from 'remeda'
+import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
 import {
-  type ModelRelation,
+  type Relationship,
   type RelationshipLineType,
   DefaultLineStyle,
   DefaultRelationshipColor,
-} from '../types/relation'
-import type { Tag } from '../types/scalars'
-import type { Color } from '../types/theme'
+  FqnRef,
+} from '../types'
+import type * as aux from '../types/aux'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
+import type { isDeploymentRelationModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
-import type { AnyAux } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
-export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
+export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
 
-export class RelationshipModel<M extends AnyAux = AnyAux> {
-  public readonly source: ElementModel<M>
-  public readonly target: ElementModel<M>
+/**
+ * A relationship between two elements (in logical or deployment model)
+ * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
+ */
+export interface AnyRelationshipModel<A extends AnyAux> {
+  get id(): scalar.RelationId
+  get expression(): string
+  get title(): string | null
+  get technology(): string | null
+  get description(): string | null
+  get navigateTo(): LikeC4ViewModel<A> | null
+  get tags(): aux.Tags<A>
+  get kind(): aux.RelationKind<A> | null
+  get links(): ReadonlyArray<Link>
+  get color(): Color
+  get line(): RelationshipLineType
+  isDeploymentRelation(): this is DeploymentRelationModel<A>
+  isModelRelation(): this is RelationshipModel<A>
+  getMetadata(): aux.Metadata<A>
+  getMetadata(field: aux.MetadataKey<A>): string | undefined
+  views(): ViewsIterator<A>
+  isTagged(tag: aux.LooseTag<A>): boolean
+}
+
+export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelationshipModel<A> {
+  public readonly source: ElementModel<A>
+  public readonly target: ElementModel<A>
 
   /**
    * Common ancestor of the source and target elements.
    * Represents the boundary of the Relation.
    */
-  public readonly boundary: ElementModel<M> | null
+  public readonly boundary: ElementModel<A> | null
 
   constructor(
-    public readonly model: LikeC4Model<M>,
-    public readonly $relationship: ModelRelation,
+    public readonly model: LikeC4Model<A>,
+    public readonly $relationship: Relationship<A>,
   ) {
-    this.source = model.element($relationship.source)
-    this.target = model.element($relationship.target)
+    this.source = model.element(FqnRef.flatten($relationship.source))
+    this.target = model.element(FqnRef.flatten($relationship.target))
     const parent = commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.model.element(parent) : null
   }
 
-  get id(): M['RelationId'] {
+  get id(): scalar.RelationId {
     return this.$relationship.id
   }
 
@@ -47,35 +70,35 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   }
 
   get title(): string | null {
-    if (isEmpty(this.$relationship.title)) {
+    if (!isTruthy(this.$relationship.title)) {
       return null
     }
     return this.$relationship.title
   }
 
   get technology(): string | null {
-    if (isEmpty(this.$relationship.technology)) {
+    if (!isTruthy(this.$relationship.technology)) {
       return null
     }
     return this.$relationship.technology
   }
 
   get description(): string | null {
-    if (isEmpty(this.$relationship.description)) {
+    if (!isTruthy(this.$relationship.description)) {
       return null
     }
     return this.$relationship.description
   }
 
-  get navigateTo(): LikeC4ViewModel<M> | null {
+  get navigateTo(): LikeC4ViewModel<A> | null {
     return this.$relationship.navigateTo ? this.model.view(this.$relationship.navigateTo) : null
   }
 
-  get tags(): ReadonlyArray<Tag> {
+  get tags(): aux.Tags<A> {
     return this.$relationship.tags ?? []
   }
 
-  get kind(): string | null {
+  get kind(): aux.RelationKind<A> | null {
     return this.$relationship.kind ?? null
   }
 
@@ -94,7 +117,7 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
   /**
    * Iterate over all views that include this relationship.
    */
-  public *views(): ViewsIterator<M> {
+  public *views(): ViewsIterator<A> {
     for (const view of this.model.views()) {
       if (view.includesRelation(this.id)) {
         yield view
@@ -103,16 +126,27 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
     return
   }
 
-  public isDeploymentRelation(): this is DeploymentRelationModel<M> {
+  public isDeploymentRelation(): this is DeploymentRelationModel<A> {
     return false
   }
 
-  public getMetadata(): Record<string, string>
-  public getMetadata(field: string): string | undefined
-  public getMetadata(field?: string) {
+  public isModelRelation(): this is RelationshipModel<A> {
+    return true
+  }
+
+  public getMetadata(): aux.Metadata<A>
+  public getMetadata(field: aux.MetadataKey<A>): string | undefined
+  public getMetadata(field?: aux.MetadataKey<A>) {
     if (field) {
       return this.$relationship.metadata?.[field]
     }
     return this.$relationship.metadata ?? {}
+  }
+
+  /**
+   * Checks if the relationship has the given tag.
+   */
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
   }
 }

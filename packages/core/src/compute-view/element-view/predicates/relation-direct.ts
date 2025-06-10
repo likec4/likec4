@@ -1,19 +1,23 @@
 import { concat, constant, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
-import { invariant } from '../../../errors'
-import { ConnectionModel, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
-import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { ModelLayer } from '../../../types/expression-v2-model'
-import { isSameHierarchy } from '../../../utils'
+import type { RelationshipModel } from '../../../model'
+import { ConnectionModel } from '../../../model'
+import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
+import { invariant, isSameHierarchy } from '../../../utils'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
-import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import {
+  findConnectionsBetween,
+  findConnectionsWithin,
+  includeDescendantsFromMemory,
+  resolveAndIncludeFromMemory,
+  resolveElements,
+} from './_utils'
 
-const isWildcard = ModelLayer.FqnExpr.isWildcard
+const isWildcard = ModelFqnExpr.isWildcard
 
-export const DirectRelationExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.Direct> = {
+export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Direct<AnyAux>> = {
   include: ({ expr: { source, target, isBidirectional = false }, memory, model, stage, where, filterWhere }) => {
     const sourceIsWildcard = isWildcard(source)
     const targetIsWildcard = isWildcard(target)
@@ -283,7 +287,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelLayer.RelationE
  * Resolve elements for both source and target, when one of them is a wildcard
  */
 function resolveWildcard(
-  nonWildcard: ModelLayer.FqnExpr.NonWildcard,
+  nonWildcard: ModelFqnExpr.NonWildcard,
   { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>,
 ): [elements: Elem[], wildcard: Elem[]] {
   let sources = resolveElements(model, nonWildcard)
@@ -291,8 +295,8 @@ function resolveWildcard(
     return [[], []]
   }
 
-  if (ModelLayer.FqnExpr.isModelRef(nonWildcard)) {
-    const parent = model.element(ModelLayer.FqnRef.toFqn(nonWildcard.ref))
+  if (ModelFqnExpr.isModelRef(nonWildcard)) {
+    const parent = model.element(FqnRef.flatten(nonWildcard.ref))
     const targets = toArray(parent.ascendingSiblings())
     return [
       includeDescendantsFromMemory(sources, memory),

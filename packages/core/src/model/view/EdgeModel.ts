@@ -1,89 +1,90 @@
-import { isNonNullish } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
 import {
+  type Any,
+  type aux,
   type Color,
-  type ComputedDynamicView,
-  type ComputedView,
-  type DiagramView,
+  type ComputedEdge,
+  type DiagramEdge,
   type IteratorLike,
-  type RelationId as C4RelationID,
   type RelationshipLineType,
+  type scalar,
   type StepEdgeId,
-  type Tag as C4Tag,
   extractStep,
   isStepEdgeId,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
-import type { LikeC4Model } from '../LikeC4Model'
 import type { RelationshipModel } from '../RelationModel'
-import type { AnyAux } from '../types'
+import type { $View } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<M extends AnyAux, V extends ComputedView | DiagramView> = IteratorLike<EdgeModel<M, V>>
+export type EdgesIterator<A extends Any, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
 
-export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
+export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
+  #edge: ComputedEdge<A> | DiagramEdge<A>
   constructor(
-    public readonly view: LikeC4ViewModel<M, V>,
-    public readonly $edge: V['edges'][number],
-    public readonly source: NodeModel<M, V>,
-    public readonly target: NodeModel<M, V>,
+    public readonly view: LikeC4ViewModel<A, View>,
+    public readonly $edge: View['edges'][number],
+    public readonly source: NodeModel<A, View>,
+    public readonly target: NodeModel<A, View>,
   ) {
+    this.#edge = $edge
   }
 
-  get id(): M['EdgeId'] {
-    return this.$edge.id
+  get id(): scalar.EdgeId {
+    return this.#edge.id
   }
 
-  get parent(): NodeModel<M, V> | null {
-    return this.$edge.parent ? this.view.node(this.$edge.parent) : null
+  get parent(): NodeModel<A, View> | null {
+    return this.#edge.parent ? this.view.node(this.#edge.parent) : null
   }
 
   get label(): string | null {
-    return this.$edge.label
+    return this.#edge.label
   }
 
   get description(): string | null {
-    return this.$edge.description ?? null
+    return this.#edge.description ?? null
   }
 
   get technology(): string | null {
-    return this.$edge.technology ?? null
+    return this.#edge.technology ?? null
   }
 
-  public hasParent(): this is EdgeModel.WithParent<M, V> {
-    return this.$edge.parent !== null
+  public hasParent(): this is EdgeModel.WithParent<A, View> {
+    return this.#edge.parent !== null
   }
 
-  get tags(): ReadonlyArray<C4Tag> {
-    return this.$edge.tags ?? []
+  get tags(): aux.Tags<A> {
+    return this.#edge.tags ?? []
   }
 
   get stepNumber(): number | null {
     return this.isStep() ? extractStep(this.id) : null
   }
 
-  get navigateTo(): LikeC4ViewModel<M> | null {
-    return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
+  get navigateTo(): LikeC4ViewModel<A> | null {
+    return this.#edge.navigateTo ? this.view.$model.view(this.#edge.navigateTo) : null
   }
 
   get color(): Color {
-    return this.$edge.color ?? 'gray'
+    return this.#edge.color ?? 'gray'
   }
 
   get line(): RelationshipLineType {
-    return this.$edge.line ?? 'dashed'
+    return this.#edge.line ?? 'dashed'
   }
 
-  public isStep(): this is EdgeModel.StepEdge<M, ComputedDynamicView> {
+  public isStep(): this is EdgeModel.StepEdge<A, View> {
     return isStepEdgeId(this.id)
   }
 
-  public relationships(type: 'model'): IteratorLike<RelationshipModel<M>>
-  public relationships(type: 'deployment'): IteratorLike<DeploymentRelationModel<M>>
-  public relationships(type?: 'model' | 'deployment'): IteratorLike<LikeC4Model.AnyRelation<M>>
-  public *relationships(type: 'model' | 'deployment' | undefined): IteratorLike<LikeC4Model.AnyRelation<M>> {
-    for (const id of this.$edge.relations) {
+  public relationships(type: 'model'): IteratorLike<RelationshipModel<A>>
+  public relationships(type: 'deployment'): IteratorLike<DeploymentRelationModel<A>>
+  public relationships(type?: 'model' | 'deployment'): IteratorLike<RelationshipModel<A> | DeploymentRelationModel<A>>
+  public *relationships(
+    type: 'model' | 'deployment' | undefined,
+  ): IteratorLike<RelationshipModel<A> | DeploymentRelationModel<A>> {
+    for (const id of this.#edge.relations) {
       // if type is provided, then we need to filter relationships
       if (type) {
         const rel = this.view.$model.findRelationship(id, type)
@@ -97,17 +98,22 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     return
   }
 
-  public includesRelation(rel: M['RelationId']): boolean {
-    return this.$edge.relations.includes(rel as C4RelationID)
+  public includesRelation(rel: aux.RelationId | { id: aux.RelationId }): boolean {
+    const id = typeof rel === 'string' ? rel : rel.id
+    return this.#edge.relations.includes(id)
+  }
+
+  public isTagged(tag: aux.LooseTag<A>): boolean {
+    return this.tags.includes(tag as aux.Tag<A>)
   }
 }
 
 namespace EdgeModel {
-  export interface StepEdge<M extends AnyAux, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
+  export interface StepEdge<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<M extends AnyAux, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
-    parent: NodeModel<M, V>
+  export interface WithParent<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
+    parent: NodeModel<A, V>
   }
 }

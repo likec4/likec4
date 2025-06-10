@@ -1,8 +1,12 @@
 {
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "target": "es2024",
     "rootDir": "src",
-    "composite": true
+    "incremental": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
   },
   "include": [
     "src"

@@ -57,12 +57,11 @@ export type ParsedElementStyle = {
 }
 
 export interface ParsedAstSpecification {
-  tags: Set<c4.Tag>
-  elements: Record<c4.ElementKind, {
-    technology?: string
-    notation?: string
-    style: ParsedElementStyle
+  tags: Record<c4.Tag, {
+    astPath: string
+    color?: c4.ColorLiteral
   }>
+  elements: Record<c4.ElementKind, c4.ElementSpecification>
   relationships: Record<
     c4.RelationshipKind,
     {
@@ -77,10 +76,10 @@ export interface ParsedAstSpecification {
   colors: Record<
     c4.CustomColor,
     {
-      color: c4.HexColorLiteral
+      color: c4.ColorLiteral
     }
   >
-  deployments: Record<c4.DeploymentNodeKind, c4.DeploymentNodeKindSpecification>
+  deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
 }
 
 export interface ParsedAstElement {
@@ -107,8 +106,8 @@ export interface ParsedAstExtend {
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
-  source: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
-  target: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+  source: c4.FqnRef.ModelRef
+  target: c4.FqnRef.ModelRef
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
@@ -128,10 +127,10 @@ export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.No
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
   export type Instance = Omit<c4.DeployedInstance, 'element'> & {
-    readonly element: c4.FqnRef.ModelRef | c4.FqnRef.ImportRef
+    readonly element: c4.FqnRef.ModelRef
   }
 }
-export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
+export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & {
   astPath: string
 }
 
@@ -139,7 +138,7 @@ export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
 export type ParsedAstGlobals = Writable<c4.ModelGlobals>
 
 export interface ParsedAstElementView {
-  __: 'element'
+  [c4._type]: 'element'
   id: c4.ViewId
   viewOf?: c4.Fqn
   extends?: c4.ViewId
@@ -148,12 +147,12 @@ export interface ParsedAstElementView {
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
-  rules: c4.ViewRule[]
+  rules: c4.ElementViewRule[]
   manualLayout?: c4.ViewManualLayout
 }
 
 export interface ParsedAstDynamicView {
-  __: 'dynamic'
+  [c4._type]: 'dynamic'
   id: c4.ViewId
   astPath: string
   title: string | null
@@ -166,7 +165,7 @@ export interface ParsedAstDynamicView {
 }
 
 export interface ParsedAstDeploymentView {
-  __: 'deployment'
+  [c4._type]: 'deployment'
   id: c4.ViewId
   astPath: string
   title: string | null
@@ -347,7 +346,7 @@ export function toRelationshipStyleExcludeDefaults(
 }
 
 export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
-  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColorLiteral | undefined))
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColor | undefined))
 }
 
 export function toAutoLayout(

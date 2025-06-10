@@ -2,15 +2,16 @@
 
 exports[`Builder (style 2) > should build  1`] = `
 {
+  "_stage": "parsed",
   "deployments": {
     "elements": {
       "dev": {
-        "color": "primary",
         "description": null,
         "id": "dev",
         "kind": "env",
-        "shape": "rectangle",
         "style": {
+          "color": "primary",
+          "shape": "rectangle",
           "size": "lg",
         },
         "tags": null,
@@ -18,23 +19,24 @@ exports[`Builder (style 2) > should build  1`] = `
         "title": "dev",
       },
       "dev.local": {
-        "color": "primary",
         "description": null,
         "id": "dev.local",
         "kind": "node",
-        "shape": "rectangle",
-        "style": {},
+        "style": {
+          "color": "primary",
+          "shape": "rectangle",
+        },
         "tags": null,
         "technology": null,
         "title": "local",
       },
       "prod": {
-        "color": "primary",
         "description": null,
         "id": "prod",
         "kind": "env",
-        "shape": "rectangle",
         "style": {
+          "color": "primary",
+          "shape": "rectangle",
           "size": "lg",
         },
         "tags": null,
@@ -42,12 +44,13 @@ exports[`Builder (style 2) > should build  1`] = `
         "title": "prod",
       },
       "prod.eu": {
-        "color": "primary",
         "description": null,
         "id": "prod.eu",
         "kind": "node",
-        "shape": "rectangle",
-        "style": {},
+        "style": {
+          "color": "primary",
+          "shape": "rectangle",
+        },
         "tags": null,
         "technology": null,
         "title": "eu",
@@ -71,7 +74,7 @@ exports[`Builder (style 2) > should build  1`] = `
         "size": "lg",
         "textSize": "sm",
       },
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "cloud",
     },
@@ -83,7 +86,7 @@ exports[`Builder (style 2) > should build  1`] = `
       "links": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [],
       "technology": null,
       "title": "ui",
     },
@@ -95,7 +98,9 @@ exports[`Builder (style 2) > should build  1`] = `
       "links": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [
+        "tag3",
+      ],
       "technology": null,
       "title": "customer",
     },
@@ -106,8 +111,10 @@ exports[`Builder (style 2) > should build  1`] = `
     "styles": {},
   },
   "imports": {},
+  "projectId": "from-builder",
   "relations": {},
   "specification": {
+    "customColors": {},
     "deployments": {
       "env": {
         "style": {
@@ -117,7 +124,11 @@ exports[`Builder (style 2) > should build  1`] = `
       "node": {},
     },
     "elements": {
-      "actor": {},
+      "actor": {
+        "tags": [
+          "tag3",
+        ],
+      },
       "component": {},
       "system": {
         "style": {
@@ -127,12 +138,22 @@ exports[`Builder (style 2) > should build  1`] = `
       },
     },
     "relationships": {},
-    "tags": [],
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+      "tag3": {
+        "color": "primary",
+      },
+    },
   },
   "views": {
     "cloud": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "cloud",
       "links": null,
@@ -153,13 +174,13 @@ exports[`Builder (style 2) > should build  1`] = `
           ],
         },
       ],
-      "tags": null,
+      "tags": [],
       "title": null,
       "viewOf": "cloud.ui",
     },
     "deployment": {
-      "__": "deployment",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "deployment",
       "description": null,
       "id": "deployment",
       "links": null,
@@ -175,12 +196,12 @@ exports[`Builder (style 2) > should build  1`] = `
           ],
         },
       ],
-      "tags": null,
+      "tags": [],
       "title": "Deployment",
     },
     "index": {
-      "__": "element",
-      "customColorDefinitions": {},
+      "_stage": "parsed",
+      "_type": "element",
       "description": null,
       "id": "index",
       "links": null,
@@ -196,7 +217,7 @@ exports[`Builder (style 2) > should build  1`] = `
           ],
         },
       ],
-      "tags": null,
+      "tags": [],
       "title": "Index",
     },
   },

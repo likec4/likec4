@@ -1,6 +1,6 @@
+import type { AnyAux } from '../../../types'
 import { isSameHierarchy } from '../../../utils'
 import type { DeploymentElementModel } from '../../DeploymentElementModel'
-import type { AnyAux } from '../../types'
 import { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
 /**

@@ -1,33 +1,39 @@
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
+  type Aux,
+  type aux,
   type BorderStyle,
   type Color,
-  type ComputedView,
+  type ComputedElementView,
   type Element,
-  type ElementKind,
   type ElementShape,
+  type ElementViewPredicate,
+  type ElementViewPredicate as ViewRulePredicate,
+  type ElementViewRule,
+  type ElementViewRule as ViewRule,
+  type ElementViewRuleGroup as ViewRuleGroup,
+  type ElementViewRuleStyle as ViewRuleStyle,
   type Fqn,
   type GlobalPredicateId,
   type GlobalStyleID,
   type IconUrl,
   type KindEqual,
+  type ModelExpression,
   type ModelRelation,
   type NonEmptyArray,
+  type ParsedElementView,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
-  type Tag,
+  type scalar,
+  type SpecAux,
   type TagEqual,
-  type ViewId,
-  type ViewRule,
   type ViewRuleGlobalPredicateRef,
   type ViewRuleGlobalStyle,
-  type ViewRuleGroup,
-  type ViewRulePredicate,
-  type ViewRuleStyle,
   type WhereOperator,
-  ModelLayer,
+  ModelFqnExpr,
+  ModelRelationExpr,
 } from '../../../types'
 import type { Participant } from '../../../types/operators'
 import { withReadableEdges } from '../../utils/with-readable-edges'
@@ -127,12 +133,12 @@ const el = ({
   kind: string
   tags?: NonEmptyArray<TestTag>
 }): Element => ({
-  id: id as Fqn,
-  kind: kind as ElementKind,
+  id: id as scalar.Fqn,
+  kind: kind as scalar.ElementKind,
   title: title ?? id,
   description: null,
   technology: null,
-  tags: tags as NonEmptyArray<Tag> ?? null,
+  tags: tags as NonEmptyArray<scalar.Tag> ?? null,
   links: null,
   style: {
     ...style,
@@ -239,8 +245,12 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   ({
     id: `${source}:${target}` as RelationId,
     title: title ?? '',
-    source: source as Fqn,
-    target: target as Fqn,
+    source: {
+      model: source as Fqn,
+    },
+    target: {
+      model: target as Fqn,
+    },
     ...(props as any),
   }) as Omit<ModelRelation, 'id'> & { id: `${Source}:${Target}` }
 
@@ -325,7 +335,7 @@ export const fakeRelations = [
 export const globalStyles = {
   'mute_old': [{
     targets: [$expr({
-      elementTag: 'old' as Tag,
+      elementTag: 'old',
       isEqual: true,
     })],
     style: {
@@ -334,7 +344,7 @@ export const globalStyles = {
   }],
   'red_next': [{
     targets: [$expr({
-      elementTag: 'next' as Tag,
+      elementTag: 'next',
       isEqual: true,
     })],
     style: {
@@ -345,6 +355,27 @@ export const globalStyles = {
 
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
+  _stage: 'computed' as const,
+  specification: {
+    elements: {
+      actor: {},
+      system: {},
+      container: {},
+      component: {},
+    },
+    relationships: {
+      graphlql: {},
+    },
+    deployments: {},
+    tags: {
+      old: {},
+      next: {},
+      aws: {},
+      storage: {},
+      communication: {},
+      legacy: {},
+    },
+  },
   elements: fakeElements,
   relations: indexBy(fakeRelations, r => r.id),
   deployments: {
@@ -381,23 +412,39 @@ const fakeParsedModel = {
           },
         }),
       ],
-    } satisfies Record<string, NonEmptyArray<ViewRulePredicate>>,
+    } as Record<string, NonEmptyArray<ElementViewPredicate<$Aux>>>,
     dynamicPredicates: {},
     styles: globalStyles,
   },
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
 
+// export type $Aux = typeof fakeModel.Aux
+export type $Aux = Aux<
+  'computed',
+  FakeElementIds,
+  never,
+  'index',
+  never,
+  SpecAux<
+    'actor' | 'system' | 'container' | 'component',
+    never,
+    'graphlql',
+    TestTag,
+    never
+  >
+>
+
 const emptyView = {
-  __: 'element' as const,
-  id: 'index' as ViewId,
+  _stage: 'parsed' as const,
+  _type: 'element' as const,
+  id: 'index' as scalar.ViewId<'index'>,
   title: null,
   description: null,
   tags: null,
   links: null,
-  customColorDefinitions: {},
   rules: [],
-}
+} satisfies ParsedElementView<$Aux>
 
 export const includeWildcard = {
   include: [
@@ -429,8 +476,8 @@ export type Expression =
 
 export function $custom(
   expr: ElementRefExpr,
-  props: Omit<ModelLayer.FqnExpr.Custom['custom'], 'expr'>,
-): ModelLayer.FqnExpr.Custom {
+  props: Omit<ModelFqnExpr.Custom<$Aux>['custom'], 'expr'>,
+): ModelFqnExpr.Custom<$Aux> {
   return {
     custom: {
       expr: $expr(expr) as any,
@@ -440,9 +487,9 @@ export function $custom(
 }
 
 export function $customRelation(
-  relation: ModelLayer.RelationExprOrWhere,
-  props: Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr'>,
-): ModelLayer.RelationExpr.Custom {
+  relation: ModelRelationExpr.OrWhere<$Aux>,
+  props: Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr'>,
+): ModelRelationExpr.Custom<$Aux> {
   return {
     customRelation: {
       expr: $expr(relation) as any,
@@ -453,20 +500,20 @@ export function $customRelation(
 
 export function $where(
   expr: Expression,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.Expression.Where
+  operator: WhereOperator<$Aux>,
+): ModelExpression.Where<$Aux>
 export function $where(
-  expr: ModelLayer.RelationExpr,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.RelationExpr.Where
+  expr: ModelRelationExpr<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelRelationExpr.Where<$Aux>
 export function $where(
-  expr: ModelLayer.FqnExpr,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.FqnExpr.Where
+  expr: ModelFqnExpr<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelFqnExpr.Where<$Aux>
 export function $where(
-  expr: Expression | ModelLayer.Expression,
-  operator: WhereOperator<TestTag, string>,
-): ModelLayer.Expression {
+  expr: Expression | ModelExpression<$Aux>,
+  operator: WhereOperator<$Aux>,
+): ModelExpression.Where<$Aux> {
   return {
     where: {
       expr: $expr(expr) as any,
@@ -477,8 +524,8 @@ export function $where(
 
 export function $participant(
   participant: Participant,
-  operator: TagEqual<TestTag> | KindEqual<TestTag>,
-): WhereOperator<TestTag, string> {
+  operator: TagEqual<$Aux> | KindEqual<$Aux>,
+): WhereOperator<$Aux> {
   return {
     participant,
     operator,
@@ -486,38 +533,38 @@ export function $participant(
 }
 
 export function $inout(
-  expr: InOutExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.InOut {
+  expr: InOutExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.InOut<$Aux> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr
     : $expr(expr.replace(/->/g, '').trim() as any)
 
-  return { inout: innerExpression }
+  return { inout: innerExpression as any }
 }
 
 export function $incoming(
-  expr: IncomingExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.Incoming {
+  expr: IncomingExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.Incoming<$Aux> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr
     : $expr(expr.replace('-> ', '') as any)
 
-  return { incoming: innerExpression }
+  return { incoming: innerExpression as any }
 }
 
 export function $outgoing(
-  expr: OutgoingExpr | ModelLayer.FqnExpr,
-): ModelLayer.RelationExpr.Outgoing {
+  expr: OutgoingExpr | ModelFqnExpr<$Aux>,
+): ModelRelationExpr.Outgoing<$Aux> {
   const innerExpression = !isString(expr)
-    ? expr as ModelLayer.FqnExpr
+    ? expr as ModelFqnExpr
     : $expr(expr.replace(' ->', '') as any)
 
-  return { outgoing: innerExpression }
+  return { outgoing: innerExpression as any }
 }
 
 export function $relation(
   expr: RelationExpr,
-): ModelLayer.RelationExpr {
+): ModelRelationExpr.Direct<$Aux> {
   const [source, target] = expr.split(/ -> | <-> /)
   const isBidirectional = expr.includes(' <-> ')
 
@@ -528,9 +575,9 @@ export function $relation(
   }
 }
 
-export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expression {
+export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression<$Aux> {
   if (!isString(expr)) {
-    return expr as ModelLayer.Expression
+    return expr as ModelExpression<$Aux>
   }
   if (expr === '*') {
     return { wildcard: true }
@@ -547,7 +594,7 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('._')) {
     return {
       ref: {
-        model: expr.replace('._', '') as Fqn,
+        model: expr.replace('._', '') as aux.Fqn<$Aux>,
       },
       selector: 'expanded',
     }
@@ -555,7 +602,7 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('.*')) {
     return {
       ref: {
-        model: expr.replace('.*', '') as Fqn,
+        model: expr.replace('.*', '') as aux.Fqn<$Aux>,
       },
       selector: 'children',
     }
@@ -563,20 +610,20 @@ export function $expr(expr: Expression | ModelLayer.Expression): ModelLayer.Expr
   if (expr.endsWith('.**')) {
     return {
       ref: {
-        model: expr.replace('.**', '') as Fqn,
+        model: expr.replace('.**', '') as aux.Fqn<$Aux>,
       },
       selector: 'descendants',
     }
   }
   return {
     ref: {
-      model: expr as Fqn,
+      model: expr as aux.Fqn<$Aux>,
     },
   }
 }
 
 type CustomProps = {
-  where?: WhereOperator<TestTag, string>
+  where?: WhereOperator<$Aux>
   with?: {
     title?: string
     description?: string
@@ -588,30 +635,30 @@ type CustomProps = {
     opacity?: number
     navigateTo?: string
     multiple?: boolean
-  } & Omit<ModelLayer.RelationExpr.Custom['customRelation'], 'expr' | 'navigateTo'>
+  } & Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr' | 'navigateTo'>
 }
 export function $include(
-  expr: Expression | ModelLayer.Expression,
+  expr: Expression | ModelExpression<$Aux>,
   props?: CustomProps,
-): ViewRulePredicate {
-  let _expr = props?.where ? $where(expr as any, props.where) : $expr(expr)
+): ElementViewPredicate<$Aux> {
+  let _expr = props?.where ? $where(expr as any, props.where as any) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
     include: [_expr],
   }
 }
 export function $with(
-  expr: ModelLayer.Expression,
+  expr: ModelExpression<$Aux>,
   props?: CustomProps['with'],
-): ModelLayer.RelationExpr.Custom | ModelLayer.FqnExpr.Custom {
-  if (ModelLayer.RelationExpr.is(expr) || ModelLayer.RelationExpr.isWhere(expr)) {
+): ModelRelationExpr.Custom<$Aux> | ModelFqnExpr.Custom<$Aux> {
+  if (ModelRelationExpr.is(expr) || ModelRelationExpr.isWhere(expr)) {
     return {
       customRelation: {
         expr,
         ...props as any,
       },
     }
-  } else if (ModelLayer.FqnExpr.is(expr) || ModelLayer.FqnExpr.isWhere(expr)) {
+  } else if (ModelFqnExpr.is(expr) || ModelFqnExpr.isWhere(expr)) {
     return {
       custom: {
         expr,
@@ -623,24 +670,24 @@ export function $with(
   throw 'Unsupported type of internal expression'
 }
 export function $exclude(
-  expr: Expression | ModelLayer.Expression,
-  where?: WhereOperator<TestTag, string>,
-): ViewRulePredicate {
+  expr: Expression | ModelExpression<$Aux>,
+  where?: WhereOperator<$Aux>,
+): ViewRulePredicate<$Aux> {
   let _expr = where ? $where(expr as any, where) : $expr(expr)
   return {
     exclude: [_expr],
   }
 }
-export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
+export function $group(groupRules: ViewRuleGroup<$Aux>['groupRules']): ViewRuleGroup<$Aux> {
   return {
     title: null,
     groupRules,
   }
 }
 
-export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
+export function $style(element: ElementRefExpr, style: ViewRuleStyle<$Aux>['style']): ViewRuleStyle<$Aux> {
   return {
-    targets: [$expr(element) as ModelLayer.FqnExpr],
+    targets: [$expr(element) as ModelFqnExpr<$Aux>],
     style: Object.assign({}, style),
   }
 }
@@ -665,25 +712,29 @@ export function $global(expr: GlobalExpr): ViewRuleGlobalStyle | ViewRuleGlobalP
 }
 
 export function computeView(
-  ...args: [FakeElementIds, ViewRule | ViewRule[]] | [ViewRule | ViewRule[]]
-) {
-  let result: ComputedView
+  ...args: [FakeElementIds, ElementViewRule<$Aux> | ElementViewRule<$Aux>[]] | [
+    ElementViewRule<$Aux> | ElementViewRule<$Aux>[],
+  ]
+): ComputedElementView<$Aux> & {
+  nodeIds: string[]
+  edgeIds: string[]
+} {
+  let result: ComputedElementView<$Aux>
   if (args.length === 1) {
-    result = computeElementView(
-      fakeModel,
+    result = computeElementView<$Aux>(
+      fakeModel as unknown as LikeC4Model<$Aux>,
       {
         ...emptyView,
-        rules: [args[0]].flat(),
+        rules: [args[0]].flat() as ElementViewRule<$Aux>[],
       },
     )
   } else {
     result = computeElementView(
-      fakeModel,
+      fakeModel as unknown as LikeC4Model<$Aux>,
       {
         ...emptyView,
-        id: 'index' as ViewId,
-        viewOf: args[0] as Fqn,
-        rules: [args[1]].flat(),
+        viewOf: args[0] as aux.Fqn<$Aux>,
+        rules: [args[1]].flat() as ElementViewRule<$Aux>[],
       },
     )
   }

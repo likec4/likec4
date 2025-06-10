@@ -3,6 +3,9 @@ name: release
 on:
   workflow_call:
   # workflow_dispatch:
+  # push:
+  #   branches:
+  #     - "fix-release"
 
 permissions:
   actions: write
@@ -21,27 +24,39 @@ jobs:
     name: publish
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
-    if: "github.ref == 'refs/heads/main'"
+    if: ${{ github.repository_owner == 'likec4' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: wow-actions/use-app-token@9e8487c993ab4085b2dd8cb90ab446b6a18cf834 # v2
+      - name: Decode the GitHub App Private Key
+        id: decode
+        run: |
+          private_key=$(echo "${{ secrets.BOT_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
+          echo "::add-mask::$private_key"
+          echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
         with:
-          fallback: ${{ secrets.GITHUB_TOKEN }}
-          app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ steps.decode.outputs.private-key }}
 
       - uses: actions/checkout@v4
         with:
-          token: ${{ env.BOT_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
           ref: ${{ github.ref }}
 
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
-
-      - name: configure git user
-        run: |
-          git config user.name "${{ env.BOT_NAME }}[bot]"
-          git config user.email "${{ env.BOT_NAME }}[bot]@users.noreply.github.com"
 
       - name: ⚙️ build
         run: pnpm ci:build
@@ -49,5 +64,5 @@ jobs:
       - name: release
         run: pnpm shipjs trigger
         env:
-          GITHUB_TOKEN: ${{ env.BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

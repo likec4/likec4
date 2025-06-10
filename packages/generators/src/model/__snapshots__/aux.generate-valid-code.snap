@@ -1,0 +1,56 @@
+import type { Aux, SpecAux } from '@likec4/core/types';
+
+export type $Specs = SpecAux<
+  // Element kinds
+  | "actor"
+  | "component"
+  | "system",
+  // Deployment kinds
+  | "env"
+  | "vm",
+  // Relationship kinds
+  | "dislike"
+  | "like",
+  // Tags
+  | "tag1"
+  | "tag2",
+  // Metadata keys
+  | "key1"
+  | "key2"
+>
+
+export type $Aux = Aux<
+  "computed",
+  // Elements
+  | "alice"
+  | "bob"
+  | "cloud"
+  | "cloud.backend"
+  | "cloud.frontend"
+  | "cloud.backend.api"
+  | "cloud.backend.db",
+  // Deployments
+  | "dev"
+  | "prod"
+  | "dev.api"
+  | "dev.vm1"
+  | "prod.vm1"
+  | "prod.vm2",
+  // Views
+  | "view1"
+  | "view2",
+  // Project ID
+  "from-builder",
+  $Specs
+>
+
+export type $ElementId = $Aux['ElementId']
+export type $DeploymentId = $Aux['DeploymentId']
+export type $ViewId = $Aux['ViewId']
+
+export type $ElementKind = $Aux['ElementKind']
+export type $RelationKind = $Aux['RelationKind']
+export type $DeploymentKind = $Aux['DeploymentKind']
+export type $Tag = $Aux['Tag']
+export type $Tags = readonly $Aux['Tag'][]
+export type $MetadataKey = $Aux['MetadataKey']

@@ -1,11 +1,10 @@
 import type { DiagramNode, DiagramView, EdgeId, Fqn, NodeId, Point, ViewId } from '@likec4/core'
 import { computeRelationshipsView } from '@likec4/core/compute-view/relationships'
 import { useMemo } from 'react'
-// import { useLikeC4Model } from 'likec4:model'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import type { ElementModel, RelationshipModel } from '@likec4/core'
 import { DefaultMap, invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
+import type { ElementModel, RelationshipModel } from '@likec4/core/model'
 import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 
 /**
@@ -369,10 +368,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
       position: [position.x, position.y],
+      x: position.x,
+      y: position.y,
       title: element.title,
       description: element.description,
       technology: element.technology,
-      tags: null,
+      tags: element.tags,
       links: null,
       color: element.color,
       shape: element.shape,

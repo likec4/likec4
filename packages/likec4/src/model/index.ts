@@ -1,15 +1,23 @@
 import { LikeC4Model } from '@likec4/core/model'
+import type { Aux, LayoutedLikeC4ModelData, SpecAux } from '@likec4/core/types'
+
+export type UnknownLayouted = Aux<
+  'layouted',
+  string,
+  string,
+  string,
+  string,
+  SpecAux<string, string, string, string, string>
+>
 
 /**
  * Used by vite plugin to generate `virtual:likec4/model`
  */
-export function createLikeC4Model(model: any): LikeC4Model.Layouted {
-  return LikeC4Model.create(model) as LikeC4Model.Layouted
+export function createLikeC4Model(model: any): LikeC4Model<UnknownLayouted> {
+  return LikeC4Model.create(model as LayoutedLikeC4ModelData<UnknownLayouted>)
 }
 
 export {
-  type AnyAux,
-  type Aux,
   Connection,
   ConnectionModel,
   DeployedInstanceModel,
@@ -28,11 +36,19 @@ export {
   hasSameSourceTarget,
   hasSameTarget,
   isAnyInOut,
-  isDeployedInstance,
-  isDeploymentNode,
+  isDeployedInstanceModel,
+  isDeploymentElementModel,
+  isDeploymentNodeModel,
+  isDeploymentRelationModel,
+  isEdgeModel,
+  isElementModel,
   isIncoming,
+  isLikeC4ViewModel,
   isNestedConnection,
+  isNestedElementOfDeployedInstanceModel,
+  isNodeModel,
   isOutgoing,
+  isRelationModel,
   LikeC4DeploymentModel,
   LikeC4Model,
   LikeC4ViewModel,
@@ -44,54 +60,4 @@ export {
   sortDeepestFirst,
 } from '@likec4/core/model'
 
-export {
-  ComputedNode,
-  ComputedView,
-  DiagramNode,
-  isDeploymentView,
-  isElementView,
-  isScopedElementView,
-  isStepEdgeId,
-} from '@likec4/core/types'
-
-export type {
-  AbstractRelation,
-  AnyParsedLikeC4ModelData,
-  AutoLayoutDirection,
-  BBox,
-  Color,
-  ComputedDeploymentView,
-  ComputedDynamicView,
-  ComputedEdge,
-  ComputedElementView,
-  ComputedLikeC4ModelData,
-  DeployedInstance,
-  DeploymentElement,
-  DeploymentNode,
-  DeploymentNodeKind,
-  DeploymentRelation,
-  DeploymentView,
-  DiagramEdge,
-  DiagramView,
-  DynamicView,
-  EdgeId,
-  Element,
-  ElementKind,
-  ElementView,
-  Fqn,
-  HexColorLiteral,
-  LayoutedLikeC4ModelData,
-  LikeC4View,
-  NodeId,
-  OverviewGraph,
-  ParsedLikeC4ModelData,
-  Point,
-  RelationExpr,
-  RelationId,
-  StepEdgeId,
-  Tag,
-  ThemeColor,
-  ViewId,
-  WhereOperator,
-  XYPoint,
-} from '@likec4/core/types'
+export type * from '@likec4/core/types'

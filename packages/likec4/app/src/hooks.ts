@@ -1,12 +1,11 @@
 import type { DiagramView, ProjectId } from '@likec4/core'
-import { useStore } from '@nanostores/react'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
+import { shallowEqual } from 'fast-equals'
 import { projects } from 'likec4:projects'
-import { computed } from 'nanostores'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { values } from 'remeda'
-import { useLikeC4ModelDataContext } from './context/LikeC4ModelContext'
+import { useLikeC4ModelDataAtom } from './context/LikeC4ModelContext'
 
 // To get the transparent background
 // We need to add a class to the HTML element
@@ -24,23 +23,42 @@ export function useTransparentBackground(enabled = true) {
 }
 
 export function useLikeC4Views(): ReadonlyArray<DiagramView> {
-  const $likec4data = useLikeC4ModelDataContext()
-  const $viewsAtom = useMemo(() => {
-    return computed($likec4data, (model) => values(model.views))
+  const $likec4data = useLikeC4ModelDataAtom()
+  const [views, setViews] = useState([] as DiagramView[])
+  useEffect(() => {
+    return $likec4data.subscribe((next) => {
+      setViews(prev => {
+        const nextViews = values(next.views)
+        if (shallowEqual(prev, nextViews)) {
+          return prev
+        }
+        return nextViews
+      })
+    })
   }, [$likec4data])
-  return useStore($viewsAtom)
+  return views
 }
 
-export function useCurrentDiagram(): DiagramView | null {
-  const viewId = useParams({
+export function useCurrentViewId(): string {
+  return useParams({
     select: (params) => params.viewId ?? 'index',
     strict: false,
   })
-  const $likec4data = useLikeC4ModelDataContext()
-  const $viewAtom = useMemo(() => {
-    return computed($likec4data, (model) => model.views[viewId] ?? null)
-  }, [viewId, $likec4data])
-  return useStore($viewAtom)
+}
+
+export function useCurrentDiagram(): DiagramView | null {
+  const viewId = useCurrentViewId()
+  const $likec4data = useLikeC4ModelDataAtom()
+
+  const [view, setView] = useState<DiagramView | null>($likec4data.value?.views[viewId] ?? null)
+
+  useEffect(() => {
+    return $likec4data.subscribe((next) => {
+      setView(next.views[viewId] ?? null)
+    })
+  }, [$likec4data, viewId])
+
+  return view
 }
 
 export function useCurrentProjectd(): ProjectId {

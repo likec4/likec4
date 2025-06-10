@@ -2,6 +2,37 @@ import { describe, expect, it } from 'vitest'
 import { Builder } from './Builder'
 
 describe('Builder (style1)', () => {
+  it('should fail on invalid tag in element spec', () => {
+    expect(() => {
+      Builder.forSpecification({
+        elements: {
+          system: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for element kind "system": tag "tag2" not found')
+  })
+
+  it('should fail on invalid tag in deployment spec', () => {
+    expect(() => {
+      Builder.forSpecification({
+        elements: {},
+        deployments: {
+          node: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
+        tags: {
+          tag1: {},
+        },
+      })
+    }).toThrowError('Invalid specification for deployment kind "node": tag "tag2" not found')
+  })
+
   it('should build nested elements and relTo', () => {
     const {
       model: {
@@ -27,6 +58,12 @@ describe('Builder (style1)', () => {
             textSize: 'sm',
           },
         },
+      },
+      tags: {
+        tag1: {
+          color: '#FFF',
+        },
+        tag2: {},
       },
     })
 

@@ -1,20 +1,19 @@
 import { anyPass, unique } from 'remeda'
-import { nonexhaustive } from '../../../errors'
-import { type ConnectionModel, Connection, findConnectionsBetween } from '../../../model/connection/model'
-import type { LikeC4Model } from '../../../model/LikeC4Model'
-import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
-import { ModelLayer } from '../../../types/expression-v2-model'
+import type { LikeC4Model, RelationshipModel } from '../../../model'
+import { type ConnectionModel, Connection } from '../../../model'
+import type { AnyAux } from '../../../types'
+import { type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
+import { nonexhaustive } from '../../../utils'
 import { toSet } from '../../../utils/iterable/to'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
-import { resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import { findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
-export const OutgoingExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.Outgoing> = {
+export const OutgoingExprPredicate: PredicateExecutor<ModelRelationExpr.Outgoing<AnyAux>> = {
   include: ({ expr, scope, model, memory, stage, filterWhere }) => {
     const target = expr.outgoing
     const connections = [] as ConnectionModel<AnyAux>[]
-    if (ModelLayer.FqnExpr.isWildcard(target)) {
+    if (ModelFqnExpr.isWildcard(target)) {
       if (!scope) {
         return
       }
@@ -57,7 +56,7 @@ export const OutgoingExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.Ou
   },
   exclude: ({ expr: { outgoing }, model, scope, stage, where }) => {
     const excluded = [] as RelationshipModel[]
-    if (ModelLayer.FqnExpr.isWildcard(outgoing)) {
+    if (ModelFqnExpr.isWildcard(outgoing)) {
       if (!scope) {
         return
       }
@@ -78,24 +77,24 @@ export const OutgoingExprPredicate: PredicateExecutor<ModelLayer.RelationExpr.Ou
 
 export function outgoingConnectionPredicate(
   model: LikeC4Model,
-  expr: ModelLayer.FqnExpr.NonWildcard,
+  expr: ModelFqnExpr.NonWildcard,
 ): ConnectionWhere {
   switch (true) {
-    case ModelLayer.FqnExpr.isElementKindExpr(expr):
-    case ModelLayer.FqnExpr.isElementTagExpr(expr): {
+    case ModelFqnExpr.isElementKindExpr(expr):
+    case ModelFqnExpr.isElementTagExpr(expr): {
       const isElement = elementExprToPredicate(expr)
       return (connection) => isElement(connection.source)
     }
-    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'children': {
-      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
+    case ModelFqnExpr.isModelRef(expr) && expr.selector === 'children': {
+      const fqn = FqnRef.flatten(expr.ref)
       return anyPass(
         [...model.children(fqn)].map(
           el => Connection.isOutgoing(el.id),
         ),
       )
     }
-    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'descendants': {
-      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
+    case ModelFqnExpr.isModelRef(expr) && expr.selector === 'descendants': {
+      const fqn = FqnRef.flatten(expr.ref)
       return anyPass([
         Connection.isInside(fqn),
         ...[...model.children(fqn)].map(
@@ -103,15 +102,15 @@ export function outgoingConnectionPredicate(
         ),
       ])
     }
-    case ModelLayer.FqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
-      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
+    case ModelFqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
+      const fqn = FqnRef.flatten(expr.ref)
       return anyPass([
         Connection.isOutgoing(fqn),
         Connection.isInside(fqn),
       ])
     }
-    case ModelLayer.FqnExpr.isModelRef(expr): {
-      const fqn = ModelLayer.FqnRef.toFqn(expr.ref)
+    case ModelFqnExpr.isModelRef(expr): {
+      const fqn = FqnRef.flatten(expr.ref)
       return Connection.isOutgoing(fqn)
     }
     default:

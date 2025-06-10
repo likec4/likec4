@@ -54,12 +54,10 @@
     "packages/*/node_modules": true,
     "packages/*/styled-system": true,
     "packages/*/lib": true,
-    "apps/*/node_modules": true,
     "apps/*/lib": true,
     "apps/*/styled-system": true,
     "styled-system/*/node_modules": true,
-    "styled-system/*/lib": true,
-    "e2e/node_modules/**": true
+    "styled-system/*/lib": true
   },
   "json.schemas": [
     {

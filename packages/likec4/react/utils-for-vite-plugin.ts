@@ -1,7 +1,7 @@
 import { LikeC4Model } from '@likec4/core/model'
 import { type DiagramView, type LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { mapValues } from 'remeda'
 import { type Atom, type WritableAtom, computed, useStore } from './nanostores'
 
@@ -13,10 +13,26 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
   useLikeC4Views: () => ReadonlyArray<DiagramView>
   useLikeC4View: (viewId: string) => DiagramView | null
 } => {
-  const $likec4model: Atom<LikeC4Model.Layouted> = computed($atom, (data) => LikeC4Model.create(data))
+  const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
+
+  function updateModel(data: LayoutedLikeC4ModelData) {
+    const current = $atom.get()
+    if (deepEqual(current, data)) {
+      return
+    }
+
+    const next = {
+      ...data,
+      views: mapValues(data.views, (next) => {
+        const currentView = current.views[next.id]
+        return deepEqual(currentView, next) ? currentView : next
+      }),
+    }
+    $atom.set(next as LayoutedLikeC4ModelData)
+  }
 
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
-    $likec4model,
+    $atom,
     (model) => [...Object.values(model.views)],
   )
 
@@ -29,22 +45,13 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
   }
 
   function useLikeC4View(viewId: string): DiagramView | null {
-    const $viewAtom = useMemo(() => {
-      return computed($atom, (model) => model.views[viewId] ?? null)
+    const [view, setView] = useState($atom.value?.views[viewId] ?? null)
+    useEffect(() => {
+      return $atom.subscribe((next) => {
+        setView(next.views[viewId] ?? null)
+      })
     }, [viewId])
-    return useStore($viewAtom)
-  }
-
-  function updateModel(data: LayoutedLikeC4ModelData) {
-    const current = $atom.get()
-    const next = {
-      ...data,
-      views: mapValues(data.views, (next) => {
-        const currentView = current.views[next.id]
-        return deepEqual(currentView, next) ? currentView : next
-      }),
-    }
-    $atom.set(next as LayoutedLikeC4ModelData)
+    return view
   }
 
   return {

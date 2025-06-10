@@ -1,10 +1,10 @@
 import { first, only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../../builder'
-import { invariant } from '../../errors'
+import { type AnyTypes, Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
 import { findConnection, findConnectionsWithin } from '../../model/connection/model'
-import { isElementView } from '../../types'
+import { type LikeC4View, isElementView } from '../../types'
+import { invariant } from '../../utils'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { TestHelper } from './__test__/TestHelper'
 import { cleanRedundantRelationships, findRedundantConnections } from './clean-connections'
@@ -16,10 +16,10 @@ const builder = Builder.specification({
   },
 })
 
-function compute(buider: Builder<any>) {
-  const { views, ...model } = buider.build()
-  const likec4model = LikeC4Model.create({ ...model, views: {} })
-  const view = only(values(views))
+function compute<const T extends AnyTypes>(buider: Builder<T>) {
+  const parsed = buider.build()
+  const likec4model = LikeC4Model.create(parsed)
+  const view = only(values(parsed.views as Record<string, LikeC4View<any>>))
   invariant(view && isElementView(view), 'Must have one element view')
   return withReadableEdges(computeElementView(likec4model, view))
 }

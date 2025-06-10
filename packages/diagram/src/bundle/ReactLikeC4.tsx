@@ -1,21 +1,16 @@
-import type { DiagramView, WhereOperator } from '@likec4/core'
-import { type CSSProperties } from 'react'
-import { ShadowRoot } from './ShadowRoot'
-
+import type { Any, DiagramView } from '@likec4/core/types'
+import type * as aux from '@likec4/core/types/aux'
 import { cx } from '@likec4/styles/css'
+import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'
 import { type LikeC4DiagramProps, LikeC4Diagram } from '../LikeC4Diagram'
-import type { OnNavigateTo } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export type ReactLikeC4Props<
-  ViewId = string,
-  Tag = string,
-  Kind = string,
-> = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
-  viewId: ViewId
+export type ReactLikeC4Props<A extends aux.Any> = Omit<LikeC4DiagramProps<A>, 'view'> & {
+  viewId: aux.ViewId<A>
 
   /**
    * Keep aspect ratio of the diagram
@@ -41,24 +36,16 @@ export type ReactLikeC4Props<
 
   style?: CSSProperties | undefined
 
-  where?: WhereOperator<Tag, Kind> | undefined
-
-  onNavigateTo?: OnNavigateTo<ViewId> | undefined
-
   mantineTheme?: any
 
   /** Function to generate nonce attribute added to all generated `<style />` tags */
   styleNonce?: string | (() => string) | undefined
 }
 
-export function ReactLikeC4<
-  ViewId extends string = string,
-  Tag = string,
-  Kind = string,
->({
+export function ReactLikeC4<A extends aux.Any = aux.UnknownLayouted>({
   viewId,
   ...props
-}: ReactLikeC4Props<ViewId, Tag, Kind>) {
+}: ReactLikeC4Props<A>) {
   const likec4model = useLikeC4Model()
   const view = likec4model?.findView(viewId)
 
@@ -85,10 +72,10 @@ export function ReactLikeC4<
   return <ReactLikeC4Inner view={view.$view} {...props} />
 }
 
-type ReactLikeC4InnerProps = Omit<ReactLikeC4Props<any, any, any>, 'viewId'> & {
-  view: DiagramView
+type ReactLikeC4InnerProps<A extends Any> = Omit<ReactLikeC4Props<A>, 'viewId'> & {
+  view: DiagramView<A>
 }
-function ReactLikeC4Inner({
+function ReactLikeC4Inner<A extends Any>({
   className,
   view,
   colorScheme: explicitColorScheme,
@@ -101,12 +88,12 @@ function ReactLikeC4Inner({
   mantineTheme,
   styleNonce,
   ...props
-}: ReactLikeC4InnerProps) {
+}: ReactLikeC4InnerProps<A>) {
   const colorScheme = useColorScheme(explicitColorScheme)
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
 
-  const notations = view.notation?.elements ?? []
+  const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
 
   let nonce
@@ -139,6 +126,7 @@ function ReactLikeC4Inner({
           showNotations={showNotations && hasNotations}
           onNavigateTo={onNavigateTo as any}
           background={background}
+          enableElementTags={false}
           {...props}
         />
       </ShadowRoot>

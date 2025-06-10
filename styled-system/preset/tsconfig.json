@@ -7,9 +7,16 @@
     "noEmit": false,
     "emitDeclarationOnly": false,
     "declarationMap": false,
+    "composite": true,
+    "rootDir": "src",
     "outDir": "dist"
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core/tsconfig.json"
+    }
   ]
 }

@@ -1,9 +1,14 @@
-import { type LikeC4Model } from '@likec4/core/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
+import { capitalize } from 'remeda'
+import { generateAux } from './generate-aux'
 
-export function generateLikeC4Model(model: LikeC4Model) {
+export function generateLikeC4Model(model: LikeC4Model<any>) {
   const out = new CompositeGeneratorNode()
+  const aux = generateAux(model)
+  const ModelData = capitalize(model.stage) + 'LikeC4ModelData'
+
   out.appendTemplate`
     /* prettier-ignore-start */
     /* eslint-disable */
@@ -13,19 +18,13 @@ export function generateLikeC4Model(model: LikeC4Model) {
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
 
-    import { LikeC4Model } from 'likec4/model'
+    import { LikeC4Model } from '@likec4/core/model'
+    import type { ${ModelData} } from '@likec4/core/types'
+    ${aux}
 
-    export const likeC4Model = LikeC4Model.fromDump(${
-    JSON5.stringify(model.$model, {
-      space: 2,
-      quote: '\'',
-    })
-  })
-
-    export type LikeC4ModelTypes = typeof likeC4Model.Aux
-    export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
-    export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
-    export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
+    export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<${ModelData}<$Aux>>(${
+    JSON5.stringify(model.$data, { space: 2, quote: '\'' })
+  } as unknown))
 
     /* prettier-ignore-end */
   `

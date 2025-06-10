@@ -12,6 +12,7 @@ import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.
 
 export const Route = createFileRoute('/_single/view/$viewId/mmd')({
   component: ViewAsMmd,
+  staleTime: Infinity,
   loader: async ({ params }) => {
     const { viewId } = params
     try {

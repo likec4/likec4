@@ -6,7 +6,7 @@ import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } fro
 const projectModelCode = (model: LikeC4Model.Layouted) => `
 import { nano, createHooksForModel } from 'likec4/react'
 
-export const $likec4data = nano.atom(${JSON5.stringify(model.$model)})
+export const $likec4data = nano.atom(${JSON5.stringify(model.$data)})
 
 export const {
   updateModel,

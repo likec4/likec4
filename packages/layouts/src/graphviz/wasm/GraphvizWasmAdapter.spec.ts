@@ -6,14 +6,18 @@ import {
   computedCloudView,
   computedIndexView,
   issue577_fail,
-  issue577_valid
+  issue577_valid,
+  parsedModel,
 } from '../__fixtures__'
 import { GraphvizLayouter } from '../GraphvizLayoter'
 import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
 
 async function dotLayout(computedView: ComputedView) {
   const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
-  return (await graphviz.layout(computedView)).diagram
+  return (await graphviz.layout({
+    specification: parsedModel.specification,
+    view: computedView,
+  })).diagram
 }
 
 describe('GraphvizWasmAdapter:', () => {

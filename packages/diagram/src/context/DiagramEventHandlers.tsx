@@ -1,3 +1,4 @@
+import type { Any } from '@likec4/core/types'
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
 import { isFunction, mapToObj } from 'remeda'
@@ -21,8 +22,8 @@ const HandlerNames = [
   'onCanvasDblClick',
 ] as const
 
-type DiagramEventHandlersContextValue = RequiredOrNull<LikeC4DiagramEventHandlers> & {
-  handlersRef: RefObject<LikeC4DiagramEventHandlers>
+type DiagramEventHandlersContextValue = RequiredOrNull<LikeC4DiagramEventHandlers<Any>> & {
+  handlersRef: RefObject<LikeC4DiagramEventHandlers<Any>>
 }
 
 const DiagramEventHandlersContext = createContext<DiagramEventHandlersContextValue>({
@@ -32,10 +33,10 @@ const DiagramEventHandlersContext = createContext<DiagramEventHandlersContextVal
   },
 })
 
-export function DiagramEventHandlers({
+export function DiagramEventHandlers<A extends Any>({
   handlers,
   children,
-}: PropsWithChildren<{ handlers: LikeC4DiagramEventHandlers }>) {
+}: PropsWithChildren<{ handlers: LikeC4DiagramEventHandlers<A> }>) {
   const handlersRef = useSyncedRef(handlers)
 
   const deps = HandlerNames.map((name) => isFunction(handlers[name]))

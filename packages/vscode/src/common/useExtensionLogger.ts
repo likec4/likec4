@@ -1,14 +1,12 @@
 import { configureLogger, getConsoleSink } from '@likec4/log'
-import { createSingletonComposable, useDisposable, useLogger } from 'reactive-vscode'
-import vscode from 'vscode'
+import { createSingletonComposable, useLogger, useOutputChannel } from 'reactive-vscode'
 import { getOutputChannelSink, getTelemetrySink } from '../logger'
 import { useTelemetry } from './useTelemetry'
 
 export const useExtensionLogger = createSingletonComposable(() => {
-  const outputChannel = vscode.window.createOutputChannel('LikeC4 Extension', {
+  const outputChannel = useOutputChannel('LikeC4 Extension', {
     log: true,
   })
-  useDisposable(outputChannel)
   const telemetry = useTelemetry()
   configureLogger({
     sinks: {

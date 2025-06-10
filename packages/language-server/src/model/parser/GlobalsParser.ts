@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
-import { isTruthy } from 'remeda'
-import { ast, type ParsedAstGlobals } from '../../ast'
+import { hasAtLeast, isTruthy } from 'remeda'
+import { type ParsedAstGlobals, ast } from '../../ast'
 import { logger, logWarnError } from '../../logger'
 import type { WithViewsParser } from './ViewsParser'
 
@@ -44,8 +44,8 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
           }
 
           const styles = this.parseGlobalStyleOrGroup(style)
-          if (styles.length > 0) {
-            c4Globals.styles[globalStyleId] = styles as c4.NonEmptyArray<c4.ViewRuleStyle>
+          if (hasAtLeast(styles, 1)) {
+            c4Globals.styles[globalStyleId] = styles
           }
         } catch (e) {
           logWarnError(e)
@@ -56,26 +56,26 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
     parseAndStoreGlobalPredicateGroupOrDynamic(
       astRule: ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup,
       id: c4.GlobalPredicateId,
-      c4Globals: ParsedAstGlobals
+      c4Globals: ParsedAstGlobals,
     ) {
       if (ast.isGlobalPredicateGroup(astRule)) {
         const predicates = this.parseGlobalPredicateGroup(astRule)
-        if (predicates.length > 0) {
-          c4Globals.predicates[id] = predicates as c4.NonEmptyArray<c4.ViewRulePredicate>
+        if (hasAtLeast(predicates, 1)) {
+          c4Globals.predicates[id] = predicates
         }
         return
       }
       if (ast.isGlobalDynamicPredicateGroup(astRule)) {
         const predicates = this.parseGlobalDynamicPredicateGroup(astRule)
-        if (predicates.length > 0) {
-          c4Globals.dynamicPredicates[id] = predicates as c4.NonEmptyArray<c4.DynamicViewIncludeRule>
+        if (hasAtLeast(predicates, 1)) {
+          c4Globals.dynamicPredicates[id] = predicates
         }
         return
       }
       nonexhaustive(astRule)
     }
 
-    parseGlobalPredicateGroup(astRule: ast.GlobalPredicateGroup): c4.ViewRulePredicate[] {
+    parseGlobalPredicateGroup(astRule: ast.GlobalPredicateGroup): c4.ElementViewPredicate[] {
       return astRule.predicates.map(p => this.parseViewRulePredicate(p))
     }
 
@@ -83,7 +83,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
       return astRule.predicates.map(p => this.parseDynamicViewIncludePredicate(p))
     }
 
-    parseGlobalStyleOrGroup(astRule: ast.GlobalStyle | ast.GlobalStyleGroup): c4.ViewRuleStyle[] {
+    parseGlobalStyleOrGroup(astRule: ast.GlobalStyle | ast.GlobalStyleGroup): c4.ElementViewRuleStyle[] {
       if (ast.isGlobalStyle(astRule)) {
         return [this.parseViewRuleStyle(astRule)]
       }

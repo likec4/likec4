@@ -28,6 +28,7 @@ export {
 
 export {
   useLikeC4Model,
+  useLikeC4Specification,
 } from '../likec4model/useLikeC4Model'
 
 export { useMantinePortalProps } from '../hooks/useMantinePortalProps'

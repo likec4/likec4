@@ -1,22 +1,22 @@
-import type { LayoutedLikeC4ModelData } from '@likec4/core'
 import { LikeC4ModelProvider } from '@likec4/diagram'
-import { useStore } from '@nanostores/react'
-import { createLikeC4Model } from 'likec4/model'
-import { type Atom, computed } from 'nanostores'
-import { type PropsWithChildren, createContext, useContext, useMemo } from 'react'
+import type { LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
+import { nano } from 'likec4/react'
+import { type PropsWithChildren, createContext, useContext } from 'react'
 
-const LikeC4ModelDataContext = createContext<Atom<LayoutedLikeC4ModelData>>(null as any)
+const LikeC4ModelDataContext = createContext<nano.Atom<LayoutedLikeC4ModelData>>(null as any)
 
-export function useLikeC4ModelDataContext() {
+export function useLikeC4ModelDataAtom() {
   return useContext(LikeC4ModelDataContext)
 }
 
 export function LikeC4ModelContext(
-  { likec4data, children }: PropsWithChildren<{ likec4data: Atom<LayoutedLikeC4ModelData> }>,
+  { likec4data, likec4model, children }: PropsWithChildren<{
+    likec4data: nano.ReadableAtom<LayoutedLikeC4ModelData>
+    likec4model: nano.ReadableAtom<LikeC4Model.Layouted>
+  }>,
 ) {
-  const $likec4model = useMemo(() => computed(likec4data, (data) => createLikeC4Model(data)), [likec4data])
-
-  const model = useStore($likec4model)
+  // useLogger('LikeC4ModelContext', [likec4data, likec4model])
+  const model = nano.useStore(likec4model)
 
   return (
     <LikeC4ModelDataContext.Provider value={likec4data}>

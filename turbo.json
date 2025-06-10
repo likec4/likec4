@@ -1,8 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
-    "NODE_ENV",
-    "CLOUDFLARE_ENV"
+    "NODE_ENV"
   ],
   "globalDependencies": [
     ".tool-versions",

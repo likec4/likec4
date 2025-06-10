@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedNode, ModelLayer } from '../../types'
-import { type Expression, type FakeElementIds, $expr, $where, $with } from '../element-view/__test__/fixture'
+import type { ComputedNode, ModelExpression } from '../../types'
+import { type $Aux, type Expression, type FakeElementIds, $expr, $where, $with } from '../element-view/__test__/fixture'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-const toPredicate = (expr: ModelLayer.Expression) => elementExprToPredicate(expr as any)
+const toPredicate = (expr: ModelExpression<$Aux>) => elementExprToPredicate(expr as any)
 
 type Node = Partial<
   ComputedNode | {
@@ -28,7 +28,7 @@ function nd(
   } as ComputedNode
 }
 
-function test$expr(expr: Expression | ModelLayer.Expression) {
+function test$expr(expr: Expression | ModelExpression<$Aux>) {
   const predicate = toPredicate($expr(expr))
   return {
     yes(node: Node) {

@@ -1,23 +1,22 @@
 import { filter, hasAtLeast, only } from 'remeda'
-import { invariant } from '../../errors'
-import { type ComputedEdge, type ComputedNode, type Fqn } from '../../types'
-import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
+import type { ConnectionModel } from '../../model'
+import {
+  type AnyAux,
+  type ComputedEdge,
+  type ComputedNode,
+  type scalar,
+} from '../../types'
+import { invariant } from '../../utils'
+import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
-import type { Connection, Elem, Memory } from './_types'
+import type { Memory } from './_types'
 
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
 
-export function toNodeSource(el: Elem): ComputedNodeSource {
-  return {
-    ...el.$element,
-    modelRef: 1,
-  }
-}
-
-export function toComputedEdges(
-  connections: ReadonlyArray<Connection>,
-): ComputedEdge[] {
+export function toComputedEdges<A extends AnyAux>(
+  connections: ReadonlyArray<ConnectionModel<A>>,
+): ComputedEdge<A>[] {
   return connections.reduce((acc, e) => {
     // const modelRelations = []
     // const deploymentRelations = []
@@ -41,11 +40,11 @@ export function toComputedEdges(
       )?.$relationship,
     )
 
-    const edge: ComputedEdge = {
+    const edge: ComputedEdge<A> = {
       id: e.id,
-      parent: e.boundary?.id ?? null,
-      source,
-      target,
+      parent: e.boundary?.id as scalar.NodeId ?? null,
+      source: source as scalar.NodeId,
+      target: target as scalar.NodeId,
       label: title ?? null,
       relations: relations.map((r) => r.id),
       ...props,
@@ -53,11 +52,14 @@ export function toComputedEdges(
 
     acc.push(edge)
     return acc
-  }, [] as ComputedEdge[])
+  }, [] as ComputedEdge<A>[])
 }
 
-export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
-  // typecast to MutableMemory
-  // invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
-  return buildComputedNodes([...memory.final].map(toNodeSource), memory.groups)
+export function buildNodes<A extends AnyAux>(
+  memory: Memory,
+): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
+  return buildComputedNodes(
+    [...memory.final].map(elementModelToNodeSource),
+    memory.groups,
+  )
 }

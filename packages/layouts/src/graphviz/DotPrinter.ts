@@ -11,17 +11,21 @@ import {
   nonNullable,
 } from '@likec4/core'
 import {
+  type AnyAux,
+  type AnyFqn,
   type Color,
   type ComputedEdge,
+  type ComputedNode,
   type ComputedView,
+  type DeploymentFqn,
   type EdgeId,
   type ElementThemeColorValues,
   type Fqn,
   type NodeId,
   type RelationshipLineType,
   type RelationshipThemeColorValues,
+  type Specification as LikeC4Specification,
   type XYPoint,
-  ComputedNode,
   DefaultPaddingSize,
   DefaultShapeSize,
   DefaultTextSize,
@@ -90,7 +94,7 @@ export type ApplyManualLayoutData = {
 
 type GraphologyNodeAttributes = {
   modelRef: Fqn | null
-  deploymentRef: Fqn | null
+  deploymentRef: DeploymentFqn | null
   origin: ComputedNode
   level: number
   depth: number
@@ -102,7 +106,7 @@ type GraphologyEdgeAttributes = {
   hierarchyDistance: number
 }
 
-export abstract class DotPrinter<V extends ComputedView = ComputedView> {
+export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   private ids = new Set<string>()
   private subgraphs = new Map<NodeId, SubgraphModel>()
   private nodes = new Map<NodeId, NodeModel>()
@@ -118,7 +122,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   public readonly graphvizModel: RootGraphModel
 
-  constructor(protected view: V) {
+  constructor(
+    protected view: V,
+    protected specification: LikeC4Specification<A>,
+  ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
       this.compoundIds.size > 0
@@ -132,16 +139,16 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         origin: node,
         level: node.level,
         depth: node.depth ?? 0,
-        modelRef: ComputedNode.modelRef(node),
-        deploymentRef: ComputedNode.deploymentRef(node),
+        modelRef: node.modelRef ?? null,
+        deploymentRef: node.deploymentRef ?? null,
         maxConnectedHierarchyDistance: 0,
       })
     }
 
     for (const edge of view.edges) {
       // First compare deploymentRef of any
-      let sourceFqn = this.graphology.getNodeAttribute(edge.source, 'deploymentRef')
-      let targetFqn = this.graphology.getNodeAttribute(edge.target, 'deploymentRef')
+      let sourceFqn: AnyFqn | null = this.graphology.getNodeAttribute(edge.source, 'deploymentRef')
+      let targetFqn: AnyFqn | null = this.graphology.getNodeAttribute(edge.target, 'deploymentRef')
       if (sourceFqn === null || targetFqn === null) {
         // Then compare modelRef
         sourceFqn = this.graphology.getNodeAttribute(edge.source, 'modelRef')
@@ -511,9 +518,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    const parent = this.computedNode(parentId)
+    const parent = this.computedNode(parentId as NodeId)
     return pipe(
-      this.descendants(parentId),
+      this.descendants(parentId as NodeId),
       flatMap(child => {
         return concat(child.inEdges, child.outEdges)
       }),
@@ -582,7 +589,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     const isShifted = offsetX > 0 || offsetY > 0
     for (const { id, ...manual } of layout.nodes) {
       // we pin only nodes, not clusters
-      const model = this.getGraphNode(id as Fqn)
+      const model = this.getGraphNode(id as NodeId)
       if (!model) {
         continue
       }
@@ -655,11 +662,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
     return isThemeColor(color)
       ? Theme.relationships[color]
-      : this.view.customColorDefinitions[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
+      : this.specification.customColors?.[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
   }
   protected getElementColorValues(color: Color): ElementThemeColorValues {
     return isThemeColor(color)
       ? Theme.elements[color]
-      : this.view.customColorDefinitions[color]?.elements ?? Theme.elements[DefaultThemeColor]
+      : this.specification.customColors?.[color]?.elements ?? Theme.elements[DefaultThemeColor]
   }
 }

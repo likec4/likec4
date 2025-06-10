@@ -3,6 +3,9 @@ import JSON5 from 'json5'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { generateViewId } from './generateViewId'
 
+/**
+ * Generate *.js file with views data
+ */
 export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
   const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
@@ -33,11 +36,11 @@ export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
             view => expandToNode`${JSON5.stringify(view.id)}: ${JSON5.stringify(view)}`,
             {
               separator: ',',
-              appendNewLineIfNotEmpty: true
-            }
-          )
+              appendNewLineIfNotEmpty: true,
+            },
+          ),
         )
-      }
+      },
     })
     .append('}', NL, NL).appendTemplate`
 
@@ -54,6 +57,9 @@ export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
   return toString(out)
 }
 
+/**
+ * Generate *.ts file with views data
+ */
 export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
   const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
@@ -88,16 +94,16 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
             view =>
               expandToNode`${JSON5.stringify(view.id)}: (${
                 JSON5.stringify(
-                  view
+                  view,
                 )
               } as unknown) as DiagramView`,
             {
               separator: ',',
-              appendNewLineIfNotEmpty: true
-            }
-          )
+              appendNewLineIfNotEmpty: true,
+            },
+          ),
         )
-      }
+      },
     })
     .append('} as const satisfies Record<LikeC4ViewId, DiagramView>', NL, NL).appendTemplate`
     export type LikeC4Views = typeof LikeC4Views
@@ -115,6 +121,9 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
   return toString(out)
 }
 
+/**
+ * Generate *.d.ts
+ */
 export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
   const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()

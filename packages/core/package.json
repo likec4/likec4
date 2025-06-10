@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -79,6 +79,14 @@
         "default": "./dist/utils/index.mjs"
       }
     },
+    "./types/aux": {
+      "sources": "./src/types/aux.ts",
+      "default": {
+        "types": "./dist/types/aux.d.mts",
+        "import": "./dist/types/aux.mjs",
+        "default": "./dist/types/aux.mjs"
+      }
+    },
     "./types": {
       "sources": "./src/types/index.ts",
       "default": {
@@ -119,5 +127,5 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.12.1"
 }

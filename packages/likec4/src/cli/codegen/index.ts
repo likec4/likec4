@@ -59,16 +59,16 @@ export const codegenCmd = {
               type: 'string',
               desc: '<file> path to output file (.jsx, .mjs or .js)',
               normalize: true,
-              coerce: resolve
+              coerce: resolve,
             })
             .option('use-dot', useDotBin),
         async args => {
           await reactHandler({
             useDotBin: args.useDotBin,
             path: args.path,
-            outfile: args.outfile
+            outfile: args.outfile,
           })
-        }
+        },
       )
       // ----------------------
       // webcomponent command
@@ -83,7 +83,7 @@ export const codegenCmd = {
               type: 'string',
               desc: '<file> path to output file (.mjs or .js)',
               normalize: true,
-              coerce: resolve
+              coerce: resolve,
             })
             .option('webcomponent-prefix', webcomponentPrefix)
             .option('use-dot', useDotBin),
@@ -92,9 +92,9 @@ export const codegenCmd = {
             useDotBin: args.useDotBin,
             path: args.path,
             outfile: args.outfile,
-            webcomponentPrefix: args.webcomponentPrefix
+            webcomponentPrefix: args.webcomponentPrefix,
           })
-        }
+        },
       })
       // ----------------------
       // model command
@@ -109,16 +109,16 @@ export const codegenCmd = {
               type: 'string',
               desc: '<file> path to output file (.ts)',
               normalize: true,
-              coerce: resolve
+              coerce: resolve,
             })
             .option('use-dot', useDotBin),
         handler: async args => {
           await modelHandler({
             path: args.path,
             useDotBin: args.useDotBin,
-            outfile: args.outfile
+            outfile: args.outfile,
           })
-        }
+        },
       })
       // ----------------------
       // views-data command
@@ -133,7 +133,7 @@ export const codegenCmd = {
               type: 'string',
               desc: '<file> output .ts file',
               normalize: true,
-              coerce: resolve
+              coerce: resolve,
             })
             .option('use-dot', useDotBin),
         handler: async args => {
@@ -141,9 +141,9 @@ export const codegenCmd = {
             format: 'views',
             path: args.path,
             useDotBin: args.useDotBin,
-            outfile: args.outfile
+            outfile: args.outfile,
           })
-        }
+        },
       })
       // ----------------------
       // dot command
@@ -159,9 +159,9 @@ export const codegenCmd = {
             format: 'dot',
             path: args.path,
             useDotBin: args.useDotBin,
-            outdir: args.outdir
+            outdir: args.outdir,
           })
-        }
+        },
       })
       // ----------------------
       // d2 command
@@ -177,9 +177,9 @@ export const codegenCmd = {
             format: 'd2',
             path: args.path,
             useDotBin: args.useDotBin,
-            outdir: args.outdir
+            outdir: args.outdir,
           })
-        }
+        },
       })
       // ----------------------
       // mermaid command
@@ -196,9 +196,28 @@ export const codegenCmd = {
             format: 'mermaid',
             useDotBin: args.useDotBin,
             path: args.path,
-            outdir: args.outdir
+            outdir: args.outdir,
           })
-        }
+        },
+      })
+      // ----------------------
+      // puml command
+      .command({
+        command: 'plantuml [path]',
+        aliases: ['puml'],
+        describe: 'generate PlantUML files (.puml)',
+        builder: yargs =>
+          yargs
+            .option('outdir', outdir)
+            .option('use-dot', useDotBin),
+        handler: async args => {
+          await legacyHandler({
+            format: 'plantuml',
+            useDotBin: args.useDotBin,
+            path: args.path,
+            outdir: args.outdir,
+          })
+        },
       }).epilog(`${k.bold('Examples:')}
   likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen model -o likec4-model.ts
@@ -206,9 +225,10 @@ export const codegenCmd = {
   likec4 gen views-data -o ./src/likec4-data.ts
   likec4 gen ts --outfile ../likec4.ts
   likec4 gen mmd --outdir assets/
+  likec4 gen plantuml --outdir assets/
   likec4 gen dot -o out .
 `),
-  handler: () => void 0
+  handler: () => void 0,
 } satisfies CommandModule
 
 export default codegenCmd

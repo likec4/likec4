@@ -1,21 +1,22 @@
 import { unique, values } from 'remeda'
-import { type ExtendsElementView, type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
+import { type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
 
 import Graph from 'graphology'
 import { topologicalSort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
+import type { AnyAux, aux, ParsedElementView } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 /**
  * Resolve rules of extended views
  * (Removes invalid views)
  */
-export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
+export function resolveRulesExtendedViews<A extends AnyAux, V extends Record<any, LikeC4View<A>>>(
   unresolvedViews: V,
 ): V {
-  const g = new Graph<{ view: LikeC4View }>({
+  const g = new Graph<{ view: LikeC4View<A> }>({
     type: 'directed',
   })
-  const extendedViews = [] as ExtendsElementView<any, any>[]
+  const extendedViews = [] as ParsedElementView<A>[]
   for (const view of values(unresolvedViews)) {
     g.addNode(view.id, { view })
     if (isExtendsElementView(view)) {
@@ -57,7 +58,7 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     const tags = unique([
       ...(extendsFrom.tags ?? []),
       ...(view.tags ?? []),
-    ])
+    ]) as aux.Tags<A>
 
     const links = [
       ...(extendsFrom.links ?? []),
@@ -69,12 +70,12 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
       ...view,
       title: view.title ?? extendsFrom.title ?? null,
       description: view.description ?? extendsFrom.description ?? null,
-      tags: isNonEmptyArray(tags) ? tags : null,
+      tags,
       links: isNonEmptyArray(links) ? links : null,
       rules: [...extendsFrom.rules, ...view.rules],
     }
     return acc
-  }, {} as Record<string, LikeC4View>) as V
+  }, {} as Record<string, LikeC4View<A>>) as V
 
   // forEachNodeInTopologicalOrder(g, (_id, { view }) => {
 

@@ -1,35 +1,35 @@
-import { nonexhaustive } from '../../errors'
-import { ModelLayer } from '../../types'
-import { whereOperatorAsPredicate } from '../../types/operators'
-import type { ModelRelation } from '../../types/relation'
-import type { ComputedNode } from '../../types/view'
+import type { AnyAux, aux, ComputedNode } from '../../types'
+import { ModelRelationExpr, whereOperatorAsPredicate } from '../../types'
+import { nonexhaustive } from '../../utils'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
-export type FilterableEdge = Pick<ModelRelation, 'kind' | 'tags'> & {
-  source: ComputedNode
-  target: ComputedNode
+export type FilterableEdge<A extends AnyAux> = {
+  tags?: aux.Tags<A> | null | undefined
+  kind?: string
+  source: ComputedNode<A>
+  target: ComputedNode<A>
 }
 
-export function relationExpressionToPredicates<T extends FilterableEdge>(
-  expr: ModelLayer.AnyRelationExpr,
+export function relationExpressionToPredicates<A extends AnyAux, T extends FilterableEdge<A>>(
+  expr: ModelRelationExpr.Any<A>,
 ): Predicate<T> {
   switch (true) {
-    case ModelLayer.RelationExpr.isCustom(expr): {
+    case ModelRelationExpr.isCustom(expr): {
       return relationExpressionToPredicates(expr.customRelation.expr)
     }
-    case ModelLayer.RelationExpr.isWhere(expr): {
+    case ModelRelationExpr.isWhere(expr): {
       const predicate = relationExpressionToPredicates(expr.where.expr)
       const where = whereOperatorAsPredicate(expr.where.condition)
       return e =>
         predicate(e) && where({
-          source: { tags: e.source.tags, kind: e.source.kind },
-          target: { tags: e.target.tags, kind: e.target.kind },
+          source: { tags: e.source.tags, kind: e.source.kind as aux.AllKinds<A> },
+          target: { tags: e.target.tags, kind: e.target.kind as aux.AllKinds<A> },
           ...(e.tags && { tags: e.tags }),
-          ...(e.kind && { kind: e.kind }),
+          ...(e.kind && { kind: e.kind as aux.AllKinds<A> }),
         })
     }
-    case ModelLayer.RelationExpr.isDirect(expr): {
+    case ModelRelationExpr.isDirect(expr): {
       const isSource = elementExprToPredicate(expr.source)
       const isTarget = elementExprToPredicate(expr.target)
       return edge => {
@@ -37,15 +37,15 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
           || (!!expr.isBidirectional && isSource(edge.target) && isTarget(edge.source))
       }
     }
-    case ModelLayer.RelationExpr.isInOut(expr): {
+    case ModelRelationExpr.isInOut(expr): {
       const isInOut = elementExprToPredicate(expr.inout)
       return edge => isInOut(edge.source) || isInOut(edge.target)
     }
-    case ModelLayer.RelationExpr.isIncoming(expr): {
+    case ModelRelationExpr.isIncoming(expr): {
       const isTarget = elementExprToPredicate(expr.incoming)
       return edge => isTarget(edge.target)
     }
-    case ModelLayer.RelationExpr.isOutgoing(expr): {
+    case ModelRelationExpr.isOutgoing(expr): {
       const isSource = elementExprToPredicate(expr.outgoing)
       return edge => isSource(edge.source)
     }

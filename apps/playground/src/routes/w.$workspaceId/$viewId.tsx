@@ -5,7 +5,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 // import { PlaygroundActorProvider } from '$state/context'
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { IconRenderer } from '$components/IconRenderer'
-import type { ViewId } from '@likec4/core'
+import type { scalar, ViewId } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
@@ -95,7 +95,7 @@ function WorkspaceDiagramPage() {
             readonly={false}
             controls
             fitView
-            fitViewPadding={0.07}
+            fitViewPadding={'32px'}
             experimentalEdgeEditing
             nodesSelectable
             nodesDraggable
@@ -115,9 +115,10 @@ function WorkspaceDiagramPage() {
             onNavigateTo={(nextView, event) => {
               event?.stopPropagation()
               playground.openSources({
-                view: nextView,
+                view: nextView as scalar.ViewId,
               })
               router.navigate({
+                viewTransition: false,
                 from: '/w/$workspaceId/$viewId',
                 to: './',
                 params: {

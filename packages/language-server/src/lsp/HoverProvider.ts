@@ -1,4 +1,4 @@
-import { FqnRef } from '@likec4/core'
+import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
 import { type AstNode, type MaybePromise, AstUtils } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
 import type { Hover } from 'vscode-languageserver-types'
@@ -46,10 +46,10 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       const doc = AstUtils.getDocument(node)
       const instance = this.parser.forDocument(doc).parseDeployedInstance(node)
       const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-        ? [instance.element.project, instance.element.model]
-        : [doc.likec4ProjectId, instance.element.model]
+        ? [instance.element.project as ProjectId, instance.element.model as Fqn]
+        : [doc.likec4ProjectId, instance.element.model as Fqn]
       const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
-      const lines = [instance.id + '  ', `instance of \`${FqnRef.toModelFqn(instance.element)}\``]
+      const lines = [instance.id + '  ', `instance of \`${FqnRef.flatten(instance.element)}\``]
       if (el) {
         lines.push(`### ${el.title}`, 'element kind `' + el.kind + '` ')
       }
@@ -75,6 +75,15 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
         contents: {
           kind: 'markdown',
           value: 'deployment node `' + node.name + '`',
+        },
+      }
+    }
+
+    if (ast.isRelationshipKind(node)) {
+      return {
+        contents: {
+          kind: 'markdown',
+          value: 'relationship kind `' + node.name + '`',
         },
       }
     }

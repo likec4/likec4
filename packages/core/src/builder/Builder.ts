@@ -1,15 +1,33 @@
 import defu from 'defu'
-import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
+import {
+  entries,
+  fromEntries,
+  hasAtLeast,
+  isFunction,
+  isNonNullish,
+  isNullish,
+  map,
+  mapToObj,
+  mapValues,
+  pickBy,
+} from 'remeda'
 import type { Writable } from 'type-fest'
-import { invariant } from '../errors'
+import { computeLikeC4Model } from '../compute-view/compute-view'
 import { LikeC4Model } from '../model/LikeC4Model'
+import type {
+  Any,
+  DeployedInstance,
+  DeploymentFqn,
+  ParsedElementView,
+  ParsedLikeC4ModelData,
+  Specification,
+} from '../types'
 import {
   type Color,
+  type DeploymentElement,
   type DeploymentRelation,
-  type DeploymentView,
   type Element,
   type ElementShape,
-  type ElementView,
   type Fqn,
   type IconUrl,
   type LikeC4View,
@@ -17,13 +35,17 @@ import {
   type ModelGlobals,
   type ModelRelation,
   type NonEmptyArray,
+  type ParsedDeploymentView as DeploymentView,
   type RelationId,
-  type Tag,
+  _stage,
+  _type,
   DefaultElementShape,
   DefaultThemeColor,
-  DeploymentElement,
-  isScopedElementView,
+  FqnRef,
+  isDeployedInstance,
+  isElementView,
 } from '../types'
+import { invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
@@ -97,10 +119,11 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    *    )
    *  )
    *
+   * @example
    *  builder.deployment((_,d) =>
    *    d(
    *      _.node('node1'),
-   *       _.node('node1.child1').with(
+   *      _.node('node1.child1').with(
    *        _.instanceOf('model.element')
    *      )
    *    )
@@ -114,11 +137,34 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds views
    *
    * @example
-   *  builder.views(({ view, $include }, _) =>
+   *  builder.views(({ view, viewOf, deploymentView, $include, $style, $rules }, _) =>
    *    _(
-   *      view('index').with(
+   *      view('view1').with(
+   *        $include('a -> b'),
+   *      ),
+   *      view('view2', {
+   *        title: 'View 2',
+   *      }).with(
+   *        $include('*')
+   *      ),
+   *      view(
+   *        'view3',
+   *        {
+   *          title: 'View 3',
+   *        },
+   *        $rules(
+   *          $include('*'),
+   *          $style(['*', 'alice'], {
+   *            color: 'red',
+   *          }),
+   *        ),
+   *      ),
+   *      viewOf('viewOfA', 'a').with(
+   *        $include('*')
+   *      ),
+   *      deploymentView('deploymentView1').with(
    *        $include('a -> b')
-   *      )
+   *      ),
    *    )
    *  )
    */
@@ -131,12 +177,12 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): Types.ToParsedLikeC4Model<T>
+  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
-   * Returns LikeC4Model with computed views
+   * Returns Computed LikeC4Model
    */
-  toLikeC4Model(): Types.ToLikeC4Model<T>
+  toLikeC4Model(): LikeC4Model.Computed<Types.ToAux<T>>
 }
 
 interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>, DeploymentModelBuilder<T> {
@@ -144,9 +190,31 @@ interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>
 
 type Op<T> = (b: T) => T
 
+function validateSpec(specification: BuilderSpecification) {
+  for (const [kind, spec] of entries(specification.elements)) {
+    if (spec.tags) {
+      for (const tag of spec.tags) {
+        invariant(specification.tags?.[tag], `Invalid specification for element kind "${kind}": tag "${tag}" not found`)
+      }
+    }
+  }
+  if (specification.deployments) {
+    for (const [kind, spec] of entries(specification.deployments)) {
+      if (spec.tags) {
+        for (const tag of spec.tags) {
+          invariant(
+            specification.tags?.[tag],
+            `Invalid specification for deployment kind "${kind}": tag "${tag}" not found`,
+          )
+        }
+      }
+    }
+  }
+}
+
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
-  _elements = new Map<string, Element>(),
+  _elements = new Map<string, Element<Any>>(),
   _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
   _globals = {
@@ -157,18 +225,26 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
-  const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
-    elements: {
-      ...structuredClone(spec.elements) as any,
-    },
-    deployments: {
-      ...structuredClone(spec.deployments) as any,
-    },
-    relationships: {
-      ...structuredClone(spec.relationships) as any,
-    },
-    tags: (spec.tags ?? []) as Tag<T['Tag']>[],
-  })
+  const toLikeC4Specification = (): Specification<Types.ToAux<T>> => {
+    validateSpec(spec)
+    return ({
+      elements: {
+        ...structuredClone(spec.elements) as any,
+      },
+      deployments: {
+        ...structuredClone(spec.deployments) as any,
+      },
+      relationships: {
+        ...structuredClone(spec.relationships) as any,
+      },
+      tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
+        color: DefaultThemeColor,
+        ...tagSpec,
+      })) as any,
+      ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
+      customColors: {},
+    } as Specification<Types.ToAux<T>>)
+  }
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
     if (!links || !hasAtLeast(links, 1)) {
@@ -181,7 +257,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     id: string,
     _props: T['NewViewProps'] | string | B | null,
     builder: B,
-  ): [Omit<LikeC4View, 'rules'>, B] => {
+  ): [Omit<LikeC4View, 'rules' | '_type'>, B] => {
     if (isFunction(_props)) {
       builder = _props as B
       _props = {}
@@ -191,7 +267,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       links: _links = [],
       title = null,
       description = null,
-      tags = null,
+      tags = [],
       ...props
     } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -202,7 +278,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       description,
       tags,
       links,
-      customColorDefinitions: {},
+      _stage: 'parsed',
+      // customColorDefinitions: {},
       ...props,
     }, builder]
   }
@@ -238,9 +315,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return self
     },
     __addRelation(relation) {
-      const sourceEl = _elements.get(relation.source)
+      const sourceEl = _elements.get(FqnRef.flatten(relation.source))
       invariant(sourceEl, `Element with id "${relation.source}" not found`)
-      const targetEl = _elements.get(relation.target)
+      const targetEl = _elements.get(FqnRef.flatten(relation.target))
       invariant(targetEl, `Element with id "${relation.target}" not found`)
       invariant(
         !isSameHierarchy(sourceEl, targetEl),
@@ -252,12 +329,13 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       })
       return self
     },
-    /**
-     * Fully qualified name for nested elements
-     */
     __fqn(id) {
       invariant(id.trim() !== '', 'Id must be non-empty')
       return id as Fqn
+    },
+    __deploymentFqn(id) {
+      invariant(id.trim() !== '', 'Id must be non-empty')
+      return id as DeploymentFqn
     },
     __addSourcelessRelation() {
       throw new Error('Can be called only in nested model')
@@ -266,7 +344,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       if (_views.has(view.id)) {
         throw new Error(`View with id "${view.id}" already exists`)
       }
-      if (isScopedElementView(view)) {
+      if (isElementView(view) && 'viewOf' in view) {
         invariant(
           _elements.get(view.viewOf),
           `Invalid scoped view ${view.id}, wlement with id "${view.viewOf}" not found`,
@@ -287,7 +365,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           `Parent element with id "${parent}" not found for node with id "${node.id}"`,
         )
       }
-      if (DeploymentElement.isInstance(node)) {
+      if (isDeployedInstance(node)) {
         invariant(parent, `Instance ${node.id} of ${node.element} must be deployed under a parent node`)
         invariant(
           _elements.get(node.element),
@@ -299,17 +377,17 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     },
     __addDeploymentRelation: (relation) => {
       invariant(
-        !isSameHierarchy(relation.source.id, relation.target.id),
+        !isSameHierarchy(relation.source.deployment, relation.target.deployment),
         'Cannot create relationship between elements in the same hierarchy',
       )
 
       invariant(
-        _deployments.has(relation.source.id),
-        `Relation "${relation.source.id} -> ${relation.target.id}" references non-existing source`,
+        _deployments.has(relation.source.deployment),
+        `Relation "${relation.source.deployment} -> ${relation.target.deployment}" references non-existing source`,
       )
       invariant(
-        _deployments.has(relation.target.id),
-        `Relation "${relation.source.id} -> ${relation.target.id}" references non-existing target`,
+        _deployments.has(relation.target.deployment),
+        `Relation "${relation.source.deployment} -> ${relation.target.deployment}" references non-existing target`,
       )
 
       _deploymentRelations.push({
@@ -319,6 +397,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return self
     },
     build: () => ({
+      [_stage]: 'parsed',
+      projectId: 'from-builder',
       specification: toLikeC4Specification(),
       elements: fromEntries(
         structuredClone(
@@ -344,7 +424,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     } as any),
     toLikeC4Model: () => {
       const parsed = self.build()
-      return LikeC4Model.compute(parsed)
+      return computeLikeC4Model(parsed)
     },
     helpers: () => ({
       model: {
@@ -353,7 +433,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
           }
         },
-        rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
+        rel: (source, target, _props?) => {
           return <T extends AnyTypes>(b: ModelBuilder<T>) => {
             const {
               title = '',
@@ -365,8 +445,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             )
             const links = mapLinks(_links)
             b.__addRelation({
-              source: source as any,
-              target: target as any,
+              source: {
+                model: source,
+              },
+              target: {
+                model: target,
+              },
               title,
               ...(links && { links }),
               ...props,
@@ -386,7 +470,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             )
             const links = mapLinks(_links)
             b.__addSourcelessRelation({
-              target,
+              target: {
+                model: target,
+              },
               title,
               ...(links && { links }),
               ...props,
@@ -422,7 +508,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 title: title ?? nameFromFqn(_id),
                 description: null,
                 technology: null,
-                tags: null,
+                tags: [],
                 color: specStyle?.color ?? DefaultThemeColor as Color,
                 shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
                 style: pickBy({
@@ -449,7 +535,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 b.__addSourcelessRelation = (relation) => {
                   return b.__addRelation({
                     ...relation,
-                    source: __fqn(id),
+                    source: {
+                      model: __fqn(id),
+                    },
                   })
                 }
                 ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
@@ -476,9 +564,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ElementView> = {
+          const view: Writable<ParsedElementView> = {
             ...generic,
-            __: 'element',
+            [_type]: 'element',
             rules: [],
           }
 
@@ -507,10 +595,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           _builder?: ElementViewRulesBuilder<any>,
         ) => {
           const [generic, builder] = createGenericView(id, _props, _builder)
-          const view: Writable<ElementView> = {
+          const view: Writable<ParsedElementView> = {
             ...generic,
             viewOf: viewOf as Fqn,
-            __: 'element',
+            [_type]: 'element',
             rules: [],
           }
 
@@ -542,7 +630,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           const [generic, builder] = createGenericView(id, _props, _builder)
           const view: Writable<DeploymentView> = {
             ...generic,
-            __: 'deployment',
+            [_type]: 'deployment',
             rules: [],
           }
 
@@ -600,34 +688,34 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               title,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
-            const _id = b.__fqn(id)
+            const _id = b.__deploymentFqn(id)
             invariant(_elements.has(target), `Target element with id "${target}" not found`)
             b.__addDeployment({
               id: _id,
-              element: target as any,
+              element: target as Fqn,
               ...title && { title },
               ...links && { links: mapLinks(links) },
               ...props,
-            })
+            } as DeployedInstance)
             return b as any
           }
         },
         rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
           return <T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
             const {
-              title,
+              title = null,
               links,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
             b.__addDeploymentRelation({
               source: {
-                id: source as any,
+                deployment: source as any,
               },
               target: {
-                id: target as any,
+                deployment: target as any,
               },
-              ...title && { title },
+              title,
               ...links && { links: mapLinks(links) },
               ...props,
             })
@@ -652,7 +740,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const icon = _icon ?? specStyle?.icon
 
-              const _id = b.__fqn(id)
+              const _id = b.__deploymentFqn(id)
 
               b.__addDeployment({
                 id: _id,
@@ -661,18 +749,20 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 description: null,
                 technology: null,
                 tags: null,
-                color: specStyle?.color ?? DefaultThemeColor as Color,
-                shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                style: pickBy({
-                  border: specStyle?.border,
-                  opacity: specStyle?.opacity,
-                  size: specStyle?.size,
-                  padding: specStyle?.padding,
-                  textSize: specStyle?.textSize,
-                  ...style,
-                }, isNonNullish),
+                style: {
+                  ...icon && { icon: icon as IconUrl },
+                  color: specStyle?.color ?? DefaultThemeColor as Color,
+                  shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
+                  ...pickBy({
+                    border: specStyle?.border,
+                    opacity: specStyle?.opacity,
+                    size: specStyle?.size,
+                    padding: specStyle?.padding,
+                    textSize: specStyle?.textSize,
+                    ...style,
+                  }, isNonNullish),
+                },
                 ...links && { links: mapLinks(links) },
-                ...icon && { icon: icon as IconUrl },
                 ...spec,
                 ...props,
               })
@@ -683,12 +773,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               (...ops: Array<(input: DeploymentModelBuilder<any>) => DeploymentModelBuilder<any>>) =>
               (b: DeploymentModelBuilder<any>) => {
                 add(b)
-                const { __fqn } = b
+                const { __deploymentFqn } = b
                 try {
-                  b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn
+                  b.__deploymentFqn = (child) => `${__deploymentFqn(id)}.${child}` as DeploymentFqn
                   ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
                 } finally {
-                  b.__fqn = __fqn
+                  b.__deploymentFqn = __deploymentFqn
                 }
                 return b
               }
@@ -740,6 +830,7 @@ export namespace Builder {
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
     views: ViewsHelpers
   } {
+    validateSpec(spec)
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
@@ -750,6 +841,7 @@ export namespace Builder {
   export function specification<const Spec extends BuilderSpecification>(
     spec: Spec,
   ): Builder<Types.FromSpecification<Spec>> {
+    validateSpec(spec)
     return builder<Spec, Types.FromSpecification<Spec>>(spec)
   }
 }

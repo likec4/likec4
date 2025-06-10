@@ -1,119 +1,63 @@
-import type { IsStringLiteral, LiteralUnion, Simplify } from 'type-fest'
+import type { Tagged } from 'type-fest'
 import type {
+  AnyAux,
+  ComputedLikeC4ModelData,
   ComputedView,
   DiagramView,
-  EdgeId,
-  Fqn,
-  GenericLikeC4ModelData,
-  KeysOf,
   LayoutedLikeC4ModelData,
-  LikeC4ModelDump,
-  NodeId,
   ParsedLikeC4ModelData,
-  RelationId,
-  ViewId,
+  scalar,
+  ViewType,
+  ViewWithType,
 } from '../types'
-import { isString } from '../utils/guards'
+import type * as aux from '../types/aux'
+import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
 export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
 
+type AnyScalar<V extends string> =
+  | Tagged<V, 'Fqn'>
+  | Tagged<V, 'DeploymentFqn'>
+  | Tagged<V, 'ViewId'>
+  | Tagged<V, 'NodeId'>
+  | Tagged<V, 'EdgeId'>
+  | Tagged<V, 'RelationId'>
+
 /**
  * Utility function to extract `id` from the given element.
  */
-export function getId<Id extends string>(element: string | { id: Id }): Id {
-  return isString(element) ? element as Id : element.id
+export function getId<Id extends string, Scalar extends AnyScalar<Id>>(element: Id | { id: Scalar }): Scalar {
+  return typeof element === 'string' ? element as unknown as Scalar : element.id
 }
 
-type WithId<Id> = { id: Id }
+export type ElementOrFqn<A extends AnyAux> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
-type WithViews<Id extends string, ViewType> = { views: Record<Id, ViewType> }
+export type DeploymentOrFqn<A extends AnyAux> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
 
-/**
- * Auxilary type to keep track
- */
-export interface Aux<
-  Element extends string,
-  Deployment extends string,
-  View extends string,
-  ViewType,
-> {
-  Element: Element
-  Deployment: Deployment
-  View: View
+export type ViewOrId<A extends AnyAux> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
 
-  // Wrapped Element
-  // If Fqn is just a string, then we use generic Fqn to have better hints in the editor
-  Fqn: IsStringLiteral<Element> extends true ? Fqn<Element> : Fqn
-  ElementOrFqn: Element | WithId<this['Fqn']>
+export type NodeOrId = string | { id: scalar.NodeId }
+export type EdgeOrId = string | { id: scalar.EdgeId }
+export type RelationOrId = string | { id: scalar.RelationId }
 
-  // Wrapped Deployment
-  DeploymentFqn: IsStringLiteral<Deployment> extends true ? Fqn<Deployment> : Fqn
-  DeploymentOrFqn: Deployment | WithId<this['DeploymentFqn']>
+export type $View<A extends AnyAux> = {
+  parsed: never
+  computed: ComputedView<A>
+  layouted: DiagramView<A>
+}[aux.Stage<A>]
 
-  // Wrapped View
-  ViewId: IsStringLiteral<View> extends true ? ViewId<View> : ViewId
+export type $ViewWithType<A extends AnyAux, V extends ViewType> = ViewWithType<$View<A>, V>
 
-  ViewType: ViewType
+export type $ViewModel<A extends AnyAux> = {
+  parsed: never
+  computed: LikeC4ViewModel<A>
+  layouted: LikeC4ViewModel<A>
+}[aux.Stage<A>]
 
-  RelationId: RelationId
-  NodeId: NodeId
-  NodeIdLiteral: string
-  EdgeId: EdgeId
-  EdgeIdLiteral: string
-
-  NodeOrId: LiteralUnion<this['NodeIdLiteral'], string> | WithId<this['NodeId']>
-  EdgeOrId: LiteralUnion<this['EdgeIdLiteral'], string> | WithId<this['EdgeId']>
-
-  Model: Simplify<Omit<GenericLikeC4ModelData, 'views'> & WithViews<this['ViewId'], ViewType>>
-}
-
-export type AnyAux = Aux<
-  string,
-  string,
-  string,
-  any
->
-
-export namespace Strict {
-  export type Fqn<A extends AnyAux> = A['Element']
-  export type Deployment<A extends AnyAux> = A['Deployment']
-  export type ViewId<A extends AnyAux> = A['View']
-}
-
-export namespace Aux {
-  export type FromParsed<M> = M extends ParsedLikeC4ModelData ? Aux<
-      KeysOf<M['elements']>,
-      KeysOf<M['deployments']['elements']>,
-      KeysOf<M['views']>,
-      ComputedView<ViewId<KeysOf<M['views']>>, string>
-    >
-    : never
-
-  export type FromModel<M> = M extends GenericLikeC4ModelData ? Aux<
-      KeysOf<M['elements']>,
-      KeysOf<M['deployments']['elements']>,
-      KeysOf<M['views']>,
-      M extends LayoutedLikeC4ModelData ? DiagramView<ViewId<KeysOf<M['views']>>, string>
-        : ComputedView<ViewId<KeysOf<M['views']>>, string>
-    >
-    : never
-
-  export type FromDump<M> = M extends LikeC4ModelDump ? Aux<
-      KeysOf<M['elements']>,
-      KeysOf<M['deployments']['elements']>,
-      KeysOf<M['views']>,
-      DiagramView<ViewId<KeysOf<M['views']>>, string>
-    >
-    : never
-}
-
-// export type FromModel<M> = LikeC4Model<
-//   M extends AnyLikeC4Model<
-//     infer Fqn extends string,
-//     infer Deployment extends string,
-//     infer ViewId extends string,
-//     any
-//   > ? Aux<Fqn, Deployment, ViewId, M>
-//     : Aux<KeysOf<>, string, string, ComputedLikeC4Model | LayoutedLikeC4Model>
-// >
+// export type $ModelData<A> = A extends infer T extends Any ? {
+export type $ModelData<A extends AnyAux> = {
+  parsed: ParsedLikeC4ModelData<A>
+  computed: ComputedLikeC4ModelData<A>
+  layouted: LayoutedLikeC4ModelData<A>
+}[aux.Stage<A>]

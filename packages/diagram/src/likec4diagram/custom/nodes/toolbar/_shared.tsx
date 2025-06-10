@@ -1,4 +1,12 @@
-import { type Fqn, type NodeId, type ThemeColor, type ViewChange, defaultTheme, invariant } from '@likec4/core'
+import {
+  type DeploymentFqn,
+  type Fqn,
+  type NodeId,
+  type ThemeColor,
+  type ViewChange,
+  defaultTheme,
+  invariant,
+} from '@likec4/core'
 import { ActionIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
@@ -45,7 +53,7 @@ export const Tooltip = MantineTooltip.withProps({
 })
 
 export function useHandlers(
-  target: Fqn,
+  target: Fqn | DeploymentFqn,
   props: NodeProps<Types.NodeData>,
 ) {
   const { onChange: triggerOnChange } = useDiagramEventHandlers()
@@ -113,7 +121,7 @@ export function BrowseRelationshipsButton({ fqn }: { fqn: Fqn }) {
   )
 }
 
-export function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { deploymentId: Fqn }>) {
+export function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { deploymentId: DeploymentFqn }>) {
   const { onOpenSource } = useDiagramEventHandlers()
   if (!onOpenSource) return null
   // const diagramApi = useDiagramStoreApi()

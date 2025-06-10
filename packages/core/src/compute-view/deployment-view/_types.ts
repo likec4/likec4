@@ -1,6 +1,6 @@
-import { LikeC4DeploymentModel } from '../../model/DeploymentModel'
-import type { RelationshipModel } from '../../model/RelationModel'
-import type { ExpressionV2, Filterable, OperatorPredicate } from '../../types'
+import type { RelationshipModel } from '../../model'
+import { LikeC4DeploymentModel } from '../../model'
+import type { AnyAux, Expression, OperatorPredicate } from '../../types'
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
 
 export { Memory, type Stage } from './memory'
@@ -13,26 +13,26 @@ export type Connection = Ctx['Connection']
 export type ElementWhere = Where<Elem>
 export type ElementWhereFilter = (elements: readonly Elem[]) => Elem[]
 export type ConnectionWhere = Where<Connection>
-export type RelationshipWhere = Where<RelationshipModel>
+export type RelationshipWhere = Where<RelationshipModel<any>>
 export type ConnectionWhereFilter = (connections: readonly Connection[]) => Connection[]
 
 export type Connections = ReadonlyArray<Connection>
 
-export interface PredicateCtx<Expr extends ExpressionV2 = ExpressionV2> {
+export interface PredicateCtx<Expr = Expression<AnyAux>> {
   expr: Expr
   stage: Stage
-  model: LikeC4DeploymentModel
+  model: LikeC4DeploymentModel<AnyAux>
   memory: Memory
-  where: OperatorPredicate<Filterable> | null
+  where: OperatorPredicate<AnyAux> | null
 }
-export interface IncludePredicateCtx<Expr extends ExpressionV2 = ExpressionV2> extends PredicateCtx<Expr> {
+export interface IncludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
   stage: StageInclude
 }
-export interface ExcludePredicateCtx<Expr extends ExpressionV2 = ExpressionV2> extends PredicateCtx<Expr> {
+export interface ExcludePredicateCtx<Expr = Expression<AnyAux>> extends PredicateCtx<Expr> {
   stage: StageExclude
 }
 
-export interface PredicateExecutor<Expr extends ExpressionV2> {
+export interface PredicateExecutor<Expr extends Expression<AnyAux> = Expression<AnyAux>> {
   include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
   exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

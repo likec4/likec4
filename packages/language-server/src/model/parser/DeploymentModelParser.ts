@@ -76,8 +76,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
     parseDeploymentNode(astNode: ast.DeploymentNode): ParsedAstDeployment.Node {
       const isValid = this.isValid
-      const id = this.resolveFqn(astNode)
-      const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
+      const id = this.resolveFqn(astNode) as unknown as c4.DeploymentFqn
+      const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentKind
       const tags = this.convertTags(astNode.body)
       const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
@@ -110,7 +110,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
     parseDeployedInstance(astNode: ast.DeployedInstance): ParsedAstDeployment.Instance {
       const isValid = this.isValid
-      const id = this.resolveFqn(astNode)
+      const id = this.resolveFqn(astNode) as unknown as c4.DeploymentFqn
       const target = this.parseFqnRef(astNode.target.modelElement)
       invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
       // const element = FqnRef.toModelFqn(target)
@@ -183,12 +183,14 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
     parseDeploymentRelation(astNode: ast.DeploymentRelation): ParsedAstDeploymentRelation {
       const isValid = this.isValid
       const astPath = this.getAstNodePath(astNode)
-      const source = FqnRef.toDeploymentRef(this._resolveDeploymentRelationSource(astNode))
-      const target = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.target))
+      const source = this._resolveDeploymentRelationSource(astNode)
+      invariant(FqnRef.isDeploymentRef(source), 'Invalid source for deployment relation')
+      const target = this.parseFqnRef(astNode.target)
+      invariant(FqnRef.isDeploymentRef(target), 'Invalid target for deployment relation')
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
       const links = this.convertLinks(astNode.body)
-      const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
+      const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
       const bodyProps = mapToObj(
@@ -213,8 +215,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const id = stringHash(
         'deployment',
         astPath,
-        source.id,
-        target.id,
+        source.deployment,
+        target.deployment,
       ) as c4.RelationId
 
       return {

@@ -1,20 +1,28 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedNode } from '../../types/view'
-import { $incoming, $inout, $outgoing, $participant, $relation, $where } from '../element-view/__test__/fixture'
+import type { ComputedNode } from '../../types'
+import {
+  type $Aux,
+  $incoming,
+  $inout,
+  $outgoing,
+  $participant,
+  $relation,
+  $where,
+} from '../element-view/__test__/fixture'
 import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'
 
 function el(id: string): ComputedNode {
   return { id } as ComputedNode
 }
 
-function r(id: string, props = {}): FilterableEdge {
+function r(id: string, props = {}): FilterableEdge<$Aux> {
   const [source, target] = id.split(':')
   return {
     id,
     source: el(source!),
     target: el(target!),
     ...props,
-  } as FilterableEdge
+  } as FilterableEdge<$Aux>
 }
 
 describe('relationExpressionToPredicates', () => {

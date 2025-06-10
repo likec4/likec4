@@ -79,6 +79,10 @@
       }
     },
     {
+      "match": "#[a-fA-F0-9]+\\b",
+      "name": "constant.other.color.likec4"
+    },
+    {
       "match": "\\b(opacity):?\\s+([^\\s]+)",
       "captures": {
         "1": {

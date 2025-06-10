@@ -1,62 +1,79 @@
 import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn, ModelRelation, RelationId } from '../types'
-import { compareRelations } from './relations'
+import { type RelationshipLike, compareRelations } from './relations'
 
 const relations = [
   {
-    id: 'customer:cloud.frontend.dashboard' as RelationId,
-    source: 'customer' as Fqn,
-    target: 'cloud.frontend.dashboard' as Fqn,
-    title: '',
+    source: {
+      model: 'customer',
+    },
+    target: {
+      model: 'cloud.frontend.dashboard',
+    },
   },
   {
-    id: 'support:cloud.frontend.supportPanel' as RelationId,
-    source: 'support' as Fqn,
-    target: 'cloud.frontend.supportPanel' as Fqn,
-    title: '',
+    source: {
+      model: 'support',
+    },
+    target: {
+      model: 'cloud.frontend.supportPanel',
+    },
   },
   {
-    id: 'cloud.backend.storage:amazon.s3' as RelationId,
-    source: 'cloud.backend.storage' as Fqn,
-    target: 'amazon.s3' as Fqn,
-    title: '',
+    source: {
+      model: 'cloud.backend.storage',
+    },
+    target: {
+      model: 'amazon.s3',
+    },
   },
   {
-    id: 'amazon.api:cloud.backend.graphql' as RelationId,
-    source: 'amazon.api' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
-    title: '',
+    source: {
+      model: 'amazon.api',
+    },
+    target: {
+      model: 'cloud.backend.graphql',
+    },
   },
   {
-    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
-    source: 'cloud.backend.graphql' as Fqn,
-    target: 'cloud.backend.storage' as Fqn,
-    title: '',
+    source: {
+      model: 'cloud.backend.graphql',
+    },
+    target: {
+      model: 'cloud.backend.storage',
+    },
   },
   {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.dashboard' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
-    title: '',
+    source: {
+      model: 'cloud.frontend.dashboard',
+    },
+    target: {
+      model: 'cloud.backend.graphql',
+    },
   },
   {
-    id: 'cloud.frontend.supportPanel:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.supportPanel' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
-    title: '',
+    source: {
+      model: 'cloud.frontend.supportPanel',
+    },
+    target: {
+      model: 'cloud.backend.graphql',
+    },
   },
-] satisfies ModelRelation[]
+] satisfies RelationshipLike[]
 
 describe('compareRelations', () => {
-  function rel(source: string, target: string) {
+  function rel(source: string, target: string): RelationshipLike {
     return {
-      source,
-      target,
+      source: {
+        model: source,
+      },
+      target: {
+        model: target,
+      },
     }
   }
-  function sorted(...relations: Array<{ source: string; target: string }>) {
-    return sort(relations, compareRelations).map(r => r.source + ' -> ' + r.target)
+  function sorted(...relations: Array<RelationshipLike>) {
+    return sort(relations, compareRelations).map(r => r.source.model + ' -> ' + r.target.model)
   }
 
   it('should sort by source and target', () => {

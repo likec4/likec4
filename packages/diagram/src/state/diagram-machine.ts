@@ -1,16 +1,15 @@
 import {
-  type BBox,
+  type DiagramNode,
   type DiagramView,
   type EdgeId,
-  type ElementNotation,
   type Fqn,
   type NodeId,
+  type NodeNotation as ElementNotation,
   type StepEdgeId,
   type ViewChange,
   type ViewId,
   type XYPoint,
-  DiagramNode,
-  getBBoxCenter,
+  BBox,
   getParallelStepsPrefix,
   invariant,
   isStepEdgeId,
@@ -51,6 +50,7 @@ import type { OpenSourceParams, PaddingWithUnit } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
 import { overlaysActorLogic } from '../overlays/overlaysActor'
+import { searchActorLogic } from '../search/searchActor'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
@@ -59,7 +59,6 @@ import {
   navigateBack,
   navigateForward,
   resetEdgeControlPoints,
-  unfocusNodesEdges,
   updateActiveWalkthrough,
   updateEdgeData,
   updateNavigationHistory,
@@ -161,6 +160,7 @@ export type Events =
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
@@ -175,6 +175,8 @@ export type Events =
   | { type: 'walkthrough.end' }
   | { type: 'notations.highlight'; notation: ElementNotation; kind?: string }
   | { type: 'notations.unhighlight' }
+  | { type: 'tag.highlight'; tag: string }
+  | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
 export type ActionArg = { context: Context; event: Events }
@@ -188,6 +190,7 @@ const _diagramMachine = setup({
       syncLayout: 'syncManualLayoutActorLogic'
       hotkey: 'hotkeyActorLogic'
       overlays: 'overlaysActorLogic'
+      search: 'searchActorLogic'
     },
     events: {} as Events,
   },
@@ -195,6 +198,7 @@ const _diagramMachine = setup({
     syncManualLayoutActorLogic,
     hotkeyActorLogic,
     overlaysActorLogic,
+    searchActorLogic,
   },
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
@@ -202,8 +206,9 @@ const _diagramMachine = setup({
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
+    'enabled: Search': ({ context }) => context.features.enableSearch,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
-    'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
+    'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {
@@ -258,10 +263,10 @@ const _diagramMachine = setup({
       const diagramNode = findDiagramNode(context, nodeId)
       if (!diagramNode) return
 
-      if (DiagramNode.deploymentRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', deployment: DiagramNode.deploymentRef(diagramNode)! })
-      } else if (DiagramNode.modelRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', element: DiagramNode.modelRef(diagramNode)! })
+      if (diagramNode.deploymentRef) {
+        enqueue.raise({ type: 'open.source', deployment: diagramNode.deploymentRef })
+      } else if (diagramNode.modelRef) {
+        enqueue.raise({ type: 'open.source', element: diagramNode.modelRef })
       }
     }),
 
@@ -270,7 +275,7 @@ const _diagramMachine = setup({
         bounds = context.view.bounds,
         duration = 450,
       } = params ?? {}
-      const { width, height, panZoom, transform } = context.xystore.getState()
+      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
       const viewport = getViewportForBounds(
@@ -288,7 +293,7 @@ const _diagramMachine = setup({
 
     'xyflow:fitFocusedBounds': ({ context }) => {
       const { bounds, duration = 450 } = focusedBounds({ context })
-      const { width, height, panZoom, transform } = context.xystore.getState()
+      const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
       const viewport = getViewportForBounds(
@@ -316,7 +321,7 @@ const _diagramMachine = setup({
         viewport,
         duration = 350,
       } = params
-      const { panZoom } = context.xystore.getState()
+      const panZoom = context.xystore?.getState().panZoom
       panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
     },
 
@@ -333,12 +338,12 @@ const _diagramMachine = setup({
           x: Math.round(fromPos.x - toPos.x),
           y: Math.round(fromPos.y - toPos.y),
         }
-      context.xystore.getState().panBy(diff)
+      context.xystore!.getState().panBy(diff)
     },
 
     'layout.align': ({ context }, params: { mode: AlignmentMode }) => {
       const { mode } = params
-      const { xystore } = context
+      const xystore = nonNullable(context.xystore, 'xystore is not initialized')
       const { nodeLookup, parentLookup } = xystore.getState()
 
       const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
@@ -365,14 +370,7 @@ const _diagramMachine = setup({
       }
       constraints.updateXYFlowNodes()
     },
-
-    'updateFeatures': enqueueActions(({ enqueue, system, event }) => {
-      assertEvent(event, 'update.features')
-      const { features } = event
-      enqueue.assign({
-        features: { ...features },
-      })
-
+    'ensure overlays actor state': enqueueActions(({ enqueue, context: { features }, system }) => {
       const enableOverlays = features.enableElementDetails || features.enableRelationshipDetails ||
         features.enableRelationshipBrowser
       const hasRunning = typedSystem(system).overlaysActorRef
@@ -387,14 +385,37 @@ const _diagramMachine = setup({
         enqueue.stopChild('overlays')
       }
     }),
-
+    'ensure search actor state': enqueueActions(({ enqueue, context: { features: { enableSearch } }, system }) => {
+      const hasRunning = typedSystem(system).searchActorRef
+      if (enableSearch && !hasRunning) {
+        enqueue.spawnChild('searchActorLogic', { id: 'search', systemId: 'search' })
+        return
+      }
+      if (!enableSearch && hasRunning) {
+        enqueue.sendTo(hasRunning, {
+          type: 'close',
+        })
+        enqueue.stopChild('search')
+      }
+    }),
+    'updateFeatures': assign(({ event }) => {
+      assertEvent(event, 'update.features')
+      return {
+        features: { ...event.features },
+      }
+    }),
+    'closeSearch': sendTo(
+      ({ system }) => typedSystem(system).searchActorRef!,
+      {
+        type: 'close',
+      },
+    ),
     'closeAllOverlays': sendTo(
       ({ system }) => typedSystem(system).overlaysActorRef!,
       {
         type: 'close.all',
       },
     ),
-
     'startSyncLayout': assign(({ context, spawn, self }) => ({
       syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
         id: 'syncLayout',
@@ -450,6 +471,7 @@ const _diagramMachine = setup({
         }),
       }
     }),
+    'focus on nodes and edges': assign(focusNodesEdges),
     'notations.highlight': assign(({ context }, params: { notation: ElementNotation; kind?: string }) => {
       const kinds = params.kind ? [params.kind] : params.notation.kinds
       const xynodes = context.xynodes.map((n) => {
@@ -470,10 +492,29 @@ const _diagramMachine = setup({
         xyedges: context.xyedges.map(Base.setDimmed('immediate')),
       }
     }),
+    'tag.highlight': assign(({ context, event }) => {
+      assertEvent(event, 'tag.highlight')
+      return {
+        xynodes: context.xynodes.map((n) => {
+          if (n.data.tags?.includes(event.tag)) {
+            return Base.setDimmed(n, false)
+          }
+          return Base.setDimmed(n, 'immediate')
+        }),
+      }
+    }),
+    'undim everything': assign(({ context }) => ({
+      xynodes: context.xynodes.map(Base.setDimmed(false)),
+      xyedges: context.xyedges.map(Base.setData({
+        dimmed: false,
+        active: false,
+      })),
+    })),
+    'update active walkthrough': assign(updateActiveWalkthrough),
   },
 }).createMachine({
   initial: 'initializing',
-  context: ({ input, self, spawn }) => ({
+  context: ({ input }): Context => ({
     ...input,
     xyedges: [],
     xynodes: [],
@@ -528,7 +569,7 @@ const _diagramMachine = setup({
         },
       },
     },
-    'isReady': {
+    isReady: {
       always: [{
         guard: 'isReady',
         actions: [
@@ -609,8 +650,8 @@ const _diagramMachine = setup({
               node: NodeId
               clientRect: Rect
             }
-            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => DiagramNode.modelRef(n) === event.fqn)?.id
-            const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
+            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.modelRef === event.fqn)?.id
+            const internalNode = fromNodeId ? nonNullable(context.xystore).getState().nodeLookup.get(fromNodeId) : null
             if (fromNodeId && internalNode) {
               const nodeRect = nodeToRect(internalNode)
               const zoom = context.xyflow!.getZoom()
@@ -703,10 +744,13 @@ const _diagramMachine = setup({
           },
         },
         'notations.unhighlight': {
-          actions: assign(({ context }) => ({
-            xynodes: context.xynodes.map(Base.setDimmed(false)),
-            xyedges: context.xyedges.map(Base.setDimmed(false)),
-          })),
+          actions: 'undim everything',
+        },
+        'tag.highlight': {
+          actions: 'tag.highlight',
+        },
+        'tag.unhighlight': {
+          actions: 'undim everything',
         },
         'saveManualLayout.*': {
           guard: 'not readonly',
@@ -719,6 +763,13 @@ const _diagramMachine = setup({
             }
             nonexhaustive(event)
           }),
+        },
+        'open.search': {
+          guard: 'enabled: Search',
+          actions: sendTo(({ system }) => typedSystem(system).searchActorRef!, ({ event }) => ({
+            type: 'open',
+            search: event.search,
+          })),
         },
       },
       exit: [
@@ -798,8 +849,8 @@ const _diagramMachine = setup({
         },
         focused: {
           entry: [
+            'focus on nodes and edges',
             assign(s => ({
-              ...focusNodesEdges(s),
               viewportBeforeFocus: { ...s.context.viewport },
             })),
             'open source of focused or last clicked node',
@@ -811,10 +862,10 @@ const _diagramMachine = setup({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue({ type: 'xyflow:fitDiagram' })
+              enqueue('xyflow:fitDiagram')
             }
+            enqueue('undim everything')
             enqueue.assign({
-              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
               focusedNode: null,
             })
@@ -842,7 +893,7 @@ const _diagramMachine = setup({
                 assign({
                   focusedNode: ({ event }) => event.nodeId,
                 }),
-                assign(focusNodesEdges),
+                'focus on nodes and edges',
                 'open source of focused or last clicked node',
                 'xyflow:fitFocusedBounds',
               ],
@@ -857,9 +908,10 @@ const _diagramMachine = setup({
               target: 'idle',
             },
             'notations.unhighlight': {
-              actions: assign(s => ({
-                ...focusNodesEdges(s),
-              })),
+              actions: 'focus on nodes and edges',
+            },
+            'tag.unhighlight': {
+              actions: 'focus on nodes and edges',
             },
           },
         },
@@ -877,7 +929,7 @@ const _diagramMachine = setup({
                 }
               },
             }),
-            assign(updateActiveWalkthrough),
+            'update active walkthrough',
             'xyflow:fitFocusedBounds',
           ],
           on: {
@@ -908,7 +960,7 @@ const _diagramMachine = setup({
                     parallelPrefix: getParallelStepsPrefix(nextStepId),
                   },
                 })
-                enqueue.assign(updateActiveWalkthrough)
+                enqueue('update active walkthrough')
                 enqueue('xyflow:fitFocusedBounds')
               }),
             },
@@ -925,14 +977,15 @@ const _diagramMachine = setup({
                     },
                   }
                 }),
-                assign(updateActiveWalkthrough),
+                'update active walkthrough',
                 'xyflow:fitFocusedBounds',
               ],
             },
             'notations.unhighlight': {
-              actions: assign(s => ({
-                ...updateActiveWalkthrough(s),
-              })),
+              actions: 'update active walkthrough',
+            },
+            'tag.unhighlight': {
+              actions: 'update active walkthrough',
             },
             'walkthrough.end': {
               target: 'idle',
@@ -952,11 +1005,11 @@ const _diagramMachine = setup({
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
             } else {
-              enqueue({ type: 'xyflow:fitDiagram' })
+              enqueue('xyflow:fitDiagram')
             }
+            enqueue('undim everything')
             enqueue.assign({
               activeWalkthrough: null,
-              ...unfocusNodesEdges({ context, event }),
               viewportBeforeFocus: null,
             })
           }),
@@ -968,6 +1021,7 @@ const _diagramMachine = setup({
       id: 'navigating',
       entry: [
         'closeAllOverlays',
+        'closeSearch',
         'stopSyncLayout',
         {
           type: 'trigger:NavigateTo',
@@ -994,7 +1048,7 @@ const _diagramMachine = setup({
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
-                params: getBBoxCenter(event.view.bounds),
+                params: BBox.center(event.view.bounds),
               })
             }
             enqueue.assign(updateNavigationHistory)
@@ -1047,6 +1101,7 @@ const _diagramMachine = setup({
           const isAnotherView = check('is another view')
           if (isAnotherView) {
             enqueue('closeAllOverlays')
+            enqueue('closeSearch')
             enqueue('stopSyncLayout')
             enqueue.assign({
               focusedNode: null,
@@ -1067,7 +1122,7 @@ const _diagramMachine = setup({
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
-                params: getBBoxCenter(event.view.bounds),
+                params: BBox.center(event.view.bounds),
               })
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
@@ -1091,13 +1146,19 @@ const _diagramMachine = setup({
       actions: assign(({ event }) => ({ ...event.inputs })),
     },
     'update.features': {
-      actions: 'updateFeatures',
+      actions: [
+        'updateFeatures',
+        'ensure overlays actor state',
+        'ensure search actor state',
+      ],
     },
   },
   exit: [
     'stopSyncLayout',
     cancel('fitDiagram'),
     stopChild('hotkey'),
+    stopChild('overlays'),
+    stopChild('search'),
     assign({
       xyflow: null,
       xystore: null as any,
@@ -1112,7 +1173,9 @@ const _diagramMachine = setup({
   ],
 })
 
-const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
+function nodeRef(node: DiagramNode) {
+  return node.modelRef ?? node.deploymentRef
+}
 function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   const fromNodeId = context.lastOnNavigate?.fromNode
   const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)

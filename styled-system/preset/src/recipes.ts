@@ -81,3 +81,56 @@ export const actionBtn = defineRecipe({
     conditions: ['whenHovered', 'hover', 'reducedGraphics'],
   }],
 })
+
+export const likec4tag = defineRecipe({
+  className: 'likec4-tag',
+  base: {
+    pointerEvents: 'all',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 40,
+    width: 'min-content',
+    transition: 'fast',
+    fontSize: 'xs',
+    fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
+    fontWeight: 500,
+    '& > span': {
+      display: 'inline-block',
+      // lineHeight: 1.5,
+    },
+    whiteSpace: 'nowrap',
+    px: 5,
+    border: 'none',
+    borderRadius: 3,
+    backgroundColor: {
+      base: 'likec4.tag.bg',
+      _hover: 'likec4.tag.bg.hover',
+    },
+  },
+  variants: {
+    autoTextColor: {
+      false: {
+        '& > span': {
+          color: 'likec4.tag.text',
+        },
+      },
+      true: {
+        '& > span': {
+          color: '[transparent]',
+          filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
+          background: 'inherit',
+          backgroundClip: 'text',
+          mixBlendMode: 'plus-lighter',
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    autoTextColor: false,
+  },
+  staticCss: [{
+    autoTextColor: ['true', 'false'],
+    conditions: ['hover'],
+  }],
+})

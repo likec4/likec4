@@ -1,7 +1,6 @@
 import { last, reverse } from 'remeda'
-import { invariant } from '../../errors'
-import type { Fqn } from '../../types'
-import type { ComputedEdge, ComputedNode } from '../../types/view'
+import type { AnyAux, ComputedEdge, ComputedNode } from '../../types'
+import { invariant } from '../../utils'
 import { commonHead } from '../../utils/common-head'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
@@ -9,7 +8,10 @@ import { ancestorsOfNode } from './ancestorsOfNode'
  * Update `inEdges` and `outEdges` props of nodes based on the edges
  * Mutates nodes and updates their in/out edges
  */
-export function linkNodesWithEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
+export function linkNodesWithEdges<A extends AnyAux>(
+  nodesMap: ReadonlyMap<any, ComputedNode<A>>,
+  edges: ComputedEdge<A>[],
+) {
   for (const edge of edges) {
     const source = nodesMap.get(edge.source)
     const target = nodesMap.get(edge.target)

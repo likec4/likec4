@@ -1,14 +1,17 @@
 import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import {
+  type Any,
+  type AnyAux,
+  type AnyViewRuleStyle as ViewRuleStyle,
   type AutoLayoutDirection,
-  type ExpressionV2,
+  type Expression,
+  type ModelRelationExpr,
   type NonEmptyArray,
-  type ViewRuleStyle,
   type WhereOperator,
+  ModelFqnExpr,
 } from '../types'
-import { ModelLayer } from '../types/expression-v2-model'
-import type { KindEqual, Participant, TagEqual } from '../types/operators'
+import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
 export interface LikeC4ViewBuilder<
@@ -25,7 +28,7 @@ export interface LikeC4ViewBuilder<
   $expr(expr: Expr | TypedExpr): TypedExpr
   include(...exprs: Expr[]): this
   exclude(...exprs: Expr[]): this
-  style(rule: ViewRuleStyle): this
+  style(rule: ViewRuleStyle<any>): this
   autoLayout(layout: AutoLayoutDirection): this
 }
 
@@ -85,7 +88,7 @@ export namespace ViewPredicate {
     where?: ViewPredicate.WhereOperator<Types>
     with?: Simplify<
       Omit<
-        ModelLayer.FqnExpr.Custom['custom'] & ModelLayer.RelationExpr.Custom['customRelation'],
+        ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
         'expr' | 'relation' | 'navigateTo'
       > & {
         navigateTo?: Types['ViewId']
@@ -94,7 +97,7 @@ export namespace ViewPredicate {
   }
 }
 
-function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<any, any> {
+function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<Any> {
   if (isString(where)) {
     const op = where as LiteralUnion<ViewPredicate.WhereEq<AnyTypes>, string>
     switch (true) {
@@ -124,16 +127,16 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
         }
       case op.startsWith('source.'):
         return {
-          operator: parseWhere(op.replace('source.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
-            | KindEqual<string>
-            | TagEqual<string>,
+          operator: parseWhere(
+            op.replace('source.', '') as ViewPredicate.WhereOperator<AnyTypes>,
+          ) as ParticipantOperator<AnyAux>['operator'],
           participant: 'source',
         }
       case op.startsWith('target.'):
         return {
-          operator: parseWhere(op.replace('target.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
-            | KindEqual<string>
-            | TagEqual<string>,
+          operator: parseWhere(
+            op.replace('target.', '') as ViewPredicate.WhereOperator<AnyTypes>,
+          ) as ParticipantOperator<AnyAux>['operator'],
           participant: 'target',
         }
       default:
@@ -181,7 +184,7 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
       const custom = args[1].with
       if (custom) {
-        const isElement = ModelLayer.FqnExpr.is(expr)
+        const isElement = ModelFqnExpr.is(expr)
         if (isElement) {
           expr = {
             custom: {
@@ -212,7 +215,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
-    let expr = b.$expr(args[0]) as ExpressionV2
+    let expr = b.$expr(args[0]) as Expression
     if (args.length === 2 && args[1].where) {
       const condition = parseWhere(args[1].where)
       expr = {
@@ -227,13 +230,28 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   }
 }
 
+/**
+ * @example
+ *  builder.views(({ view, $style }, _) =>
+ *    _(
+ *      view('view1').with(
+ *        $style('*', {
+ *          color: 'red',
+ *        }),
+ *        $style(['bob', 'alice'], {
+ *          color: 'blue',
+ *        }),
+ *      ),
+ *    )
+ *  )
+ */
 function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
-  { notation, ...style }: ViewRuleStyle['style'] & { notation?: string },
+  { notation, ...style }: ViewRuleStyle<any>['style'] & { notation?: string },
 ): (b: B) => B {
   return (b) =>
     b.style({
-      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as ModelLayer.FqnExpr),
+      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as ModelFqnExpr),
       ...(notation ? { notation } : {}),
       style: {
         ...style,

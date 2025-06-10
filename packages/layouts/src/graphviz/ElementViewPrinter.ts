@@ -1,13 +1,13 @@
-import type { ComputedEdge, ComputedElementView, ComputedNode, ComputedView, Fqn } from '@likec4/core'
+import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
 import { DefaultArrowType, nonNullable } from '@likec4/core'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
-import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
+import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { isCompound, toArrowType } from './utils'
 
-export class ElementViewPrinter<V extends ComputedView = ComputedElementView> extends DotPrinter<V> {
+export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, ComputedElementView<A>> {
   protected override postBuild(G: RootGraphModel): void {
     this.assignGroups()
 

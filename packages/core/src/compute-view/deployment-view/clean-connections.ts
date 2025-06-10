@@ -12,23 +12,21 @@ import {
   reduce,
   values,
 } from 'remeda'
-import { invariant } from '../../errors'
+import type { RelationshipModel } from '../../model'
 import {
   DeploymentConnectionModel,
   differenceConnections,
   isNestedConnection,
   mergeConnections,
+  RelationshipsAccum,
   sortConnectionsByBoundaryHierarchy,
-} from '../../model/connection'
-import { findConnection } from '../../model/connection/deployment'
-import { RelationshipsAccum } from '../../model/DeploymentElementModel'
-import type { RelationshipModel } from '../../model/RelationModel'
+} from '../../model'
+import { invariant } from '../../utils'
 import { imap, toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import { intersection, union } from '../../utils/set'
 import type { Connection, Connections } from './_types'
-
-const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
+import { findConnection } from './utils'
 
 type MapOfExcludesFromConnection = DefaultMap<DeploymentConnectionModel, Set<RelationshipModel>>
 function findCrossBoundarySameSourceOrTarget(connections: Connections): MapOfExcludesFromConnection {

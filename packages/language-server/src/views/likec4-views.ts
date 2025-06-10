@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView, OverviewGraph, ProjectId, ViewId } from '@likec4/core'
+import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
@@ -35,7 +35,7 @@ export interface LikeC4Views {
   ): Promise<GraphvizOut | null>
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
-  overviewGraph(): Promise<OverviewGraph>
+  // overviewGraph(): Promise<OverviewGraph>
 }
 
 export class DefaultLikeC4Views implements LikeC4Views {
@@ -43,7 +43,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   private viewsWithReportedErrors = new Set<ViewId>()
   private ModelBuilder: LikeC4ModelBuilder
-  private queue = new PQueue({ concurrency: 4, timeout: 10_000, throwOnTimeout: true })
+  private queue = new PQueue({ concurrency: 2, timeout: 20_000, throwOnTimeout: true })
 
   constructor(private services: LikeC4Services) {
     this.ModelBuilder = services.likec4.ModelBuilder
@@ -58,53 +58,69 @@ export class DefaultLikeC4Views implements LikeC4Views {
     cancelToken = CancellationToken.None,
   ): Promise<ComputedView[]> {
     const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
-    return values(likeC4Model.$model.views)
+    return values(likeC4Model.$data.views)
   }
 
   async layoutAllViews(
     projectId?: ProjectId | undefined,
     cancelToken = CancellationToken.None,
   ): Promise<Array<Readonly<GraphvizOut>>> {
-    const views = await this.computedViews(projectId, cancelToken)
+    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const views = values(likeC4Model.$data.views)
     if (views.length === 0) {
       return []
     }
+
     const logger = rootLogger.getChild(['views', projectId ?? ''])
     logger.debug`layoutAll: ${views.length} views`
+
+    if (this.queue.pending + this.queue.size > 0) {
+      logger.debug`wait for previous layouts to finish`
+      // wait for any previous layout to finish
+      await this.queue.onIdle()
+    }
+
+    if (this.layouter.port.concurrency !== this.queue.concurrency) {
+      this.queue.concurrency = this.layouter.port.concurrency
+      logger.debug`set queue concurrency to ${this.layouter.port.concurrency}`
+    }
+    const specification = likeC4Model.$data.specification
     const results = [] as GraphvizOut[]
-    const tasks = [] as Promise<GraphvizOut>[]
+    // const tasks = [] as Promise<GraphvizOut>[]
     for (const view of views) {
-      this.viewsWithReportedErrors.delete(view.id)
-      tasks.push(
-        Promise
-          .resolve()
-          .then(async () => {
-            const result = await this.queue.add(async () => {
-              logger.debug`layouting view ${view.id}...`
-              return await this.layouter.layout(view)
-            })
-            if (!result) {
-              return Promise.reject(new Error(`Failed to layout view ${view.id}`))
-            }
-            logger.debug`done layout view ${view.id}`
-            this.viewsWithReportedErrors.delete(view.id)
-            this.cache.set(view, result)
-            return result
-          })
-          .catch(e => {
-            logger.warn(`fail layout view ${view.id}`, { e })
-            this.cache.delete(view)
-            return Promise.reject(e)
-          }),
-      )
-    }
-    for (const task of await Promise.allSettled(tasks)) {
-      if (task.status === 'fulfilled') {
-        results.push(task.value)
-      } else {
-        logger.error(loggable(task.reason))
+      let cached = this.cache.get(view)
+      if (cached) {
+        logger.debug`layout ${view.id} from cache`
+        results.push(cached)
+        continue
       }
+
+      if (this.queue.pending > this.queue.concurrency + 4) {
+        await this.queue.onSizeLessThan(this.queue.concurrency + 1)
+      }
+      this.queue
+        .add(async () => {
+          logger.debug`layouting view ${view.id}...`
+          return await this.layouter.layout({
+            view,
+            specification,
+          })
+        })
+        .then(result => {
+          if (!result) {
+            throw new Error(`Layout queue returned null for view ${view.id}`)
+          }
+          this.viewsWithReportedErrors.delete(view.id)
+          logger.debug`done layout view ${view.id}`
+          this.cache.set(view, result)
+          results.push(result)
+        })
+        .catch(e => {
+          logger.error(`Fail layout view ${view.id}`, { e })
+          this.cache.delete(view)
+        })
     }
+    await this.queue.onIdle()
     if (results.length !== views.length) {
       logger.warn`layouted ${results.length} of ${views.length} views`
     } else if (results.length > 0) {
@@ -133,9 +149,17 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     try {
       const start = performance.now()
+      if (this.queue.pending + this.queue.size > 0) {
+        logger.debug`wait for previous layouts to finish`
+        // wait for any previous layout to finish
+        await this.queue.onIdle()
+      }
       const result = await this.queue.add(async () => {
         logger.debug`layouting view ${view.id}...`
-        return await this.layouter.layout(view)
+        return await this.layouter.layout({
+          view,
+          specification: model.$data.specification,
+        })
       })
       if (!result) {
         throw new Error(`Failed to layout view ${viewId}`)
@@ -172,9 +196,16 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
-    const views = await this.computedViews(projectId, cancelToken)
+    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
+    const views = values(likeC4Model.$data.views)
+    if (views.length === 0) {
+      return []
+    }
     const tasks = views.map(async view => {
-      const { dot, svg } = await this.layouter.svg(view)
+      const { dot, svg } = await this.layouter.svg({
+        view,
+        specification: likeC4Model.$data.specification,
+      })
       return {
         id: view.id,
         dot,
@@ -194,15 +225,15 @@ export class DefaultLikeC4Views implements LikeC4Views {
     return succeed
   }
 
-  async overviewGraph(): Promise<OverviewGraph> {
-    const KEY = 'OverviewGraph'
-    const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
-    if (cache.has(KEY)) {
-      return await Promise.resolve(cache.get(KEY)!)
-    }
-    const views = await this.computedViews()
-    const overviewGraph = await this.layouter.layoutOverviewGraph(views)
-    cache.set(KEY, overviewGraph)
-    return overviewGraph
-  }
+  // async overviewGraph(): Promise<OverviewGraph> {
+  //   const KEY = 'OverviewGraph'
+  //   const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
+  //   if (cache.has(KEY)) {
+  //     return await Promise.resolve(cache.get(KEY)!)
+  //   }
+  //   const views = await this.computedViews()
+  //   const overviewGraph = await this.layouter.layoutOverviewGraph(views)
+  //   cache.set(KEY, overviewGraph)
+  //   return overviewGraph
+  // }
 }

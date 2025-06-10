@@ -9,10 +9,12 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import * as css from '../_single/view.css'
 
 export const Route = createFileRoute('/project/$projectId')({
+  staleTime: Infinity,
   loader: async ({ params }) => {
-    const { $likec4data } = await loadModel(params.projectId)
+    const { $likec4data, $likec4model } = await loadModel(params.projectId)
     return {
       $likec4data,
+      $likec4model,
       IconRenderer: ProjectIcons(params.projectId),
     }
   },
@@ -20,12 +22,12 @@ export const Route = createFileRoute('/project/$projectId')({
 })
 
 function RouteComponent() {
-  const { $likec4data, IconRenderer } = Route.useLoaderData()
+  const { $likec4data, $likec4model, IconRenderer } = Route.useLoaderData()
 
   return (
     <Box className={css.cssViewOutlet}>
       <ErrorBoundary FallbackComponent={Fallback}>
-        <LikeC4ModelContext likec4data={$likec4data}>
+        <LikeC4ModelContext likec4data={$likec4data} likec4model={$likec4model}>
           <IconRendererProvider value={IconRenderer}>
             <Outlet />
           </IconRendererProvider>

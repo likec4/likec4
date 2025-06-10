@@ -73,33 +73,35 @@ This repository's contents are:
 
 ### Packages
 
-#### CLI (`/packages/likec4`)
+#### CLI `/packages/likec4`
 
 - **Purpose**: Command-line interface and integration point, main entry point for the tool.
 - **Technology**: Uses [yargs](https://yargs.js.org/)
 
-#### Core (`/packages/core`)
+#### Core `/packages/core`
+
+Check [README](./packages/core/README.md) for details.
 
 - **Technology**: Pure TypeScript, no frameworks. Heavy use of [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) and [remeda](https://remedajs.com/)
 - **Purpose**: Core type definitions and domain model. `compute-view` contains logic for computing diagram views
 - **Suggestions**: A great way to start contributing is by adding more tests for compute-view. This will help you understand how it works while also benefiting the project. There are also open questions from @pavelpykhtin, who has made significant contributions.
 
-#### Diagrams (`/packages/diagram`)
+#### Diagrams `/packages/diagram`
 
 - **Purpose**: Renders the actual diagrams
 - **Technology**: Uses [React](https://react.dev/), [ReactFlow](https://reactflow.dev/), [XState](https://xstate.js.org/)
 
-#### Language Server (`/packages/language-server`)
+#### Language Server `/packages/language-server`
 
 - **Purpose**: Parses DSL, builds models, and computes views
 - **Technology**: Built with [Langium](https://langium.org/)
 
-#### Layouts (`/packages/layouts`)
+#### Layouts `/packages/layouts`
 
 - **Purpose**: Transforms computed views into visual graph layouts
 - **Technology**: Uses [Graphviz](https://graphviz.org/) for layout algorithms
 
-#### VSCode Extension (`/packages/vscode`)
+#### VSCode Extension `/packages/vscode`
 
 - **Purpose**: Integrates LikeC4 into Visual Studio Code.
 - **Technology**: Uses [reactive-vscode](https://github.com/KermanX/reactive-vscode) and follows [VS Code extension patterns](https://vscode-docs.readthedocs.io/en/stable/extensions/patterns-and-principles/).

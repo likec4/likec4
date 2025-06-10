@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { DeploymentConnectionModel, findConnection } from '../../../model/connection/deployment'
 import { DeploymentRelationModel, RelationshipsAccum } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
+import type { AnyAux } from '../../../types'
 import { createModel } from '../__test__/fixture'
 import { Memory, StageInclude } from '../memory'
 import { StageExclude } from './stage-exclude'
@@ -279,7 +279,7 @@ describe('Stage', () => {
         ]
       `)
     })
-    
+
     it('should keep explicit element explicit when neighbour is excluded', () => {
       const model = createModel()
       const zone1 = model.deployment.element('prod.eu.zone1')

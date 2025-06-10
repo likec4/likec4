@@ -1,8 +1,9 @@
-import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
+import { extractStep, isStepEdgeId } from '@likec4/core'
+import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { Text } from '@mantine/core'
-import { type PropsWithChildren } from 'react'
+import { type PropsWithChildren, forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
@@ -22,26 +23,29 @@ type EdgeLabelProps = PropsWithChildren<
   }
 >
 
-export function EdgeLabel({
-  edgeProps: {
-    id,
-    data: {
-      label,
-      technology,
+export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
+  {
+    edgeProps: {
+      id,
+      data: {
+        label,
+        technology,
+      },
     },
+    className,
+    style,
+    children,
+    ...rest
   },
-  className,
-  style,
-  children,
-  ...rest
-}: EdgeLabelProps) {
+  ref,
+) => {
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
   const classes = labelsva({
     isStepEdge: stepNum !== null,
   })
 
   return (
-    <Box className={cx(classes.root!, className)} {...rest}>
+    <Box ref={ref} className={cx(classes.root!, className)} {...rest}>
       {stepNum !== null && (
         <Box className={classes.stepNumber!}>
           {stepNum}
@@ -62,4 +66,5 @@ export function EdgeLabel({
       </Box>
     </Box>
   )
-}
+})
+EdgeLabel.displayName = 'EdgeLabel'

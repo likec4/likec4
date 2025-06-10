@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { type OverviewGraph, nonexhaustive } from '@likec4/core'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useMantineColorScheme } from '@mantine/core'

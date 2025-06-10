@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { type ElementKind, type Fqn, type IconUrl, type Tag } from '../../../types'
+import { type IconUrl } from '../../../types'
 import { $exclude, $expr, $include, computeView } from './fixture'
 
 describe('compute-element-view', () => {
@@ -388,7 +388,7 @@ describe('compute-element-view', () => {
     const { nodeIds, edgeIds } = computeView({
       include: [
         {
-          elementKind: 'system' as ElementKind,
+          elementKind: 'system',
           isEqual: true,
         },
       ],
@@ -410,7 +410,7 @@ describe('compute-element-view', () => {
     const { nodeIds, edgeIds } = computeView({
       include: [
         {
-          elementTag: 'old' as Tag,
+          elementTag: 'old',
           isEqual: true,
         },
       ],
@@ -427,7 +427,7 @@ describe('compute-element-view', () => {
       {
         exclude: [
           {
-            elementKind: 'actor' as ElementKind,
+            elementKind: 'actor',
             isEqual: true,
           },
         ],
@@ -453,7 +453,7 @@ describe('compute-element-view', () => {
       {
         exclude: [
           {
-            elementTag: 'old' as Tag,
+            elementTag: 'old',
             isEqual: true,
           },
         ],
