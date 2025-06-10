@@ -84,7 +84,7 @@
   "type": "module",
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.2.4",
+    "@cloudflare/vite-plugin": "1.5.0",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",

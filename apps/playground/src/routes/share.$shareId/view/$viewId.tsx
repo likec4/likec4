@@ -6,9 +6,9 @@ import type { DiagramView } from '@likec4/core'
 import { type ControlsCustomLayout, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { css } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
-import { Button, UnstyledButton } from '@mantine/core'
+import { Alert, Button, Container, UnstyledButton } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
-import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import * as m from 'motion/react-m'
 
 export const Route = createFileRoute('/share/$shareId/view/$viewId')({
@@ -39,7 +39,13 @@ function RouteComponent() {
   })
 
   if (!view) {
-    throw notFound()
+    return (
+      <Container size={'sm'} py="xl">
+        <Alert title="Not Found" color="pink">
+          View <code>{viewId}</code> not found.
+        </Alert>
+      </Container>
+    )
   }
 
   const notations = view.notation?.nodes ?? []
