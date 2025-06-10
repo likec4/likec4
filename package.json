@@ -38,7 +38,6 @@
     "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
-    "esbuild": "catalog:esbuild",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
@@ -53,7 +52,6 @@
   },
   "pnpm": {
     "overrides": {
-      "esbuild": "catalog:esbuild",
       "react": "catalog:react",
       "react-dom": "catalog:react",
       "@types/react": "catalog:react",
@@ -65,8 +63,6 @@
       "vscode-languageserver-types": "catalog:vscode",
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
-      "tsx": "catalog:",
-      "typescript": "catalog:",
       "type-fest": "catalog:utils",
       "turbo": "catalog:",
       "sharp": "catalog:utils",

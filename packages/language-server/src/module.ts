@@ -32,7 +32,12 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
-import { type LikeC4MCPServer, LikeC4MCPServerFactory, NoopLikeC4MCPServer } from './mcp/LikeC4MCPServerFactory'
+import {
+  type LikeC4MCPServer,
+  type LikeC4MCPServerFactory,
+  NoopLikeC4MCPServer,
+  NoopLikeC4MCPServerFactory,
+} from './mcp/LikeC4MCPServerFactory'
 import { type LikeC4MCPTools, DefaultLikeC4MCPTools } from './mcp/LikeC4MCPTools'
 import {
   type LikeC4ModelBuilder,
@@ -104,7 +109,6 @@ export interface LikeC4AddedServices {
   documentation: {
     DocumentationProvider: LikeC4DocumentationProvider
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   mcp: {
@@ -156,7 +160,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   mcp: {
     Tools: bind(DefaultLikeC4MCPTools),
     Server: bind(NoopLikeC4MCPServer),
-    ServerFactory: bind(LikeC4MCPServerFactory),
+    ServerFactory: bind(NoopLikeC4MCPServerFactory),
   },
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),

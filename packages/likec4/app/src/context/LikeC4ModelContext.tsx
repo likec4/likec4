@@ -1,5 +1,4 @@
 import { LikeC4ModelProvider } from '@likec4/diagram'
-import { useLogger } from '@mantine/hooks'
 import type { LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
 import { nano } from 'likec4/react'
 import { type PropsWithChildren, createContext, useContext } from 'react'
@@ -16,7 +15,7 @@ export function LikeC4ModelContext(
     likec4model: nano.ReadableAtom<LikeC4Model.Layouted>
   }>,
 ) {
-  useLogger('LikeC4ModelContext', [likec4data, likec4model])
+  // useLogger('LikeC4ModelContext', [likec4data, likec4model])
   const model = nano.useStore(likec4model)
 
   return (

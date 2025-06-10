@@ -246,9 +246,9 @@ function throwShareNotFound(c: HonoContext, shareId: string): never {
     })
   }
 
-  console.warn(`throwing 307, share ${shareId} requires pincode`)
+  console.warn(`throwing 307, share ${shareId} not found or expired`)
   throw new HTTPException(307, {
-    message: 'Redirecting due to unauthorized access, requires pincode',
+    message: 'Redirecting due to not found',
     res: c.redirect(`/share/${shareId}/not-found`),
   })
 }

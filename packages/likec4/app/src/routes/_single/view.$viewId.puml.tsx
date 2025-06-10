@@ -12,6 +12,7 @@ import * as styles from './view_viewId_.css'
 
 export const Route = createFileRoute('/_single/view/$viewId/puml')({
   component: ViewAsPuml,
+  staleTime: Infinity,
   loader: async ({ params }) => {
     const { viewId } = params
     try {

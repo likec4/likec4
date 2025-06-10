@@ -8,7 +8,7 @@ import { css } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { Button, UnstyledButton } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
-import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
+import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router'
 import * as m from 'motion/react-m'
 
 export const Route = createFileRoute('/share/$shareId/view/$viewId')({
@@ -24,15 +24,15 @@ function useLikeC4DiagramView(viewId: string): DiagramView | null {
 }
 
 function RouteComponent() {
-  const router = useRouter()
-  const { viewId, shareId } = Route.useParams()
+  const navigate = useNavigate()
+  const { viewId } = Route.useParams()
   const view = useLikeC4DiagramView(viewId)
   const sharedPlayground = Route.parentRoute.useLoaderData()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    router.navigate({
-      to: '/share/$shareId/view/$viewId/',
-      params: { shareId, viewId },
+    navigate({
+      to: './',
+      params: { viewId },
       search: true,
       viewTransition: false,
     })

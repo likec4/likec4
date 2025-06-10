@@ -9,6 +9,7 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import * as css from '../_single/view.css'
 
 export const Route = createFileRoute('/project/$projectId')({
+  staleTime: Infinity,
   loader: async ({ params }) => {
     const { $likec4data, $likec4model } = await loadModel(params.projectId)
     return {
