@@ -16,7 +16,6 @@ The `element` defines the kind that can be used across the model.
 
 ```likec4 copy
 specification {
-
   // Define whatever you want
   element user
   element cloud
@@ -31,7 +30,6 @@ specification {
   element repository
   element database
   element pgTable
-
 }
 ```
 
@@ -55,11 +53,32 @@ Tags may be used to mark, group, filter elements/relationships/views, or give so
 
 ```likec4
 specification {
-
   tag deprecated
   tag epic-123
   tag team2
+}
+```
 
+You can assign colors:
+
+```likec4
+specification {
+  tag deprecated {
+    color #FF0000
+  }
+}
+```
+
+You can add tags to element kinds:
+
+```likec4
+specification {
+  // Now every kafka-topic will be marked with the infra and data-lake tags
+  element kafka-topic {
+    #infra #data-lake
+  }
+  tag infra
+  tag data-lake
 }
 ```
 
@@ -67,7 +86,7 @@ specification {
 
 Custom colors could be defined to extend built in themes. Being defined in specification they could be used later along with the theme colors.
 
-Note: Only a base color with a 3 or 6-character hex code is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
+Note: Only a base color with a 3, 6 or 8-character hex code is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
 
 ```likec4
 specification {

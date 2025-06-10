@@ -40,7 +40,11 @@
       }
     },
     {
-      "match": "(#)([a-zA-Z0-9]+)",
+      "match": "#[a-fA-F0-9]+",
+      "name": "constant.other.color.likec4"
+    },
+    {
+      "match": "#[a-zA-Z0-9]+",
       "name": "entity.name.type.enum.likec4"
     },
     {

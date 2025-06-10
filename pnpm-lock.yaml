@@ -22,14 +22,14 @@ catalogs:
       specifier: ^0.41.2
       version: 0.41.2
     astro:
-      specifier: 5.8.0
-      version: 5.8.0
+      specifier: 5.9.2
+      version: 5.9.2
     astro-og-canvas:
       specifier: ^0.7.0
       version: 0.7.0
     shiki:
-      specifier: ^3.3.0
-      version: 3.3.0
+      specifier: ^3.6.0
+      version: 3.6.0
     starlight-heading-badges:
       specifier: ^0.5.0
       version: 0.5.0
@@ -91,23 +91,23 @@ catalogs:
       version: 3.5.0
   mantine:
     '@mantine/colors-generator':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
     '@mantine/core':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
     '@mantine/hooks':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
     '@mantine/modals':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
     '@mantine/notifications':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
     '@mantine/vanilla-extract':
-      specifier: 8.0.1
-      version: 8.0.1
+      specifier: 8.1.0
+      version: 8.1.0
   mcp:
     '@modelcontextprotocol/sdk':
       specifier: ^1.10.2
@@ -146,8 +146,8 @@ catalogs:
       version: 1.114.17
   utils:
     '@hpcc-js/wasm-graphviz':
-      specifier: 1.8.0
-      version: 1.8.0
+      specifier: 1.7.0
+      version: 1.7.0
     '@types/picomatch':
       specifier: ^4.0.0
       version: 4.0.0
@@ -333,7 +333,7 @@ importers:
         version: 4.3.0(@types/node@22.15.31)(@types/react-dom@19.1.5(@types/react@19.1.5))(@types/react@19.1.5)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+        version: 0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.41.2
@@ -348,10 +348,10 @@ importers:
         version: 19.1.5(@types/react@19.1.5)
       astro:
         specifier: catalog:astro
-        version: 5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
+        version: 5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.7.0(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+        version: 0.7.0(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       canvaskit-wasm:
         specifier: ^0.40.0
         version: 0.40.0
@@ -369,16 +369,16 @@ importers:
         version: 0.34.2
       shiki:
         specifier: catalog:astro
-        version: 3.3.0
+        version: 3.6.0
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.5.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
+        version: 0.5.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.16.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
+        version: 0.16.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.11.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
+        version: 0.11.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
     devDependencies:
       '@types/picomatch':
         specifier: catalog:utils
@@ -430,7 +430,7 @@ importers:
         version: 0.5.2(hono@4.7.10)(valibot@1.0.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.8.0
+        version: 1.7.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -454,16 +454,16 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.0.1(react@19.1.0)
+        version: 8.1.0(react@19.1.0)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.0.1(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.0.1(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.0)
@@ -650,7 +650,7 @@ importers:
         version: link:../tsconfig
       '@mantine/colors-generator':
         specifier: catalog:mantine
-        version: 8.0.1(chroma-js@3.1.2)
+        version: 8.1.0(chroma-js@3.1.2)
       '@types/natural-compare-lite':
         specifier: ^1.4.2
         version: 1.4.2
@@ -719,10 +719,10 @@ importers:
         version: link:../../styled-system/styles
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.0.1(react@19.1.0)
+        version: 8.1.0(react@19.1.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.0)
@@ -892,7 +892,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.8.0
+        version: 1.7.0
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1034,7 +1034,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.8.0
+        version: 1.7.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1107,7 +1107,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.8.0
+        version: 1.7.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1165,10 +1165,10 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.0.1(react@19.1.0)
+        version: 8.1.0(react@19.1.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.0)
@@ -1469,7 +1469,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.8.0
+        version: 1.7.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1531,8 +1531,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       reactive-vscode:
-        specifier: ^0.2.17
-        version: 0.2.17(@types/vscode@1.100.0)
+        specifier: ^0.2.19
+        version: 0.2.19(@types/vscode@1.100.0)
       remeda:
         specifier: catalog:utils
         version: 2.23.0
@@ -1604,10 +1604,10 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.0.1(react@19.1.0)
+        version: 8.1.0(react@19.1.0)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.0)
@@ -1707,10 +1707,10 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+        version: 8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.6(typescript@5.8.3)
@@ -1783,6 +1783,9 @@ packages:
 
   '@astrojs/compiler@2.11.0':
     resolution: {integrity: sha512-zZOO7i+JhojO8qmlyR/URui6LyfHJY6m+L9nwyX5GiKD78YoRaZ5tzz6X0fkl+5bD3uwlDHayf6Oe8Fu36RKNg==}
+
+  '@astrojs/compiler@2.12.2':
+    resolution: {integrity: sha512-w2zfvhjNCkNMmMMOn5b0J8+OmUaBL1o40ipMvqcG6NRpdC+lKxmTi48DT8Xw0SzJ3AfmeFLB45zXZXtmbsjcgw==}
 
   '@astrojs/internal-helpers@0.6.1':
     resolution: {integrity: sha512-l5Pqf6uZu31aG+3Lv8nl/3s4DbUzdlxTWDof4pEpto6GUJNhhCbelVi9dEyurOVyqaelwmS9oSyOWOENSfgo9A==}
@@ -3029,8 +3032,8 @@ packages:
       hono: '>=3.9.0'
       valibot: ^1.0.0 || ^1.0.0-beta.4 || ^1.0.0-rc
 
-  '@hpcc-js/wasm-graphviz@1.8.0':
-    resolution: {integrity: sha512-aLQveMOReqKk0t1XLnQ0mhEuJiXInNwBVW4ASclpcETKlpvF+tIL2N+l8buQsoFEiyc5EYbNtedNX/Zk89fjjQ==}
+  '@hpcc-js/wasm-graphviz@1.7.0':
+    resolution: {integrity: sha512-/1XEmubfDz1UolKiVh6H4BrGX0DZwR39Y2h76LdqR17FZ3gCJoUs4jV7kUywedXerbwx1szhU3dBsNcvkEmjiQ==}
 
   '@hutson/parse-repository-url@3.0.2':
     resolution: {integrity: sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==}
@@ -3182,48 +3185,48 @@ packages:
   '@logtape/logtape@0.9.2':
     resolution: {integrity: sha512-ehmMe+Oe7ldApaAytWguHI5O74TVeCqWFdW5FYVfu7ytdcUzbO79qTFHBm2aoM0ELt7j1zSFcxqNCozxieCQCw==}
 
-  '@mantine/colors-generator@8.0.1':
-    resolution: {integrity: sha512-3xc0MYQGIwY+NH8tk/ANRfULBpKY2yjoaK68Uz1uRr8KqZJ8iSk1bZMph1ZxzIr48WPG/iNpEJv+ZZt+Ns7raQ==}
+  '@mantine/colors-generator@8.1.0':
+    resolution: {integrity: sha512-hUZD+1ut7a0gP8P0W73HQEr+JCCneBoRGJ9ZOhALWTf8htN6Vb1/zvHUYGAZRQ9swh3tlEGJAiX22ltriG6hPQ==}
     peerDependencies:
       chroma-js: '>=2.4.2'
 
-  '@mantine/core@8.0.1':
-    resolution: {integrity: sha512-4ezaxKjChSPtawamQ3KrJq+x506uTouXlL0Z5fP+t105KnyxMrAJUENhbh2ivD4pq9Zh1BFiD9IWzyu3IXFR8w==}
+  '@mantine/core@8.1.0':
+    resolution: {integrity: sha512-wouPEE6nNjN52+taw23uca6OFsxXF7Slw4G5GT3CGCathDsN563fxuPNrc2uifvNsl/3bbiMFAAGAkVF07lc1A==}
     peerDependencies:
-      '@mantine/hooks': 8.0.1
+      '@mantine/hooks': 8.1.0
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@mantine/hooks@8.0.1':
-    resolution: {integrity: sha512-GvLdM4Ro3QcDyIgqrdXsUZmeeKye2TNL/k3mEr9JhM5KacHQjr83JPp0u9eLobn7kiyBqpLTYmVYAbmjJdCxHw==}
+  '@mantine/hooks@8.1.0':
+    resolution: {integrity: sha512-Ycg8g11zRFfG0ZOp3lIogZh8O1Y5+Jiteu1Ja0BeIeTPVLLXufUhhgyorNr7F4QTD18xKzB1nX8wZzKFD6czPQ==}
     peerDependencies:
       react: ^19.1.0
 
-  '@mantine/modals@8.0.1':
-    resolution: {integrity: sha512-pC9dl1N115Wx42QHJFUMNC1IheL+MLrsPPHOZER+882DTWsoO+O6d668ZffuXIKLpkCj87uaDm9Pom1GAHiA/Q==}
+  '@mantine/modals@8.1.0':
+    resolution: {integrity: sha512-wYgbVjOsQx0fKEVi6n4Rzuncxm3OwrOGmFdmgFfWgRgMbXDWBXVOmJz7sJhyelQtozg4fq9ZszkL4iilkPi5nw==}
     peerDependencies:
-      '@mantine/core': 8.0.1
-      '@mantine/hooks': 8.0.1
-      react: ^19.1.0
-      react-dom: ^19.1.0
-
-  '@mantine/notifications@8.0.1':
-    resolution: {integrity: sha512-7TX9OyAmUcok3qffnheS7gTAMKDczETy8XEYDr38Sy/XIoXLjM+3CwO+a/vfd1F9oW2LvkahkHT0Ey+vBOVd0Q==}
-    peerDependencies:
-      '@mantine/core': 8.0.1
-      '@mantine/hooks': 8.0.1
+      '@mantine/core': 8.1.0
+      '@mantine/hooks': 8.1.0
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@mantine/store@8.0.1':
-    resolution: {integrity: sha512-3wfUDeiERXJEI+MGgRAbh+9aY35D9oE4UzquLqZh8cIiH5i5g64Y/eJx3PfjHgO5+Zeu6lbgTgL6k4lg4a2SBQ==}
+  '@mantine/notifications@8.1.0':
+    resolution: {integrity: sha512-MuTl3OVOaZko+fCxbi+1J2/7Ho6443aMDBV93UGwLfRfi6SwCMgv9Luj7LXG7JKLgYgWy3Uj9gOSXS6efNfmww==}
+    peerDependencies:
+      '@mantine/core': 8.1.0
+      '@mantine/hooks': 8.1.0
+      react: ^19.1.0
+      react-dom: ^19.1.0
+
+  '@mantine/store@8.1.0':
+    resolution: {integrity: sha512-PobjhLuTIPtv3EkWkz+axmcPqrA8E2rSrUCm76CiddkZf6INaV9bQGzt7UpyoKQzu8jWuy/WUltdKPScwUfQBg==}
     peerDependencies:
       react: ^19.1.0
 
-  '@mantine/vanilla-extract@8.0.1':
-    resolution: {integrity: sha512-4t6+4rAR+dUO2F5XyHEenHjkDWMQx4wOCBPK4vFs/S7Xmgrk6IqsuDPlVG4ji3rkOmzm82IPlUTo9A8bkfAg7g==}
+  '@mantine/vanilla-extract@8.1.0':
+    resolution: {integrity: sha512-/sZ54VWFi1GsUwX9KQF/9NZtXmiISvvxn6JeGESo2gQwewo4YlVqVX2xWs2340fZRExZZbsrhZIG7DQrZrF6xg==}
     peerDependencies:
-      '@mantine/core': 8.0.1
+      '@mantine/core': 8.1.0
 
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
@@ -3498,8 +3501,8 @@ packages:
       js-cookie:
         optional: true
 
-  '@reactive-vscode/reactivity@0.2.17':
-    resolution: {integrity: sha512-inEwa3aToCc9uyX9UmfuswqCbYHYErh7C/80IeZbHGgDTFt//Fe4lZxRNkxWwXGdHVi4AlBmnHqcbEP7tt1Bvw==}
+  '@reactive-vscode/reactivity@0.2.19':
+    resolution: {integrity: sha512-b8v4/Q1irXV5xREmsF8w3EpKp+WI/T29+aa74SBNrAnolC3qHslckGvj2/M12b2wcXmlVUVJl5mUHFpxjaAhHA==}
 
   '@rolldown/pluginutils@1.0.0-beta.9':
     resolution: {integrity: sha512-e9MeMtVWo186sgvFFJOPGy7/d2j2mZhLJIdVW0C/xDluuOvymEATqz6zKsP0ZmXGzQtqlyjz5sC1sYQUoJG98w==}
@@ -3792,23 +3795,23 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@shikijs/core@3.3.0':
-    resolution: {integrity: sha512-CovkFL2WVaHk6PCrwv6ctlmD4SS1qtIfN8yEyDXDYWh4ONvomdM9MaFw20qHuqJOcb8/xrkqoWQRJ//X10phOQ==}
+  '@shikijs/core@3.6.0':
+    resolution: {integrity: sha512-9By7Xb3olEX0o6UeJyPLI1PE1scC4d3wcVepvtv2xbuN9/IThYN4Wcwh24rcFeASzPam11MCq8yQpwwzCgSBRw==}
 
-  '@shikijs/engine-javascript@3.3.0':
-    resolution: {integrity: sha512-XlhnFGv0glq7pfsoN0KyBCz9FJU678LZdQ2LqlIdAj6JKsg5xpYKay3DkazXWExp3DTJJK9rMOuGzU2911pg7Q==}
+  '@shikijs/engine-javascript@3.6.0':
+    resolution: {integrity: sha512-7YnLhZG/TU05IHMG14QaLvTW/9WiK8SEYafceccHUSXs2Qr5vJibUwsDfXDLmRi0zHdzsxrGKpSX6hnqe0k8nA==}
 
-  '@shikijs/engine-oniguruma@3.3.0':
-    resolution: {integrity: sha512-l0vIw+GxeNU7uGnsu6B+Crpeqf+WTQ2Va71cHb5ZYWEVEPdfYwY5kXwYqRJwHrxz9WH+pjSpXQz+TJgAsrkA5A==}
+  '@shikijs/engine-oniguruma@3.6.0':
+    resolution: {integrity: sha512-nmOhIZ9yT3Grd+2plmW/d8+vZ2pcQmo/UnVwXMUXAKTXdi+LK0S08Ancrz5tQQPkxvjBalpMW2aKvwXfelauvA==}
 
-  '@shikijs/langs@3.3.0':
-    resolution: {integrity: sha512-zt6Kf/7XpBQKSI9eqku+arLkAcDQ3NHJO6zFjiChI8w0Oz6Jjjay7pToottjQGjSDCFk++R85643WbyINcuL+g==}
+  '@shikijs/langs@3.6.0':
+    resolution: {integrity: sha512-IdZkQJaLBu1LCYCwkr30hNuSDfllOT8RWYVZK1tD2J03DkiagYKRxj/pDSl8Didml3xxuyzUjgtioInwEQM/TA==}
 
-  '@shikijs/themes@3.3.0':
-    resolution: {integrity: sha512-tXeCvLXBnqq34B0YZUEaAD1lD4lmN6TOHAhnHacj4Owh7Ptb/rf5XCDeROZt2rEOk5yuka3OOW2zLqClV7/SOg==}
+  '@shikijs/themes@3.6.0':
+    resolution: {integrity: sha512-Fq2j4nWr1DF4drvmhqKq8x5vVQ27VncF8XZMBuHuQMZvUSS3NBgpqfwz/FoGe36+W6PvniZ1yDlg2d4kmYDU6w==}
 
-  '@shikijs/types@3.3.0':
-    resolution: {integrity: sha512-KPCGnHG6k06QG/2pnYGbFtFvpVJmC3uIpXrAiPrawETifujPBv0Se2oUxm5qYgjCvGJS9InKvjytOdN+bGuX+Q==}
+  '@shikijs/types@3.6.0':
+    resolution: {integrity: sha512-cLWFiToxYu0aAzJqhXTQsFiJRTFDAGl93IrMSBNaGSzs7ixkLfdG6pH11HipuWFGW5vyx4X47W8HDQ7eSrmBUg==}
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
@@ -4014,9 +4017,6 @@ packages:
   '@types/fontkit@2.0.8':
     resolution: {integrity: sha512-wN+8bYxIpJf+5oZdrdtaX04qUuWHcKxcDEgRS9Qm9ZClSHjzEn13SxUC+5eRM+4yXIeTYk8mTzLAWGF64847ew==}
 
-  '@types/glob-to-regexp@0.4.4':
-    resolution: {integrity: sha512-nDKoaKJYbnn1MZxUY0cA1bPmmgZbg0cTq7Rh13d0KWYNOiKbqoR+2d89SnRPszGh7ROzSwZ/GOjZ4jPbmmZ6Eg==}
-
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -4037,9 +4037,6 @@ packages:
 
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
-
-  '@types/mime@3.0.4':
-    resolution: {integrity: sha512-iJt33IQnVRkqeqC7PzBHPTC6fDlRNRW8vjrgqtScAhrmMwe8c4Eo7+fUGTa+XdWrpEgpyKWMYmi2dIwMAYRzPw==}
 
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
@@ -4109,9 +4106,6 @@ packages:
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
 
-  '@types/stoppable@1.1.3':
-    resolution: {integrity: sha512-7wGKIBJGE4ZxFjk9NkjAxZMLlIXroETqP1FJCdoSvKmEznwmBxQFmTB1dsCkAvVcNemuSZM5qkkd9HE/NL2JTw==}
-
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -4126,9 +4120,6 @@ packages:
 
   '@types/which@3.0.4':
     resolution: {integrity: sha512-liyfuo/106JdlgSchJzXEQCVArk0CvevqPote8F8HgWgJ3dRCcTHgJIsLDuee0kxk/mhbInzIZk3QWSZJ8R+2w==}
-
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -4452,8 +4443,8 @@ packages:
     peerDependencies:
       astro: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  astro@5.8.0:
-    resolution: {integrity: sha512-G57ELkdIntDiSrucA5lQaRtBOjquaZ9b9NIwoz2f471ZuuJcynLjWgItgBzlrz5UMY4WqnFbVWUCKlJb7nt9bA==}
+  astro@5.9.2:
+    resolution: {integrity: sha512-K/zZlQOWMpamfLDOls5jvG7lrsjH1gkk3ESRZyZDCkVBtKHMF4LbjwCicm/iBb3mX3V/PerqRYzLbOy3/4JLCQ==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -6921,11 +6912,11 @@ packages:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
 
-  oniguruma-parser@0.12.0:
-    resolution: {integrity: sha512-fD9o5ebCmEAA9dLysajdQvuKzLL7cj+w7DQjuO3Cb6IwafENfx6iL+RGkmyW82pVRsvgzixsWinHvgxTMJvdIA==}
+  oniguruma-parser@0.12.1:
+    resolution: {integrity: sha512-8Unqkvk1RYc6yq2WBYRj4hdnsAxVze8i7iPfQr8e4uSP3tRv0rpZcbGUDvxfQQcdwHt/e9PrMvGCsa8OqG9X3w==}
 
-  oniguruma-to-es@4.3.1:
-    resolution: {integrity: sha512-VtX1kepWO+7HG7IWV5v72JhiqofK7XsiHmtgnvurnNOTdIvE5mrdWYtsOrQyrXCv1L2Ckm08hywp+MFO7rC4Ug==}
+  oniguruma-to-es@4.3.3:
+    resolution: {integrity: sha512-rPiZhzC3wXwE59YQMRDodUwwT9FZ9nNBwQQfsd1wfdtlKEyCdRV0avrTcSZ5xlIvGRVPd/cx6ZN45ECmS39xvg==}
 
   open@10.1.2:
     resolution: {integrity: sha512-cxN6aIDPz6rm8hbebcP7vrQNhvRcveZoJU72Y7vskh4oIm+BZwBECnx5nTmrlres1Qapvx27Qo1Auukpf8PKXw==}
@@ -7596,8 +7587,8 @@ packages:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
     engines: {node: '>=0.10.0'}
 
-  reactive-vscode@0.2.17:
-    resolution: {integrity: sha512-FIMLWJrGIjN1iSCL4LANwWhe9U1TXDUclKneJOGDl5lXoOnv9AokHdCVePW0X9VeBGP5419szyUxQHb26g3k6A==}
+  reactive-vscode@0.2.19:
+    resolution: {integrity: sha512-dqkuhOB0LmiTgODo3Uzn9UgkiuAgFxEdiuwlt6NKyPQWT5hOhfA862BFv4LnZM5fJXNyZ2XQ6INweroc5p8lfw==}
     peerDependencies:
       '@types/vscode': ^1.89.0
 
@@ -7928,8 +7919,8 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  shiki@3.3.0:
-    resolution: {integrity: sha512-j0Z1tG5vlOFGW8JVj0Cpuatzvshes7VJy5ncDmmMaYcmnGW0Js1N81TOW98ivTFNZfKRn9uwEg/aIm638o368g==}
+  shiki@3.6.0:
+    resolution: {integrity: sha512-tKn/Y0MGBTffQoklaATXmTqDU02zx8NYBGQ+F6gy87/YjKbizcLd+Cybh/0ZtOBX9r1NEnAy/GTRDKtOsc1L9w==}
 
   shipjs-lib@0.27.0:
     resolution: {integrity: sha512-BLqiL4CqTTk6yj2hFOcIRzlGHLpSshPof9ldEx2HierdzeueDm/4Rd+RXdeL53EGYqT+HuqVIC5DYMLARPPJEQ==}
@@ -9180,6 +9171,8 @@ snapshots:
 
   '@astrojs/compiler@2.11.0': {}
 
+  '@astrojs/compiler@2.12.2': {}
+
   '@astrojs/internal-helpers@0.6.1': {}
 
   '@astrojs/language-server@2.15.4(prettier@3.5.2)(typescript@5.8.3)':
@@ -9223,7 +9216,7 @@ snapshots:
       remark-parse: 11.0.0
       remark-rehype: 11.1.2
       remark-smartypants: 3.0.2
-      shiki: 3.3.0
+      shiki: 3.6.0
       smol-toml: 1.3.1
       unified: 11.0.5
       unist-util-remove-position: 5.0.0
@@ -9249,7 +9242,7 @@ snapshots:
       remark-parse: 11.0.0
       remark-rehype: 11.1.2
       remark-smartypants: 3.0.2
-      shiki: 3.3.0
+      shiki: 3.6.0
       smol-toml: 1.3.1
       unified: 11.0.5
       unist-util-remove-position: 5.0.0
@@ -9259,12 +9252,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@4.2.5(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))':
+  '@astrojs/mdx@4.2.5(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.1
       '@mdx-js/mdx': 3.1.0(acorn@8.14.1)
       acorn: 8.14.1
-      astro: 5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
+      astro: 5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
       es-module-lexer: 1.7.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -9315,17 +9308,17 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.24.3
 
-  '@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))':
+  '@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.2
-      '@astrojs/mdx': 4.2.5(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      '@astrojs/mdx': 4.2.5(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       '@astrojs/sitemap': 3.3.1
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
-      astro-expressive-code: 0.41.2(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      astro: 5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
+      astro-expressive-code: 0.41.2(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -9536,7 +9529,6 @@ snapshots:
 
   '@cloudflare/kv-asset-handler@0.4.0':
     dependencies:
-      '@types/mime': 3.0.4
       mime: 3.0.0
 
   '@cloudflare/unenv-preset@2.3.2(unenv@2.0.0-rc.17)(workerd@1.20250525.0)':
@@ -9550,7 +9542,6 @@ snapshots:
       '@cloudflare/unenv-preset': 2.3.2(unenv@2.0.0-rc.17)(workerd@1.20250525.0)
       '@mjackson/node-fetch-server': 0.6.1
       '@rollup/plugin-replace': 6.0.2(rollup@4.42.0)
-      '@types/ws': 8.18.1
       get-port: 7.1.0
       miniflare: 4.20250525.1
       picocolors: 1.1.1
@@ -10839,7 +10830,7 @@ snapshots:
   '@expressive-code/plugin-shiki@0.41.2':
     dependencies:
       '@expressive-code/core': 0.41.2
-      shiki: 3.3.0
+      shiki: 3.6.0
 
   '@expressive-code/plugin-text-markers@0.41.2':
     dependencies:
@@ -10885,7 +10876,7 @@ snapshots:
       hono: 4.7.10
       valibot: 1.0.0(typescript@5.8.3)
 
-  '@hpcc-js/wasm-graphviz@1.8.0': {}
+  '@hpcc-js/wasm-graphviz@1.7.0': {}
 
   '@hutson/parse-repository-url@3.0.2': {}
 
@@ -11001,14 +10992,14 @@ snapshots:
 
   '@logtape/logtape@0.9.2': {}
 
-  '@mantine/colors-generator@8.0.1(chroma-js@3.1.2)':
+  '@mantine/colors-generator@8.1.0(chroma-js@3.1.2)':
     dependencies:
       chroma-js: 3.1.2
 
-  '@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@floating-ui/react': 0.26.28(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@mantine/hooks': 8.0.1(react@19.1.0)
+      '@mantine/hooks': 8.1.0(react@19.1.0)
       clsx: 2.1.1
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -11019,33 +11010,33 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@8.0.1(react@19.1.0)':
+  '@mantine/hooks@8.1.0(react@19.1.0)':
     dependencies:
       react: 19.1.0
 
-  '@mantine/modals@8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.0.1(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@mantine/modals@8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@mantine/core': 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@mantine/hooks': 8.0.1(react@19.1.0)
+      '@mantine/core': 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@mantine/hooks': 8.1.0(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@mantine/notifications@8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.0.1(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@mantine/notifications@8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@mantine/core': 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@mantine/hooks': 8.0.1(react@19.1.0)
-      '@mantine/store': 8.0.1(react@19.1.0)
+      '@mantine/core': 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@mantine/hooks': 8.1.0(react@19.1.0)
+      '@mantine/store': 8.1.0(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       react-transition-group: 4.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
-  '@mantine/store@8.0.1(react@19.1.0)':
+  '@mantine/store@8.1.0(react@19.1.0)':
     dependencies:
       react: 19.1.0
 
-  '@mantine/vanilla-extract@8.0.1(@mantine/core@8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
+  '@mantine/vanilla-extract@8.1.0(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
     dependencies:
-      '@mantine/core': 8.0.1(@mantine/hooks@8.0.1(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@mantine/core': 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   '@mdx-js/mdx@3.1.0(acorn@8.14.1)':
     dependencies:
@@ -11548,7 +11539,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@reactive-vscode/reactivity@0.2.17': {}
+  '@reactive-vscode/reactivity@0.2.19': {}
 
   '@rolldown/pluginutils@1.0.0-beta.9': {}
 
@@ -11784,33 +11775,33 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@shikijs/core@3.3.0':
+  '@shikijs/core@3.6.0':
     dependencies:
-      '@shikijs/types': 3.3.0
+      '@shikijs/types': 3.6.0
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
       hast-util-to-html: 9.0.5
 
-  '@shikijs/engine-javascript@3.3.0':
+  '@shikijs/engine-javascript@3.6.0':
     dependencies:
-      '@shikijs/types': 3.3.0
+      '@shikijs/types': 3.6.0
       '@shikijs/vscode-textmate': 10.0.2
-      oniguruma-to-es: 4.3.1
+      oniguruma-to-es: 4.3.3
 
-  '@shikijs/engine-oniguruma@3.3.0':
+  '@shikijs/engine-oniguruma@3.6.0':
     dependencies:
-      '@shikijs/types': 3.3.0
+      '@shikijs/types': 3.6.0
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@shikijs/langs@3.3.0':
+  '@shikijs/langs@3.6.0':
     dependencies:
-      '@shikijs/types': 3.3.0
+      '@shikijs/types': 3.6.0
 
-  '@shikijs/themes@3.3.0':
+  '@shikijs/themes@3.6.0':
     dependencies:
-      '@shikijs/types': 3.3.0
+      '@shikijs/types': 3.6.0
 
-  '@shikijs/types@3.3.0':
+  '@shikijs/types@3.6.0':
     dependencies:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
@@ -12077,8 +12068,6 @@ snapshots:
     dependencies:
       '@types/node': 22.15.31
 
-  '@types/glob-to-regexp@0.4.4': {}
-
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -12099,8 +12088,6 @@ snapshots:
   '@types/mdx@2.0.13': {}
 
   '@types/mime@1.3.5': {}
-
-  '@types/mime@3.0.4': {}
 
   '@types/minimatch@5.1.2': {}
 
@@ -12165,10 +12152,6 @@ snapshots:
       '@types/node': 20.19.0
       '@types/send': 0.17.4
 
-  '@types/stoppable@1.1.3':
-    dependencies:
-      '@types/node': 22.15.31
-
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
@@ -12178,10 +12161,6 @@ snapshots:
   '@types/vscode@1.100.0': {}
 
   '@types/which@3.0.4': {}
-
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 22.15.31
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -12268,7 +12247,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
-      vitest: 3.1.4(@types/debug@4.1.12)(@types/node@20.19.0)(@vitest/ui@3.1.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
+      vitest: 3.1.4(@types/debug@4.1.12)(@types/node@22.15.31)(@vitest/ui@3.1.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
     optional: true
 
   '@vitest/ui@3.2.3(vitest@3.1.4)':
@@ -12592,21 +12571,21 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.41.2(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)):
+  astro-expressive-code@0.41.2(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)):
     dependencies:
-      astro: 5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
+      astro: 5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
       rehype-expressive-code: 0.41.2
 
-  astro-og-canvas@0.7.0(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)):
+  astro-og-canvas@0.7.0(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)):
     dependencies:
-      astro: 5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
+      astro: 5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)
       canvaskit-wasm: 0.39.1
       deterministic-object-hash: 2.0.2
       entities: 4.5.0
 
-  astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0):
+  astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0):
     dependencies:
-      '@astrojs/compiler': 2.11.0
+      '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.6.1
       '@astrojs/markdown-remark': 6.3.2
       '@astrojs/telemetry': 3.3.0
@@ -12650,9 +12629,9 @@ snapshots:
       prompts: 2.4.2
       rehype: 13.0.2
       semver: 7.7.2
-      shiki: 3.3.0
+      shiki: 3.6.0
       tinyexec: 0.3.2
-      tinyglobby: 0.2.13
+      tinyglobby: 0.2.14
       tsconfck: 3.1.5(typescript@5.8.3)
       ultrahtml: 1.6.0
       unifont: 0.5.0
@@ -13548,7 +13527,7 @@ snapshots:
 
   dom-helpers@5.2.1:
     dependencies:
-      '@babel/runtime': 7.27.1
+      '@babel/runtime': 7.27.6
       csstype: 3.1.3
 
   dom-serializer@2.0.0:
@@ -15470,9 +15449,6 @@ snapshots:
   miniflare@4.20250525.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
-      '@types/glob-to-regexp': 0.4.4
-      '@types/stoppable': 1.1.3
-      '@types/ws': 8.18.1
       acorn: 8.14.0
       acorn-walk: 8.3.2
       exit-hook: 2.2.1
@@ -15792,11 +15768,11 @@ snapshots:
     dependencies:
       mimic-fn: 2.1.0
 
-  oniguruma-parser@0.12.0: {}
+  oniguruma-parser@0.12.1: {}
 
-  oniguruma-to-es@4.3.1:
+  oniguruma-to-es@4.3.3:
     dependencies:
-      oniguruma-parser: 0.12.0
+      oniguruma-parser: 0.12.1
       regex: 6.0.1
       regex-recursion: 6.0.2
 
@@ -16428,7 +16404,7 @@ snapshots:
 
   react-textarea-autosize@8.5.9(@types/react@19.1.5)(react@19.1.0):
     dependencies:
-      '@babel/runtime': 7.27.1
+      '@babel/runtime': 7.27.6
       react: 19.1.0
       use-composed-ref: 1.4.0(@types/react@19.1.5)(react@19.1.0)
       use-latest: 1.3.0(@types/react@19.1.5)(react@19.1.0)
@@ -16437,7 +16413,7 @@ snapshots:
 
   react-transition-group@4.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      '@babel/runtime': 7.27.1
+      '@babel/runtime': 7.27.6
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -16446,9 +16422,9 @@ snapshots:
 
   react@19.1.0: {}
 
-  reactive-vscode@0.2.17(@types/vscode@1.100.0):
+  reactive-vscode@0.2.19(@types/vscode@1.100.0):
     dependencies:
-      '@reactive-vscode/reactivity': 0.2.17
+      '@reactive-vscode/reactivity': 0.2.19
       '@types/vscode': 1.100.0
 
   read-package-json-fast@4.0.0:
@@ -16948,14 +16924,14 @@ snapshots:
       interpret: 1.4.0
       rechoir: 0.6.2
 
-  shiki@3.3.0:
+  shiki@3.6.0:
     dependencies:
-      '@shikijs/core': 3.3.0
-      '@shikijs/engine-javascript': 3.3.0
-      '@shikijs/engine-oniguruma': 3.3.0
-      '@shikijs/langs': 3.3.0
-      '@shikijs/themes': 3.3.0
-      '@shikijs/types': 3.3.0
+      '@shikijs/core': 3.6.0
+      '@shikijs/engine-javascript': 3.6.0
+      '@shikijs/engine-oniguruma': 3.6.0
+      '@shikijs/langs': 3.6.0
+      '@shikijs/themes': 3.6.0
+      '@shikijs/types': 3.6.0
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
 
@@ -17107,19 +17083,19 @@ snapshots:
       as-table: 1.0.55
       get-source: 2.0.12
 
-  starlight-heading-badges@0.5.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
+  starlight-heading-badges@0.5.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
     dependencies:
       '@astrojs/markdown-remark': 6.3.2
-      '@astrojs/starlight': 0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      '@astrojs/starlight': 0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       unist-util-visit: 5.0.0
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.16.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
+  starlight-links-validator@0.16.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      '@astrojs/starlight': 0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
       '@types/picomatch': 3.0.2
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
@@ -17133,9 +17109,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.11.0(@astrojs/starlight@0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
+  starlight-package-managers@0.11.0(@astrojs/starlight@0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.34.3(astro@5.8.0(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      '@astrojs/starlight': 0.34.3(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.42.0)(sugarss@4.0.1(postcss@8.5.4))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
 
   statuses@2.0.1: {}
 

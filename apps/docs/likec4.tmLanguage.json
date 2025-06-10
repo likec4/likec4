@@ -79,8 +79,8 @@
       }
     },
     {
-      "match": "(#)([a-zA-Z0-9]+)",
-      "name": "entity.name.type.enum.likec4"
+      "match": "#[a-fA-F0-9]+\\b",
+      "name": "constant.other.color.likec4"
     },
     {
       "match": "\\b(opacity):?\\s+([^\\s]+)",

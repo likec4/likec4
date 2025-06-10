@@ -25,10 +25,9 @@ import { useBuiltinFileSystem } from './common/useBuiltinFileSystem'
 import { useDiagramPreview, ViewType } from './common/useDiagramPreview'
 import { useExtensionLogger } from './common/useExtensionLogger'
 import { activateMessenger } from './common/useMessenger'
-import { activateTagDecoration } from './common/useTagDecoration'
 import { activateTelemetry } from './common/useTelemetry'
 import { languageId } from './const'
-import { logger, logWarn } from './logger'
+import { logError, logger, logWarn } from './logger'
 import { commands } from './meta'
 import { useRpc } from './Rpc'
 
@@ -55,9 +54,13 @@ export function activateLanguageClient(
   let activated = false
   function activate() {
     if (activated) return
-    activated = true
-    const result = activateLc(createLc)
-    onActivated?.(result)
+    try {
+      const result = activateLc(createLc)
+      activated = true
+      onActivated?.(result)
+    } catch (e) {
+      logError(e)
+    }
   }
 
   useDisposable(vscode.window.registerWebviewPanelSerializer(
@@ -89,9 +92,9 @@ export function activateLanguageClient(
 function activateLc(
   createLc: CreateLanguageClient,
 ) {
+  const output = useExtensionLogger()
   useBuiltinFileSystem()
   useVscodeContext('likec4.activated', true)
-  const output = useExtensionLogger()
   logger.info('starting language server')
   const documentSelector = useDocumentSelector()
 

@@ -30,7 +30,7 @@
     "canvaskit-wasm": "^0.40.0",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "sharp": "^0.34.2",
+    "sharp": "catalog:utils",
     "starlight-heading-badges": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro"
