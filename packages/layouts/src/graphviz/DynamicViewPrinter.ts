@@ -1,4 +1,4 @@
-import type { AnyAux, ComputedDynamicView, ComputedEdge } from '@likec4/core'
+import type { AnyAux, ComputedDynamicView, ComputedEdge, HexColor } from '@likec4/core'
 import { DefaultArrowType, DefaultRelationshipColor, extractStep } from '@likec4/core'
 import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
@@ -30,7 +30,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor,
+        [_.fontcolor]: colorValues.labelColor as HexColor,
       })
     }
 

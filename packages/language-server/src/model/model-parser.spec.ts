@@ -49,18 +49,20 @@ describe.concurrent('LikeC4ModelParser', () => {
       const { validate, services } = createTestServices()
       const { document } = await validate(`
         specification {
-          element system
           tag tag1
           tag tag2 {
             color #3094FEB9
+          }
+          tag tag3 {
+            color rgba(255, 255, 255, 0.123)
+          }
+          tag tag4 {
+            color rgba(200, 200, 200, 55%)
           }
         }
       `)
       const doc = services.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
-        elements: {
-          system: {},
-        },
         tags: {
           tag1: {
             astPath: expect.any(String),
@@ -68,6 +70,14 @@ describe.concurrent('LikeC4ModelParser', () => {
           tag2: {
             astPath: expect.any(String),
             color: '#3094FEB9',
+          },
+          tag3: {
+            astPath: expect.any(String),
+            color: 'rgba(255,255,255,0.123)',
+          },
+          tag4: {
+            astPath: expect.any(String),
+            color: 'rgba(200,200,200,0.55)',
           },
         },
       })

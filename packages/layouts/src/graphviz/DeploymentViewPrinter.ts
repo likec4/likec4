@@ -3,6 +3,7 @@ import {
   type ComputedDeploymentView,
   type ComputedEdge,
   type ComputedNode,
+  type HexColor,
   DefaultArrowType,
   nonNullable,
 } from '@likec4/core'
@@ -107,7 +108,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor,
+        [_.fontcolor]: colorValues.labelColor as HexColor,
       })
     }
 

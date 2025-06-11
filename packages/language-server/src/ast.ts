@@ -254,9 +254,13 @@ export function isParsedLikeC4LangiumDocument(
   )
 }
 
-export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {
+export function parseAstPercent(value: string): number {
   const opacity = parseFloat(value)
   return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
+}
+
+export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {
+  return parseAstPercent(value)
 }
 
 export function parseAstSizeValue({ value }: { value: ast.SizeValue }): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {

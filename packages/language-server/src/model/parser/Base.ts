@@ -9,6 +9,8 @@ import {
   isBoolean,
   isEmpty,
   isNonNullish,
+  isNumber,
+  isString,
   isTruthy,
   map,
   pipe,
@@ -21,6 +23,7 @@ import {
   type ParsedLikeC4LangiumDocument,
   ast,
   parseAstOpacityProperty,
+  parseAstPercent,
   parseAstSizeValue,
   toColor,
 } from '../../ast'
@@ -183,6 +186,28 @@ export class BaseParser {
         return undefined
       }
     }
+  }
+
+  parseColorLiteral(astNode: ast.ColorLiteral): c4.ColorLiteral | undefined {
+    if (!this.isValid(astNode)) {
+      return undefined
+    }
+    if (ast.isHexColor(astNode)) {
+      return `#${astNode.hex}`
+    }
+    if (ast.isRGBAColor(astNode)) {
+      let alpha = isNumber(astNode.alpha) ? astNode.alpha : undefined
+      if (isString(astNode.alpha)) {
+        alpha = parseAstPercent(astNode.alpha) / 100
+      }
+
+      if (alpha !== undefined) {
+        return `rgba(${astNode.red},${astNode.green},${astNode.blue},${alpha})`
+      }
+
+      return `rgb(${astNode.red},${astNode.green},${astNode.blue})`
+    }
+    nonexhaustive(astNode)
   }
 
   parseElementStyle(

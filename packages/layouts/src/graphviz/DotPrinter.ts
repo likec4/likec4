@@ -21,6 +21,7 @@ import {
   type EdgeId,
   type ElementThemeColorValues,
   type Fqn,
+  type HexColor,
   type NodeId,
   type RelationshipLineType,
   type RelationshipThemeColorValues,
@@ -299,7 +300,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.fontname]: FontName,
       [_.shape]: 'rect',
       [_.fillcolor]: defaultTheme.elements[DefaultThemeColor].fill,
-      [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast,
+      [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast as HexColor,
       [_.color]: defaultTheme.elements[DefaultThemeColor].stroke,
       [_.style]: 'filled',
       [_.penwidth]: 0,
@@ -312,7 +313,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
-      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor,
+      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor as HexColor,
     })
   }
 
@@ -404,7 +405,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     if (element.color !== DefaultThemeColor) {
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
-        [_.fontcolor]: colorValues.hiContrast,
+        [_.fontcolor]: colorValues.hiContrast as HexColor,
         [_.color]: colorValues.stroke,
       })
     }

@@ -14,7 +14,12 @@ import { dynamicViewStep } from './dynamic-view-step'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImported, checkImportsFromPoject } from './imports'
-import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
+import {
+  colorLiteralRuleChecks,
+  iconPropertyRuleChecks,
+  notesPropertyRuleChecks,
+  opacityPropertyRuleChecks,
+} from './property-checks'
 import { checkRelationBody, relationChecks } from './relation'
 import {
   checkDeploymentNodeKind,
@@ -90,6 +95,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationTag,
   ast.isSpecificationColor,
   ast.isSpecificationRule,
+  ast.isColorLiteral,
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
@@ -163,6 +169,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     OutgoingRelationExpr: checkOutgoingRelationExpr(services),
     ImportsFromPoject: checkImportsFromPoject(services),
     Imported: checkImported(services),
+    ColorLiteral: colorLiteralRuleChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {
