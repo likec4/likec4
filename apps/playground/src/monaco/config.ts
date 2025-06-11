@@ -1,6 +1,4 @@
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type OpenEditor } from '@codingame/monaco-vscode-editor-service-override'
-
 import {
   RegisteredFileSystemProvider,
   registerFileSystemOverlay,
@@ -16,10 +14,11 @@ export type CustomWrapperConfig = WrapperConfig & {
   fsProvider: RegisteredFileSystemProvider
 }
 
+export type MonacoEditorApp = monaco.editor.IStandaloneCodeEditor
+
 export const createWrapperConfig = (params: {
-  // playgroundActorRef: PlaygroundActorRef
   onActiveEditorChanged?: (filename: string) => void
-  getActiveEditor: () => monaco.editor.ICodeEditor | null
+  getActiveEditor: () => MonacoEditorApp | null
 }): CustomWrapperConfig => {
   console.log('createWrapperConfig')
   const extensionFilesOrContents = new Map<string, string | URL>()
@@ -29,26 +28,6 @@ export const createWrapperConfig = (params: {
   const fsProvider = new RegisteredFileSystemProvider(false)
   registerFileSystemOverlay(1, fsProvider)
 
-  const openEditorFunc: OpenEditor = async (modelRef, opts, _sideBySide) => {
-    const editor = first(monaco.editor.getEditors())
-    if (!editor) {
-      return undefined
-    }
-    const nextFilename = modelRef.object.textEditorModel.uri.path.slice(1)
-    params.onActiveEditorChanged?.(nextFilename)
-    editor.setModel(modelRef.object.textEditorModel)
-    return editor
-  }
-
-  // const playgroundContext = params.playgroundActorRef.getSnapshot().context
-
-  // const modified = {
-  //   text: playgroundContext.files[playgroundContext.activeFilename] ?? '',
-  //   uri: monaco.Uri.file(playgroundContext.activeFilename).toString(),
-  //   enforceLanguageId: 'likec4',
-  // }
-  // console.debug('modified', modified)
-
   return {
     $type: 'extended',
     fsProvider,
@@ -57,7 +36,16 @@ export const createWrapperConfig = (params: {
       loadThemes: true,
       viewsConfig: {
         viewServiceType: 'EditorService',
-        openEditorFunc,
+        openEditorFunc: async (modelRef) => {
+          const editor = first(monaco.editor.getEditors())
+          if (!editor) {
+            return undefined
+          }
+          const nextFilename = modelRef.object.textEditorModel.uri.path.slice(1)
+          params.onActiveEditorChanged?.(nextFilename)
+          editor.setModel(modelRef.object.textEditorModel)
+          return editor
+        },
       },
       enableExtHostWorker: false,
       // serviceOverrides: {
