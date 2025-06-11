@@ -30,8 +30,7 @@ const api = factory.createApp()
   .route('/api/share', apiShareRoute)
 export type ApiType = typeof api
 
-const app = api
-  .route('/viewkv', viewKv)
+const app = (import.meta.env.DEV ? api.route('/viewkv', viewKv) : api)
   .get('/share/:shareId/enter-pincode', async c => {
     const kv = sharesKV(c)
     const { shareOptions } = await kv.readMetadata(c.req.param('shareId'))
