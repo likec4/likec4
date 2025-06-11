@@ -16,7 +16,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "rm -r -f dist",
+    "clean": "pnpm rimraf dist lib",
     "pack": "pnpm pack",
     "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
@@ -122,9 +122,9 @@
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
     "remeda": "catalog:utils",
-    "turbo": "catalog:",
-    "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "turbo": "catalog:common",
+    "typescript": "catalog:common",
+    "unbuild": "catalog:common",
     "vitest": "catalog:vitest"
   },
   "packageManager": "pnpm@10.12.1"

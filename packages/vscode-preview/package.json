@@ -14,7 +14,7 @@
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -r -f dist"
+    "clean": "pnpm rimraf dist lib"
   },
   "devDependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.2.5",
@@ -29,7 +29,7 @@
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@tabler/icons-react": "catalog:react",
-    "@types/node": "catalog:",
+    "@types/node": "catalog:common",
     "@types/object-hash": "^3.0.6",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
@@ -46,9 +46,9 @@
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
-    "tsx": "catalog:",
+    "tsx": "catalog:common",
     "type-fest": "catalog:utils",
-    "typescript": "catalog:",
+    "typescript": "catalog:common",
     "vite": "catalog:vite",
     "vscode-messenger-common": "^0.5.1",
     "vscode-messenger-webview": "^0.5.1"

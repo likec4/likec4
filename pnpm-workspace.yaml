@@ -4,17 +4,17 @@ packages:
   - packages/*
   - "!packages/create-likec4"
 
-catalog:
-  typescript: ^5.8.3
-  wireit: ^0.14.12
-  wrangler: ^4.19.1
-  "@types/node": ^20.19.0
-  unbuild: ^3.5.0
-  turbo: ^2.5.4
-  tsx: ~4.19.4
-  zx: ^8.5.4
-
 catalogs:
+  common:
+    typescript: ^5.8.3
+    wireit: ^0.14.12
+    wrangler: ^4.19.2
+    "@types/node": ~20.19.0
+    unbuild: ^3.5.0
+    turbo: ^2.5.4
+    tsx: ~4.20.1
+    zx: ^8.5.5
+
   utils:
     remeda: ^2.23.0
     type-fest: ^4.41.0
@@ -75,8 +75,8 @@ catalogs:
     vite-tsconfig-paths: ^5.1.4
     rollup: ^4.41.0
   vitest:
-    vitest: ^3.2.3
-    "@vitest/ui": ^3.2.3
+    vitest: 3.2.3
+    "@vitest/ui": 3.2.3
   css:
     postcss: ^8.5.4
     "@pandacss/dev": ^0.53.6

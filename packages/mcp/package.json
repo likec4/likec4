@@ -27,7 +27,8 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "wireit",
-    "inspector": "wireit"
+    "inspector": "wireit",
+    "clean": "pnpm rimraf dist lib"
   },
   "wireit": {
     "build": {
@@ -58,15 +59,15 @@
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "catalog:",
+    "@types/node": "catalog:common",
     "remeda": "catalog:utils",
-    "tsx": "catalog:",
-    "turbo": "catalog:",
-    "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "tsx": "catalog:common",
+    "turbo": "catalog:common",
+    "typescript": "catalog:common",
+    "unbuild": "catalog:common",
     "vitest": "catalog:vitest",
     "zod": "catalog:utils",
-    "wireit": "catalog:"
+    "wireit": "catalog:common"
   },
   "packageManager": "pnpm@10.12.1"
 }

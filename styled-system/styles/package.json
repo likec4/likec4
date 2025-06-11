@@ -21,7 +21,8 @@
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
     "generate": "panda codegen && panda cssgen",
-    "emit-pkg": "panda emit-pkg --base dist"
+    "emit-pkg": "panda emit-pkg --base dist",
+    "clean": "pnpm rimraf dist lib"
   },
   "exports": {
     "./css": {
@@ -79,8 +80,8 @@
     "@pandacss/dev": "catalog:css",
     "postcss": "catalog:css",
     "nano-spawn": "catalog:utils",
-    "unbuild": "catalog:",
-    "typescript": "catalog:"
+    "unbuild": "catalog:common",
+    "typescript": "catalog:common"
   },
   "packageManager": "pnpm@10.12.1"
 }

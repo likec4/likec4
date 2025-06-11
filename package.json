@@ -26,7 +26,7 @@
     "ci:test": "vitest run --no-isolate",
     "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "release": "shipjs prepare",
-    "clean": "turbo run clean",
+    "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
@@ -35,7 +35,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/node": "catalog:common",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
     "execa": "^9.6.0",
@@ -43,11 +43,11 @@
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
     "npm-run-all2": "^7.0.2",
+    "rimraf": "^6.0.1",
     "shipjs": "^0.27.0",
-    "tsx": "catalog:",
-    "turbo": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:vite",
+    "tsx": "catalog:common",
+    "turbo": "catalog:common",
+    "typescript": "catalog:common",
     "vitest": "catalog:vitest"
   },
   "pnpm": {
@@ -64,7 +64,7 @@
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
       "type-fest": "catalog:utils",
-      "turbo": "catalog:",
+      "turbo": "catalog:common",
       "sharp": "catalog:utils",
       "mnemonist": "0.40.3"
     },

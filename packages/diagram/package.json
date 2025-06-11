@@ -73,7 +73,8 @@
     "build": "echo \"use pnpm turbo run build\" || true",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
-    "test": "vitest run --no-isolate"
+    "test": "vitest run --no-isolate",
+    "clean": "pnpm rimraf dist lib bundle"
   },
   "dependencies": {
     "@dagrejs/dagre": "1.1.4",
@@ -111,15 +112,15 @@
     "@types/d3-shape": "^3.1.7",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@types/node": "catalog:",
+    "@types/node": "catalog:common",
     "@vitejs/plugin-react": "catalog:vite",
     "postcss": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "typescript": "catalog:",
+    "typescript": "catalog:common",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
-    "wireit": "catalog:"
+    "wireit": "catalog:common"
   }
 }

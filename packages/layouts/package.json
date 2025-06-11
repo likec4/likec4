@@ -48,7 +48,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "rm -r -f -g \"dist/**\""
+    "clean": "pnpm rimraf dist lib"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
@@ -70,11 +70,11 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "catalog:",
+    "@types/node": "catalog:common",
     "@types/which": "^3.0.4",
-    "turbo": "catalog:",
-    "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "turbo": "catalog:common",
+    "typescript": "catalog:common",
+    "unbuild": "catalog:common",
     "vitest": "catalog:vitest"
   },
   "packageManager": "pnpm@10.12.1"
