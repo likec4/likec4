@@ -1,3 +1,32 @@
+## [1.32.1](https://github.com/likec4/likec4/compare/v1.32.0...v1.32.1) (2025-06-12)
+
+
+### Bug Fixes
+
+* impossible to open elements in navigation menu since 1.32.0, closes [#1996](https://github.com/likec4/likec4/issues/1996)
+
+
+### Improvements
+
+* **dsl:** support rgb and rgba colors
+  ```zig
+  specification {
+    tag deprecated {
+      color rgba(44, 8, 128, 0.9)
+    }
+  }
+  ```
+  
+* **dsl:** support escaped quotes in string literals
+  ```zig
+  specification {
+    service cloud 'Cloud\'s Systems' 
+    service cloud "Cloud\"s Systems"
+  }
+  ```
+
+
+
 # [1.32.0](https://github.com/likec4/likec4/compare/v1.31.0...v1.32.0) (2025-06-10)
 
 ### 🚀 Features
