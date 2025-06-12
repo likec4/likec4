@@ -177,21 +177,6 @@ In progress
 
 :::
 
-### Metadata
-
-Same as [elements metadata](/dsl/model/#element-metadata):
-
-```likec4
-model {
-  customer -> frontend 'opens in browser' {
-    metadata {
-      prop1 'value1'
-      prop2 'value2'
-    }
-  }
-}
-```
-
 ### Tags
 
 Relationships may be tagged
@@ -240,5 +225,26 @@ model {
     navigateTo dashboardRequestFlow
   }
   
+}
+```
+
+## Relationships Metadata
+
+Same as [elements metadata](/dsl/model/#element-metadata):
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    metadata {
+      prop1 'value1'
+      prop2 '
+        apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: app-statefulset
+        spec: {}
+      '
+    }
+  }
 }
 ```

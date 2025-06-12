@@ -9,9 +9,7 @@ tableOfContents:
   maxHeadingLevel: 5
 ---
 
-import { Aside, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
-
-import { Card } from '@astrojs/starlight/components';
+import { Card, Aside } from '@astrojs/starlight/components';
 import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
 
 <Aside type='caution' title="Experimental" >
@@ -130,7 +128,7 @@ view {
 }
 ```
 
-This notation have higher priority, then global one or defined within style predicates. 
+This override has the highest priority, then defined within style predicates, and finally global notations.
 
 :::note
 Feel free to share your ideas in <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>GitHub discussions</a> how to improve notations, make reusable or more flexible.

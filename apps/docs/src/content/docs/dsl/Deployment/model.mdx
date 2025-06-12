@@ -84,12 +84,12 @@ deployment {
 As in the logical model, you can [`extend`](/dsl/extend/#extend-element) deployment nodes:
 
 ```likec4
-// 'deployments/prod.c4'
+// File: 'deployments/prod.c4'
 deployment {
   environment prod
 }
 
-// 'deployments/prod/zone-eu.c4'
+// File: 'deployments/prod/zone-eu.c4'
 deployment {
   extend prod {
     zone eu

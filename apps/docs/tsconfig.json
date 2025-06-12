@@ -15,7 +15,9 @@
       "@assets/*": [
         "./src/assets/*"
       ]
-    }
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": [
     "./src"

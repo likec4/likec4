@@ -18,19 +18,19 @@
     "clean": "pnpm rimraf dist lib .astro"
   },
   "dependencies": {
-    "likec4": "workspace:*",
     "@astrojs/check": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/starlight": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
-    "shiki": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "^0.40.0",
+    "likec4": "workspace:*",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "catalog:utils",
+    "shiki": "catalog:astro",
     "starlight-heading-badges": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro"

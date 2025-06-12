@@ -15,13 +15,12 @@ The `model` describes architecture as a set of hierarchical elements and any rel
 
 ## Element
 
-Element is a basic building block.  
-It represents a logical or physical part of the architecture.  
+Element is a basic building block. It represents a logical part of the architecture.  
 Any element must have a [kind](/dsl/specification#element-kind) and a name (_identifier_):
 
 ```likec4
 specification {
-  element actor // define a kind
+  element actor
   element service
 }
 
@@ -42,17 +41,17 @@ It can contain letters, digits and underscore, but can't start with a digit or c
 | name       |     |
 | :--------- | :-- |
 | api        | ✅  |
-| Api        | ✅  |
+| Api2       | ✅  |
 | \_api      | ✅  |
-| \_1api     | ✅  |
-| 1api       | ⛔️ |
-| a.pi       | ⛔️ |
+| \__Api1    | ✅  |
+| 1api       | ⛔️  |
+| a.pi       | ⛔️  |
 
 
 ### Element Properties
 
-Elements may have properties: _title_, _description_ and _technology_.  
-For example, Structurizr DSL style:
+Elements may have properties: `title`, `description` and `technology`.  
+For example:
 
 ```likec4 copy
 specification {
@@ -65,13 +64,10 @@ model {
 }
 ```
 
-<Aside>
-LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.  
+LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.\
 Check the [Big Bank example](/examples/bigbank).
-</Aside>
 
-Element's name is used as a title by default.  
-But you can specify your own:
+All properties are optional, and element's name will be used as a title by default:
 
 ```likec4
 model {
@@ -84,6 +80,24 @@ model {
   cloud = service 'Cloud Systems'
 }
 ```
+
+:::note
+You can use single or double quotes:
+```likec4
+specification {
+  service cloud 'Cloud Systems' 
+  // Or
+  service cloud "Cloud Systems"
+}
+```
+If you need quotes inside, you can escape with backslash:
+```likec4
+specification {
+  service cloud 'Cloud\'s Systems' 
+  service cloud "Cloud\"s Systems"
+}
+```
+:::
 
 These properties may be defined as nested:
 
@@ -111,7 +125,6 @@ model {
 ```
 
 :::tip
-
 You may define technology in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
 
 ```likec4
@@ -180,7 +193,7 @@ model {
 }
 ```
 
-### Element Metadata
+## Element Metadata
 
 Element metadata is a set of key-value pairs, defined in a nested block:
 

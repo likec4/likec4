@@ -42,7 +42,9 @@ The view’s name is used as an image filename during export and as part of the 
   If it is not defined - will be generated and include top-level elements
 </Aside>
 
-Views can have a title, description, tags and links (similar to [model elements](/dsl/model#element)):
+### View properties
+
+Views can have a `title`, `description`, `tags` and `links` (similar to [elements](/dsl/model#element)):
 
 ```likec4
 views {
@@ -63,12 +65,6 @@ views {
 ```
 
 Properties must be defined before [predicates](#view-predicates).  
-Predicates specify which elements and relationships are visible.
-
-<Aside title="Relationships">
-  Views contain elements and their connections (relationships).  
-  Connections represent merged relationships - direct between elements and/or those derived from their nested elements.
-</Aside>
 
 ## Scoped views
 
@@ -117,6 +113,11 @@ You can define multiple views for the same element, with the default determined 
 
 Views are not static, they are generated from the model. Any changes in the model are applied immediately and update views.
 Two types of predicates define what is visible: element and relationship predicates.
+
+<Aside>
+  Views contain elements and their connections (relationships).  
+  Connections represent merged relationships - direct between elements and/or those derived from their nested elements.
+</Aside>
 
 #### Element predicates
 
