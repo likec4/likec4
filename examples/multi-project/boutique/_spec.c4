@@ -57,11 +57,13 @@ specification {
 
   tag deprecated
   tag next
-  tag v1  
+  tag v1
   tag v1_1
   tag v2
   tag teamA
-  tag teamB
+  tag teamB {
+    color rgba(201, 6, 6, 0.9)
+  }
 
   relationship solid {
     line solid
