@@ -3,14 +3,27 @@
 
 ### Bug Fixes
 
-* impossible to open elements in navigation menu since 1.32.0 ([8e49de2](https://github.com/likec4/likec4/commit/8e49de2f1c4a7358f85f61635cd8db0d74a56eab)), closes [#1996](https://github.com/likec4/likec4/issues/1996)
+* impossible to open elements in navigation menu since 1.32.0, closes [#1996](https://github.com/likec4/likec4/issues/1996)
 
 
-### Features
+### Improvements
 
-* **dsl:** support rgb and rgba colors ([#2000](https://github.com/likec4/likec4/issues/2000)) ([df48061](https://github.com/likec4/likec4/commit/df4806155e769839420804e38736f7c80e923fc9))
-* **playground:** improve search UI responsiveness and add legacy model conversion support ([bc2b995](https://github.com/likec4/likec4/commit/bc2b995e731ff525ea5956d461e12faa2a44dd3e))
-* support escaped quotes in string literals ([a80cbe2](https://github.com/likec4/likec4/commit/a80cbe24f9f11f26d4e288ccd51154a1bbfaabcd))
+* **dsl:** support rgb and rgba colors
+  ```zig
+  specification {
+    tag deprecated {
+      color rgba(44, 8, 128, 0.9)
+    }
+  }
+  ```
+  
+* **dsl:** support escaped quotes in string literals
+  ```zig
+  specification {
+    service cloud 'Cloud\'s Systems' 
+    service cloud "Cloud\"s Systems"
+  }
+  ```
 
 
 
