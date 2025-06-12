@@ -876,7 +876,7 @@ terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;
 
-terminal String: /"[^"]*"|'[^']*'/;
+terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
