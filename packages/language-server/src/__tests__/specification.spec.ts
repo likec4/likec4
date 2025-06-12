@@ -1,4 +1,4 @@
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import { test } from './asserts'
 
 describe.concurrent('specification', () => {
@@ -222,6 +222,23 @@ describe.concurrent('specification', () => {
       }`
   })
 
+  test('spec with custom colors').valid`
+    specification {
+      relationship async {
+        color custom-color1
+      }
+      element person {
+        style {
+          color custom-color2
+        }
+      }
+
+      color custom-color1 #00ffff
+      color custom-color2 rgb(201 200 6)
+      color custom-color3 rgba(201, 6, 6, 0.9)
+      color custom-color4 rgba(201 200 6 80%)
+    }`
+
   describe('for tags', () => {
     test('fail if tag starts with number').invalid`
       specification {
@@ -328,20 +345,6 @@ describe.concurrent('specification', () => {
           technology "http"
           notation "HTTP Request"
         }
-      }`
-
-    test('spec with custom colors').valid`
-      specification {
-        relationship async {
-          color custom-color
-        }
-        element person {
-          style {
-            color custom-color
-          }
-        }
-
-        color custom-color #00ffff
       }`
 
     test('spec with invalid relationshipkind color').invalid`

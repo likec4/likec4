@@ -64,7 +64,7 @@ You can assign colors:
 ```likec4
 specification {
   tag deprecated {
-    color #FF0000
+    color #FF0000 // or `rgb(255 0 0)` see below
   }
 }
 ```
@@ -86,16 +86,20 @@ specification {
 
 Custom colors could be defined to extend built in themes. Being defined in specification they could be used later along with the theme colors.
 
-Note: Only a base color with a 3, 6 or 8-character hex code is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
+Note: Only a base color with a 3, 6 or 8-character hex code, and `rgb()`/`rgba()` is supported. The reason is that to draw a node, we need not only a fill color but also a border color and text color. The same applies to the color of edges, where a line color, label background color, and text color are required. Therefore, the [color palette generator from the Mantine library](https://mantine.dev/colors-generator/) is used to build a color scheme from the provided base color.
 
 ```likec4
 specification {
-  color custom-color #808
-  color another-color #440
+  color custom-color1 #F00
+  color custom-color2 #AABBCC
+  color custom-color3 rgb(255, 0, 0)
+  color custom-color4 rgb(100 150 200)
+  color custom-color5 rgba(44, 8, 128, 0.9)
+  color custom-color6 rgba(255, 200, 100, 50%) 
 
   element person {
     style {
-      color custom-color
+      color custom-color1
     }
   }
 }

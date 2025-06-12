@@ -342,6 +342,14 @@
       "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|<-|\\,|\\;|\\!|\\=)"
     },
     {
+      "name": "entity.name.function.likec4",
+      "match": "\\b(rgba|rgb)"
+    },
+    {
+      "name": "constant.numeric.likec4",
+      "match": "\\b\\d+(\\.\\d+|%)?"
+    },
+    {
       "include": "#string"
     }
   ],

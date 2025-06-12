@@ -52,17 +52,6 @@
       "name": "entity.name.type.enum.likec4"
     },
     {
-      "match": "\\b(opacity):?\\s+([^\\s]+)",
-      "captures": {
-        "1": {
-          "name": "variable.other.property.likec4"
-        },
-        "2": {
-          "name": "constant.numeric.likec4"
-        }
-      }
-    },
-    {
       "match": "(-\\[)([^\\]]*)(\\]->)",
       "captures": {
         "1": {
@@ -77,7 +66,7 @@
       }
     },
     {
-      "match": "\\b(shape|color|head|tail|line|border):?\\s+([-\\w]+)\\b",
+      "match": "\\b(shape|head|tail|line|border):?\\s+([-\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.property.likec4"
@@ -105,7 +94,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|description|technology|navigateTo|notation|multiple|size|padding|textSize)\\b"
+      "match": "\\b(title|color|description|technology|navigateTo|notation|multiple|size|padding|textSize|opacity)\\b"
     },
     {
       "name": "keyword.control.likec4",
@@ -122,6 +111,14 @@
     {
       "name": "keyword.symbol.likec4",
       "match": "(\\{|\\}|\\(|\\)|\\:|\\,|\\;|\\!|\\=+)"
+    },
+    {
+      "name": "entity.name.function.likec4",
+      "match": "\\b(rgba|rgb)"
+    },
+    {
+      "name": "constant.numeric.likec4",
+      "match": "\\b\\d+(\\.\\d+|%)?"
     }
   ],
   "repository": {

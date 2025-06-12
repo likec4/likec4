@@ -810,7 +810,7 @@ ColorLiteral:
   RGBAColor | HexColor;
 
 RGBAColor:
-  ('rgba' | 'rgb') '(' red=Number ','? green=Number ','? blue=Number (','|'/')? alpha=(Float | Number | Percent)? ')';
+  ('rgba' | 'rgb') '(' red=Number ','? green=Number ','? blue=Number ','? alpha=(Float | Number | Percent)? ')';
 HexColor:
   Hash hex=(Hex | Number);
 
