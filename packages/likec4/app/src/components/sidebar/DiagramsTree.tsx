@@ -1,9 +1,8 @@
 import type { DiagramView } from '@likec4/core/types'
 import { StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
+import { Box } from '@likec4/styles/jsx'
 import {
-  type BoxProps,
   type TreeNodeData,
-  Box,
   Button,
   HoverCard,
   HoverCardDropdown,
@@ -21,8 +20,8 @@ import {
   IconStack2,
   IconStarFilled,
 } from '@tabler/icons-react'
-import { useRouter } from '@tanstack/react-router'
-import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentDiagram, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
@@ -48,8 +47,19 @@ const setHoveredNode = () => {}
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   groupBy: GroupBy | undefined
 }) => {
+  const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
-  const router = useRouter()
+  const navigate = useNavigate()
+  const navigateTo = (viewId: string) => {
+    navigate({
+      to: './',
+      viewTransition: false,
+      params: (p) => ({
+        ...p,
+        viewId,
+      }),
+    })
+  }
   const diagram = useCurrentDiagram()
   const viewId = diagram?.id ?? null
 
@@ -97,7 +107,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
         }}
         levelOffset={'md'}
         renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
-          <DiagramPreviewHoverCard viewId={!hasChildren ? node.value : null} {...elementProps}>
+          <DiagramPreviewHoverCard diagram={!hasChildren ? views.find((v) => v.id === node.value) : undefined}>
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
@@ -124,17 +134,11 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
                   {hasChildren && <FolderIcon node={node} expanded={expanded} />}
                 </>
               }
+              {...elementProps}
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  router.buildAndCommitLocation({
-                    to: '.',
-                    viewTransition: false,
-                    params: (p: any) => ({
-                      ...p,
-                      viewId: node.value,
-                    }),
-                  })
+                  navigateTo(node.value)
                 },
               })}
             >
@@ -145,38 +149,28 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       />
     </Box>
   )
-})
+}, (prev, next) => prev.groupBy === next.groupBy)
 
-function DiagramPreviewHoverCard({
-  viewId,
-  children,
-  onClick,
-  ...props
-}: PropsWithChildren<BoxProps & { viewId: string | null; onClick: (event: MouseEvent) => void }>) {
-  const views = useLikeC4Views()
-  const diagram = views.find((v) => v.id === viewId)
+function DiagramPreviewHoverCard({ diagram, children }: PropsWithChildren<{ diagram: DiagramView | undefined }>) {
   const ratio = diagram ? Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300) : 1
 
   const width = diagram ? Math.round(diagram.bounds.width / ratio) : 0
   const height = diagram ? Math.round(diagram.bounds.height / ratio) : 0
+
   return (
-    <Box {...props}>
+    <>
       {diagram && (
         <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
           <HoverCardTarget>
             {children}
           </HoverCardTarget>
-          <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
+          <HoverCardDropdown style={{ width, height }} p={'xs'}>
             <DiagramPreview diagram={diagram} />
           </HoverCardDropdown>
         </HoverCard>
       )}
-      {!diagram && (
-        <>
-          {children}
-        </>
-      )}
-    </Box>
+      {!diagram && children}
+    </>
   )
 }
 
