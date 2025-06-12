@@ -46,10 +46,10 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "catalog:common",
-    "typescript": "catalog:common",
-    "unbuild": "catalog:common",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }

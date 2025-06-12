@@ -4,17 +4,17 @@ packages:
   - packages/*
   - "!packages/create-likec4"
 
-catalogs:
-  common:
-    typescript: ^5.8.3
-    wireit: ^0.14.12
-    wrangler: ^4.19.2
-    "@types/node": ~20.19.0
-    unbuild: ^3.5.0
-    turbo: ^2.5.4
-    tsx: ~4.20.1
-    zx: ^8.5.5
+catalog:
+  typescript: 5.8.3
+  wireit: 0.14.12
+  wrangler: 4.19.2
+  "@types/node": ~20.19.0
+  unbuild: 3.5.0
+  turbo: 2.5.4
+  tsx: 4.20.2
+  zx: 8.5.5
 
+catalogs:
   utils:
     remeda: ^2.23.0
     type-fest: ^4.41.0

@@ -154,7 +154,7 @@
     "@tanstack/react-router": "catalog:router",
     "@tanstack/router-cli": "catalog:router",
     "@tanstack/router-vite-plugin": "catalog:router",
-    "@types/node": "catalog:common",
+    "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
     "@types/prop-types": "^15.7.14",
     "@types/react": "catalog:react",
@@ -204,11 +204,11 @@
     "strip-indent": "^4.0.0",
     "terser": "^5.39.2",
     "tinyrainbow": "^2.0.0",
-    "tsx": "catalog:common",
-    "turbo": "catalog:common",
-    "typescript": "catalog:common",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "unbuild": "catalog:common",
+    "unbuild": "catalog:",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.1.0",
     "vite-plugin-singlefile": "^2.2.0",
@@ -218,8 +218,8 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
-    "wireit": "catalog:common",
+    "wireit": "catalog:",
     "yargs": "17.7.2"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }

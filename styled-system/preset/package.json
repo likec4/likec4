@@ -48,9 +48,9 @@
     "khroma": "^2.1.0",
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
-    "tsx": "catalog:common",
-    "typescript": "catalog:common",
-    "unbuild": "catalog:common"
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }
