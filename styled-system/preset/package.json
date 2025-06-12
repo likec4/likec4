@@ -8,7 +8,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "generate": "tsx --conditions=sources ./generate.ts",
+    "generate": "pnpm tsx --conditions=sources ./generate.ts",
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
     "clean": "pnpm rimraf dist lib"
@@ -39,6 +39,8 @@
     "@radix-ui/colors": "^3.0.0"
   },
   "devDependencies": {
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "pandacss-preset-radix-colors": "^0.2.0",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
@@ -48,7 +50,6 @@
     "khroma": "^2.1.0",
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
-    "tsx": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:"
   },
