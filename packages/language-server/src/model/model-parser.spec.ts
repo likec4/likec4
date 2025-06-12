@@ -7,7 +7,69 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
-  describe('parses specification', () => {
+  it('parses strings with escaped quotes', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(`
+        specification {
+          element el1 {
+            technology "\\"container\\""
+            notation "
+              \\"C4 Container\\"
+            "
+          }
+          element el2 {
+            technology '\\'container\\''
+            notation '
+              \\'C4 Container\\'
+            '
+          }
+        }
+      `)
+    const doc = services.likec4.ModelParser.parse(document)
+    expect(doc.c4Specification).toMatchObject({
+      elements: {
+        el1: {
+          technology: '"container"',
+          notation: `"C4 Container"`,
+        },
+        el2: {
+          technology: `'container'`,
+          notation: `'C4 Container'`,
+        },
+      },
+    })
+  })
+
+  describe('specification', () => {
+    it('parses custom colors', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          color customcolor1 #00ffff
+          color customcolor2 rgb(201 200 6)
+          color customcolor3 rgba(201, 6, 6, 0.9)
+          color customcolor4 rgba(201 200 6 80%)
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        colors: {
+          customcolor1: {
+            color: '#00ffff',
+          },
+          customcolor2: {
+            color: 'rgb(201,200,6)',
+          },
+          customcolor3: {
+            color: 'rgba(201,6,6,0.9)',
+          },
+          customcolor4: {
+            color: 'rgba(201,200,6,0.8)',
+          },
+        },
+      })
+    })
+
     it('parses tags in elements', async ({ expect }) => {
       const { validate, services } = createTestServices()
       const { document } = await validate(`
@@ -84,7 +146,7 @@ describe.concurrent('LikeC4ModelParser', () => {
     })
   })
 
-  describe('parses logical model', () => {
+  describe('logical model', () => {
     it('parses styles', async ({ expect }) => {
       const { validate, services } = createTestServices()
       const { document } = await validate(`
@@ -196,7 +258,7 @@ describe.concurrent('LikeC4ModelParser', () => {
     })
   })
 
-  describe('parses relation predicate', () => {
+  describe('relation predicate', () => {
     it('combined of "with" and "where"', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
@@ -323,7 +385,7 @@ describe.concurrent('LikeC4ModelParser', () => {
     })
   })
 
-  describe('parses deployment model', () => {
+  describe('deployment model', () => {
     it('parses styles of specification ', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
@@ -724,7 +786,7 @@ describe.concurrent('LikeC4ModelParser', () => {
     })
   })
 
-  describe('parses global rules', () => {
+  describe('global rules', () => {
     it('parses styles', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
