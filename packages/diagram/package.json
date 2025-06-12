@@ -65,7 +65,7 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.11.1",
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
@@ -112,15 +112,15 @@
     "@types/d3-shape": "^3.1.7",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@types/node": "catalog:common",
+    "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:vite",
     "postcss": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "typescript": "catalog:common",
+    "typescript": "catalog:",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
-    "wireit": "catalog:common"
+    "wireit": "catalog:"
   }
 }

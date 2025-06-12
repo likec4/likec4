@@ -2,7 +2,7 @@
   "name": "@likec4/docs-astro",
   "type": "module",
   "version": "1.32.1",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.11.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -37,8 +37,9 @@
     "@types/picomatch": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "tsx": "catalog:common",
-    "typescript": "catalog:common",
-    "wrangler": "catalog:common"
+    "vite": "catalog:vite",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "catalog:"
   }
 }

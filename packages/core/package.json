@@ -122,10 +122,10 @@
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
     "remeda": "catalog:utils",
-    "turbo": "catalog:common",
-    "typescript": "catalog:common",
-    "unbuild": "catalog:common",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }

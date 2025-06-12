@@ -5,12 +5,20 @@
   ],
   "tasks": {
     "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
+      "dependsOn": [],
       "outputs": [
         "src/generated.ts"
       ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "generate"
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

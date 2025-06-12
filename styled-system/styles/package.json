@@ -60,10 +60,6 @@
         "default": "./preset.mjs"
       }
     },
-    "./vite": {
-      "types": "./vite.d.mts",
-      "default": "./vite.mjs"
-    },
     "./dev": "./dev.ts"
   },
   "peerDependencies": {
@@ -73,15 +69,16 @@
     "@likec4/style-preset": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
-    "@pandabox/unplugin": "^0.2.1",
+    "@pandabox/unplugin": "^0.2.2",
+    "@types/picomatch": "catalog:utils",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@pandacss/dev": "catalog:css",
     "postcss": "catalog:css",
     "nano-spawn": "catalog:utils",
-    "unbuild": "catalog:common",
-    "typescript": "catalog:common"
+    "unbuild": "catalog:",
+    "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }

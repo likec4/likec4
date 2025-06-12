@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.11.1",
   "type": "module",
   "scripts": {
     "install:chromium": "playwright install chromium",
@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.53.0",
     "likec4": "file:../packages/likec4/package.tgz",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
@@ -24,9 +24,9 @@
     "react-dom": "^19.1.0",
     "std-env": "^3.9.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.4",
-    "wrangler": "^4.16.1",
-    "zx": "^8.5.4"
+    "vitest": "^3.2.3",
+    "wrangler": "^4.19.2",
+    "zx": "^8.5.5"
   },
   "pnpm": {
     "overrides": {

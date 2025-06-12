@@ -3,7 +3,7 @@
   "version": "1.32.1",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.11.1",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -35,23 +35,24 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "catalog:common",
+    "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
-    "npm-run-all2": "^7.0.2",
+    "npm-run-all2": "^8.0.4",
     "rimraf": "^6.0.1",
     "shipjs": "^0.27.0",
-    "tsx": "catalog:common",
-    "turbo": "catalog:common",
-    "typescript": "catalog:common",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },
   "pnpm": {
     "overrides": {
+      "esbuild": "catalog:esbuild",
       "react": "catalog:react",
       "react-dom": "catalog:react",
       "@types/react": "catalog:react",
@@ -64,7 +65,7 @@
       "vscode-oniguruma": "catalog:vscode",
       "vscode-uri": "catalog:vscode",
       "type-fest": "catalog:utils",
-      "turbo": "catalog:common",
+      "turbo": "catalog:",
       "sharp": "catalog:utils",
       "mnemonist": "0.40.3"
     },

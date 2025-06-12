@@ -12,6 +12,16 @@
         "dist/**"
       ]
     },
+    "typecheck": {
+      "dependsOn": [
+        "generate"
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
         "generate"

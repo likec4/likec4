@@ -66,8 +66,8 @@
     "picomatch": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "typescript": "catalog:common",
-    "wireit": "catalog:common"
+    "typescript": "catalog:",
+    "wireit": "catalog:"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }

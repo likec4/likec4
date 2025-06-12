@@ -4,17 +4,17 @@ packages:
   - packages/*
   - "!packages/create-likec4"
 
-catalogs:
-  common:
-    typescript: ^5.8.3
-    wireit: ^0.14.12
-    wrangler: ^4.19.2
-    "@types/node": ~20.19.0
-    unbuild: ^3.5.0
-    turbo: ^2.5.4
-    tsx: ~4.20.1
-    zx: ^8.5.5
+catalog:
+  typescript: 5.8.3
+  wireit: 0.14.12
+  wrangler: 4.19.2
+  "@types/node": ~20.19.0
+  unbuild: 3.5.0
+  turbo: 2.5.4
+  tsx: 4.19.4
+  zx: 8.5.5
 
+catalogs:
   utils:
     remeda: ^2.23.0
     type-fest: ^4.41.0
@@ -47,9 +47,9 @@ catalogs:
   react:
     react: ^19.1.0
     react-dom: ^19.1.0
-    "@types/react": ^19.1.5
-    "@types/react-dom": ^19.1.5
-    react-error-boundary: ^5.0.0
+    "@types/react": 19.1.5
+    "@types/react-dom": 19.1.5
+    react-error-boundary: ^6.0.0
     "@tabler/icons-react": 3.31.0
     clsx: ^2.1.1
     nanostores: 1.0.1
@@ -68,7 +68,7 @@ catalogs:
     "@mantine/notifications": 8.1.0
     "@mantine/colors-generator": 8.1.0
   vite:
-    "@vitejs/plugin-react": ^4.5.0
+    "@vitejs/plugin-react": ^4.5.2
     vite: ^6.3.5
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.23.0
@@ -78,9 +78,9 @@ catalogs:
     vitest: 3.2.3
     "@vitest/ui": 3.2.3
   css:
-    postcss: ^8.5.4
-    "@pandacss/dev": ^0.53.6
-    "@pandacss/preset-panda": ^0.53.6
+    postcss: 8.5.5
+    "@pandacss/dev": ^0.53.7
+    "@pandacss/preset-panda": ^0.53.7
   vscode:
     vscode-jsonrpc: 8.2.0
     vscode-languageclient: 9.0.1

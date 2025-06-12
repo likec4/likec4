@@ -59,15 +59,15 @@
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "catalog:common",
+    "@types/node": "catalog:",
     "remeda": "catalog:utils",
-    "tsx": "catalog:common",
-    "turbo": "catalog:common",
-    "typescript": "catalog:common",
-    "unbuild": "catalog:common",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
     "vitest": "catalog:vitest",
     "zod": "catalog:utils",
-    "wireit": "catalog:common"
+    "wireit": "catalog:"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.11.1"
 }
