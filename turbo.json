@@ -6,7 +6,8 @@
   "globalDependencies": [
     ".tool-versions",
     "package.json",
-    "pnpm-workspace.yaml"
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml"
   ],
   "ui": "tui",
   "tasks": {
