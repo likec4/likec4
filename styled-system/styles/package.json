@@ -60,10 +60,6 @@
         "default": "./preset.mjs"
       }
     },
-    "./vite": {
-      "types": "./vite.d.mts",
-      "default": "./vite.mjs"
-    },
     "./dev": "./dev.ts"
   },
   "peerDependencies": {
@@ -82,7 +78,6 @@
     "postcss": "catalog:css",
     "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",
-    "vite": "catalog:vite",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.11.1"
