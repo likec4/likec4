@@ -15,14 +15,14 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../hooks/useCurrentViewId'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -32,6 +32,7 @@ export const NothingFound = () => (
 )
 
 export const ViewsColumn = memo(() => {
+  const ref = useRef<HTMLDivElement>(null)
   let views = [...useLikeC4Model().views()]
   let search = useNormalizedSearch()
   if (search) {
@@ -49,15 +50,14 @@ export const ViewsColumn = memo(() => {
 
   return (
     <Stack
+      ref={ref}
       renderRoot={props => <m.div layout {...props} />}
       gap={8}
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           const maxY = (e.target as HTMLElement).getBoundingClientRect().y
-          const elementButtons = [...document.querySelectorAll<HTMLButtonElement>(
-            `[data-likec4-search-elements] .likec4-focusable`,
-          )]
+          const elementButtons = queryAllFocusable(ref.current, 'elements', '.likec4-element-button')
           let elementButton = elementButtons.length > 1
             ? elementButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
             : null
@@ -78,7 +78,7 @@ export const ViewsColumn = memo(() => {
             tabIndex={-1}
             onFocus={e => {
               e.stopPropagation()
-              moveFocusToSearchInput()
+              moveFocusToSearchInput(ref.current)
             }} />
         </VisuallyHidden>
       )}

@@ -2,7 +2,7 @@ import { cx } from '@likec4/styles/css'
 import {
   RemoveScroll,
 } from '@mantine/core'
-import { useMergedRef } from '@mantine/hooks'
+import { useFocusTrap, useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import { m, useReducedMotionConfig } from 'motion/react'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
@@ -39,6 +39,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   ...rest
 }, ref) => {
   const [opened, setOpened] = useState(openDelay === 0)
+  const focusTrapRef = useFocusTrap(opened)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const isClosingRef = useRef(false)
 
@@ -79,8 +80,17 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   }
   return (
     <m.dialog
-      ref={useMergedRef(dialogRef, ref)}
-      className={cx(RemoveScroll.classNames.fullWidth, classes?.dialog, className, styles.dialog)}
+      ref={useMergedRef(
+        dialogRef,
+        focusTrapRef,
+        ref,
+      )}
+      className={cx(
+        classes?.dialog,
+        className,
+        styles.dialog,
+        fullscreen && RemoveScroll.classNames.fullWidth,
+      )}
       layout
       style={{
         // @ts-ignore
@@ -143,8 +153,13 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       }}
       {...rest}
     >
-      <RemoveScroll forwardProps removeScrollBar={false}>
-        <div className={cx(classes?.body, styles.body, 'overlay-body')}>
+      <RemoveScroll forwardProps>
+        <div
+          className={cx(
+            classes?.body,
+            styles.body,
+            'overlay-body',
+          )}>
           {opened && <>{children}</>}
         </div>
       </RemoveScroll>

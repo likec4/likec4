@@ -47,15 +47,7 @@ export function ReactLikeC4<A extends aux.Any = aux.UnknownLayouted>({
   ...props
 }: ReactLikeC4Props<A>) {
   const likec4model = useLikeC4Model()
-  const view = likec4model?.findView(viewId)
-
-  if (!likec4model) {
-    return (
-      <ErrorMessage>
-        LikeC4Model not found. Make sure you have LikeC4ModelProvider.
-      </ErrorMessage>
-    )
-  }
+  const view = likec4model.findView(viewId)
 
   if (!view) {
     return <ViewNotFound viewId={viewId} />
@@ -64,7 +56,7 @@ export function ReactLikeC4<A extends aux.Any = aux.UnknownLayouted>({
   if (!view.isDiagram()) {
     return (
       <ErrorMessage>
-        LikeC4Model is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
       </ErrorMessage>
     )
   }

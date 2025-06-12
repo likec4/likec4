@@ -11,11 +11,10 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core'
-import { useFocusWithin, useWindowEvent } from '@mantine/hooks'
-import { usePreviousDistinct } from '@react-hookz/web'
+import { useFocusWithin, useMergedRef, useWindowEvent } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
-import { type ReactNode, memo } from 'react'
-import { keys, only } from 'remeda'
+import { type ReactNode, memo, useRef } from 'react'
+import { keys } from 'remeda'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { useSearch, useSearchActor } from '../hooks'
 import * as css from './styles.css'
@@ -30,9 +29,10 @@ const SEARCH_PREFIXES = ['#', 'kind:']
 export const LikeC4SearchInput = memo(() => {
   const searchActorRef = useSearchActor()
   const likec4model = useLikeC4Model()
+  const inputRef = useRef<HTMLInputElement>(null)
   const { ref, focused } = useFocusWithin<HTMLInputElement>()
   const [search, setSearch] = useSearch()
-  const previous = usePreviousDistinct(search)
+  // const previous = usePreviousDistinct(search)
 
   // const [isEmptyForSomeTime, cancel] = useDebouncedValue(
   //   focused ? search : 'rstrs',
@@ -60,7 +60,7 @@ export const LikeC4SearchInput = memo(() => {
             event.key.match(/^\p{L}$/u)
           )
         ) {
-          moveFocusToSearchInput()
+          moveFocusToSearchInput(inputRef.current)
         }
       } catch (e) {
         console.warn(e)
@@ -84,14 +84,15 @@ export const LikeC4SearchInput = memo(() => {
     case search.startsWith('#'): {
       const searchTag = search.toLocaleLowerCase().slice(1)
       const alloptions = likec4model.tags.filter((tag) => tag.toLocaleLowerCase().includes(searchTag))
-      isExactMatch = only(alloptions)?.toLocaleLowerCase() === searchTag
       if (alloptions.length === 0) {
+        isExactMatch = false
         options = [
           <ComboboxEmpty key="empty-tags">
             No tags found
           </ComboboxEmpty>,
         ]
       } else {
+        isExactMatch = likec4model.tags.some((tag) => tag.toLocaleLowerCase() === searchTag)
         options = alloptions.map((tag) => (
           <ComboboxOption value={`#${tag}`} key={tag}>
             <Text component="span" opacity={.5} mr={1} fz={'sm'}>#</Text>
@@ -107,15 +108,16 @@ export const LikeC4SearchInput = memo(() => {
       let alloptions = keys(likec4model.specification.elements)
       if (term) {
         alloptions = alloptions.filter((kind) => kind.toLocaleLowerCase().includes(term))
-        isExactMatch = only(alloptions)?.toLocaleLowerCase() === term
       }
       if (alloptions.length === 0) {
+        isExactMatch = false
         options = [
           <ComboboxEmpty key="empty-kinds">
             No kinds found
           </ComboboxEmpty>,
         ]
       } else {
+        isExactMatch = alloptions.some((kind) => kind.toLocaleLowerCase() === term)
         options = alloptions.map((kind) => (
           <ComboboxOption value={`kind:${kind}`} key={kind}>
             <Text component="span" opacity={.5} mr={1} fz={'sm'}>kind:</Text>
@@ -136,7 +138,7 @@ export const LikeC4SearchInput = memo(() => {
           combobox.closeDropdown()
           // Let react to display filtered elements
           setTimeout(() => {
-            focusToFirstFoundElement()
+            focusToFirstFoundElement(inputRef.current)
           }, 350)
         }
       }}
@@ -152,10 +154,11 @@ export const LikeC4SearchInput = memo(() => {
     >
       <ComboboxTarget>
         <Input
-          ref={ref}
-          id="likec4searchinput"
+          ref={useMergedRef(inputRef, ref)}
           placeholder="Search by title, description or start with # or kind:"
           autoFocus
+          data-autofocus
+          data-likec4-search-input
           tabIndex={0}
           classNames={{
             input: css.input,
@@ -244,7 +247,7 @@ export const LikeC4SearchInput = memo(() => {
             ) {
               combobox.closeDropdown()
               stopAndPrevent(e)
-              focusToFirstFoundElement()
+              focusToFirstFoundElement(inputRef.current)
               return
             }
           }} />

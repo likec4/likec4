@@ -85,6 +85,7 @@ export default function App() {
           enableDynamicViewWalkthrough
           enableElementDetails
           enableRelationshipBrowser
+          enableElementTags
           enableSearch
           showNavigationButtons
           showNotations

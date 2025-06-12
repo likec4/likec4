@@ -46,6 +46,7 @@ export function ViewEditor() {
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
+      enableElementTags
       onNavigateTo={onNavigateTo}
       onChange={(e) => console.log(e)}
       onBurgerMenuClick={withOverviewGraph

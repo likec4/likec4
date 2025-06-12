@@ -2,12 +2,14 @@ import { css } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
 import { Button } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
+import { useRef } from 'react'
 import { ElementTag } from '../../base/primitives'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { useNormalizedSearch, useUpdateSearch } from '../hooks'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './utils'
 
 export function SearchByTags() {
+  const ref = useRef<HTMLDivElement>(null)
   let tags = useLikeC4Model().tagsSortedByUsage
   let setSearch = useUpdateSearch()
   let search = useNormalizedSearch()
@@ -24,6 +26,7 @@ export function SearchByTags() {
 
   return (
     <HStack
+      ref={ref}
       css={{
         gap: 'md',
         paddingLeft: 48,
@@ -84,7 +87,7 @@ export function SearchByTags() {
               setSearch(`#${tag}`)
               // Let react to display filtered elements
               setTimeout(() => {
-                focusToFirstFoundElement()
+                focusToFirstFoundElement(ref.current)
               }, 350)
             }}
           />
@@ -97,7 +100,7 @@ export function SearchByTags() {
           onClick={(e) => {
             e.stopPropagation()
             setSearch('')
-            moveFocusToSearchInput()
+            moveFocusToSearchInput(ref.current)
           }}
           rightSection={<IconX size={14} />}
         >

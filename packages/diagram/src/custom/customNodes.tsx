@@ -45,15 +45,20 @@ export type CustomElementNodeProps<M extends Any = Any> = {
  *   ElementTitle,
  *   ElementActions,
  *   ElementDetailsButtonWithHandler,
+ *   IfEnabled,
  *   IfNotReadOnly,
  *   ElementToolbar,
  *   DefaultHandles,
+ *   ElementTags
  * } from '@likec4/diagram/custom'
  *
  * const CustomElementNode = elementNode(({ nodeProps, nodeModel }) => (
  *   <ElementNodeContainer nodeProps={nodeProps}>
  *     <ElementShape {...nodeProps} />
  *     <ElementTitle {...nodeProps} />
+ *     <IfEnabled feature="ElementTags">
+ *       <ElementTags {...nodeProps} />
+ *     </IfEnabled>
  *     <ElementActions
  *       {...nodeProps}
  *       extraButtons={[

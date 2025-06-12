@@ -34,6 +34,14 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./model/builder": {
+      "sources": "./src/model/builder.ts",
+      "default": {
+        "types": "./dist/model/builder.d.mts",
+        "import": "./dist/model/builder.mjs",
+        "default": "./dist/model/builder.mjs"
+      }
+    },
     "./model": {
       "sources": "./src/model/index.ts",
       "default": {

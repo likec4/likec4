@@ -1,6 +1,6 @@
 import { css } from '@likec4/styles/css'
-import { VStack } from '@likec4/styles/jsx'
-import { FocusTrap, Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
+import { Box, VStack } from '@likec4/styles/jsx'
+import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
 import {
   useCallbackRef,
   useHotkeys,
@@ -8,6 +8,7 @@ import {
 import { useTimeoutEffect } from '@react-hookz/web'
 import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
+import { useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { isTruthy } from 'remeda'
 import { ErrorFallback } from '../components/ErrorFallback'
@@ -127,22 +128,23 @@ const scrollArea = css({
 })
 
 const SearchOverlay = ({ searchActorRef }: { searchActorRef: SearchActorRef }) => {
+  const ref = useRef<HTMLDivElement>(null)
   const pickViewFor = usePickViewFor()
 
   useTimeoutEffect(() => {
     if (isTruthy(searchActorRef.getSnapshot().context.openedWithSearch)) {
-      focusToFirstFoundElement()
+      focusToFirstFoundElement(ref.current)
     }
   }, 150)
 
   return (
-    <FocusTrap>
+    <Box ref={ref} display={'contents'}>
       <Group
         className={'group'}
         wrap="nowrap"
         onClick={e => {
           e.stopPropagation()
-          moveFocusToSearchInput()
+          moveFocusToSearchInput(ref.current)
         }}>
         <VStack flex={1} px={'sm'}>
           <LikeC4SearchInput />
@@ -213,6 +215,6 @@ const SearchOverlay = ({ searchActorRef }: { searchActorRef: SearchActorRef }) =
         </GridCol>
       </Grid>
       {pickViewFor && <PickView elementFqn={pickViewFor} />}
-    </FocusTrap>
+    </Box>
   )
 }

@@ -31,7 +31,7 @@ import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
-import { centerY, moveFocusToSearchInput, stopAndPrevent } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
 
 interface LikeC4ModelTreeNodeData {
@@ -161,7 +161,7 @@ function ElementsTree({
     if (e.key === 'ArrowUp') {
       if (id === roots[0]?.value) {
         stopAndPrevent(e)
-        moveFocusToSearchInput()
+        moveFocusToSearchInput(target)
       }
       return
     }
@@ -172,9 +172,7 @@ function ElementsTree({
       }
       const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
       const maxY = label.getBoundingClientRect().y
-      const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
-        `[data-likec4-search-views] .${styles.focusable}`,
-      )]
+      const viewButtons = queryAllFocusable(target, 'views')
       let view = viewButtons.length > 1
         ? viewButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
         : null

@@ -134,7 +134,15 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
    */
   nodesDraggable?: boolean | undefined
 
+  /**
+   * Initial width of the diagram
+   * (supposed to be used during SSR)
+   */
   initialWidth?: number | undefined
+  /**
+   * Initial height of the diagram
+   * (supposed to be used during SSR)
+   */
   initialHeight?: number | undefined
 
   /**
@@ -156,7 +164,9 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
   showNavigationButtons?: undefined | boolean
 
   /**
-   * Display notations of the view
+   * Display notations in the bottom right corner
+   * (Active if only notations are present)
+   *
    * @default true
    */
   showNotations?: boolean | undefined
@@ -200,7 +210,7 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
 
   /**
    * Display element tags in the bottom left corner
-   * @default true
+   * @default false
    */
   enableElementTags?: boolean | undefined
 
@@ -212,8 +222,9 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
 
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
+   * Enable it if you have a large or static view
    *
-   * @default 'auto' - will be set to true if view has more then 3000 * 2000 pixels
+   * @default 'auto' - will be `true` if view has more then 3000 * 2000 pixels
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
