@@ -74,8 +74,8 @@ catalogs:
       version: 1.7.0
   hono:
     hono:
-      specifier: ^4.7.10
-      version: 4.7.10
+      specifier: ^4.7.11
+      version: 4.7.11
     hono-sessions:
       specifier: ^0.7.2
       version: 0.7.2
@@ -426,11 +426,11 @@ importers:
         specifier: 16.1.1
         version: 16.1.1
       '@hono/oauth-providers':
-        specifier: ^0.7.1
-        version: 0.7.1(hono@4.7.10)
+        specifier: ^0.8.1
+        version: 0.8.1(hono@4.7.11)
       '@hono/valibot-validator':
         specifier: ^0.5.2
-        version: 0.5.2(hono@4.7.10)(valibot@1.0.0(typescript@5.8.3))
+        version: 0.5.2(hono@4.7.11)(valibot@1.0.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
@@ -526,7 +526,7 @@ importers:
         version: 5.2.2
       hono:
         specifier: catalog:hono
-        version: 4.7.10
+        version: 4.7.11
       hono-sessions:
         specifier: catalog:hono
         version: 0.7.2
@@ -2715,8 +2715,8 @@ packages:
   '@fontsource/ibm-plex-sans@5.2.5':
     resolution: {integrity: sha512-W1kkC/fpDuoKQ5pNSQt/Bg0rpV9AATreA9ABwZf678AlwSCY2TQBT1YwAxxB65E9jcT/ysDrU1sGVNUyWCBXRw==}
 
-  '@hono/oauth-providers@0.7.1':
-    resolution: {integrity: sha512-NJ9weiJ5Af+/Waq0q/DIMofxkKlK32pVl7/iXh/Q0dumRKftn1A41h3d5clsNtwNsKfADErtshbdD1Q89/bFag==}
+  '@hono/oauth-providers@0.8.1':
+    resolution: {integrity: sha512-CN5dUHQ/I5jB/YVM2cIL7GdQyYZkzNTMlRG2EqIShv8jisKfvAZelEM12l8SexS4uqIiNJwPQBC33WrMGKUmqw==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
       hono: '>=3.*'
@@ -5534,8 +5534,8 @@ packages:
   hono-sessions@0.7.2:
     resolution: {integrity: sha512-QuoDqovzibnIYK0E3G7Pfoe63mYsyY8WgR1wmAuRDWpxpIglDVxShBn4VveFC+VGZummY407XeImoJhUpGcJMg==}
 
-  hono@4.7.10:
-    resolution: {integrity: sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ==}
+  hono@4.7.11:
+    resolution: {integrity: sha512-rv0JMwC0KALbbmwJDEnxvQCeJh+xbS3KEWW5PC9cMJ08Ur9xgatI0HmtgYZfOdOSOeYsp5LO2cOhdI8cLEbDEQ==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -10450,13 +10450,13 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.5': {}
 
-  '@hono/oauth-providers@0.7.1(hono@4.7.10)':
+  '@hono/oauth-providers@0.8.1(hono@4.7.11)':
     dependencies:
-      hono: 4.7.10
+      hono: 4.7.11
 
-  '@hono/valibot-validator@0.5.2(hono@4.7.10)(valibot@1.0.0(typescript@5.8.3))':
+  '@hono/valibot-validator@0.5.2(hono@4.7.11)(valibot@1.0.0(typescript@5.8.3))':
     dependencies:
-      hono: 4.7.10
+      hono: 4.7.11
       valibot: 1.0.0(typescript@5.8.3)
 
   '@hpcc-js/wasm-graphviz@1.7.0': {}
@@ -14013,10 +14013,10 @@ snapshots:
 
   hono-sessions@0.7.2:
     dependencies:
-      hono: 4.7.10
+      hono: 4.7.11
       iron-webcrypto: 1.2.1
 
-  hono@4.7.10: {}
+  hono@4.7.11: {}
 
   hookable@5.5.3: {}
 
