@@ -11,7 +11,8 @@
     "generate": "tsx --conditions=sources ./generate.ts",
     "typecheck": "tsc --build --verbose",
     "prebuild": "rm -rf dist/*",
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "pnpm rimraf dist lib"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -48,8 +49,8 @@
     "khroma": "^2.1.0",
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
-    "tsx": "catalog:",
-    "typescript": "catalog:"
+    "tsx": "catalog:common",
+    "typescript": "catalog:common"
   },
   "packageManager": "pnpm@10.12.1"
 }

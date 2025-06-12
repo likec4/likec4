@@ -4,7 +4,6 @@ import { defineConfig } from 'astro/config'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightLinksValidator from 'starlight-links-validator'
-import { searchForWorkspaceRoot } from 'vite'
 
 const version = process.env.npm_package_version || 'latest'
 
@@ -137,12 +136,6 @@ export default defineConfig({
         // Alias to bundled React components, can't use 'development' condition
         'likec4/react': new URL('../../packages/likec4/react/index.mjs', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname,
-      },
-    },
-    server: {
-      fs: {
-        // https://vitejs.dev/config/server-options.html#server-fs-allow
-        allow: [searchForWorkspaceRoot(process.cwd())],
       },
     },
     plugins: [

@@ -1,4 +1,5 @@
 import type * as c4 from '@likec4/core'
+import { nonNullable } from '@likec4/core/utils'
 import { filter, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import { ast, toRelationshipStyleExcludeDefaults } from '../../ast'
 import { logger, logWarnError } from '../../logger'
@@ -62,10 +63,11 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       for (const tagSpec of tags_specs) {
         const tag = tagSpec.tag.name as c4.Tag
         const astPath = this.getAstNodePath(tagSpec.tag)
+        const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
         if (isTruthy(tag)) {
           c4Specification.tags[tag] = {
             astPath,
-            ...(tagSpec.color ? { color: tagSpec.color as c4.ColorLiteral } : {}),
+            ...(color ? { color } : {}),
           }
         }
       }
@@ -78,9 +80,8 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             logger.warn(`Custom color "${colorName}" is already defined`)
             continue
           }
-
           c4Specification.colors[colorName] = {
-            color: color as c4.ColorLiteral,
+            color: nonNullable(this.parseColorLiteral(color), `Color "${colorName}" is not valid: ${color}`),
           }
         } catch (e) {
           logWarnError(e)

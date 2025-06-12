@@ -1075,7 +1075,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('parses custom color definitions', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         color custom-color1 #FF00FF
         color custom-color2 #FFFF00
@@ -1087,7 +1087,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
+
     const model = await buildModel()
     expect(model.specification).toHaveProperty('customColors', {
       'custom-color1': {
@@ -1121,7 +1123,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('allows custom colors in spec', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element component {
           style {
@@ -1146,7 +1148,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
@@ -1157,7 +1160,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('allows custom colors in relationships', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element component
 
@@ -1178,7 +1181,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
@@ -1187,7 +1191,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('allows custom colors in include expressions of view', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element component
 
@@ -1206,7 +1210,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
@@ -1215,7 +1220,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('includes both sides of inout relation', async ({ expect }) => {
     const { validate, services } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
           element sys
           tag tobe
@@ -1243,7 +1248,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           }
       }
     `)
-    expect(diagnostics.length).toBe(0)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
 
     const indexView = withReadableEdges((await services.likec4.ModelBuilder.computeView('index' as ViewId))!)
 
@@ -1253,7 +1259,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
   it('assigns tag colors', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element system
         tag tag1
@@ -1263,6 +1269,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         tag tag3
       }
     `)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
     const model = await buildModel()
     expect(model.specification).toEqual({
       customColors: {},

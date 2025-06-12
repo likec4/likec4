@@ -34,7 +34,7 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -r -f dist",
+    "clean": "pnpm rimraf dist lib",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
@@ -46,9 +46,9 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "unbuild": "catalog:",
+    "@types/node": "catalog:common",
+    "typescript": "catalog:common",
+    "unbuild": "catalog:common",
     "vitest": "catalog:vitest"
   },
   "packageManager": "pnpm@10.12.1"

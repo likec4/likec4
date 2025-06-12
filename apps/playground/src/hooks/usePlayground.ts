@@ -6,10 +6,9 @@ import {
 } from '$state/types'
 import { type ViewChange, type ViewId, nonNullable } from '@likec4/core'
 import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
-import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { useMemo } from 'react'
+import { type DependencyList, useCallback, useMemo } from 'react'
 import { keys } from 'remeda'
 import {
   _useOptionalPlaygroundActorRef as useOptionalPlaygroundActorRef,
@@ -79,17 +78,19 @@ export function usePlayground() {
 export function usePlaygroundContext<T = unknown>(
   selector: (state: PlaygroundContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+  deps: DependencyList = [],
 ) {
   const playgroundActor = usePlaygroundActorRef()
-  const select = useCallbackRef((s: PlaygroundActorSnapshot) => selector(s.context))
+  const select = useCallback((s: PlaygroundActorSnapshot) => selector(s.context), deps)
   return useSelector(playgroundActor, select, compare)
 }
 export function usePlaygroundSnapshot<T = unknown>(
   selector: (state: PlaygroundActorSnapshot) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+  deps: DependencyList = [],
 ) {
   const playgroundActor = usePlaygroundActorRef()
-  return useSelector(playgroundActor, useCallbackRef(selector), compare)
+  return useSelector(playgroundActor, useCallback(selector, deps), compare)
 }
 
 const selectWorkspace = (snapshot: PlaygroundActorSnapshot) => ({

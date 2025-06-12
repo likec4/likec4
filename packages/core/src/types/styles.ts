@@ -25,11 +25,10 @@ export type ElementShape = TupleToUnion<typeof ElementShapes>
 
 export type HexColor = `#${string}`
 
-type Comma = ',' | ', '
 export type ColorLiteral =
   | HexColor
-  | `rgb(${number}${Comma}${number}${Comma}${number})`
-  | `rgba(${number}${Comma}${number}${Comma}${number}${Comma}${number})`
+  | `rgb(${number},${number},${number})`
+  | `rgba(${number},${number},${number},${number})`
 
 export type CustomColor<T = string> = Tagged<T, 'CustomColor'>
 
@@ -69,19 +68,19 @@ export type ThemeColor = typeof ThemeColors[number]
  * Backward compatibility alias
  * @deprecated Use {@link ThemeColor} instead
  */
-export type Color = ThemeColor | HexColor
+export type Color = ThemeColor | ColorLiteral
 
 export function isThemeColor(color: string): color is ThemeColor {
   return ThemeColors.includes(color as ThemeColor)
 }
 
 export interface ElementThemeColorValues {
-  fill: HexColor
-  stroke: HexColor
+  fill: ColorLiteral
+  stroke: ColorLiteral
   // Main text (title, etc.)
-  hiContrast: HexColor
+  hiContrast: ColorLiteral
   // Secondary text (description, etc.)
-  loContrast: HexColor
+  loContrast: ColorLiteral
 }
 
 export type ElementThemeColors = {
@@ -89,9 +88,9 @@ export type ElementThemeColors = {
 }
 
 export interface RelationshipThemeColorValues {
-  lineColor: HexColor
-  labelBgColor: HexColor
-  labelColor: HexColor
+  lineColor: ColorLiteral
+  labelBgColor: ColorLiteral
+  labelColor: ColorLiteral
 }
 
 export interface ThemeColorValues {

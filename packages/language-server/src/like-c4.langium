@@ -64,11 +64,11 @@ SpecificationDeploymentNodeKind:
 
 SpecificationTag:
   'tag' tag=Tag ('{'
-    ('color' color=CustomColorValue)?
+    ('color' color=ColorLiteral)?
   '}')?;
 
 SpecificationColor:
-  'color' name=CustomColor color=CustomColorValue;
+  'color' name=CustomColor color=ColorLiteral;
 
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
@@ -806,8 +806,13 @@ ElementShape returns string:
 Participant returns string:
   'source' | 'target';
 
-CustomColorValue returns string:
-  Hash (Id | Hex | Number);
+ColorLiteral:
+  RGBAColor | HexColor;
+
+RGBAColor:
+  ('rgba' | 'rgb') '(' red=Number ','? green=Number ','? blue=Number (','|'/')? alpha=(Float | Number | Percent)? ')';
+HexColor:
+  Hash hex=(Hex | Number);
 
 IconId returns string:
   LIB_ICON;
@@ -816,10 +821,10 @@ Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
 CustomColorId returns string:
-  IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
+  Hex | IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  Hex | IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (
@@ -875,6 +880,7 @@ terminal String: /"[^"]*"|'[^']*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
+terminal Float returns number: /\b\d+\.\d+\b/;
 terminal Number returns number: /\b\d+\b/;
-terminal Hex: /\b[a-zA-Z0-9]+\b/;
+terminal Hex: /\b[a-fA-F0-9]{3,}\b/;
+terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;

@@ -24,42 +24,58 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 
 1. Fork the [repository](https://github.com/likec4/likec4), then clone or download your fork.
 
-2. Ensure you have all required [tools](./.tool-versions)\
-   Install manually or use [asdf](https://asdf-vm.com/):
-   ```sh
-   asdf install
-   ```
+2. Project requires [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/)\
+   See required versions in [.tool-versions](./.tool-versions)
 
-3. Install dependencies with pnpm – `pnpm install`
+   - [Optional] If you use [asdf](https://asdf-vm.com/):
+     ```sh
+     asdf install
+     ```
+
+3. Install dependencies with pnpm:
+   ```sh
+   pnpm install
+   ```
 
 4. Pre-generate sources by running `build` (or `generate`) in root:
    ```sh
    pnpm build
    ```
+   > [!TIP]
+   > It is always a good idea to run `pnpm generate` after checkout or merge.
 
 5. Mostly used dev tasks:
-   1. `pnpm dev` in `apps/playground`
-   2. `pnpm dev` (or any `pnpm dev:*`) in `package/likec4`
-   3. `pnpm vitest:ui` in root
-   4. `pnpm typecheck` in root
+   - `pnpm dev` in `apps/playground`\
+     This command starts the playground app in development mode, picking up changes from any package with hot reloading.
+   - `pnpm dev` (or any `pnpm dev:*`) in `package/likec4`\
+     This command also picks up changes from any package.
+   - `pnpm vitest:ui` in root to run all tests.
+   - `pnpm typecheck` in root to run the typecheck.
 
 6. To work on VSCode extension:
    - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
+> [!TIP]
+> Project uses Typescript project references to optimize compile time, but sometimes it may cause issues on delete/rename.\
+> Try `pnpm clean` in root to clean up caches, and `pnpm typecheck` after.
+>
+> If it doesn't help, `pnpm store prune`, removing `node_modules` and clean install are always a good idea.
+
 ### E2E
 
-`/e2e` contains isolated workspace. Test steps are:
+`/e2e` contains isolated workspace.\
+Run from root:
+
+```sh
+pnpm test:e2e
+```
+
+What it does:
 
 - pack `likec4` to tarball
 - install this tarball in isolated wokspace
 - generate spec files from model (using LikeC4Model)
 - run playwright
-
-To run from root workspace:
-
-```sh
-pnpm test:e2e
-```
 
 ## About this repository
 
@@ -73,23 +89,28 @@ This repository's contents are:
 
 ### Packages
 
-#### CLI `/packages/likec4`
+#### `/packages/likec4`
 
-- **Purpose**: Command-line interface and integration point, main entry point for the tool.
-- **Technology**: Uses [yargs](https://yargs.js.org/)
+- **Purpose**: Provides CLI, Vite plugin, generates static website (sources in `/packages/likec4/app/`). Main entry point for the tool.
+- **Technology**: Uses [yargs](https://yargs.js.org/), [Vite](https://vite.dev/)
 
 #### Core `/packages/core`
 
-Check [README](./packages/core/README.md) for details.
-
+- **Purpose**: Core type definitions, api, model builder and utilities. `compute-view` contains logic for computing diagram views.
+  Read [core's README](./packages/core/README.md).
 - **Technology**: Pure TypeScript, no frameworks. Heavy use of [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) and [remeda](https://remedajs.com/)
-- **Purpose**: Core type definitions and domain model. `compute-view` contains logic for computing diagram views
+
 - **Suggestions**: A great way to start contributing is by adding more tests for compute-view. This will help you understand how it works while also benefiting the project. There are also open questions from @pavelpykhtin, who has made significant contributions.
 
 #### Diagrams `/packages/diagram`
 
 - **Purpose**: Renders the actual diagrams
 - **Technology**: Uses [React](https://react.dev/), [ReactFlow](https://reactflow.dev/), [XState](https://xstate.js.org/)
+
+#### Generators `/packages/generators`
+
+- **Purpose**: Converts LikeC4 Model to other formats, like Mermaid, PlantUML, SVG, etc.\
+  Also generates typings for Model API and React.
 
 #### Language Server `/packages/language-server`
 
@@ -109,7 +130,6 @@ Check [README](./packages/core/README.md) for details.
 #### Additional Packages
 
 - `create-likec4`: Scaffolding tool for new projects
-- `generators`: Converts LikeC4 to other formats
 - `icons`: Pre-bundled icon sets
 - `log`: Common logger implementation
 - `tsconfig`: TypeScript configuration
