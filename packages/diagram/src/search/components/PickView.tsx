@@ -55,44 +55,44 @@ export function PickView({ elementFqn }: { elementFqn: Fqn }) {
           closePickView()
         }}>
       </m.div>
-      <m.div
-        key="pickview"
-        initial={{
-          opacity: 0,
-          scale: 0.95,
-          originY: 0,
-          translateX: '-50%',
-          translateY: -20,
-        }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-          translateY: 0,
-        }}
-        exit={{
-          opacity: 0,
-          scale: 0.98,
-          translateY: -20,
-          transition: {
-            duration: 0.1,
-          },
-        }}
-        className={styles.pickview}
-        data-likec4-search-views>
-        <Group px="sm" py="md" justify="space-between">
-          <Title order={2} lh={1}>Select view</Title>
-          <ActionIcon
-            size={'md'}
-            variant="default"
-            onClick={(e) => {
-              e.stopPropagation()
-              closePickView()
-            }}>
-            <IconX />
-          </ActionIcon>
-        </Group>
-        <FocusTrap>
-          <ScrollAreaAutosize mah={'calc(100vh - 8rem - 50px)'} type="never">
+      <FocusTrap>
+        <m.div
+          key="pickview"
+          initial={{
+            opacity: 0,
+            scale: 0.95,
+            originY: 0,
+            translateX: '-50%',
+            translateY: -20,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            translateY: 0,
+          }}
+          exit={{
+            opacity: 0,
+            scale: 0.98,
+            translateY: -20,
+            transition: {
+              duration: 0.1,
+            },
+          }}
+          className={styles.pickview}
+          data-likec4-search-views>
+          <Group px="sm" py="md" justify="space-between">
+            <Title order={2} lh={1}>Select view</Title>
+            <ActionIcon
+              size={'md'}
+              variant="default"
+              onClick={(e) => {
+                e.stopPropagation()
+                closePickView()
+              }}>
+              <IconX />
+            </ActionIcon>
+          </Group>
+          <ScrollAreaAutosize mah={'calc(100vh - 110px)'} type="never">
             {scoped.length > 0 && (
               <Stack gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
                 <Title order={6} c={'dimmed'}>scoped views of the element</Title>
@@ -127,8 +127,8 @@ export function PickView({ elementFqn }: { elementFqn: Fqn }) {
               </Stack>
             )}
           </ScrollAreaAutosize>
-        </FocusTrap>
-      </m.div>
+        </m.div>
+      </FocusTrap>
     </>
   )
 }

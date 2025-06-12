@@ -40,17 +40,70 @@ LikeC4 React library can be used in two ways.
 
 ### Bundled
 
-This is the easiest way to use the library.
+This is the easiest way to use the library.  
 Diagram renders inside shadow DOM, already includes all the dependencies and takes care of the styling.
 
 #### LikeC4ModelProvider
 
-Diagram requires instance of `LikeC4Model` to render.  
-You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.
+Diagram requires instance of `LikeC4Model.Layouted` to render.  
+You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.  
+Below are examples of how to prepare the model:
+- Using CLI codegen
+- Using Source files
+- Using Model Builder
+
+<br />
 
 
 <Tabs>
- <Tab label='Model from builder'>    
+  <Tab label='CLI Codegen'>
+    Prepare model with [code generation](/tooling/code-generation/model/):
+
+    ```sh
+    likec4 codegen model --outfile ./likec4-model.ts
+    ```
+
+    Then:
+
+    ```tsx copy
+    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+    // import model from generated file
+    import { likec4model } from './likec4-model.ts'
+
+    function App() {
+      return (
+        <LikeC4ModelProvider model={likec4model}>
+          {/* ... */}
+        </LikeC4ModelProvider>
+      )
+    }
+    ```
+  </Tab>
+
+  <Tab label='From Sources'>
+  It is possible to prepare model from string. See [API usage](/tooling/model-api/#usage):  
+  ```tsx copy
+  import { LikeC4 } from 'likec4'
+  import { LikeC4ModelProvider } from 'likec4/react'
+  
+  const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+  const likec4model = await likec4.layoutedModel()
+
+  function App() {
+    return (
+      <LikeC4ModelProvider model={likec4model}>
+        {/* ... */}
+      </LikeC4ModelProvider>
+    )
+  }
+  ```
+  </Tab>
+
+  <Tab label='Model Builder'>   
+    :::caution
+    This example is not complete, model has to be layouted before it can be used.
+    :::
+
     ```tsx copy collapse={6-51}
     import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
     import { Builder } from "@likec4/core/builder"
@@ -115,46 +168,31 @@ You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component
     ```
   </Tab>
 
-  <Tab label='From dump'>
-    Prepare model with [export](/tooling/cli/#export-to-json):
-
-    ```sh
-    likec4 export json -o ./src/likec4-dump.json
-    ```
-
-    Then import it:
-
-    ```tsx copy
-    import { LikeC4Model } from '@likec4/core/model'
-    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
-    import dump from './likec4-dump.json' with { type: 'json' }
-
-    const likec4model = LikeC4Model.fromDump(dump)
-
-    function App() {
-      return (
-        <LikeC4ModelProvider model={likec4model}>
-          {/* ... */}
-        </LikeC4ModelProvider>
-      )
-    }
-    ```
-  </Tab>
+  
 </Tabs>
+
+:::tip
+If you have `likec4` in your dependencies, you can use:
+- `likec4/react` instead of `@likec4/diagram/bundle`
+- `likec4/model` instead of `@likec4/core/model` and `@likec4/core/types`
+- `likec4/model/builder` instead of `@likec4/core/builder`
+- `likec4/icons/all` instead of `@likec4/icons/all`
+:::
+
 
 #### LikeC4View
 
 ```tsx
-import { LikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+import { LikeC4View, LikeC4ModelProvider } from '@likec4/diagram/bundle'
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider model={likec4model}>      
       <LikeC4View
         viewId="index1"
         onNodeClick={(nodeId) => console.log(nodeId)}
       />
-
+      {/* Possible to have multiple views */}
       <LikeC4View viewId="index2" />
     </LikeC4ModelProvider>
   )
@@ -192,13 +230,38 @@ function App() {
   )
 }
 ```
+#### Hooks
+
+Available hooks inside `LikeC4View` or `ReactLikeC4`:
+
+```tsx
+import {
+  useLikeC4Model,
+  useLikeC4Specification,
+  useLikeC4ViewModel,
+  useEnabledFeatures,
+  useCurrentViewId,
+
+  // XYFlow hooks
+  useXYFlow,
+  useXYStore,
+  useXYStoreApi,
+
+  // Diagram API
+  useDiagram,
+
+  // Select from state
+  useDiagramContext
+} from '@likec4/diagram/bundle'
+```
 
 #### Icons
 
-If you use built-in icons, install [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons) and:
+If you use built-in icons, install [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons) (or use `likec4/icons`):
 
 ```tsx
-import { type ElementIconRenderer, LikeC4, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
+import type { ElementIconRenderer } from '@likec4/diagram/bundle'
+import { LikeC4ModelProvider, LikeC4View, ReactLikeC4 } from '@likec4/diagram/bundle'
 import { lazy, Suspense } from 'react'
 
 // Better to lazy load icons, bundle is quite large at the moment
@@ -218,6 +281,11 @@ function App() {
     <LikeC4ModelProvider model={likec4model}>
       <LikeC4View
         viewId="index1"
+        renderIcon={IconRenderer}
+      />
+      {/* Same for ReactLikeC4 */}
+      <ReactLikeC4
+        viewId="index2"
         renderIcon={IconRenderer}
       />
     </LikeC4ModelProvider>
@@ -321,16 +389,16 @@ Same as [ReactLikeC4](#reactlikec4), but import from `@likec4/diagram`
 and you have to provide instance of `DiagramView`:
 
 ```tsx
-import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4ModelProvider, useLikeC4ViewModel } from '@likec4/diagram'
 
 function LikeC4View({viewId}: {viewId: string}) {
-  const model = useLikeC4Model(true).findView(viewId)
-  if (!model?.isDiagram()) {
-    throw new Error('View not found')
+  const view = useLikeC4ViewModel(viewId)
+  if (!view) {
+    return <>View not found</>
   }
   return (
     <LikeC4Diagram
-      view={model.$view} 
+      view={view.$view} 
       readOnly
       pannable
       zoomable={false}
@@ -355,7 +423,8 @@ function App() {
 
 ## Customization
 
-You can render any component inside `LikeC4Diagram` (or `LikeC4View`/`ReactLikeC4` if you are using bundle):
+You can render any component inside `LikeC4Diagram`\
+(or `LikeC4View`/`ReactLikeC4` if you are using bundle):
 
 ```tsx
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
@@ -389,7 +458,8 @@ function App() {
 ### Custom node renderers
 
 LikeC4Diagram can use custom node renderers.\
-Compose custom nodes renderers using primitives from `@likec4/diagram/custom` (or `@likec4/diagram/bundle/custom` for the bundled version).\
+Compose custom nodes renderers using primitives from `@likec4/diagram/custom`\
+(or `@likec4/diagram/bundle/custom` for the bundled version).\
 See [customNodes.tsx](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.tsx) for examples.
 
 ```tsx
@@ -439,6 +509,8 @@ function App() {
   )
 }
 ```
+
+You can also use [hooks](/tooling/react/#hooks) to access the model and diagram API.
 
 ### Custom styles
 

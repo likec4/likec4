@@ -10,8 +10,7 @@
   "scripts": {
     "generate": "tsx --conditions=sources ./generate.ts",
     "typecheck": "tsc --build --verbose",
-    "prebuild": "rm -rf dist/*",
-    "build": "tsc",
+    "build": "unbuild",
     "clean": "pnpm rimraf dist lib"
   },
   "publishConfig": {
@@ -26,9 +25,9 @@
     ".": {
       "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       }
     },
     "./src": "./src/index.ts"
@@ -37,10 +36,10 @@
     "@pandacss/dev": "catalog:css"
   },
   "dependencies": {
-    "@radix-ui/colors": "^3.0.0",
-    "pandacss-preset-radix-colors": "^0.2.0"
+    "@radix-ui/colors": "^3.0.0"
   },
   "devDependencies": {
+    "pandacss-preset-radix-colors": "^0.2.0",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
@@ -50,7 +49,8 @@
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
     "tsx": "catalog:common",
-    "typescript": "catalog:common"
+    "typescript": "catalog:common",
+    "unbuild": "catalog:common"
   },
   "packageManager": "pnpm@10.12.1"
 }

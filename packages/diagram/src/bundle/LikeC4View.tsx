@@ -1,4 +1,4 @@
-import type { Any, DiagramView, ViewId } from '@likec4/core/types'
+import type { Any, DiagramView } from '@likec4/core/types'
 import type * as aux from '@likec4/core/types/aux'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
@@ -20,25 +20,18 @@ export function LikeC4View<A extends aux.Any = aux.UnknownLayouted>({
   ...props
 }: LikeC4ViewProps<A>) {
   const likec4model = useLikeC4Model()
-  const view = likec4model?.findView(viewId)
+  const view = likec4model.findView(viewId)
 
-  if (!likec4model) {
-    return (
-      <ErrorMessage>
-        LikeC4Model not found. Make sure you have LikeC4ModelProvider.
-      </ErrorMessage>
-    )
-  }
-  if (likec4model.stage !== 'layouted') {
-    return (
-      <ErrorMessage>
-        LikeC4Model is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
-      </ErrorMessage>
-    )
-  }
-
-  if (!view || !view.isDiagram()) {
+  if (!view) {
     return <ViewNotFound viewId={viewId} />
+  }
+
+  if (!view.isDiagram()) {
+    return (
+      <ErrorMessage>
+        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+      </ErrorMessage>
+    )
   }
 
   return <LikeC4ViewInner view={view.$view} {...props} />
@@ -57,7 +50,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
   injectFontCss = true,
   controls = false,
   fitView = true,
-  fitViewPadding = '8px',
+  fitViewPadding = '16px',
   background = 'transparent',
   browser = true,
   showDiagramTitle = false,
@@ -154,11 +147,11 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
             {...props}
           />
           {browserView && (
-            <Overlay onClose={() => onNavigateTo(null)}>
+            <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>
               <LikeC4Diagram
                 view={browserView}
                 background="dots"
-                onNavigateTo={to => onNavigateTo(to as ViewId)}
+                onNavigateTo={onNavigateTo}
                 enableDynamicViewWalkthrough
                 enableFocusMode
                 enableRelationshipBrowser
@@ -169,12 +162,12 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
                 controls
                 readonly
                 fitView
-                fitViewPadding={'16px'}
-                renderNodes={renderNodes}
+                fitViewPadding={'32px'}
                 {...props}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&
                   (browserView.notation?.nodes.length ?? 0) > 0}
+                renderNodes={renderNodes}
               />
               <Box pos="absolute" top={'1rem'} right={'1rem'}>
                 <ActionIcon

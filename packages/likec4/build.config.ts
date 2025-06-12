@@ -13,6 +13,7 @@ const cli: BuildConfig = {
     'src/index.ts',
     'src/cli/index.ts',
     'src/model/index.ts',
+    'src/model/builder.ts',
     'src/vite-plugin/index.ts',
   ],
   clean: isProduction,

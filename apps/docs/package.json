@@ -17,7 +17,7 @@
     "deploy:prod": "run deploy --branch main",
     "clean": "pnpm rimraf dist lib .astro"
   },
-  "dependencies": {
+  "devDependencies": {
     "@astrojs/check": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/starlight": "catalog:astro",
@@ -25,7 +25,7 @@
     "@expressive-code/plugin-line-numbers": "catalog:astro",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
-    "canvaskit-wasm": "^0.40.0",
+    "canvaskit-wasm": "0.40.0",
     "likec4": "workspace:*",
     "react": "catalog:react",
     "react-dom": "catalog:react",
@@ -33,13 +33,12 @@
     "shiki": "catalog:astro",
     "starlight-heading-badges": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
-    "starlight-package-managers": "catalog:astro"
-  },
-  "devDependencies": {
+    "starlight-package-managers": "catalog:astro",
     "@types/picomatch": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "tsx": "catalog:common",
-    "typescript": "catalog:common"
+    "typescript": "catalog:common",
+    "wrangler": "catalog:common"
   }
 }
