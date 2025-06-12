@@ -15,13 +15,5 @@
   },
   "include": [
     "*.ts",
-  ],
-  "references": [
-    {
-      "path": "../preset/tsconfig.json"
-    },
-    {
-      "path": "../../packages/core/tsconfig.json"
-    }
   ]
 }

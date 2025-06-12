@@ -7,10 +7,5 @@
   },
   "include": [
     "src"
-  ],
-  "references": [
-    {
-      "path": "../../packages/core/tsconfig.json"
-    }
   ]
 }
