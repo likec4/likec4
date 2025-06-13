@@ -218,7 +218,7 @@ export type Metadata<A extends Any> =
     ? never
     : IsLiteral<A['MetadataKey']> extends true
       ? {
-        [key in Coalesce<A['MetadataKey']>]?: string
+        [key in A['MetadataKey']]?: string
       }
       : Record<string, string>
 
