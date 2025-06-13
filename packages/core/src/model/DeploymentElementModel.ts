@@ -24,7 +24,7 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { IncomingFilter, OutgoingFilter } from './types'
+import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends Any> = IteratorLike<DeploymentElementModel<A>>
@@ -33,7 +33,7 @@ export type DeploymentNodesIterator<A extends Any> = IteratorLike<DeploymentNode
 
 export type DeploymentElementModel<A extends Any = Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
-abstract class AbstractDeploymentElementModel<A extends Any> {
+abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags<A>, WithMetadata<A> {
   abstract readonly id: aux.DeploymentFqn<A>
   abstract readonly _literalId: aux.DeploymentId<A>
   abstract readonly parent: DeploymentNodeModel<A> | null
