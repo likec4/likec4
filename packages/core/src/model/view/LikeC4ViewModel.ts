@@ -16,6 +16,7 @@ import {
   type $View,
   type EdgeOrId,
   type NodeOrId,
+  type WithTags,
   getId,
 } from '../types'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
@@ -25,7 +26,7 @@ export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = Iterat
 
 export type InferViewType<V> = V extends AnyView<any> ? V[_type] : never
 
-export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> {
+export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -245,7 +246,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   public isScopedElementView(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel.ScopedElementView<A, V> {
+  ): this is LikeC4ViewModel.ScopedElementView<A> {
     return this.$view[_type] === 'element' && isTruthy(this.$view.viewOf)
   }
 
@@ -264,8 +265,8 @@ export namespace LikeC4ViewModel {
   {
   }
 
-  export interface ScopedElementView<A extends Any, V extends $View<A> = $View<A>>
-    extends LikeC4ViewModel<A, ViewWithType<V, 'element'> & { viewOf: aux.StrictFqn<A> }>
+  export interface ScopedElementView<A extends Any>
+    extends LikeC4ViewModel<A, ViewWithType<$View<A>, 'element'> & { viewOf: aux.StrictFqn<A> }>
   {
     viewOf: ElementModel<A>
   }

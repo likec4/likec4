@@ -1,4 +1,3 @@
-import type { MergeExclusive, Simplify } from 'type-fest'
 import type { ExclusiveUnion } from './_common'
 import type { AnyAux, Unknown } from './aux'
 import type { _type } from './const'

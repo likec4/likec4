@@ -18,13 +18,13 @@ import type * as aux from '../../types/aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import type { $View, IncomingFilter, OutgoingFilter } from '../types'
+import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
 export type NodesIterator<M extends Any, V extends $View<M>> = IteratorLike<NodeModel<M, V>>
 
-export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> {
+export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
   #node: ComputedNode<A> | DiagramNode<A>
 
   constructor(

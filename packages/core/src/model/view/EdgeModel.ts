@@ -13,13 +13,13 @@ import {
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
-import type { $View } from '../types'
+import type { $View, WithTags } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
 export type EdgesIterator<A extends Any, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
 
-export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> {
+export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> implements WithTags<A> {
   #edge: ComputedEdge<A> | DiagramEdge<A>
   constructor(
     public readonly view: LikeC4ViewModel<A, View>,

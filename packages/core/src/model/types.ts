@@ -61,3 +61,13 @@ export type $ModelData<A extends AnyAux> = {
   computed: ComputedLikeC4ModelData<A>
   layouted: LayoutedLikeC4ModelData<A>
 }[aux.Stage<A>]
+
+export interface WithTags<A extends AnyAux> {
+  get tags(): aux.Tags<A>
+  isTagged(tag: aux.LooseTag<A>): boolean
+}
+
+export interface WithMetadata<A extends AnyAux> {
+  getMetadata(): aux.Metadata<A>
+  getMetadata(field: aux.MetadataKey<A>): string | undefined
+}

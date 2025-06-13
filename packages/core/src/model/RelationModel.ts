@@ -13,6 +13,7 @@ import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { isDeploymentRelationModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
+import type { WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
@@ -21,24 +22,20 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * A relationship between two elements (in logical or deployment model)
  * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
-export interface AnyRelationshipModel<A extends AnyAux> {
+export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, WithMetadata<A> {
   get id(): scalar.RelationId
   get expression(): string
   get title(): string | null
   get technology(): string | null
   get description(): string | null
   get navigateTo(): LikeC4ViewModel<A> | null
-  get tags(): aux.Tags<A>
   get kind(): aux.RelationKind<A> | null
   get links(): ReadonlyArray<Link>
   get color(): Color
   get line(): RelationshipLineType
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
-  getMetadata(): aux.Metadata<A>
-  getMetadata(field: aux.MetadataKey<A>): string | undefined
   views(): ViewsIterator<A>
-  isTagged(tag: aux.LooseTag<A>): boolean
 }
 
 export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelationshipModel<A> {

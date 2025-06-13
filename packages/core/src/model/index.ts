@@ -45,6 +45,8 @@ export type {
   IncomingFilter,
   NodeOrId,
   OutgoingFilter,
+  WithMetadata,
+  WithTags,
 } from './types'
 
 export * from './guards'

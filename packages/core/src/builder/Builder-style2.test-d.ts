@@ -36,7 +36,11 @@ test('Builder types - style 2', () => {
         system('cloud').with(
           component('backend').with(
             component('api'),
-            component('db'),
+            component('db', {
+              metadata: {
+                key1: 'value1',
+              },
+            }),
           ),
           component('frontend').with(
             // @ts-expect-error

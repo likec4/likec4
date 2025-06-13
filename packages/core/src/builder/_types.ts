@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { IfNever, IsLiteral, IsNever, Tagged, TupleToUnion } from 'type-fest'
 import type {
   AnyAux,
   Aux,
@@ -41,7 +41,11 @@ export type BuilderSpecification = {
   metadataKeys?: string[]
 }
 
-export type Metadata<MetadataKey extends string> = IfNever<MetadataKey, never, Record<MetadataKey, string>>
+export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends true ? never :
+  IsLiteral<MetadataKey> extends true ? {
+      [key in MetadataKey]?: string
+    } :
+  Record<string, string>
 
 export type NewElementProps<Tag, Metadata> = {
   title?: string

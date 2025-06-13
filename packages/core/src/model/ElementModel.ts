@@ -18,12 +18,12 @@ import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNat
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { $ViewWithType, IncomingFilter, OutgoingFilter } from './types'
+import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<A extends AnyAux = Any> {
+export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMetadata<A> {
   readonly id: aux.Fqn<A>
   readonly _literalId: aux.ElementId<A>
   readonly hierarchyLevel: number
@@ -101,7 +101,7 @@ export class ElementModel<A extends AnyAux = Any> {
     return this.$element.links ?? []
   }
 
-  get defaultView(): LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }> | null {
+  get defaultView(): LikeC4ViewModel.ScopedElementView<A> | null {
     return memoizeProp(this, Symbol.for('defaultView'), () => ihead(this.scopedViews()) ?? null)
   }
 
@@ -242,11 +242,9 @@ export class ElementModel<A extends AnyAux = Any> {
    * Iterate over all views that scope this element.
    * It is possible that element is not included in the view.
    */
-  public scopedViews(): ReadonlySet<
-    LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }>
-  > {
+  public scopedViews(): ReadonlySet<LikeC4ViewModel.ScopedElementView<A>> {
     return memoizeProp(this, Symbol.for('scopedViews'), () => {
-      const views = new Set<LikeC4ViewModel<A, $ViewWithType<A, 'element'> & { viewOf: aux.StrictFqn<A> }>>()
+      const views = new Set<LikeC4ViewModel.ScopedElementView<A>>()
       for (const vm of this.$model.views()) {
         if (vm.isScopedElementView() && vm.viewOf.id === this.id) {
           views.add(vm)

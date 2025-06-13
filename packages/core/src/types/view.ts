@@ -22,11 +22,6 @@ export type ParsedView<A extends Any = Any> =
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
 
-// export type ParsedView<A extends Any = Any> = ExclusiveUnion<{
-//   Element: ParsedElementView<A>
-//   Deployment: ParsedDeploymentView<A>
-//   Dynamic: ParsedDynamicView<A>
-// }>
 /**
  * Should be `ParsedView` but keep it for backward compatibility
  * @deprecated use `ParsedView`
@@ -37,17 +32,6 @@ export type ComputedView<A extends Any = Any> =
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
-// export type ComputedView<A extends Any = Any> = ExclusiveUnion<{
-//   Element: ComputedElementView<A>
-//   Deployment: ComputedDeploymentView<A>
-//   Dynamic: ComputedDynamicView<A>
-// }>
-
-// export type LayoutedView<A extends Any = Any> = ExclusiveUnion<{
-//   Element: LayoutedElementView<A>
-//   Deployment: LayoutedDeploymentView<A>
-//   Dynamic: LayoutedDynamicView<A>
-// }>
 
 export type LayoutedView<A extends Any = Any> =
   | LayoutedElementView<A>
@@ -72,17 +56,6 @@ export type AnyView<A extends Any = Any> =
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
-// export type AnyView<A extends Any = Any> = ExclusiveUnion<{
-//   ParsedElement: ParsedElementView<A>
-//   ParsedDeployment: ParsedDeploymentView<A>
-//   ParsedDynamic: ParsedDynamicView<A>
-//   ComputedElement: ComputedElementView<A>
-//   ComputedDeployment: ComputedDeploymentView<A>
-//   ComputedDynamic: ComputedDynamicView<A>
-//   LayoutedElement: LayoutedElementView<A>
-//   LayoutedDeployment: LayoutedDeploymentView<A>
-//   LayoutedDynamic: LayoutedDynamicView<A>
-// }>
 
 export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
 export type ViewWithType<V extends AnyView<Any>, T extends ViewType> = Extract<V, { [_type]: T }>
