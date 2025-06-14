@@ -13,6 +13,7 @@ import {
   type scalar,
   GroupElementKind,
   isGroupElementKind,
+  stringFromMarkdownOrHtml,
 } from '../../types'
 import type * as aux from '../../types/aux'
 import { memoizeProp } from '../../utils'
@@ -47,11 +48,11 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   get description(): string | null {
-    return this.#node.description ?? null
+    return stringFromMarkdownOrHtml(this.#node.description) ?? null
   }
 
   get technology(): string | null {
-    return this.#node.technology ?? null
+    return stringFromMarkdownOrHtml(this.#node.technology) ?? null
   }
 
   get parent(): NodeModel<A, V> | null {

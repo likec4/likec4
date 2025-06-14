@@ -4,6 +4,23 @@ import { invariant } from '../utils/invariant'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 
+export type MarkdownOrString = string | { md: string }
+export type HtmlOrString = string | { html: string }
+
+export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | string): string
+export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | null | undefined): string | undefined
+export function stringFromMarkdownOrHtml(
+  value: MarkdownOrString | HtmlOrString | null | undefined,
+): string | undefined {
+  if (value === null || value === undefined) {
+    return undefined
+  }
+  if (typeof value === 'string') {
+    return value
+  }
+  return 'md' in value ? value.md : value.html
+}
+
 export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'tech'}:${string}`
 export type Icon = Tagged<string, 'Icon'> | BuiltInIcon
 export type IconUrl = Icon

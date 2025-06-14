@@ -17,6 +17,7 @@ import {
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
+  stringFromMarkdownOrHtml,
 } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
@@ -62,11 +63,11 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   get description(): string | null {
-    return this.$node.description ?? null
+    return stringFromMarkdownOrHtml(this.$node.description) ?? null
   }
 
   get technology(): string | null {
-    return this.$node.technology ?? null
+    return stringFromMarkdownOrHtml(this.$node.technology) ?? null
   }
 
   get links(): ReadonlyArray<Link> {
@@ -403,11 +404,11 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
   }
 
   override get description(): string | null {
-    return this.$instance.description ?? this.element.description
+    return stringFromMarkdownOrHtml(this.$instance.description ?? this.element.description) ?? null
   }
 
   override get technology(): string | null {
-    return this.$instance.technology ?? this.element.technology
+    return stringFromMarkdownOrHtml(this.$instance.technology ?? this.element.technology) ?? null
   }
 
   override get links(): ReadonlyArray<Link> {

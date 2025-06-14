@@ -57,15 +57,15 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly id: aux.StrictFqn<A>
   readonly kind: aux.ElementKind<A>
   readonly title: string
-  readonly description?: string | null
-  readonly technology?: string | null
+  readonly description?: scalar.MarkdownOrString | null
+  readonly technology?: scalar.MarkdownOrString | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly icon?: scalar.Icon
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
-  readonly notation?: string
+  readonly notation?: scalar.MarkdownOrString | null
   readonly metadata?: aux.Metadata<A>
 }
 

@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
-import { FqnRef } from '@likec4/core/types'
+import { FqnRef, stringFromMarkdownOrHtml } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
@@ -86,7 +86,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      let [title, description, technology] = astNode.props ?? []
+      let [_title, _description, _technology] = astNode.props ?? []
 
       const bodyProps = pipe(
         astNode.body?.props ?? [],
@@ -95,9 +95,9 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         mapToObj(p => [p.key, p.value || undefined]),
       )
 
-      title = removeIndent(title ?? bodyProps.title)
-      description = removeIndent(bodyProps.description ?? description)
-      technology = toSingleLine(bodyProps.technology ?? technology)
+      const title = stringFromMarkdownOrHtml(removeIndent(_title ?? bodyProps.title))
+      const description = removeIndent(_description ?? bodyProps.description)
+      const technology = toSingleLine(_technology ?? bodyProps.technology)
 
       const links = this.parseLinks(astNode.body)
 

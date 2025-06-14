@@ -13,7 +13,7 @@ function remark(): Processor<Root, Root, Root, Root, string> {
   return _remark ??= unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkRehype)
     .use(rehypeRaw)
     .use(rehypeFormat)
     .use(rehypeSanitize)

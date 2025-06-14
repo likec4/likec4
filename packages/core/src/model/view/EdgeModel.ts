@@ -10,6 +10,7 @@ import {
   type StepEdgeId,
   extractStep,
   isStepEdgeId,
+  stringFromMarkdownOrHtml,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
@@ -39,15 +40,15 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
   }
 
   get label(): string | null {
-    return this.#edge.label
+    return stringFromMarkdownOrHtml(this.#edge.label) ?? null
   }
 
   get description(): string | null {
-    return this.#edge.description ?? null
+    return stringFromMarkdownOrHtml(this.#edge.description) ?? null
   }
 
   get technology(): string | null {
-    return this.#edge.technology ?? null
+    return stringFromMarkdownOrHtml(this.#edge.technology) ?? null
   }
 
   public hasParent(): this is EdgeModel.WithParent<A, View> {

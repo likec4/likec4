@@ -87,8 +87,8 @@ export interface ParsedAstElement {
   astPath: string
   kind: c4.ElementKind
   title: string
-  description?: string
-  technology?: string
+  description?: c4.MarkdownOrString
+  technology?: c4.MarkdownOrString
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<c4.Link>
   style: ParsedElementStyle
@@ -111,8 +111,8 @@ export interface ParsedAstRelation {
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
-  description?: string
-  technology?: string
+  description?: c4.MarkdownOrString
+  technology?: c4.MarkdownOrString
   color?: c4.Color
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType

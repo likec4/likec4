@@ -12,6 +12,7 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
   splitGlobalFqn,
+  stringFromMarkdownOrHtml,
 } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
@@ -90,11 +91,11 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   }
 
   get description(): string | null {
-    return this.$element.description ?? null
+    return stringFromMarkdownOrHtml(this.$element.description) ?? null
   }
 
   get technology(): string | null {
-    return this.$element.technology ?? null
+    return stringFromMarkdownOrHtml(this.$element.technology) ?? null
   }
 
   get links(): ReadonlyArray<Link> {
