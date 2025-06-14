@@ -41,5 +41,15 @@ describe.concurrent('strings', () => {
         '
       }
     }
+
+    `
+  test('valid multi-line with triple quotes').valid`
+    specification {
+      element el1 {
+        technology '''
+          tech container
+        '''
+      }
+    }
   `
 })

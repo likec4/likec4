@@ -104,14 +104,28 @@
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "catalog:utils"
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-to-string": "^4.0.0",
+    "rehype-format": "5.0.1",
+    "rehype-raw": "7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-stringify": "10.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
+    "type-fest": "catalog:utils",
+    "unified": "11.0.5"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
+    "@types/extend": "3.0.0",
+    "@types/hast": "3.0.0",
+    "@types/mdast": "4.0.0",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
+    "@types/unist": "3.0.0",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
     "fdir": "catalog:utils",

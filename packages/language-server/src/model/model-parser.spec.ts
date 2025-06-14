@@ -40,6 +40,45 @@ describe.concurrent('LikeC4ModelParser', () => {
     })
   })
 
+  it('parses strings with triple quotes', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(`
+        specification {
+          element el1 {
+            technology '''
+              el1-tech
+            '''
+            // Should treat internal quotes as part of the string
+            notation '''
+              el'1-n'ota"tion
+            '''
+          }
+          element el2 {
+            technology """
+              el2-tech
+            """
+            // Should treat internal quotes as part of the string
+            notation """
+              el"2-n"ota'tion
+            """
+          }
+        }
+      `)
+    const doc = services.likec4.ModelParser.parse(document)
+    expect(doc.c4Specification).toMatchObject({
+      elements: {
+        el1: {
+          technology: 'el1-tech',
+          notation: 'el\'1-n\'ota"tion',
+        },
+        el2: {
+          technology: 'el2-tech',
+          notation: 'el"2-n"ota\'tion',
+        },
+      },
+    })
+  })
+
   describe('specification', () => {
     it('parses custom colors', async ({ expect }) => {
       const { validate, services } = createTestServices()

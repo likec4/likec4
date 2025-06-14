@@ -711,7 +711,7 @@ OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
 
 MultipleProperty:
-  key='multiple' ':'? value=Boolean ';'?;
+  key='multiple' ':'? value=BOOLEAN ';'?;
 
 // Element properties -------------------------------------
 IconProperty:
@@ -785,8 +785,6 @@ RelationKindDotRef :
   Dot kind=[RelationshipKind:Id]
 ;
 
-Boolean returns boolean: 'true' | 'false';
-
 LineOptions returns string:
   'solid' |
   'dashed' |
@@ -826,6 +824,9 @@ IconId returns string:
 
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
+
+// STRING returns string:
+//   TripleQuoteString | QuotedString;
 
 CustomColorId returns string:
   Hex | IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
@@ -867,6 +868,7 @@ hidden terminal NL: /[\r\n]+/;
 
 
 // LibIcons
+terminal BOOLEAN returns boolean: /true|false/;
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
@@ -883,7 +885,9 @@ terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;
 
-terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
+terminal String: TripleQuoteString | QuotedString;
+terminal fragment TripleQuoteString: '\'\'\'' -> '\'\'\'' | '"""' -> '"""';
+terminal fragment QuotedString: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;

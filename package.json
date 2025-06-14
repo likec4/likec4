@@ -36,7 +36,6 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
     "execa": "^9.6.0",

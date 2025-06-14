@@ -294,7 +294,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         })
         return 'prune'
       }
-      if ('value' in node && node.value) {
+      if ('value' in node && node.value && !ast.isStringProperty(node)) {
         acceptor({
           node,
           property: 'value',

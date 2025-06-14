@@ -111,7 +111,10 @@
       {
         "language": "likec4",
         "scopeName": "source.likec4",
-        "path": "likec4.tmLanguage.json"
+        "path": "likec4.tmLanguage.json",
+        "embeddedLanguages": {
+          "text.html.markdown": "markdown"
+        }
       }
     ],
     "configuration": {
