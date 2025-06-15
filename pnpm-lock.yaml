@@ -50,6 +50,9 @@ catalogs:
     '@types/node':
       specifier: ~20.19.0
       version: 20.19.0
+    playwright:
+      specifier: ^1.53.0
+      version: 1.53.0
     tsx:
       specifier: 4.19.4
       version: 4.19.4
@@ -1124,7 +1127,7 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       playwright:
-        specifier: ^1.53.0
+        specifier: 'catalog:'
         version: 1.53.0
       rollup:
         specifier: catalog:vite
@@ -1485,6 +1488,9 @@ importers:
       '@likec4/vscode-preview':
         specifier: workspace:*
         version: link:../vscode-preview
+      '@reactive-vscode/vueuse':
+        specifier: ^0.2.19
+        version: 0.2.19
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.0
@@ -1524,6 +1530,9 @@ importers:
       p-timeout:
         specifier: ^6.1.4
         version: 6.1.4
+      playwright:
+        specifier: 'catalog:'
+        version: 1.53.0
       pretty-ms:
         specifier: ^9.2.0
         version: 9.2.0
@@ -3205,6 +3214,9 @@ packages:
 
   '@reactive-vscode/reactivity@0.2.19':
     resolution: {integrity: sha512-b8v4/Q1irXV5xREmsF8w3EpKp+WI/T29+aa74SBNrAnolC3qHslckGvj2/M12b2wcXmlVUVJl5mUHFpxjaAhHA==}
+
+  '@reactive-vscode/vueuse@0.2.19':
+    resolution: {integrity: sha512-gArQ8iBuCBSpfjWzvczD7PsMi2ODXhXrGJuF8YSB2qpk1Jtj9ORm6R36ZM9DCljvVyvWyrdreAdwb59OWRUcUA==}
 
   '@rolldown/pluginutils@1.0.0-beta.11':
     resolution: {integrity: sha512-L/gAA/hyCSuzTF1ftlzUSI/IKr2POHsv1Dd78GfqkR83KMNuswWD61JxGV2L7nRwBBBSDr6R1gCkdTmoN7W4ag==}
@@ -11138,6 +11150,10 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   '@reactive-vscode/reactivity@0.2.19': {}
+
+  '@reactive-vscode/vueuse@0.2.19':
+    dependencies:
+      '@reactive-vscode/reactivity': 0.2.19
 
   '@rolldown/pluginutils@1.0.0-beta.11': {}
 

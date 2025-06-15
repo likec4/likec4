@@ -8,13 +8,18 @@ import {
   rootLogger,
 } from '@likec4/log'
 import { type TelemetryReporter } from '@vscode/extension-telemetry'
-import { defineLogger } from 'reactive-vscode'
+import { defineLogger, onDeactivate } from 'reactive-vscode'
 import type { LogOutputChannel } from 'vscode'
 import vscode from 'vscode'
 
 export const logger = rootLogger.getChild('vscode')
 
-export const vscodelogger = defineLogger('vscode')
+export const loggerOutput = vscode.window.createOutputChannel('LikeC4 Extension', {
+  log: true,
+})
+export const extensionLogger = defineLogger('LikeC4 Extension', {
+  outputChannel: loggerOutput,
+})
 
 export function logWarn(e: unknown): void {
   if (e instanceof Error) {

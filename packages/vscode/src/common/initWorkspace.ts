@@ -3,12 +3,13 @@ import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
 import { logger, logWarn } from '../logger'
-import type { Rpc } from '../Rpc'
+import { type Rpc, useRpc } from '../Rpc'
 
 // LSP web extensions does not have access to the file system
 // so we do this trick (find all files and open them)
-export async function initWorkspace(rpc: Rpc) {
+export async function initWorkspace() {
   try {
+    const rpc = useRpc()
     const docs = await findSources(rpc.client)
     if (docs.length <= 0) {
       logger.warn('[InitWorkspace] with pattern {globPattern} no docs found', { globPattern })

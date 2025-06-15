@@ -1,3 +1,4 @@
+import { loggable } from '@likec4/log'
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../LikeC4MCPServerFactory'
@@ -36,7 +37,12 @@ export const WithMCPServer = {
               eventName: 'mcp-server-started',
             })
           })
-          .catch(err => logger.error('Failed to start LikeC4 MCP Server', { err }))
+          .catch(err => {
+            logger.error('Failed to start LikeC4 MCP Server', { err })
+            if (connection) {
+              connection.window.showErrorMessage(`LikeC4: Failed to start MCP Server\n\n${loggable(err)}`)
+            }
+          })
       })
 
       return server

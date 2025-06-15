@@ -1,17 +1,14 @@
 import { configureLogger, getConsoleSink } from '@likec4/log'
-import { createSingletonComposable, useLogger, useOutputChannel } from 'reactive-vscode'
-import { getOutputChannelSink, getTelemetrySink } from '../logger'
+import { createSingletonComposable } from 'reactive-vscode'
+import { extensionLogger, getOutputChannelSink, getTelemetrySink, logger, loggerOutput } from '../logger'
 import { useTelemetry } from './useTelemetry'
 
 export const useExtensionLogger = createSingletonComposable(() => {
-  const outputChannel = useOutputChannel('LikeC4 Extension', {
-    log: true,
-  })
   const telemetry = useTelemetry()
   configureLogger({
     sinks: {
       console: getConsoleSink(),
-      vscode: getOutputChannelSink(outputChannel),
+      vscode: getOutputChannelSink(loggerOutput),
       telemetry: getTelemetrySink(telemetry),
     },
     loggers: [
@@ -21,10 +18,11 @@ export const useExtensionLogger = createSingletonComposable(() => {
       },
     ],
   })
-  outputChannel.debug('configured logger')
+  loggerOutput.debug('configured logger')
 
-  return useLogger('LikeC4 Extension', {
-    outputChannel,
-    getPrefix: () => '',
-  })
+  return {
+    logger,
+    loggerOutput,
+    extensionLogger,
+  }
 })
