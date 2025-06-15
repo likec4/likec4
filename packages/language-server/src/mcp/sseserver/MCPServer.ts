@@ -10,16 +10,20 @@ const logger = mainLogger.getChild('LikeC4MCPServer')
 
 export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   // Store transports by session ID to send notifications
-  private readonly transports: { [sessionId: string]: SSEServerTransport } = {}
+  private transports: { [sessionId: string]: SSEServerTransport } = {}
   private server: http.Server | undefined = undefined
 
-  private port: number = 33335
+  private _port: number = 33335
 
   constructor(private services: LikeC4Services) {
   }
 
   get isStarted() {
     return this.server?.listening === true
+  }
+
+  get port() {
+    return this._port
   }
 
   async dispose() {
@@ -33,8 +37,8 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
       }
       await this.stop()
     }
-    logger.info('Starting server on port {port}', { port })
-    this.port = port
+    logger.info('Starting MCP server on port {port}', { port })
+    this._port = port
 
     const mcp = this.services.mcp.ServerFactory.create()
 
@@ -61,12 +65,12 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     })
 
     return new Promise((resolve, reject) => {
-      this.server = app.listen(port, (err) => {
+      this.server = app.listen(this._port, (err) => {
         if (err) {
           reject(err)
           return
         }
-        logger.info('server listening on port {port}', { port })
+        logger.info('MCP server listening on port {port}', { port: this._port })
         resolve()
       })
     })
@@ -79,6 +83,7 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     }
     logger.info('Stopping server')
     this.server = undefined
+    this.transports = {}
     return new Promise((resolve) => {
       server.close((err) => {
         if (err) {

@@ -3,7 +3,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { LikeC4Services } from '../module'
 
 export interface LikeC4MCPServer {
-  get isStarted(): boolean
+  readonly isStarted: boolean
+  readonly port: number
   start(port: number): Promise<void>
   stop(): Promise<void>
 }
@@ -15,6 +16,9 @@ export interface LikeC4MCPServerFactory {
 export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   get isStarted(): boolean {
     return false
+  }
+  get port(): number {
+    return NaN
   }
   start(port: number) {
     return Promise.reject(new Error('Not implemented'))

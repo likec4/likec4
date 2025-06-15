@@ -21,10 +21,10 @@ export const WithMCPServer = {
         }
         logger.debug('Configuration update: {update}', { update })
 
-        const { enabled, port } = update.configuration.mcp ?? {
-          enabled: false,
-          port: 33335,
-        }
+        const {
+          enabled = false,
+          port = 33335,
+        } = update.configuration.mcp as { enabled?: boolean; port?: number }
 
         if (!enabled) {
           server.stop()
