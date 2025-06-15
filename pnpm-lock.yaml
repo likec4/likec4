@@ -152,8 +152,8 @@ catalogs:
       specifier: ^4.0.0
       version: 4.0.0
     '@valibot/to-json-schema':
-      specifier: ^1.0.0
-      version: 1.0.0
+      specifier: ^1.3.0
+      version: 1.3.0
     chroma-js:
       specifier: ^3.1.2
       version: 3.1.2
@@ -206,11 +206,11 @@ catalogs:
       specifier: ^1.6.1
       version: 1.6.1
     valibot:
-      specifier: ^1.0.0
-      version: 1.0.0
+      specifier: ^1.1.0
+      version: 1.1.0
     zod:
-      specifier: ^3.24.3
-      version: 3.24.3
+      specifier: ^3.25.64
+      version: 3.25.64
   vite:
     '@vitejs/plugin-react':
       specifier: ^4.5.2
@@ -433,7 +433,7 @@ importers:
         version: 0.8.1(hono@4.7.11)
       '@hono/valibot-validator':
         specifier: ^0.5.2
-        version: 0.5.2(hono@4.7.11)(valibot@1.0.0(typescript@5.8.3))
+        version: 0.5.2(hono@4.7.11)(valibot@1.1.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.7.0
@@ -598,7 +598,7 @@ importers:
         version: 1.6.1
       valibot:
         specifier: catalog:utils
-        version: 1.0.0(typescript@5.8.3)
+        version: 1.1.0(typescript@5.8.3)
       vite:
         specifier: catalog:vite
         version: 6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
@@ -1013,7 +1013,7 @@ importers:
         version: 3.5.0(typescript@5.8.3)
       valibot:
         specifier: catalog:utils
-        version: 1.0.0(typescript@5.8.3)
+        version: 1.1.0(typescript@5.8.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.3(@types/debug@4.1.12)(@types/node@20.19.0)(@vitest/ui@3.2.3)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
@@ -1037,7 +1037,7 @@ importers:
         version: 5.0.0
       zod:
         specifier: catalog:utils
-        version: 3.24.3
+        version: 3.25.64
 
   packages/layouts:
     dependencies:
@@ -1461,7 +1461,7 @@ importers:
         version: 0.14.12
       zod:
         specifier: catalog:utils
-        version: 3.24.3
+        version: 3.25.64
 
   packages/tsconfig: {}
 
@@ -1502,7 +1502,7 @@ importers:
         version: 3.0.4
       '@valibot/to-json-schema':
         specifier: catalog:utils
-        version: 1.0.0(valibot@1.0.0(typescript@5.8.3))
+        version: 1.3.0(valibot@1.1.0(typescript@5.8.3))
       '@vscode/extension-telemetry':
         specifier: ^1.0.0
         version: 1.0.0(tslib@2.8.1)
@@ -1562,7 +1562,7 @@ importers:
         version: 5.8.3
       valibot:
         specifier: catalog:utils
-        version: 1.0.0(typescript@5.8.3)
+        version: 1.1.0(typescript@5.8.3)
       vscode-ext-gen:
         specifier: ^1.0.2
         version: 1.0.2
@@ -3847,10 +3847,10 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@valibot/to-json-schema@1.0.0':
-    resolution: {integrity: sha512-/9crJgPptVsGCL6X+JPDQyaJwkalSZ/52WuF8DiRUxJgcmpNdzYRfZ+gqMEP8W3CTVfuMWPqqvIgfwJ97f9Etw==}
+  '@valibot/to-json-schema@1.3.0':
+    resolution: {integrity: sha512-82Vv6x7sOYhv5YmTRgSppSqj1nn2pMCk5BqCMGWYp0V/fq+qirrbGncqZAtZ09/lrO40ne/7z8ejwE728aVreg==}
     peerDependencies:
-      valibot: ^1.0.0
+      valibot: ^1.1.0
 
   '@ver0/deep-equal@1.0.0':
     resolution: {integrity: sha512-XKIlF1i6UJiyTL52mDrSDDgRX7Qr5yJ7ts9zn2liZEmhiAEum4XKrJRAWmHdFwCQeGBU+rb+/b0ldw/9V8lOWw==}
@@ -8403,8 +8403,8 @@ packages:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
-  valibot@1.0.0:
-    resolution: {integrity: sha512-1Hc0ihzWxBar6NGeZv7fPLY0QuxFMyxwYR2sF1Blu7Wq7EnremwY2W02tit2ij2VJT8HcSkHAQqmFfl77f73Yw==}
+  valibot@1.1.0:
+    resolution: {integrity: sha512-Nk8lX30Qhu+9txPYTwM0cFlWLdPFsFr6LblzqIySfbZph9+BFsAHsNvHOymEviUepeIW6KFHzpX8TKhbptBXXw==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -8887,6 +8887,9 @@ packages:
 
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
+
+  zod@3.25.64:
+    resolution: {integrity: sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -10466,10 +10469,10 @@ snapshots:
     dependencies:
       hono: 4.7.11
 
-  '@hono/valibot-validator@0.5.2(hono@4.7.11)(valibot@1.0.0(typescript@5.8.3))':
+  '@hono/valibot-validator@0.5.2(hono@4.7.11)(valibot@1.1.0(typescript@5.8.3))':
     dependencies:
       hono: 4.7.11
-      valibot: 1.0.0(typescript@5.8.3)
+      valibot: 1.1.0(typescript@5.8.3)
 
   '@hpcc-js/wasm-graphviz@1.7.0': {}
 
@@ -10790,8 +10793,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.24.3
-      zod-to-json-schema: 3.24.5(zod@3.24.3)
+      zod: 3.25.64
+      zod-to-json-schema: 3.24.5(zod@3.25.64)
     transitivePeerDependencies:
       - supports-color
 
@@ -11781,9 +11784,9 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@valibot/to-json-schema@1.0.0(valibot@1.0.0(typescript@5.8.3))':
+  '@valibot/to-json-schema@1.3.0(valibot@1.1.0(typescript@5.8.3))':
     dependencies:
-      valibot: 1.0.0(typescript@5.8.3)
+      valibot: 1.1.0(typescript@5.8.3)
 
   '@ver0/deep-equal@1.0.0': {}
 
@@ -11838,14 +11841,6 @@ snapshots:
       magic-string: 0.30.17
     optionalDependencies:
       vite: 6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
-
-  '@vitest/mocker@3.2.3(vite@6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.20.2)(yaml@2.7.0))':
-    dependencies:
-      '@vitest/spy': 3.2.3
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.20.2)(yaml@2.7.0)
 
   '@vitest/pretty-format@3.2.3':
     dependencies:
@@ -17281,7 +17276,7 @@ snapshots:
 
   uuid@9.0.1: {}
 
-  valibot@1.0.0(typescript@5.8.3):
+  valibot@1.1.0(typescript@5.8.3):
     optionalDependencies:
       typescript: 5.8.3
 
@@ -17581,7 +17576,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.3
-      '@vitest/mocker': 3.2.3(vite@6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.20.2)(yaml@2.7.0))
+      '@vitest/mocker': 3.2.3(vite@6.3.5(@types/node@20.19.0)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0))
       '@vitest/pretty-format': 3.2.3
       '@vitest/runner': 3.2.3
       '@vitest/snapshot': 3.2.3
@@ -17981,6 +17976,10 @@ snapshots:
     dependencies:
       zod: 3.24.3
 
+  zod-to-json-schema@3.24.5(zod@3.25.64):
+    dependencies:
+      zod: 3.25.64
+
   zod-to-ts@1.2.0(typescript@5.8.3)(zod@3.24.3):
     dependencies:
       typescript: 5.8.3
@@ -17989,6 +17988,8 @@ snapshots:
   zod@3.22.3: {}
 
   zod@3.24.3: {}
+
+  zod@3.25.64: {}
 
   zustand@4.5.7(@types/react@19.1.5)(react@19.1.0):
     dependencies:

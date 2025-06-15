@@ -24,7 +24,7 @@ export const ProjectConfig = v.object({
       v.description('List of file patterns to exclude from the project, default is ["**/node_modules/**/*"]'),
     ),
   ),
-}, 'Project configuration')
+})
 
 export type ProjectConfig = v.InferOutput<typeof ProjectConfig>
 
