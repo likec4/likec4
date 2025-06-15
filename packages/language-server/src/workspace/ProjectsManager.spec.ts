@@ -86,6 +86,59 @@ describe.concurrent('ProjectsManager', () => {
       expect(project.folder.toString()).toBe(URI.parse('file:///test/workspace/src/test-project').toString())
     })
 
+    it('should fail to register project with empty name', async ({ expect }) => {
+      const { projectsManager, services } = await createMultiProjectTestServices({})
+
+      const config = {
+        name: '',
+      }
+      const fs = services.shared.workspace.FileSystemProvider
+      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+
+      const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
+      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[ValiError: Project name cannot be empty]`,
+      )
+    })
+
+    it('should fail to register project with default name', async ({ expect }) => {
+      const { projectsManager, services } = await createMultiProjectTestServices({})
+
+      const config = {
+        name: 'default',
+      }
+      const fs = services.shared.workspace.FileSystemProvider
+      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+
+      const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
+      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[ValiError: Project name cannot be "default"]`,
+      )
+      await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
+        .toThrowErrorMatchingInlineSnapshot(
+          `[ValiError: Project name cannot be "default"]`,
+        )
+    })
+
+    it('should fail to register project with name containing "."', async ({ expect }) => {
+      const { projectsManager, services } = await createMultiProjectTestServices({})
+
+      const config = {
+        name: 'one.two',
+      }
+      const fs = services.shared.workspace.FileSystemProvider
+      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+
+      const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
+      await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[ValiError: Project name cannot contain ".", try to use A-z, 0-9, _ and -]`,
+      )
+      await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
+        .toThrowErrorMatchingInlineSnapshot(
+          `[ValiError: Project name cannot contain ".", try to use A-z, 0-9, _ and -]`,
+        )
+    })
+
     it('should handle duplicate project names by appending numbers', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 

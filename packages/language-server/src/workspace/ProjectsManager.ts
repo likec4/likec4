@@ -1,5 +1,6 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
 import { BiMap, invariant, nonNullable } from '@likec4/core'
+import { loggable } from '@likec4/log'
 import { type FileSystemNode, type LangiumDocument, URI, WorkspaceCache } from 'langium'
 import picomatch from 'picomatch/posix'
 import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
@@ -10,7 +11,7 @@ import {
   withoutProtocol,
   withProtocol,
 } from 'ufo'
-import { parseConfigJson, ProjectConfig } from '../config'
+import { parseConfigJson, ProjectConfig, validateConfig } from '../config'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
@@ -142,14 +143,21 @@ export class ProjectsManager {
    * Checks if the provided file system entry is a valid project config file.
    *
    * @param entry The file system entry to check
-   * @returns {boolean} Returns true if the entry is a valid config file, false otherwise.
    */
   async loadConfigFile(entry: FileSystemNode): Promise<Project | undefined> {
     if (entry.isDirectory) {
       return undefined
     }
     if (this.isConfigFile(entry)) {
-      return await this.registerProject(entry.uri)
+      try {
+        return await this.registerProject(entry.uri)
+      } catch (error) {
+        this.services.lsp.Connection?.window.showErrorMessage(
+          `LikeC4: Failed to register project at ${entry.uri.toString()}\n\n${loggable(error)}`,
+        )
+        logger.error('Failed to register project at {uri}', { uri: entry.uri.toString(), error })
+        return undefined
+      }
     }
     return undefined
   }
@@ -165,7 +173,8 @@ export class ProjectsManager {
       const folderUri = configFile.with({ path })
       return this.registerProject({ config, folderUri })
     }
-    const { config, folderUri } = opts
+    const config = validateConfig(opts.config)
+    const { folderUri } = opts
     let id = config.name as ProjectId
     let i = 1
     while (this.projectIdToFolder.has(id)) {

@@ -39,7 +39,16 @@ await cp(
   { recursive: true },
 )
 
-await writeFile('./data/config.schema.json', JSON.stringify(toJsonSchema(ProjectConfig), null, 2))
+await writeFile(
+  './data/config.schema.json',
+  JSON.stringify(
+    toJsonSchema(ProjectConfig, {
+      ignoreActions: ['excludes'],
+    }),
+    null,
+    2,
+  ),
+)
 
 consola.start('Build vscode extension')
 
