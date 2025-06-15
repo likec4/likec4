@@ -1,3 +1,4 @@
+import useLanguageClient from '#useLanguageClient'
 import {
   type BuildDocuments,
   type ChangeView,
@@ -9,7 +10,7 @@ import {
   FetchComputedModel,
   FetchTelemetryMetrics,
 } from '@likec4/language-server/protocol'
-import { nextTick, triggerRef, useDisposable } from 'reactive-vscode'
+import { createSingletonComposable, nextTick, triggerRef, useDisposable } from 'reactive-vscode'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { BaseLanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
@@ -45,7 +46,8 @@ const lsp = {
   getDocumentTags,
 }
 
-export function useRpc(client: BaseLanguageClient) {
+export const useRpc = createSingletonComposable(() => {
+  const client = useLanguageClient()
   let previousOperation = Promise.resolve({} as any)
 
   async function queue<T>(op: () => Promise<T>): Promise<T> {
@@ -118,6 +120,6 @@ export function useRpc(client: BaseLanguageClient) {
     fetchViewsFromAllProjects,
     getDocumentTags,
   }
-}
+})
 
 export type Rpc = ReturnType<typeof useRpc>

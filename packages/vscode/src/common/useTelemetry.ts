@@ -1,9 +1,16 @@
 import { TelemetryReporter } from '@vscode/extension-telemetry'
 import { deepEqual } from 'fast-equals'
-import { createSingletonComposable, tryOnScopeDispose, useDisposable } from 'reactive-vscode'
+import {
+  createSingletonComposable,
+  tryOnScopeDispose,
+  useDisposable,
+  useIsTelemetryEnabled,
+  watch,
+} from 'reactive-vscode'
 import { keys } from 'remeda'
 import { logger as root, logWarn } from '../logger'
-import type { Rpc } from '../Rpc'
+import { type Rpc, useRpc } from '../Rpc'
+import { whenExtensionActive } from './useIsActivated'
 
 // Application insights key (also known as instrumentation key)
 const TelemetryConnectionString =
@@ -12,13 +19,26 @@ const TelemetryConnectionString =
 const logger = root.getChild('telemetry')
 
 export const useTelemetry = createSingletonComposable(() => {
-  const reporter = new TelemetryReporter(TelemetryConnectionString)
-  return useDisposable(reporter)
+  const reporter = useDisposable(new TelemetryReporter(TelemetryConnectionString))
+  const isEnabled = useIsTelemetryEnabled()
+  whenExtensionActive(() => {
+    watch(isEnabled, (_isEnabled) => {
+      if (!_isEnabled) {
+        logger.debug('telemetry disabled')
+        return
+      }
+      logger.debug('useTelemetry activation')
+      activateTelemetry(useRpc(), reporter)
+    }, {
+      immediate: true,
+    })
+  }, () => {
+    logger.debug('useTelemetry deactivation')
+  })
+  return reporter
 })
 
-export function activateTelemetry(rpc: Rpc) {
-  const telemetry = useTelemetry()
-
+function activateTelemetry(rpc: Rpc, telemetry: TelemetryReporter) {
   async function fetchMetrics() {
     const t0 = performance.now()
     const { metrics } = await rpc.fetchMetrics()
@@ -32,10 +52,6 @@ export function activateTelemetry(rpc: Rpc) {
   let previousMetrics: Record<string, number> | null = null
   async function sendTelemetryMetrics() {
     try {
-      // if telemetry is off, do nothing
-      if (telemetry.telemetryLevel === 'off') {
-        return
-      }
       const { metrics, ms } = await fetchMetrics()
       if (!metrics) {
         return

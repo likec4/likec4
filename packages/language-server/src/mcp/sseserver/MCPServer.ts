@@ -18,6 +18,10 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   constructor(private services: LikeC4Services) {
   }
 
+  get isStarted() {
+    return this.server?.listening === true
+  }
+
   async dispose() {
     await this.stop()
   }
@@ -59,7 +63,6 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     return new Promise((resolve, reject) => {
       this.server = app.listen(port, (err) => {
         if (err) {
-          logger.error('Failed to start server', { err })
           reject(err)
           return
         }

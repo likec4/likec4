@@ -124,7 +124,7 @@
         },
         "likec4.mcp.port": {
           "description": "Port to use for MCP Server",
-          "type": "integer",
+          "type": "number",
           "default": 33335
         },
         "likec4.graphviz.mode": {
@@ -249,6 +249,10 @@
     "#useDocumentSelector": {
       "browser": "./src/browser/useDocumentSelector.ts",
       "default": "./src/node/useDocumentSelector.ts"
+    },
+    "#useLanguageClient": {
+      "browser": "./src/browser/useLanguageClient.ts",
+      "default": "./src/node/useLanguageClient.ts"
     }
   },
   "devDependencies": {
@@ -259,14 +263,15 @@
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
+    "@reactive-vscode/vueuse": "^0.2.19",
     "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
+    "@valibot/to-json-schema": "catalog:utils",
     "@vscode/extension-telemetry": "^1.0.0",
     "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
-    "@valibot/to-json-schema": "catalog:utils",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
     "fast-equals": "catalog:utils",
@@ -277,11 +282,11 @@
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "tslib": "^2.8.1",
-    "valibot": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
+    "valibot": "catalog:utils",
     "vscode-ext-gen": "^1.0.2",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",
@@ -289,6 +294,7 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-messenger": "^0.5.1",
     "vscode-messenger-common": "^0.5.1",
+    "playwright": "catalog:",
     "vscode-uri": "catalog:vscode"
   },
   "packageManager": "pnpm@10.11.1"
