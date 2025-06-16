@@ -21,7 +21,7 @@ model {
 
   disconnected_client -> disconnected_frontend 'uses'
   disconnected_frontend -> disconnected_backend 'calls'
-  // disconnected_restapi -> disconnected_db 'accesses'
+  disconnected_restapi -> disconnected_db 'exposes'
 }
 
 views {

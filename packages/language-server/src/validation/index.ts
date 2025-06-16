@@ -11,7 +11,7 @@ import {
   extendDeploymentChecks,
 } from './deployment-checks'
 import { dynamicViewStep } from './dynamic-view-step'
-import { checkElement } from './element'
+import { checkElement, checkElementCorrectness } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImported, checkImportsFromPoject } from './imports'
 import {
@@ -156,7 +156,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
-    Element: checkElement(services),
+    Element: [checkElement(services), checkElementCorrectness(services)],
     ElementRef: checkElementRef(services),
     ElementKind: checkElementKind(services),
     Relation: relationChecks(services),

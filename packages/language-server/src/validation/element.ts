@@ -55,3 +55,88 @@ export const checkElement = (services: LikeC4Services): ValidationCheck<ast.Elem
     }
   })
 }
+
+export const checkElementCorrectness = (services: LikeC4Services): ValidationCheck<ast.Element> => {
+  return tryOrLog((el, accept) => {
+    // Skip user and external elements as they are often meant to be boundary elements
+    const kindName = el.kind?.ref?.name
+    if (kindName === 'user' || kindName === 'external') {
+      return
+    }
+
+    const doc = getDocument(el)
+    const grammar = doc.parseResult.value
+
+    if (!grammar || grammar.$type !== 'LikeC4Grammar') {
+      return
+    }
+
+    // Get the element's fully qualified name
+    const fqnIndex = services.likec4.FqnIndex
+    const elementFqn = fqnIndex.getFqn(el)
+
+    if (!elementFqn) {
+      return
+    }
+
+    // Check if this element is connected to any other elements
+    let isConnected = false
+
+    // Search through all models in the grammar for relations
+    for (const model of grammar.models) {
+      if (!model.elements) continue
+
+      // Look for relations in the model elements
+      for (const statement of model.elements) {
+        if (statement.$type === 'Relation') {
+          const relation = statement as ast.Relation
+
+          // Check if this element is the source or target of any relation
+          // The source and target have a 'value' property that contains the actual reference
+          let sourceFqn: string | null = null
+          let targetFqn: string | null = null
+
+          // Access source from the value property
+          const sourceValue = (relation.source as any)?.value
+          const targetValue = (relation.target as any)?.value
+
+          if (sourceValue?.ref) {
+            sourceFqn = fqnIndex.getFqn(sourceValue.ref)
+          } else if (sourceValue?.$refText) {
+            sourceFqn = sourceValue.$refText
+          } else if (typeof sourceValue === 'string') {
+            sourceFqn = sourceValue
+          }
+
+          if (targetValue?.ref) {
+            targetFqn = fqnIndex.getFqn(targetValue.ref)
+          } else if (targetValue?.$refText) {
+            targetFqn = targetValue.$refText
+          } else if (typeof targetValue === 'string') {
+            targetFqn = targetValue
+          }
+
+          // Check if this element matches the source or target
+          if (
+            (sourceFqn && (sourceFqn === elementFqn || sourceFqn === el.name)) ||
+            (targetFqn && (targetFqn === elementFqn || targetFqn === el.name))
+          ) {
+            isConnected = true
+            break
+          }
+        }
+      }
+
+      if (isConnected) break
+    }
+
+    // If the element is not connected to anything, report it as disconnected
+    if (!isConnected) {
+      accept('warning', `Element '${el.title || el.name}' is not connected to any other elements`, {
+        node: el,
+        property: 'name',
+        code: 'disconnected-element',
+      })
+    }
+  })
+}
