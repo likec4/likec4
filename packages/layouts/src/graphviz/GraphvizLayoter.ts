@@ -1,5 +1,6 @@
 import {
   type AnyAux,
+  type aux,
   type ComputedView,
   type DiagramView,
   type Specification,
@@ -39,14 +40,14 @@ const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<
   }
 }
 
-export type LayoutTaskParams<A extends AnyAux = AnyAux> = {
+export type LayoutTaskParams<A extends AnyAux> = {
   view: ComputedView<A>
   specification: Specification<A>
 }
 
-export type LayoutResult = {
+export type LayoutResult<A extends AnyAux> = {
   dot: DotSource
-  diagram: DiagramView
+  diagram: DiagramView<aux.toLayouted<A>>
 }
 const logger = rootLogger.getChild(['layouter'])
 
@@ -83,7 +84,7 @@ export class GraphvizLayouter {
     }
   }
 
-  async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult> {
+  async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     try {
       logger.debug`layouting view ${params.view.id}...`
       let dot = await this.dot(params)

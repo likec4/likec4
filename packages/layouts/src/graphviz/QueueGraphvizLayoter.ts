@@ -67,7 +67,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     }
   }
 
-  override async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult> {
+  override async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     const result = await this.runInQueue(async () => {
       return await super.layout(params)
     })
@@ -79,9 +79,9 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
 
   async batchLayout<A extends AnyAux>(params: {
     batch: LayoutTaskParams<A>[]
-    onSuccess?: (task: LayoutTaskParams<A>, result: LayoutResult) => void
+    onSuccess?: (task: LayoutTaskParams<A>, result: LayoutResult<A>) => void
     onError?: (task: LayoutTaskParams<A>, error: unknown) => void
-  }): Promise<LayoutResult[]> {
+  }): Promise<LayoutResult<A>[]> {
     if (this.isProcessingBatch) {
       logger.debug`wait for previous layouts to finish`
       // wait for any previous layout to finish
@@ -92,7 +92,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     const concurrency = this.queue.concurrency
     logger.debug`starting batch layout, size: ${params.batch.length}, concurrency: ${concurrency}`
     this.isProcessingBatch = true
-    const results = [] as LayoutResult[]
+    const results = [] as LayoutResult<A>[]
     try {
       for (const task of params.batch) {
         logger.debug`add task for view ${task.view.id}`
