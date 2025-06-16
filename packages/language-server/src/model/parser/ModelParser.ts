@@ -2,7 +2,7 @@ import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
-import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstElement,
@@ -161,9 +161,11 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value],
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationStringProperty),
+        filter(p => isTruthy(p.value)),
+        mapToObj(p => [p.key, p.value || undefined]),
       )
 
       const navigateTo = pipe(
@@ -175,7 +177,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       )
 
       const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(bodyProps.description)
+      const description = removeIndent(astNode.description ?? bodyProps.description)
       const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
