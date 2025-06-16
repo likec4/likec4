@@ -714,11 +714,44 @@ export class LikeC4Formatter extends AbstractFormatter {
 
       const newEdits = command.region.nodes.map(node => ({
         range: node.range,
-        newText: node.text.replaceAll(quotesToReplace, quotesToInsert),
+        newText: quotesToInsert +
+          this.escapeQuotesInternalQuotes(
+            node.text.slice(1, -1),
+            quotesToReplace,
+            quotesToInsert,
+          ) +
+          quotesToInsert,
       }))
 
       edits.push(...newEdits)
     }
+  }
+
+  private escapeQuotesInternalQuotes(text: string, quotesToReplace: string, quoteToInsert: string) {
+    let result = ''
+    let start = 0
+
+    while (start >= 0) {
+      let pos = text.indexOf(quoteToInsert, start)
+
+      if (pos < 0) {
+        result += text.slice(start)
+        break
+      }
+
+      result += text.slice(start, pos)
+      start = pos + 1
+
+      let escaped = false
+      while (pos > 0 && text[pos - 1] == '\\') {
+        escaped = !escaped
+        pos--
+      }
+
+      result += escaped ? quoteToInsert : `\\${quoteToInsert}`
+    }
+
+    return result
   }
 
   private getAutoQuoteStyle(commands: ExtendedFormattingCommand[]): QuoteStyle {
