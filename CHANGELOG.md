@@ -1,3 +1,16 @@
+## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
+
+### Bug Fixes
+
+* memory leak on MCP server restarts ([0b01bb4](https://github.com/likec4/likec4/commit/0b01bb434944cc0a73c5ffd7c8f60f97544e67bc))
+* relationship descriptions not displayed in tooltip, closes [#1981](https://github.com/likec4/likec4/issues/1981)
+
+### Improvements
+
+* show error message if  MCP server fails to start
+* validate project name ([#2008](https://github.com/likec4/likec4/issues/2008))
+* improve error logging in vscode extension (to help with [#1716](https://github.com/likec4/likec4/issues/1716))
+
 ## [1.32.1](https://github.com/likec4/likec4/compare/v1.32.0...v1.32.1) (2025-06-12)
 
 
