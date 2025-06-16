@@ -11,7 +11,8 @@
     "dist",
     "*.mts",
     "*.mjs",
-    "*.ts"
+    "*.ts",
+    "!build.config.ts"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -24,7 +25,8 @@
     "emit-pkg": "panda emit-pkg --base dist",
     "clean": "pnpm rimraf dist lib",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-styles-$npm_package_version.tgz package.tgz || true"
+    "postpack": "cp likec4-styles-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "exports": {
     "./css": {
@@ -66,6 +68,11 @@
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css"
+  },
+  "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@likec4/style-preset": "workspace:*",

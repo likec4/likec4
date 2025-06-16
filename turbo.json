@@ -46,6 +46,12 @@
         "*.tgz"
       ],
       "outputLogs": "new-only"
+    },
+    "lint:package": {
+      "dependsOn": [
+        "pack"
+      ],
+      "cache": false
     }
   }
 }

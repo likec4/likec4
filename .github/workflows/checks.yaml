@@ -36,6 +36,10 @@ jobs:
       - name: ⚙️ build
         run: pnpm ci:build
 
+      - name: ⚙️ lint:package
+        run: |
+          pnpm lint:package
+
   check-tests:
     name: 🔬 tests
     timeout-minutes: 5

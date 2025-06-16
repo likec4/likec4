@@ -22,8 +22,8 @@ jobs:
 
       - name: ⚙️ build
         run: |
-          pnpm turbo run pack --filter='@likec4/core' --filter='@likec4/diagram' --filter='@likec4/language-server' --filter='likec4'
+          pnpm turbo run pack --filter="!./apps/*"
 
       - name: publish
         run: |
-          pnpx pkg-pr-new publish --pnpm --comment=off './packages/core' './packages/diagram' './packages/language-server' './packages/likec4'
+          pnpx pkg-pr-new publish --pnpm --comment=off './packages/core' './packages/diagram' './packages/language-server' './packages/likec4' './styled-system/styles'

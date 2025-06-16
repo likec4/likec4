@@ -24,7 +24,7 @@ runs:
       with:
         cache-prefix: turbo_cache_
 
-    - run: pnpm install --frozen-lockfile
+    - run: pnpm install
       shell: sh
       env:
         HUSKY: "0"

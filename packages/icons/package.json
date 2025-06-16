@@ -51,7 +51,8 @@
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
     "generate": "pnpm node scripts/generate.mjs",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true"
+    "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",

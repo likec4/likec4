@@ -11,6 +11,9 @@
     "generate": "pnpm tsx --conditions=sources ./generate.ts",
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf dist lib"
   },
   "publishConfig": {

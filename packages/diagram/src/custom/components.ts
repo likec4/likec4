@@ -41,6 +41,7 @@ export {
   IfEnabled,
   IfNotEnabled,
   IfNotReadOnly,
+  IfReadOnly,
 } from '../context/DiagramFeatures'
 
 export {

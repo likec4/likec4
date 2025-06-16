@@ -74,18 +74,17 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
-    "clean": "pnpm rimraf dist lib bundle"
+    "clean": "pnpm rimraf dist lib bundle *.tgz",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
-    "@likec4/style-preset": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
-    "@tabler/icons-react": "catalog:react",
     "@xstate/react": "^5.0.4",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
@@ -101,10 +100,17 @@
     "xstate": "^5.19.3"
   },
   "peerDependencies": {
+    "@pandacss/dev": "catalog:css",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
+  "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@tabler/icons-react": "catalog:react",
     "@likec4/tsconfig": "workspace:*",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",

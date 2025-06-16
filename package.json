@@ -19,6 +19,7 @@
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "typecheck:all": "turbo run typecheck",
+    "lint:package": "turbo run lint:package --filter=\"!./apps/*\"",
     "generate": "turbo run generate --filter=\"!@likec4/docs-astro\"",
     "generate:all": "turbo run generate",
     "ci:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
