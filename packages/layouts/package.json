@@ -48,7 +48,9 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "pnpm rimraf dist lib",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-layouts-$npm_package_version.tgz package.tgz || true"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",

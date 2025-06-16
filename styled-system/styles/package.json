@@ -22,7 +22,9 @@
     "build": "unbuild",
     "generate": "panda codegen && panda cssgen",
     "emit-pkg": "panda emit-pkg --base dist",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "pnpm rimraf dist lib",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-styles-$npm_package_version.tgz package.tgz || true"
   },
   "exports": {
     "./css": {

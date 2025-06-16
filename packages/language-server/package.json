@@ -92,6 +92,7 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
+    "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
     "pregenerate": "rm -f src/generated/*",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
