@@ -60,6 +60,6 @@ describe('generateAux', () => {
 
   it('generate valid code', async ({ expect }) => {
     const aux = generateAux(m.toLikeC4Model())
-    await expect(aux).toMatchFileSnapshot('__snapshots__/aux.generate-valid-code.snap')
+    await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.generate-valid-code.snap')
   })
 })

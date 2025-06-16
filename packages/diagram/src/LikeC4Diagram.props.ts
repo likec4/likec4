@@ -6,7 +6,7 @@ import type {
   ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/aux'
+import type * as aux from '@likec4/core/types/_aux'
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { SetRequired } from 'type-fest'

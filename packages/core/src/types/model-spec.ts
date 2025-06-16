@@ -1,6 +1,6 @@
 import type { IsNever } from 'type-fest'
-import type * as aux from './aux'
-import type { Any } from './aux'
+import type * as aux from './_aux'
+import type { Any } from './_aux'
 import type * as scalar from './scalar'
 import type {
   Icon,

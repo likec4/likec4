@@ -18,7 +18,7 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
 } from '../types'
-import * as aux from '../types/aux'
+import * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'

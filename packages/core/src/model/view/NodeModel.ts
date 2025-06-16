@@ -14,7 +14,7 @@ import {
   GroupElementKind,
   isGroupElementKind,
 } from '../../types'
-import type * as aux from '../../types/aux'
+import type * as aux from '../../types/_aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
