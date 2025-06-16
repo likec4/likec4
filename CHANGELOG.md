@@ -1,3 +1,18 @@
+## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* memory leak in MCP server restarts ([0b01bb4](https://github.com/likec4/likec4/commit/0b01bb434944cc0a73c5ffd7c8f60f97544e67bc))
+* relationship descriptions not displayed in tooltip ([#2010](https://github.com/likec4/likec4/issues/2010)) ([a6f2e86](https://github.com/likec4/likec4/commit/a6f2e86ce057bca61f69c8526d4287bc7cc31bd6)), closes [#1981](https://github.com/likec4/likec4/issues/1981)
+
+
+### Features
+
+* validate project name ([#2008](https://github.com/likec4/likec4/issues/2008)) ([919cbd7](https://github.com/likec4/likec4/commit/919cbd7800290737ee7c566c44b02e5836674dc4))
+
+
+
 ## [1.32.1](https://github.com/likec4/likec4/compare/v1.32.0...v1.32.1) (2025-06-12)
 
 
