@@ -193,9 +193,11 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty) ?? [],
-        p => [p.key, p.value as string | undefined],
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationStringProperty),
+        filter(p => isTruthy(p.value)),
+        mapToObj(p => [p.key, p.value || undefined]),
       )
 
       const navigateTo = pipe(
@@ -206,8 +208,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         first(),
       )
 
-      const title = removeIndent(astNode.title ?? bodyProps.title)
-      const description = removeIndent(bodyProps.description)
+      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
+      const description = removeIndent(astNode.description ?? bodyProps.description)
       const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)

@@ -4,7 +4,6 @@ import {
   type CompositeCstNode,
   type CstNode,
   type LangiumDocument,
-  CstUtils,
   GrammarUtils,
 } from 'langium'
 import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } from 'langium/lsp'
@@ -135,7 +134,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         n.target,
         n.tags,
       ], isTruthy)).prepend(FormattingOptions.oneSpace)
-      f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+      f.properties('title', 'description', 'technology').prepend(FormattingOptions.oneSpace)
     })
   }
 
@@ -160,7 +159,7 @@ export class LikeC4Formatter extends AbstractFormatter {
           n.target,
           n.tags,
         ], isTruthy)).prepend(FormattingOptions.oneSpace)
-        f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
+        f.properties('title', 'description', 'technology').prepend(FormattingOptions.oneSpace)
       },
     )
 

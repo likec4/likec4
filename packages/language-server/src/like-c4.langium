@@ -85,7 +85,7 @@ SpecificationRelationshipStringProperty:
 // Imports -------------------------------------
 
 ImportsFromPoject:
-  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String
+  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String ';'?
 ;
 
 Imported:
@@ -94,6 +94,7 @@ Imported:
 
 // Model -------------------------------------
 
+// Allow use spaces and commas in tags
 Tags:
   (values+=TagRef)+ ({infer Tags.prev=current} ',' (values+=TagRef)*)* ';'?
 ;
@@ -116,7 +117,7 @@ Element:
   (props+=String  // title
     (props+=String  // description
       (props+=String  // technology
-        (props+=String)?   // tags
+        (props+=String)?   // tags (ignored by likec4, but still parsed for Structurizr compatibility)
       )?
     )?
   )?
@@ -193,9 +194,10 @@ Relation<isExplicit>:
     '->'
   )
   target=FqnRef
-  (
-    title=String
-    technology=String?
+  (title=String  // title
+    (description=String  // description
+      (technology=String)?
+    )?
   )?
   tags=Tags?
   body=RelationBody?
@@ -610,11 +612,16 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
-  target=FqnRef
   (
-    title=String
-    technology=String?
+    dotKind=RelationKindDotRef |
+    '-[' kind=[RelationshipKind] ']->' |
+    '->'
+  )
+  target=FqnRef
+  (title=String  // title
+    (description=String  // description
+      (technology=String)?
+    )?
   )?
   tags=Tags?
   body=DeploymentRelationBody?

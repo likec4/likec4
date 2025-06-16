@@ -933,7 +933,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds relations with technology', async ({ expect }) => {
+  it('builds relations with title, description and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -942,7 +942,17 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     model {
       component system1
       component system2 {
-        -> system1 'uses' 'http'
+        -> system1 'uses' 'desc'
+        -> system1 'uses' 'desc' 'http'
+      }
+      component system3 {
+        -> system2 'uses' {
+          description 'desc2'
+        }
+        -> system2 'uses' 'desc1' {
+          description 'desc2'
+          technology 'http'
+        }
       }
     }
     `)
@@ -950,17 +960,52 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     const relations = values(model.relations)
-    expect(relations).toHaveLength(1)
-    expect(relations[0]).toMatchObject({
-      source: {
-        model: 'system2',
-      },
-      target: {
-        model: 'system1',
-      },
-      title: 'uses',
-      technology: 'http',
-    })
+    expect(relations).toEqual([
+      expect.objectContaining({
+        source: {
+          model: 'system2',
+        },
+        target: {
+          model: 'system1',
+        },
+        title: 'uses',
+        description: 'desc',
+      }),
+      expect.objectContaining({
+        source: {
+          model: 'system2',
+        },
+        target: {
+          model: 'system1',
+        },
+        title: 'uses',
+        description: 'desc',
+        technology: 'http',
+      }),
+      expect.objectContaining({
+        source: {
+          model: 'system3',
+        },
+        target: {
+          model: 'system2',
+        },
+        title: 'uses',
+        description: 'desc2',
+      }),
+      expect.objectContaining({
+        source: {
+          model: 'system3',
+        },
+        target: {
+          model: 'system2',
+        },
+        title: 'uses',
+        description: 'desc1',
+        technology: 'http',
+      }),
+    ])
+    expect(relations[0]).not.toHaveProperty('technology')
+    expect(relations[2]).not.toHaveProperty('technology')
   })
 
   it('builds elements with custom size', async ({ expect }) => {
