@@ -61,14 +61,18 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
 
       const tags_specs = specifications.flatMap(s => s.tags.filter(this.isValid))
       for (const tagSpec of tags_specs) {
-        const tag = tagSpec.tag.name as c4.Tag
-        const astPath = this.getAstNodePath(tagSpec.tag)
-        const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
-        if (isTruthy(tag)) {
-          c4Specification.tags[tag] = {
-            astPath,
-            ...(color ? { color } : {}),
+        try {
+          const tag = tagSpec.tag.name as c4.Tag
+          const astPath = this.getAstNodePath(tagSpec.tag)
+          const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
+          if (isTruthy(tag)) {
+            c4Specification.tags[tag] = {
+              astPath,
+              ...(color ? { color } : {}),
+            }
           }
+        } catch (e) {
+          logWarnError(e)
         }
       }
 
