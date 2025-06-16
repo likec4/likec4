@@ -7,3 +7,5 @@ export { parseGraphvizJson } from './graphviz/GraphvizParser'
 export type { DotSource } from './graphviz/types'
 
 export { GraphvizLayouter, GraphvizWasmAdapter, QueueGraphvizLayoter }
+
+export { layoutLikeC4Model } from './graphviz/layout-model'

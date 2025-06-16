@@ -40,14 +40,14 @@ const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<
   }
 }
 
-export type LayoutTaskParams<A extends AnyAux> = {
+export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
   specification: Specification<A>
 }
 
-export type LayoutResult<A extends AnyAux> = {
+export type LayoutResult<A extends aux.Any = aux.Any> = {
   dot: DotSource
-  diagram: DiagramView<aux.toLayouted<A>>
+  diagram: DiagramView<A>
 }
 const logger = rootLogger.getChild(['layouter'])
 

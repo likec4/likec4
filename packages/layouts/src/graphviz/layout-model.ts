@@ -4,7 +4,13 @@ import { invariant } from '@likec4/core/utils'
 import { mapToObj } from 'remeda'
 import { QueueGraphvizLayoter } from './QueueGraphvizLayoter'
 
-export async function layoutModel<A extends aux.Any>(
+/**
+ * Layouts all views in the computed model.
+ * @param model - The model to layout.
+ * @param options - Options for the layouter.
+ * @returns A promise that resolves to the layouted model.
+ */
+export async function layoutLikeC4Model<A extends aux.Any>(
   model: LikeC4Model<A>,
   options?: ConstructorParameters<typeof QueueGraphvizLayoter>[0],
 ): Promise<LikeC4Model.Layouted<A>> {
