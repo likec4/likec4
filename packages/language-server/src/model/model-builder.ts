@@ -16,7 +16,6 @@ import {
   interruptAndCheck,
   WorkspaceCache,
 } from 'langium'
-import prettyMs from 'pretty-ms'
 import {
   filter,
   flatMap,
@@ -32,7 +31,7 @@ import { CancellationToken } from 'vscode-jsonrpc'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
-import { ADisposable } from '../utils'
+import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
 import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
@@ -42,7 +41,7 @@ const parsedWithoutImportsCacheKey = (projectId: c4.ProjectId) => `parsed-withou
 const parsedModelCacheKey = (projectId: c4.ProjectId) => `parsed-model-${projectId}`
 const computedModelCacheKey = (projectId: c4.ProjectId) => `computed-model-${projectId}`
 
-const logger = mainLogger.getChild('ModelBuilder')
+const builderLogger = mainLogger.getChild('model-builder')
 
 type ModelParsedListener = (docs: URI[]) => void
 
@@ -95,7 +94,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         },
       ),
     )
-    logger.debug`created`
+    builderLogger.debug`created`
   }
 
   /**
@@ -107,19 +106,19 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    */
   private unsafeSyncParseModelData(projectId: c4.ProjectId): BuildModelData | null {
     const cache = this.cache as WorkspaceCache<string, BuildModelData | null>
-    const log = logger.getChild(['project', projectId])
+    const logger = builderLogger.getChild(projectId)
     const key = parsedWithoutImportsCacheKey(projectId)
     if (cache.has(key)) {
-      log.debug`unsafeSyncBuildModelData from cache, project ${projectId}`
+      logger.debug`unsafeSyncBuildModelData from cache`
     }
     return cache.get(key, () => {
       try {
         const docs = this.documents(projectId)
         if (docs.length === 0) {
-          logger.debug`no documents to build model, project ${projectId}`
+          logger.debug`no documents to build model`
           return null
         }
-        log.debug`unsafeSyncBuildModelData, project ${projectId}`
+        logger.debug`unsafeSyncBuildModelData`
         return buildModelData(projectId, docs)
       } catch (e) {
         logWarnError(e)
@@ -132,6 +131,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * To avoid circular dependencies, first we parse all documents and then we join them.
    */
   private unsafeSyncJoinedModelData(projectId: c4.ProjectId): LikeC4Model.Parsed | null {
+    const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
     const key = parsedModelCacheKey(projectId)
     return cache.get(key, () => {
@@ -169,18 +169,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken = CancellationToken.None,
   ): Promise<LikeC4Model.Parsed | null> {
     const project = this.projects.ensureProjectId(projectId)
-    const log = logger.getChild(['project', project])
+    const logger = builderLogger.getChild(project)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
     const cached = cache.get(parsedModelCacheKey(project))
     if (cached) {
-      log.debug`parseModel from cache, project ${project}`
+      logger.debug`parseModel from cache`
       return cached
     }
-    const t0 = performance.now()
+    const t0 = performanceMark()
     return await this.mutex.read(async () => {
       await interruptAndCheck(cancelToken)
       const result = this.unsafeSyncJoinedModelData(project)
-      log.debug(`parseModel, project ${project} in ${prettyMs(performance.now() - t0)}`)
+      logger.debug`parseModel in ${t0.pretty}`
       return result
     })
   }
@@ -193,6 +193,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * Otherwise, the model may be incomplete.
    */
   public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed {
+    const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedModelCacheKey(projectId), () => {
@@ -231,18 +232,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken = CancellationToken.None,
   ): Promise<LikeC4Model.Computed> {
     const project = this.projects.ensureProjectId(projectId)
-    const log = logger.getChild(['project', project])
+    const logger = builderLogger.getChild(project)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const cached = cache.get(computedModelCacheKey(project))
     if (cached) {
-      log.debug('buildLikeC4Model from cache')
+      logger.debug('buildLikeC4Model from cache')
       return cached
     }
-    const t0 = performance.now()
+    const t0 = performanceMark()
     return await this.mutex.read(async () => {
       await interruptAndCheck(cancelToken)
       const result = this.unsafeSyncBuildModel(project)
-      log.debug(`buildLikeC4Model in ${prettyMs(performance.now() - t0)}`)
+      logger.debug(`buildLikeC4Model in ${t0.pretty}`)
       return result
     })
   }
@@ -253,7 +254,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken = CancellationToken.None,
   ): Promise<c4.ComputedView | null> {
     const project = this.projects.ensureProjectId(projectId)
-    const log = logger.getChild(['project', project])
+    const logger = builderLogger.getChild(project)
     const cache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
     const cacheKey = computedViewKey(project, viewId)
     if (cache.has(cacheKey)) {
@@ -266,10 +267,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     return cache.get(cacheKey, () => {
       const view = parsed.$data.views[viewId]
       if (!view) {
-        log.warn`computeView: cant find view ${viewId}`
+        logger.warn`computeView: cant find view ${viewId}`
         return null
       }
-      log.debug`computeView: ${viewId}`
+      logger.debug`computeView: ${viewId}`
       const result = computeView(view, parsed)
       if (!result.isSuccess) {
         logWarnError(result.error)

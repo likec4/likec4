@@ -1,4 +1,5 @@
 import { loggable } from '@likec4/log'
+import { isError } from 'remeda'
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../LikeC4MCPServerFactory'
@@ -35,9 +36,16 @@ export const WithMCPServer = {
           .then(() => {
             connection?.telemetry?.logEvent({
               eventName: 'mcp-server-started',
+              mcpPort: port,
             })
           })
           .catch(err => {
+            const message = isError<Error>(err) ? err.message : undefined
+            connection?.telemetry?.logEvent({
+              eventName: 'mcp-server-start-failed',
+              mcpPort: port,
+              ...message && { message },
+            })
             logger.error('Failed to start LikeC4 MCP Server', { err })
             if (connection) {
               connection.window.showErrorMessage(`LikeC4: Failed to start MCP Server\n\n${loggable(err)}`)

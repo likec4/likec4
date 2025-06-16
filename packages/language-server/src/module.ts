@@ -1,4 +1,4 @@
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
+import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import {
   type Module,
   DocumentState,
@@ -119,7 +119,7 @@ export interface LikeC4AddedServices {
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
-    Layouter: GraphvizLayouter
+    Layouter: QueueGraphvizLayoter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
@@ -165,8 +165,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
-      logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
-      return new GraphvizLayouter(new GraphvizWasmAdapter())
+      return new QueueGraphvizLayoter({
+        graphviz: new GraphvizWasmAdapter(),
+      })
     },
     Views: bind(DefaultLikeC4Views),
     DeploymentsIndex: bind(DeploymentsIndex),

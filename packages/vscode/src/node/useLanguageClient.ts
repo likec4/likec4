@@ -12,13 +12,10 @@ import {
   type LanguageClientOptions,
   type ServerOptions,
   LanguageClient as NodeLanguageClient,
-  State,
   TransportKind,
 } from 'vscode-languageclient/node'
 import { isLikeC4Source } from '../common/initWorkspace'
-import { useTelemetry } from '../common/useTelemetry'
 import { globPattern, isVirtual } from '../const'
-import { logger } from '../logger'
 
 const useLanguageClient = createSingletonComposable(() => {
   const serverModule = extensionContext.value!.asAbsolutePath(
@@ -83,9 +80,7 @@ const useLanguageClient = createSingletonComposable(() => {
       : {},
   }
 
-  // Create and start the language client.
   const client = new NodeLanguageClient('likec4', 'LikeC4 Language Server', serverOptions, clientOptions)
-
   return useDisposable(client)
 })
 

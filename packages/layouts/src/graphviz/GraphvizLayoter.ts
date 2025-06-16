@@ -16,6 +16,7 @@ import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
 import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
+import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
 
 export interface GraphvizPort {
   get concurrency(): number
@@ -25,7 +26,7 @@ export interface GraphvizPort {
   svg(dot: DotSource): Promise<string>
 }
 
-const getPrinter = <A extends AnyAux>({ view, specification }: Params<A>) => {
+const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<A>) => {
   switch (true) {
     case isDynamicView(view):
       return new DynamicViewPrinter(view, specification)
@@ -38,7 +39,7 @@ const getPrinter = <A extends AnyAux>({ view, specification }: Params<A>) => {
   }
 }
 
-export type Params<A extends AnyAux = AnyAux> = {
+export type LayoutTaskParams<A extends AnyAux = AnyAux> = {
   view: ComputedView<A>
   specification: Specification<A>
 }
@@ -47,12 +48,16 @@ export type LayoutResult = {
   dot: DotSource
   diagram: DiagramView
 }
-const logger = rootLogger.getChild('graphviz-layouter')
+const logger = rootLogger.getChild(['layouter'])
 
 export class GraphvizLayouter {
-  constructor(private graphviz: GraphvizPort) {}
+  private graphviz: GraphvizPort
 
-  get port() {
+  constructor(graphviz?: GraphvizPort) {
+    this.graphviz = graphviz ?? new GraphvizWasmAdapter()
+  }
+
+  get graphvizPort(): GraphvizPort {
     return this.graphviz
   }
 
@@ -78,8 +83,9 @@ export class GraphvizLayouter {
     }
   }
 
-  async layout<A extends AnyAux>(params: Params<A>): Promise<LayoutResult> {
+  async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult> {
     try {
+      logger.debug`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
       const { view } = params
       const json = await this.dotToJson(dot)
@@ -119,7 +125,7 @@ export class GraphvizLayouter {
     }
   }
 
-  async svg<A extends AnyAux>(params: Params<A>) {
+  async svg<A extends AnyAux>(params: LayoutTaskParams<A>) {
     let dot = await this.dot(params)
     dot = dot
       .split('\n')
@@ -132,7 +138,7 @@ export class GraphvizLayouter {
     }
   }
 
-  async dot<A extends AnyAux>(params: Params<A>): Promise<DotSource> {
+  async dot<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<DotSource> {
     const printer = getPrinter(params)
     let dot = printer.print()
     if (!isElementView(params.view)) {

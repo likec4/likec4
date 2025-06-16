@@ -1,4 +1,4 @@
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
+import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { isEmpty } from 'remeda'
 import which from 'which'
@@ -16,10 +16,12 @@ function graphvizBinPath() {
 
 export const ConfigurableLayouter = {
   likec4: {
-    Layouter(services: LikeC4Services): GraphvizLayouter {
+    Layouter(services: LikeC4Services): QueueGraphvizLayoter {
       logger.debug('Creating ConfigurableLayouter')
       const wasmAdapter = new GraphvizWasmAdapter()
-      const layouter = new GraphvizLayouter(wasmAdapter)
+      const layouter = new QueueGraphvizLayoter({
+        graphviz: wasmAdapter,
+      })
       const langId = services.LanguageMetaData.languageId
       services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
         logger.debug('Configuration update: {update}', { update })

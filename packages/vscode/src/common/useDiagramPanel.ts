@@ -6,6 +6,7 @@ import {
   createSingletonComposable,
   effectScope,
   extensionContext,
+  nextTick,
   ref,
   shallowRef,
   triggerRef,
@@ -30,26 +31,106 @@ const serializeStateSchema = v.looseObject({
 
 export const ViewType = 'likec4-preview' as const
 
-const logger = rootLogger.getChild('DiagramPreview')
+const logger = rootLogger.getChild('diagram-panel')
 
 export const useDiagramPanel = createSingletonComposable(() => {
   const panel = shallowRef<WebviewPanel | null>(null)
   const panelVisible = ref(false)
-  let currentScope: EffectScope | null = null
+  let panelScope: EffectScope | null = null
 
   const panelState = {
     viewId: ref<ViewId | null>(null),
     projectId: ref<ProjectId | null>(null),
   }
-  // const state = reactive(
-  //   {
-  //     viewId: null,
-  //     projectId: null,
-  //   } as (
-  //     | { viewId: null; projectId: null }
-  //     | { viewId: ViewId; projectId: ProjectId }
-  //   ),
-  // )
+
+  // vscode-messenger participant id
+  const participantId = ref<WebviewIdMessageParticipant | null>(null)
+
+  function runInPanelScope() {
+    const viewId = (panelState.viewId.value ?? 'index') as ViewId
+    const projectId = (panelState.projectId.value ?? 'default') as ProjectId
+    const messenger = useMessenger()
+    const panelExists = panel.value !== null
+    const _panel = panel.value ?? useDisposable(createWebviewPanel())
+    _panel.onDidDispose(() => {
+      // if panel is not disposed by close() call, call close() to dispose it
+      if (panel.value) {
+        logger.debug`panel closed by user`
+        panel.value = null
+        close()
+      }
+    })
+    useDisposable(_panel.onDidChangeViewState((e) => {
+      if (panelVisible.value !== e.webviewPanel.visible) {
+        panelVisible.value = e.webviewPanel.visible
+        logger.debug`panel visible changed: ${e.webviewPanel.visible}`
+        triggerRef(panel)
+      }
+    }))
+    writeHTMLToDiagramPreview(_panel, viewId, projectId)
+
+    const participant = participantId.value = messenger.registerWebviewPanel(_panel, {
+      broadcastMethods: [BroadcastModelUpdate.method],
+    })
+    watch([panelState.viewId, panelState.projectId], ([viewId, projectId]) => {
+      if (!viewId) {
+        logger.warn('Invalid state: viewId is empty in ensurePanel scope')
+        return
+      }
+      if (!projectId) {
+        logger.warn('Invalid state: projectId is empty in ensurePanel scope')
+        return
+      }
+      logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
+      messenger.sendNotification(OnOpenView, participant, {
+        projectId,
+        viewId,
+      })
+    })
+    if (panelExists) {
+      nextTick(() => {
+        logger.debug`panel exists, sending OpenView notification`
+        logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
+        messenger.sendNotification(OnOpenView, participant, {
+          projectId,
+          viewId,
+        })
+      })
+    }
+    tryOnScopeDispose(() => {
+      panelVisible.value = false
+      participantId.value = null
+    })
+    panelVisible.value = _panel.visible
+    panel.value = _panel
+  }
+
+  /**
+   * Ensures that the panel scope is created and runs the panel scope.
+   * If the panel scope is not created, it will be created and run.
+   * If the panel scope is created but the panel is null, it will be disposed and re-run.
+   */
+  function ensurePanelScope() {
+    if (!panelScope) {
+      logger.debug`creating scope for view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
+      panelScope = effectScope()
+      panelScope.run(() => {
+        try {
+          runInPanelScope()
+        } catch (err) {
+          logger.error('Error in panel scope', { err })
+        }
+      })
+      return panel
+    }
+    if (!panel.value) {
+      logger.error('Invalid state: panel is null in ensurePanel with active scope')
+      panelScope.stop()
+      panelScope = null
+      return ensurePanelScope()
+    }
+    return panel
+  }
 
   useViewTitle(
     panel,
@@ -63,84 +144,34 @@ export const useDiagramPanel = createSingletonComposable(() => {
     }),
   )
 
-  const participantId = ref<WebviewIdMessageParticipant | null>(null)
-
-  function ensurePanel() {
-    if (!currentScope) {
-      logger.debug`creating scope for view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
-      currentScope = effectScope()
-      currentScope.run(() => {
-        const viewId = (panelState.viewId.value ?? 'index') as ViewId
-        const projectId = (panelState.projectId.value ?? 'default') as ProjectId
-        const messenger = useMessenger()
-        const _panel = useDisposable(panel.value ?? createWebviewPanel())
-        _panel.onDidDispose(() => {
-          if (panel.value) {
-            panel.value = null
-            close()
-          }
-        })
-        useDisposable(_panel.onDidChangeViewState((e) => {
-          if (panelVisible.value !== e.webviewPanel.visible) {
-            panelVisible.value = e.webviewPanel.visible
-            logger.debug`panel visible: ${e.webviewPanel.visible}`
-            triggerRef(panel)
-          }
-        }))
-        writeHTMLToDiagramPreview(_panel, viewId, projectId)
-
-        const participant = participantId.value = messenger.registerWebviewPanel(_panel, {
-          broadcastMethods: [BroadcastModelUpdate.method],
-        })
-        watch([panelState.viewId, panelState.projectId], ([viewId, projectId]) => {
-          if (!viewId) {
-            logger.warn('Invalid state: viewId is empty in ensurePanel scope')
-            return
-          }
-          if (!projectId) {
-            logger.warn('Invalid state: projectId is empty in ensurePanel scope')
-            return
-          }
-          logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
-          messenger.sendNotification(OnOpenView, participant, {
-            projectId,
-            viewId,
-          })
-        })
-        tryOnScopeDispose(() => {
-          panelVisible.value = false
-          participantId.value = null
-        })
-        panelVisible.value = _panel.visible
-        panel.value = _panel
-      })
-    }
-    if (!panel.value) {
-      logger.error('Invalid state: panel is null in ensurePanel with active scope')
-    }
-    return panel
-  }
-
   function open(viewId: ViewId, projectId: ProjectId) {
     logger.debug`open view ${viewId} (project: ${projectId})`
+    const panelExists = panel.value !== null
     panelState.viewId.value = viewId
     panelState.projectId.value = projectId
-    ensurePanel()
-    panel.value?.reveal()
+    ensurePanelScope()
+    if (panelExists) {
+      panel.value?.reveal(undefined, true)
+    }
   }
 
   function close() {
-    const _panel = panel.value
-    // reset panel value to null to prevent dispose loop
-    panel.value = null
-    if (_panel) {
+    try {
       logger.debug`close view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
-      _panel.dispose()
+      const _panel = panel.value
+      // reset panel value to null to prevent dispose loop
+      panel.value = null
+      if (_panel) {
+        _panel.dispose()
+      }
+      panelScope?.stop()
+    } catch (e) {
+      logError(e)
+    } finally {
+      panelScope = null
+      panelState.viewId.value = null
+      panelState.projectId.value = null
     }
-    currentScope?.stop()
-    currentScope = null
-    panelState.viewId.value = null
-    panelState.projectId.value = null
   }
 
   function deserialize(_panel: WebviewPanel, serializeState: any) {
@@ -156,8 +187,8 @@ export const useDiagramPanel = createSingletonComposable(() => {
       panel.value = _panel
       panelState.viewId.value = parsedState.output.viewId as ViewId
       panelState.projectId.value = parsedState.output.projectId as ProjectId
-      ensurePanel()
-      _panel.reveal()
+      ensurePanelScope()
+      _panel.reveal(undefined, true)
     } catch (e) {
       logError(e)
     }

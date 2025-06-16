@@ -5,6 +5,7 @@ import type { Locate } from '@likec4/language-server/protocol'
 import {
   executeCommand,
   nextTick,
+  onDeactivate,
   shallowRef,
   toValue,
   tryOnScopeDispose,
@@ -27,7 +28,7 @@ import { useIsActivated, whenExtensionActive } from './common/useIsActivated'
 import { activateMessenger, useMessenger } from './common/useMessenger'
 import { useTelemetry } from './common/useTelemetry'
 import { languageId } from './const'
-import { logError, logger, loggerOutput, logWarn } from './logger'
+import { logError, logger, logWarn } from './logger'
 import { commands } from './meta'
 import { useRpc } from './Rpc'
 import { performanceMark } from './utils'
@@ -36,7 +37,7 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   const m = performanceMark()
   useBuiltinFileSystem()
   useExtensionLogger()
-  logger.debug(`activateExtension: ${extensionKind}`)
+  logger.info(`activateExtension: ${extensionKind}`)
   const activeTextEditor = useActiveTextEditor()
   const visibleTextEditors = useVisibleTextEditors()
   const telemetry = useTelemetry()
@@ -58,7 +59,7 @@ export function activateExtension(extensionKind: 'node' | 'web') {
 
   createWebviewPanelSerializer(() => {
     if (!activated) {
-      logger.debug('activate language client because of deserializing webview panel')
+      logger.info('activate language client because of opened preview panel')
       activate()
     }
   })
@@ -67,7 +68,7 @@ export function activateExtension(extensionKind: 'node' | 'web') {
     const textEditor = visibleTextEditors.value.find(editor => editor.document.languageId === languageId)
     if (!textEditor) return
     if (!activated) {
-      logger.debug(`activate language client because of visible editor: ${textEditor.document.uri.toString()}`)
+      logger.info(`activate language client because of opened document\n${textEditor.document.uri.toString()}`)
       activate()
     }
     nextTick(() => {
@@ -77,8 +78,12 @@ export function activateExtension(extensionKind: 'node' | 'web') {
     immediate: true,
   })
 
-  logger.debug(`activateExtension done in ${m.pretty}`)
+  logger.info(`activateExtension done in ${m.pretty}`)
   telemetry.sendTelemetryEvent('activation', { extensionKind })
+
+  onDeactivate(() => {
+    logger.info('deactivate extension')
+  })
 }
 
 function stateName(state: State) {
@@ -234,9 +239,10 @@ function activateLc() {
       logger.warn(`Failed to layout view ${viewId}`)
       return
     }
+    const { loggerOutput } = useExtensionLogger()
     loggerOutput.info(`DOT of view "${viewId}"`)
     loggerOutput.info('\n' + result.dot)
-    loggerOutput.show()
+    loggerOutput.show(false)
   })
 
   const layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
@@ -245,11 +251,12 @@ function activateLc() {
   useDisposable(layoutDiagnosticsCollection)
 
   useCommand(commands.validateLayout, async () => {
+    const { loggerOutput } = useExtensionLogger()
     sendTelemetryAboutCommand(commands.validateLayout)
     const { result } = await rpc.validateLayout()
 
     if (!result) {
-      logger.error('Failed to layout views')
+      logger.error('Failed to validate layout - no result returned')
       loggerOutput.show()
       return
     }

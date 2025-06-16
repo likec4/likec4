@@ -52,7 +52,7 @@ export {
   toSet,
 } from './iterable'
 export { memoizeProp } from './memoize-prop'
-export { delay } from './promises'
+export { delay, promiseNextTick } from './promises'
 
 export {
   compareRelations,

@@ -10,9 +10,10 @@ import vscode from 'vscode'
 import type { LanguageClientOptions } from 'vscode-languageclient/browser'
 import { LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/browser'
 import { isLikeC4Source } from '../common/initWorkspace'
-import { extensionLogger, logger } from '../logger'
+import { useExtensionLogger } from '../common/useExtensionLogger'
 
 const useLanguageClient = createSingletonComposable(() => {
+  const { logger, loggerOutput } = useExtensionLogger()
   // Create a worker. The worker main file implements the language server.
   const serverMain = vscode.Uri.joinPath(
     extensionContext.value!.extensionUri,
@@ -35,7 +36,7 @@ const useLanguageClient = createSingletonComposable(() => {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    outputChannel: extensionLogger.outputChannel.value!,
+    outputChannel: loggerOutput,
     diagnosticCollectionName: 'likec4',
     markdown: {
       isTrusted: true,

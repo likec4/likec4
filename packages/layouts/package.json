@@ -61,6 +61,7 @@
     "khroma": "^2.1.0",
     "nano-spawn": "catalog:utils",
     "p-limit": "catalog:utils",
+    "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",

@@ -3,7 +3,7 @@ import {
   createCustomLanguageServices,
   LikeC4FileSystem,
 } from '@likec4/language-server'
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
+import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
@@ -15,9 +15,6 @@ import { CliWorkspace } from './Workspace'
 
 export type CliAddedServices = {
   logger: Logger
-  likec4: {
-    Layouter: GraphvizLayouter
-  }
   cli: {
     Workspace: CliWorkspace
   }
@@ -32,11 +29,6 @@ function bind<T>(Type: Constructor<T, [CliServices]>) {
 export const CliModule: Module<CliServices, DeepPartial<LikeC4Services> & CliAddedServices> = {
   logger: () => {
     throw new Error('Logger must be provided')
-  },
-  likec4: {
-    Layouter: () => {
-      throw new Error('Layouter must be provided')
-    },
   },
   cli: {
     Workspace: bind(CliWorkspace),
@@ -91,9 +83,11 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     logger: () => logger,
     likec4: {
       Layouter: () =>
-        new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
+        new QueueGraphvizLayoter({
+          graphviz: useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter(),
+        }),
     },
-  } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
+  } satisfies Module<CliServices, DeepPartial<CliServices>>
 
   return createCustomLanguageServices(options.useFileSystem ? LikeC4FileSystem : {}, CliModule, module).likec4
 }
