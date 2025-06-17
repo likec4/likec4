@@ -133,7 +133,7 @@ describe('applyElementCustomProperties', () => {
       {
         id: 'customer',
         title: 'Title',
-        description: '',
+        description: { txt: '' },
         technology: null,
         shape: 'queue',
         color: 'indigo',

@@ -1,6 +1,6 @@
 import { isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { Any, AnyAux, Color, IteratorLike } from '../types'
+import type { Any, AnyAux, Color, IteratorLike, scalar } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -12,7 +12,6 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
   splitGlobalFqn,
-  stringFromMarkdownOrHtml,
 } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
@@ -90,12 +89,12 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.$element.title
   }
 
-  get description(): string | null {
-    return stringFromMarkdownOrHtml(this.$element.description) ?? null
+  get description(): scalar.MarkdownOrString | null {
+    return this.$element.description ?? null
   }
 
   get technology(): string | null {
-    return stringFromMarkdownOrHtml(this.$element.technology) ?? null
+    return this.$element.technology ?? null
   }
 
   get links(): ReadonlyArray<Link> {

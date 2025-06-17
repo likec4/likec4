@@ -3,7 +3,6 @@ import type * as aux from './aux'
 import type { AnyAux } from './aux'
 import type { _stage, _type } from './const'
 import type { BBox, Point, XYPoint } from './geometry'
-import type * as scalar from './scalar'
 import type {
   BaseViewProperties,
   ViewAutoLayout,
@@ -12,9 +11,7 @@ import type {
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
 
-export interface DiagramNode<A extends AnyAux = AnyAux>
-  extends Omit<ComputedNode<A>, 'description' | 'technology' | 'notation'>, BBox
-{
+export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   x: number
   y: number
   width: number
@@ -30,14 +27,12 @@ export interface DiagramNode<A extends AnyAux = AnyAux>
    */
   labelBBox: BBox
 
-  description?: scalar.HtmlOrString | null
-  technology?: scalar.HtmlOrString | null
-  notation?: scalar.HtmlOrString | null
+  // description?: scalar.HtmlOrString | null
+  // technology?: scalar.HtmlOrString | null
+  // notation?: scalar.HtmlOrString | null
 }
 
-export interface DiagramEdge<A extends AnyAux = AnyAux>
-  extends Omit<ComputedEdge<A>, 'label' | 'description' | 'technology' | 'notation' | 'notes'>
-{
+export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {
   /**
    * Bezier points
    * (Absolute coordinates)
@@ -60,11 +55,11 @@ export interface DiagramEdge<A extends AnyAux = AnyAux>
    * @deprecated
    */
   dotpos?: string
-  label: scalar.HtmlOrString | null
-  description?: scalar.HtmlOrString | null
-  technology?: scalar.HtmlOrString | null
-  notation?: scalar.HtmlOrString | null
-  notes?: scalar.HtmlOrString | null
+  // label: scalar.HtmlOrString | null
+  // description?: scalar.HtmlOrString | null
+  // technology?: scalar.HtmlOrString | null
+  // notation?: scalar.HtmlOrString | null
+  // notes?: scalar.HtmlOrString | null
 }
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {

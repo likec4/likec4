@@ -58,14 +58,14 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly kind: aux.ElementKind<A>
   readonly title: string
   readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: scalar.MarkdownOrString | null
+  readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly icon?: scalar.Icon
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
-  readonly notation?: scalar.MarkdownOrString | null
+  readonly notation?: string | null
   readonly metadata?: aux.Metadata<A>
 }
 
@@ -82,7 +82,7 @@ export interface AbstractRelationship<A extends AnyAux>
 {
   readonly id: scalar.RelationId
   readonly title?: string | null
-  readonly description?: string | null
+  readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
   readonly kind?: aux.RelationKind<A>
   readonly color?: Color

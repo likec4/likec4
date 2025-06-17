@@ -36,8 +36,8 @@ export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks
   deploymentRef?: aux.DeploymentFqn<A> | undefined
   title: string
   description?: scalar.MarkdownOrString | null
-  technology?: scalar.MarkdownOrString | null
-  notation?: scalar.MarkdownOrString | null
+  technology?: string | null
+  notation?: string
   children: scalar.NodeId[]
   inEdges: scalar.EdgeId[]
   outEdges: scalar.EdgeId[]
@@ -61,14 +61,14 @@ export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<
   parent: scalar.NodeId | null
   source: scalar.NodeId
   target: scalar.NodeId
-  label: scalar.MarkdownOrString | null
-  description?: scalar.MarkdownOrString
-  technology?: scalar.MarkdownOrString
+  label: string | null
+  description?: scalar.MarkdownOrString | null
+  technology?: string
   relations: scalar.RelationId[]
   kind?: aux.RelationKind<A> | typeof scalar.StepEdgeKind
-  notation?: scalar.MarkdownOrString
+  notation?: string
   // Notes for walkthrough
-  notes?: scalar.MarkdownOrString
+  notes?: string
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

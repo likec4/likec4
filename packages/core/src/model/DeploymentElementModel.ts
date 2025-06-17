@@ -17,7 +17,6 @@ import {
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
-  stringFromMarkdownOrHtml,
 } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
@@ -62,12 +61,12 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
-  get description(): string | null {
-    return stringFromMarkdownOrHtml(this.$node.description) ?? null
+  get description(): scalar.MarkdownOrString | null {
+    return this.$node.description ?? null
   }
 
   get technology(): string | null {
-    return stringFromMarkdownOrHtml(this.$node.technology) ?? null
+    return this.$node.technology ?? null
   }
 
   get links(): ReadonlyArray<Link> {
@@ -403,12 +402,12 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return this.element.kind
   }
 
-  override get description(): string | null {
-    return stringFromMarkdownOrHtml(this.$instance.description ?? this.element.description) ?? null
+  override get description(): scalar.MarkdownOrString | null {
+    return this.$instance.description ?? this.element.description ?? null
   }
 
   override get technology(): string | null {
-    return stringFromMarkdownOrHtml(this.$instance.technology ?? this.element.technology) ?? null
+    return this.$instance.technology ?? this.element.technology ?? null
   }
 
   override get links(): ReadonlyArray<Link> {
@@ -487,7 +486,7 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.element.title
   }
 
-  get description(): string | null {
+  get description(): scalar.MarkdownOrString | null {
     return this.element.description
   }
 
@@ -543,11 +542,11 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
     return this.$relationship.technology
   }
 
-  get description(): string | null {
+  get description(): scalar.MarkdownOrString | null {
     if (!isTruthy(this.$relationship.description)) {
       return null
     }
-    return this.$relationship.description
+    return this.$relationship.description ?? null
   }
 
   get tags(): aux.Tags<A> {

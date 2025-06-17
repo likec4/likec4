@@ -6,7 +6,6 @@ exports[`Builder (style 2) > should build  1`] = `
   "deployments": {
     "elements": {
       "dev": {
-        "description": null,
         "id": "dev",
         "kind": "env",
         "style": {
@@ -19,7 +18,6 @@ exports[`Builder (style 2) > should build  1`] = `
         "title": "dev",
       },
       "dev.local": {
-        "description": null,
         "id": "dev.local",
         "kind": "node",
         "style": {
@@ -31,7 +29,6 @@ exports[`Builder (style 2) > should build  1`] = `
         "title": "local",
       },
       "prod": {
-        "description": null,
         "id": "prod",
         "kind": "env",
         "style": {
@@ -44,7 +41,6 @@ exports[`Builder (style 2) > should build  1`] = `
         "title": "prod",
       },
       "prod.eu": {
-        "description": null,
         "id": "prod.eu",
         "kind": "node",
         "style": {
@@ -65,7 +61,6 @@ exports[`Builder (style 2) > should build  1`] = `
   "elements": {
     "cloud": {
       "color": "primary",
-      "description": null,
       "id": "cloud",
       "kind": "system",
       "links": null,
@@ -80,7 +75,6 @@ exports[`Builder (style 2) > should build  1`] = `
     },
     "cloud.ui": {
       "color": "primary",
-      "description": null,
       "id": "cloud.ui",
       "kind": "component",
       "links": null,
@@ -92,7 +86,6 @@ exports[`Builder (style 2) > should build  1`] = `
     },
     "customer": {
       "color": "primary",
-      "description": null,
       "id": "customer",
       "kind": "actor",
       "links": null,

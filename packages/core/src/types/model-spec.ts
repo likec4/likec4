@@ -24,8 +24,8 @@ import type {
  */
 export interface ElementSpecification {
   tags?: scalar.Tag[]
-  technology?: scalar.MarkdownOrString
-  notation?: scalar.MarkdownOrString
+  technology?: string
+  notation?: string
   style: {
     shape?: ElementShape
     icon?: Icon
@@ -53,8 +53,8 @@ export function isTagColorSpecified(spec: string | TagSpecification): spec is { 
 }
 
 export interface RelationshipSpecification {
-  technology?: scalar.MarkdownOrString
-  notation?: scalar.MarkdownOrString
+  technology?: string
+  notation?: string
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

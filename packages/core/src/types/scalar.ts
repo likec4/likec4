@@ -4,22 +4,30 @@ import { invariant } from '../utils/invariant'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 
-export type MarkdownOrString = string | { md: string }
-export type HtmlOrString = string | { html: string }
+export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?: never }
+export type HtmlOrString = { txt: string; html?: never } | { html: string; txt?: never }
 
-export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | string): string
-export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | null | undefined): string | undefined
-export function stringFromMarkdownOrHtml(
-  value: MarkdownOrString | HtmlOrString | null | undefined,
-): string | undefined {
-  if (value === null || value === undefined) {
-    return undefined
-  }
-  if (typeof value === 'string') {
-    return value
-  }
-  return 'md' in value ? value.md : value.html
-}
+// export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | string): string
+// export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | null | undefined): string | undefined
+// export function stringFromMarkdownOrHtml(
+//   value: MarkdownOrString | HtmlOrString | null | undefined,
+// ): string | undefined {
+//   if (value === null || value === undefined) {
+//     return undefined
+//   }
+//   switch (true) {
+//     case typeof value === 'string':
+//       return value
+//     case 'txt' in value:
+//       return value.txt
+//     case 'md' in value:
+//       return value.md
+//     case 'html' in value:
+//       return value.html
+//     default:
+//       nonexhaustive(value)
+//   }
+// }
 
 export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'tech'}:${string}`
 export type Icon = Tagged<string, 'Icon'> | BuiltInIcon

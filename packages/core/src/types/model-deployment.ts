@@ -27,11 +27,11 @@ export interface DeploymentNode<A extends AnyAux = Unknown>
   readonly kind: aux.DeploymentKind<A>
   readonly title: string
   readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: scalar.MarkdownOrString | null
+  readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly style: DeploymentElementStyle
-  readonly notation?: scalar.MarkdownOrString
+  readonly notation?: string | null
   readonly metadata?: aux.Metadata<A>
 }
 
@@ -51,7 +51,7 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly element: aux.StrictFqn<A>
   readonly title?: string
   readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: scalar.MarkdownOrString | null
+  readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly style?: DeploymentElementStyle

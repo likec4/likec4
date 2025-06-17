@@ -27,7 +27,7 @@ export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, Wit
   get expression(): string
   get title(): string | null
   get technology(): string | null
-  get description(): string | null
+  get description(): scalar.MarkdownOrString | null
   get navigateTo(): LikeC4ViewModel<A> | null
   get kind(): aux.RelationKind<A> | null
   get links(): ReadonlyArray<Link>
@@ -80,7 +80,7 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.technology
   }
 
-  get description(): string | null {
+  get description(): scalar.MarkdownOrString | null {
     if (!isTruthy(this.$relationship.description)) {
       return null
     }

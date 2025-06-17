@@ -7,7 +7,6 @@
   "elements": {
     "cloud": {
       "color": "primary",
-      "description": null,
       "id": "cloud",
       "kind": "system",
       "links": null,
@@ -22,7 +21,6 @@
     },
     "cloud.api": {
       "color": "primary",
-      "description": null,
       "id": "cloud.api",
       "kind": "component",
       "links": null,
@@ -34,7 +32,6 @@
     },
     "cloud.ui": {
       "color": "primary",
-      "description": null,
       "id": "cloud.ui",
       "kind": "component",
       "links": null,
@@ -46,7 +43,6 @@
     },
     "customer": {
       "color": "primary",
-      "description": null,
       "id": "customer",
       "kind": "actor",
       "links": null,
