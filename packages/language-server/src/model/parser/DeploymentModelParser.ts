@@ -90,7 +90,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title))
       const description = removeIndent(bodyProps.description)
       const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
 
@@ -127,7 +127,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title) ?? astNode.name)
       const description = this.parseMarkdownOrString(bodyProps.description)
       const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
 
@@ -136,8 +136,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       return {
         id,
         element: target,
+        title: title ?? nameFromFqn(FqnRef.flatten(target)),
         ...(metadata && { metadata }),
-        ...(title && { title }),
         ...(tags && { tags }),
         ...(links && isNonEmptyArray(links) && { links }),
         ...(isTruthy(technology) && { technology }),

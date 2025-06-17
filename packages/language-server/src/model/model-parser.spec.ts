@@ -44,39 +44,55 @@ describe.concurrent('LikeC4ModelParser', () => {
     const { validate, services } = createTestServices()
     const { document } = await validate(`
         specification {
-          element el1 {
-            technology '''
+          element element
+        }
+        model {
+           element el1 {
+            description '''
               el1-tech
             '''
-            // Should treat internal quotes as part of the string
-            notation '''
-              el'1-n'ota"tion
-            '''
+            element el11 {
+              // Should treat internal quotes as part of the string
+              description '''
+                el'1-n'ota"tion
+              '''
+            }
           }
           element el2 {
-            technology """
+            description """
               el2-tech
             """
-            // Should treat internal quotes as part of the string
-            notation """
-              el"2-n"ota'tion
-            """
-          }
+            element el21 {
+              // Should treat internal quotes as part of the string
+              description """
+                el"2-n"ota'tion
+              """
+            }
         }
       `)
     const doc = services.likec4.ModelParser.parse(document)
-    expect(doc.c4Specification).toMatchObject({
-      elements: {
-        el1: {
-          technology: 'el1-tech',
-          notation: 'el\'1-n\'ota"tion',
-        },
-        el2: {
-          technology: 'el2-tech',
-          notation: 'el"2-n"ota\'tion',
-        },
+    expect(doc.c4Elements).toMatchObject([
+      {
+        id: 'el1',
+        kind: 'element',
+        description: { md: 'el1-tech' },
       },
-    })
+      {
+        id: 'el2',
+        kind: 'element',
+        description: { md: 'el2-tech' },
+      },
+      {
+        id: 'el1.el11',
+        kind: 'element',
+        description: { md: 'el\'1-n\'ota"tion' },
+      },
+      {
+        id: 'el2.el21',
+        kind: 'element',
+        description: { md: 'el"2-n"ota\'tion' },
+      },
+    ])
   })
 
   describe('specification', () => {

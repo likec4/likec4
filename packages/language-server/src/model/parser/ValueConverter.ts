@@ -2,7 +2,7 @@ import { type CstNode, type ValueType, DefaultValueConverter, ValueConverter } f
 
 export class LikeC4ValueConverter extends DefaultValueConverter {
   protected override runConverter(rule: any, input: string, cstNode: CstNode): ValueType {
-    if (rule.name.toUpperCase() === 'TRIPLE_QUOTE_STRING') {
+    if (rule.name === 'MarkdownString') {
       if ((input.startsWith('"""') && input.endsWith('"""')) || (input.startsWith(`'''`) && input.endsWith(`'''`))) {
         input = input.slice(3, -3)
       }

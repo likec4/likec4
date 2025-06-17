@@ -46,7 +46,9 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
     "system.frontend": {
       "color": "muted",
-      "description": "Frontend description",
+      "description": {
+        "txt": "Frontend description",
+      },
       "id": "system.frontend",
       "kind": "component",
       "links": null,
