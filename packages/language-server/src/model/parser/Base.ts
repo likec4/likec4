@@ -36,10 +36,13 @@ import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 export type GConstructor<T = {}> = new(...args: any[]) => T
 
 export function toSingleLine(str: string): string
+export function toSingleLine(str: string | undefined): string | undefined
 export function toSingleLine(str: ast.MarkdownOrString): MarkdownOrString
-export function toSingleLine(str: string | undefined | null): string | undefined
-export function toSingleLine(str: ast.MarkdownOrString | string | undefined | null): MarkdownOrString | undefined
-export function toSingleLine(str: ast.MarkdownOrString | string | undefined | null): MarkdownOrString | undefined {
+export function toSingleLine(str: ast.MarkdownOrString | undefined): MarkdownOrString | undefined
+export function toSingleLine(str: ast.MarkdownOrString | string): MarkdownOrString | string
+export function toSingleLine(
+  str: ast.MarkdownOrString | string | undefined | null,
+): MarkdownOrString | string | undefined {
   if (str === null || str === undefined) {
     return undefined
   }
@@ -47,16 +50,25 @@ export function toSingleLine(str: ast.MarkdownOrString | string | undefined | nu
   if (isString(without)) {
     return without.split('\n').join(' ')
   }
+  if ('md' in without) {
+    return {
+      md: without.md.split('\n').join(' '),
+    }
+  }
   return {
-    md: without.md.split('\n').join(' '),
+    txt: without.txt.split('\n').join(' '),
   }
 }
 
 export function removeIndent(str: string): string
-export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString
-export function removeIndent(str: string | undefined | null): string | undefined
-export function removeIndent(str: ast.MarkdownOrString | string | undefined | null): MarkdownOrString | undefined
-export function removeIndent(str: ast.MarkdownOrString | string | undefined | null): MarkdownOrString | undefined {
+export function removeIndent(str: string | undefined): string | undefined
+export function removeIndent(str: ast.MarkdownOrString): MarkdownOrString
+export function removeIndent(str: ast.MarkdownOrString | undefined): MarkdownOrString | undefined
+export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
+// export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
+export function removeIndent(
+  str: ast.MarkdownOrString | string | undefined,
+): MarkdownOrString | string | undefined {
   if (str === null || str === undefined) {
     return undefined
   }
@@ -68,7 +80,9 @@ export function removeIndent(str: ast.MarkdownOrString | string | undefined | nu
         md: stripIndent(str.markdown).trim(),
       }
     case ast.isMarkdownOrString(str) && !!str.text:
-      return stripIndent(str.text).trim()
+      return {
+        txt: stripIndent(str.text).trim(),
+      }
     default:
       return undefined
   }
@@ -126,11 +140,19 @@ export class BaseParser {
     }
     const data = pipe(
       metadataAstNode.props,
-      map(p => [p.key, removeIndent(p.value)] as [string, string]),
+      map(p => [p.key, removeIndent(p.value)] as [string, MarkdownOrString]),
+      map(([key, value]) => [key, value.md || value.txt] as [string, string]),
       filter(([_, value]) => isTruthy(value)),
       fromEntries(),
     )
     return isEmpty(data) ? undefined : data
+  }
+
+  parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
+    if (ast.isMarkdownOrString(markdownOrString)) {
+      return removeIndent(markdownOrString)
+    }
+    return undefined
   }
 
   convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {

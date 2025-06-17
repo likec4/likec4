@@ -13,6 +13,7 @@ import {
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
+import { RichText } from '../RichText'
 import type { $View, WithTags } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
@@ -42,8 +43,8 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
     return this.#edge.label ?? null
   }
 
-  get description(): scalar.MarkdownOrString | null {
-    return this.#edge.description ?? null
+  get description(): RichText | null {
+    return RichText.memoize(this, this.#edge.description)
   }
 
   get technology(): string | null {

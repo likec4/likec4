@@ -140,9 +140,10 @@ export function toNodeSource<A extends AnyAux>(
 ): ComputedNodeSource<A> {
   if (el.isDeploymentNode()) {
     const onlyOneInstance = el.onlyOneInstance()
-    let { title, kind, id, ...$node } = el.$node
+    let { title, kind, id, description: _, ...$node } = el.$node
     const { icon, color, shape, ...style } = el.$node.style ?? {}
     let tags = [...el.tags]
+    let description
     // If there is only one instance
     if (onlyOneInstance) {
       tags = unique([...tags, ...onlyOneInstance.tags])
@@ -150,6 +151,11 @@ export function toNodeSource<A extends AnyAux>(
       if (title === nameFromFqn(el.id)) {
         title = onlyOneInstance.title
       }
+      description = onlyOneInstance.description?.$source ?? null
+    }
+
+    if (el.description) {
+      description = el.description.$source
     }
 
     return {
@@ -162,6 +168,7 @@ export function toNodeSource<A extends AnyAux>(
       ...(icon && { icon }),
       ...(color && { color }),
       ...(shape && { shape }),
+      ...(description && { description }),
       tags,
       style: {
         ...style,
@@ -191,12 +198,15 @@ export function toNodeSource<A extends AnyAux>(
 
   const notation = instance.notation ?? element.$element.notation
 
+  let description = el.description?.$source ?? null
+  let technology = instance.technology ?? element.technology
+
   return {
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: instance.title ?? element.title,
-    description: instance.description ?? element.description,
-    technology: instance.technology ?? element.technology,
+    ...(description && { description }),
+    ...(technology && { technology }),
     tags: [...el.tags],
     links: hasAtLeast(links, 1) ? links : null,
     ...icon && { icon },

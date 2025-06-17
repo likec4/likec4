@@ -29,13 +29,14 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, C
 }
 
 export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
-  & Pick<ComputedNode<A>, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
-  & Partial<Omit<Element<A>, 'id' | 'title' | 'kind'>>
+  & Pick<ComputedNode<A>, 'id' | 'title' | 'description' | 'kind' | 'deploymentRef' | 'modelRef'>
+  & Partial<Omit<Element<A>, 'id' | 'title' | 'description' | 'kind'>>
 >
 
 export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
   return {
     ...el.$element,
+    // description: el.description?.$source ?? null,
     tags: [...el.tags],
     id: el.id as scalar.NodeId,
     modelRef: el.id,

@@ -7,6 +7,7 @@ import {
   type ParsedAstDeploymentRelation,
   type ParsedAstExtend,
   ast,
+  parseMarkdownAsString,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -86,12 +87,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? bodyProps.title)
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
       const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(bodyProps.technology)
+      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
 
       const links = this.convertLinks(astNode.body)
 
@@ -123,12 +124,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? bodyProps.title)
-      const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(bodyProps.technology)
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
+      const description = this.parseMarkdownOrString(bodyProps.description)
+      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
 
       const links = this.convertLinks(astNode.body)
 
@@ -197,7 +198,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         astNode.body?.props ?? [],
         filter(ast.isRelationStringProperty),
         filter(p => isTruthy(p.value)),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
       const navigateTo = pipe(
@@ -208,9 +209,9 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         first(),
       )
 
-      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(astNode.description ?? bodyProps.description)
-      const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
+      const description = removeIndent(bodyProps.description)
+      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
 

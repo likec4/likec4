@@ -24,6 +24,7 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
+import { RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
@@ -61,8 +62,8 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
-  get description(): scalar.MarkdownOrString | null {
-    return this.$node.description ?? null
+  get description(): RichText | null {
+    return RichText.memoize(this, this.$node.description)
   }
 
   get technology(): string | null {
@@ -402,8 +403,8 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return this.element.kind
   }
 
-  override get description(): scalar.MarkdownOrString | null {
-    return this.$instance.description ?? this.element.description ?? null
+  override get description(): RichText | null {
+    return RichText.memoize(this, this.$instance.description ?? this.element.$element.description)
   }
 
   override get technology(): string | null {
@@ -486,7 +487,7 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.element.title
   }
 
-  get description(): scalar.MarkdownOrString | null {
+  get description(): RichText | null {
     return this.element.description
   }
 
@@ -536,17 +537,11 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   get technology(): string | null {
-    if (!isTruthy(this.$relationship.technology)) {
-      return null
-    }
-    return this.$relationship.technology
+    return this.$relationship.technology ?? null
   }
 
-  get description(): scalar.MarkdownOrString | null {
-    if (!isTruthy(this.$relationship.description)) {
-      return null
-    }
-    return this.$relationship.description ?? null
+  get description(): RichText | null {
+    return RichText.memoize(this, this.$relationship.description)
   }
 
   get tags(): aux.Tags<A> {

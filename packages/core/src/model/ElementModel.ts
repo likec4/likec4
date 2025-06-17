@@ -1,6 +1,6 @@
 import { isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import type { Any, AnyAux, Color, IteratorLike, scalar } from '../types'
+import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
   type Element as C4Element,
   type ElementShape as C4ElementShape,
@@ -18,6 +18,7 @@ import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNat
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
+import { RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
@@ -89,8 +90,8 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.$element.title
   }
 
-  get description(): scalar.MarkdownOrString | null {
-    return this.$element.description ?? null
+  get description(): RichText | null {
+    return RichText.memoize(this, this.$element.description)
   }
 
   get technology(): string | null {

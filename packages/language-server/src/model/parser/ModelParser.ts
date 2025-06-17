@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
-import { FqnRef, stringFromMarkdownOrHtml } from '@likec4/core/types'
+import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
@@ -9,6 +9,7 @@ import {
   type ParsedAstExtend,
   type ParsedAstRelation,
   ast,
+  parseMarkdownAsString,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
@@ -92,12 +93,14 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = stringFromMarkdownOrHtml(removeIndent(_title ?? bodyProps.title))
-      const description = removeIndent(_description ?? bodyProps.description)
-      const technology = toSingleLine(_technology ?? bodyProps.technology)
+      const title = removeIndent(_title || parseMarkdownAsString(bodyProps.title))
+      const description = _description
+        ? { txt: removeIndent(_description) }
+        : this.parseMarkdownOrString(bodyProps.description)
+      const technology = toSingleLine(_technology ?? parseMarkdownAsString(bodyProps.technology))
 
       const links = this.parseLinks(astNode.body)
 
@@ -165,7 +168,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         astNode.body?.props ?? [],
         filter(ast.isRelationStringProperty),
         filter(p => isTruthy(p.value)),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
       const navigateTo = pipe(
@@ -176,9 +179,11 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         first(),
       )
 
-      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(astNode.description ?? bodyProps.description)
-      const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
+      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
+      const description = astNode.description
+        ? { txt: removeIndent(astNode.description) }
+        : this.parseMarkdownOrString(bodyProps.description)
+      const technology = toSingleLine(astNode.technology) ?? removeIndent(parseMarkdownAsString(bodyProps.technology))
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
