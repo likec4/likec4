@@ -464,6 +464,10 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.instance.id
   }
 
+  get parent(): DeploymentNodeModel<A> {
+    return this.instance.parent
+  }
+
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
     const { icon, style } = this.element.$element
     return {
@@ -511,13 +515,16 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   public source: DeploymentRelationEndpoint<A>
   public target: DeploymentRelationEndpoint<A>
 
+  public readonly isSelfRelation: boolean
+
   constructor(
     public readonly $model: LikeC4DeploymentModel<A>,
     public readonly $relationship: DeploymentRelationship<A>,
   ) {
     this.source = $model.deploymentRef($relationship.source)
     this.target = $model.deploymentRef($relationship.target)
-    const parent = commonAncestor(this.source.id, this.target.id)
+    this.isSelfRelation = this.source === this.target
+    const parent = this.isSelfRelation ? this.source.parent?.id : commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.$model.node(parent) : null
   }
   get id(): scalar.RelationId {
