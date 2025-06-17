@@ -1,6 +1,6 @@
+import type * as aux from './_aux'
+import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
-import type * as aux from './aux'
-import type { AnyAux } from './aux'
 import type { _type } from './const'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
 import type { BorderStyle, Color, ShapeSize, SpacingSize, TextSize } from './styles'

@@ -1,5 +1,5 @@
 import type { Any, DiagramView } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/aux'
+import type * as aux from '@likec4/core/types/_aux'
 import { cx } from '@likec4/styles/css'
 import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'

@@ -1,6 +1,6 @@
 export * from './_common'
 
-export type * as aux from './aux'
+export type * as aux from './_aux'
 
 export type {
   Any,
@@ -11,7 +11,7 @@ export type {
   UnknownComputed,
   UnknownLayouted,
   UnknownParsed,
-} from './aux'
+} from './_aux'
 
 export * from './const'
 export * from './expression'

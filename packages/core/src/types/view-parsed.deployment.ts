@@ -1,5 +1,5 @@
+import type { AnyAux, Unknown } from './_aux'
 import type { ExclusiveUnion } from './_common'
-import type { AnyAux, Unknown } from './aux'
 import type { _type } from './const'
 import type { Expression, FqnExpr } from './expression'
 import type {

@@ -8,7 +8,7 @@ import type {
   ViewWithType,
 } from '../../types'
 import { _stage, _type } from '../../types'
-import type * as aux from '../../types/aux'
+import type * as aux from '../../types/_aux'
 import { DefaultMap, ifind, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'

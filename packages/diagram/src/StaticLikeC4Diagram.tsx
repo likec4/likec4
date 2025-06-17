@@ -1,4 +1,4 @@
-import type * as aux from '@likec4/core/types/aux'
+import type * as aux from '@likec4/core/types/_aux'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 

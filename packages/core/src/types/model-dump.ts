@@ -1,5 +1,5 @@
+import type * as aux from './_aux'
 import type { KeysOf } from './_common'
-import type * as aux from './aux'
 import type { _stage } from './const'
 import type { ParsedLikeC4ModelData } from './model-data'
 

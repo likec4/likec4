@@ -7,7 +7,7 @@ import {
   DefaultRelationshipColor,
   FqnRef,
 } from '../types'
-import type * as aux from '../types/aux'
+import type * as aux from '../types/_aux'
 import { commonAncestor } from '../utils/fqn'
 import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'

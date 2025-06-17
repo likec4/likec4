@@ -16,7 +16,7 @@ import type {
   WhereOperator,
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
-import type * as aux from '../types/aux'
+import type * as aux from '../types/_aux'
 import { compareNatural, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'

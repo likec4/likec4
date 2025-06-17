@@ -10,7 +10,7 @@ import type {
   ViewType,
   ViewWithType,
 } from '../types'
-import type * as aux from '../types/aux'
+import type * as aux from '../types/_aux'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
