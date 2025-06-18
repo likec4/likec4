@@ -320,7 +320,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       const targetEl = _elements.get(FqnRef.flatten(relation.target))
       invariant(targetEl, `Element with id "${relation.target}" not found`)
       invariant(
-        !isSameHierarchy(sourceEl, targetEl),
+        !isSameHierarchy(sourceEl, targetEl) || sourceEl.id === targetEl.id,
         'Cannot create relationship between elements in the same hierarchy',
       )
       _relations.push({

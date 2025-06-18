@@ -1,9 +1,8 @@
-import { FqnExpr, FqnRef, isSameHierarchy } from '@likec4/core'
-import { type Reference, type ValidationCheck, AstUtils } from 'langium'
-import { isDefined } from 'remeda'
+import { FqnRef, isSameHierarchy } from '@likec4/core'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
-import { importsRef, safeCall } from '../utils'
+import { safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
@@ -42,7 +41,9 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       }
     }
 
-    if (isSameHierarchy(FqnRef.flatten(source), FqnRef.flatten(target))) {
+    const sourceFqn = FqnRef.flatten(source)
+    const targetFqn = FqnRef.flatten(target)
+    if (isSameHierarchy(sourceFqn, targetFqn) && sourceFqn !== targetFqn) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,
       })
