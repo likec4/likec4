@@ -71,6 +71,29 @@
       - `disconnected_restapi` (line 13)
     - Hover over elements to see warning messages about connectivity
 
+## Testing Cursor Language Server Integration
+
+11. **Install LikeC4 extension in Cursor**
+    ```bash
+    # From project root
+    cursor --install-extension packages/vscode/likec4-vscode-1.32.1.vsix --force
+    ```
+
+12. **Restart Cursor**
+    - Completely restart Cursor application, or
+    - Use `Cmd+Shift+P` → `Developer: Reload Window`
+
+13. **Open Cursor with correctness examples**
+    ```bash
+    cursor correctness-examples/
+    ```
+
+14. **Expected behavior in Cursor**
+    - Same as VS Code: squiggly lines appear under disconnected elements
+    - Syntax highlighting for `.c4` files
+    - Code completion and IntelliSense
+    - All language server features work identically to VS Code
+
 ## Expected Results
 
 ### CLI Output
@@ -85,6 +108,11 @@
 - Hover shows: "Element 'X' is not connected to any other elements"
 - Diagnostic code: `disconnected-element`
 - Severity: Warning (not error)
+
+### Cursor Language Server
+- Identical behavior to VS Code
+- Uses the same VSCode extension package (.vsix)
+- Full language server integration with diagnostics, syntax highlighting, and IntelliSense
 
 ## Project Structure Notes
 
@@ -116,8 +144,18 @@ Shows available options including `--strict` mode for treating warnings as error
 
 ## Troubleshooting
 
+### VS Code Issues
 - If VS Code doesn't show diagnostics, restart the language server: `Ctrl+Shift+P` → "Developer: Reload Window"
 - Ensure both language server and VS Code extension are built after changes
-- Check VS Code output panel for language server logs if needed  
-- If `pnpm start` doesn't work, ensure you're in the `packages/likec4` directory
+- Check VS Code output panel for language server logs if needed
+
+### Cursor Issues
+- If Cursor doesn't show diagnostics after installing extension, restart Cursor completely
+- Use `Cmd+Shift+P` → "Developer: Reload Window" to restart language server
+- Check extension is installed: `Cmd+Shift+P` → "Extensions: Show Installed Extensions" → search "likec4"
+- Verify file is recognized as LikeC4 language (bottom right of editor should show "LikeC4")
+
+### General Issues
+- If `pnpm start` doesn't work, ensure you're in the `packages/likec4` directory  
 - Verify dependencies are installed with `pnpm install` from project root
+- Make sure VS Code extension is built with `pnpm run build` in `packages/vscode/`

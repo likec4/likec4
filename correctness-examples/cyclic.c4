@@ -1,0 +1,34 @@
+model {
+  client3 = person 'Client User' {
+    description 'End user of the application'
+  }
+
+  frontend3 = webapp 'Web Application' {
+    description 'Frontend web application'
+  }
+
+  backend3 = service 'Business Service' {
+    description 'Main business logic service'
+    
+    restapi3 = api 'API Service' {
+      description 'RESTful API service'
+    }
+  }
+
+  db3 = database 'Database' {
+    description 'Data storage system'
+  }
+
+  client3 -> frontend3 'uses'
+  frontend3 -> backend3 'calls'
+  restapi3 -> db3 'accesses'
+  restapi3 -> client3 'accesses'
+}
+
+views {
+  view architecture3 {
+    title "Cyclic Architecture Overview"
+    include *
+    autoLayout TopBottom
+  }
+} 

@@ -1,0 +1,34 @@
+model {
+  client4 = person 'Client User' {
+    description 'End user of the application'
+  }
+
+  frontend4 = webapp 'Web Application' {
+    description 'Frontend web application'
+  }
+
+  backend4 = service 'Business Service' {
+    description 'Main business logic service'
+    
+    restapi4 = api 'API Service' {
+      description 'RESTful API service'
+    }
+  }
+
+  db4 = database 'Database' {
+    description 'Data storage system'
+  }
+
+  client4 -> frontend4 'uses'
+  frontend4 -> backend4 'calls'
+  restapi4 -> db4 'accesses'
+  frontend4 -> db4 'accesses'
+}
+
+views {
+  view architecture4 {
+    title "Mislayered Architecture Overview"
+    include *
+    autoLayout TopBottom
+  }
+} 
