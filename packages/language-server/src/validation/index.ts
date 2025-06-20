@@ -4,6 +4,7 @@ import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { checkElementConnectivity } from './correctness'
 import {
   deployedInstanceChecks,
   deploymentNodeChecks,
@@ -11,7 +12,7 @@ import {
   extendDeploymentChecks,
 } from './deployment-checks'
 import { dynamicViewStep } from './dynamic-view-step'
-import { checkElement, checkElementCorrectness } from './element'
+import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImported, checkImportsFromPoject } from './imports'
 import {
@@ -156,7 +157,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
-    Element: [checkElement(services), checkElementCorrectness(services)],
+    Element: [checkElement(services), checkElementConnectivity(services)],
     ElementRef: checkElementRef(services),
     ElementKind: checkElementKind(services),
     Relation: relationChecks(services),

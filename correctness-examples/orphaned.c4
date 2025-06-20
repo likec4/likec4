@@ -21,6 +21,7 @@ model {
 
   client2 -> frontend2 'uses'
   frontend2 -> backend2 'calls'
+
 }
 
 views {

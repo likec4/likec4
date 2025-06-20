@@ -81,55 +81,26 @@ export async function handler({ path, strict }: HandlerParams): Promise<number> 
   return 0
 }
 
-// Modify findDisconnectedElements to get location from model
-function findDisconnectedElements(model: any, logger: any): any[] {
+function findDisconnectedElements(model: any): any[] {
   const disconnected: any[] = []
 
   try {
     const elements = [...model.elements()]
 
     for (const element of elements) {
-      if (
-        !isElementConnected(element, model) &&
-        element.kind !== 'user' &&
-        element.kind !== 'external'
-      ) {
-        // Get element definition from model
-        const elementDef = model.getElementDefinition?.(element.id)
+      // Skip user and external elements as they are often meant to be boundary elements
+      if (element.kind === 'user' || element.kind === 'external') {
+        continue
+      }
 
-        // Get the AST node that defines this element
-        const node = elementDef?.node
-
-        // Try to get location from the AST node first
-        const nodeLocation = node?.location?.position?.start
-
-        logger.info('Element location debug:', {
-          id: element.id,
-          nodeLocation,
-          defLocation: elementDef?.location,
-          elementLocation: element.location,
-        })
-
-        // Preserve original element and add enhanced location info
-        disconnected.push({
-          ...element,
-          definition: elementDef,
-          node,
-          location: {
-            source: nodeLocation?.source || elementDef?.source || element.source,
-            start: {
-              line: nodeLocation?.line || elementDef?.line || element.line || 1,
-            },
-            file: nodeLocation?.file || elementDef?.file || element.file,
-            section: node?.parent?.name || elementDef?.parent?.name || element.section,
-          },
-        })
+      if (!isElementConnected(element, model)) {
+        disconnected.push(element)
       }
     }
 
     return disconnected
   } catch (error) {
-    logger.error('Error in findDisconnectedElements:', error)
+    console.error('Error in findDisconnectedElements:', error)
     return []
   }
 }
@@ -139,29 +110,14 @@ function isElementConnected(element: any, model: any): boolean {
   return relationships.some(rel => rel.source?.id === element.id || rel.target?.id === element.id)
 }
 
-// Update formatLocation to use the enhanced location info
-function formatLocation(element: any, logger: any): string {
-  // Try to get location from various sources in order of preference
-  const nodeLocation = element.node?.location?.position?.start
-  const defLocation = element.definition?.location
-  const elementLocation = element.location
-
-  const file = nodeLocation?.file || defLocation?.file || elementLocation?.file || element.source
-  const line = nodeLocation?.line || defLocation?.line || elementLocation?.start?.line || 1
-  const section = element.node?.parent?.name || element.definition?.parent?.name || element.section
-
-  logger.info('Location resolution:', {
-    id: element.id,
-    nodeLocation,
-    defLocation,
-    elementLocation,
-    resolved: { file, line, section },
-  })
+function formatLocation(element: any): string {
+  // Try to get location information from the element
+  const file = element.astPath?.document?.uri?.toString() || element.source || 'unknown'
+  const line = element.astPath?.range?.start?.line || 1
 
   return [
-    `file: ${file || 'unknown'}`,
-    `line: ${line}`, // Always show a line number, default to 1
-    `section: ${section || 'unknown'}`,
+    `file: ${file}`,
+    `line: ${line}`,
     `id: ${element.id}`,
   ].join(', ')
 }
@@ -171,21 +127,21 @@ async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Prom
 
   try {
     const computedModel = languageServices.computedModel()
+    const elementsArray = [...computedModel.elements()]
 
-    // Changed debug to info since debug isn't available
     logger.info('Analyzing model structure:', {
-      elementsCount: computedModel.elements().length,
+      elementsCount: elementsArray.length,
     })
 
-    // Check for disconnected components
-    const disconnectedElements = findDisconnectedElements(computedModel, logger) // Pass logger to this function
+    // Check for disconnected components - using the same logic as language server validation
+    const disconnectedElements = findDisconnectedElements(computedModel)
 
     for (const element of disconnectedElements) {
       issues.push({
-        type: 'error',
+        type: 'warning', // Same as language server validation
         category: 'Connectivity',
-        message: `Element '${element.title || element.id}' is not connected to any other elements`,
-        location: formatLocation(element, logger), // Pass logger here
+        message: `Element '${element.id}' is not connected to any other elements`,
+        location: formatLocation(element),
         suggestions: [
           `Add connections to/from '${element.id}'`,
           'Consider if this element should be removed or connected',
@@ -198,9 +154,8 @@ async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Prom
     issues.push({
       type: 'error',
       category: 'Internal',
-      message: `Failed to run correctness checks: ${error}`,
+      message: `Internal error: ${error}`,
       location: 'unknown',
-      suggestions: [],
     })
   }
 

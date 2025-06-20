@@ -1,0 +1,11 @@
+GENERAL
+pnpm install &&
+pnpm turbo run build --force --no-cache --no-daemon
+
+
+CLI
+pnpm turbo run build --force --no-cache --no-daemon
+
+cd packages/likec4 &&
+pnpm start correctness ../../correctness-examples &&
+cd ../..

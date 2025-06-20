@@ -1,0 +1,1 @@
+export { checkElementConnectivity } from './connectivity'
