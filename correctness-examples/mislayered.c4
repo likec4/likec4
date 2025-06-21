@@ -31,10 +31,10 @@ model {
     }
   }
 
-  client4 -> frontend4 'uses'
-  frontend4 -> backend4 'calls'
-  restapi4 -> db4 'accesses'
-  client4 -> db4 'accesses'
+  client4 .uses frontend4
+  frontend4 .calls backend4
+  restapi4 .accesses db4
+  client4 .accesses db4
 }
 
 views {

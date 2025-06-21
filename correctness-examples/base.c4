@@ -19,9 +19,9 @@ model {
     description 'Data storage system'
   }
 
-  client1 -> frontend1 'uses'
-  frontend1 -> backend1 'calls'
-  restapi1 -> db1 'accesses'
+  client1 .uses frontend1
+  frontend1 .calls backend1
+  restapi1 .accesses db1
 }
 
 views {

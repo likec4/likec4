@@ -4,4 +4,8 @@ specification {
     element service
     element api
     element database
+
+    relationship uses
+    relationship calls
+    relationship accesses
 }
