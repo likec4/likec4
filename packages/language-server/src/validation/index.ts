@@ -4,7 +4,7 @@ import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { checkElementConnectivity } from './correctness'
+import { checkCyclicDependencies, checkElementConnectivity, checkMislayering } from './correctness'
 import {
   deployedInstanceChecks,
   deploymentNodeChecks,
@@ -157,10 +157,11 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
+    LikeC4Grammar: checkCyclicDependencies(services),
     Element: [checkElement(services), checkElementConnectivity(services)],
     ElementRef: checkElementRef(services),
     ElementKind: checkElementKind(services),
-    Relation: relationChecks(services),
+    Relation: [relationChecks(services), checkMislayering(services)],
     RelationBody: checkRelationBody(services),
     Tag: checkTag(services),
     FqnExprWith: checkFqnExprWith(services),

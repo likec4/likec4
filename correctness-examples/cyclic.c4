@@ -22,7 +22,7 @@ model {
   client3 -> frontend3 'uses'
   frontend3 -> backend3 'calls'
   restapi3 -> db3 'accesses'
-  restapi3 -> client3 'accesses'
+  db3 -> restapi3 'notifies'
 }
 
 views {

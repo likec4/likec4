@@ -1,19 +1,15 @@
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
-import { projectIdFrom } from '../../utils'
 import { tryOrLog } from '../_shared'
 
 const { getDocument } = AstUtils
 
 export const checkElementConnectivity = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   return tryOrLog((el, accept) => {
-    // console.log('NIKHIL CHECKING ELEMENT CONNECTIVITY')
-    console.log(`[CONNECTIVITY DEBUG] Checking element: ${el.name}, kind: ${el.kind?.ref?.name}`)
     // Skip user and external elements as they are often meant to be boundary elements
     const kindName = el.kind?.ref?.name
     if (kindName === 'user' || kindName === 'external') {
-      console.log(`[CONNECTIVITY DEBUG] Skipping ${el.name} - user/external element`)
       return
     }
 
@@ -21,7 +17,6 @@ export const checkElementConnectivity = (services: LikeC4Services): ValidationCh
     const grammar = doc.parseResult.value as ast.LikeC4Grammar
 
     if (!grammar || grammar.$type !== 'LikeC4Grammar') {
-      console.log(`[CONNECTIVITY DEBUG] No valid grammar found for ${el.name}`)
       return
     }
 
@@ -30,11 +25,8 @@ export const checkElementConnectivity = (services: LikeC4Services): ValidationCh
     const elementFqn = fqnIndex.getFqn(el)
 
     if (!elementFqn) {
-      console.log(`[CONNECTIVITY DEBUG] No FQN found for element ${el.name}`)
       return
     }
-
-    console.log(`[CONNECTIVITY DEBUG] Element ${el.name} has FQN: ${elementFqn}`)
 
     // Check if this element is connected to any other elements
     let isConnected = false
@@ -42,8 +34,6 @@ export const checkElementConnectivity = (services: LikeC4Services): ValidationCh
     // Search through all models in the grammar for relations
     for (const model of grammar.models) {
       if (!model.elements) continue
-
-      console.log(`[CONNECTIVITY DEBUG] Checking model with ${model.elements.length} elements`)
 
       // Look for relations in the model elements
       for (const statement of model.elements) {
@@ -64,14 +54,11 @@ export const checkElementConnectivity = (services: LikeC4Services): ValidationCh
             targetFqn = fqnIndex.getFqn(relation.target.value.ref)
           }
 
-          console.log(`[CONNECTIVITY DEBUG] Found relation: ${sourceFqn} -> ${targetFqn}`)
-
           // Check if this element matches the source or target
           if (
             (sourceFqn && sourceFqn === elementFqn) ||
             (targetFqn && targetFqn === elementFqn)
           ) {
-            console.log(`[CONNECTIVITY DEBUG] Element ${el.name} is connected!`)
             isConnected = true
             break
           }
@@ -85,14 +72,11 @@ export const checkElementConnectivity = (services: LikeC4Services): ValidationCh
     if (!isConnected) {
       // Use name since Element interface doesn't have title property
       const elementName = el.name || 'unknown'
-      console.log(`[CONNECTIVITY DEBUG] Element ${elementName} is NOT connected - reporting warning`)
       accept('warning', `Element '${elementName}' is not connected to any other elements`, {
         node: el,
         property: 'name',
         code: 'disconnected-element',
       })
-    } else {
-      console.log(`[CONNECTIVITY DEBUG] Element ${el.name} is connected`)
     }
   })
 }

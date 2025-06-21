@@ -1,14 +1,23 @@
 model {
   client4 = person 'Client User' {
     description 'End user of the application'
+    metadata {
+      layer '1'
+    }
   }
 
   frontend4 = webapp 'Web Application' {
     description 'Frontend web application'
+    metadata {
+      layer '2'
+    }
   }
 
   backend4 = service 'Business Service' {
     description 'Main business logic service'
+    metadata {
+      layer '3'
+    }
     
     restapi4 = api 'API Service' {
       description 'RESTful API service'
@@ -17,6 +26,9 @@ model {
 
   db4 = database 'Database' {
     description 'Data storage system'
+    metadata {
+      layer '4'
+    }
   }
 
   client4 -> frontend4 'uses'

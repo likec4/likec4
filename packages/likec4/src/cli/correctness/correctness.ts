@@ -2,6 +2,9 @@ import { exit } from 'node:process'
 import k from 'tinyrainbow'
 import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger } from '../../logger'
+import { checkCycle } from './cycle'
+import { checkMislayering } from './mislayering'
+import { checkOrphan } from './orphan'
 
 type HandlerParams = {
   path: string
@@ -13,7 +16,6 @@ type CorrectnessIssue = {
   category: string
   message: string
   location: string
-  suggestions?: string[]
 }
 
 export async function handler({ path, strict }: HandlerParams): Promise<number> {
@@ -33,24 +35,25 @@ export async function handler({ path, strict }: HandlerParams): Promise<number> 
     return 0
   }
 
+  // Report and summarize issues
+  reportIssues(issues, logger)
+
+  // Handle exit conditions
+  return handleExitConditions(issues, strict, logger)
+}
+
+function reportIssues(issues: CorrectnessIssue[], logger: any): void {
   // Group issues by type
   const errors = issues.filter(issue => issue.type === 'error')
   const warnings = issues.filter(issue => issue.type === 'warning')
 
-  // Report issues
+  // Report individual issues
   for (const issue of issues) {
     const color = issue.type === 'error' ? k.red : k.yellow
     const icon = issue.type === 'error' ? 'ERROR' : 'WARNING'
 
     logger.info(color(`${icon} [${issue.category}] ${issue.message}`))
     logger.info(k.gray(`   at ${issue.location}`))
-
-    if (issue.suggestions && issue.suggestions.length > 0) {
-      logger.info(k.blue('   Suggestions:'))
-      for (const suggestion of issue.suggestions) {
-        logger.info(k.blue(`      • ${suggestion}`))
-      }
-    }
     logger.info('') // Empty line for spacing
   }
 
@@ -62,8 +65,13 @@ export async function handler({ path, strict }: HandlerParams): Promise<number> 
   if (warnings.length > 0) {
     logger.info(k.yellow(`   ${warnings.length} warning(s)`))
   }
+}
 
-  // Exit code logic
+function handleExitConditions(issues: CorrectnessIssue[], strict: boolean, logger: any): number {
+  const errors = issues.filter(issue => issue.type === 'error')
+  const warnings = issues.filter(issue => issue.type === 'warning')
+
+  // Exit code logic - only internal errors cause exit code 1
   if (errors.length > 0) {
     logger.error('Correctness check failed due to errors')
     exit(1)
@@ -81,74 +89,16 @@ export async function handler({ path, strict }: HandlerParams): Promise<number> 
   return 0
 }
 
-function findDisconnectedElements(model: any): any[] {
-  const disconnected: any[] = []
-
-  try {
-    const elements = [...model.elements()]
-
-    for (const element of elements) {
-      // Skip user and external elements as they are often meant to be boundary elements
-      if (element.kind === 'user' || element.kind === 'external') {
-        continue
-      }
-
-      if (!isElementConnected(element, model)) {
-        disconnected.push(element)
-      }
-    }
-
-    return disconnected
-  } catch (error) {
-    console.error('Error in findDisconnectedElements:', error)
-    return []
-  }
-}
-
-function isElementConnected(element: any, model: any): boolean {
-  const relationships = [...model.relationships()]
-  return relationships.some(rel => rel.source?.id === element.id || rel.target?.id === element.id)
-}
-
-function formatLocation(element: any): string {
-  // Try to get location information from the element
-  const file = element.astPath?.document?.uri?.toString() || element.source || 'unknown'
-  const line = element.astPath?.range?.start?.line || 1
-
-  return [
-    `file: ${file}`,
-    `line: ${line}`,
-    `id: ${element.id}`,
-  ].join(', ')
-}
-
 async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Promise<CorrectnessIssue[]> {
   const issues: CorrectnessIssue[] = []
 
   try {
     const computedModel = languageServices.computedModel()
-    const elementsArray = [...computedModel.elements()]
 
-    logger.info('Analyzing model structure:', {
-      elementsCount: elementsArray.length,
-    })
-
-    // Check for disconnected components - using the same logic as language server validation
-    const disconnectedElements = findDisconnectedElements(computedModel)
-
-    for (const element of disconnectedElements) {
-      issues.push({
-        type: 'warning', // Same as language server validation
-        category: 'Connectivity',
-        message: `Element '${element.id}' is not connected to any other elements`,
-        location: formatLocation(element),
-        suggestions: [
-          `Add connections to/from '${element.id}'`,
-          'Consider if this element should be removed or connected',
-          'Check if this element serves a purpose in the architecture',
-        ],
-      })
-    }
+    // Run individual checks
+    issues.push(...checkOrphan(computedModel, languageServices))
+    issues.push(...checkCycle(computedModel, languageServices))
+    issues.push(...checkMislayering(computedModel, languageServices))
   } catch (error) {
     logger.error(`Error during correctness check: ${error}`)
     issues.push({

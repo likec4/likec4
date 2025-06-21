@@ -25,4 +25,4 @@ export const correctnessCmd = {
   strict: boolean
 }>
 
-export default correctnessCmd 
+export default correctnessCmd
