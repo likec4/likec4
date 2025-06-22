@@ -48,8 +48,8 @@ catalogs:
   react:
     react: ^19.1.0
     react-dom: ^19.1.0
-    "@types/react": 19.1.5
-    "@types/react-dom": 19.1.5
+    "@types/react": 19.1.8
+    "@types/react-dom": 19.1.6
     react-error-boundary: ^6.0.0
     "@tabler/icons-react": 3.31.0
     clsx: ^2.1.1
@@ -62,12 +62,12 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": 8.1.0
-    "@mantine/hooks": 8.1.0
-    "@mantine/vanilla-extract": 8.1.0
-    "@mantine/modals": 8.1.0
-    "@mantine/notifications": 8.1.0
-    "@mantine/colors-generator": 8.1.0
+    "@mantine/core": 8.1.1
+    "@mantine/hooks": 8.1.1
+    "@mantine/vanilla-extract": 8.1.1
+    "@mantine/modals": 8.1.1
+    "@mantine/notifications": 8.1.1
+    "@mantine/colors-generator": 8.1.1
   vite:
     "@vitejs/plugin-react": ^4.5.2
     vite: ^6.3.5
