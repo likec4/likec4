@@ -83,7 +83,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.11.1",
+  "packageManager": "pnpm@10.12.1",
   "dependencies": {
     "@cloudflare/vite-plugin": "1.5.1",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
