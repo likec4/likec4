@@ -5,7 +5,6 @@ import { invariant } from '../utils/invariant'
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 
 export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?: never }
-export type HtmlOrString = { txt: string; html?: never } | { html: string; txt?: never }
 
 // export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | string): string
 // export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | null | undefined): string | undefined

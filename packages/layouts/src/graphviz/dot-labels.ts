@@ -10,6 +10,7 @@ import {
   defaultTheme as Theme,
   nonexhaustive,
 } from '@likec4/core'
+import { RichText } from '@likec4/core/model'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
@@ -120,10 +121,11 @@ export function nodeLabel(
         }),
       )
     }
-    if (isTruthy(node.description?.trim())) {
+    const description = node.description ? RichText.from(node.description) : undefined
+    if (description) {
       lines.push(
         wrapWithFont({
-          text: node.description,
+          text: description.text,
           fontsize: Math.ceil(fontSize(sizes.text) * 0.75),
           maxchars: hasIcon ? 35 : 45,
           maxLines: isSmOrXs ? 3 : 5,

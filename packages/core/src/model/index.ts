@@ -60,3 +60,5 @@ export type {
   AuxFromLikeC4ModelData,
   SpecAux,
 } from '../types'
+
+export { RichText } from './RichText'
