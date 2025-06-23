@@ -1,23 +1,17 @@
 name: bootstrap
 description: Init Node.js, caches and install dependencies
 
-inputs:
-  node-version:
-    description: "The version of Node.js to use"
-    required: false
-    default: "20.19.1"
-
 runs:
   using: "composite"
   steps:
-    - name: 🛠️ Setup pnpm
-      uses: pnpm/action-setup@v4
-
     - name: 🛠️ Setup node
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node-version }}
+        node-version-file: .tool-versions
         cache: "pnpm"
+
+    - name: 🛠️ Setup pnpm
+      uses: pnpm/action-setup@v4
 
     - name: 🛠️ Cache for turbo
       uses: rharkor/caching-for-turbo@v1.8
