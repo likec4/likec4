@@ -2,13 +2,16 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     'config:recommended',
-    'group:monorepos',
     'helpers:disableTypesNodeMajor',
+    'group:monorepos',
+    'npm:unpublishSafe'
   ],
   "prHourlyLimit": 20,
   "prConcurrentLimit": 5,
   "rangeStrategy": 'bump',
-  "updateInternalDeps": true,
+  "postUpdateOptions": [
+    "pnpmDedupe"
+  ],
   "labels": [
     "dependencies"
   ],
@@ -22,11 +25,13 @@
       matchCategories: [
         'ci',
       ],
+      automergeType: "branch",
       automerge: true,
       pinDigests: false,
     },
     {
       automerge: true,
+      automergeType: "branch",
       matchPackageNames: [
         'dprint',
         'type-fest',
@@ -37,7 +42,8 @@
         'pnpm',
         'semver',
         'terser',
-        '@fontsource{/,}**',
+        '@fontsource-variable/**',
+        '@fontsource/**',
       ]
     },
     {
@@ -50,26 +56,25 @@
       groupName: '@nanostores',
       matchPackageNames: [
         'nanostores',
-        '@nanostores{/,}**',
+        '@nanostores/**',
       ],
     },
     {
       groupName: '@xyflow',
       matchPackageNames: [
-        '@xyflow{/,}**',
+        '@xyflow/**',
       ],
     },
     {
       groupName: '@expressive-code',
       matchPackageNames: [
-        '@expressive-code{/,}**',
+        '@expressive-code/**',
       ],
     },
     {
       groupName: 'reactive-vscode',
       matchPackageNames: [
-        '@reactive-vscode{/,}**',
-        'reactive-vscode',
+        '/reactive-vscode/',
       ],
     },
     {
