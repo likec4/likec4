@@ -18,7 +18,7 @@ import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNat
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import { RichText } from './RichText'
+import { type RichTextEmpty, type RichTextOrEmpty, RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
@@ -90,7 +90,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.$element.title
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$element.description)
   }
 

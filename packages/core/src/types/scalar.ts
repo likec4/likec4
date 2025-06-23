@@ -1,32 +1,53 @@
-import { isTruthy } from 'remeda'
+import { isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
-import { invariant } from '../utils/invariant'
+import { invariant } from '../utils'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
 
 export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?: never }
 
-// export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | string): string
-// export function stringFromMarkdownOrHtml(value: MarkdownOrString | HtmlOrString | null | undefined): string | undefined
-// export function stringFromMarkdownOrHtml(
-//   value: MarkdownOrString | HtmlOrString | null | undefined,
-// ): string | undefined {
-//   if (value === null || value === undefined) {
-//     return undefined
-//   }
-//   switch (true) {
-//     case typeof value === 'string':
-//       return value
-//     case 'txt' in value:
-//       return value.txt
-//     case 'md' in value:
-//       return value.md
-//     case 'html' in value:
-//       return value.html
-//     default:
-//       nonexhaustive(value)
-//   }
-// }
+/**
+ * Converts a MarkdownOrString object or a plain string into a simple string representation.
+ * This utility function handles different types of text content and normalizes them to a string format.
+ *
+ * @param value - The content to be flattened.
+ *   Can be one of:
+ *   - A plain string
+ *   - A MarkdownOrString object with either txt or md property
+ *   - undefined or null
+ *
+ * @returns The string content contained within the input value.
+ *   - Returns the input directly if it's already a string
+ *   - Returns the txt property if available in a MarkdownOrString object
+ *   - Falls back to the md property if txt is not available
+ *   - Returns null if:
+ *     - The input is null or undefined
+ *     - The resulting string value is empty, whitespace, or null
+ *
+ * @example
+ * // String input
+ * flattenMarkdownOrString("Hello world") // Returns: "Hello world"
+ * flattenMarkdownOrString("   ") // Returns: null
+ *
+ * // MarkdownOrString with txt property
+ * flattenMarkdownOrString({ txt: "Plain text" }) // Returns: "Plain text"
+ * flattenMarkdownOrString({ txt: "   " }) // Returns: null
+ *
+ * // MarkdownOrString with md property
+ * flattenMarkdownOrString({ md: "**Bold markdown**" }) // Returns: "**Bold markdown**"
+ *
+ * // Null input
+ * flattenMarkdownOrString(null) // Returns: null
+ */
+export function flattenMarkdownOrString(value: MarkdownOrString | string): string
+export function flattenMarkdownOrString(value: MarkdownOrString | string | undefined | null): string | null
+export function flattenMarkdownOrString(value: MarkdownOrString | string | undefined | null): string | null {
+  if (value === null || value === undefined) {
+    return null
+  }
+  const content = isString(value) ? value : value.txt ?? value.md
+  return isTruthy(content?.trim()) ? content : null
+}
 
 export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'tech'}:${string}`
 export type Icon = Tagged<string, 'Icon'> | BuiltInIcon

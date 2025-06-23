@@ -12,7 +12,7 @@ import type * as aux from '../../types/aux'
 import { DefaultMap, ifind, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
-import { RichText } from '../RichText'
+import { type RichTextOrEmpty, RichText } from '../RichText'
 import {
   type $View,
   type EdgeOrId,
@@ -93,7 +93,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return this.$view.title
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$view.description)
   }
 

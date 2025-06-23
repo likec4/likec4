@@ -151,7 +151,7 @@ export function toNodeSource<A extends AnyAux>(
       if (title === nameFromFqn(el.id)) {
         title = onlyOneInstance.title
       }
-      description = onlyOneInstance.description?.$source ?? null
+      description = onlyOneInstance.description.$source
     }
 
     if (el.description) {
@@ -198,7 +198,7 @@ export function toNodeSource<A extends AnyAux>(
 
   const notation = instance.notation ?? element.$element.notation
 
-  let description = el.description?.$source ?? null
+  let description = el.description.$source
   let technology = instance.technology ?? element.technology
 
   return {

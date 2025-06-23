@@ -24,7 +24,7 @@ import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import { RichText } from './RichText'
+import { type RichTextOrEmpty, RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
@@ -62,7 +62,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$node.description)
   }
 
@@ -403,7 +403,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return this.element.kind
   }
 
-  override get description(): RichText | null {
+  override get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$instance.description ?? this.element.$element.description)
   }
 
@@ -487,7 +487,7 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.element.title
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return this.element.description
   }
 
@@ -540,7 +540,7 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
     return this.$relationship.technology ?? null
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$relationship.description)
   }
 

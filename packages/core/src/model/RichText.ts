@@ -4,16 +4,34 @@ import { markdownToText, memoizeProp } from '../utils'
 const richtxt = Symbol.for('richtxt')
 const symb_text = Symbol.for('text')
 
+const emptyTxt = ''
+
+export interface RichTextEmpty {
+  readonly isEmpty: true
+  readonly $source: null
+  readonly text: null
+}
+
+export type RichTextOrEmpty = RichText | RichTextEmpty
+
 export class RichText {
-  static memoize(obj: object, source: MarkdownOrString | null | undefined): RichText | null {
-    return memoizeProp(obj, richtxt, () => source ? RichText.from(source) : null)
+  static memoize(obj: object, source: MarkdownOrString | null | undefined): RichTextOrEmpty {
+    return memoizeProp(obj, richtxt, () => source ? RichText.from(source) : RichText.EMPTY)
   }
 
   static from(source: MarkdownOrString): RichText {
     return new RichText(source)
   }
 
+  static EMPTY: RichTextEmpty = {
+    isEmpty: true,
+    $source: null,
+    text: null,
+  }
+
   public readonly $source: Readonly<MarkdownOrString>
+
+  public readonly isEmpty: boolean
 
   /**
    * Private constructor to prevent direct instantiation.
@@ -22,8 +40,15 @@ export class RichText {
   private constructor(source: MarkdownOrString | string) {
     if (typeof source === 'string') {
       this.$source = { txt: source }
+      this.isEmpty = source.trim() === emptyTxt
     } else {
       this.$source = source
+      this.isEmpty = true
+      if ('md' in source) {
+        this.isEmpty = source.md === emptyTxt
+      } else {
+        this.isEmpty = source.txt === emptyTxt
+      }
     }
   }
 
@@ -33,6 +58,9 @@ export class RichText {
    * If the source is a markdown, it returns the markdown.
    */
   get text(): string {
+    if (this.isEmpty) {
+      return emptyTxt
+    }
     if ('txt' in this.$source) {
       return this.$source.txt
     }

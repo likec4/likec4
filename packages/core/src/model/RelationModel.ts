@@ -13,7 +13,7 @@ import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { isDeploymentRelationModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
-import { RichText } from './RichText'
+import { type RichTextEmpty, type RichTextOrEmpty, RichText } from './RichText'
 import type { WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
@@ -28,7 +28,7 @@ export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, Wit
   readonly expression: string
   readonly title: string | null
   readonly technology: string | null
-  readonly description: RichText | null
+  readonly description: RichTextOrEmpty
   readonly navigateTo: LikeC4ViewModel<A> | null
   readonly kind: aux.RelationKind<A> | null
   readonly links: ReadonlyArray<Link>
@@ -81,7 +81,7 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.technology
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.$relationship.description)
   }
 

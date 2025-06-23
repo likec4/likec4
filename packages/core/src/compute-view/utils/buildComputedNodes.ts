@@ -36,7 +36,6 @@ export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
 export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
   return {
     ...el.$element,
-    // description: el.description?.$source ?? null,
     tags: [...el.tags],
     id: el.id as scalar.NodeId,
     modelRef: el.id,

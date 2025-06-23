@@ -18,7 +18,7 @@ import type * as aux from '../../types/aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import { RichText } from '../RichText'
+import { type RichTextOrEmpty, RichText } from '../RichText'
 import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
@@ -47,7 +47,7 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.#node.kind as any
   }
 
-  get description(): RichText | null {
+  get description(): RichTextOrEmpty {
     return RichText.memoize(this, this.#node.description)
   }
 
