@@ -134,3 +134,78 @@ export const likec4tag = defineRecipe({
     conditions: ['hover'],
   }],
 })
+
+export const descriptionRichText = defineRecipe({
+  className: 'likec4-description-rich-text',
+  base: {
+    pointerEvents: 'all',
+    '--typography-spacing': '0.1em',
+    whiteSpace: 'normal',
+    paddingBottom: 2,
+
+    '& > *': {
+      whiteSpace: 'preserve-breaks',
+    },
+
+    '& :first-child': {
+      marginTop: 0,
+    },
+
+    '& :last-child': {
+      marginBottom: 0,
+    },
+    '& :where(h1, h2, h3, h4, h5, h6)': {
+      lineHeight: '1.3',
+      fontSize: '1em',
+      marginTop: 'var(--typography-spacing)',
+      marginBottom: 'var(--typography-spacing)',
+    },
+
+    '& :is(h1)': {
+      fontSize: '1.4em',
+    },
+    '& :is(h2)': {
+      fontSize: '1.3em',
+    },
+    '& :is(h3)': {
+      fontSize: '1.2em',
+    },
+
+    '& :where(img)': {
+      maxWidth: '100%',
+      marginBottom: 'var(--typography-spacing)',
+    },
+
+    '& :where(p)': {
+      marginTop: '0',
+      marginBottom: 'var(--typography-spacing)',
+    },
+
+    '& :where(a)': {
+      color: 'likec4.palette.stroke',
+      mixBlendMode: 'multiply',
+      textDecoration: 'underline',
+      _hover: {
+        textDecoration: 'none',
+      },
+    },
+
+    '& :where(code)': {
+      padding: '0px 3px',
+      borderRadius: '[2px]',
+      border: '1px solid',
+      borderColor: 'likec4.palette.stroke/70',
+      fontSize: '0.85em',
+      paddingBottom: '1px',
+      backgroundColor: 'likec4.palette.stroke/50',
+    },
+    '& :where(ul, ol):not([data-type="taskList"])': {
+      marginBottom: 'var(--typography-spacing)',
+      paddingInlineStart: 'var(--typography-spacing)',
+      listStylePosition: 'outside',
+    },
+  },
+  staticCss: [{
+    conditions: ['hover'],
+  }],
+})

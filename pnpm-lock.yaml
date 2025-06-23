@@ -1802,6 +1802,9 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 0.53.7(typescript@5.8.3)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.0
       '@types/picomatch':
         specifier: catalog:utils
         version: 4.0.0
@@ -10851,11 +10854,11 @@ snapshots:
 
   '@octokit/types@4.1.10':
     dependencies:
-      '@types/node': 20.19.1
+      '@types/node': 24.0.3
 
   '@octokit/types@5.5.0':
     dependencies:
-      '@types/node': 20.19.1
+      '@types/node': 24.0.3
 
   '@octokit/types@6.41.0':
     dependencies:
@@ -11306,7 +11309,7 @@ snapshots:
   '@slack/webhook@5.0.4':
     dependencies:
       '@slack/types': 1.10.0
-      '@types/node': 20.19.1
+      '@types/node': 24.0.3
       axios: 0.21.4
     transitivePeerDependencies:
       - debug
@@ -11568,7 +11571,7 @@ snapshots:
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.19.1
+      '@types/node': 24.0.3
 
   '@types/hast@3.0.4':
     dependencies:

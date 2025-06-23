@@ -14,6 +14,7 @@ import type {
   NodeId,
   NonEmptyArray,
   Point,
+  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import { useMemo } from 'react'
@@ -24,6 +25,7 @@ import {
   ifind,
   invariant,
   nonNullable,
+  RichText,
   toArray,
 } from '@likec4/core'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
@@ -200,12 +202,13 @@ export type LayoutRelationshipsViewResult = {
 export namespace LayoutRelationshipsViewResult {
   export const Empty = '@empty' as ElementKind
 
-  export type Node = Omit<DiagramNode, 'deploymentRef' | 'inEdges' | 'outEdges'> & {
+  export type Node = Omit<DiagramNode, 'deploymentRef' | 'description' | 'inEdges' | 'outEdges'> & {
+    description: RichTextOrEmpty
     column: RelationshipsBrowserTypes.Column
     ports: RelationshipsBrowserTypes.Ports
     existsInCurrentView: boolean
   }
-  export type Edge = DiagramEdge & {
+  export type Edge = Omit<DiagramEdge, 'description'> & {
     sourceFqn: Fqn
     targetFqn: Fqn
     sourceHandle: string
@@ -464,7 +467,7 @@ export function layoutRelationshipsView(
         y: position.y,
         position: [position.x, position.y],
         title: 'empty node',
-        description: null,
+        description: RichText.EMPTY,
         technology: null,
         tags: [],
         links: [],
@@ -515,7 +518,7 @@ export function layoutRelationshipsView(
       y: position.y,
       position: [position.x, position.y],
       title: element.title,
-      description: element.description,
+      description: RichText.from(element.description),
       technology: element.technology,
       tags: [...element.tags],
       links: null,

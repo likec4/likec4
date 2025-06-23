@@ -40,6 +40,7 @@ import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
+import { DescriptionMarkdown } from '../../base/primitives'
 import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
@@ -415,9 +416,12 @@ export function ElementDetailsCard({
             <TabsPanel value="Properties">
               <ScrollArea scrollbars="y" type="auto">
                 <Box className={styles.propertiesGrid} pt={'xs'}>
-                  <ElementProperty title="description" emptyValue="no description">
-                    {elementModel.description}
-                  </ElementProperty>
+                  <>
+                    <PropertyLabel>description</PropertyLabel>
+                    <Box>
+                      <DescriptionMarkdown value={elementModel.description} />
+                    </Box>
+                  </>
                   {elementModel.technology && (
                     <ElementProperty title="technology">
                       {elementModel.technology}
@@ -527,11 +531,13 @@ const ViewButton = <A extends Any>({
           <Text component="div" className={styles.viewButtonTitle} lineClamp={1}>
             {view.title || 'untitled'}
           </Text>
-          {view.description && (
+          {
+            /* {view.description && (
             <Text component="div" mt={2} fz={'xs'} c={'dimmed'} lh={1.4} lineClamp={1}>
               {view.description}
             </Text>
-          )}
+          )} */
+          }
         </Box>
       </Group>
     </UnstyledButton>

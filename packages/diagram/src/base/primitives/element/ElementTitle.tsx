@@ -1,4 +1,4 @@
-import type { DiagramNode } from '@likec4/core/types'
+import type { DiagramNode, RichTextOrEmpty } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Text } from '@mantine/core'
@@ -6,6 +6,7 @@ import { isEmpty, isNumber, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps, NonOptional } from '../../types'
+import { DescriptionMarkdown } from '../DescriptionMarkdown'
 import { nodeSizes } from './ElementNodeContainer'
 import * as styles from './ElementTitle.css'
 
@@ -15,12 +16,12 @@ type Data = Simplify<
       DiagramNode,
       | 'title'
       | 'technology'
-      | 'description'
       | 'color'
       | 'style'
     >
   >
   & {
+    description?: RichTextOrEmpty
     icon?: string | null
   }
 >
@@ -40,7 +41,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
   })
   const classes = styles.elementTitle({
     hasIcon: isTruthy(elementIcon),
-    hasDescription: !isEmpty(data.description ?? ''),
+    hasDescription: !!data.description?.nonEmpty,
     hasTechnology: !isEmpty(data.technology ?? ''),
   })
   const size = nodeSizes(data.style).size
@@ -77,12 +78,12 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         )}
 
         {data.description && (
-          <Text
-            component="div"
+          <DescriptionMarkdown
             className={cx(classes.description, 'likec4-element-description')}
-            lineClamp={isSmOrXs ? 3 : 5}>
-            {data.description}
-          </Text>
+            value={data.description}
+            hideIfEmpty
+            lineClamp={isSmOrXs ? 3 : 5}
+          />
         )}
       </Box>
     </Box>

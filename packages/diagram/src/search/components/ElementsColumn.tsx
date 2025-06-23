@@ -24,6 +24,7 @@ import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
 import { first, isEmpty, only, pipe, reduce } from 'remeda'
+import { DescriptionMarkdown } from '../../base/primitives/DescriptionMarkdown'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useDiagram } from '../../hooks/useDiagram'
 import { sortByLabel } from '../../likec4model/useLikeC4ElementsTree'
@@ -279,7 +280,7 @@ function ElementTreeNode(
             </Tooltip>
           </Group>
           <Highlight component="div" highlight={searchTerms} className={btn.description!} lineClamp={1}>
-            {element.description || 'No description'}
+            {element.description.text || 'No description'}
           </Highlight>
         </Box>
 

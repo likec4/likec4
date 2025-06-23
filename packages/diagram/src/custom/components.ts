@@ -4,6 +4,7 @@ export {
   CompoundNodeContainer,
   CompoundTitle,
   DefaultHandles,
+  DescriptionMarkdown,
   ElementActionButtons,
   ElementDetailsButton,
   ElementNodeContainer,
