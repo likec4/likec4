@@ -6,6 +6,8 @@ runs:
   steps:
     - name: 🛠️ Setup pnpm
       uses: pnpm/action-setup@v4
+      env:
+        NODE_ENV: development
 
     - name: 🛠️ Setup node
       uses: actions/setup-node@v4
