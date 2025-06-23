@@ -119,7 +119,7 @@
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@msgpack/msgpack": "^3.1.1",
     "@smithy/util-base64": "^4.0.0",
-    "@types/express": "^5.0.2",
+    "@types/express": "^5.0.3",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
     "@types/which": "^3.0.4",
