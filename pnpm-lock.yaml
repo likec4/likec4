@@ -110,8 +110,8 @@ catalogs:
       version: 8.1.1
   mcp:
     '@modelcontextprotocol/sdk':
-      specifier: ^1.13.0
-      version: 1.13.0
+      specifier: ^1.13.1
+      version: 1.13.1
   react:
     '@nanostores/react':
       specifier: 1.0.0
@@ -915,7 +915,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.13.0
+        version: 1.13.1
       '@msgpack/msgpack':
         specifier: ^3.1.2
         version: 3.1.2
@@ -1432,7 +1432,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.13.0
+        version: 1.13.1
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.0
@@ -2988,8 +2988,8 @@ packages:
   '@mjackson/node-fetch-server@0.6.1':
     resolution: {integrity: sha512-9ZJnk/DJjt805uv5PPv11haJIW+HHf3YEEyVXv+8iLQxLD/iXA68FH220XoiTPBC4gCg5q+IMadDw8qPqlA5wg==}
 
-  '@modelcontextprotocol/sdk@1.13.0':
-    resolution: {integrity: sha512-P5FZsXU0kY881F6Hbk9GhsYx02/KgWK1DYf7/tyE/1lcFKhDYPQR9iYjhQXJn+Sg6hQleMo3DB7h7+p4wgp2Lw==}
+  '@modelcontextprotocol/sdk@1.13.1':
+    resolution: {integrity: sha512-8q6+9aF0yA39/qWT/uaIj6zTpC+Qu07DnN/lb9mjoquCJsAh6l3HyYqc9O3t2j7GilseOQOQimLg7W3By6jqvg==}
     engines: {node: '>=18'}
 
   '@msgpack/msgpack@3.1.2':
@@ -10669,7 +10669,7 @@ snapshots:
 
   '@mjackson/node-fetch-server@0.6.1': {}
 
-  '@modelcontextprotocol/sdk@1.13.0':
+  '@modelcontextprotocol/sdk@1.13.1':
     dependencies:
       ajv: 6.12.6
       content-type: 1.0.5
