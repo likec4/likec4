@@ -7,12 +7,11 @@ import {
   type ParsedAstDeploymentRelation,
   type ParsedAstExtend,
   ast,
-  parseMarkdownAsString,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
-import { removeIndent, toSingleLine } from './Base'
+import { toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
@@ -90,9 +89,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title))
-      const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
+      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
+        {
+          title: astNode.title,
+        },
+        bodyProps,
+      )
 
       const links = this.convertLinks(astNode.body)
 
@@ -103,8 +105,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(metadata && { metadata }),
         ...(tags && { tags }),
         ...(links && isNonEmptyArray(links) && { links }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
+        ...descAndTech,
         style,
       }
     }
@@ -127,9 +128,15 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title) ?? astNode.name)
-      const description = this.parseMarkdownOrString(bodyProps.description)
-      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
+      const {
+        title = toSingleLine(astNode.name),
+        ...descAndTech
+      } = this.parseTitleDescriptionTechnology(
+        {
+          title: astNode.title,
+        },
+        bodyProps,
+      )
 
       const links = this.convertLinks(astNode.body)
 
@@ -140,8 +147,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(metadata && { metadata }),
         ...(tags && { tags }),
         ...(links && isNonEmptyArray(links) && { links }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
+        ...descAndTech,
         style,
       }
     }
@@ -209,9 +215,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         first(),
       )
 
-      const title = removeIndent(astNode.title ?? parseMarkdownAsString(bodyProps.title)) ?? ''
-      const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(parseMarkdownAsString(bodyProps.technology))
+      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
+        {
+          title: astNode.title,
+        },
+        bodyProps,
+      )
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
 
@@ -228,8 +237,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         target,
         ...title && { title },
         ...(metadata && { metadata }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
+        ...descAndTech,
         ...(kind && { kind }),
         ...(tags && { tags }),
         ...(isNonEmptyArray(links) && { links }),

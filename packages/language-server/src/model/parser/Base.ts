@@ -24,6 +24,7 @@ import {
   parseAstOpacityProperty,
   parseAstPercent,
   parseAstSizeValue,
+  parseMarkdownAsString,
   toColor,
 } from '../../ast'
 import type { ProjectConfig } from '../../config'
@@ -52,7 +53,7 @@ export function toSingleLine(
   }
   if ('md' in without) {
     return {
-      md: without.md.split('\n').join(' '),
+      md: without.md.split('\n').join('  '),
     }
   }
   return {
@@ -75,11 +76,11 @@ export function removeIndent(
   switch (true) {
     case isString(str):
       return stripIndent(str).trim()
-    case ast.isMarkdownOrString(str) && !!str.markdown:
+    case ast.isMarkdownOrString(str) && isTruthy(str.markdown):
       return {
         md: stripIndent(str.markdown).trim(),
       }
-    case ast.isMarkdownOrString(str) && !!str.text:
+    case ast.isMarkdownOrString(str) && isTruthy(str.text):
       return {
         txt: stripIndent(str.text).trim(),
       }
@@ -347,5 +348,35 @@ export class BaseParser {
       }
     }
     return result
+  }
+
+  parseTitleDescriptionTechnology(
+    inlineProps: {
+      title?: string | undefined
+      description?: string | undefined
+      technology?: string | undefined
+    },
+    bodyProps: {
+      title?: ast.MarkdownOrString | undefined
+      description?: ast.MarkdownOrString | undefined
+      technology?: ast.MarkdownOrString | undefined
+    },
+  ): {
+    title?: string
+    description?: c4.MarkdownOrString
+    technology?: string
+  } {
+    const title = removeIndent(inlineProps.title ?? parseMarkdownAsString(bodyProps.title))
+
+    const description = inlineProps.description
+      ? { txt: removeIndent(inlineProps.description) }
+      : this.parseMarkdownOrString(bodyProps.description)
+    const technology = toSingleLine(inlineProps.technology) ?? removeIndent(parseMarkdownAsString(bodyProps.technology))
+
+    return {
+      ...(isTruthy(title) && { title }),
+      ...(isTruthy(description) && { description }),
+      ...(isTruthy(technology) && { technology }),
+    }
   }
 }

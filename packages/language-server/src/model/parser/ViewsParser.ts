@@ -1,6 +1,6 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
+import { filter, isArray, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
@@ -90,10 +90,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const stringProps = body.props.filter(ast.isViewStringProperty)
-
-      const title = toSingleLine(parseMarkdownAsString(stringProps.find(p => p.key === 'title')?.value)) ?? null
-      const description = this.parseMarkdownOrString(stringProps.find(p => p.key === 'description')?.value) ?? null
+      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
+        {},
+        pipe(
+          body.props,
+          filter(p => this.isValid(p)),
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
@@ -257,10 +262,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           astPath,
         ) as c4.ViewId
       }
-      const stringProps = props.filter(ast.isViewStringProperty)
 
-      const title = toSingleLine(parseMarkdownAsString(stringProps.find(p => p.key === 'title')?.value)) ?? null
-      const description = this.parseMarkdownOrString(stringProps.find(p => p.key === 'description')?.value) ?? null
+      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
+        {},
+        pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)

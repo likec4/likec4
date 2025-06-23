@@ -1,11 +1,11 @@
 import * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { isNonNullish } from 'remeda'
+import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
 import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
-import { removeIndent, toSingleLine } from './Base'
+import { removeIndent } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
 import type { WithExpressionV2 } from './FqnRefParser'
 
@@ -29,10 +29,18 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
           astPath,
         ) as c4.ViewId
       }
-      const stringProps = props.filter(ast.isViewStringProperty)
 
-      const title = toSingleLine(parseMarkdownAsString(stringProps.find(p => p.key === 'title')?.value)) ?? null
-      const description = this.parseMarkdownOrString(stringProps.find(p => p.key === 'description')?.value) ?? null
+      const {
+        title = null,
+        description = null,
+      } = this.parseTitleDescriptionTechnology(
+        {},
+        pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
