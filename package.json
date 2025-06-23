@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=20.19.1"
+    "node": "~20.19.1"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
