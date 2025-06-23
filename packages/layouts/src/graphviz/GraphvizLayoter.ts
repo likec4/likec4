@@ -19,7 +19,7 @@ import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
 import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
 
-export interface GraphvizPort {
+export interface GraphvizPort extends Disposable {
   get concurrency(): number
   unflatten(dot: DotSource): Promise<DotSource>
   acyclic(dot: DotSource): Promise<DotSource>
@@ -51,7 +51,7 @@ export type LayoutResult<A extends aux.Any = aux.Any> = {
 }
 const logger = rootLogger.getChild(['layouter'])
 
-export class GraphvizLayouter {
+export class GraphvizLayouter implements Disposable {
   private graphviz: GraphvizPort
 
   constructor(graphviz?: GraphvizPort) {
@@ -120,6 +120,8 @@ export class GraphvizLayouter {
         .split('\n')
         .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
         .join('\n') as DotSource
+
+      logger.debug`layouting view ${params.view.id} done`
       return { dot, diagram }
     } catch (e) {
       throw new Error(`Error during layout: ${params.view.id}`, { cause: e })

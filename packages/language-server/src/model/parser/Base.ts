@@ -37,10 +37,13 @@ import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 export type GConstructor<T = {}> = new(...args: any[]) => T
 
 export function toSingleLine(str: string): string
-export function toSingleLine(str: string | undefined): string | undefined
+export function toSingleLine(str: string | undefined | null): string | undefined
 export function toSingleLine(str: ast.MarkdownOrString): MarkdownOrString
-export function toSingleLine(str: ast.MarkdownOrString | undefined): MarkdownOrString | undefined
+export function toSingleLine(str: ast.MarkdownOrString | undefined | null): MarkdownOrString | undefined
 export function toSingleLine(str: ast.MarkdownOrString | string): MarkdownOrString | string
+export function toSingleLine(
+  str: ast.MarkdownOrString | string | undefined | null,
+): MarkdownOrString | string | undefined
 export function toSingleLine(
   str: ast.MarkdownOrString | string | undefined | null,
 ): MarkdownOrString | string | undefined {
