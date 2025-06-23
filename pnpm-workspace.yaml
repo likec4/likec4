@@ -111,7 +111,7 @@ catalogs:
     starlight-package-managers: ^0.11.0
     shiki: ^3.6.0
   mcp:
-    "@modelcontextprotocol/sdk": ^1.13.0
+    "@modelcontextprotocol/sdk": ^1.13.1
   hono:
     hono: ^4.8.2
     hono-sessions: ^0.7.3
