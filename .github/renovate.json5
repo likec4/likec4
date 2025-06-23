@@ -1,0 +1,88 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    'config:recommended',
+    'group:monorepos',
+    'helpers:disableTypesNodeMajor',
+  ],
+  "prHourlyLimit": 20,
+  "prConcurrentLimit": 5,
+  "rangeStrategy": 'bump',
+  "updateInternalDeps": true,
+  "labels": [
+    "dependencies"
+  ],
+  "ignorePaths": [
+    "e2e/**",
+    "examples/**",
+    "packages/create-likec4/**"
+  ],
+  packageRules: [
+    {
+      matchCategories: [
+        'ci',
+      ],
+      automerge: true,
+      pinDigests: false,
+    },
+    {
+      automerge: true,
+      matchPackageNames: [
+        'dprint',
+        'type-fest',
+        'remeda',
+        'turbo',
+        'wrangler',
+        'wireit',
+        'pnpm',
+        'semver',
+        'terser',
+        '@fontsource{/,}**',
+      ]
+    },
+    {
+      groupName: '@langium',
+      matchDepNames: [
+        '/langium/',
+      ],
+    },
+    {
+      groupName: '@nanostores',
+      matchPackageNames: [
+        'nanostores',
+        '@nanostores{/,}**',
+      ],
+    },
+    {
+      groupName: '@xyflow',
+      matchPackageNames: [
+        '@xyflow{/,}**',
+      ],
+    },
+    {
+      groupName: '@expressive-code',
+      matchPackageNames: [
+        '@expressive-code{/,}**',
+      ],
+    },
+    {
+      groupName: 'reactive-vscode',
+      matchPackageNames: [
+        '@reactive-vscode{/,}**',
+        'reactive-vscode',
+      ],
+    },
+    {
+      enabled: false,
+      matchPackageNames: [
+        '/^monaco/',
+        '/^@monaco/',
+        '/^@codingame/',
+        '@types/vscode',
+        'vscode',
+        '/^vscode-/',
+        '@tanstack{/,}**',
+      ]
+    },
+  ],
+}
