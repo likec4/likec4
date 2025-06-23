@@ -127,6 +127,5 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
-  },
-  "packageManager": "pnpm@10.12.1"
+  }
 }

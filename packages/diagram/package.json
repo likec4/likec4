@@ -65,7 +65,7 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.12.1",
+
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",

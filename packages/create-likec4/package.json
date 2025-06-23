@@ -37,6 +37,5 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:"
-  },
-  "packageManager": "pnpm@10.12.1"
+  }
 }

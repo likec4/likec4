@@ -296,6 +296,5 @@
     "vscode-messenger-common": "^0.5.1",
     "playwright": "catalog:",
     "vscode-uri": "catalog:vscode"
-  },
-  "packageManager": "pnpm@10.12.1"
+  }
 }

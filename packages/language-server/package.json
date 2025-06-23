@@ -155,6 +155,5 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "zod": "catalog:utils"
-  },
-  "packageManager": "pnpm@10.12.1"
+  }
 }

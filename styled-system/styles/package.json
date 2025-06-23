@@ -88,6 +88,5 @@
     "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",
     "typescript": "catalog:"
-  },
-  "packageManager": "pnpm@10.12.1"
+  }
 }

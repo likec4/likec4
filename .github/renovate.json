@@ -8,6 +8,7 @@
   ],
   "ignorePaths": [
     "e2e/**",
-    "examples/**"
+    "examples/**",
+    "packages/create-likec4/**"
   ]
 }
