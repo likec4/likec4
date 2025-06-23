@@ -110,22 +110,22 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'client': {
         kind: 'user',
         shape: 'person',
-        description: null,
-        technology: null,
       },
       'system.backend': {
         color: 'secondary',
         title: 'Backend',
-        description: null,
         technology: 'NodeJS',
       },
       'system.frontend': {
         color: 'muted',
         shape: 'browser',
         description: { txt: 'Frontend description' },
-        technology: null,
       },
     })
+    expect(model.elements['client']).not.to.have.property('description')
+    expect(model.elements['client']).not.to.have.property('technology')
+    expect(model.elements['system.backend']).not.to.have.property('description')
+    expect(model.elements['system.frontend']).not.to.have.property('technology')
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 

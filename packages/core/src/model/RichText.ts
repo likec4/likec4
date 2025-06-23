@@ -13,11 +13,19 @@ export class RichText {
     return new RichText(source)
   }
 
+  public readonly $source: Readonly<MarkdownOrString>
+
   /**
    * Private constructor to prevent direct instantiation.
    * Use `RichText.from` or `RichText.memoize` instead.
    */
-  private constructor(public $source: MarkdownOrString) {}
+  private constructor(source: MarkdownOrString | string) {
+    if (typeof source === 'string') {
+      this.$source = { txt: source }
+    } else {
+      this.$source = source
+    }
+  }
 
   /**
    * Returns the text content of the rich text.

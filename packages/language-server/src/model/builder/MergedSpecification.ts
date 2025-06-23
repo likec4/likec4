@@ -125,8 +125,8 @@ export class MergedSpecification {
         },
         links: links ?? null,
         tags: tags ?? [],
-        technology: technology ?? null,
-        description: description ?? null,
+        ...(technology && { technology }),
+        ...(description && { description }),
         title,
         kind,
         id,
@@ -192,9 +192,12 @@ export class MergedSpecification {
         technology = __kind.technology,
         notation = __kind.notation,
         style,
+        description,
+        ...rest
       } = parsed
       return {
-        ...parsed,
+        ...rest,
+        ...(description && { description }),
         ...(notation && { notation }),
         ...(technology && { technology }),
         style: {
