@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
-    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "@fontsource/ibm-plex-sans": "^5.2.6",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
