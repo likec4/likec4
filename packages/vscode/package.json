@@ -273,7 +273,7 @@
     "esbuild": "catalog:esbuild",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",
-    "execa": "^9.5.3",
+    "execa": "^9.6.0",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "p-timeout": "^6.1.4",

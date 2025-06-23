@@ -62,7 +62,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "esbuild": "catalog:esbuild",
-    "execa": "^9.5.3",
+    "execa": "^9.6.0",
     "fdir": "catalog:utils",
     "picomatch": "catalog:utils",
     "react": "catalog:react",
