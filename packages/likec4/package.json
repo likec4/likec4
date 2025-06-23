@@ -19,7 +19,7 @@
     "graph"
   ],
   "engines": {
-    "node": ">=20.19.1"
+    "node": ">=20.19.3"
   },
   "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
