@@ -121,5 +121,4 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
-
-pnpmfile: node_modules/.pnpm-config/@pnpm/types-fixer/pnpmfile.cjs
+# pnpmfile: node_modules/.pnpm-config/@pnpm/types-fixer/pnpmfile.cjs
