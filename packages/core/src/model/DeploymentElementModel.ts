@@ -18,13 +18,13 @@ import {
   DefaultShapeSize,
   DefaultThemeColor,
 } from '../types'
+import { type RichTextOrEmpty, RichText } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import { type RichTextOrEmpty, RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 

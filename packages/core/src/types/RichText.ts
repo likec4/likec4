@@ -16,11 +16,13 @@ export type RichTextOrEmpty = RichText | RichTextEmpty
 
 export class RichText {
   static memoize(obj: object, source: MarkdownOrString | null | undefined): RichTextOrEmpty {
-    return memoizeProp(obj, richtxt, () => source ? RichText.from(source) : RichText.EMPTY)
+    return memoizeProp(obj, richtxt, () => RichText.from(source))
   }
 
-  static from(source: MarkdownOrString): RichText {
-    return new RichText(source)
+  static from(source: MarkdownOrString): RichText
+  static from(source: MarkdownOrString | null | undefined): RichTextOrEmpty
+  static from(source: MarkdownOrString | null | undefined): RichTextOrEmpty {
+    return source ? new RichText(source) : RichText.EMPTY
   }
 
   static EMPTY: RichTextEmpty = {

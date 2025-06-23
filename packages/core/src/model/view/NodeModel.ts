@@ -10,15 +10,16 @@ import {
   type IconUrl,
   type IteratorLike,
   type Link,
+  type RichTextOrEmpty,
   type scalar,
   GroupElementKind,
   isGroupElementKind,
+  RichText,
 } from '../../types'
 import type * as aux from '../../types/aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import { type RichTextOrEmpty, RichText } from '../RichText'
 import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'

@@ -61,4 +61,4 @@ export type {
   SpecAux,
 } from '../types'
 
-export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'
+export { RichText, type RichTextEmpty, type RichTextOrEmpty } from '../types'

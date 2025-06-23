@@ -3,9 +3,11 @@ import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
+  type RichTextOrEmpty,
   DefaultLineStyle,
   DefaultRelationshipColor,
   FqnRef,
+  RichText,
 } from '../types'
 import type * as aux from '../types/aux'
 import { commonAncestor } from '../utils/fqn'
@@ -13,7 +15,6 @@ import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { isDeploymentRelationModel } from './guards'
 import type { LikeC4Model } from './LikeC4Model'
-import { type RichTextEmpty, type RichTextOrEmpty, RichText } from './RichText'
 import type { WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 

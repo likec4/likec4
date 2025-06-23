@@ -8,9 +8,11 @@ import {
   type IconUrl,
   type Link,
   type ProjectId,
+  type RichTextOrEmpty,
   DefaultElementShape,
   DefaultShapeSize,
   DefaultThemeColor,
+  RichText,
   splitGlobalFqn,
 } from '../types'
 import * as aux from '../types/aux'
@@ -18,7 +20,6 @@ import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNat
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import { type RichTextEmpty, type RichTextOrEmpty, RichText } from './RichText'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 

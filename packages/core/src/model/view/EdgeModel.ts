@@ -11,9 +11,9 @@ import {
   extractStep,
   isStepEdgeId,
 } from '../../types'
+import { type RichTextOrEmpty, RichText } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
-import { type RichTextOrEmpty, RichText } from '../RichText'
 import type { $View, WithTags } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
