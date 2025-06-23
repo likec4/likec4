@@ -26,6 +26,11 @@ describe('RichText', () => {
       expect(RichText.from(RichText.EMPTY)).toBe(RichText.EMPTY)
     })
 
+    it('should return the same instance for same source input', () => {
+      const source = { txt: 'test' }
+      expect(RichText.from(source)).toBe(RichText.from(source))
+    })
+
     it('should create from plain string', () => {
       const rt = RichText.from('hello')
       expect(rt.isEmpty).toBe(false)

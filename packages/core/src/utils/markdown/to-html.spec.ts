@@ -10,36 +10,38 @@ describe('markdownToHtml', () => {
     ['This is plain text', '<p>This is plain text</p>'],
     [' ', ''],
     [' Trim spaces   ', '<p>Trim spaces</p>'],
+    ['Trim spaces \n\nLine2\n\nLine3', '<p>Trim spaces</p>\n<p>Line2</p>\n<p>Line3</p>'],
     [' Trim spaces \n', '<p>Trim spaces</p>'],
     ['\n\n Trim spaces \n \n', '<p>Trim spaces</p>'],
+    ['\nLine1\nLine2\nLine3', '<p>Line1\nLine2\nLine3</p>'],
   ])('should convert plain text "%s" to %s', (text, expectedContent) => {
     const result = markdownToHtml(text)
     expect(result).toBe(expectedContent)
   })
 
   it('should convert headings to HTML headings', () => {
-    expect(markdownToHtml('# Heading 1').trim()).toMatch(/<h1[^>]*>Heading 1<\/h1>/)
-    expect(markdownToHtml('## Heading 2').trim()).toMatch(/<h2[^>]*>Heading 2<\/h2>/)
-    expect(markdownToHtml('### Heading 3').trim()).toMatch(/<h3[^>]*>Heading 3<\/h3>/)
+    expect(markdownToHtml('# Heading 1')).toMatchInlineSnapshot(`"<h1>Heading 1</h1>"`)
+    expect(markdownToHtml('## Heading 2')).toMatchInlineSnapshot(`"<h2>Heading 2</h2>"`)
+    expect(markdownToHtml('### Heading 3')).toMatchInlineSnapshot(`"<h3>Heading 3</h3>"`)
   })
 
   it('should convert emphasis to HTML emphasis tags', () => {
-    expect(markdownToHtml('*italic*').trim()).toMatch(/<p[^>]*><em[^>]*>italic<\/em><\/p>/)
-    expect(markdownToHtml('_italic_').trim()).toMatch(/<p[^>]*><em[^>]*>italic<\/em><\/p>/)
-    expect(markdownToHtml('**bold**').trim()).toMatch(/<p[^>]*><strong[^>]*>bold<\/strong><\/p>/)
-    expect(markdownToHtml('__bold__').trim()).toMatch(/<p[^>]*><strong[^>]*>bold<\/strong><\/p>/)
-    expect(markdownToHtml('***bold italic***').trim()).toMatch(
-      /<p[^>]*><em[^>]*><strong[^>]*>bold italic<\/strong><\/em><\/p>/,
+    expect(markdownToHtml('*italic*')).toMatchInlineSnapshot(`"<p><em>italic</em></p>"`)
+    expect(markdownToHtml('_italic_')).toMatchInlineSnapshot(`"<p><em>italic</em></p>"`)
+    expect(markdownToHtml('**bold**')).toMatchInlineSnapshot(`"<p><strong>bold</strong></p>"`)
+    expect(markdownToHtml('__bold__')).toMatchInlineSnapshot(`"<p><strong>bold</strong></p>"`)
+    expect(markdownToHtml('***bold italic***')).toMatchInlineSnapshot(
+      `"<p><em><strong>bold italic</strong></em></p>"`,
     )
   })
 
   it('should convert links to HTML anchors', () => {
-    const result1 = markdownToHtml('[link text](https://example.com)').trim()
-    expect(result1).toMatch(/<p[^>]*>.*<a [^>]*href="https:\/\/example.com"[^>]*>link text<\/a>.*<\/p>/s)
+    expect(markdownToHtml('[link text](https://example.com)')).toMatchInlineSnapshot(
+      `"<p><a href="https://example.com">link text</a></p>"`,
+    )
 
-    const result2 = markdownToHtml('Visit [example](https://example.com) for more info').trim()
-    expect(result2).toMatch(
-      /<p[^>]*>Visit .*<a [^>]*href="https:\/\/example.com"[^>]*>example<\/a>.* for more info<\/p>/s,
+    expect(markdownToHtml('Visit [example](https://example.com) for more info')).toMatchInlineSnapshot(
+      `"<p>Visit <a href="https://example.com">example</a> for more info</p>"`,
     )
   })
 
@@ -74,13 +76,13 @@ describe('markdownToHtml', () => {
 `
     expect(markdownToHtml(markdown)).toMatchInlineSnapshot(`
       "<ul>
-        <li>Item 1</li>
-        <li>Item 2
-          <ul>
-            <li>Nested item</li>
-          </ul>
-        </li>
-        <li>Item 3</li>
+      <li>Item 1</li>
+      <li>Item 2
+      <ul>
+      <li>Nested item</li>
+      </ul>
+      </li>
+      <li>Item 3</li>
       </ul>"
     `)
   })
@@ -92,11 +94,11 @@ describe('markdownToHtml', () => {
 3. Third item
 `
     expect(markdownToHtml(markdown)).toMatchInlineSnapshot(`
-      "<ol>
-        <li>First item</li>
-        <li>Second item</li>
-        <li>Third item</li>
-      </ol>"
+    "<ol>
+    <li>First item</li>
+    <li>Second item</li>
+    <li>Third item</li>
+    </ol>"
     `)
   })
 
@@ -119,10 +121,8 @@ describe('markdownToHtml', () => {
     const markdown = '> This is a quote\n> Another line'
     expect(markdownToHtml(markdown)).toMatchInlineSnapshot(`
       "<blockquote>
-        <p>
-          This is a quote
-          Another line
-        </p>
+      <p>This is a quote
+      Another line</p>
       </blockquote>"
     `)
   })
@@ -143,8 +143,8 @@ code block
       "<h1>Title</h1>
       <p>This is a <strong>bold</strong> statement with <a href="https://example.com">a link</a>.</p>
       <ul>
-        <li>List item 1</li>
-        <li>List item 2 with <em>emphasis</em></li>
+      <li>List item 1</li>
+      <li>List item 2 with <em>emphasis</em></li>
       </ul>
       <pre><code>code block
       </code></pre>"
@@ -167,25 +167,8 @@ code block
 | Cell 1   | Cell 2   |
 | Cell 3   | Cell 4   |
 `
-    expect(markdownToHtml(markdown)).toMatchInlineSnapshot(`
-      "<table>
-        <thead>
-          <tr>
-            <th>Header 1</th>
-            <th>Header 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Cell 1</td>
-            <td>Cell 2</td>
-          </tr>
-          <tr>
-            <td>Cell 3</td>
-            <td>Cell 4</td>
-          </tr>
-        </tbody>
-      </table>"
-    `)
+    expect(markdownToHtml(markdown)).toMatchInlineSnapshot(
+      `"<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></tbody></table>"`,
+    )
   })
 })
