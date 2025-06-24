@@ -18,7 +18,7 @@ import type {
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/aux'
 import { compareNatural, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
-import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
+import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
@@ -633,12 +633,16 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     this._incoming.get(target.id).add(rel)
     this._outgoing.get(source.id).add(rel)
 
-    const relParent = commonAncestor(source.id, target.id)
+    const relParent = rel.boundary?.id ?? null
     // Process internal relationships
     if (relParent) {
       for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
         this._internal.get(ancestor).add(rel)
       }
+    }
+    // Skip hierarchy processing for self relations
+    if (rel.isSelfRelation) {
+      return rel
     }
     // Process source hierarchy
     for (const sourceAncestor of ancestorsFqn(source.id)) {

@@ -111,6 +111,7 @@ const local = b
     ),
     $m.model(
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
+      $m.rel('cloud.backend', 'cloud.backend', 'self call'),
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
       $m.rel('cloud.backend.api', 'email', 'sends emails'),

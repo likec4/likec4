@@ -23,16 +23,17 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
 export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, WithMetadata<A> {
-  get id(): scalar.RelationId
-  get expression(): string
-  get title(): string | null
-  get technology(): string | null
-  get description(): string | null
-  get navigateTo(): LikeC4ViewModel<A> | null
-  get kind(): aux.RelationKind<A> | null
-  get links(): ReadonlyArray<Link>
-  get color(): Color
-  get line(): RelationshipLineType
+  readonly id: scalar.RelationId
+  readonly expression: string
+  readonly title: string | null
+  readonly technology: string | null
+  readonly description: string | null
+  readonly navigateTo: LikeC4ViewModel<A> | null
+  readonly kind: aux.RelationKind<A> | null
+  readonly links: ReadonlyArray<Link>
+  readonly color: Color
+  readonly line: RelationshipLineType
+  readonly isSelfRelation: boolean
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
   views(): ViewsIterator<A>
@@ -48,13 +49,16 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
    */
   public readonly boundary: ElementModel<A> | null
 
+  public readonly isSelfRelation: boolean
+
   constructor(
     public readonly model: LikeC4Model<A>,
     public readonly $relationship: Relationship<A>,
   ) {
     this.source = model.element(FqnRef.flatten($relationship.source))
     this.target = model.element(FqnRef.flatten($relationship.target))
-    const parent = commonAncestor(this.source.id, this.target.id)
+    this.isSelfRelation = this.source.id === this.target.id
+    const parent = this.isSelfRelation ? this.source.parent?.id : commonAncestor(this.source.id, this.target.id)
     this.boundary = parent ? this.model.element(parent) : null
   }
 

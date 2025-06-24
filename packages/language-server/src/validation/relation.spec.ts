@@ -1,4 +1,4 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('relationChecks', () => {
@@ -138,6 +138,23 @@ describe.concurrent('relationChecks', () => {
       }
     `)
     expect(errors).toEqual(['Invalid parent-child relationship'])
+  })
+
+  it('should not report for valid self relation', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          -> c1
+        }
+        component c2 {}
+        c2 -> c2
+      }
+    `)
+    expect(errors).toEqual([])
   })
 
   it('should not report for valid tags', async ({ expect }) => {
