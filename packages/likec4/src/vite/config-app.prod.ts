@@ -69,16 +69,15 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'production',
     optimizeDeps: {
-      noDiscovery: true,
-      include: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-        'likec4/model',
-      ],
+      force: true,
+    },
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          target: 'ESNext',
+          jsx: 'react-jsx',
+        },
+      },
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
