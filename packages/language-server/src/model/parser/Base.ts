@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
+import { type MarkdownOrString, GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
 import type { AstNode, URI } from 'langium'
 import {
   filter,
@@ -8,7 +8,6 @@ import {
   isArray,
   isBoolean,
   isEmpty,
-  isNonNullish,
   isNumber,
   isString,
   isTruthy,
@@ -25,6 +24,7 @@ import {
   parseAstOpacityProperty,
   parseAstPercent,
   parseAstSizeValue,
+  parseMarkdownAsString,
   toColor,
 } from '../../ast'
 import type { ProjectConfig } from '../../config'
@@ -36,12 +36,60 @@ import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
 
-export function toSingleLine<T extends string | undefined | null>(str: T): T {
-  return (isNonNullish(str) ? removeIndent(str).split('\n').join(' ') : undefined) as T
+export function toSingleLine(str: string): string
+export function toSingleLine(str: string | undefined | null): string | undefined
+export function toSingleLine(str: ast.MarkdownOrString): MarkdownOrString
+export function toSingleLine(str: ast.MarkdownOrString | undefined | null): MarkdownOrString | undefined
+export function toSingleLine(str: ast.MarkdownOrString | string): MarkdownOrString | string
+export function toSingleLine(
+  str: ast.MarkdownOrString | string | undefined | null,
+): MarkdownOrString | string | undefined
+export function toSingleLine(
+  str: ast.MarkdownOrString | string | undefined | null,
+): MarkdownOrString | string | undefined {
+  if (str === null || str === undefined) {
+    return undefined
+  }
+  const without = removeIndent(str)
+  if (isString(without)) {
+    return without.split('\n').join(' ')
+  }
+  if ('md' in without) {
+    return {
+      md: without.md.split('\n').join('  '),
+    }
+  }
+  return {
+    txt: without.txt.split('\n').join(' '),
+  }
 }
 
-export function removeIndent<T extends string | undefined | null>(str: T): T {
-  return (isNonNullish(str) ? stripIndent(str).trim() : undefined) as T
+export function removeIndent(str: string): string
+export function removeIndent(str: string | undefined): string | undefined
+export function removeIndent(str: ast.MarkdownOrString): MarkdownOrString
+export function removeIndent(str: ast.MarkdownOrString | undefined): MarkdownOrString | undefined
+export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
+// export function removeIndent(str: ast.MarkdownOrString | string): MarkdownOrString | string
+export function removeIndent(
+  str: ast.MarkdownOrString | string | undefined,
+): MarkdownOrString | string | undefined {
+  if (str === null || str === undefined) {
+    return undefined
+  }
+  switch (true) {
+    case isString(str):
+      return stripIndent(str).trim()
+    case ast.isMarkdownOrString(str) && isTruthy(str.markdown):
+      return {
+        md: stripIndent(str.markdown).trim(),
+      }
+    case ast.isMarkdownOrString(str) && isTruthy(str.text):
+      return {
+        txt: stripIndent(str.text).trim(),
+      }
+    default:
+      return undefined
+  }
 }
 
 export type Base = GConstructor<BaseParser>
@@ -96,11 +144,19 @@ export class BaseParser {
     }
     const data = pipe(
       metadataAstNode.props,
-      map(p => [p.key, removeIndent(p.value)] as [string, string]),
+      map(p => [p.key, removeIndent(p.value)] as [string, MarkdownOrString]),
+      map(([key, value]) => [key, value.md || value.txt] as [string, string]),
       filter(([_, value]) => isTruthy(value)),
       fromEntries(),
     )
     return isEmpty(data) ? undefined : data
+  }
+
+  parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
+    if (ast.isMarkdownOrString(markdownOrString)) {
+      return removeIndent(markdownOrString)
+    }
+    return undefined
   }
 
   convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {
@@ -295,5 +351,39 @@ export class BaseParser {
       }
     }
     return result
+  }
+
+  /**
+   * Parses title, description and technology
+   * Inline properties (right on node) have higher priority than body properties (inside '{...}')
+   */
+  parseTitleDescriptionTechnology(
+    inlineProps: {
+      title?: string | undefined
+      description?: string | undefined
+      technology?: string | undefined
+    },
+    bodyProps: {
+      title?: ast.MarkdownOrString | undefined
+      description?: ast.MarkdownOrString | undefined
+      technology?: ast.MarkdownOrString | undefined
+    },
+  ): {
+    title?: string
+    description?: c4.MarkdownOrString
+    technology?: string
+  } {
+    const title = removeIndent(inlineProps.title ?? parseMarkdownAsString(bodyProps.title))
+
+    const description = inlineProps.description
+      ? { txt: removeIndent(inlineProps.description) }
+      : this.parseMarkdownOrString(bodyProps.description)
+    const technology = toSingleLine(inlineProps.technology) ?? removeIndent(parseMarkdownAsString(bodyProps.technology))
+
+    return {
+      ...(isTruthy(title) && { title }),
+      ...(isTruthy(description) && { description }),
+      ...(isTruthy(technology) && { technology }),
+    }
   }
 }

@@ -6,6 +6,7 @@ import type {
   NonEmptyArray,
   RelationId,
   RelationshipLineType,
+  RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
@@ -29,7 +30,6 @@ export namespace RelationshipsBrowserTypes {
         DiagramNode,
         | 'title'
         | 'technology'
-        | 'description'
         | 'color'
         | 'shape'
         | 'style'
@@ -45,6 +45,7 @@ export namespace RelationshipsBrowserTypes {
       icon: string | null
       ports: Ports
       existsInCurrentView: boolean
+      description: RichTextOrEmpty
     }
   >
 

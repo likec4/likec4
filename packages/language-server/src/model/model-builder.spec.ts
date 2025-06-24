@@ -110,22 +110,22 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'client': {
         kind: 'user',
         shape: 'person',
-        description: null,
-        technology: null,
       },
       'system.backend': {
         color: 'secondary',
         title: 'Backend',
-        description: null,
         technology: 'NodeJS',
       },
       'system.frontend': {
         color: 'muted',
         shape: 'browser',
-        description: 'Frontend description',
-        technology: null,
+        description: { txt: 'Frontend description' },
       },
     })
+    expect(model.elements['client']).not.to.have.property('description')
+    expect(model.elements['client']).not.to.have.property('technology')
+    expect(model.elements['system.backend']).not.to.have.property('description')
+    expect(model.elements['system.frontend']).not.to.have.property('technology')
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
@@ -420,7 +420,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       withLinks: {
         id: 'withLinks',
         title: null,
-        description: 'View with links',
+        description: { txt: 'View with links' },
         tags: ['v2'],
         links: [
           { url: 'https://example1.com' },
@@ -753,7 +753,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
       title: 'calls',
       technology: 'NodeJS',
-      description: 'description',
+      description: { txt: 'description' },
       color: 'red',
       line: 'dotted',
       head: 'diamond',
@@ -798,7 +798,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     let system1Node = indexView!.nodes.find(n => n.id === 'system1')
     expect(system1Node).toMatchObject({
       title: 'system1',
-      description: 'Custom description',
+      description: { txt: 'Custom description' },
       navigateTo: 'index',
     })
 
@@ -809,7 +809,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
 
     system1Node = views['index' as ViewId]!.nodes.find(n => n.id === 'system1')!
     expect(system1Node).toBeDefined()
-    expect(system1Node.description).toEqual('Custom description')
+    expect(system1Node.description).toEqual({ txt: 'Custom description' })
     expect(system1Node.navigateTo).toEqual('index')
     expect(system1Node.color).toEqual('amber')
 
@@ -969,7 +969,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           model: 'system1',
         },
         title: 'uses',
-        description: 'desc',
+        description: { txt: 'desc' },
       }),
       expect.objectContaining({
         source: {
@@ -979,7 +979,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           model: 'system1',
         },
         title: 'uses',
-        description: 'desc',
+        description: { txt: 'desc' },
         technology: 'http',
       }),
       expect.objectContaining({
@@ -990,7 +990,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           model: 'system2',
         },
         title: 'uses',
-        description: 'desc2',
+        description: { txt: 'desc2' },
       }),
       expect.objectContaining({
         source: {
@@ -1000,7 +1000,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           model: 'system2',
         },
         title: 'uses',
-        description: 'desc1',
+        description: { txt: 'desc1' },
         technology: 'http',
       }),
     ])

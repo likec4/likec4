@@ -1,4 +1,4 @@
-import { type IteratorLike, type ProjectId, _type } from '@likec4/core'
+import { type IteratorLike, type ProjectId, type RichTextOrEmpty, _type, RichText } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { flatMap } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -12,8 +12,11 @@ import { elementResource, modelViewResource } from './utils'
 
 const logger = mainLogger.getChild('LikeC4MCPServices')
 
-function singleLine<T extends string | undefined | null>(str: T) {
-  const res = toSingleLine(str)?.replaceAll('"', '\'')
+function singleLine(str: RichTextOrEmpty | string | undefined | null) {
+  if (str === null || str === undefined) {
+    return 'null'
+  }
+  const res = toSingleLine(RichText.from(str).text)?.replaceAll('"', '\'')
   return res ? `"${res}"` : 'null'
 }
 

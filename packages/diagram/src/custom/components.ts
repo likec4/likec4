@@ -11,6 +11,7 @@ export {
   ElementTag,
   ElementTags,
   ElementTitle,
+  MarkdownBlock,
 } from '../base/primitives'
 
 export {

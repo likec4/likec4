@@ -42,16 +42,15 @@
       "dependsOn": [
         "build"
       ],
-      "outputs": [
-        "*.tgz"
-      ],
+      "cache": false,
       "outputLogs": "new-only"
     },
     "lint:package": {
       "dependsOn": [
         "pack"
       ],
-      "cache": false
+      "cache": false,
+      "outputLogs": "new-only"
     }
   }
 }

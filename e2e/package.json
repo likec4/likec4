@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-
   "type": "module",
   "scripts": {
     "install:chromium": "playwright install chromium",
@@ -14,7 +13,7 @@
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots"
   },
-  "devDependencies": {
+  "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@playwright/test": "^1.53.0",
     "likec4": "file:../packages/likec4/package.tgz",
@@ -24,7 +23,7 @@
     "react-dom": "^19.1.0",
     "std-env": "^3.9.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.3",
+    "vitest": "^3.2.4",
     "wrangler": "^4.19.2",
     "zx": "^8.5.5"
   },

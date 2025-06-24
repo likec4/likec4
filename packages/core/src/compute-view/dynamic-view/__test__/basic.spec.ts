@@ -218,7 +218,7 @@ describe('dynamic-view', () => {
     const [step1] = edges
     expect(step1).toMatchObject({
       line: 'dotted',
-      description: 'uploads1',
+      description: { txt: 'uploads1' },
       head: 'open',
       tail: 'odot',
       color: 'red',

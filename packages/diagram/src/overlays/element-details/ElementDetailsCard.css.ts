@@ -226,13 +226,15 @@ export const propertiesGrid = css({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: `[20px 16px]`,
+  gap: `[24px 20px]`,
   alignItems: 'baseline',
   justifyItems: 'stretch',
 })
 
 export const propertyLabel = css({
   justifySelf: 'end',
+  textAlign: 'right',
+  userSelect: 'none',
 })
 
 export const resizeHandle = css({

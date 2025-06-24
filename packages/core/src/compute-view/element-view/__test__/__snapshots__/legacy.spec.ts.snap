@@ -76,7 +76,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "6df052156ae59d91622677537c2d657e4946d803",
+  "hash": "222934c5cc26fad8c43658376bc4e475e47c666f",
   "id": "index",
   "links": null,
   "nodes": [
@@ -308,7 +308,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "388ed63a4179b91d2953e5c4908c651e3e826eb0",
+  "hash": "3d2473dacefacc5be93c73cfe3b1c20824c1b57f",
   "id": "index",
   "links": null,
   "nodes": [

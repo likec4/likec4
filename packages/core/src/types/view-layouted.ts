@@ -26,6 +26,10 @@ export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>,
    * (Absolute coordinates)
    */
   labelBBox: BBox
+
+  // description?: scalar.HtmlOrString | null
+  // technology?: scalar.HtmlOrString | null
+  // notation?: scalar.HtmlOrString | null
 }
 
 export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {
@@ -51,6 +55,11 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
    * @deprecated
    */
   dotpos?: string
+  // label: scalar.HtmlOrString | null
+  // description?: scalar.HtmlOrString | null
+  // technology?: scalar.HtmlOrString | null
+  // notation?: scalar.HtmlOrString | null
+  // notes?: scalar.HtmlOrString | null
 }
 
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {

@@ -46,6 +46,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
     if (this.isProcessingBatch) {
       logger.debug`waiting for batch to finish`
       await this.queue.onIdle()
+      await promiseNextTick()
       // recursively call runInQueue (to prevent batches from running in parallel)
       return await this.runInQueue(fn)
     } else if (this.queue.size > this.queue.concurrency * 2 + 1) {
@@ -86,6 +87,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
       logger.debug`wait for previous layouts to finish`
       // wait for any previous layout to finish
       await this.queue.onIdle()
+      await promiseNextTick()
       // recursively call batchLayout (to prevent batches from running in parallel)
       return await this.batchLayout(params)
     }
@@ -120,13 +122,9 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         }
       }
     } finally {
-      // Add a task to the queue to signal that the batch is done
-      this.queue.add(async () => {
-        logger.debug`batch layout done`
-        this.isProcessingBatch = false
-        await promiseNextTick()
-      })
       await this.queue.onIdle()
+      logger.debug`batch layout done`
+      this.isProcessingBatch = false
     }
     return results
   }
@@ -143,4 +141,9 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   //     return await super.dot(params)
   //   })
   // }
+
+  override dispose(): void {
+    this.queue.clear()
+    super.dispose()
+  }
 }

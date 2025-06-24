@@ -371,7 +371,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       x: position.x,
       y: position.y,
       title: element.title,
-      description: element.description,
+      description: element.description.$source,
       technology: element.technology,
       tags: element.tags,
       links: null,

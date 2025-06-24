@@ -26,7 +26,9 @@ describe('LikeC4DeploymentModel', () => {
       _(
         el('customer'),
         el('cloud'),
-        el('cloud.ui'),
+        el('cloud.ui', {
+          title: 'UI',
+        }),
         elWithTags('cloud.backend', {
           tags: ['tag2'],
         }),
@@ -47,7 +49,9 @@ describe('LikeC4DeploymentModel', () => {
         nd('prod'),
         nd('prod.z1').with(
           vm('vm1').with(
-            instanceOf('cloud.ui'),
+            instanceOf('ui', 'cloud.ui', {
+              title: 'Prod/Zone 1/UI',
+            }),
           ),
           vm('vm2', {
             tags: ['tag2'],
@@ -94,6 +98,13 @@ describe('LikeC4DeploymentModel', () => {
   it('instance ref', ({ expect }) => {
     const el = d.instance('prod.z1.vm1.ui')
     expect(el.element).toBe(model.element('cloud.ui'))
+    // Instance title is not inherited from the element
+    expect(el.title).toBe('Prod/Zone 1/UI')
+
+    const el2 = d.instance('prod.z2.vm1.ui')
+    expect(el2.element).toBe(model.element('cloud.ui'))
+    // Instance title is inherited from the element
+    expect(el2.title).toBe('UI')
   })
 
   it('parent and children', ({ expect }) => {
@@ -159,4 +170,18 @@ describe('LikeC4DeploymentModel', () => {
     expect(view!.includesDeployment('customer')).toBe(true)
     expect(view!.includesDeployment('customer.customer')).toBe(false)
   })
+
+  // it('deployment view node titles', ({ expect }) => {
+  //   const view = model.view('prod')
+  //   invariant(view.isDeploymentView())
+  //   expect([...view.nodes()].map(n => n.title)).toEqual([
+  //     'customer',
+  //     'prod',
+  //     'prod.z1.vm1.ui',
+  //     'prod.z1.vm2',
+  //     'prod.z2.vm1.ui',
+  //     'prod.z2.vm2',
+  //     'prod.infra',
+  //   ])
+  // })
 })

@@ -9,6 +9,7 @@ import {
   defaultTheme,
   defaultTheme as Theme,
   nonexhaustive,
+  RichText,
 } from '@likec4/core'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
@@ -27,14 +28,14 @@ export function wrap(text: string, {
   maxchars,
   maxLines,
   sanitize: escape = identity(),
-}: WrapOptions) {
+}: WrapOptions): string[] {
   let lines = wordWrap(text, {
     width: maxchars,
     indent: '',
     escape,
   }).split('\n')
   if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
-    lines = lines.slice(0, maxLines - 1)
+    lines = lines.slice(0, maxLines)
   }
   return lines
 }
@@ -78,12 +79,12 @@ function maxchars(size: ShapeSize) {
   switch (size) {
     case 'xs':
     case 'sm':
-      return 25
+      return 30
     case 'md':
-      return 35
+      return 40
     case 'lg':
     case 'xl':
-      return 45
+      return 55
     default:
       nonexhaustive(size)
   }
@@ -120,10 +121,11 @@ export function nodeLabel(
         }),
       )
     }
-    if (isTruthy(node.description?.trim())) {
+    const description = RichText.from(node.description).text
+    if (description) {
       lines.push(
         wrapWithFont({
-          text: node.description,
+          text: description,
           fontsize: Math.ceil(fontSize(sizes.text) * 0.75),
           maxchars: hasIcon ? 35 : 45,
           maxLines: isSmOrXs ? 3 : 5,
@@ -132,7 +134,7 @@ export function nodeLabel(
       )
     }
   }
-  if (lines.length === 1 && !hasIcon) {
+  if (lines.length === 1 && hasIcon === false) {
     return `<${lines[0]}>`
   }
 

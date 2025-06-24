@@ -87,7 +87,7 @@ export interface ParsedAstElement {
   astPath: string
   kind: c4.ElementKind
   title: string
-  description?: string
+  description?: c4.MarkdownOrString
   technology?: string
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<c4.Link>
@@ -111,7 +111,7 @@ export interface ParsedAstRelation {
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
-  description?: string
+  description?: c4.MarkdownOrString
   technology?: string
   color?: c4.Color
   line?: c4.RelationshipLineType
@@ -144,7 +144,7 @@ export interface ParsedAstElementView {
   extends?: c4.ViewId
   astPath: string
   title: string | null
-  description: string | null
+  description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ElementViewRule[]
@@ -156,7 +156,7 @@ export interface ParsedAstDynamicView {
   id: c4.ViewId
   astPath: string
   title: string | null
-  description: string | null
+  description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.DynamicViewStepOrParallel[]
@@ -169,7 +169,7 @@ export interface ParsedAstDeploymentView {
   id: c4.ViewId
   astPath: string
   title: string | null
-  description: string | null
+  description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
@@ -252,6 +252,10 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports
   )
+}
+
+export function parseMarkdownAsString(node?: ast.MarkdownOrString): string | undefined {
+  return node?.markdown || node?.text
 }
 
 export function parseAstPercent(value: string): number {

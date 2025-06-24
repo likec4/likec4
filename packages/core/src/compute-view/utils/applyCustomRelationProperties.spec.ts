@@ -48,6 +48,7 @@ describe('applyRelationCustomProperties', () => {
       {
         ...edge,
         ...propsToOverride,
+        description: { txt: propsToOverride.description },
         isCustomized: true,
         label: undefined,
       },

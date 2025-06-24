@@ -80,7 +80,7 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('technology' | 'notation') ':'? value=String ';'?;
+  key=('technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 // Imports -------------------------------------
 
@@ -142,7 +142,7 @@ ElementProperty:
   MetadataProperty;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ExtendElement:
   'extend' element=StrictFqnElementRef body=ExtendElementBody
@@ -218,7 +218,7 @@ RelationProperty:
 ;
 
 RelationStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -236,7 +236,7 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=IdTerminal ':'? value=String ';'?
+  key=IdTerminal ':'? value=MarkdownOrString ';'?
 ;
 
 // Views -------------------------------------
@@ -307,7 +307,7 @@ ViewProperty:
 ;
 
 ViewStringProperty:
-  key=('title' | 'description') ':'? value=String ';'?;
+  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
@@ -391,10 +391,10 @@ ViewRuleAutoLayout:
     )?;
 
 NotationProperty:
-  key='notation' ':'? value=String ';'?
+  key='notation' ':'? value=MarkdownOrString ';'?
 ;
 NotesProperty:
-  key='notes' ':'? value=String ';'?
+  key='notes' ':'? value=MarkdownOrString ';'?
 ;
 
 CustomElementProperties: '{'
@@ -711,7 +711,7 @@ OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
 
 MultipleProperty:
-  key='multiple' ':'? value=Boolean ';'?;
+  key='multiple' ':'? value=BOOLEAN ';'?;
 
 // Element properties -------------------------------------
 IconProperty:
@@ -785,8 +785,6 @@ RelationKindDotRef :
   Dot kind=[RelationshipKind:Id]
 ;
 
-Boolean returns boolean: 'true' | 'false';
-
 LineOptions returns string:
   'solid' |
   'dashed' |
@@ -826,6 +824,9 @@ IconId returns string:
 
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
+
+MarkdownOrString:
+  markdown=MarkdownString | text=String;
 
 CustomColorId returns string:
   Hex | IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
@@ -867,6 +868,7 @@ hidden terminal NL: /[\r\n]+/;
 
 
 // LibIcons
+terminal BOOLEAN returns boolean: /true|false/;
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
@@ -883,7 +885,10 @@ terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;
 
+terminal MarkdownString: '\'\'\'' -> '\'\'\'' | '"""' -> '"""';
 terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
+
+// terminal fragment QuotedString: ;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;

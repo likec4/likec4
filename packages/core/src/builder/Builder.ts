@@ -275,11 +275,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     return [{
       id: id as any,
       title,
-      description,
+      description: description ? { txt: description } : null,
       tags,
       links,
       _stage: 'parsed',
-      // customColorDefinitions: {},
       ...props,
     }, builder]
   }
@@ -438,6 +437,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             const {
               title = '',
               links: _links = [],
+              description = null,
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
@@ -452,6 +452,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 model: target,
               },
               title,
+              ...(description && { description: { txt: description } }),
               ...(links && { links }),
               ...props,
             })
@@ -463,6 +464,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             const {
               title = '',
               links: _links = [],
+              description = null,
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
@@ -474,6 +476,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 model: target,
               },
               title,
+              ...(description && { description: { txt: description } }),
               ...(links && { links }),
               ...props,
             })
@@ -493,6 +496,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 icon: _icon,
                 style,
                 title,
+                description = null,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -506,7 +510,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
-                description: null,
+                ...(description && { description: { txt: description } }),
                 technology: null,
                 tags: [],
                 color: specStyle?.color ?? DefaultThemeColor as Color,
@@ -686,6 +690,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             const {
               links,
               title,
+              description = null,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
             const _id = b.__deploymentFqn(id)
@@ -694,6 +699,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               id: _id,
               element: target as Fqn,
               ...title && { title },
+              ...(description && { description: { txt: description } }),
               ...links && { links: mapLinks(links) },
               ...props,
             } as DeployedInstance)
@@ -705,6 +711,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             const {
               title = null,
               links,
+              description = null,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -716,6 +723,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 deployment: target as any,
               },
               title,
+              ...description && { description: { txt: description } },
               ...links && { links: mapLinks(links) },
               ...props,
             })
@@ -735,6 +743,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 icon: _icon,
                 style,
                 title,
+                description = null,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -746,7 +755,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
-                description: null,
+                ...(description && { description: { txt: description } }),
                 technology: null,
                 tags: null,
                 style: {

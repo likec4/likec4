@@ -79,8 +79,12 @@ export const builder = b
       }),
       system('cloud').with(
         component('frontend').with(
-          webapp('dashboard'),
-          mobile('mobile'),
+          webapp('dashboard', {
+            title: 'Dashboard',
+          }),
+          mobile('mobile', {
+            title: 'Mobile',
+          }),
         ),
         component('auth'),
         component('backend').with(
@@ -140,11 +144,15 @@ export const builder = b
         zone('eu').with(
           zone('zone1').with(
             instanceOf('api', 'cloud.backend.api'),
-            instanceOf('ui', 'cloud.frontend.dashboard'),
+            instanceOf('ui', 'cloud.frontend.dashboard', {
+              title: 'prod.eu.zone1/dashboard',
+            }),
           ),
           zone('zone2').with(
             instanceOf('api', 'cloud.backend.api'),
-            instanceOf('ui', 'cloud.frontend.dashboard'),
+            instanceOf('ui', 'cloud.frontend.dashboard', {
+              title: 'prod.eu.zone2/dashboard',
+            }),
           ),
           instanceOf('auth', 'cloud.auth'),
           instanceOf('media', 'cloud.media'),
@@ -153,7 +161,9 @@ export const builder = b
         zone('us').with(
           zone('zone1').with(
             instanceOf('api', 'cloud.backend.api'),
-            instanceOf('ui', 'cloud.frontend.dashboard'),
+            instanceOf('ui', 'cloud.frontend.dashboard', {
+              title: 'prod.us.zone1/dashboard',
+            }),
           ),
           instanceOf('db', 'aws.rds'),
         ),

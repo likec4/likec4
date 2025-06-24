@@ -57,7 +57,7 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly id: aux.StrictFqn<A>
   readonly kind: aux.ElementKind<A>
   readonly title: string
-  readonly description?: string | null
+  readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
@@ -65,7 +65,7 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
-  readonly notation?: string
+  readonly notation?: string | null
   readonly metadata?: aux.Metadata<A>
 }
 
@@ -82,7 +82,7 @@ export interface AbstractRelationship<A extends AnyAux>
 {
   readonly id: scalar.RelationId
   readonly title?: string | null
-  readonly description?: string | null
+  readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
   readonly kind?: aux.RelationKind<A>
   readonly color?: Color

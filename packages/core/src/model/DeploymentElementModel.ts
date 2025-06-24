@@ -1,4 +1,4 @@
-import { isTruthy, only, unique } from 'remeda'
+import { isEmpty, isTruthy, only, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import {
   type Any,
@@ -12,11 +12,13 @@ import {
   type IteratorLike,
   type Link,
   type RelationshipLineType,
+  type RichTextOrEmpty,
   type scalar,
   DefaultElementShape,
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
+  RichText,
 } from '../types'
 import * as aux from '../types/aux'
 import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
@@ -61,8 +63,8 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
-  get description(): string | null {
-    return this.$node.description ?? null
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$node.description)
   }
 
   get technology(): string | null {
@@ -197,6 +199,10 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
         new Set(this.incomingModelRelationships()),
         new Set(this.incoming()),
       ))
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$node.metadata && !isEmpty(this.$node.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>
@@ -402,12 +408,12 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return this.element.kind
   }
 
-  override get description(): string | null {
-    return this.$instance.description ?? this.element.description
+  override get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$instance.description ?? this.element.$element.description)
   }
 
   override get technology(): string | null {
-    return this.$instance.technology ?? this.element.technology
+    return this.$instance.technology ?? this.element.technology ?? null
   }
 
   override get links(): ReadonlyArray<Link> {
@@ -486,7 +492,7 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.element.title
   }
 
-  get description(): string | null {
+  get description(): RichTextOrEmpty {
     return this.element.description
   }
 
@@ -536,17 +542,11 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   get technology(): string | null {
-    if (!isTruthy(this.$relationship.technology)) {
-      return null
-    }
-    return this.$relationship.technology
+    return this.$relationship.technology ?? null
   }
 
-  get description(): string | null {
-    if (!isTruthy(this.$relationship.description)) {
-      return null
-    }
-    return this.$relationship.description
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$relationship.description)
   }
 
   get tags(): aux.Tags<A> {
@@ -588,6 +588,10 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
 
   public isModelRelation(): this is RelationshipModel<A> {
     return false
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$relationship.metadata && !isEmpty(this.$relationship.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>

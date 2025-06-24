@@ -155,11 +155,11 @@ export function ViewButton(
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
         </Group>
         <Highlight
-          highlight={view.$view.description ? search : ''}
+          highlight={view.description.nonEmpty ? search : ''}
           component="div"
           className={btn.description!}
           lineClamp={1}>
-          {view.$view.description || 'No description'}
+          {view.description.text || 'No description'}
         </Highlight>
       </Box>
     </UnstyledButton>

@@ -1,4 +1,13 @@
-import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType, ViewId } from '@likec4/core/types'
+import type {
+  Color,
+  DiagramNode,
+  Fqn,
+  IconUrl,
+  RelationId,
+  RelationshipLineType,
+  RichTextOrEmpty,
+  ViewId,
+} from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
@@ -19,7 +28,6 @@ export namespace RelationshipDetailsTypes {
         DiagramNode,
         | 'title'
         | 'technology'
-        | 'description'
         | 'color'
         | 'shape'
         | 'width'
@@ -34,6 +42,7 @@ export namespace RelationshipDetailsTypes {
       fqn: Fqn
       icon: IconUrl
       ports: Ports
+      description: RichTextOrEmpty
     }
 
   export type CompoundNodeData =
@@ -69,9 +78,9 @@ export namespace RelationshipDetailsTypes {
       color: Color | undefined
       label: string | null
       technology?: string | undefined
-      description?: string | undefined
       navigateTo: ViewId | null
       line: RelationshipLineType
+      description: RichTextOrEmpty
     }
   >
 

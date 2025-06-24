@@ -253,7 +253,7 @@ const Relationship = forwardRef<
         )}
       </Group>
       <Box className={styles.title}>{r.title || 'untitled'}</Box>
-      {r.description && <Text size="xs" c="dimmed">{r.description}</Text>}
+      {r.description.nonEmpty && <Text size="xs" c="dimmed">{r.description.text}</Text>}
       {links.length > 0 && (
         <Stack
           gap={3}

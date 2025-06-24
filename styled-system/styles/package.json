@@ -75,6 +75,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@likec4/style-preset": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
