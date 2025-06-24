@@ -353,6 +353,10 @@ export class BaseParser {
     return result
   }
 
+  /**
+   * Parses title, description and technology
+   * Inline properties (right on node) have higher priority than body properties (inside '{...}')
+   */
   parseTitleDescriptionTechnology(
     inlineProps: {
       title?: string | undefined

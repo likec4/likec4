@@ -180,6 +180,7 @@ export class MergedSpecification {
       }
     }
     if ('element' in parsed) {
+      logger.warn`Invalid ParsedAstDeployment ${parsed.id}, has both element and kind properties`
       return null
     }
     try {

@@ -11,7 +11,6 @@ import {
 } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
-import { toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
@@ -128,10 +127,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const {
-        title = toSingleLine(astNode.name),
-        ...descAndTech
-      } = this.parseTitleDescriptionTechnology(
+      const titleDescAndTech = this.parseTitleDescriptionTechnology(
         {
           title: astNode.title,
         },
@@ -143,11 +139,10 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       return {
         id,
         element: target,
-        title: title ?? nameFromFqn(FqnRef.flatten(target)),
         ...(metadata && { metadata }),
         ...(tags && { tags }),
         ...(links && isNonEmptyArray(links) && { links }),
-        ...descAndTech,
+        ...titleDescAndTech,
         style,
       }
     }
@@ -215,7 +210,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         first(),
       )
 
-      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
+      const titleDescAndTech = this.parseTitleDescriptionTechnology(
         {
           title: astNode.title,
         },
@@ -235,9 +230,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         id,
         source,
         target,
-        ...title && { title },
+        ...titleDescAndTech,
         ...(metadata && { metadata }),
-        ...descAndTech,
         ...(kind && { kind }),
         ...(tags && { tags }),
         ...(isNonEmptyArray(links) && { links }),

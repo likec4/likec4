@@ -140,22 +140,18 @@ export function toNodeSource<A extends AnyAux>(
 ): ComputedNodeSource<A> {
   if (el.isDeploymentNode()) {
     const onlyOneInstance = el.onlyOneInstance()
-    let { title, kind, id, description: _, ...$node } = el.$node
+    let { title, kind, id, description, ...$node } = el.$node
     const { icon, color, shape, ...style } = el.$node.style ?? {}
     let tags = [...el.tags]
-    let description
+    // let description
     // If there is only one instance
     if (onlyOneInstance) {
       tags = unique([...tags, ...onlyOneInstance.tags])
-      // If title was not overriden
+      // If title was not overriden, take title from the instance
       if (title === nameFromFqn(el.id)) {
         title = onlyOneInstance.title
       }
-      description = onlyOneInstance.description.$source
-    }
-
-    if (el.description) {
-      description = el.description.$source
+      description = onlyOneInstance.description.$source ?? description
     }
 
     return {
@@ -181,10 +177,7 @@ export function toNodeSource<A extends AnyAux>(
   invariant(el.isInstance(), 'Expected Instance')
   const instance = el.$instance
   const element = el.element
-
-  const icon = instance.style?.icon ?? element.icon
-  const color = instance.style?.color ?? element.color
-  const shape = instance.style?.shape ?? element.shape
+  const { icon, color, shape, ...style } = el.style
 
   const links = [
     ...element.links,
@@ -204,7 +197,7 @@ export function toNodeSource<A extends AnyAux>(
   return {
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
-    title: instance.title ?? element.title,
+    title: el.title,
     ...(description && { description }),
     ...(technology && { technology }),
     tags: [...el.tags],
@@ -212,10 +205,7 @@ export function toNodeSource<A extends AnyAux>(
     ...icon && { icon },
     ...color && { color },
     ...shape && { shape },
-    style: {
-      ...element.style,
-      ...instance.style,
-    },
+    style,
     deploymentRef: instance.id,
     modelRef: element.id,
     ...notation && { notation },
