@@ -14,7 +14,7 @@ export default defineConfig({
 
   // Retry on CI only.
   retries: isCI ? 2 : 0,
-  timeout: 10 * 1000,
+  timeout: 5 * 1000,
 
   // Opt out of parallel tests on CI.
   // workers: isCI ? /1 : '80%',
@@ -29,11 +29,11 @@ export default defineConfig({
     ]
     : 'html',
 
-  updateSnapshots: 'missing',
+  updateSnapshots: 'none',
   use: {
     browserName: 'chromium',
     colorScheme: 'light',
-    trace: 'retain-on-first-failure',
+    trace: 'retain-on-failure',
   },
 
   expect: {
