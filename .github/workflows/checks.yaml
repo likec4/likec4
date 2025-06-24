@@ -110,6 +110,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v4
@@ -120,13 +121,13 @@ jobs:
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
-          npm install
-          npm run install:chromium
-          npm run bootstrap
+          pnpm install
+          pnpm install:chromium
+          pnpm bootstrap
 
       - name: ⚙️ run playwright tests
         working-directory: e2e
-        run: npm run test
+        run: pnpm test
 
       - id: cloudflare
         if: ${{ failure() && github.repository_owner == 'likec4' }}
@@ -163,10 +164,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 🛠️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        env:
+          NODE_ENV: development
+
       - name: 🛠️ Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v4
@@ -177,12 +184,12 @@ jobs:
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
-          npm install
-          npm run bootstrap
+          pnpm install
+          pnpm bootstrap
 
       - name: ʦ typecheck test
         working-directory: e2e
-        run: npm run typecheck
+        run: pnpm typecheck
 
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}

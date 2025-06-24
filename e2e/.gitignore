@@ -14,3 +14,4 @@ playwright-report/*
 tests/*.spec.ts
 
 pnpm-lock.yaml
+package-lock.json
