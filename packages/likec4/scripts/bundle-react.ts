@@ -63,6 +63,7 @@ try {
 }
 
 consola.success('✅ React bundle done')
+consola.start('generating dts bundle')
 
 try {
   const [dts] = await generateDtsBundle([
@@ -70,14 +71,11 @@ try {
       filePath: './react/index.ts',
       libraries: {
         inlinedLibraries: [
-          '@likec4/diagram',
           '@likec4/diagram/bundle',
-          'nanostores',
-          '@nanostores/react',
+          '@likec4/diagram',
           '@xyflow/react',
           '@xyflow/system',
           'type-fest',
-          'fast-equals',
         ],
       },
       output: {
@@ -96,6 +94,7 @@ try {
 
   await writeFile('react/index.d.mts', dts, 'utf-8')
   consola.success('✅ React Typings done')
+  process.exit(0)
 } catch (e) {
   consola.error('⛔️ Failed to generate dts bundle')
   consola.error(e)
