@@ -29,6 +29,10 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     this._unflattenpath = unflatten_path
   }
 
+  dispose(): void {
+    // do nothing for now
+  }
+
   [Symbol.dispose](): void {
     // do nothing for now
   }

@@ -23,9 +23,13 @@ export class GraphvizWasmAdapter implements GraphvizPort {
     return 1
   }
 
-  [Symbol.dispose]() {
+  dispose(): void {
     Graphviz.unload()
     GraphvizWasmAdapter._graphviz = null
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
   }
 
   private graphviz(): Promise<Graphviz> {

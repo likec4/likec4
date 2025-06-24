@@ -25,6 +25,7 @@ export interface GraphvizPort extends Disposable {
   acyclic(dot: DotSource): Promise<DotSource>
   layoutJson(dot: DotSource): Promise<string>
   svg(dot: DotSource): Promise<string>
+  dispose(): void
 }
 
 const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<A>) => {
@@ -58,11 +59,20 @@ export class GraphvizLayouter implements Disposable {
     this.graphviz = graphviz ?? new GraphvizWasmAdapter()
   }
 
+  dispose(): void {
+    this.graphviz.dispose()
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
+  }
+
   get graphvizPort(): GraphvizPort {
     return this.graphviz
   }
 
   changePort(graphviz: GraphvizPort) {
+    this.graphviz.dispose()
     this.graphviz = graphviz
   }
 

@@ -141,4 +141,9 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   //     return await super.dot(params)
   //   })
   // }
+
+  override dispose(): void {
+    this.queue.clear()
+    super.dispose()
+  }
 }
