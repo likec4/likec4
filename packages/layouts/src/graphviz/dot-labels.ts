@@ -73,7 +73,7 @@ export function nodeIcon() {
 }
 
 function fontSize(textSize: TextSize) {
-  return defaultTheme.textSizes[textSize]
+  return Math.round(defaultTheme.textSizes[textSize])
 }
 function maxchars(size: ShapeSize) {
   switch (size) {
