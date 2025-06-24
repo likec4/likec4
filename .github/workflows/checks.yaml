@@ -46,7 +46,8 @@ jobs:
           name: tarballs
           compression-level: 0
           path: |
-            packages/*/package.tgz
+            packages/core/package.tgz
+            packages/likec4/package.tgz
           if-no-files-found: error
 
   check-tests:
@@ -109,7 +110,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v4
@@ -120,14 +120,13 @@ jobs:
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
-          pnpm install
-          pnpm add @likec4/core@file:../packages/core/package.tgz likec4@file:../packages/likec4/package.tgz
-          pnpm install:chromium
-          pnpm bootstrap
+          npm install
+          npm run install:chromium
+          npm run bootstrap
 
       - name: ⚙️ run playwright tests
         working-directory: e2e
-        run: pnpm test
+        run: npm run test
 
       - id: cloudflare
         if: ${{ failure() && github.repository_owner == 'likec4' }}
@@ -164,16 +163,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🛠️ Setup pnpm
-        uses: pnpm/action-setup@v4
-        env:
-          NODE_ENV: development
-
       - name: 🛠️ Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-          cache: "pnpm"
 
       - name: 📦 download tarballs
         uses: actions/download-artifact@v4
@@ -184,12 +177,12 @@ jobs:
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
-          pnpm install
-          pnpm bootstrap
+          npm install
+          npm run bootstrap
 
       - name: ʦ typecheck test
         working-directory: e2e
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
