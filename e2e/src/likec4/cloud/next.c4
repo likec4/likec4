@@ -37,10 +37,10 @@ model {
 
     graphql = component 'GraphQL' {
       #next, #api
-      description '
+      description '''
         GraphQL API for the backend
-        Uses Apollo Server
-      '
+        Uses [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+      '''
       icon tech:graphql
 
       gqlQuery myAccount {
