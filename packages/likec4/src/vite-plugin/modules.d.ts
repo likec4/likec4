@@ -62,6 +62,19 @@ declare module 'likec4:model' {
     ): () => void
 
     /**
+     * Low-level method to notify listeners about changes in the store.
+     *
+     * Can cause unexpected behaviour when combined with frontend frameworks
+     * that perform equality checks for values, such as React.
+     */
+    notify(oldValue?: ReadonlyIfObject<Value>): void
+
+    /**
+     * Unbind all listeners.
+     */
+    off(): void
+
+    /**
      * Subscribe to store changes and call listener immediately.
      *
      * ```
