@@ -100,6 +100,18 @@
         "build-react"
       ],
       "outputLogs": "new-only"
+    },
+    "pack": {
+      "dependsOn": [
+        "generate",
+        "build-app",
+        "build-cli",
+        "build-react"
+      ],
+      "outputs": [
+        "*.tgz"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

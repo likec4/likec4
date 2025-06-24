@@ -5,6 +5,7 @@ on:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: "production"
   FORCE_COLOR: true
   DO_NOT_TRACK: "1"
 
@@ -57,7 +58,7 @@ jobs:
         env:
           NODE_ENV: development
         run: |
-          pnpm install
+          pnpm install --prefer-offline
           pnpm install:chromium
           pnpm bootstrap
 
