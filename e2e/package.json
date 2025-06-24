@@ -17,16 +17,16 @@
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@playwright/test": "^1.53.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "likec4": "file:../packages/likec4/package.tgz",
-    "@types/react": "^19.1.5",
-    "@types/react-dom": "^19.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "std-env": "^3.9.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
-    "wrangler": "^4.19.2",
-    "zx": "^8.5.5"
+    "wrangler": "^4.21.2",
+    "zx": "^8.6.0"
   },
   "pnpm": {
     "overrides": {
