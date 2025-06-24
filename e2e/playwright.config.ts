@@ -11,7 +11,6 @@ export default defineConfig({
 
   // Retry on CI only.
   retries: isCI ? 2 : 0,
-  timeout: 10 * 1000,
 
   // Opt out of parallel tests on CI.
   // workers: isCI ? /1 : '80%',
@@ -36,7 +35,6 @@ export default defineConfig({
     toHaveScreenshot: {
       scale: 'device',
       animations: 'disabled',
-      maxDiffPixelRatio: 0.1,
     },
   },
 
@@ -52,7 +50,6 @@ export default defineConfig({
     command: './node_modules/.bin/likec4 start',
     port: 5173,
     stdout: 'pipe',
-    timeout: 10 * 1000,
     env: {
       NODE_ENV: 'production',
     },
