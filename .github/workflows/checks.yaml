@@ -46,7 +46,7 @@ jobs:
           name: tarballs
           compression-level: 0
           path: |
-            packages/*/*.tgz
+            packages/*/package.tgz
           if-no-files-found: error
 
   check-tests:
@@ -115,6 +115,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tarballs
+          path: packages
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
@@ -179,6 +180,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tarballs
+          path: packages
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
