@@ -140,9 +140,10 @@ export const markdownBlock = defineRecipe({
   jsx: ['MarkdownBlock'],
   base: {
     pointerEvents: 'all',
-    '--typography-spacing': 'calc(0.5rem * var(--mantine-scale, 1))',
-    '--text-fz-sm': 'calc(0.79rem * var(--mantine-scale, 1))',
-    '--text-fz-md': 'calc(1rem * var(--mantine-scale, 1))',
+    '--text-fz': '1rem',
+    '--typography-spacing': 'calc(0.75 * var(--text-fz) * var(--mantine-scale, 1))',
+    '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale) / 1.125)',
+    '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale))',
     '--text-fw-headings': '600',
 
     paddingBottom: 'calc(.5 * var(--typography-spacing) + 1px)',
@@ -166,31 +167,31 @@ export const markdownBlock = defineRecipe({
     },
 
     '& :is(h1)': {
-      fontSize: 'calc(1.476rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.476 * var(--text-fz) * var(--mantine-scale, 1))',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h2)': {
-      fontSize: 'calc(1.383rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.383 * var(--text-fz) * var(--mantine-scale, 1))',
       // lineHeight: 'var(--mantine-h2-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h3)': {
-      fontSize: 'calc(1.296rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.296 * var(--text-fz) * var(--mantine-scale, 1))',
       // lineHeight: 'var(--mantine-h3-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h4)': {
-      fontSize: 'calc(1.215rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.215 * var(--text-fz) * var(--mantine-scale, 1))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h5)': {
-      fontSize: 'calc(1.138rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.138 * var(--text-fz) * var(--mantine-scale, 1))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h6)': {
-      fontSize: 'calc(1.067rem * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.067 * var(--text-fz) * var(--mantine-scale, 1))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
@@ -344,7 +345,7 @@ export const markdownBlock = defineRecipe({
     },
 
     '& :where(blockquote)': {
-      fontSize: 'calc(1rem * var(--mantine-scale, 1))',
+      fontSize: 'var(--text-fz-md)',
       lineHeight: 'var(--mantine-line-height)',
       margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
@@ -371,13 +372,16 @@ export const markdownBlock = defineRecipe({
       true: {
         '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
         '& :where(a)': {
-          color: 'likec4.palette.stroke/60',
+          color: 'likec4.palette.fill/45',
           mixBlendMode: 'difference',
         },
         '& :where(code)': {
           borderColor: 'likec4.palette.stroke/85',
           color: 'likec4.palette.hiContrast',
           backgroundColor: 'likec4.palette.stroke/70',
+        },
+        '& :where(strong)': {
+          color: `color-mix(in srgb , {colors.likec4.palette.hiContrast} 50%,  {colors.likec4.palette.loContrast})`,
         },
         '& :where(blockquote)': {
           padding: '2xs',

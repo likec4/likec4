@@ -63,7 +63,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
       {elementIcon}
       <Box className={cx(classes.textContainer, 'likec4-element-main-props')}>
         <Text
-          component="h3"
+          component="div"
           className={cx(classes.title, 'likec4-element-title')}
           lineClamp={isSmOrXs ? 2 : 3}>
           {data.title}
@@ -83,7 +83,9 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
             value={data.description}
             uselikec4palette
             hideIfEmpty
-            textScale={0.8}
+            // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
+            maxHeight={data.description.isMarkdown ? '8rem' : undefined}
+            // textScale={0.95}
             lineClamp={isSmOrXs ? 3 : 5}
           />
         )}

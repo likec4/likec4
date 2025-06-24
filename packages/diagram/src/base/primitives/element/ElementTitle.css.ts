@@ -10,7 +10,9 @@ const title = css.raw({
 })
 
 const description = css.raw({
-  flex: '0 1 auto',
+  flexGrow: '0',
+  flexShrink: '1',
+
   textStyle: 'likec4.node.secondary',
   color: 'likec4.palette.loContrast',
   textAlign: 'center',
@@ -87,6 +89,8 @@ export const elementTitle = sva({
       flex: '1',
       height: 'fit-content',
       width: 'fit-content',
+      maxHeight: '100%',
+      maxWidth: '100%',
       margin: '0 auto',
       display: 'flex',
       alignItems: 'center',
@@ -139,6 +143,8 @@ export const elementTitle = sva({
     textContainer: {
       height: 'fit-content',
       width: 'fit-content',
+      maxHeight: '100%',
+      maxWidth: '100%',
       flex: '0 1 auto',
       display: 'flex',
       flexDirection: 'column',
