@@ -140,7 +140,7 @@ export const markdownBlock = defineRecipe({
   jsx: ['MarkdownBlock'],
   base: {
     pointerEvents: 'all',
-    '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
+    '--typography-spacing': 'calc(0.5rem * var(--mantine-scale, 1))',
     '--text-fz-sm': 'calc(0.79rem * var(--mantine-scale, 1))',
     '--text-fz-md': 'calc(1rem * var(--mantine-scale, 1))',
     '--text-fw-headings': '600',
@@ -204,6 +204,11 @@ export const markdownBlock = defineRecipe({
       fontSize: 'var(--text-fz-md)',
       marginTop: '0',
       marginBottom: 'var(--typography-spacing)',
+      whiteSpace: 'preserve-breaks',
+    },
+
+    '& :where(strong)': {
+      fontWeight: '500',
     },
 
     '& :where(mark)': {
@@ -341,16 +346,19 @@ export const markdownBlock = defineRecipe({
     '& :where(blockquote)': {
       fontSize: 'calc(1rem * var(--mantine-scale, 1))',
       lineHeight: 'var(--mantine-line-height)',
-      margin: 'var(--mantine-spacing-md) 0',
+      margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
-      padding: 'var(--mantine-spacing-md) var(--mantine-spacing-lg)',
+      padding: 'xs',
 
       _light: {
-        backgroundColor: 'mantine.colors.gray[0]',
+        backgroundColor: 'mantine.colors.gray[1]',
       },
 
       _dark: {
-        backgroundColor: 'mantine.colors.dark[8]',
+        backgroundColor: 'mantine.colors.dark[5]',
+      },
+      '&:not(:first-child)': {
+        marginTop: 'var(--typography-spacing)',
       },
     },
   },
@@ -361,6 +369,7 @@ export const markdownBlock = defineRecipe({
      */
     uselikec4palette: {
       true: {
+        '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
         '& :where(a)': {
           color: 'likec4.palette.stroke/60',
           mixBlendMode: 'difference',
@@ -369,6 +378,10 @@ export const markdownBlock = defineRecipe({
           borderColor: 'likec4.palette.stroke/85',
           color: 'likec4.palette.hiContrast',
           backgroundColor: 'likec4.palette.stroke/70',
+        },
+        '& :where(blockquote)': {
+          padding: '2xs',
+          backgroundColor: 'likec4.palette.stroke/65',
         },
       },
       false: {},

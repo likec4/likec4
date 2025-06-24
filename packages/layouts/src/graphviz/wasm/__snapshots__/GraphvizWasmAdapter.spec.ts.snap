@@ -52,7 +52,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
-  "hash": "0e855f58163143eb9c45ac79127b7f60de4c5843",
+  "hash": "6ec7a0bfdf61ac1b68cbe84ee434993f850234aa",
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -133,7 +133,9 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       ],
       "color": "primary",
       "depth": 1,
-      "description": "Amazon is a cloud provider",
+      "description": {
+        "txt": "Amazon is a cloud provider",
+      },
       "height": 265,
       "id": "amazon",
       "inEdges": [
@@ -167,7 +169,9 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "S3 is a storage service",
+      "description": {
+        "txt": "S3 is a storage service",
+      },
       "height": 180,
       "id": "amazon.s3",
       "inEdges": [
@@ -428,7 +432,7 @@ sso authentification",
       "target": "cloud.backend.storage",
     },
   ],
-  "hash": "ef8af4e4460173b1ee693ae331829f9793cbe2ae",
+  "hash": "99fa18910f6ab081a0172b2cd694e29e9c24978a",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -469,7 +473,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
+      "description": {
+        "txt": "Support engineers are responsible for supporting customers",
+      },
       "height": 180,
       "id": "support",
       "inEdges": [],
@@ -545,7 +551,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "The customer dashboard is a webapp that allows customers to view their data.",
+      "description": {
+        "txt": "The customer dashboard is a webapp that allows customers to view their data.",
+      },
       "height": 180,
       "id": "cloud.frontend.dashboard",
       "inEdges": [
@@ -581,7 +589,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "The admin panel is a webapp that allows support staff to manage customer data.",
+      "description": {
+        "txt": "The admin panel is a webapp that allows support staff to manage customer data.",
+      },
       "height": 180,
       "id": "cloud.frontend.adminPanel",
       "inEdges": [
@@ -658,7 +668,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "Component that allows to query data via GraphQL.",
+      "description": {
+        "txt": "Component that allows to query data via GraphQL.",
+      },
       "height": 180,
       "id": "cloud.backend.graphql",
       "inEdges": [
@@ -695,7 +707,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "The backend storage is a component that stores data.",
+      "description": {
+        "txt": "The backend storage is a component that stores data.",
+      },
       "height": 180,
       "id": "cloud.backend.storage",
       "inEdges": [
@@ -731,7 +745,9 @@ sso authentification",
     {
       "children": [],
       "color": "primary",
-      "description": "Amazon is a cloud provider",
+      "description": {
+        "txt": "Amazon is a cloud provider",
+      },
       "height": 180,
       "id": "amazon",
       "inEdges": [
@@ -927,7 +943,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "ce579a71c5b48307612e44e36ab91b7b06a3a6f3",
+  "hash": "3d9fd3e6f1b9accf0d5d2cf3522faa1800fdc431",
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -968,7 +984,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
+      "description": {
+        "txt": "Support engineers are responsible for supporting customers",
+      },
       "height": 180,
       "id": "support",
       "inEdges": [],
@@ -1116,7 +1134,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Amazon is a cloud provider",
+      "description": {
+        "txt": "Amazon is a cloud provider",
+      },
       "height": 180,
       "id": "amazon",
       "inEdges": [
@@ -1276,7 +1296,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
   ],
-  "hash": "4923fc4c18d9538671bf4a81642d46b9698a2e3d",
+  "hash": "4736354413203b853e85d9eea0bd6e99272bb510",
   "id": "index",
   "links": null,
   "nodes": [
@@ -1317,7 +1337,9 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
+      "description": {
+        "txt": "Support engineers are responsible for supporting customers",
+      },
       "height": 180,
       "id": "support",
       "inEdges": [],
@@ -1388,7 +1410,9 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Amazon is a cloud provider",
+      "description": {
+        "txt": "Amazon is a cloud provider",
+      },
       "height": 180,
       "id": "amazon",
       "inEdges": [

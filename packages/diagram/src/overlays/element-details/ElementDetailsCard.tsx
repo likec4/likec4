@@ -581,6 +581,7 @@ function ElementProperty({
         fz={'md'}
         style={{
           whiteSpace: 'preserve-breaks',
+          userSelect: 'all',
           ...style,
         }}
         {...props}
@@ -656,6 +657,7 @@ function ElementMetata({
                     padding: '2xs',
                     whiteSpace: 'pre',
                     fontFamily: '[var(--mantine-font-family-monospace)]',
+                    userSelect: 'all',
                   })}>
                   {value}
                 </div>

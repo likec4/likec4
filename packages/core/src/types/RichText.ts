@@ -182,10 +182,7 @@ export class RichText {
     if (this.isEmpty || this.$source === null) {
       return emptyTxt
     }
-    if (!this.isMarkdown) {
-      return this.text
-    }
-    const markdown = this.md
+    const markdown = this.$source.md ?? this.$source.txt
     return memoizeProp(this, symb_html, () => markdownToHtml(markdown))
   }
 

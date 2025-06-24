@@ -142,6 +142,7 @@ export function DiagramTitlePanel() {
                     }>
                     <MarkdownBlock
                       className={styles.description}
+                      textScale={0.9}
                       value={description} />
                   </Spoiler>
                 )}

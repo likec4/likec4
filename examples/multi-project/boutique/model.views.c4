@@ -16,10 +16,10 @@ views {
   }
 
   view boutique of boutique {
-    description '
-      E-commerce app for browsing items, add them to the cart,
+    description '''
+      **E-commerce app** for browsing items, add them to the cart,
       and purchasing them.
-    '
+    '''
     include
       *,
       customer with {
@@ -39,6 +39,10 @@ views {
   }
 
   view frontend of boutique.frontend {
+    title 'Frontend'
+    description '''
+      Interactions of **Frontend**
+    '''
     include
       *,
       boutique

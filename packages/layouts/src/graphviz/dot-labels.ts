@@ -79,12 +79,12 @@ function maxchars(size: ShapeSize) {
   switch (size) {
     case 'xs':
     case 'sm':
-      return 25
+      return 30
     case 'md':
-      return 35
+      return 40
     case 'lg':
     case 'xl':
-      return 45
+      return 55
     default:
       nonexhaustive(size)
   }

@@ -79,7 +79,6 @@ export const textStyles = defineTextStyles({
           fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
           lineHeight: 1.3,
           textWrap: 'pretty',
-          whiteSpace: 'preserve-breaks',
         },
       },
     },
