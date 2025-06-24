@@ -117,7 +117,7 @@
     "unified": "11.0.5"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.4",
+    "@dagrejs/dagre": "1.1.5",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/extend": "3.0.0",
