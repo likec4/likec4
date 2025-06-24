@@ -5,6 +5,7 @@ on:
 
 env:
   NODE_ENV: production
+  CLOUDFLARE_ENV: "production"
   FORCE_COLOR: true
   DO_NOT_TRACK: "1"
 
@@ -54,10 +55,9 @@ jobs:
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
-        env:
-          NODE_ENV: development
         run: |
           pnpm install
+          pnpm add @likec4/core@file:../packages/core/package.tgz likec4@file:../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 
@@ -79,6 +79,6 @@ jobs:
 
       - name: enable automerge
         if: ${{ steps.cpr.outputs.pull-request-number }}
-        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}" || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
