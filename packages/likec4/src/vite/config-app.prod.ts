@@ -1,4 +1,5 @@
 import { viteAliases } from '@/vite/aliases'
+import packageJson from '@likec4/core/package.json'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -9,6 +10,10 @@ import type { LikeC4 } from '../LikeC4'
 import { type ViteLogger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, viteAppRoot, viteLogger } from './utils'
+
+const coreExports = Object
+  .keys(packageJson.exports)
+  .map((key) => `@likec4/core${key.slice(1)}`)
 
 export type LikeC4ViteConfig = {
   customLogger?: ViteLogger
@@ -69,7 +74,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'production',
     optimizeDeps: {
-      force: true,
+      noDiscovery: true,
       include: [
         'react',
         'react-dom',
@@ -77,6 +82,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react/jsx-dev-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
+        'likec4/model',
+        ...coreExports,
       ],
     },
     define: {
