@@ -121,6 +121,7 @@ jobs:
         working-directory: e2e
         run: |
           pnpm install
+          pnpm add @likec4/core@file:../packages/core/package.tgz likec4@file:../packages/likec4/package.tgz
           pnpm install:chromium
           pnpm bootstrap
 
