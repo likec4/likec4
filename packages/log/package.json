@@ -31,7 +31,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
     "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
