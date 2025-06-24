@@ -27,6 +27,7 @@ const bundled: BuildEntry = {
 export default defineBuildConfig({
   entries: [mkdist, bundled],
   clean: true,
+  stub: false,
   rollup: {
     esbuild: {
       minify: true,
