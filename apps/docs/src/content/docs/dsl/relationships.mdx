@@ -170,12 +170,25 @@ model {
 }
 ```
 
-:::caution
+Same as for elements, you can use markdown in `description` with triple quotes: 
 
-Description is not displayed in the diagrams yet  
-In progress
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    description '''
+      **Customer** opens the frontend in the browser
+      to interact with the system
 
-:::
+
+      | checks    |    |
+      |:--------- |:-- |
+      | check 1   | ✅ |
+      | check 2   | ⛔️ |
+      | check 3   | ✅ |
+    '''
+  }
+}
+```
 
 ### Tags
 
