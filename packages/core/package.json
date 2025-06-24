@@ -126,6 +126,7 @@
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.0",
+    "@types/node": "catalog:",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
     "fdir": "catalog:utils",

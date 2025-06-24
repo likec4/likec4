@@ -1,4 +1,4 @@
-import { isTruthy } from 'remeda'
+import { isEmpty, isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
 import {
   type Relationship,
@@ -128,6 +128,10 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
 
   public isModelRelation(): this is RelationshipModel<A> {
     return true
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$relationship.metadata && !isEmpty(this.$relationship.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>

@@ -1,4 +1,4 @@
-import { isTruthy, unique } from 'remeda'
+import { isEmpty, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
@@ -265,6 +265,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
 
   public deployments(): DeployedInstancesIterator<A> {
     return this.$model.deployment.instancesOf(this)
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$element.metadata && !isEmpty(this.$element.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>
