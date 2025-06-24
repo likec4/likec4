@@ -135,17 +135,18 @@ export const likec4tag = defineRecipe({
   }],
 })
 
-export const descriptionRichText = defineRecipe({
-  className: 'likec4-description-rich-text',
+export const markdownBlock = defineRecipe({
+  className: 'likec4-markdown-block',
+  jsx: ['MarkdownBlock'],
   base: {
     pointerEvents: 'all',
-    '--typography-spacing': '0.1em',
-    whiteSpace: 'normal',
-    paddingBottom: 2,
+    '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
+    '--text-fz-sm': 'calc(0.79rem * var(--mantine-scale, 1))',
+    '--text-fz-md': 'calc(1rem * var(--mantine-scale, 1))',
+    '--text-fw-headings': '600',
 
-    '& > *': {
-      whiteSpace: 'preserve-breaks',
-    },
+    paddingBottom: 'calc(.5 * var(--typography-spacing) + 1px)',
+    fontSize: 'var(--text-fz-md)',
 
     '& :first-child': {
       marginTop: 0,
@@ -155,20 +156,43 @@ export const descriptionRichText = defineRecipe({
       marginBottom: 0,
     },
     '& :where(h1, h2, h3, h4, h5, h6)': {
-      lineHeight: '1.3',
-      fontSize: '1em',
-      marginTop: 'var(--typography-spacing)',
+      lineHeight: '1.5',
+      textWrap: 'var(--mantine-heading-text-wrap)',
+      fontFamily: 'var(--mantine-font-family-headings)',
       marginBottom: 'var(--typography-spacing)',
+    },
+    '& :is(h1, h2, h3, h4, h5, h6):not(:first-child)': {
+      marginTop: 'var(--typography-spacing)',
     },
 
     '& :is(h1)': {
-      fontSize: '1.4em',
+      fontSize: 'calc(1.476rem * var(--mantine-scale, 1))',
+      fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h2)': {
-      fontSize: '1.3em',
+      fontSize: 'calc(1.383rem * var(--mantine-scale, 1))',
+      // lineHeight: 'var(--mantine-h2-line-height)',
+      fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h3)': {
-      fontSize: '1.2em',
+      fontSize: 'calc(1.296rem * var(--mantine-scale, 1))',
+      // lineHeight: 'var(--mantine-h3-line-height)',
+      fontWeight: 'var(--text-fw-headings)',
+    },
+    '& :is(h4)': {
+      fontSize: 'calc(1.215rem * var(--mantine-scale, 1))',
+      // lineHeight: 'var(--mantine-h4-line-height)',
+      fontWeight: 'var(--text-fw-headings)',
+    },
+    '& :is(h5)': {
+      fontSize: 'calc(1.138rem * var(--mantine-scale, 1))',
+      // lineHeight: 'var(--mantine-h4-line-height)',
+      fontWeight: 'var(--text-fw-headings)',
+    },
+    '& :is(h6)': {
+      fontSize: 'calc(1.067rem * var(--mantine-scale, 1))',
+      // lineHeight: 'var(--mantine-h4-line-height)',
+      fontWeight: 'var(--text-fw-headings)',
     },
 
     '& :where(img)': {
@@ -177,35 +201,186 @@ export const descriptionRichText = defineRecipe({
     },
 
     '& :where(p)': {
+      fontSize: 'var(--text-fz-md)',
       marginTop: '0',
       marginBottom: 'var(--typography-spacing)',
     },
 
+    '& :where(mark)': {
+      fontSize: 'var(--text-fz-md)',
+      _light: {
+        backgroundColor: 'mantine.colors.yellow[2]',
+        color: 'inherit',
+      },
+      _dark: {
+        backgroundColor: 'mantine.colors.yellow[5]',
+        color: 'mantine.colors.black',
+      },
+    },
+
     '& :where(a)': {
-      color: 'likec4.palette.stroke',
-      mixBlendMode: 'multiply',
-      textDecoration: 'underline',
+      fontSize: 'var(--text-fz-md)',
+      color: 'var(--mantine-color-anchor)',
+      textDecoration: 'none',
+      fontWeight: '500',
       _hover: {
-        textDecoration: 'none',
+        textDecoration: 'underline',
+      },
+    },
+
+    '& :where(hr)': {
+      margin: 'var(--typography-spacing)',
+      border: 'none',
+      borderBottom: '1px solid',
+      _light: {
+        borderColor: 'mantine.colors.gray[3]',
+      },
+      _dark: {
+        borderColor: 'mantine.colors.dark[3]',
+      },
+    },
+    '& :where(pre)': {
+      padding: 'var(--mantine-spacing-xs)',
+      lineHeight: 'var(--mantine-line-height)',
+      margin: '0',
+      marginTop: 'var(--mantine-spacing-md)',
+      marginBottom: 'var(--mantine-spacing-md)',
+      overflowX: 'auto',
+      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontSize: 'var(--text-fz-sm)',
+      borderRadius: 'var(--mantine-radius-xs)',
+      _light: {
+        backgroundColor: 'mantine.colors.gray[0]',
+      },
+      _dark: {
+        backgroundColor: 'mantine.colors.dark[8]',
+      },
+
+      '& :where(code)': {
+        backgroundColor: 'transparent',
+        padding: '0',
+        borderRadius: '0',
+        color: 'inherit',
+        border: '0',
       },
     },
 
     '& :where(code)': {
-      padding: '0px 3px',
-      borderRadius: '[2px]',
-      border: '1px solid',
-      borderColor: 'likec4.palette.stroke/70',
-      fontSize: '0.85em',
-      paddingBottom: '1px',
-      backgroundColor: 'likec4.palette.stroke/50',
+      lineHeight: '1',
+      padding: '1px 4px',
+      borderRadius: '2px',
+      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontSize: 'var(--text-fz-sm)',
+
+      _light: {
+        backgroundColor: 'mantine.colors.gray[0]',
+        color: 'mantine.colors.black',
+      },
+
+      _dark: {
+        backgroundColor: 'mantine.colors.dark[5]',
+        color: 'mantine.colors.white',
+      },
     },
+
     '& :where(ul, ol):not([data-type="taskList"])': {
       marginBottom: 'var(--typography-spacing)',
       paddingInlineStart: 'var(--typography-spacing)',
       listStylePosition: 'outside',
     },
+
+    '& :where(table)': {
+      width: '100%',
+      borderCollapse: 'collapse',
+      captionSide: 'bottom',
+      marginBottom: 'var(--mantine-spacing-md)',
+
+      _light: {
+        ['--table-border-color']: 'var(--mantine-color-gray-3)',
+      },
+
+      _dark: {
+        ['--table-border-color']: 'var(--mantine-color-dark-4)',
+      },
+
+      '& :where(caption)': {
+        marginTop: 'var(--mantine-spacing-xs)',
+        fontSize: 'var(--text-fz-sm)',
+        color: 'var(--mantine-color-dimmed)',
+      },
+
+      '& :where(th)': {
+        textAlign: 'left',
+        fontWeight: 'bold',
+        fontSize: 'var(--text-fz-sm)',
+        padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-xs)',
+      },
+
+      '& :where(thead th)': {
+        borderBottom: '1px solid',
+        borderColor: 'var(--table-border-color)',
+      },
+
+      '& :where(tfoot th)': {
+        borderTop: '1px solid',
+        borderColor: 'var(--table-border-color)',
+      },
+
+      '& :where(td)': {
+        padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-xs)',
+        borderBottom: '1px solid',
+        borderColor: 'var(--table-border-color)',
+        fontSize: 'var(--text-fz-sm)',
+      },
+
+      '& :where(tr:last-of-type td)': {
+        borderBottom: '0',
+      },
+    },
+
+    '& :where(blockquote)': {
+      fontSize: 'calc(1rem * var(--mantine-scale, 1))',
+      lineHeight: 'var(--mantine-line-height)',
+      margin: 'var(--mantine-spacing-md) 0',
+      borderRadius: 'var(--mantine-radius-sm)',
+      padding: 'var(--mantine-spacing-md) var(--mantine-spacing-lg)',
+
+      _light: {
+        backgroundColor: 'mantine.colors.gray[0]',
+      },
+
+      _dark: {
+        backgroundColor: 'mantine.colors.dark[8]',
+      },
+    },
   },
+
+  variants: {
+    /**
+     * When markdown block is used inside a diagram node, this variant should be used to apply the likec4 palette.
+     */
+    uselikec4palette: {
+      true: {
+        '& :where(a)': {
+          color: 'likec4.palette.stroke/60',
+          mixBlendMode: 'difference',
+        },
+        '& :where(code)': {
+          borderColor: 'likec4.palette.stroke/85',
+          color: 'likec4.palette.hiContrast',
+          backgroundColor: 'likec4.palette.stroke/70',
+        },
+      },
+      false: {},
+    },
+  },
+
+  defaultVariants: {
+    uselikec4palette: false,
+  },
+
   staticCss: [{
+    uselikec4palette: ['true'],
     conditions: ['hover'],
   }],
 })

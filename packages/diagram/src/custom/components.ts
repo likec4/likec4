@@ -4,7 +4,6 @@ export {
   CompoundNodeContainer,
   CompoundTitle,
   DefaultHandles,
-  DescriptionMarkdown,
   ElementActionButtons,
   ElementDetailsButton,
   ElementNodeContainer,
@@ -12,6 +11,7 @@ export {
   ElementTag,
   ElementTags,
   ElementTitle,
+  MarkdownBlock,
 } from '../base/primitives'
 
 export {

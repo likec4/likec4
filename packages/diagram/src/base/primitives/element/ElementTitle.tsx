@@ -6,7 +6,7 @@ import { isEmpty, isNumber, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps, NonOptional } from '../../types'
-import { DescriptionMarkdown } from '../DescriptionMarkdown'
+import { MarkdownBlock } from '../MarkdownBlock'
 import { nodeSizes } from './ElementNodeContainer'
 import * as styles from './ElementTitle.css'
 
@@ -78,10 +78,12 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         )}
 
         {data.description && (
-          <DescriptionMarkdown
+          <MarkdownBlock
             className={cx(classes.description, 'likec4-element-description')}
             value={data.description}
+            uselikec4palette
             hideIfEmpty
+            textScale={0.8}
             lineClamp={isSmOrXs ? 3 : 5}
           />
         )}

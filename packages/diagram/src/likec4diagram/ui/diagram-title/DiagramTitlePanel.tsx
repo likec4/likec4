@@ -4,8 +4,8 @@ import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
+import { MarkdownBlock } from '../../../base/primitives'
 import { Link } from '../../../components/Link'
-import { DescriptionMarkdown } from '../../../custom'
 import { useDiagramContext } from '../../../hooks/useDiagram'
 import type { DiagramContext } from '../../../state/types'
 import * as styles from './DiagramTitlePanel.css'
@@ -140,7 +140,7 @@ export function DiagramTitlePanel() {
                         hide
                       </Button>
                     }>
-                    <DescriptionMarkdown
+                    <MarkdownBlock
                       className={styles.description}
                       value={description} />
                   </Spoiler>

@@ -6,7 +6,7 @@ import { StaticLikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { memo, useLayoutEffect, useState } from 'react'
 
 import type { DiagramView } from '@likec4/core'
-import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
+import { Box, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { keys } from 'remeda'
 // import { useLikeC4Model } from 'likec4:model'
@@ -20,14 +20,16 @@ function RouteComponent() {
   useDocumentTitle('LikeC4')
   const views = keys(useLikeC4Model().$model.views)
   return (
-    <SimpleGrid
-      p={{ base: 'md', sm: 'xl' }}
-      cols={{ base: 1, sm: 2, md: 3, lg: 5 }}
-      spacing={{ base: 10, sm: 'xl' }}
-      verticalSpacing={{ base: 'md', sm: 'xl' }}
-    >
-      {views.map(v => <ViewCard key={v} viewId={v} />)}
-    </SimpleGrid>
+    <Container size={'xl'}>
+      <SimpleGrid
+        p={{ base: 'md', sm: 'xl' }}
+        cols={{ base: 1, sm: 2, md: 3, lg: 4 }}
+        spacing={{ base: 10, sm: 'xl' }}
+        verticalSpacing={{ base: 'md', sm: 'xl' }}
+      >
+        {views.map(v => <ViewCard key={v} viewId={v} />)}
+      </SimpleGrid>
+    </Container>
   )
 }
 
@@ -52,7 +54,7 @@ const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
       </Group>
 
       <Text size="sm" c="dimmed">
-        {description}
+        {/* {description} */}
       </Text>
       <Link to={'/view/$viewId/'} params={{ viewId: id }} search className={css.cardLink}></Link>
     </Card>

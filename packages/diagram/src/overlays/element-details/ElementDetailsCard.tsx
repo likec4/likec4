@@ -40,7 +40,7 @@ import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
-import { DescriptionMarkdown } from '../../base/primitives'
+import { MarkdownBlock } from '../../base/primitives'
 import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
@@ -127,6 +127,7 @@ export function ElementDetailsCard({
   )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? elementModel.defaultView?.$view ?? null
+  // Ignore default view if it's the current view
   if (defaultView?.id === viewId) {
     defaultView = null
   }
@@ -325,7 +326,21 @@ export function ElementDetailsCard({
             <Group align="baseline" gap={'sm'} wrap="nowrap">
               <div>
                 <SmallLabel>kind</SmallLabel>
-                <Badge radius={'sm'} size="sm" fw={600} color="gray">{elementModel.kind}</Badge>
+                <Badge
+                  radius={'sm'}
+                  size="sm"
+                  fw={600}
+                  color="gray"
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  onClick={e => {
+                    e.stopPropagation()
+                    diagram.openSearch(`kind:${elementModel.kind}`)
+                  }}
+                >
+                  {elementModel.kind}
+                </Badge>
               </div>
               <div style={{ flex: 1 }}>
                 <SmallLabel>tags</SmallLabel>
@@ -370,9 +385,9 @@ export function ElementDetailsCard({
                       radius="sm"
                       onClick={e => {
                         e.stopPropagation()
-                        // diagram.openSource({
-                        //   element: elementModel.id,
-                        // })
+                        diagram.openSource({
+                          element: elementModel.id,
+                        })
                       }}>
                       <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
                     </ActionIcon>
@@ -418,9 +433,10 @@ export function ElementDetailsCard({
                 <Box className={styles.propertiesGrid} pt={'xs'}>
                   <>
                     <PropertyLabel>description</PropertyLabel>
-                    <Box>
-                      <DescriptionMarkdown value={elementModel.description} />
-                    </Box>
+                    <MarkdownBlock
+                      value={elementModel.description}
+                      emptyText="no description"
+                    />
                   </>
                   {elementModel.technology && (
                     <ElementProperty title="technology">
