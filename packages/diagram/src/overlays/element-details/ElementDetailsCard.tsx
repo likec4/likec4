@@ -17,12 +17,12 @@ import {
   Box,
   Card,
   CloseButton,
-  Code,
   Divider as MantineDivider,
   Flex,
   Group,
   RemoveScroll,
   ScrollArea,
+  ScrollAreaAutosize,
   Stack,
   Tabs,
   TabsList,
@@ -39,7 +39,7 @@ import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@ta
 import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
-import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
+import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
 import { MarkdownBlock } from '../../base/primitives'
 import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
@@ -429,7 +429,7 @@ export function ElementDetailsCard({
             </TabsList>
 
             <TabsPanel value="Properties">
-              <ScrollArea scrollbars="y" type="auto">
+              <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
                 <Box className={styles.propertiesGrid} pt={'xs'}>
                   <>
                     <PropertyLabel>description</PropertyLabel>
@@ -592,17 +592,77 @@ function ElementProperty({
 }
 
 function ElementMetata({
-  value,
+  value: metadata,
 }: {
   value: NonNullable<Element['metadata']>
 }) {
   return (
     <>
       <PropertyLabel>metadata</PropertyLabel>
-      <Box>
-        <Code block>
-          {JSON.stringify(value, null, 2)}
-        </Code>
+      <Box
+        className={css({
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'min-content 1fr',
+          gridAutoRows: 'min-content max-content',
+          gap: `[4px 4px]`,
+          alignItems: 'baseline',
+          justifyItems: 'stretch',
+          paddingRight: '2xs',
+        })}>
+        {entries(metadata).map(([key, value]) => (
+          <div
+            key={key}
+            className={cx(
+              'group',
+              css({
+                display: 'contents',
+              }),
+            )}
+          >
+            <div
+              className={css({
+                fontSize: 'sm',
+                fontWeight: 500,
+                justifySelf: 'end',
+                whiteSpace: 'nowrap',
+              })}>
+              {key}:
+            </div>
+            <div
+              className={css({})}>
+              <ScrollAreaAutosize
+                type="auto"
+                mah={200}
+                overscrollBehavior="none"
+                className={css({
+                  transitionProperty: 'all',
+                  transitionDuration: 'fast',
+                  transitionTimingFunction: 'inOut',
+                  rounded: 'sm',
+                  color: 'mantine.colors.gray[8]',
+                  _dark: {
+                    color: 'mantine.colors.dark[1]',
+                  },
+                  _groupHover: {
+                    transitionTimingFunction: 'out',
+                    color: 'mantine.colors.defaultColor',
+                    background: 'mantine.colors.defaultHover',
+                  },
+                })}>
+                <div
+                  className={css({
+                    fontSize: 'sm',
+                    padding: '2xs',
+                    whiteSpace: 'pre',
+                    fontFamily: '[var(--mantine-font-family-monospace)]',
+                  })}>
+                  {value}
+                </div>
+              </ScrollAreaAutosize>
+            </div>
+          </div>
+        ))}
       </Box>
     </>
   )

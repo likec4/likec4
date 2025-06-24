@@ -226,7 +226,7 @@ export const propertiesGrid = css({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: `[20px 16px]`,
+  gap: `[24px 16px]`,
   alignItems: 'baseline',
   justifyItems: 'stretch',
 })
