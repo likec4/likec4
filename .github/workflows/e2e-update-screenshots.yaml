@@ -56,15 +56,14 @@ jobs:
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
         run: |
-          pnpm install
-          pnpm add @likec4/core@file:../packages/core/package.tgz likec4@file:../packages/likec4/package.tgz
-          pnpm install:chromium
-          pnpm bootstrap
+          npm install
+          npm run install:chromium
+          npm run bootstrap
 
       - name: ⚙️ update screenshots
         working-directory: e2e
         run: |
-          pnpm test:update-screenshots
+          npm run test:update-screenshots
 
       - name: create pull request
         id: cpr
