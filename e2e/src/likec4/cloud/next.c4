@@ -139,14 +139,6 @@ views {
 
   view graphql of graphql {
     include *, cloud.next
-
-    style * {
-      color muted
-    }
-
-    style graphql, graphql.* {
-      color primary
-    }
   }
 
 }
