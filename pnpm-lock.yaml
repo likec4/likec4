@@ -146,8 +146,8 @@ catalogs:
       version: 1.114.17
   utils:
     '@hpcc-js/wasm-graphviz':
-      specifier: 1.7.0
-      version: 1.7.0
+      specifier: 1.8.0
+      version: 1.8.0
     '@types/picomatch':
       specifier: ^4.0.0
       version: 4.0.0
@@ -431,7 +431,7 @@ importers:
         version: 0.5.2(hono@4.8.2)(valibot@1.1.0(typescript@5.8.3))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.7.0
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -938,7 +938,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.7.0
+        version: 1.8.0
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1080,7 +1080,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.7.0
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1156,7 +1156,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.7.0
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1509,7 +1509,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.7.0
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -2779,8 +2779,8 @@ packages:
       hono: '>=3.9.0'
       valibot: ^1.0.0 || ^1.0.0-beta.4 || ^1.0.0-rc
 
-  '@hpcc-js/wasm-graphviz@1.7.0':
-    resolution: {integrity: sha512-/1XEmubfDz1UolKiVh6H4BrGX0DZwR39Y2h76LdqR17FZ3gCJoUs4jV7kUywedXerbwx1szhU3dBsNcvkEmjiQ==}
+  '@hpcc-js/wasm-graphviz@1.8.0':
+    resolution: {integrity: sha512-aLQveMOReqKk0t1XLnQ0mhEuJiXInNwBVW4ASclpcETKlpvF+tIL2N+l8buQsoFEiyc5EYbNtedNX/Zk89fjjQ==}
 
   '@hutson/parse-repository-url@3.0.2':
     resolution: {integrity: sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==}
@@ -10416,7 +10416,7 @@ snapshots:
       hono: 4.8.2
       valibot: 1.1.0(typescript@5.8.3)
 
-  '@hpcc-js/wasm-graphviz@1.7.0': {}
+  '@hpcc-js/wasm-graphviz@1.8.0': {}
 
   '@hutson/parse-repository-url@3.0.2': {}
 
