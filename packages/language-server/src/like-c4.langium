@@ -816,8 +816,10 @@ ColorLiteral:
 
 RGBAColor:
   ('rgba' | 'rgb') '(' red=Number ','? green=Number ','? blue=Number ','? alpha=(Float | Number | Percent)? ')';
+
+// Validated later
 HexColor:
-  Hash hex=(Hex | Number);
+  Hash hex=(Hex | Number | IdTerminal);
 
 IconId returns string:
   LIB_ICON;
@@ -829,10 +831,10 @@ MarkdownOrString:
   markdown=MarkdownString | text=String;
 
 CustomColorId returns string:
-  Hex | IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
+  IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  Hex | IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (
@@ -894,5 +896,5 @@ terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal Float returns number: /\b\d+\.\d+\b/;
 terminal Number returns number: /\b\d+\b/;
-terminal Hex: /\b[a-fA-F0-9]{3,}\b/;
 terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
+terminal Hex: /[a-fA-F0-9]{3,}(?![-_g-zG-Z])/;

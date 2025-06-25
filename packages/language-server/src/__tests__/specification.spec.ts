@@ -233,10 +233,20 @@ describe.concurrent('specification', () => {
         }
       }
 
-      color custom-color1 #00ffff
-      color custom-color2 rgb(201 200 6)
-      color custom-color3 rgba(201, 6, 6, 0.9)
-      color custom-color4 rgba(201 200 6 80%)
+      color custom-color1 #123
+      color custom-color2 #00ffff
+      color custom-color3 rgb(201 200 6)
+      color custom-color4 rgba(201, 6, 6, 0.9)
+      color custom-color5 rgba(201 200 6 80%)
+    }`
+
+  test('custom color with invalid hex (wrong symbol)').invalid`
+    specification {
+      color custom-color1 #00fgff
+    }`
+  test('custom color with invalid hex (starts with _ from ID)').invalid`
+    specification {
+      color custom-color1 #_FF
     }`
 
   describe('for tags', () => {
