@@ -1,26 +1,45 @@
 # [1.33.0](https://github.com/likec4/likec4/compare/v1.32.2...v1.33.0) (2025-06-25)
 
+### 🚀 Features
+
+* **Markdown**
+  
+  Strings with triple qoutes (`""" markdown """` or `''' markdown '''`) are now parsed as Markdown.  
+  This is the first step in adopting Markdown support, and it’s currently limited to descriptions only:
+
+  ```zig
+  model {
+    mobile = application {
+      description '''
+        ### Multi-platform application
+  
+        [React Native](https://reactnative.dev)
+      '''
+    }
+  
+    web = application {
+      description """
+        ### Web Application
+  
+        > Provides services to customers through
+        > the web interface.
+  
+        | checks     |     |
+        | :--------- | :-- |
+        | check 1    | ✅  |
+        | check 2    | ⛔️  |
+        | check 3    | ✅  |
+      """
+    }
+  }
+  ```
+  Closes [#1124](https://github.com/likec4/likec4/issues/1124)
 
 ### Bug Fixes
 
-* **deps:** update dependency react-resizable-panels to ^3.0.3 ([#2030](https://github.com/likec4/likec4/issues/2030)) ([ceab737](https://github.com/likec4/likec4/commit/ceab737cf499d8367a8edd7c70e50d0ab889b877))
-* **diagam:** makdown description does not respect text sizes ([e904e0d](https://github.com/likec4/likec4/commit/e904e0d2a56c8436ad91186e4374e9cc46100c3c))
-* downgrade likec4 version to 1.32.2 and update e2e test dependencies ([77652fd](https://github.com/likec4/likec4/commit/77652fd883b33c0ec7dda94ba621717cb9e79b2c))
 * **dsl:** resilient parser for specification tags ([ba9619b](https://github.com/likec4/likec4/commit/ba9619b9d1b5bd996c5fbe136890f9b1cbf579aa))
-* inherit titles of deployed instances from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
-* missing entrypoint in `@likec4/diagram` ([7d15463](https://github.com/likec4/likec4/commit/7d15463af3f4e7869cdd0a4c1ac7b4f3484be0d4))
-* **playground:**  convert descriptions from LegacyModel ([acffc41](https://github.com/likec4/likec4/commit/acffc419a4307ebe74cf848c0ed199ef7b032e60))
-* round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
-
-
-### Features
-
-* add markdown support and triple quote strings for text fields ([77851ed](https://github.com/likec4/likec4/commit/77851edf396136d5e8263c87f31699a19980a7c9))
-* add markdown support for titles, descriptions, and notes with HTML sanitization ([c2027ce](https://github.com/likec4/likec4/commit/c2027cef07bd7d93c4e8b1dbb67bfeb41c6bc1da))
-* add package linting with publint ([3df2cf3](https://github.com/likec4/likec4/commit/3df2cf3f50a262127df52fb878ea7d785ca9a8b0))
-* implement markdown support ([21d94fa](https://github.com/likec4/likec4/commit/21d94fa036739c8f73884866ff90e93c58f993e3))
-* implement markdown support for element and view descriptions ([a0cb146](https://github.com/likec4/likec4/commit/a0cb146cb7f7d1f1f8f7eaf2dea09549933bcccd))
-
+* **api:** inherit deployed instances titles from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
+* **layout:** round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
 
 
 ## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
