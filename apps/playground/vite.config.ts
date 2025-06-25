@@ -12,6 +12,12 @@ import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+  // '@likec4/core/compute-view/relationships': path.resolve(
+  //   __dirname,
+  //   '../../packages/core/src/compute-view/relationships-view/index.ts',
+  // ),
+  // '@likec4/core': path.resolve(__dirname, '../../packages/core/src'),
+  // '@likec4/language-server': path.resolve(__dirname, '../../packages/language-server/src'),
 } satisfies AliasOptions
 
 export default defineConfig(({ command }) => ({
@@ -34,6 +40,10 @@ export default defineConfig(({ command }) => ({
   },
   environments: {
     client: {
+      resolve: {
+        alias,
+        conditions: ['sources'],
+      },
       optimizeDeps: {
         include: [
           '@likec4/icons/all',
@@ -79,6 +89,11 @@ export default defineConfig(({ command }) => ({
             },
           }],
         },
+      },
+    },
+    playground: {
+      resolve: {
+        conditions: ['workerd', 'worker', 'sources'],
       },
     },
   },

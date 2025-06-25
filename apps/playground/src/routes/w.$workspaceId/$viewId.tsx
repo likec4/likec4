@@ -105,6 +105,7 @@ function WorkspaceDiagramPage() {
             enableRelationshipBrowser
             enableRelationshipDetails
             showNotations
+            enableElementTags
             enableFocusMode
             enableSearch
             reactFlowProps={{

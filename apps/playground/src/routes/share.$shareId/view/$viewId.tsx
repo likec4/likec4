@@ -68,6 +68,7 @@ function RouteComponent() {
         enableRelationshipDetails
         enableRelationshipBrowser
         experimentalEdgeEditing={false}
+        enableElementTags
         showNotations={hasNotations}
         nodesDraggable={false}
         nodesSelectable
