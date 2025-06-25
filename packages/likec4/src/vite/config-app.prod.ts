@@ -70,14 +70,14 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     mode: 'production',
     optimizeDeps: {
       force: true,
-      include: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-      ],
+    },
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          target: 'ESNext',
+          jsx: 'react-jsx',
+        },
+      },
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),

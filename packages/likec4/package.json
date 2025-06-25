@@ -61,6 +61,10 @@
     "./vite-plugin-modules": {
       "types": "./vite-plugin-modules.d.ts"
     },
+    "./vite-plugin/internal": {
+      "sources": "./src/vite-plugin/internal.ts",
+      "default": "./dist/vite-plugin/internal.mjs"
+    },
     "./vite-plugin": {
       "sources": "./src/vite-plugin/index.ts",
       "default": {

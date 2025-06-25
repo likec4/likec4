@@ -1,5 +1,4 @@
 import type { DiagramView, WhereOperator } from '@likec4/core/types'
-import { useLogger } from '@mantine/hooks'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -14,7 +13,16 @@ import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorSnapshot } from './types'
 
-const selectToggledFeatures = (state: DiagramActorSnapshot) => state.context.toggledFeatures
+const selectToggledFeatures = (state: DiagramActorSnapshot) => {
+  if (state.context.features.enableReadOnly) {
+    return {
+      ...state.context.toggledFeatures,
+      enableReadOnly: true,
+    }
+  }
+  return state.context.toggledFeatures
+}
+
 export function DiagramActorProvider({
   view,
   zoomable,
