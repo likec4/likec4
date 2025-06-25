@@ -686,8 +686,8 @@ importers:
         specifier: catalog:mantine
         version: 8.1.1(chroma-js@3.1.2)
       '@types/extend':
-        specifier: 3.0.0
-        version: 3.0.0
+        specifier: 3.0.4
+        version: 3.0.4
       '@types/hast':
         specifier: 3.0.0
         version: 3.0.0
@@ -3677,8 +3677,8 @@ packages:
   '@types/express@5.0.3':
     resolution: {integrity: sha512-wGA0NX93b19/dZC1J18tKWVIYWyyF2ZjT9vin/NRu0qzzvfVzWjs04iq2rQ3H65vCTQYlRqs3YHfY7zjdV+9Kw==}
 
-  '@types/extend@3.0.0':
-    resolution: {integrity: sha512-Eo8NQCbgjlMPQarlFAE3vpyCvFda4dg1Ob5ZJb6BJI9x4NAZVWowyMNB8GJJDgDI4lr2oqiQvXlPB0Fn1NoXnQ==}
+  '@types/extend@3.0.4':
+    resolution: {integrity: sha512-ArMouDUTJEz1SQRpFsT2rIw7DeqICFv5aaVzLSIYMYQSLcwcGOfT3VyglQs/p7K3F7fT4zxr0NWxYZIdifD6dA==}
 
   '@types/fontkit@2.0.8':
     resolution: {integrity: sha512-wN+8bYxIpJf+5oZdrdtaX04qUuWHcKxcDEgRS9Qm9ZClSHjzEn13SxUC+5eRM+4yXIeTYk8mTzLAWGF64847ew==}
@@ -11548,7 +11548,7 @@ snapshots:
       '@types/express-serve-static-core': 5.0.6
       '@types/serve-static': 1.15.7
 
-  '@types/extend@3.0.0': {}
+  '@types/extend@3.0.4': {}
 
   '@types/fontkit@2.0.8':
     dependencies:

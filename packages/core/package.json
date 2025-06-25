@@ -120,7 +120,7 @@
     "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
-    "@types/extend": "3.0.0",
+    "@types/extend": "3.0.4",
     "@types/hast": "3.0.0",
     "@types/mdast": "4.0.0",
     "@types/natural-compare-lite": "^1.4.2",
