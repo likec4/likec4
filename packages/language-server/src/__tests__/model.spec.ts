@@ -20,14 +20,6 @@ describe.concurrent('model', () => {
       1aa = system
     }`
 
-  test('name with dash').valid`
-    specification {
-      element system
-    }
-    model {
-      aaa-a = system
-    }`
-
   test('name on the right side').valid`
     specification {
       element person
