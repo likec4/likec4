@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.32.2",
+  "version": "1.33.0",
   "private": true,
   "scripts": {
     "generate": "wireit",
@@ -83,7 +83,6 @@
   },
   "sideEffects": false,
   "type": "module",
-
   "dependencies": {
     "@cloudflare/vite-plugin": "1.7.5",
     "@codingame/monaco-vscode-editor-api": "16.1.1",

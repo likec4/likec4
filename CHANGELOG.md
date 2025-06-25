@@ -1,3 +1,47 @@
+# [1.33.0](https://github.com/likec4/likec4/compare/v1.32.2...v1.33.0) (2025-06-25)
+
+### 🚀 Features
+
+* **Markdown**
+  
+  Strings with triple qoutes (`""" markdown """` or `''' markdown '''`) are now parsed as Markdown.  
+  This is the first step in adopting Markdown support, and it’s currently limited to descriptions only:
+
+  ```zig
+  model {
+    mobile = application {
+      description '''
+        ### Multi-platform application
+  
+        [React Native](https://reactnative.dev)
+      '''
+    }
+  
+    web = application {
+      description """
+        ### Web Application
+  
+        > Provides services to customers through
+        > the web interface.
+  
+        | checks     |     |
+        | :--------- | :-- |
+        | check 1    | ✅  |
+        | check 2    | ⛔️  |
+        | check 3    | ✅  |
+      """
+    }
+  }
+  ```
+  Closes [#1124](https://github.com/likec4/likec4/issues/1124)
+
+### Bug Fixes
+
+* **dsl:** resilient parser for specification tags ([ba9619b](https://github.com/likec4/likec4/commit/ba9619b9d1b5bd996c5fbe136890f9b1cbf579aa))
+* **api:** inherit deployed instances titles from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
+* **layout:** round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
+
+
 ## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
 
 ### Bug Fixes

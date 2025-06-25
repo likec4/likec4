@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.32.2",
+  "version": "1.33.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -65,7 +65,6 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
