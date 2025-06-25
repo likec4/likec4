@@ -84,8 +84,8 @@ export default definePreset({
       [`${rootNotReduced} ${nodeOrEdge}:has([data-likec4-dimmed="true"])`]: {
         transitionProperty: 'opacity, filter',
         transitionTimingFunction: '{easings.inOut}',
-        transitionDuration: '800ms',
-        transitionDelay: '200ms',
+        transitionDuration: '600ms',
+        // transitionDelay: '100ms',
       },
       [`[data-mantine-color-scheme="dark"] ${rootNotReduced} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
         {

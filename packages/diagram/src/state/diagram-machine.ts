@@ -499,7 +499,7 @@ const _diagramMachine = setup({
           if (n.data.tags?.includes(event.tag)) {
             return Base.setDimmed(n, false)
           }
-          return Base.setDimmed(n, 'immediate')
+          return Base.setDimmed(n, true)
         }),
       }
     }),
