@@ -80,8 +80,8 @@ catalogs:
     "@vitest/ui": 3.2.4
   css:
     postcss: 8.5.5
-    "@pandacss/dev": ^0.53.7
-    "@pandacss/preset-panda": ^0.53.7
+    "@pandacss/dev": ^0.54.0
+    "@pandacss/preset-panda": ^0.54.0
   vscode:
     vscode-jsonrpc: 8.2.0
     vscode-languageclient: 9.0.1
