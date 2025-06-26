@@ -320,6 +320,10 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.15.31)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0)
 
   apps/docs:
+    dependencies:
+      starlight-image-zoom:
+        specifier: ^0.12.0
+        version: 0.12.0(@astrojs/starlight@0.34.4(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0)))
     devDependencies:
       '@astrojs/check':
         specifier: catalog:astro
@@ -7718,6 +7722,12 @@ packages:
 
   starlight-heading-badges@0.5.0:
     resolution: {integrity: sha512-B2acUppMY2seU8ab5wHTDlRo1zDkTAPBDtLMPq+5o01k5INmN5OlFsHwpSBvdqEf2fomUA7KcvnrRrUL3InNsQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.32.0'
+
+  starlight-image-zoom@0.12.0:
+    resolution: {integrity: sha512-Zt9DuqXEw4JBBRc67wL9EP7DE9cSa+o2nyjQU6Xq+gRp388Wcu9C9FPROLuaYXbxpE93bbj5oyrhhMaiEWOZzg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@astrojs/starlight': '>=0.32.0'
@@ -16533,6 +16543,16 @@ snapshots:
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       unist-util-visit: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  starlight-image-zoom@0.12.0(@astrojs/starlight@0.34.4(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))):
+    dependencies:
+      '@astrojs/starlight': 0.34.4(astro@5.9.2(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.0))
+      mdast-util-mdx-jsx: 3.2.0
+      rehype-raw: 7.0.0
+      unist-util-visit: 5.0.0
+      unist-util-visit-parents: 6.0.1
     transitivePeerDependencies:
       - supports-color
 
