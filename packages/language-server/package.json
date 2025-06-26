@@ -139,7 +139,7 @@
     "picomatch": "catalog:utils",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",

@@ -143,7 +143,7 @@
     "react-resizable-panels": "^3.0.3",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",

@@ -17,6 +17,7 @@ catalog:
 
 catalogs:
   utils:
+    strip-indent: ^4.0.0
     remeda: ^2.23.1
     type-fest: ^4.41.0
     fast-equals: ^5.2.2

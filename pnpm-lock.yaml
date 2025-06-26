@@ -202,6 +202,9 @@ catalogs:
     std-env:
       specifier: ^3.9.0
       version: 3.9.0
+    strip-indent:
+      specifier: ^4.0.0
+      version: 4.0.0
     ufo:
       specifier: 1.6.1
       version: 1.6.1
@@ -574,7 +577,7 @@ importers:
         specifier: catalog:utils
         version: 3.9.0
       strip-indent:
-        specifier: ^4.0.0
+        specifier: catalog:utils
         version: 4.0.0
       tsx:
         specifier: 'catalog:'
@@ -1028,7 +1031,7 @@ importers:
         specifier: catalog:utils
         version: 2.23.1
       strip-indent:
-        specifier: ^4.0.0
+        specifier: catalog:utils
         version: 4.0.0
       tsx:
         specifier: 'catalog:'
@@ -1115,7 +1118,7 @@ importers:
         specifier: catalog:utils
         version: 2.23.1
       strip-indent:
-        specifier: ^4.0.0
+        specifier: catalog:utils
         version: 4.0.0
       ts-graphviz:
         specifier: ^1.8.2
@@ -1375,7 +1378,7 @@ importers:
         specifier: catalog:utils
         version: 3.9.0
       strip-indent:
-        specifier: ^4.0.0
+        specifier: catalog:utils
         version: 4.0.0
       tinyrainbow:
         specifier: ^2.0.0

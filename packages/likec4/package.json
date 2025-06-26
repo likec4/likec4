@@ -204,7 +204,7 @@
     "remeda": "catalog:utils",
     "semver": "^7.7.2",
     "std-env": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tinyrainbow": "^2.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
