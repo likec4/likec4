@@ -99,3 +99,5 @@ jspm_packages/
 dist
 
 ## Panda
+/.project
+/.settings/*
