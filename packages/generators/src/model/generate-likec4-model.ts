@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
 import { capitalize } from 'remeda'
 import { generateAux } from './generate-aux'
