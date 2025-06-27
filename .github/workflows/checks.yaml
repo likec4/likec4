@@ -36,6 +36,24 @@ jobs:
       - name: ⚙️ build
         run: pnpm ci:build
 
+  check-on-windows:
+    name: ⊞ windows build
+    timeout-minutes: 10
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ⚙️ build
+        run: pnpm turbo run build --filter="!@likec4/docs-astro" --filter="!@likec4/playground"
+
+      - name: 🔬 test
+        env:
+          NODE_ENV: test
+        run: pnpm ci:test
+
   check-tests:
     name: 🔬 tests
     timeout-minutes: 5
@@ -133,7 +151,7 @@ jobs:
 
   check-e2e-types:
     name: 🔬 e2e types
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-24.04-arm
     needs:
       - check-build
