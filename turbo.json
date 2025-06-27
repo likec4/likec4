@@ -42,9 +42,14 @@
       "dependsOn": [
         "build"
       ],
-      "outputs": [
-        "package.tgz"
+      "cache": false,
+      "outputLogs": "new-only"
+    },
+    "lint:package": {
+      "dependsOn": [
+        "pack"
       ],
+      "cache": false,
       "outputLogs": "new-only"
     }
   }

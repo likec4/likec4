@@ -1,6 +1,6 @@
 {
   "name": "create-likec4",
-  "version": "1.32.1",
+  "version": "1.33.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -37,6 +37,5 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

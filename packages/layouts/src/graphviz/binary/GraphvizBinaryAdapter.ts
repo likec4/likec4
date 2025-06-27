@@ -29,8 +29,16 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     this._unflattenpath = unflatten_path
   }
 
+  dispose(): void {
+    // do nothing for now
+  }
+
+  [Symbol.dispose](): void {
+    // do nothing for now
+  }
+
   get concurrency() {
-    return Math.max(1, os.cpus().length - 1)
+    return Math.max(1, os.cpus().length - 2)
   }
 
   get dotpath() {

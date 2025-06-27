@@ -80,12 +80,12 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('technology' | 'notation') ':'? value=String ';'?;
+  key=('technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 // Imports -------------------------------------
 
 ImportsFromPoject:
-  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String
+  'import' ( '{' imports=Imported '}' | imports=Imported) 'from' project=String ';'?
 ;
 
 Imported:
@@ -94,6 +94,7 @@ Imported:
 
 // Model -------------------------------------
 
+// Allow use spaces and commas in tags
 Tags:
   (values+=TagRef)+ ({infer Tags.prev=current} ',' (values+=TagRef)*)* ';'?
 ;
@@ -116,7 +117,7 @@ Element:
   (props+=String  // title
     (props+=String  // description
       (props+=String  // technology
-        (props+=String)?   // tags
+        (props+=String)?   // tags (ignored by likec4, but still parsed for Structurizr compatibility)
       )?
     )?
   )?
@@ -141,7 +142,7 @@ ElementProperty:
   MetadataProperty;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ExtendElement:
   'extend' element=StrictFqnElementRef body=ExtendElementBody
@@ -193,9 +194,10 @@ Relation<isExplicit>:
     '->'
   )
   target=FqnRef
-  (
-    title=String
-    technology=String?
+  (title=String  // title
+    (description=String  // description
+      (technology=String)?
+    )?
   )?
   tags=Tags?
   body=RelationBody?
@@ -216,7 +218,7 @@ RelationProperty:
 ;
 
 RelationStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -234,7 +236,7 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=IdTerminal ':'? value=String ';'?
+  key=IdTerminal ':'? value=MarkdownOrString ';'?
 ;
 
 // Views -------------------------------------
@@ -305,7 +307,7 @@ ViewProperty:
 ;
 
 ViewStringProperty:
-  key=('title' | 'description') ':'? value=String ';'?;
+  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
@@ -389,10 +391,10 @@ ViewRuleAutoLayout:
     )?;
 
 NotationProperty:
-  key='notation' ':'? value=String ';'?
+  key='notation' ':'? value=MarkdownOrString ';'?
 ;
 NotesProperty:
-  key='notes' ':'? value=String ';'?
+  key='notes' ':'? value=MarkdownOrString ';'?
 ;
 
 CustomElementProperties: '{'
@@ -610,11 +612,16 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
-  target=FqnRef
   (
-    title=String
-    technology=String?
+    dotKind=RelationKindDotRef |
+    '-[' kind=[RelationshipKind] ']->' |
+    '->'
+  )
+  target=FqnRef
+  (title=String  // title
+    (description=String  // description
+      (technology=String)?
+    )?
   )?
   tags=Tags?
   body=DeploymentRelationBody?
@@ -704,7 +711,7 @@ OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
 
 MultipleProperty:
-  key='multiple' ':'? value=Boolean ';'?;
+  key='multiple' ':'? value=BOOLEAN ';'?;
 
 // Element properties -------------------------------------
 IconProperty:
@@ -778,8 +785,6 @@ RelationKindDotRef :
   Dot kind=[RelationshipKind:Id]
 ;
 
-Boolean returns boolean: 'true' | 'false';
-
 LineOptions returns string:
   'solid' |
   'dashed' |
@@ -811,8 +816,10 @@ ColorLiteral:
 
 RGBAColor:
   ('rgba' | 'rgb') '(' red=Number ','? green=Number ','? blue=Number ','? alpha=(Float | Number | Percent)? ')';
+
+// Validated later
 HexColor:
-  Hash hex=(Hex | Number);
+  Hash hex=(Hex | Number | IdTerminal);
 
 IconId returns string:
   LIB_ICON;
@@ -820,11 +827,14 @@ IconId returns string:
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
+MarkdownOrString:
+  markdown=MarkdownString | text=String;
+
 CustomColorId returns string:
-  Hex | IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
+  IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  Hex | IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (
@@ -860,6 +870,7 @@ hidden terminal NL: /[\r\n]+/;
 
 
 // LibIcons
+terminal BOOLEAN returns boolean: /true|false/;
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
@@ -876,11 +887,14 @@ terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;
 
+terminal MarkdownString: '\'\'\'' -> '\'\'\'' | '"""' -> '"""';
 terminal String: /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/;
+
+// terminal fragment QuotedString: ;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal Float returns number: /\b\d+\.\d+\b/;
 terminal Number returns number: /\b\d+\b/;
-terminal Hex: /\b[a-fA-F0-9]{3,}\b/;
 terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
+terminal Hex: /[a-fA-F0-9]{3,}(?![-_g-zG-Z])/;

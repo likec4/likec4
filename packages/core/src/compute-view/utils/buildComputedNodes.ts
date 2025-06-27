@@ -29,8 +29,8 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, C
 }
 
 export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
-  & Pick<ComputedNode<A>, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
-  & Partial<Omit<Element<A>, 'id' | 'title' | 'kind'>>
+  & Pick<ComputedNode<A>, 'id' | 'title' | 'description' | 'kind' | 'deploymentRef' | 'modelRef'>
+  & Partial<Omit<Element<A>, 'id' | 'title' | 'description' | 'kind'>>
 >
 
 export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
@@ -86,7 +86,7 @@ export function buildComputedNodes<A extends AnyAux>(
   // Ensure that parent nodes are created before child nodes
   Array.from(elements)
     .sort(compareByFqnHierarchically)
-    .forEach(({ id, style, kind, title, color, shape, tags, ...el }) => {
+    .forEach(({ id, style, kind, title, color, shape, tags, notation, ...el }) => {
       let parent = parentFqn(id)
       let level = 0
       let parentNd: ComputedNode<A> | undefined
@@ -130,6 +130,7 @@ export function buildComputedNodes<A extends AnyAux>(
         children: [],
         inEdges: [],
         outEdges: [],
+        ...notation && { notation },
         ...el,
         style: {
           ...style,

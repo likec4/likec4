@@ -2,6 +2,7 @@ import {
   type Fqn,
   nonNullable,
   Queue,
+  RichText,
 } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
@@ -111,7 +112,7 @@ export function layoutResultToXYFlow(
               fqn,
               title: node.title,
               technology: node.technology,
-              description: node.description,
+              description: RichText.from(node.description),
               height: node.height,
               width: node.width,
               color: node.color,
@@ -159,8 +160,8 @@ export function layoutResultToXYFlow(
         color,
         navigateTo,
         line,
+        description: RichText.from(description),
         ...(technology && { technology }),
-        ...(description && { description }),
       },
     })
   }

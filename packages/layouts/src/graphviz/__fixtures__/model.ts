@@ -91,16 +91,18 @@ const el = ({
   title,
   style,
   tags,
+  description,
   ...props
-}: Partial<Omit<Element, 'id' | 'kind' | 'tags'>> & {
+}: Partial<Omit<Element, 'id' | 'kind' | 'description' | 'tags'>> & {
   id: string
   kind: string
+  description?: string
   tags?: NonEmptyArray<string>
 }): Element => ({
   id: id as Fqn,
   kind: kind as ElementKind,
   title: title ?? id,
-  description: null,
+  ...description ? { description: { txt: description } } : {},
   technology: null,
   tags: tags as NonEmptyArray<any> ?? null,
   links: null,

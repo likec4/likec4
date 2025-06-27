@@ -3,85 +3,110 @@
     // symbol used for single line comment. Remove this entry if your language does not support line comments
     "lineComment": "//",
     // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
-    "blockComment": ["/*", "*/"]
+    "blockComment": [
+      "/*",
+      "*/"
+    ]
   },
   // symbols used as brackets
   "brackets": [
-    ["{", "}"],
-    ["(", ")"]
+    [
+      "{",
+      "}"
+    ],
+    [
+      "(",
+      ")"
+    ]
   ],
   // symbols that are auto closed when typing
   "autoClosingPairs": [
-    {
-      "open": "{",
-      "close": "}"
-    },
-    {
-      "open": "-[",
-      "close": "]->"
-    },
-    {
-      "open": "[",
-      "close": "]"
-    },
-    {
-      "open": "(",
-      "close": ")"
-    },
-    {
-      "open": "'",
-      "close": "'",
-      "notIn": ["string", "comment"]
-    },
-    {
-      "open": "\"",
-      "close": "\"",
-      "notIn": ["string"]
-    },
-    {
-      "open": "/*",
-      "close": "*/",
-      "notIn": ["string"]
-    }
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ],
+    [
+      "-[",
+      " ]->"
+    ],
+    [
+      "'''",
+      "'''"
+    ],
+    [
+      "'",
+      "'"
+    ],
+    [
+      "\"\"\"",
+      "\"\"\""
+    ],
+    [
+      "\"",
+      "\""
+    ],
+    [
+      "/*",
+      "*/"
+    ]
   ],
-  "autoCloseBefore": "}])`\n\t",
+  "autoCloseBefore": "'\";:.,=}])>` \n\t",
   // symbols that can be used to surround a selection
   "surroundingPairs": [
-    ["{", "}"],
-    ["[", "]"],
-    ["(", ")"],
-    ["\"", "\""],
-    ["'", "'"]
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ],
+    [
+      "'''",
+      "'''"
+    ],
+    [
+      "\"",
+      "\""
+    ],
+    [
+      "'",
+      "'"
+    ]
   ],
-  "colorizedBracketPairs": [["{", "}"]],
+  "colorizedBracketPairs": [
+    [
+      "{",
+      "}"
+    ]
+  ],
   "onEnterRules": [
     {
-      "beforeText": {
-        "pattern": "{\\s*$"
-      },
-      "afterText": {
-        "pattern": "}\\s*$"
-      },
+      "beforeText": "{\\s*$",
       "action": {
         "indent": "indentOutdent"
       }
     },
     {
-      "beforeText": {
-        "pattern": "\\s*(\"|')$"
-      },
-      "afterText": {
-        "pattern": "^(\"|')\\s*$"
-      },
+      "beforeText": "\\s*(\"|'){1,3}$",
       "action": {
         "indent": "indentOutdent"
       }
     },
     {
-      "": "// e.g. ... include| ",
-      "beforeText": {
-        "pattern": "^\\s*(include|exclude)\\s*$"
-      },
+      "beforeText": "^\\s*(include|exclude)\\s*$",
       "action": {
         "indent": "indent"
       }

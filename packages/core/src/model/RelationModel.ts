@@ -1,11 +1,13 @@
-import { isTruthy } from 'remeda'
+import { isEmpty, isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
+  type RichTextOrEmpty,
   DefaultLineStyle,
   DefaultRelationshipColor,
   FqnRef,
+  RichText,
 } from '../types'
 import type * as aux from '../types/_aux'
 import { commonAncestor } from '../utils/fqn'
@@ -23,16 +25,16 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
 export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, WithMetadata<A> {
-  get id(): scalar.RelationId
-  get expression(): string
-  get title(): string | null
-  get technology(): string | null
-  get description(): string | null
-  get navigateTo(): LikeC4ViewModel<A> | null
-  get kind(): aux.RelationKind<A> | null
-  get links(): ReadonlyArray<Link>
-  get color(): Color
-  get line(): RelationshipLineType
+  readonly id: scalar.RelationId
+  readonly expression: string
+  readonly title: string | null
+  readonly technology: string | null
+  readonly description: RichTextOrEmpty
+  readonly navigateTo: LikeC4ViewModel<A> | null
+  readonly kind: aux.RelationKind<A> | null
+  readonly links: ReadonlyArray<Link>
+  readonly color: Color
+  readonly line: RelationshipLineType
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
   views(): ViewsIterator<A>
@@ -80,11 +82,8 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.technology
   }
 
-  get description(): string | null {
-    if (!isTruthy(this.$relationship.description)) {
-      return null
-    }
-    return this.$relationship.description
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$relationship.description)
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {
@@ -129,6 +128,10 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
 
   public isModelRelation(): this is RelationshipModel<A> {
     return true
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$relationship.metadata && !isEmpty(this.$relationship.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>

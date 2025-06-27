@@ -8,6 +8,7 @@ import type {
   ViewWithType,
 } from '../../types'
 import { _stage, _type } from '../../types'
+import { type RichTextOrEmpty, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
 import { DefaultMap, ifind, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
@@ -90,6 +91,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   get title(): string | null {
     return this.$view.title
+  }
+
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$view.description)
   }
 
   get tags(): aux.Tags<A> {

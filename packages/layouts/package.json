@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.32.1",
+  "version": "1.33.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -46,9 +46,12 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
+    "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "pnpm rimraf dist lib",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-layouts-$npm_package_version.tgz package.tgz || true"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
@@ -63,7 +66,7 @@
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "ts-graphviz": "^1.8.2",
     "type-fest": "catalog:utils",
     "which": "^5.0.0",
@@ -77,6 +80,5 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

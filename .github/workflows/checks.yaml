@@ -35,6 +35,20 @@ jobs:
 
       - name: ⚙️ build
         run: pnpm ci:build
+        
+      - name: ⚙️ lint:package
+        run: |
+          pnpm lint:package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarballs
+          compression-level: 0
+          path: |
+            packages/core/package.tgz
+            packages/likec4/package.tgz
+          if-no-files-found: error
 
   check-on-windows:
     name: ⊞ windows build
@@ -105,19 +119,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
+      - name: 🛠️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        env:
+          NODE_ENV: development
 
-      - name: 📦 pack
-        run: |
-          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
+      - name: 🛠️ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: "pnpm"
+
+      - name: 📦 download tarballs
+        uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: packages
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
-        env:
-          NODE_ENV: development
         run: |
-          pnpm install --prefer-offline
+          pnpm install
           pnpm install:chromium
           pnpm bootstrap
 
@@ -160,19 +182,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
+      - name: 🛠️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        env:
+          NODE_ENV: development
 
-      - name: 📦 pack
-        run: |
-          pnpm turbo run pack --filter='@likec4/core' --filter='likec4'
+      - name: 🛠️ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: "pnpm"
+
+      - name: 📦 download tarballs
+        uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: packages
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
-        env:
-          NODE_ENV: development
         run: |
-          pnpm install --prefer-offline
+          pnpm install
           pnpm bootstrap
 
       - name: ʦ typecheck test

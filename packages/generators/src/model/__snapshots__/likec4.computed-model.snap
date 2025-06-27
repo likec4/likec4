@@ -130,7 +130,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'customer',
       kind: 'person',
       title: 'customer',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -142,7 +141,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud',
       kind: 'system',
       title: 'cloud',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -154,7 +152,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.frontend',
       kind: 'component',
       title: 'frontend',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -166,7 +163,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.frontend.dashboard',
       kind: 'webapp',
       title: 'dashboard',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -178,7 +174,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.frontend.mobile',
       kind: 'mobile',
       title: 'mobile',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -190,7 +185,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.auth',
       kind: 'component',
       title: 'auth',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -202,7 +196,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.backend',
       kind: 'component',
       title: 'backend',
-      description: null,
       technology: null,
       tags: [
         'external',
@@ -219,7 +212,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.backend.api',
       kind: 'component',
       title: 'api',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -231,7 +223,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.backend.graphql',
       kind: 'component',
       title: 'graphql',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -243,7 +234,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'cloud.media',
       kind: 'component',
       title: 'media',
-      description: null,
       technology: null,
       tags: [
         'internal',
@@ -257,7 +247,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'aws',
       kind: 'system',
       title: 'aws',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -269,7 +258,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'aws.rds',
       kind: 'component',
       title: 'rds',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -281,7 +269,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'aws.s3',
       kind: 'component',
       title: 's3',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -296,7 +283,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       id: 'email',
       kind: 'system',
       title: 'email',
-      description: null,
       technology: null,
       tags: [],
       color: 'primary',
@@ -474,7 +460,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'customer',
         kind: 'node',
         title: 'customer',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -490,7 +475,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'prod',
         kind: 'env',
         title: 'prod',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -502,7 +486,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'prod.eu',
         kind: 'zone',
         title: 'eu',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -514,7 +497,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'prod.eu.zone1',
         kind: 'zone',
         title: 'zone1',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -534,7 +516,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'prod.eu.zone2',
         kind: 'zone',
         title: 'zone2',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -562,7 +543,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
         id: 'prod.us',
         kind: 'zone',
         title: 'us',
-        description: null,
         technology: null,
         tags: null,
         style: {
@@ -601,7 +581,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'e83b636f6de8d6dc7fdb745349a384f8ebfad639',
+      hash: '35b5fd7db6a023b41072785020176c78dbe60fb0',
       edges: [
         {
           id: 'customer:cloud',
@@ -752,7 +732,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       autoLayout: {
         direction: 'TB',
       },
-      hash: '1a523d612d8c2ad78909f943d5abe155f185391a',
+      hash: '9f1ba774789e0a91843241f8a2e506f36012888c',
       edges: [
         {
           id: 'cloud.backend:cloud.auth',
@@ -1077,7 +1057,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       autoLayout: {
         direction: 'TB',
       },
-      hash: '162fafc65660c3ffa0b88d2d4c5996b159aca805',
+      hash: '44b32e42b6308fedcb2dbcc0f2b6c84276a3580b',
       edges: [
         {
           id: 'customer.instance:prod.eu.zone1.ui',

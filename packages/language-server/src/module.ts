@@ -46,6 +46,7 @@ import {
   FqnIndex,
   LikeC4ModelLocator,
   LikeC4ModelParser,
+  LikeC4ValueConverter,
 } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
 import {
@@ -143,6 +144,9 @@ export interface LikeC4AddedServices {
     ScopeProvider: LikeC4ScopeProvider
   }
   shared?: LikeC4SharedServices
+  parser: {
+    ValueConverter: LikeC4ValueConverter
+  }
 }
 
 export type LikeC4Services = LangiumServices & LikeC4AddedServices
@@ -195,6 +199,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     NameProvider: bind(LikeC4NameProvider),
     ScopeComputation: bind(LikeC4ScopeComputation),
     ScopeProvider: bind(LikeC4ScopeProvider),
+  },
+  parser: {
+    ValueConverter: bind(LikeC4ValueConverter),
   },
 }
 

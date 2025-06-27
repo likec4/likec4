@@ -1,6 +1,6 @@
 # `@likec4/styles
 
-Shared utilities for [PandaCSS](https://panda-css.com/)
+Shared preset and generated styles for [PandaCSS](https://panda-css.com/)
 
 ## Usage
 

@@ -1,4 +1,6 @@
 import type {
+  DeploymentElement,
+  DeploymentRelationship,
   DiagramEdge,
   DiagramNode,
   Element,
@@ -136,6 +138,16 @@ function assignTagColors(tags: string[]): Record<Tag, TagSpecification> {
   )
 }
 
+function convertDescription(description: string | null | undefined) {
+  if (description === null) {
+    return { description: null }
+  }
+  if (typeof description === 'string') {
+    return { description: { txt: description } }
+  }
+  return {}
+}
+
 function convertLegacyModel(
   { specification, relations, views, elements, deployments, globals, imports }: LayoutedLikeC4ModelDataLegacy,
 ): LayoutedLikeC4ModelData<any> {
@@ -149,10 +161,23 @@ function convertLegacyModel(
       tags: assignTagColors(specification.tags),
       customColors: first(values(views))?.customColorDefinitions ?? {},
     },
-    elements: elements as Record<string, Element<any>>,
-    deployments: deployments as any,
-    relations: mapValues(relations, ({ id, source, target, color, ...rest }): Relationship => ({
+    elements: mapValues(elements, ({ description, ...rest }): Element => ({
+      ...rest as unknown as Element,
+      ...convertDescription(description),
+    })),
+    deployments: {
+      elements: mapValues(deployments.elements, ({ description, ...rest }): DeploymentElement => ({
+        ...rest as unknown as DeploymentElement,
+        ...convertDescription(description),
+      })),
+      relations: mapValues(deployments.relations, ({ description, ...rest }): DeploymentRelationship => ({
+        ...rest as unknown as DeploymentRelationship,
+        ...convertDescription(description),
+      })),
+    },
+    relations: mapValues(relations, ({ id, source, target, color, description, ...rest }): Relationship => ({
       ...rest,
+      ...convertDescription(description),
       id: id as unknown as scalar.RelationId,
       ...(color && { color: color as any }),
       source: {
@@ -162,8 +187,9 @@ function convertLegacyModel(
         model: target,
       },
     })),
-    views: mapValues(views, ({ __, id, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
+    views: mapValues(views, ({ __, id, description, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
       ...rest,
+      description: description ? { txt: description } : null,
       ...(notation
         ? {
           notation: {
@@ -171,13 +197,17 @@ function convertLegacyModel(
           },
         }
         : {}),
-      edges: edges.map(({ tags, ...rest }): DiagramEdge<any> => ({
+      edges: edges.map((
+        { tags, description, ...rest },
+      ): DiagramEdge<any> => ({
         ...rest as unknown as DiagramEdge<any>,
+        ...convertDescription(description),
         tags: tags ? [...tags] : [],
       })),
-      nodes: nodes.map(({ id, modelRef, deploymentRef, tags, ...rest }): DiagramNode<any> => ({
+      nodes: nodes.map(({ id, modelRef, deploymentRef, description, tags, ...rest }): DiagramNode<any> => ({
         ...rest as unknown as DiagramNode<any>,
         id: id as unknown as scalar.NodeId,
+        description: description ? { txt: description } : null,
         x: rest.position[0],
         y: rest.position[1],
         tags: tags ? [...tags] : [],

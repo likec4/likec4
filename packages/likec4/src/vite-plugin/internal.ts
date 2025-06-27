@@ -1,9 +1,18 @@
+/**
+ * This module is used by the Vite plugin to generate the virtual modules
+ */
 import { LikeC4Model } from '@likec4/core/model'
 import { type DiagramView, type LayoutedLikeC4ModelData } from '@likec4/core/types'
-import { deepEqual } from 'fast-equals'
+import { useStore } from '@nanostores/react'
+import { type Atom, type WritableAtom, computed } from 'nanostores'
 import { useEffect, useState } from 'react'
-import { mapValues } from 'remeda'
-import { type Atom, type WritableAtom, computed, useStore } from './nanostores'
+import { isDeepEqual, mapValues } from 'remeda'
+
+export { atom, batched, computed, map } from 'nanostores'
+
+export { useStore } from '@nanostores/react'
+
+export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 
 // This is a workaround to avoid type errors in the Vite plugin
 export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: WritableAtom<LayoutedLikeC4ModelData>): {
@@ -17,7 +26,7 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
 
   function updateModel(data: LayoutedLikeC4ModelData) {
     const current = $atom.get()
-    if (deepEqual(current, data)) {
+    if (isDeepEqual(current, data)) {
       return
     }
 
@@ -25,7 +34,7 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
       ...data,
       views: mapValues(data.views, (next) => {
         const currentView = current.views[next.id]
-        return deepEqual(currentView, next) ? currentView : next
+        return isDeepEqual(currentView, next) ? currentView : next
       }),
     }
     $atom.set(next as LayoutedLikeC4ModelData)

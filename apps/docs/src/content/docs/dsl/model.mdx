@@ -136,6 +136,38 @@ specification {
 ```
 :::
 
+#### Markdown
+
+You can use markdown in `description` with triple quotes: 
+
+```likec4 copy
+model {
+  mobile = application {     
+    title 'Mobile Application'
+    description '''
+      ### Multi-platform application
+      
+      [React Native](https://reactnative.dev)
+    '''
+  }
+
+  web = application {
+    description """
+      ### Web Application
+      
+      > Provides services to customers through
+      > the web interface.
+
+      | checks     |     |
+      | :--------- | :-- |
+      | check 1    | ✅  |
+      | check 2    | ⛔️  |
+      | check 3    | ✅  |
+    """
+  }  
+}
+```
+
 ### Element Tags
 
 Tags are defined in nested block and before any properties:

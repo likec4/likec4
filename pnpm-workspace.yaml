@@ -7,8 +7,8 @@ packages:
 catalog:
   typescript: 5.8.3
   wireit: 0.14.12
-  wrangler: 4.19.2
-  "@types/node": ~20.19.0
+  wrangler: 4.21.2
+  "@types/node": ~20.19.1
   unbuild: 3.5.0
   turbo: 2.5.4
   tsx: 4.19.4
@@ -17,13 +17,14 @@ catalog:
 
 catalogs:
   utils:
-    remeda: ^2.23.0
+    strip-indent: ^4.0.0
+    remeda: ^2.23.1
     type-fest: ^4.41.0
     fast-equals: ^5.2.2
     std-env: ^3.9.0
     consola: ^3.4.2
     chroma-js: ^3.1.2
-    "@hpcc-js/wasm-graphviz": 1.7.0
+    "@hpcc-js/wasm-graphviz": 1.8.0
     valibot: ^1.1.0
     "@valibot/to-json-schema": ^1.3.0
     esm-env: ^1.2.2
@@ -32,24 +33,24 @@ catalogs:
     nano-spawn: ^1.0.2
     picomatch: ^4.0.2
     "@types/picomatch": ^4.0.0
-    p-timeout: ^6.1.4
-    p-debounce: ^4.0.0
-    p-queue: ^8.1.0
-    p-limit: ^6.2.0
-    fdir: ^6.4.4
-    package-manager-detector: ^1.2.0
-    ufo: ^1.6.1
-    zod: ^3.25.64
-    sharp: ^0.34.2
+    p-timeout: 6.1.4
+    p-debounce: 4.0.0
+    p-queue: 8.1.0
+    p-limit: 6.2.0
+    fdir: 6.4.6
+    package-manager-detector: 1.3.0
+    ufo: 1.6.1
+    zod: 3.25.67
+    sharp: 0.34.2
   esbuild:
-    esbuild: ^0.25.5
-    esbuild-node-externals: ^1.18.0
-    esbuild-plugins-node-modules-polyfill: ^1.7.0
+    esbuild: 0.25.5
+    esbuild-node-externals: 1.18.0
+    esbuild-plugins-node-modules-polyfill: 1.7.1
   react:
     react: ^19.1.0
     react-dom: ^19.1.0
-    "@types/react": 19.1.5
-    "@types/react-dom": 19.1.5
+    "@types/react": 19.1.8
+    "@types/react-dom": 19.1.6
     react-error-boundary: ^6.0.0
     "@tabler/icons-react": 3.31.0
     clsx: ^2.1.1
@@ -62,22 +63,22 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": 8.1.0
-    "@mantine/hooks": 8.1.0
-    "@mantine/vanilla-extract": 8.1.0
-    "@mantine/modals": 8.1.0
-    "@mantine/notifications": 8.1.0
-    "@mantine/colors-generator": 8.1.0
+    "@mantine/core": 8.1.1
+    "@mantine/hooks": 8.1.1
+    "@mantine/vanilla-extract": 8.1.1
+    "@mantine/modals": 8.1.1
+    "@mantine/notifications": 8.1.1
+    "@mantine/colors-generator": 8.1.1
   vite:
     "@vitejs/plugin-react": ^4.5.2
     vite: ^6.3.5
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.23.0
     vite-tsconfig-paths: ^5.1.4
-    rollup: ^4.41.0
+    rollup: ^4.44.0
   vitest:
-    vitest: 3.2.3
-    "@vitest/ui": 3.2.3
+    vitest: 3.2.4
+    "@vitest/ui": 3.2.4
   css:
     postcss: 8.5.5
     "@pandacss/dev": ^0.53.7
@@ -101,7 +102,7 @@ catalogs:
   astro:
     "@astrojs/check": ^0.9.4
     "@astrojs/react": 4.3.0
-    "@astrojs/starlight": 0.34.3
+    "@astrojs/starlight": 0.34.4
     "@expressive-code/plugin-collapsible-sections": ^0.41.2
     "@expressive-code/plugin-line-numbers": ^0.41.2
     astro: 5.9.2
@@ -111,15 +112,13 @@ catalogs:
     starlight-package-managers: ^0.11.0
     shiki: ^3.6.0
   mcp:
-    "@modelcontextprotocol/sdk": ^1.12.1
+    "@modelcontextprotocol/sdk": ^1.13.1
   hono:
-    hono: ^4.7.11
-    hono-sessions: ^0.7.2
+    hono: ^4.8.2
+    hono-sessions: ^0.7.3
 
 onlyBuiltDependencies:
   - dprint
   - esbuild
   - sharp
   - workerd
-
-pnpmfile: node_modules/.pnpm-config/@pnpm/types-fixer/pnpmfile.cjs

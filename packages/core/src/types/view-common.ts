@@ -106,7 +106,7 @@ export type ViewType = 'element' | 'dynamic' | 'deployment'
 export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
-  readonly description: string | null
+  readonly description: scalar.MarkdownOrString | null
   /**
    * For all views we find common ancestor path.
    * This is used to generate relative paths, i.e.:

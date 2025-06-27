@@ -1,4 +1,4 @@
-import { isTruthy, unique } from 'remeda'
+import { isEmpty, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
@@ -8,9 +8,11 @@ import {
   type IconUrl,
   type Link,
   type ProjectId,
+  type RichTextOrEmpty,
   DefaultElementShape,
   DefaultShapeSize,
   DefaultThemeColor,
+  RichText,
   splitGlobalFqn,
 } from '../types'
 import * as aux from '../types/_aux'
@@ -89,8 +91,8 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.$element.title
   }
 
-  get description(): string | null {
-    return this.$element.description ?? null
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.$element.description)
   }
 
   get technology(): string | null {
@@ -263,6 +265,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
 
   public deployments(): DeployedInstancesIterator<A> {
     return this.$model.deployment.instancesOf(this)
+  }
+
+  public hasMetadata(): boolean {
+    return !!this.$element.metadata && !isEmpty(this.$element.metadata)
   }
 
   public getMetadata(): aux.Metadata<A>

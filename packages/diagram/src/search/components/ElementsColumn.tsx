@@ -279,7 +279,7 @@ function ElementTreeNode(
             </Tooltip>
           </Group>
           <Highlight component="div" highlight={searchTerms} className={btn.description!} lineClamp={1}>
-            {element.description || 'No description'}
+            {element.description.text || 'No description'}
           </Highlight>
         </Box>
 

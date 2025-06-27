@@ -4,9 +4,9 @@ import { LikeC4Model } from '../../model'
 import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } from './_shared'
 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
-import { nano, createHooksForModel } from 'likec4/react'
+import { createHooksForModel, atom } from 'likec4/vite-plugin/internal'
 
-export const $likec4data = nano.atom(${JSON5.stringify(model.$data)})
+export const $likec4data = atom(${JSON5.stringify(model.$data)})
 
 export const {
   updateModel,

@@ -10,6 +10,7 @@ import {
   invariant,
   nonNullable,
   Queue,
+  RichText,
   whereOperatorAsPredicate,
 } from '@likec4/core'
 import { useCustomCompareMemo } from '@react-hookz/web'
@@ -129,7 +130,7 @@ function viewToNodesEdge(opts: {
       id: node.id,
       title: node.title,
       technology: node.technology,
-      description: node.description,
+      description: RichText.from(node.description),
       height: node.height,
       width: node.width,
       level: node.level,

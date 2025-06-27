@@ -37,3 +37,5 @@ export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
 export type * as scalar from './scalar'
+
+export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'

@@ -16,6 +16,7 @@ See:
 
 Contents:
 
+- [Model Provider](#model-provider)
 - [Bundled Version](#bundled-version)
   - [LikeC4View](#likec4view)
   - [ReactLikeC4](#reactlikec4)
@@ -27,6 +28,13 @@ Contents:
   - [Node renderer](#custom-node-renderer)
   - [Styles](#custom-styles)
 
+## Model Provider
+
+Diagram requires instance of `LikeC4Model.Layouted` to render.\
+You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.
+
+See [📖 Documentation](https://likec4.dev/tooling/react/#likec4modelprovider) for examples.
+
 ## Bundled version
 
 The easiest way to use this package is the bundled version.\
@@ -35,12 +43,11 @@ Diagram renders inside shadow DOM and has its own styles.
 ### LikeC4View
 
 ```tsx
-import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
-
-// instance of LikeC4Model
-// See https://likec4.dev/tooling/model-api/
-const likec4model = LikeC4Model.fromDump()
+/**
+ * See https://likec4.dev/tooling/react/#likec4modelprovider
+ */
+import { likec4model } from './likec4-model.ts'
 
 function App() {
   return (

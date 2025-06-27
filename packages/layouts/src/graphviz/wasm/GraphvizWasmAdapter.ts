@@ -13,18 +13,46 @@ const logger = rootLogger.getChild('graphviz-wasm')
 export class GraphvizWasmAdapter implements GraphvizPort {
   private static _graphviz: Promise<Graphviz> | null = null
 
+  /**
+   * Workaround for graphviz wasm memory issues
+   * After each N operations unload the wasm and reload it
+   */
+  private static opsCount = 0
+
   get concurrency() {
     return 1
   }
 
+  dispose(): void {
+    Graphviz.unload()
+    GraphvizWasmAdapter._graphviz = null
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
+  }
+
   private graphviz(): Promise<Graphviz> {
-    return Promise.resolve().then(() => GraphvizWasmAdapter._graphviz ??= Graphviz.load())
+    return Promise.resolve().then(async () => {
+      if (!GraphvizWasmAdapter._graphviz) {
+        logger.debug`loading wasm`
+        GraphvizWasmAdapter.opsCount = 0
+        GraphvizWasmAdapter._graphviz = Graphviz.load()
+      }
+      return await GraphvizWasmAdapter._graphviz
+    })
   }
 
   private async attempt<T>(logMessage: string, dot: string, fn: () => Promise<T>): Promise<T> {
     return await limit(async () => {
       try {
-        return await fn()
+        const result = await fn()
+        if (++GraphvizWasmAdapter.opsCount >= 10) {
+          logger.debug`unloading wasm`
+          Graphviz.unload()
+          GraphvizWasmAdapter._graphviz = null
+        }
+        return result
       } catch (error) {
         logger.error(`FAILED GraphvizWasm. ${logMessage}`, { error })
         logger.error('FAILED DOT:\n' + dot)

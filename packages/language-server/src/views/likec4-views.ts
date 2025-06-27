@@ -100,7 +100,6 @@ export class DefaultLikeC4Views implements LikeC4Views {
         },
         onError: (task, error) => {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
-          this.cache.delete(task.view)
         },
       })
     }

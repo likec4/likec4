@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
-import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
-import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
+import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
 import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
@@ -96,7 +96,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           }
           if (ast.isElementStringProperty(prop)) {
             if (isDefined(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value) || ''
+              acc.custom[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) || ''
             }
             return acc
           }
@@ -133,8 +133,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             return acc
           }
           if (ast.isNotationProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value)
+            const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
+            if (value) {
+              acc.custom[prop.key] = value
             }
             return acc
           }
@@ -278,8 +279,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return props.reduce(
         (acc, prop) => {
           if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
+            const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
+            if (value) {
+              acc.customRelation[prop.key] = value
             }
             return acc
           }

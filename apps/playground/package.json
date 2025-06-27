@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.32.1",
+  "version": "1.33.0",
   "private": true,
   "scripts": {
     "generate": "wireit",
@@ -83,9 +83,8 @@
   },
   "sideEffects": false,
   "type": "module",
-  "packageManager": "pnpm@10.11.1",
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.5.1",
+    "@cloudflare/vite-plugin": "1.7.5",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",
@@ -141,10 +140,10 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^3.0.2",
+    "react-resizable-panels": "^3.0.3",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",

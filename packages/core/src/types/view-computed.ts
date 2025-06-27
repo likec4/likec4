@@ -26,16 +26,14 @@ export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks
   parent: scalar.NodeId | null
   /**
    * Reference to model element
-   * If 1 - node id is a reference
    */
   modelRef?: aux.Fqn<A> | undefined
   /**
    * Reference to deployment element
-   * If 1 - node id is a reference
    */
   deploymentRef?: aux.DeploymentFqn<A> | undefined
   title: string
-  description?: string | null
+  description?: scalar.MarkdownOrString | null
   technology?: string | null
   notation?: string
   children: scalar.NodeId[]
@@ -62,7 +60,7 @@ export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<
   source: scalar.NodeId
   target: scalar.NodeId
   label: string | null
-  description?: string
+  description?: scalar.MarkdownOrString | null
   technology?: string
   relations: scalar.RelationId[]
   kind?: aux.RelationKind<A> | typeof scalar.StepEdgeKind

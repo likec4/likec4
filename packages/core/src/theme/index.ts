@@ -37,12 +37,19 @@ export const defaultTheme: LikeC4Theme = {
     lg: 24, // 1.5rem = 16px + 8px
     xl: 32, // 2rem
   },
+  /**
+   * Text sizes for titles
+   * https://typescale.com/
+   *
+   * Scale:  1.2
+   * Base:   16px
+   */
   textSizes: {
-    xs: 12,
-    sm: 14,
-    md: 19,
-    lg: 24,
-    xl: 32,
+    xs: 13.33,
+    sm: 16,
+    md: 19.2,
+    lg: 23.04,
+    xl: 27.65,
   },
 }
 

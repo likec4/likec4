@@ -15,37 +15,17 @@ const cli: BuildConfig = {
     'src/model/index.ts',
     'src/model/builder.ts',
     'src/vite-plugin/index.ts',
+    'src/vite-plugin/internal.ts',
   ],
   clean: isProduction,
   outDir: 'dist',
-  stub: !isProduction,
+  stub: false,
   failOnWarn: false,
-  stubOptions: {
-    jiti: {
-      moduleCache: false,
-      alias: {
-        '@/vite/': resolve('src/vite/'),
-        '@likec4/core': resolve('../core/src/'),
-        '@likec4/layouts': resolve('../layouts/src/'),
-        '@likec4/language-server': resolve('../language-server/src/'),
-      },
-      nativeModules: [
-        'json5',
-        '@hpcc-js/wasm-graphviz',
-        'vite',
-        '@vitejs/plugin-react',
-      ],
-    },
-  },
   alias: {
-    ...(isProduction
-      ? {
-        '@/vite/aliases': resolve('src/vite/aliases.prod.ts'),
-        '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
-        '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
-        '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
-      }
-      : {}),
+    '@/vite/aliases': resolve('src/vite/aliases.prod.ts'),
+    '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
+    '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
+    '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
   },
   declaration: isProduction ? 'node16' : false,
   rollup: {

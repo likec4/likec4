@@ -2,7 +2,7 @@ import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
-import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstElement,
@@ -13,7 +13,6 @@ import {
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
-import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
@@ -86,18 +85,23 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      let [title, description, technology] = astNode.props ?? []
+      let [_title, _description, _technology] = astNode.props ?? []
 
       const bodyProps = pipe(
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined]),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      title = removeIndent(title ?? bodyProps.title)
-      description = removeIndent(bodyProps.description ?? description)
-      technology = toSingleLine(bodyProps.technology ?? technology)
+      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
+        {
+          title: _title,
+          description: _description,
+          technology: _technology,
+        },
+        bodyProps,
+      )
 
       const links = this.parseLinks(astNode.body)
 
@@ -109,8 +113,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         ...(metadata && { metadata }),
         ...(tags && { tags }),
         ...(links && isNonEmptyArray(links) && { links }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
+        ...descAndTech,
         style,
       }
     }
@@ -161,9 +164,11 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      const bodyProps = mapToObj(
-        astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value],
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationStringProperty),
+        filter(p => isTruthy(p.value)),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
       const navigateTo = pipe(
@@ -173,10 +178,15 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         filter(isTruthy),
         first(),
       )
-
-      const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
-      const description = removeIndent(bodyProps.description)
-      const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
+      const { title = '', ...descAndTech } = this.parseTitleDescriptionTechnology(
+        // inline props
+        {
+          title: astNode.title,
+          description: astNode.description,
+          technology: astNode.technology,
+        },
+        bodyProps,
+      )
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
@@ -191,8 +201,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         target,
         title,
         ...(metadata && { metadata }),
-        ...(isTruthy(technology) && { technology }),
-        ...(isTruthy(description) && { description }),
+        ...descAndTech,
         ...(kind && { kind }),
         ...(tags && { tags }),
         ...(isNonEmptyArray(links) && { links }),

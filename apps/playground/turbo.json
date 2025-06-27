@@ -5,6 +5,10 @@
   ],
   "tasks": {
     "generate": {
+      "env": [
+        "NODE_ENV",
+        "CLOUDFLARE_ENV"
+      ],
       "dependsOn": [
         "^generate"
       ],

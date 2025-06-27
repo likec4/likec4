@@ -18,6 +18,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
       customRelation: {
         expr,
         title,
+        description,
         ...customprops
       },
     } of rules
@@ -44,6 +45,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         edges[i] = {
           ...edge,
           ...props,
+          ...description && { description: { txt: description } },
           label: title ?? edge.label,
           isCustomized: true,
         }

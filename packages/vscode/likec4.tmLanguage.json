@@ -7,6 +7,9 @@
       "include": "#comments"
     },
     {
+      "include": "#triple-quoted-string"
+    },
+    {
       "include": "#string"
     },
     {
@@ -148,6 +151,48 @@
           },
           "end": "(?=$)",
           "name": "comment.line.likec4"
+        }
+      ]
+    },
+    "triple-quoted-string": {
+      "patterns": [
+        {
+          "begin": "(\"\"\")\\s*$",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.likec4"
+            }
+          },
+          "end": "^\\s*(\"\"\")\\s*$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.likec4"
+            }
+          },
+          "name": "block.markdown.likec4",
+          "contentName": "meta.embedded.block.text.html.markdown",
+          "patterns": [{
+            "include": "text.html.markdown"
+          }]
+        },
+        {
+          "begin": "(''')\\s*$",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.likec4"
+            }
+          },
+          "end": "^\\s*(''')\\s*$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.likec4"
+            }
+          },
+          "name": "block.markdown.likec4",
+          "contentName": "meta.embedded.block.text.html.markdown",
+          "patterns": [{
+            "include": "text.html.markdown"
+          }]
         }
       ]
     },

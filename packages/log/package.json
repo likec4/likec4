@@ -1,7 +1,7 @@
 {
   "name": "@likec4/log",
   "license": "MIT",
-  "version": "1.32.1",
+  "version": "1.33.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -31,8 +31,11 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --verbose",
     "build": "unbuild",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf dist lib"
   },
   "dependencies": {
@@ -47,6 +50,5 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "wrap-error-message": "^3.0.1"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

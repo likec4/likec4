@@ -1,4 +1,4 @@
-import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
+import { isDeepEqual, isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
 import type {
   AnyAux,
   aux,
@@ -9,12 +9,13 @@ import type {
   Relationship,
   RelationshipArrowType,
   RelationshipLineType,
+  scalar,
 } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 
 function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | DeploymentRelationship<A>): {
   title?: string
-  description?: string | null
+  description?: scalar.MarkdownOrString | null
   technology: string | null
   kind: aux.RelationKind<A> | null
   color: Color | null
@@ -52,7 +53,7 @@ function pickRelationshipProps<A extends AnyAux>(relation: Relationship<A> | Dep
 
 export type MergedRelationshipProps<A extends AnyAux> = {
   title?: string | null
-  description?: string
+  description?: scalar.MarkdownOrString | null
   technology?: string
   kind?: aux.RelationKind<A>
   color?: Color
@@ -80,7 +81,7 @@ export function mergePropsFromRelationships<A extends AnyAux>(
         if (isTruthy(r.title) && !acc.title.includes(r.title)) {
           acc.title.push(r.title)
         }
-        if (isTruthy(r.description) && !acc.description.includes(r.description)) {
+        if (isTruthy(r.description) && !acc.description.some(isDeepEqual(r.description))) {
           acc.description.push(r.description)
         }
         if (isTruthy(r.technology) && !acc.technology.includes(r.technology)) {
@@ -114,7 +115,7 @@ export function mergePropsFromRelationships<A extends AnyAux>(
       },
       {
         title: [] as string[],
-        description: [] as string[],
+        description: [] as scalar.MarkdownOrString[],
         technology: [] as string[],
         kind: [] as aux.RelationKind<A>[],
         head: [] as RelationshipArrowType[],

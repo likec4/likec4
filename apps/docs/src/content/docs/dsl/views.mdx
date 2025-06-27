@@ -44,7 +44,7 @@ The view’s name is used as an image filename during export and as part of the 
 
 ### View properties
 
-Views can have a `title`, `description`, `tags` and `links` (similar to [elements](/dsl/model#element)):
+Views can have a `title`, `description`, `tags` and `links`:
 
 ```likec4
 views {
@@ -52,10 +52,12 @@ views {
   view epic12 {
     #next, #epic-12
     title "Cloud System - Changes in Epic-12"
-    description "
-      This diagram shows the high-level
+
+    // Description can be Markdown with triple quotes
+    description """
+      This diagram shows the **high-level**
       components and interactions.
-    "
+    """
 
     link https://my.jira/epic/12 'Epic-12'
 

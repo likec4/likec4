@@ -1,11 +1,12 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { isArray, isDefined, isNonNullish, isTruthy } from 'remeda'
+import { filter, isArray, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
   type ParsedAstElementView,
   ast,
+  parseMarkdownAsString,
   toAutoLayout,
   toColor,
   ViewOps,
@@ -89,8 +90,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const title = toSingleLine(body.props.find(p => p.key === 'title')?.value) ?? null
-      const description = removeIndent(body.props.find(p => p.key === 'description')?.value) ?? null
+      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
+        {},
+        pipe(
+          body.props,
+          filter(p => this.isValid(p)),
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
@@ -222,7 +230,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         c4.ModelExpression.isFqnExpr(e as any)
       )
       const style = this.parseStyleProps(astRule.props.filter(ast.isStyleProperty))
-      const notation = removeIndent(astRule.props.find(ast.isNotationProperty)?.value)
+      const notation = removeIndent(parseMarkdownAsString(astRule.props.find(ast.isNotationProperty)?.value))
       return {
         targets,
         style,
@@ -255,8 +263,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
-      const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
+      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
+        {},
+        pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
@@ -386,7 +400,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             case ast.isNotationProperty(prop):
             case ast.isNotesProperty(prop): {
               if (isDefined(prop.value)) {
-                step[prop.key] = removeIndent(prop.value) ?? ''
+                step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
               }
               break
             }

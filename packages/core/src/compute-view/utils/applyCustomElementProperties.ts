@@ -47,6 +47,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
       padding,
       size,
       textSize,
+      description,
       ...rest
     } = omitBy(props, isNullish)
     const notEmpty = !isEmpty(rest)
@@ -60,6 +61,13 @@ export function applyCustomElementProperties<A extends AnyAux>(
           ...node,
           isCustomized: true,
           ...rest,
+        }
+      }
+      if (description !== undefined) {
+        node = {
+          ...node,
+          isCustomized: true,
+          description: { txt: description },
         }
       }
 
