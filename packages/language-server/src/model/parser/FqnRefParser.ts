@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { type invariant, nonexhaustive, nonNullable, RelationExpr } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
