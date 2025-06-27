@@ -23,7 +23,7 @@ export const buildCmd = {
       .option('use-hash-history', useHashHistory)
       .option('use-dot', useDotBin)
       .option('webcomponent-prefix', webcomponentPrefix)
-      .option('use-overview', useOverview)
+      // .option('use-overview', useOverview)
       .option('output-single-file', outputSingleFile)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
@@ -36,7 +36,7 @@ export const buildCmd = {
       base: args.base,
       useHashHistory: args['use-hash-history'],
       useDotBin: args['use-dot'],
-      useOverview: args['use-overview'] ?? false,
+      // useOverview: args['use-overview'] ?? false,
       webcomponentPrefix: args['webcomponent-prefix'],
       outputSingleFile: args['output-single-file'] ?? false,
     })
@@ -47,7 +47,7 @@ export const buildCmd = {
   'use-dot': boolean
   base?: string | undefined
   'use-hash-history': boolean | undefined
-  'use-overview': boolean | undefined
+  // 'use-overview': boolean | undefined
   'webcomponent-prefix': string
   'output-single-file': boolean | undefined
 }>

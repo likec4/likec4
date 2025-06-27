@@ -61,9 +61,8 @@ export default definePreset({
         position: 'relative',
         width: '100%',
         height: '100%',
-        padding: 0,
-        margin: 0,
-        boxSizing: 'border-box',
+        padding: '0px',
+        margin: '0px',
         border: '0px solid transparent',
       },
       [`${root} .react-flow:is(.not-initialized)`]: {

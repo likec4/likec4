@@ -50,6 +50,7 @@ export const cssExportView = css({
   marginRight: 'auto',
   marginBottom: 'auto',
   background: 'transparent',
+  overflow: 'hidden',
 })
 
 export const cssWebcomponentView = css({
