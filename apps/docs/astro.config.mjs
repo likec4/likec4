@@ -3,6 +3,7 @@ import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
+import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 
 const version = process.env.npm_package_version || 'latest'
@@ -15,6 +16,17 @@ export default defineConfig({
   integrations: [
     react(),
     starlight({
+      plugins: [
+        starlightImageZoom(),
+        starlightHeadingBadges(),
+        starlightLinksValidator({
+          exclude: [
+            '/playground/blank/',
+            '/playground/getting-started/',
+            '/playground/',
+          ],
+        }),
+      ],
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
       social: [
@@ -47,9 +59,9 @@ export default defineConfig({
           autogenerate: { directory: 'dsl' },
         },
         {
-          label: 'Examples',
+          label: 'Showcases',
           autogenerate: {
-            directory: 'examples',
+            directory: 'showcases',
           },
         },
         {
@@ -110,16 +122,6 @@ export default defineConfig({
         SiteTitle: './src/components/starlight/SiteTitle.astro',
         Head: './src/components/starlight/Head.astro',
       },
-      plugins: [
-        starlightHeadingBadges(),
-        starlightLinksValidator({
-          exclude: [
-            '/playground/blank/',
-            '/playground/getting-started/',
-            '/playground/',
-          ],
-        }),
-      ],
     }),
   ],
 
