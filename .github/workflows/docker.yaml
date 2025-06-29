@@ -13,17 +13,11 @@ concurrency:
 
 jobs:
   docker:
-    strategy:
-      matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04-arm
     if: ${{ github.repository_owner == 'likec4' }}
     permissions:
       packages: write
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -50,12 +44,13 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
 
-      - name: build docker
-        uses: docker/bake-action@v6
+      - name: Build and push
+        uses: docker/build-push-action@v6
         with:
-          files: |
-            ./docker-bake.hcl
-            cwd://${{ steps.meta.outputs.bake-file }}
-          targets: build
-          provenance: true
           push: true
+          platforms: linux/amd64,linux/arm64
+          provenance: mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: "type=registry,ref=ghcr.io/${{ github.repository }}:latest"
+          cache-to: type=inline
