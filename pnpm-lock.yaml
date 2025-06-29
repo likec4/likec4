@@ -427,8 +427,8 @@ importers:
         specifier: 16.1.1
         version: 16.1.1
       '@hono/oauth-providers':
-        specifier: ^0.8.1
-        version: 0.8.1(hono@4.8.3)
+        specifier: ^0.8.2
+        version: 0.8.2(hono@4.8.3)
       '@hono/valibot-validator':
         specifier: ^0.5.2
         version: 0.5.2(hono@4.8.3)(valibot@1.1.0(typescript@5.8.3))
@@ -2770,8 +2770,8 @@ packages:
   '@fontsource/ibm-plex-sans@5.2.6':
     resolution: {integrity: sha512-yclktpagJncROwdWHHEfPsrIfoo3uiIeDFchvmjNmTW/YMBfLYWJnUv19EAqPNhGizdtmcH9FjzOR2094Z2uPg==}
 
-  '@hono/oauth-providers@0.8.1':
-    resolution: {integrity: sha512-CN5dUHQ/I5jB/YVM2cIL7GdQyYZkzNTMlRG2EqIShv8jisKfvAZelEM12l8SexS4uqIiNJwPQBC33WrMGKUmqw==}
+  '@hono/oauth-providers@0.8.2':
+    resolution: {integrity: sha512-xQa9bt6Z/xAMvT+MTHHhXX28nyzqSDZl8LzszM071dIzoEcBx/NwZLnZjPm+7ZiRZb/2E9tiP5GMbBimtYrEHg==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
       hono: '>=3.*'
@@ -10404,7 +10404,7 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.6': {}
 
-  '@hono/oauth-providers@0.8.1(hono@4.8.3)':
+  '@hono/oauth-providers@0.8.2(hono@4.8.3)':
     dependencies:
       hono: 4.8.3
 
