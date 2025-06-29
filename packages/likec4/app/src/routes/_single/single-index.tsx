@@ -11,6 +11,7 @@ import { useDocumentTitle } from '@mantine/hooks'
 import type { aux, LikeC4ViewModel } from '@likec4/core/model'
 import { MarkdownBlock } from '@likec4/diagram/custom'
 import { useTimeoutEffect } from '@react-hookz/web'
+import { pageTitle } from '../../const'
 import * as css from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/_single/single-index')({
 })
 
 function RouteComponent() {
-  useDocumentTitle('LikeC4')
+  useDocumentTitle(pageTitle)
   const views = [...useLikeC4Model('layouted').views()]
   return (
     <Container size={'xl'}>

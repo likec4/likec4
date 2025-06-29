@@ -2,7 +2,16 @@
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
-import { base, outputSingleFile, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix } from '../options'
+import {
+  base,
+  outputSingleFile,
+  path,
+  title,
+  useDotBin,
+  useHashHistory,
+  useOverview,
+  webcomponentPrefix,
+} from '../options'
 import { buildHandler as handler } from './build'
 
 export const buildCmd = {
@@ -23,7 +32,8 @@ export const buildCmd = {
       .option('use-hash-history', useHashHistory)
       .option('use-dot', useDotBin)
       .option('webcomponent-prefix', webcomponentPrefix)
-      // .option('use-overview', useOverview)
+      .option('title', title)
+      //.option('use-overview', useOverview)
       .option('output-single-file', outputSingleFile)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
@@ -38,6 +48,7 @@ export const buildCmd = {
       useDotBin: args['use-dot'],
       // useOverview: args['use-overview'] ?? false,
       webcomponentPrefix: args['webcomponent-prefix'],
+      title: args.title,
       outputSingleFile: args['output-single-file'] ?? false,
     })
   },
@@ -49,6 +60,7 @@ export const buildCmd = {
   'use-hash-history': boolean | undefined
   // 'use-overview': boolean | undefined
   'webcomponent-prefix': string
+  title?: string | undefined
   'output-single-file': boolean | undefined
 }>
 

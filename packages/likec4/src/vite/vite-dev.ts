@@ -23,6 +23,7 @@ export async function viteDev({
   buildWebcomponent = true,
   hmr = true,
   webcomponentPrefix = 'likec4',
+  title,
   languageServices,
   likec4AssetsDir,
   openBrowser,
@@ -36,6 +37,7 @@ export async function viteDev({
     languageServices,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
   })
   const logger = config.customLogger
   const port = await getPort({
