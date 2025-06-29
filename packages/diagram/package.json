@@ -77,7 +77,7 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.4",
+    "@dagrejs/dagre": "1.1.5",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@mantine/core": "catalog:mantine",

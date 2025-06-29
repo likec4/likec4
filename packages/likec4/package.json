@@ -139,7 +139,7 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.4",
+    "@dagrejs/dagre": "1.1.5",
     "@fontsource/ibm-plex-sans": "^5.2.6",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
