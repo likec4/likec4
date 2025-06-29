@@ -4,6 +4,7 @@ import {
   ModelRelationExpr,
 } from '@likec4/core'
 import { describe, it } from 'vitest'
+import { custom } from 'zod'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
@@ -438,6 +439,128 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
       })
     })
+
+    describe('inline kind', () => {
+      it('adds condition on kind', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
+          specification {
+            element e
+            relationship r
+          }
+          model {
+          }
+          views {
+            view index {
+              include * -[r]-> *
+            }
+          }
+        `)
+
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+
+        const rules = doc.c4Views[0]?.rules!
+        const includeRule = rules[0] as ViewRulePredicate
+        const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
+
+        expect(isViewRulePredicate(includeRule)).toBe(true)
+        expect(wherePredicate).toStrictEqual({
+          where: {
+            condition: {
+              kind: { eq: 'r' },
+            },
+            expr: {
+              isBidirectional: false,
+              source: { wildcard: true },
+              target: { wildcard: true },
+            },
+          },
+        })
+      })
+      it('can be conbined with "where"', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
+          specification {
+            element e
+            relationship r
+            tag alpha
+          }
+          model {
+          }
+          views {
+            view index {
+              include * -[r]-> * where tag is #alpha
+            }
+          }
+        `)
+
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+
+        const rules = doc.c4Views[0]?.rules!
+        const includeRule = rules[0] as ViewRulePredicate
+        const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
+
+        expect(isViewRulePredicate(includeRule)).toBe(true)
+        expect(wherePredicate).toStrictEqual({
+          where: {
+            condition: {
+              and: [{
+                kind: { eq: 'r' },
+              }, {
+                tag: { eq: 'alpha' },
+              }],
+            },
+            expr: {
+              isBidirectional: false,
+              source: { wildcard: true },
+              target: { wildcard: true },
+            },
+          },
+        })
+      })
+      it('can be conbined with "with"', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
+          specification {
+            element e
+            relationship r
+            tag alpha
+          }
+          model {
+          }
+          views {
+            view index {
+              include * -[r]-> * with { color red }
+            }
+          }
+        `)
+
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+
+        const rules = doc.c4Views[0]?.rules!
+        const includeRule = rules[0] as ViewRulePredicate
+        const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
+
+        expect(isViewRulePredicate(includeRule)).toBe(true)
+        expect(wherePredicate).toStrictEqual({
+          customRelation: {
+            color: 'red',
+            expr: {
+              where: {
+                condition: {
+                  kind: { eq: 'r' },
+                },
+                expr: {
+                  isBidirectional: false,
+                  source: { wildcard: true },
+                  target: { wildcard: true },
+                },
+              },
+            },
+          },
+        })
+      })
+    })
   })
 
   describe('deployment model', () => {
@@ -737,7 +860,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         views {
           deployment view test {
-            include * -> root
+            include * -> root,
           }
         }
       `)
@@ -796,12 +919,14 @@ describe.concurrent('LikeC4ModelParser', () => {
       }])
     })
 
-    it('should parse predicates', async ({ expect }) => {
-      const { parse, services } = createTestServices()
-      const langiumDocument = await parse(`
+    describe('should parse predicates', () => {
+      it('relations', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
         specification {
           element element
           deploymentNode node
+          relationship r
         }
         model {
           element root {
@@ -816,28 +941,136 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         views {
           deployment view test {
-            include ins.child1 <-> child2
+            include 
+              ins.child1 <-> child2,
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
-      expect(doc.c4Views).toHaveLength(1)
-      expect(doc.c4Views[0]!.rules).toEqual([{
-        include: [{
-          isBidirectional: true,
-          source: {
-            ref: {
-              deployment: 'nd.ins',
-              element: 'root.child1',
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        expect(doc.c4Views).toHaveLength(1)
+        expect(doc.c4Views[0]!.rules).toEqual([{
+          include: [{
+            isBidirectional: true,
+            source: {
+              ref: {
+                deployment: 'nd.ins',
+                element: 'root.child1',
+              },
             },
-          },
-          target: {
-            ref: {
-              model: 'root.child2',
+            target: {
+              ref: {
+                model: 'root.child2',
+              },
             },
-          },
-        }],
-      }])
+          }],
+        }])
+      })
+      it('relation with dot-kind', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+          relationship r
+        }
+        model {
+          element root {
+            element child1
+            element child2
+          }
+        }
+        deployment {
+          node nd {
+            ins = instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include ins.child1 .r child2
+          }
+        }
+      `)
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        expect(doc.c4Views).toHaveLength(1)
+        expect(doc.c4Views[0]!.rules).toEqual([{
+          include: [{
+            where: {
+              condition: {
+                kind: {
+                  eq: 'r',
+                },
+              },
+              expr: {
+                isBidirectional: false,
+                source: {
+                  ref: {
+                    deployment: 'nd.ins',
+                    element: 'root.child1',
+                  },
+                },
+                target: {
+                  ref: {
+                    model: 'root.child2',
+                  },
+                },
+              },
+            },
+          }],
+        }])
+      })
+      it('relation with inline kind', async ({ expect }) => {
+        const { parse, services } = createTestServices()
+        const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+          relationship r
+        }
+        model {
+          element root {
+            element child1
+            element child2
+          }
+        }
+        deployment {
+          node nd {
+            ins = instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include ins.child1 -[r]-> child2
+          }
+        }
+      `)
+        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        expect(doc.c4Views).toHaveLength(1)
+        expect(doc.c4Views[0]!.rules).toEqual([{
+          include: [{
+            where: {
+              condition: {
+                kind: {
+                  eq: 'r',
+                },
+              },
+              expr: {
+                isBidirectional: false,
+                source: {
+                  ref: {
+                    deployment: 'nd.ins',
+                    element: 'root.child1',
+                  },
+                },
+                target: {
+                  ref: {
+                    model: 'root.child2',
+                  },
+                },
+              },
+            },
+          }],
+        }])
+      })
     })
   })
 
