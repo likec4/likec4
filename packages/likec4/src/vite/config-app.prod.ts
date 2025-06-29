@@ -29,7 +29,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
   const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
-  customLogger.info(k.cyan('output') + ' ' + k.dim(outDir))
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   let base = '/'
   if (cfg.base) {
@@ -69,7 +69,20 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'production',
     optimizeDeps: {
-      force: true,
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+        '@likec4/core/types',
+        '@likec4/core/model',
+        '@likec4/core/compute-view/relationships',
+        '@likec4/core/utils',
+        '@likec4/core',
+        'likec4/vite-plugin/internal',
+      ],
+      noDiscovery: true,
     },
     esbuild: {
       tsconfigRaw: {
@@ -90,7 +103,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       modulePreload: false,
       emptyOutDir: false,
       sourcemap: false,
-      cssCodeSplit: true,
       cssMinify: true,
       minify: true,
       copyPublicDir: true,
@@ -99,9 +111,20 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         treeshake: {
           preset: 'recommended',
         },
+        input: [
+          resolve(root, 'index.html'),
+          resolve(root, 'src', 'main.js'),
+          resolve(root, 'src', 'fonts.css'),
+          resolve(root, 'src', 'style.css'),
+        ],
         output: {
-          hoistTransitiveImports: false,
           compact: true,
+          manualChunks: (id) => {
+            if (id.includes('/likec4/node_modules/')) {
+              return 'vendors'
+            }
+            return undefined
+          },
         },
       },
     },

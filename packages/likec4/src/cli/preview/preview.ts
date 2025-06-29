@@ -1,3 +1,4 @@
+import isInsideContainer from 'is-inside-container'
 import { LikeC4 } from '../../LikeC4'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { vitePreview } from '../../vite/vite-preview'
@@ -28,13 +29,19 @@ export async function handler({
   path,
   output: outputDir,
   base,
-  listen
+  listen,
 }: HandlerParams) {
   const languageServices = await LikeC4.fromWorkspace(path, {
-    logger: 'vite'
+    logger: 'vite',
   })
 
-  const server = await vitePreview({ base, languageServices, outputDir, open: true, listen })
+  const server = await vitePreview({
+    base,
+    languageServices,
+    outputDir,
+    open: !isInsideContainer(),
+    listen,
+  })
 
   printServerUrls(server)
 }

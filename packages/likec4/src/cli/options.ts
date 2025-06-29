@@ -1,3 +1,4 @@
+import isInsideContainer from 'is-inside-container'
 import { resolve } from 'node:path'
 import type { Options, PositionalOptions } from 'yargs'
 
@@ -13,8 +14,10 @@ export const useDotBin = {
   alias: 'use-dot-bin',
   boolean: true,
   type: 'boolean',
-  desc: 'use graphviz binaries ("dot" should be on PATH)',
-  default: false,
+  desc: isInsideContainer()
+    ? 'enabled in container, disable by --no-use-dot'
+    : 'use graphviz binaries ("dot" should be on PATH)',
+  default: isInsideContainer(),
 } as const satisfies Options
 
 export const useHashHistory = {
@@ -60,6 +63,8 @@ export const outputSingleFile = {
 export const listen = {
   alias: 'l',
   type: 'string',
-  desc: 'ip address of the network interface to listen on',
-  default: 'localhost',
+  desc: isInsideContainer()
+    ? 'listen 0.0.0.0 by default in container'
+    : 'ip address of the network interface to listen on',
+  default: isInsideContainer() ? '0.0.0.0' : 'localhost',
 } as const satisfies Options

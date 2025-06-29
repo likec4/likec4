@@ -1,10 +1,12 @@
 import { type LikeC4ViteConfig, viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { logger as consola } from '@likec4/log'
+import { loggable } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
+import isInsideContainer from 'is-inside-container'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
 import { build, createServer } from 'vite'
@@ -35,6 +37,7 @@ export async function viteDev({
     likec4AssetsDir,
     webcomponentPrefix,
   })
+  const logger = config.customLogger
   const port = await getPort({
     port: [
       5173,
@@ -48,38 +51,27 @@ export async function viteDev({
 
   const publicDir = await mkTempPublicDir()
 
-  let webcomponentPromise: Promise<unknown> | undefined
-  if (buildWebcomponent) {
-    const webcomponentConfig = await viteWebcomponentConfig({
-      webcomponentPrefix,
-      languageServices: languageServices,
-      outDir: publicDir,
-      base: config.base,
-    })
-    // don't wait, we want to start the server asap
-    webcomponentPromise = build({
-      ...webcomponentConfig,
-      logLevel: 'warn',
-    }).catch((err) => {
-      consola.warn('webcomponent build failed', { err })
-      consola.warn('Ignoring error and continuing')
-      return Promise.resolve()
-    })
+  const host = listen ?? (isInsideContainer() ? '0.0.0.0' : 'localhost')
+
+  if (hmr) {
+    logger.info(`Enabling HMR: localhost:${hmrPort}`)
+    if (isInsideContainer()) {
+      logger.info(k.yellow(`ensure port ${hmrPort} is published from container`))
+    }
   }
 
   const server = await createServer({
     ...config,
-    define: Object.assign(
-      {},
-      config.define,
-      hmr && {
+    define: hmr
+      ? {
+        ...config.define,
         'process.env.NODE_ENV': '"development"',
-      },
-    ),
+      }
+      : config.define,
     mode: hmr ? 'development' : config.mode,
     publicDir,
     server: {
-      host: listen ?? '127.0.0.1',
+      host,
       // TODO: temprorary enable access to any host
       // This is not recommended as it can be a security risk - https://vite.dev/config/server-options#server-allowedhosts
       // Enabled after request in discord support just to check if it solves the problem
@@ -88,20 +80,37 @@ export async function viteDev({
       hmr: hmr && {
         overlay: true,
         // needed for hmr to work over network aka WSL2
-        // host: 'localhost',
+        // host,
         port: hmrPort,
       },
       fs: {
         strict: false,
       },
-      open: openBrowser ?? !isDev,
+      open: openBrowser ?? (!isDev && !isInsideContainer()),
     },
   })
 
   await server.listen()
 
-  if (webcomponentPromise) {
-    await webcomponentPromise
+  if (buildWebcomponent) {
+    // don't wait, we want to start the server asap
+    ;(async () => {
+      try {
+        const webcomponentConfig = await viteWebcomponentConfig({
+          webcomponentPrefix,
+          languageServices: languageServices,
+          outDir: publicDir,
+          base: config.base,
+        })
+        await build({
+          ...webcomponentConfig,
+          logLevel: 'warn',
+        })
+      } catch (err) {
+        logger.warn(loggable(err))
+        logger.warn('webcomponent build failed, ignoring error and continue')
+      }
+    })()
   }
 
   return server

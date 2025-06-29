@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
+import { createLikeC4Logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
-import { chunkSizeWarningLimit, JsBanners, viteAppRoot, viteLogger } from './utils'
+import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
@@ -17,7 +18,7 @@ export async function viteReactConfig({
   outDir,
   filename = 'likec4-react.mjs',
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
-  const customLogger = viteLogger
+  const customLogger = createLikeC4Logger(['vite', 'react'])
   const root = viteAppRoot()
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))

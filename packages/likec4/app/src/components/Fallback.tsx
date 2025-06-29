@@ -1,15 +1,9 @@
 import { Alert, Button, Code, Container, Group, Text } from '@mantine/core'
-import { isNotFound, useRouter } from '@tanstack/react-router'
+import { isNotFound, useRouter, useSearch } from '@tanstack/react-router'
 import type { FallbackProps } from 'react-error-boundary'
 
 export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter()
-  // const { viewId } = Route.useParams()
-
-  // useUpdateEffect(() => {
-  //   resetErrorBoundary()
-  // }, [viewId])
-
   if (isNotFound(error)) {
     return (
       <Container my={'md'}>
@@ -26,7 +20,6 @@ export function Fallback({ error, resetErrorBoundary }: FallbackProps) {
               resetErrorBoundary()
               router.navigate({
                 to: '/',
-                search: true,
               })
             }}
             variant="light"

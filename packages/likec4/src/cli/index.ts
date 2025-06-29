@@ -2,8 +2,10 @@
 
 import { configureLogger, getConsoleSink } from '@likec4/log'
 import { DEV } from 'esm-env'
+import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
+import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -24,13 +26,13 @@ configureLogger({
     {
       category: 'likec4',
       sinks: ['console'],
-      lowestLevel: DEV ? 'debug' : 'info',
+      lowestLevel: isDevelopment ? 'debug' : 'info',
     },
   ],
 })
 
 async function main() {
-  if (!DEV) {
+  if (!DEV && !isInsideContainer()) {
     notifyAvailableUpdate()
   }
 

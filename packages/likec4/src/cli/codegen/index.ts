@@ -126,6 +126,7 @@ export const codegenCmd = {
         command: 'views-data [path]',
         aliases: ['views'],
         describe: 'generate likec4 views data (.ts)',
+        deprecated: 'use codegen model',
         builder: yargs =>
           yargs
             .option('outfile', {
@@ -221,9 +222,8 @@ export const codegenCmd = {
       }).epilog(`${k.bold('Examples:')}
   likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen model -o likec4-model.ts
-  likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot-bin ./src
-  likec4 gen views-data -o ./src/likec4-data.ts
-  likec4 gen ts --outfile ../likec4.ts
+  likec4 gen ts --outfile likec4-model.ts
+  likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot ./src
   likec4 gen mmd --outdir assets/
   likec4 gen plantuml --outdir assets/
   likec4 gen dot -o out .
