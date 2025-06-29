@@ -72,6 +72,17 @@ jobs:
     env:
       PLATFORM_PAIR: ${{ matrix.os == 'ubuntu-24.04-arm' && 'linux-arm64' || 'linux-amd64' }}
     steps:
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -94,13 +105,15 @@ jobs:
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
+        env:
+          CACHE_TAG: ${{ matrix.os == 'ubuntu-24.04-arm' && 'buildcache-arm64' || 'buildcache-amd64' }}
         with:
           platforms: ${{ matrix.os == 'ubuntu-24.04-arm' && 'linux/arm64' || 'linux/amd64' }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
-          cache-from: "type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest"
-          cache-to: type=inline
+          cache-from: type=registry,ref=${{ env.REGISTRY_IMAGE }}:${{ env.CACHE_TAG }}
+          cache-to: type=registry,ref=${{ env.REGISTRY_IMAGE }}:${{ env.CACHE_TAG }},mode=max
 
       - name: Export digest
         run: |
