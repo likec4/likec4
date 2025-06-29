@@ -6,10 +6,10 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </p>
 
-  <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
-  <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/likec4)</a>
 
-  <p>
+<p>
     <a href="https://likec4.dev/">docs</a> |
     <a href="https://playground.likec4.dev/">playground</a> |
     <a href="https://template.likec4.dev/view/index/">demo</a>
@@ -69,3 +69,10 @@ Open [likec4/template](https://github.com/likec4/template) in the browser using 
 
 - [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4)
 - [vscode.dev](https://vscode.dev/github/likec4/template/blob/main/src/model.c4)
+
+## Getting help
+
+We are always happy to help you get started:
+
+- [Join Discord community](https://discord.gg/86ZSpjKAdA) – it is the easiest way to get help
+- [GitHub Discussions](https://github.com/likec4/likec4/discussions) – ask anything about the project or give feedback

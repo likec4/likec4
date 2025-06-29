@@ -27,7 +27,8 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 2. Project requires [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/)\
    See required versions in [.tool-versions](./.tool-versions)
 
-   - [Optional] If you use [asdf](https://asdf-vm.com/):
+   - (Optional) If you use [asdf](https://asdf-vm.com/):
+
      ```sh
      asdf install
      ```
@@ -40,7 +41,10 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 4. Pre-generate sources by running `build` (or `generate`) in root:
    ```sh
    pnpm build
+   # or
+   pnpm generate
    ```
+
    > [!TIP]
    > It is always a good idea to run `pnpm generate` after checkout or merge.
 
@@ -56,15 +60,17 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
    - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
 > [!TIP]
-> Project uses Typescript project references to optimize compile time, but sometimes it may cause issues on delete/rename.\
+> Project uses Typescript project references to optimize compile time, but sometimes it may cause issues on delete/rename.
+>
 > Try `pnpm clean` in root to clean up caches, and `pnpm typecheck` after.
 >
-> If it doesn't help, `pnpm store prune`, removing `node_modules` and clean install are always a good idea.
+> If it doesn't help, try `pnpm store prune`, remove `node_modules`, and clean `pnpm install`.
 
 ### E2E
 
-`/e2e` contains isolated workspace.\
-Run from root:
+[`/e2e`](./e2e) contains isolated workspace to run E2E tests.
+
+To run locally, from root:
 
 ```sh
 pnpm test:e2e
