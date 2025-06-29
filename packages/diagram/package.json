@@ -84,7 +84,7 @@
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
-    "@xstate/react": "^5.0.4",
+    "@xstate/react": "^5.0.5",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
@@ -96,7 +96,7 @@
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
-    "xstate": "^5.19.3"
+    "xstate": "^5.20.0"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
