@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import type { Aux, SpecAux } from './aux'
+import type { Aux, SpecAux } from './_aux'
 import { type Filterable, whereOperatorAsPredicate } from './operators'
 
 type A = Aux<

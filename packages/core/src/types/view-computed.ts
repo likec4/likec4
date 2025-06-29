@@ -1,5 +1,5 @@
-import type * as aux from './aux'
-import type { Any } from './aux'
+import type * as aux from './_aux'
+import type { Any } from './_aux'
 import type { _stage, _type } from './const'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'

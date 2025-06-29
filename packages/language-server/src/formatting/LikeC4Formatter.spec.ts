@@ -1816,6 +1816,44 @@ model {
         ),
     )
 
+    it(
+      'keeps internal quotes',
+      async ({ expect }) =>
+        expect(
+          await format(
+            `
+  model {
+    component user1 "escaped double quote \\""
+    component user2 "single quoute '"
+    component user3 "escaped single quoute \\'"
+    component user4 "single quoute with leading backslash \\\\'"
+    component user5 "\\\\'"
+  }
+  views {
+    view index {
+      include *
+    }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+          "
+          model {
+            component user1 'escaped double quote \\"'
+            component user2 'single quoute \\''
+            component user3 'escaped single quoute \\''
+            component user4 'single quoute with leading backslash \\\\\\''
+            component user5 '\\\\\\''
+          }
+          views {
+            view index {
+              include *
+            }
+          }"
+        `,
+        ),
+    )
+
     it('is idempotent', async ({ expect }) => {
       const source = `
   specification {

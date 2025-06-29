@@ -1,6 +1,6 @@
+import type * as aux from './_aux'
+import type { AnyAux } from './_aux'
 import type { Link } from './_common'
-import type * as aux from './aux'
-import type { AnyAux } from './aux'
 import type { FqnRef } from './fqnRef'
 import type * as scalar from './scalar'
 import type {

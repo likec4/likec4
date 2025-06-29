@@ -80,12 +80,12 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./types/aux": {
-      "sources": "./src/types/aux.ts",
+    "./types/_aux": {
+      "sources": "./src/types/_aux.ts",
       "default": {
-        "types": "./dist/types/aux.d.mts",
-        "import": "./dist/types/aux.mjs",
-        "default": "./dist/types/aux.mjs"
+        "types": "./dist/types/_aux.d.mts",
+        "import": "./dist/types/_aux.mjs",
+        "default": "./dist/types/_aux.mjs"
       }
     },
     "./types": {

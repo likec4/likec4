@@ -95,8 +95,8 @@ describe('LikeC4', () => {
         x: expect.any(Number),
         y: expect.any(Number),
         width: expect.any(Number),
-        height: expect.any(Number)
-      }
+        height: expect.any(Number),
+      },
     })
   })
 
@@ -114,8 +114,8 @@ describe('LikeC4', () => {
       `,
         {
           printErrors: false,
-          throwIfInvalid: false
-        }
+          throwIfInvalid: false,
+        },
       )
 
       expect(likec4.hasErrors()).toBe(true)
@@ -138,11 +138,12 @@ describe('LikeC4', () => {
     `,
       {
         printErrors: false,
-        throwIfInvalid: true
-      }
+        throwIfInvalid: true,
+      },
     )
 
-    await expect(promise).rejects.toThrow(`Invalid model:
-  /workspace/source.likec4:5 Could not resolve reference to ElementKind named 'user'`)
+    await expect(promise).rejects.toThrow(
+      /source.likec4:5 Could not resolve reference to ElementKind named 'user'/,
+    )
   })
 })

@@ -7,7 +7,7 @@ import {
   FqnRef,
   isDeploymentNode,
 } from '../types'
-import * as aux from '../types/aux'
+import * as aux from '../types/_aux'
 import { invariant, nonNullable } from '../utils'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'

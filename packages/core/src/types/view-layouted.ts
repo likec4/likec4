@@ -1,6 +1,6 @@
+import type * as aux from './_aux'
+import type { AnyAux } from './_aux'
 import type { NonEmptyArray } from './_common'
-import type * as aux from './aux'
-import type { AnyAux } from './aux'
 import type { _stage, _type } from './const'
 import type { BBox, Point, XYPoint } from './geometry'
 import type {

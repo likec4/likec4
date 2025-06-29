@@ -1,6 +1,6 @@
 import type { NonEmptyTuple, Tagged } from 'type-fest'
+import type { Any } from './_aux'
 import type { NonEmptyArray } from './_common'
-import type { Any } from './aux'
 import type { DynamicViewIncludeRule } from './view-parsed.dynamic'
 import type { ElementViewPredicate, ElementViewRuleStyle } from './view-parsed.element'
 

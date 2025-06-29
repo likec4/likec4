@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type * as aux from './aux'
-import type { Aux, SpecAux } from './aux'
+import type * as aux from './_aux'
+import type { Aux, SpecAux } from './_aux'
 import type { ModelStage } from './const'
 import * as scalar from './scalar'
 

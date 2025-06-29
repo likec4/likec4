@@ -15,7 +15,7 @@ import {
   RichText,
   splitGlobalFqn,
 } from '../types'
-import * as aux from '../types/aux'
+import * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
