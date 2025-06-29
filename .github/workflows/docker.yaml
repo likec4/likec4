@@ -67,3 +67,6 @@ jobs:
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
           targets: build
+          provenance: true
+          push: true
+          github-token: ${{ steps.app-token.outputs.token }}
