@@ -122,7 +122,7 @@
     "@mantine/colors-generator": "catalog:mantine",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
-    "@types/mdast": "4.0.0",
+    "@types/mdast": "4.0.4",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
