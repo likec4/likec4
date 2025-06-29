@@ -121,10 +121,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           compact: true,
           manualChunks: (id) => {
             if (id.includes('/likec4/node_modules/')) {
-              console.log('+ ', id)
               return 'vendors'
             }
-            console.log('- ', id)
+            return undefined
           },
         },
       },

@@ -1,7 +1,7 @@
 // docker-bake.hcl
 target "docker-metadata-action" {}
 
-target "ubuntu-24.04" {
+target "build-amd64" {
   inherits = ["docker-metadata-action"]
   context = "./"
   dockerfile = "Dockerfile"
@@ -10,7 +10,7 @@ target "ubuntu-24.04" {
   ]
 }
 
-target "ubuntu-24.04-arm" {
+target "build-arm64" {
   inherits = ["docker-metadata-action"]
   context = "./"
   dockerfile = "Dockerfile"

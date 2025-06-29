@@ -56,6 +56,6 @@ jobs:
           files: |
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
-          targets: ${{ matrix.os }}
+          targets: ${{ matrix.os == 'ubuntu-24.04-arm' && 'build-arm64' || 'build-amd64' }}
           provenance: true
           push: true
