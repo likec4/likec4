@@ -13,26 +13,16 @@ concurrency:
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
     if: ${{ github.repository_owner == 'likec4' }}
+    permissions:
+      packages: write
     steps:
-      - name: decode the GitHub App Private Key
-        id: decode
-        run: |
-          private_key=$(echo "${{ secrets.BOT_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
-          echo "::add-mask::$private_key"
-          echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.BOT_APP_ID }}
-          private-key: ${{ steps.decode.outputs.private-key }}
-
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -44,8 +34,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: "${{ steps.app-token.outputs.app-slug }}[bot]"
-          password: ${{ steps.app-token.outputs.token }}
+          username: ${{ github.repository }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: docker meta
         id: meta
@@ -66,7 +56,6 @@ jobs:
           files: |
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
-          targets: build
+          targets: ${{ matrix.os }}
           provenance: true
           push: true
-          github-token: ${{ steps.app-token.outputs.token }}
