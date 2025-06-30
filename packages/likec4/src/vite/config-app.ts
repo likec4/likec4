@@ -46,17 +46,20 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   }
 
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
+  const title = cfg.title ?? 'LikeC4'
 
   return {
     isDev: true,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     root,
     languageServices,
     configFile: false,
     mode: 'development',
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
+      PAGE_TITLE: JSON.stringify(title),
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"',

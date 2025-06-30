@@ -19,6 +19,7 @@ export const Assets = ['favicon.ico', 'robots.txt']
 export const viteBuild = async ({
   buildWebcomponent = true,
   webcomponentPrefix = 'likec4',
+  title,
   languageServices,
   likec4AssetsDir,
   outputSingleFile,
@@ -31,6 +32,7 @@ export const viteBuild = async ({
     languageServices,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     outputSingleFile,
   })
 

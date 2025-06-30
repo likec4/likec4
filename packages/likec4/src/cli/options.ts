@@ -41,6 +41,13 @@ export const webcomponentPrefix = {
   default: 'likec4',
 } as const satisfies Options
 
+export const title = {
+  alias: 't',
+  type: 'string',
+  desc: 'base title of the app pages (default is "LikeC4")',
+  default: 'LikeC4',
+} as const satisfies Options
+
 export const base = {
   alias: ['base-url'],
   type: 'string',

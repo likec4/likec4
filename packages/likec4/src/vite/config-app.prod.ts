@@ -15,6 +15,7 @@ export type LikeC4ViteConfig = {
   languageServices: LikeC4
   outputDir?: string | undefined
   base?: string | undefined
+  title?: string | undefined
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
   useOverviewGraph?: boolean | undefined
@@ -43,11 +44,13 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   }
 
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
+  const title = cfg.title ?? 'LikeC4'
 
   return {
     isDev: false,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     root,
     languageServices,
     clearScreen: false,
@@ -94,6 +97,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
+      PAGE_TITLE: JSON.stringify(title),
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"',

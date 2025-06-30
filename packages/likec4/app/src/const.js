@@ -8,6 +8,7 @@ if (!BASE.endsWith('/')) {
   BASE = BASE + '/'
 }
 
+export const pageTitle = PAGE_TITLE
 export const useHashHistory = __USE_HASH_HISTORY__ === true
 
 export const basepath = useHashHistory ? '/' : BASE

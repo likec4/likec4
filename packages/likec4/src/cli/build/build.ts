@@ -36,6 +36,12 @@ type HandlerParams = {
 
   webcomponentPrefix: string
 
+  /**
+   * base title of the app pages
+   * @default 'LikeC4'
+   */
+  title: string | undefined
+
   outputSingleFile: boolean | undefined
 }
 
@@ -44,6 +50,7 @@ export async function buildHandler({
   useDotBin,
   useHashHistory,
   webcomponentPrefix,
+  title,
   useOverview = false,
   output: outputDir,
   outputSingleFile,
@@ -88,6 +95,7 @@ export async function buildHandler({
     customLogger: logger,
     useOverviewGraph: useOverview,
     webcomponentPrefix,
+    title,
     languageServices,
     likec4AssetsDir,
     outputDir,
