@@ -1,6 +1,7 @@
 import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isAndOperator, isOrOperator } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import type { Where } from '../../../core/src/compute-view/deployment-view/_types'
 import { ast } from '../ast'
 
 const parseEquals = (
@@ -53,32 +54,45 @@ export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator
       const left = parseWhereClause(astNode.left)
       const right = parseWhereClause(astNode.right)
       const operator = astNode.operator.toLowerCase() as Lowercase<ast.WhereBinaryExpression['operator']>
-      switch (operator) {
-        case 'and': {
-          const operands = [
-            isAndOperator(left) ? left.and : left,
-            isAndOperator(right) ? right.and : right,
-          ].flat()
-          invariant(isNonEmptyArray(operands), 'Expected non-empty array')
-          return {
-            and: operands,
-          }
-        }
-        case 'or': {
-          const operands = [
-            isOrOperator(left) ? left.or : left,
-            isOrOperator(right) ? right.or : right,
-          ].flat()
-          invariant(isNonEmptyArray(operands), 'Expected non-empty array')
-          return {
-            or: operands,
-          }
-        }
-        default:
-          nonexhaustive(operator)
-      }
+
+      return createBinaryOperator(operator, left, right)
     }
     default:
       nonexhaustive(astNode)
+  }
+}
+
+export function createBinaryOperator(
+  operator: Lowercase<ast.WhereBinaryExpression['operator']>,
+  left: c4.WhereOperator,
+  right: c4.WhereOperator | null,
+): c4.WhereOperator {
+  if (right === null) {
+    return left
+  }
+
+  switch (operator) {
+    case 'and': {
+      const operands = [
+        isAndOperator(left) ? left.and : left,
+        isAndOperator(right) ? right.and : right,
+      ].flat()
+      invariant(isNonEmptyArray(operands), 'Expected non-empty array')
+      return {
+        and: operands,
+      }
+    }
+    case 'or': {
+      const operands = [
+        isOrOperator(left) ? left.or : left,
+        isOrOperator(right) ? right.or : right,
+      ].flat()
+      invariant(isNonEmptyArray(operands), 'Expected non-empty array')
+      return {
+        or: operands,
+      }
+    }
+    default:
+      nonexhaustive(operator)
   }
 }

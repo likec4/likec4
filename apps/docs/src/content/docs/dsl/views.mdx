@@ -482,6 +482,8 @@ include
   // only incoming http-requests
   -> backend
     where kind is http-request
+  -[http-request]-> backend
+  .http-request backend
 ```
 
 It is also possible to filter relations by tag or kind of its endpoints.
