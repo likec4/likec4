@@ -108,11 +108,12 @@ catalogs:
     astro: 5.9.2
     astro-og-canvas: ^0.7.0
     starlight-heading-badges: ^0.5.0
+    starlight-image-zoom: ^0.12.0
     starlight-links-validator: ^0.16.0
     starlight-package-managers: ^0.11.0
     shiki: ^3.6.0
   mcp:
-    "@modelcontextprotocol/sdk": ^1.13.1
+    "@modelcontextprotocol/sdk": ^1.13.2
   hono:
     hono: ^4.8.3
     hono-sessions: ^0.7.3

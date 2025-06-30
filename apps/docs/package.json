@@ -34,14 +34,12 @@
     "sharp": "catalog:utils",
     "shiki": "catalog:astro",
     "starlight-heading-badges": "catalog:astro",
+    "starlight-image-zoom": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "wrangler": "catalog:"
-  },
-  "dependencies": {
-    "starlight-image-zoom": "^0.12.0"
   }
 }
