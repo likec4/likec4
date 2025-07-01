@@ -68,6 +68,9 @@ jobs:
           platforms: ${{ matrix.os == 'ubuntu-24.04-arm' && 'linux/arm64' || 'linux/amd64' }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
+          # build-args: |
+          #   LIKEC4_VER=${{ env.LIKEC4_VER }}
+          no-cache-filters: runner
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           cache-from: type=registry,ref=${{ env.REGISTRY_IMAGE }}:${{ env.CACHE_TAG }}
           cache-to: type=registry,ref=${{ env.REGISTRY_IMAGE }}:${{ env.CACHE_TAG }},mode=max
