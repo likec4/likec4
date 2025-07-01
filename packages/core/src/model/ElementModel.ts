@@ -16,7 +16,7 @@ import {
   splitGlobalFqn,
 } from '../types'
 import * as aux from '../types/_aux'
-import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, sortNaturalByFqn } from '../utils'
+import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, nameFromFqn, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -52,6 +52,10 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
       this.imported = null
       this.hierarchyLevel = hierarchyLevel(this.id)
     }
+  }
+
+  get name(): string {
+    return nameFromFqn(this.id)
   }
 
   get parent(): ElementModel<A> | null {

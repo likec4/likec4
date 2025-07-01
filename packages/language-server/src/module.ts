@@ -22,7 +22,6 @@ import {
   LikeC4GeneratedSharedModule,
 } from './generated/module'
 import { type LikeC4LanguageServices, DefaultLikeC4LanguageServices } from './LikeC4LanguageServices'
-import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -35,10 +34,8 @@ import {
 import {
   type LikeC4MCPServer,
   type LikeC4MCPServerFactory,
-  NoopLikeC4MCPServer,
-  NoopLikeC4MCPServerFactory,
-} from './mcp/LikeC4MCPServerFactory'
-import { type LikeC4MCPTools, DefaultLikeC4MCPTools } from './mcp/LikeC4MCPTools'
+} from './mcp/interfaces'
+import { NoopLikeC4MCPServer, NoopLikeC4MCPServerFactory } from './mcp/NoopLikeC4MCPServer'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -113,7 +110,6 @@ export interface LikeC4AddedServices {
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   mcp: {
-    Tools: LikeC4MCPTools
     Server: LikeC4MCPServer
     ServerFactory: LikeC4MCPServerFactory
   }
@@ -162,7 +158,6 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   mcp: {
-    Tools: bind(DefaultLikeC4MCPTools),
     Server: bind(NoopLikeC4MCPServer),
     ServerFactory: bind(NoopLikeC4MCPServerFactory),
   },

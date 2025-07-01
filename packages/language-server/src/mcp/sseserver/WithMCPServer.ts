@@ -2,7 +2,7 @@ import { loggable } from '@likec4/log'
 import { isError } from 'remeda'
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer } from '../LikeC4MCPServerFactory'
+import type { LikeC4MCPServer } from '../interfaces'
 import { SSELikeC4MCPServer } from './MCPServer'
 import { LikeC4MCPServerFactory } from './MCPServerFactory'
 

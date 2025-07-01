@@ -1,17 +1,7 @@
 import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { LikeC4Services } from '../module'
-
-export interface LikeC4MCPServer {
-  readonly isStarted: boolean
-  readonly port: number
-  start(port: number): Promise<void>
-  stop(): Promise<void>
-}
-
-export interface LikeC4MCPServerFactory {
-  create(options?: ServerOptions): McpServer
-}
+import type { LikeC4MCPServer, LikeC4MCPServerFactory } from './interfaces'
 
 export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   get isStarted(): boolean {

@@ -1,122 +1,91 @@
-import { type Any, type aux, type ProjectId, _type, imap, toArray } from '@likec4/core'
-import { type ElementModel, type LikeC4ViewModel } from '@likec4/core/model'
-import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
+import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
+import type {
+  CallToolResult,
+  ServerNotification,
+  ServerRequest,
+  ToolAnnotations,
+} from '@modelcontextprotocol/sdk/types.js'
+import type { z, ZodRawShape, ZodTypeAny } from 'zod'
 
-export function elementResource<A extends Any = Any>(
-  languageServices: LikeC4LanguageServices,
-  el: ElementModel<A>,
-  projectId?: aux.ProjectId<A>,
-) {
-  return {
-    id: el.id,
-    parent: !el.parent ? null : {
-      id: el.parent.id,
-      title: el.parent.title,
-      kind: el.parent.kind,
-    },
-    projectId,
-    title: el.title,
-    kind: el.kind,
-    shape: el.shape,
-    technology: el.technology,
-    description: el.description,
-    tags: el.tags,
-    children: toArray(imap(el.children(), c => ({
-      id: c.id,
-      title: c.title,
-      kind: el.kind,
-    }))),
-    relations: {
-      incoming: toArray(imap(el.incoming(), r => ({
-        id: r.id,
-        title: r.title,
-        description: r.description,
-        technology: r.technology,
-        source: {
-          id: r.source.id,
-          title: r.source.title,
-          kind: r.source.kind,
-        },
-        ...(r.target.id === el.id
-          ? {
-            type: 'direct',
-          }
-          : {
-            type: 'implicit, to nested',
-            target: {
-              id: r.target.id,
-              title: r.target.title,
-              kind: r.target.kind,
-            },
-          }),
-      }))),
-      outgoing: toArray(imap(el.outgoing(), r => ({
-        id: r.id,
-        title: r.title,
-        description: r.description,
-        technology: r.technology,
-        target: {
-          id: r.target.id,
-          title: r.target.title,
-          kind: r.target.kind,
-        },
-        ...(r.source.id === el.id
-          ? {
-            type: 'direct',
-          }
-          : {
-            type: 'implicit, from nested',
-            source: {
-              id: r.source.id,
-              title: r.source.title,
-              kind: r.source.kind,
-            },
-          }),
-      }))),
-    },
-    views: toArray(imap(el.views(), v => ({
-      id: v.id,
-      title: v.title,
-    }))),
-    sourceFile: languageServices.locate({
-      element: el.id,
-      projectId,
-    }),
-  }
+import { loggable } from '@likec4/log'
+import type { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { LikeC4LanguageServices } from '../LikeC4LanguageServices'
+import { logger as mainLogger } from '../logger'
+
+export const logger = mainLogger.getChild('mcp')
+
+type ToolResult<Out extends undefined | ZodRawShape = undefined> =
+  // dprint-ignore
+  Out extends ZodRawShape
+    ? z.objectOutputType<Out, ZodTypeAny>
+    : string
+
+type LikeC4ToolCallback<Args extends undefined | ZodRawShape, Out extends undefined | ZodRawShape> =
+  // dprint-ignore
+  Args extends ZodRawShape
+    ? (languageServices: LikeC4LanguageServices, args: z.objectOutputType<Args, ZodTypeAny>, extra: RequestHandlerExtra<ServerRequest, ServerNotification>) => Promise<ToolResult<Out>>
+    : (languageServices: LikeC4LanguageServices, extra: RequestHandlerExtra<ServerRequest, ServerNotification>) => Promise<ToolResult<Out>>
+
+export function likec4Tool<
+  InputArgs extends ZodRawShape,
+  OutputArgs extends ZodRawShape,
+  Cb extends LikeC4ToolCallback<InputArgs, OutputArgs>,
+>(
+  config: {
+    name: string
+    description?: string
+    inputSchema?: InputArgs
+    outputSchema?: OutputArgs
+    annotations?: ToolAnnotations
+  },
+  cb: Cb,
+): (languageServices: LikeC4LanguageServices) => [string, { inputSchema?: InputArgs }, ToolCallback<InputArgs>] {
+  const { name, ...rest } = config
+  return (languageServices: LikeC4LanguageServices) => [
+    name,
+    rest,
+    mkcallTool(name, languageServices, cb),
+  ]
 }
 
-export function modelViewResource(
+function mkcallTool<
+  InputArgs extends ZodRawShape,
+  OutputArgs extends ZodRawShape,
+  Cb extends LikeC4ToolCallback<InputArgs, OutputArgs>,
+>(
+  name: string,
   languageServices: LikeC4LanguageServices,
-  view: LikeC4ViewModel<aux.Any>,
-  projectId?: ProjectId,
-) {
-  return {
-    id: view.id,
-    title: view.title,
-    projectId,
-    viewType: view[_type],
-    description: view.$view.description ?? '',
-    tags: view.tags,
-    nodes: toArray(imap(view.nodes(), node => ({
-      id: node.id,
-      title: node.title,
-      represents: node.element
-        ? {
-          element: node.element.id,
+  cb: Cb,
+): ToolCallback<InputArgs> {
+  const tool = cb.bind(null, languageServices)
+  return (async function callTool(args: any, extra: any): Promise<CallToolResult> {
+    logger.debug('Calling tool {name}', { name, args })
+    try {
+      const result = await tool.call(null, args, extra)
+      if (typeof result === 'string') {
+        return {
+          content: [{
+            type: 'text',
+            text: result,
+          }],
         }
-        : {},
-    }))),
-    sourceFile: languageServices.locate({
-      view: view.id,
-      projectId,
-    }),
-    // edges: toArray(imap(view.edges(), edge => ({
-    //   id: edge.id,
-    //   title: edge.title,
-    // }))),
-    // elements: toArray(imap(view.elements(), el => ({
-    //   id: el.id,
-    //   title: el.title,
-    // }))),
-  }
+      }
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result),
+        }],
+        structuredContent: result,
+      }
+    } catch (err) {
+      logger.error(`Tool ${name} failed`, { err })
+      return {
+        content: [{
+          type: 'text',
+          text: loggable(err),
+        }],
+        isError: true,
+      }
+    }
+  }) as unknown as ToolCallback<InputArgs>
 }
