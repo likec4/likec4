@@ -144,7 +144,7 @@
     "turbo": "catalog:",
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
-    "ufo": "^1.6.1",
+    "ufo": "catalog:utils",
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
     "vitest": "catalog:vitest",

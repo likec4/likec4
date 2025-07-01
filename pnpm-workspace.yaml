@@ -42,6 +42,7 @@ catalogs:
     ufo: 1.6.1
     zod: 3.25.67
     sharp: 0.34.2
+    nanoid: 5.1.5
   esbuild:
     esbuild: 0.25.5
     esbuild-node-externals: 1.18.0
@@ -117,6 +118,7 @@ catalogs:
   hono:
     hono: ^4.8.3
     hono-sessions: ^0.7.3
+    "@hono/node-server": ^1.14.4
 
 onlyBuiltDependencies:
   - dprint

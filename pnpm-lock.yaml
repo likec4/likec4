@@ -178,6 +178,9 @@ catalogs:
     nano-spawn:
       specifier: ^1.0.2
       version: 1.0.2
+    nanoid:
+      specifier: 5.1.5
+      version: 5.1.5
     object-hash:
       specifier: ^3.0.0
       version: 3.0.0
@@ -556,7 +559,7 @@ importers:
         specifier: catalog:react
         version: 12.12.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nanoid:
-        specifier: ^5.1.5
+        specifier: catalog:utils
         version: 5.1.5
       nanostores:
         specifier: catalog:react
@@ -598,7 +601,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
       ufo:
-        specifier: ^1.6.1
+        specifier: catalog:utils
         version: 1.6.1
       valibot:
         specifier: catalog:utils
@@ -1052,7 +1055,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
       ufo:
-        specifier: ^1.6.1
+        specifier: catalog:utils
         version: 1.6.1
       unbuild:
         specifier: 'catalog:'
