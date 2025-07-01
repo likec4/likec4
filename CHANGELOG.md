@@ -1,3 +1,7 @@
+## [1.34.1](https://github.com/likec4/likec4/compare/v1.34.0...v1.34.1) (2025-07-01)
+
+
+
 # [1.34.0](https://github.com/likec4/likec4/compare/v1.33.0...v1.34.0) (2025-07-01)
 
 ### 🚀 Features
