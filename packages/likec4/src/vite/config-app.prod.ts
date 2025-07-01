@@ -46,6 +46,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
   const title = cfg.title ?? 'LikeC4'
 
+  const isSingleFile = cfg.outputSingleFile ?? false
+
   return {
     isDev: false,
     likec4AssetsDir,
@@ -115,21 +117,23 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         treeshake: {
           preset: 'recommended',
         },
-        input: [
-          resolve(root, 'index.html'),
-          resolve(root, 'src', 'main.js'),
-          resolve(root, 'src', 'fonts.css'),
-          resolve(root, 'src', 'style.css'),
-        ],
-        output: {
-          compact: true,
-          manualChunks: (id) => {
-            if (id.includes('/likec4/node_modules/')) {
-              return 'vendors'
-            }
-            return undefined
+        ...(!isSingleFile && {
+          input: [
+            resolve(root, 'index.html'),
+            resolve(root, 'src', 'main.js'),
+            resolve(root, 'src', 'fonts.css'),
+            resolve(root, 'src', 'style.css'),
+          ],
+          output: {
+            compact: true,
+            manualChunks: (id) => {
+              if (id.includes('/likec4/node_modules/')) {
+                return 'vendors'
+              }
+              return undefined
+            },
           },
-        },
+        }),
       },
     },
     customLogger,
@@ -139,6 +143,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,
       }),
-    ].concat(cfg.outputSingleFile ? [viteSingleFile()] : []),
+      // Enable single file output
+      isSingleFile ? viteSingleFile() : undefined,
+    ].filter(Boolean),
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }
