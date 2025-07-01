@@ -868,9 +868,8 @@ hidden terminal NL: /[\r\n]+/;
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
 // terminal Boolean returns boolean: 'true' | 'false';
 
-
+terminal BOOLEAN returns boolean: /\b(true|false)\b/;
 // LibIcons
-terminal BOOLEAN returns boolean: /true|false/;
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;

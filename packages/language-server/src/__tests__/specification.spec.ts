@@ -249,6 +249,12 @@ describe.concurrent('specification', () => {
       color custom-color1 #_FF
     }`
 
+  // https://github.com/likec4/likec4/issues/2057
+  test('custom color name does not coflict with Boolean').valid`
+    specification {
+      color truered #dc0005
+    }`
+
   describe('for tags', () => {
     test('fail if tag starts with number').invalid`
       specification {

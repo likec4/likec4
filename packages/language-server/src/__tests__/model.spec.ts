@@ -20,6 +20,15 @@ describe.concurrent('model', () => {
       1aa = system
     }`
 
+  // https://github.com/likec4/likec4/issues/2057
+  test('name does not coflict with Boolean').valid`
+    specification {
+      element system
+    }
+    model {
+      system truesys
+    }`
+
   test('name on the right side').valid`
     specification {
       element person
