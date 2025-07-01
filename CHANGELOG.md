@@ -1,3 +1,12 @@
+## [1.34.2](https://github.com/likec4/likec4/compare/v1.34.1...v1.34.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* **cli:** can't generate single page html ([19bb4fb](https://github.com/likec4/likec4/commit/19bb4fbd93f40f58e185c3a41b54e6085de5a2ba)), closes [#2076](https://github.com/likec4/likec4/issues/2076)
+
+
+
 ## [1.34.1](https://github.com/likec4/likec4/compare/v1.34.0...v1.34.1) (2025-07-01)
 
 ### Bug Fixes
