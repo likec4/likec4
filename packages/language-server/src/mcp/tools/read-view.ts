@@ -1,16 +1,39 @@
 import { invariant } from '@likec4/core'
+import type { NodeModel } from '@likec4/core/model'
 import z from 'zod'
+import { safeCall } from '../../utils'
 import { ProjectsManager } from '../../workspace'
 import { likec4Tool } from '../utils'
+import { locationSchema } from './_common'
+
+const modelRef = (node: NodeModel) => {
+  if (node.hasElement()) {
+    return node.element.id
+  }
+  if (node.hasDeployment()) {
+    return node.deployment.id
+  }
+  return null
+}
 
 export const readView = likec4Tool({
   name: 'read-view',
-  description: 'Read details about a LikeC4 view',
+  description: `
+Returns information about LikeC4 view, includes:
+- id (view name)
+- type (element, deployment, dynamic)
+- title, description, tags
+- project name this view belongs to
+- array of elements included in this view
+- array of relationships in this view (source, target, title, description, technology, tags)
+- viewOf (element id this view is the default view of)
+- source location (if running in the editor)
+`.trimStart(),
   annotations: {
     readOnlyHint: true,
   },
   inputSchema: {
-    id: z.string().describe('View id (name)'),
+    viewId: z.string().describe('View id (name)'),
     project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),
   },
   outputSchema: {
@@ -27,32 +50,57 @@ export const readView = likec4Tool({
           id: z.string().describe('Element ID (FQN)'),
           kind: z.string().describe('Element kind'),
           title: z.string().describe('Element title'),
+          description: z.string().nullish(),
+          technology: z.string().nullish(),
+          children: z.array(z.string()),
+          shape: z.string().describe('Element shape'),
+          tags: z.array(z.string()),
         }),
         z.object({
           type: z.literal('deployment-node'),
           id: z.string().describe('Deployment ID (FQN)'),
           kind: z.string().describe('Deployment kind'),
           title: z.string().describe('Deployment title'),
+          description: z.string().nullish(),
+          technology: z.string().nullish(),
+          children: z.array(z.string()),
+          shape: z.string().describe('Deployment shape'),
+          tags: z.array(z.string()),
         }),
         z.object({
           type: z.literal('deployed-instance'),
           id: z.string().describe('Deployment ID (FQN)'),
           title: z.string().describe('Deployment title'),
+          description: z.string().nullish(),
+          technology: z.string().nullish(),
           logicalElementId: z.string().describe('Logical element ID (FQN)'),
+          shape: z.string().describe('Deployment shape'),
+          tags: z.array(z.string()),
         }),
       ]),
     ).describe('Elements in this view'),
+    relationships: z.array(
+      z.object({
+        source: z.string().describe('Source element ID'),
+        target: z.string().describe('Target element ID'),
+        title: z.string().nullish(),
+        description: z.string().nullish(),
+        technology: z.string().nullish(),
+        tags: z.array(z.string()),
+      }),
+    ).describe('Relationships in this view'),
     defaultViewOf: z.string().optional().describe('Element ID (FQN) this view is the default view of'),
+    sourceLocation: locationSchema.nullish(),
   },
 }, async (languageServices, args) => {
   const projectId = args.project ?? ProjectsManager.DefaultProjectId
   const project = languageServices.projects().find(p => p.id === projectId)
   invariant(project, `Project "${projectId}" not found`)
   const model = await languageServices.computedModel(project.id)
-  const view = model.findView(args.id)
+  const view = model.findView(args.viewId)
 
   if (!view) {
-    throw new Error(`View with ID '${args.id}' not found in project ${project.id}`)
+    throw new Error(`View with ID '${args.viewId}' not found in project ${project.id}`)
   }
   return {
     id: view.id,
@@ -68,6 +116,10 @@ export const readView = likec4Tool({
           id: node.deployment.id,
           title: node.title,
           logicalElementId: node.deployment.element.id,
+          description: node.description.text,
+          technology: node.technology,
+          shape: node.shape,
+          tags: [...node.tags],
         }
       }
       if (node.hasDeployment()) {
@@ -76,6 +128,11 @@ export const readView = likec4Tool({
           id: node.deployment.id,
           title: node.title,
           kind: node.deployment.kind,
+          description: node.description.text,
+          technology: node.technology,
+          shape: node.shape,
+          tags: [...node.tags],
+          children: [...node.children()].flatMap(c => modelRef(c) ?? []),
         }
       }
       if (node.hasElement()) {
@@ -84,10 +141,30 @@ export const readView = likec4Tool({
           id: node.element.id,
           title: node.title,
           kind: node.element.kind,
+          description: node.description.text,
+          technology: node.technology,
+          shape: node.shape,
+          tags: [...node.tags],
+          children: [...node.children()].flatMap(c => modelRef(c) ?? []),
         }
       }
       return []
     }),
     viewOf: view.viewOf?.id,
+    relationships: [...view.edges()].flatMap(r => {
+      const source = modelRef(r.source)
+      const target = modelRef(r.target)
+      return source && target
+        ? [{
+          source,
+          target,
+          title: r.label,
+          description: r.description.text,
+          technology: r.technology,
+          tags: [...r.tags],
+        }]
+        : []
+    }),
+    sourceLocation: safeCall(() => languageServices.locate({ view: view.id, projectId })),
   }
 })

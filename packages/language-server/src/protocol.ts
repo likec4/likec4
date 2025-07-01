@@ -18,11 +18,19 @@ export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
   export type Type = typeof type
 }
-
-// export namespace DidChangeModelNotification {
-//   export const type = new NotificationType<string>('likec4/onDidChangeModel')
-//   export type Type = typeof type
-// }
+/**
+ * When server requests to open a likec4 preview panel
+ * (available only in the editor).
+ * (not the best place, but seems to be working)
+ */
+export namespace DidRequestOpenViewNotification {
+  export type Params = {
+    viewId: ViewId
+    projectId: ProjectId
+  }
+  export const type = new NotificationType<Params>('likec4/onRequestOpenView')
+  export type Type = typeof type
+}
 
 /**
  * Request to fetch the computed model data

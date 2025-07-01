@@ -35,6 +35,8 @@ export interface LikeC4Views {
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
   // overviewGraph(): Promise<OverviewGraph>
+
+  openView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<void>
 }
 
 const viewsLogger = rootLogger.getChild('views')
@@ -194,6 +196,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     cache.set(KEY, succeed)
     return succeed
+  }
+
+  /**
+   * Open a view in the preview panel.
+   */
+  async openView(viewId: ViewId, projectId: ProjectId): Promise<void> {
+    await this.services.Rpc.openView({ viewId, projectId })
   }
 
   // async overviewGraph(): Promise<OverviewGraph> {

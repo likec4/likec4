@@ -1,11 +1,32 @@
 import { invariant } from '@likec4/core'
 import z from 'zod'
+import { safeCall } from '../../utils'
 import { ProjectsManager } from '../../workspace'
 import { likec4Tool } from '../utils'
+import { locationSchema } from './_common'
 
 export const readElement = likec4Tool({
   name: 'read-element',
-  description: 'Read details about a LikeC4 logical element',
+  description: `
+Returns information about LikeC4 element, includes:
+- id (FQN)
+- parent id (FQN of the parent element, if this element is a nested)
+- kind (element kind)
+- title, description, technology
+- array of assigned tags
+- project name this element belongs to
+- metadata (key-value pairs)
+- shape
+- children (array of ids of the direct children elements)
+- name of the default view of this element if any
+- array of views that include this element
+- element relationships:
+  - incoming and outgoing
+  - direct and indirect (relationships with the nested elements)
+  (relationships include title, kind, description, technology, tags)
+- array of Deployment FQNs that represent deployed instances of this element
+- source location (where the element is defined, if running in the editor)
+`.trimStart(),
   annotations: {
     readOnlyHint: true,
   },
@@ -34,6 +55,7 @@ export const readElement = likec4Tool({
           title: z.string(),
           kind: z.string(),
         }),
+        kind: z.string().nullish().describe('Relationship kind'),
         target: z.string().describe(
           'Target element id (FQN), either this element or nested element, if relationship is indirect',
         ),
@@ -49,6 +71,7 @@ export const readElement = likec4Tool({
           title: z.string(),
           kind: z.string(),
         }),
+        kind: z.string().nullish().describe('Relationship kind'),
         title: z.string().nullish().describe('Relationship title'),
         description: z.string().nullish().describe('Relationship description'),
         technology: z.string().nullish().describe('Relationship technology'),
@@ -56,6 +79,7 @@ export const readElement = likec4Tool({
       })),
     }).describe('Relationships of this element (including indirect, incoming/outgoing to/from nested elements)'),
     deployedInstances: z.array(z.string()).describe('Deployed instances of this element (Array of Deployment FQNs)'),
+    sourceLocation: locationSchema.nullish(),
   },
 }, async (languageServices, args) => {
   const projectId = args.project ?? ProjectsManager.DefaultProjectId
@@ -85,6 +109,7 @@ export const readElement = likec4Tool({
           title: r.source.title,
           kind: r.source.kind,
         },
+        kind: r.kind,
         target: r.target.id,
         title: r.title,
         description: r.description.text,
@@ -98,6 +123,7 @@ export const readElement = likec4Tool({
           title: r.target.title,
           kind: r.target.kind,
         },
+        kind: r.kind,
         title: r.title,
         description: r.description.text,
         technology: r.technology,
@@ -105,5 +131,6 @@ export const readElement = likec4Tool({
       })),
     },
     deployedInstances: [...element.deployments()].map(i => i.id),
+    sourceLocation: safeCall(() => languageServices.locate({ element: element.id, projectId })),
   }
 })

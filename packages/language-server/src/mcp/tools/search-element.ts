@@ -1,4 +1,4 @@
-import { ifilter, isome } from '@likec4/core/utils'
+import { ifilter } from '@likec4/core/utils'
 import z from 'zod'
 import { likec4Tool } from '../utils'
 
@@ -9,6 +9,7 @@ const searchResultSchema = z.array(
       id: z.string().describe('Element ID (FQN)'),
       kind: z.string(),
       title: z.string(),
+      shape: z.string(),
       project: z.string().describe('Project name'),
       tags: z.array(z.string()),
     }),
@@ -17,14 +18,7 @@ const searchResultSchema = z.array(
       id: z.string().describe('Deployment ID (FQN)'),
       kind: z.string(),
       title: z.string(),
-      project: z.string().describe('Project name'),
-      tags: z.array(z.string()),
-    }),
-    z.object({
-      type: z.literal('deployed-instance'),
-      id: z.string().describe('Deployment ID (FQN)'),
-      title: z.string(),
-      logicalElementId: z.string().describe('Logical element ID (FQN)'),
+      shape: z.string(),
       project: z.string().describe('Project name'),
       tags: z.array(z.string()),
     }),
@@ -37,10 +31,22 @@ export const searchElement = likec4Tool({
     readOnlyHint: true,
   },
   description: `
-Search for LikeC4 elements and deployments by partial match of:
+Search for LikeC4 elements and deployment nodes by partial match of:
 - id (FQN)
 - title
-- tags
+- kind (if search string starts with "kind:")
+- shape (if search string starts with "shape:")
+- any assigned tags (if search string starts with "#")
+
+Returns array of found elements with:
+- type (logical or deployment-node)
+- id (FQN)
+- kind
+- title
+- shape
+- project name this element belongs to
+- assigned tags
+
 Can be used for further requests (like read-element or read-project-summary)
 `.trimStart(),
   inputSchema: {
@@ -52,12 +58,26 @@ Can be used for further requests (like read-element or read-project-summary)
 }, async (languageServices, args) => {
   const projects = languageServices.projects()
   const found = [] as z.infer<typeof searchResultSchema>
-  const search = args.search.toLowerCase()
+  let search = args.search.toLowerCase()
 
-  const predicate = <E extends { id: string; title: string; kind: string; tags: readonly string[] }>(el: E) =>
-    el.id.toLowerCase().includes(search)
-    || el.title.toLowerCase().includes(search)
-    || isome(el.tags, tag => tag.toLowerCase().includes(search))
+  let predicate: <E extends { id: string; title: string; kind: string; shape: string; tags: readonly string[] }>(
+    el: E,
+  ) => boolean
+
+  if (search.startsWith('kind:')) {
+    search = search.slice(5)
+    predicate = (el) => el.kind.toLowerCase().includes(search)
+  } else if (search.startsWith('shape:')) {
+    search = search.slice(6)
+    predicate = (el) => el.shape.toLowerCase().includes(search)
+  } else if (search.startsWith('#')) {
+    search = search.slice(1)
+    predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
+  } else {
+    predicate = (el) =>
+      el.id.toLowerCase().includes(search)
+      || el.title.toLowerCase().includes(search)
+  }
 
   for (const project of projects) {
     try {
@@ -70,18 +90,7 @@ Can be used for further requests (like read-element or read-project-summary)
           id: el.id,
           kind: el.kind,
           title: el.title,
-          project: project.id,
-          tags: [...el.tags],
-        })
-      }
-
-      // filter deployed instances
-      for (const el of ifilter(model.deployment.instances(), predicate)) {
-        found.push({
-          type: 'deployed-instance',
-          id: el.id,
-          title: el.title,
-          logicalElementId: el.element.id,
+          shape: el.shape,
           project: project.id,
           tags: [...el.tags],
         })
@@ -94,6 +103,7 @@ Can be used for further requests (like read-element or read-project-summary)
           id: el.id,
           kind: el.kind,
           title: el.title,
+          shape: el.shape,
           project: project.id,
           tags: [...el.tags],
         })

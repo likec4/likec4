@@ -17,6 +17,7 @@ import {
   ChangeView,
   ComputeView,
   DidChangeModelNotification,
+  DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchLayoutedModel,
   FetchProjects,
@@ -276,5 +277,17 @@ export class Rpc extends ADisposable {
         }),
       )
     }
+  }
+
+  async openView(params: DidRequestOpenViewNotification.Params): Promise<void> {
+    const lspConnection = this.services.shared.lsp.Connection
+    if (!lspConnection) {
+      logger.error('No LSP connection')
+      return
+    }
+    await lspConnection.sendNotification<DidRequestOpenViewNotification.Params>(
+      DidRequestOpenViewNotification.type,
+      params,
+    )
   }
 }
