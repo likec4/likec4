@@ -1,3 +1,9 @@
+## [1.34.1](https://github.com/likec4/likec4/compare/v1.34.0...v1.34.1) (2025-07-01)
+
+### Bug Fixes
+* **vscode:** request likec4/layout-view failed, closes [#2073](https://github.com/likec4/likec4/issues/2073)
+  
+
 # [1.34.0](https://github.com/likec4/likec4/compare/v1.33.0...v1.34.0) (2025-07-01)
 
 ### 🚀 Features

@@ -66,4 +66,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
+          # TODO: enable provenance
+          # NPM_CONFIG_PROVENANCE: "true"
