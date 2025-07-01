@@ -218,9 +218,12 @@ export namespace FetchTelemetryMetrics {
   export type Res = {
     metrics: null | {
       elementKinds: number
+      deploymentKinds: number
       relationshipKinds: number
       tags: number
+      customColors: number
       elements: number
+      deploymentNodes: number
       relationships: number
       views: number
       projects: number
