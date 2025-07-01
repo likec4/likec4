@@ -514,8 +514,8 @@ importers:
         specifier: catalog:vite
         version: 4.6.0(vite@6.3.5(@types/node@20.19.1)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.19.4)(yaml@2.7.0))
       '@xstate/react':
-        specifier: ^5.0.5
-        version: 5.0.5(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
+        specifier: ^6.0.0
+        version: 6.0.0(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.6.4(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -785,8 +785,8 @@ importers:
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@xstate/react':
-        specifier: ^5.0.5
-        version: 5.0.5(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
+        specifier: ^6.0.0
+        version: 6.0.0(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.6.4(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3934,11 +3934,11 @@ packages:
   '@webgpu/types@0.1.21':
     resolution: {integrity: sha512-pUrWq3V5PiSGFLeLxoGqReTZmiiXwY3jRkIG5sLLKjyqNxrwm/04b4nw7LSmGWJcKk59XOM/YRTUwOzo4MMlow==}
 
-  '@xstate/react@5.0.5':
-    resolution: {integrity: sha512-MfF/cPHa3lNKJmGFpUycMbNP25qBXyZXrxc8VYNroAu0Nnk0DV5WzAkTcQXma0xEC4dSwsoA+YQuKbZATtqvgg==}
+  '@xstate/react@6.0.0':
+    resolution: {integrity: sha512-xXlLpFJxqLhhmecAXclBECgk+B4zYSrDTl8hTfPZBogkn82OHKbm9zJxox3Z/YXoOhAQhKFTRLMYGdlbhc6T9A==}
     peerDependencies:
       react: ^19.1.0
-      xstate: ^5.19.4
+      xstate: ^5.20.0
     peerDependenciesMeta:
       xstate:
         optional: true
@@ -11896,7 +11896,7 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@5.0.5(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)':
+  '@xstate/react@6.0.0(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)':
     dependencies:
       react: 19.1.0
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@19.1.0)

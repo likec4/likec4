@@ -84,7 +84,7 @@
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
-    "@xstate/react": "^5.0.5",
+    "@xstate/react": "^6.0.0",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
