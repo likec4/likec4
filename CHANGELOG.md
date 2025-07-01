@@ -1,3 +1,25 @@
+# [1.34.0](https://github.com/likec4/likec4/compare/v1.33.0...v1.34.0) (2025-07-01)
+
+
+### Bug Fixes
+
+* **deps:** update xstate monorepo ([#2031](https://github.com/likec4/likec4/issues/2031)) ([917f6ce](https://github.com/likec4/likec4/commit/917f6ce60eb541d456b26199434ef51d00a67bd0))
+* **dev-env:** aux.* files renamed to match windows constraints on reserved filenames ([92f6cff](https://github.com/likec4/likec4/commit/92f6cffbf185be310842aafba99ecc7657100180))
+* **dsl:** element identifier conflict with HEX ([#2050](https://github.com/likec4/likec4/issues/2050)) ([8059b10](https://github.com/likec4/likec4/commit/8059b1094e420e4bbf0b78190eade97553edc008)), closes [#2049](https://github.com/likec4/likec4/issues/2049)
+* **dsl:** spec parsing bug with boolean strings ([105ffc0](https://github.com/likec4/likec4/commit/105ffc06d4a7f131de8c3e94ffa2980239c62bce)), closes [#2057](https://github.com/likec4/likec4/issues/2057)
+* fixed build error after merge from main ([504a7c2](https://github.com/likec4/likec4/commit/504a7c225047481d5f69c804024e54e5f36fc04b))
+* **formatter:** Fixed handling of internal quotes [#2005](https://github.com/likec4/likec4/issues/2005) ([3f8f8df](https://github.com/likec4/likec4/commit/3f8f8df35d03b7fe6db13f6798c05aa91345134b))
+
+
+### Features
+
+* **cli:** title option in cli ([#2056](https://github.com/likec4/likec4/issues/2056)) ([f4cfbe1](https://github.com/likec4/likec4/commit/f4cfbe1771f2a01e0db008038bb17e7ec21d141c)), closes [#1942](https://github.com/likec4/likec4/issues/1942)
+* docker ([#2063](https://github.com/likec4/likec4/issues/2063)) ([0cc1f54](https://github.com/likec4/likec4/commit/0cc1f54cce09554a9afb1bf5e259b0bb7ccb93c2)), closes [#1840](https://github.com/likec4/likec4/issues/1840)
+* **dsl:** short syntax for constraints on kind ([#2054](https://github.com/likec4/likec4/issues/2054)) ([0d16fe8](https://github.com/likec4/likec4/commit/0d16fe883bccabfb8ff2e07e64f33b0ff654442d)), closes [#1994](https://github.com/likec4/likec4/issues/1994)
+* **mcp:** refactor MCP tools with structured outputs ([cfe23f8](https://github.com/likec4/likec4/commit/cfe23f853405c5e4a25f2db2e91435640ba3d766))
+
+
+
 # [1.33.0](https://github.com/likec4/likec4/compare/v1.32.2...v1.33.0) (2025-06-25)
 
 ### 🚀 Features
