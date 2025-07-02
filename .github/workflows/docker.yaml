@@ -40,18 +40,26 @@ jobs:
               }
             }
 
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-
       - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY_IMAGE }}
+            likec4/likec4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -67,7 +75,9 @@ jobs:
         with:
           platforms: ${{ matrix.os == 'ubuntu-24.04-arm' && 'linux/arm64' || 'linux/amd64' }}
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            ${{ env.REGISTRY_IMAGE }}
+            likec4/likec4
           # build-args: |
           #   LIKEC4_VER=${{ env.LIKEC4_VER }}
           no-cache-filters: runner
@@ -104,6 +114,12 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
           registry: ghcr.io
           username: ${{ github.repository }}
           password: ${{ secrets.GITHUB_TOKEN }}
@@ -115,7 +131,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY_IMAGE }}
+          images: |
+            ${{ env.REGISTRY_IMAGE }}
+            likec4/likec4
           tags: |
             type=ref,event=branch
             type=sha
