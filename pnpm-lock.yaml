@@ -1460,8 +1460,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       safe-stringify:
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.2.0
+        version: 1.2.0
       std-env:
         specifier: catalog:utils
         version: 3.9.0
@@ -7509,8 +7509,8 @@ packages:
     resolution: {integrity: sha512-b3rppTKm9T+PsVCBEOUR46GWI7fdOs00VKZ1+9c1EWDaDMvjQc6tUwuFyIprgGgTcWoVHSKrU8H31ZHA2e0RHA==}
     engines: {node: '>=10'}
 
-  safe-stringify@1.1.1:
-    resolution: {integrity: sha512-YSzQLuwp06fuvJD1h6+vVNFYZoXmDs5UUNPUbTvQK7Ap+L0qD4Vp+sN434C+pdS3prVVlUfQdNeiEIgxox/kUQ==}
+  safe-stringify@1.2.0:
+    resolution: {integrity: sha512-C+LbapLbyGhP/WeMTrnYhIPjUoNTXZ/A3Znli8D5iF+IZXrDlgvfruykOq/bZ/5ncGy/K6RsavHlkirgWDFNdA==}
     engines: {node: '>=16'}
 
   safer-buffer@2.1.2:
@@ -16239,7 +16239,7 @@ snapshots:
 
   safe-stable-stringify@2.5.0: {}
 
-  safe-stringify@1.1.1: {}
+  safe-stringify@1.2.0: {}
 
   safer-buffer@2.1.2: {}
 
