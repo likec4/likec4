@@ -7,7 +7,7 @@ import {
   DefaultTextSize,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import type { LayoutProps } from 'motion/react'
+import type { MotionNodeLayoutOptions } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type CSSProperties, type ReactNode, forwardRef } from 'react'
 import type { NodeProps } from '../../types'
@@ -27,7 +27,7 @@ export type ElementNodeContainerProps =
     style?: CSSProperties | undefined
     [key: `data-${string}`]: string | undefined
   }
-  & LayoutProps
+  & MotionNodeLayoutOptions
 
 export function nodeSizes({
   size,
