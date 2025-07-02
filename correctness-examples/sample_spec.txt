@@ -1,0 +1,36 @@
+specification {
+    element person
+    element webapp {
+        runtime {
+            availability "99.9%"
+            normal {
+                latency "50ms"
+                throughput "10 req/s"
+            }
+            load {
+                latency "90ms"
+                throughput "200 req/s"
+                peak_throughput "500 req/s"
+            }
+            constraints {
+                ...
+            }
+        }
+    }
+    element service
+    element api
+    element database
+    relationship uses {
+        style "implicit-invocation"
+    }
+    relationship calls {
+        style "implicit-invocation"
+    }
+    relationship accesses { 
+        path [
+            { from = person, to = webapp, rel = "uses", duration = "100ms" },
+            { from = webapp, to = service, rel = "calls", duration = "200ms" },
+            { from = service, to = database, rel = "accesses", duration = "50ms" }
+        ]
+    }
+}

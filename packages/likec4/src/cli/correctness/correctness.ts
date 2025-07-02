@@ -18,6 +18,13 @@ type CorrectnessIssue = {
   location: string
 }
 
+// Configuration for conditional checks based on tags
+type ConditionalCheck = {
+  tagName: string
+  checkFn: (computedModel: any, languageServices: LikeC4) => CorrectnessIssue[]
+  checkName: string
+}
+
 export async function handler({ path, strict }: HandlerParams): Promise<number> {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
@@ -89,16 +96,78 @@ function handleExitConditions(issues: CorrectnessIssue[], strict: boolean, logge
   return 0
 }
 
+/**
+ * Check if a specific tag exists in the specification
+ */
+function hasTag(computedModel: any, tagName: string): boolean {
+  try {
+    const specification = computedModel.specification
+    return specification && specification.tags && Object.prototype.hasOwnProperty.call(specification.tags, tagName)
+  } catch (error) {
+    return false
+  }
+}
+
+/**
+ * Get a list of all defined tags for debugging
+ */
+function getDefinedTags(computedModel: any): string[] {
+  try {
+    const specification = computedModel.specification
+    return specification?.tags ? Object.keys(specification.tags) : []
+  } catch (error) {
+    return []
+  }
+}
+
 async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Promise<CorrectnessIssue[]> {
   const issues: CorrectnessIssue[] = []
 
   try {
     const computedModel = languageServices.computedModel()
 
-    // Run individual checks
-    issues.push(...checkOrphan(computedModel, languageServices))
-    issues.push(...checkCycle(computedModel, languageServices))
-    issues.push(...checkMislayering(computedModel, languageServices))
+    // Log available tags for debugging
+    const definedTags = getDefinedTags(computedModel)
+    if (definedTags.length > 0) {
+      logger.info(k.gray(`Tags defined in specification: ${definedTags.join(', ')}`))
+    }
+
+    // Define conditional checks - these only run if specific tags exist
+    const conditionalChecks: ConditionalCheck[] = [
+      {
+        tagName: 'check-orphan',
+        checkFn: checkOrphan,
+        checkName: 'orphan elements',
+      },
+      {
+        tagName: 'check-cycle',
+        checkFn: checkCycle,
+        checkName: 'cyclic dependencies',
+      },
+      {
+        tagName: 'check-mislayering',
+        checkFn: checkMislayering,
+        checkName: 'mislayering',
+      },
+    ]
+
+    // Run conditional checks based on tag presence
+    for (const { tagName, checkFn, checkName } of conditionalChecks) {
+      if (hasTag(computedModel, tagName)) {
+        logger.info(k.gray(`Tag '${tagName}' found - running ${checkName} check...`))
+        issues.push(...checkFn(computedModel, languageServices))
+      } else {
+        logger.info(k.gray(`Tag '${tagName}' not found - skipping ${checkName} check`))
+      }
+    }
+
+    // Log summary of what checks would be available
+    if (definedTags.length === 0) {
+      logger.info(k.gray('No validation tags found in specification. Available tags:'))
+      logger.info(k.gray('  - check-orphan: Check for orphaned elements'))
+      logger.info(k.gray('  - check-cycle: Check for cyclic dependencies'))
+      logger.info(k.gray('  - check-mislayering: Check for layer violations'))
+    }
   } catch (error) {
     logger.error(`Error during correctness check: ${error}`)
     issues.push({

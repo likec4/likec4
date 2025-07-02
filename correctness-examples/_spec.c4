@@ -8,4 +8,8 @@ specification {
     relationship uses
     relationship calls
     relationship accesses
+
+    tag check-orphan
+    tag check-cycle
+    tag check-mislayering
 }
