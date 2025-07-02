@@ -7,10 +7,9 @@ import type {
   scalar,
   ViewWithType,
 } from '../../types'
-import { _stage, _type } from '../../types'
-import { type RichTextOrEmpty, RichText } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
-import { DefaultMap, ifind, nonNullable } from '../../utils'
+import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import {
@@ -18,9 +17,10 @@ import {
   type EdgeOrId,
   type NodeOrId,
   type WithTags,
-  getId,
 } from '../types'
+import { getId, getViewTitleFromPath } from '../utils'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
+import type { LikeC4ViewsGroup } from './LikeC4ViewsGroup'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
@@ -44,9 +44,20 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   public readonly $view: V
   public readonly $model: LikeC4Model<A>
 
-  constructor(model: LikeC4Model<A>, view: V) {
+  /**
+   * View group this view belongs to.
+   * If view is top-level, this is null.
+   */
+  public readonly viewGroup: LikeC4ViewsGroup<A> | null
+
+  constructor(
+    model: LikeC4Model<A>,
+    view: V,
+    viewGroup: LikeC4ViewsGroup<A> | null,
+  ) {
     this.$model = model
     this.$view = view
+    this.viewGroup = viewGroup
     for (const node of view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
@@ -90,7 +101,28 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   get title(): string | null {
-    return this.$view.title
+    return memoizeProp(this, 'title', () => {
+      if (!this.$view.title) {
+        return null
+      }
+      return getViewTitleFromPath(this.$view.title)
+    })
+  }
+
+  /**
+   * Returns path to this view as an array of groups and this view as the last element
+   * @example
+   * "Group 1",
+   * "Group 1/Group 2",
+   * "Group 1/Group 2/View",
+   */
+  get breadcrumbs(): [...LikeC4ViewsGroup<A>[], this] {
+    return memoizeProp(this, 'breadcrumbs', () => {
+      if (this.viewGroup) {
+        return [...this.viewGroup.breadcrumbs, this]
+      }
+      return [this]
+    })
   }
 
   get description(): RichTextOrEmpty {

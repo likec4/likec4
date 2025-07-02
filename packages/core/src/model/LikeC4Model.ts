@@ -1,4 +1,4 @@
-import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
+import { entries, hasAtLeast, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
 import type {
   Any,
   Aux,
@@ -17,7 +17,7 @@ import type {
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/_aux'
-import { compareNatural, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
+import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
@@ -36,9 +36,10 @@ import {
   type IncomingFilter,
   type OutgoingFilter,
   type RelationOrId,
-  getId,
 } from './types'
+import { getId, getViewGroupPath, normalizeViewPath, VIEW_GROUP_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { LikeC4ViewsGroup } from './view/LikeC4ViewsGroup'
 import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends Any = aux.Unknown> {
@@ -67,6 +68,16 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   protected readonly _internal = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
   protected readonly _views = new Map<aux.ViewId<A>, LikeC4ViewModel<A>>()
+
+  protected readonly _rootViewGroup: LikeC4ViewsGroup<A>
+  protected readonly _viewGroups = new Map<string, LikeC4ViewsGroup<A>>()
+
+  protected readonly _viewGroupChildren = new DefaultMap<
+    string,
+    Set<LikeC4ViewsGroup<A> | LikeC4ViewModel<A>>
+  >(
+    () => new Set(),
+  )
 
   protected readonly _allTags = new DefaultMap<
     aux.Tag<A>,
@@ -165,17 +176,61 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     this.deployment = new LikeC4DeploymentModel(this)
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
+      const compare = compareNaturalHierarchically(VIEW_GROUP_SEPARATOR)
       const views = pipe(
         values($data.views as Record<string, $View<A>>),
-        sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
+        map(view => ({
+          view,
+          path: normalizeViewPath(view.title ?? view.id),
+          group: view.title && getViewGroupPath(view.title) || '',
+        })),
+        sort((a, b) => compare(a.path, b.path)),
       )
-      for (const view of views) {
-        const vm = new LikeC4ViewModel(this, view)
+
+      const getOrCreateGroup = (path: string) => {
+        let group = this._viewGroups.get(path)
+        if (!group) {
+          const segments = split(path, VIEW_GROUP_SEPARATOR)
+          invariant(hasAtLeast(segments, 1), `View group path "${path}" must have at least one element`)
+          let defaultView
+          // Root group has "index" as default view
+          if (path === '') {
+            defaultView = views.find(view => view.view.id === 'index')
+          } else {
+            defaultView = views.find(view => view.path === path)
+          }
+          group = new LikeC4ViewsGroup(this, segments, defaultView?.view.id)
+          this._viewGroups.set(path, group)
+        }
+        return group
+      }
+
+      this._rootViewGroup = getOrCreateGroup('')
+
+      // Process view groups
+      for (const { group } of views) {
+        if (this._viewGroups.has(group)) {
+          continue
+        }
+        split(group, VIEW_GROUP_SEPARATOR).reduce((parent, segment) => {
+          const path = [...parent, segment]
+          const group = getOrCreateGroup(path.join(VIEW_GROUP_SEPARATOR))
+          this._viewGroupChildren.get(parent.join(VIEW_GROUP_SEPARATOR)).add(group)
+          return path
+        }, [] as string[])
+      }
+
+      for (const { view, group } of views) {
+        const vm = new LikeC4ViewModel(this, view, group === '' ? null : getOrCreateGroup(group))
+        this._viewGroupChildren.get(group).add(vm)
         this._views.set(view.id, vm)
         for (const tag of vm.tags) {
           this._allTags.get(tag).add(vm)
         }
       }
+    } else {
+      this._rootViewGroup = new LikeC4ViewsGroup(this, [''], undefined)
+      this._viewGroups.set(this._rootViewGroup.path, this._rootViewGroup)
     }
   }
 
@@ -349,6 +404,42 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
   public findView(viewId: aux.LooseViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
+  }
+
+  /**
+   * Returns a view group by its path.
+   * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
+   * @throws Error if view group is not found.
+   */
+  public viewGroup(path: string): LikeC4ViewsGroup<A> {
+    return nonNullable(this._viewGroups.get(path), `View group ${path} not found`)
+  }
+
+  /**
+   * Root group is special group with an empty path and used only for internal purposes.
+   * It is not visible to the user and should be used only to get top-level groups or views.
+   */
+  get rootViewGroup(): LikeC4ViewsGroup<A> {
+    return this._rootViewGroup
+  }
+
+  /**
+   * Whether the model has any view groups.
+   */
+  get hasViewGroups(): boolean {
+    // Root view group is always present
+    return this._viewGroups.size > 1
+  }
+
+  /**
+   * Returns all children of a view group.
+   * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
+   *
+   * @throws Error if view group is not found.
+   */
+  public viewGroupChildren(path: string): ReadonlySet<LikeC4ViewsGroup<A> | LikeC4ViewModel<A>> {
+    invariant(this._viewGroups.has(path), `View group ${path} not found`)
+    return this._viewGroupChildren.get(path)
   }
 
   /**
