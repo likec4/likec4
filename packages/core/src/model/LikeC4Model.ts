@@ -184,7 +184,6 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
           path: normalizeViewPath(view.title ?? view.id),
           group: view.title && getViewGroupPath(view.title) || '',
         })),
-        sort((a, b) => compare(a.path, b.path)),
       )
 
       const getOrCreateGroup = (path: string) => {
@@ -208,7 +207,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
       this._rootViewGroup = getOrCreateGroup('')
 
       // Process view groups
-      for (const { group } of views) {
+      // Sort in natural order to preserve hierarchy
+      for (const { group } of sort(views, (a, b) => compare(a.path, b.path))) {
         if (this._viewGroups.has(group)) {
           continue
         }

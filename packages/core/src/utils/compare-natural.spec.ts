@@ -54,6 +54,34 @@ describe('compareNaturalHierarchically', () => {
       'a.b.c',
       'a.c.c',
     ])
+
+    expect(
+      sortHierarchically([
+        'b.c',
+        'b',
+        'a.b.c',
+      ]),
+    ).toEqual([
+      'a.b.c',
+      'b',
+      'b.c',
+    ])
+
+    expect(
+      sortHierarchically([
+        '_._.b.c',
+        '_._.b',
+        '_._.a.c',
+        '_._.a.b.1.2',
+        '_._.a.b.1',
+      ]),
+    ).toEqual([
+      '_._.a.b.1',
+      '_._.a.b.1.2',
+      '_._.a.c',
+      '_._.b',
+      '_._.b.c',
+    ])
   })
 
   it('should handle custom separators', () => {
@@ -86,24 +114,24 @@ describe('compareNaturalHierarchically', () => {
       ]),
     ).toEqual([
       'a',
-      'b',
       'a.a',
       'a.b',
       'a.b.c',
+      'b',
     ])
   })
 
   it('should sort numerically within hierarchies', () => {
     expect(
       sortHierarchically([
-        'a.2',
-        'a.10',
-        'a.1',
+        'a.b.2',
+        'a.b.10',
+        'a.b.1',
       ]),
     ).toEqual([
-      'a.1',
-      'a.2',
-      'a.10',
+      'a.b.1',
+      'a.b.2',
+      'a.b.10',
     ])
   })
 
@@ -118,8 +146,8 @@ describe('compareNaturalHierarchically', () => {
     ).toEqual([
       '',
       'a',
-      'b',
       'a.b',
+      'b',
     ])
   })
 
@@ -134,8 +162,8 @@ describe('compareNaturalHierarchically', () => {
       ]),
     ).toEqual([
       'a',
-      'b',
       'a.b',
+      'b',
       undefined,
       undefined,
     ])
