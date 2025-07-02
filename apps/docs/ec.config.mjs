@@ -3,7 +3,9 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import likec4grammar from './likec4.tmLanguage.json' with { type: 'json' }
 import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 
+/** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default {
+  // themes: ['dracula', 'solarized-light'],
   plugins: [
     pluginLineNumbers(),
     pluginCollapsibleSections(),
