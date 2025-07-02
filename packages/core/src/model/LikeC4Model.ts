@@ -184,6 +184,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
           path: normalizeViewPath(view.title ?? view.id),
           group: view.title && getViewGroupPath(view.title) || '',
         })),
+        // Sort hierarchically by groups, but keep same order within groups
+        sort((a, b) => compare(a.group, b.group)),
       )
 
       const getOrCreateGroup = (path: string) => {
@@ -208,10 +210,11 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 
       // Process view groups
       // Sort in natural order to preserve hierarchy
-      for (const { group } of sort(views, (a, b) => compare(a.path, b.path))) {
+      for (const { group } of views) {
         if (this._viewGroups.has(group)) {
           continue
         }
+        // Create groups for each segment of the path
         split(group, VIEW_GROUP_SEPARATOR).reduce((parent, segment) => {
           const path = [...parent, segment]
           const group = getOrCreateGroup(path.join(VIEW_GROUP_SEPARATOR))
@@ -309,6 +312,21 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     }))
   }
 
+  /**
+   * Returns the element with the given FQN.
+   *
+   * @throws Error if element is not found\
+   * Use {@link findElement} if you don't want to throw an error
+   *
+   * @note Method is type-safe for typed model
+
+   * @example
+   * model.element('cloud.frontend')
+   * // or object with id property of scalar.Fqn
+   * model.element({
+   *   id: 'dashboard',
+   * })
+   */
   public element(el: ElementOrFqn<A>): ElementModel<A> {
     if (el instanceof ElementModel) {
       return el
@@ -316,6 +334,16 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     const id = getId(el)
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
+
+  /**
+   * Returns the element with the given FQN.
+   *
+   * @returns Element if found, null otherwise
+   * @note Method is not type-safe as {@link element}
+   *
+   * @example
+   * model.findElement('cloud.frontend')
+   */
   public findElement(el: aux.LooseElementId<A>): ElementModel<A> | null {
     return this._elements.get(getId(el)) ?? null
   }
@@ -397,11 +425,29 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 
   /**
    * Returns a specific view by its ID.
+   * @note Method is type-safe for typed model
+   * @throws Error if view is not found\
+   * Use {@link findView} if you don't want to throw an error
+   *
+   * @example
+   * model.view('index')
+   * // or object with id property of scalar.ViewId
+   * model.view({
+   *   id: 'index',
+   * })
    */
   public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A, $View<A>> {
     const id = getId(viewId)
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
+
+  /**
+   * Returns a specific view by its ID.
+   * @note Method is not type-safe as {@link view}
+   *
+   * @example
+   * model.findView('index')
+   */
   public findView(viewId: aux.LooseViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
   }
@@ -543,7 +589,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
 
   /**
-   * Returns all tags used in the model, sorted alphabetically.
+   * Returns array of all tags used in the model, sorted naturally.\
+   * Use {@link specification.tags} to get all defined tags
    */
   get tags(): aux.Tags<A> {
     return memoizeProp(this, 'tags', () => sort([...this._allTags.keys()], compareNatural))

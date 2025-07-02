@@ -273,4 +273,39 @@ describe('LikeC4Model', () => {
       'prod',
     ])
   })
+
+  it('elements where', ({ expect }) => {
+    const elements = [...model.elementsWhere({
+      kind: 'system',
+    })]
+
+    expect(elements).toEqual([
+      model.element('cloud'),
+      model.element('aws'),
+      model.element('email'),
+    ])
+
+    expect([...model.elementsWhere({
+      and: [
+        { kind: 'system' },
+        { tag: 'external' },
+      ],
+    })].map(prop('id'))).toEqual([
+      'email',
+    ])
+
+    expect([...model.elementsWhere({
+      and: [
+        { kind: 'system' },
+        {
+          tag: {
+            neq: 'external',
+          },
+        },
+      ],
+    })].map(prop('id'))).toEqual([
+      'cloud',
+      'aws',
+    ])
+  })
 })
