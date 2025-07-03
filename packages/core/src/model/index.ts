@@ -36,6 +36,7 @@ export { LikeC4DeploymentModel } from './DeploymentModel'
 
 export { EdgeModel } from './view/EdgeModel'
 export { LikeC4ViewModel } from './view/LikeC4ViewModel'
+export { LikeC4ViewsGroup } from './view/LikeC4ViewsGroup'
 export { NodeModel } from './view/NodeModel'
 
 export type {

@@ -1,4 +1,5 @@
 import { cx } from '@likec4/styles/css'
+import { hstack } from '@likec4/styles/patterns'
 import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core'
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { LayoutGroup, m } from 'motion/react'
@@ -9,6 +10,7 @@ import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../con
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
+import { DiagramBreadcrumbs } from '../breadcrumbs/DiagramBreadcrumbs'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { LayoutDriftNotification } from './LayoutDriftNotification'
@@ -23,9 +25,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
   search,
   actionsGroup,
 }) => (
-  <Group
-    component={m.div}
-    // @ts-expect-error group component not fully polymorphic
+  <m.div
     initial={{
       opacity: 0.05,
       translateX: -30,
@@ -41,16 +41,19 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
       translateX: -30,
       translateY: -10,
     }}
-    align="flex-start"
     className={cx(
+      hstack({
+        gap: 'sm',
+        alignItems: 'flex-start',
+      }),
       'react-flow__panel',
       css.panel,
       'likec4-top-left-panel',
     )}
-    gap="xs"
     onClick={stopPropagation}
   >
-    <Stack align="flex-start" gap="xs">
+    {
+      /* <Stack align="flex-start" gap="xs">
       <LayoutGroup>
         <Group
           className={cx(css.navigationButtons, 'likec4-navigation-webview')}
@@ -63,8 +66,10 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
     </Stack>
     <Box>
       {search}
-    </Box>
-  </Group>
+    </Box> */
+    }
+    <DiagramBreadcrumbs />
+  </m.div>
 )
 
 export const Controls = memo(() => {

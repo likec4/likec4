@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
 import type { Types } from '../likec4diagram/types'
-import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 
 function customDiagramNode<
   P extends {
@@ -15,7 +15,10 @@ function customDiagramNode<
   Node: (props: P) => ReactNode,
 ): (props: P['nodeProps']) => ReactNode {
   return customNode((props) => {
-    const viewModel = useLikeC4Model().view(props.data.viewId)
+    const viewModel = useLikeC4ViewModel(props.data.viewId)
+    if (!viewModel) {
+      throw new Error(`View "${props.data.viewId}" not found`)
+    }
     const model = viewModel.node(props.id)
     // @ts-ignore
     return <Node nodeProps={props} nodeModel={model} />

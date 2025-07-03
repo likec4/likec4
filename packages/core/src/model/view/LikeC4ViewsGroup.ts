@@ -78,6 +78,9 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
     return memoizeProp(this, 'breadcrumbs', () => {
       const parent = this.parent
       if (parent) {
+        if (parent.isRoot) {
+          return [parent, this]
+        }
         return [...parent.breadcrumbs, this]
       }
       return [this]
@@ -85,15 +88,16 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
   }
 
   /**
-   * Returns parent group (excluding root)
-   *
-   * @throws Error if this is the root group.
+   * Returns parent group
    */
   get parent(): LikeC4ViewsGroup<A> | null {
-    invariant(!this.isRoot, 'Root view group has no parent')
-    if (isEmpty(this.parentPath)) {
+    // invariant(!this.isRoot, 'Root view group has no parent')
+    if (this.parentPath === undefined) {
       return null
     }
+    // if (isEmpty(this.parentPath)) {
+    //   return null
+    // }
     return this.$model.viewGroup(this.parentPath)
   }
 
@@ -107,14 +111,29 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
   }
 
   /**
+   * Returns sorted array of children groups
+   */
+  get groups(): ReadonlyArray<LikeC4ViewsGroup<A>> {
+    return memoizeProp(this, 'groups', () => {
+      const groups: LikeC4ViewsGroup<A>[] = []
+      for (const child of this.children) {
+        if (child instanceof LikeC4ViewsGroup) {
+          groups.push(child)
+        }
+      }
+      return groups
+    })
+  }
+
+  /**
    * Returns all views in this view group.
    */
-  get views(): ReadonlySet<LikeC4ViewModel<A>> {
+  get views(): ReadonlyArray<LikeC4ViewModel<A>> {
     return memoizeProp(this, 'views', () => {
-      const views = new Set<LikeC4ViewModel<A>>()
+      const views: LikeC4ViewModel<A>[] = []
       for (const child of this.children) {
         if (child instanceof LikeC4ViewModel) {
-          views.add(child)
+          views.push(child)
         }
       }
       return views

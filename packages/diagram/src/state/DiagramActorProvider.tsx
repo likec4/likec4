@@ -2,13 +2,16 @@ import type { DiagramView, WhereOperator } from '@likec4/core/types'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
+import { useCurrentViewId } from '../hooks/useCurrentViewId'
 import type { PaddingWithUnit } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
+import { CurrentViewModelContext } from '../likec4model/LikeC4ModelContext'
+import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorSnapshot } from './types'
@@ -114,8 +117,34 @@ export function DiagramActorProvider({
   return (
     <DiagramActorContextProvider value={actorRef}>
       <DiagramFeatures overrides={toggledFeatures}>
-        {children}
+        <CurrentViewModelProvider>
+          {children}
+        </CurrentViewModelProvider>
       </DiagramFeatures>
     </DiagramActorContextProvider>
+  )
+}
+
+function CurrentViewModelProvider({
+  children,
+}: PropsWithChildren) {
+  const viewId = useCurrentViewId()
+  const likec4model = useLikeC4Model()
+  const [viewmodel, setViewmodel] = useState(() => likec4model.findView(viewId))
+
+  useEffect(() => {
+    setViewmodel(likec4model.findView(viewId))
+  }, [likec4model, viewId])
+
+  if (!viewmodel) {
+    throw new Error(`View "${viewId}" not found`)
+  }
+  if (!viewmodel.isDiagram()) {
+    throw new Error(`View "${viewId}" is not diagram`)
+  }
+  return (
+    <CurrentViewModelContext.Provider value={viewmodel}>
+      {children}
+    </CurrentViewModelContext.Provider>
   )
 }

@@ -119,7 +119,7 @@ views {
   }
 
   view customer of customer {
-    title '[context] Customer'
+    title 'Context / Customer'
     include
       *,
       cloud,
@@ -134,7 +134,7 @@ views {
 
   view cloud of cloud {
     #v1
-    title '[system] Cloud'
+    title 'System / Cloud'
     description '
       Some description with
       multi-lines
@@ -152,7 +152,7 @@ views {
 
   view cloud_ui of ui {
     #v2 #next
-    title '[context] Cloud UI'
+    title 'Context / Cloud UI'
     link ./model.c4#L127
 
     include
@@ -176,7 +176,7 @@ views {
   }
 
   view cloud_backend of backend {
-    title '[context] Cloud Backend'
+    title 'Context / Cloud Backend'
     include
       cloud,
       amazon,
