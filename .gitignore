@@ -7,6 +7,7 @@
 .vscode-test-web
 .pnpm-store/
 .wireit
+.windsurf
 
 panda.buildinfo.json
 

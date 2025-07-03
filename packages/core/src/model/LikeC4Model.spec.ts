@@ -285,27 +285,46 @@ describe('LikeC4Model', () => {
       model.element('email'),
     ])
 
-    expect([...model.elementsWhere({
-      and: [
-        { kind: 'system' },
-        { tag: 'external' },
-      ],
-    })].map(prop('id'))).toEqual([
+    expect([
+      ...model.elementsWhere({
+        and: [
+          { kind: 'system' },
+          { tag: 'external' },
+        ],
+      }),
+    ].map(prop('id'))).toEqual([
       'email',
     ])
 
-    expect([...model.elementsWhere({
-      and: [
-        { kind: 'system' },
-        {
-          tag: {
-            neq: 'external',
+    expect([
+      ...model.elementsWhere({
+        and: [
+          { kind: 'system' },
+          {
+            tag: {
+              neq: 'external',
+            },
           },
-        },
-      ],
-    })].map(prop('id'))).toEqual([
+        ],
+      }),
+    ].map(prop('id'))).toEqual([
       'cloud',
       'aws',
+    ])
+  })
+
+  it('relationships where', ({ expect }) => {
+    const toSystem = [...model.relationshipsWhere({
+      participant: 'target',
+      operator: {
+        kind: 'system',
+      },
+    })].map(r => r.expression)
+
+    expect(toSystem).toEqual([
+      'customer -> cloud',
+      'cloud.backend.api -> email',
+      'cloud -> email',
     ])
   })
 })
