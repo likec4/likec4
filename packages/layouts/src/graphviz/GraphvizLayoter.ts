@@ -103,27 +103,7 @@ export class GraphvizLayouter implements Disposable {
       let diagram = parseGraphvizJson(json, view)
 
       if (view.manualLayout) {
-        const result = applyManualLayout(diagram, view.manualLayout)
-        if (result.diagram) {
-          diagram = result.diagram
-        } else {
-          // apply manual layout if only new diagram has some nodes
-          // from the previous layout
-          if (result.relayout.nodes.length > 0) {
-            const printer = getPrinter(params)
-            // TODO: apply manual layout fails when there are edges with compounds
-            if (printer.hasEdgesWithCompounds) {
-              // edges with coumpoudns are using _.ltail, _.lhead
-              // This is not supported by FDP
-              logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
-            } else {
-              printer.applyManualLayout(result.relayout)
-              const rawjson = await this.dotToJson(printer.print())
-              diagram = parseGraphvizJson(rawjson, view)
-            }
-          }
-          diagram.hasLayoutDrift = true
-        }
+        diagram = applyManualLayout(diagram, view.manualLayout)
       }
 
       dot = dot

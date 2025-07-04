@@ -1,14 +1,12 @@
-import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout } from '@likec4/core'
+import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout, BBox, NodeId } from '@likec4/core'
 import { deepEqual } from 'fast-equals'
-import { entries } from 'remeda'
-import type { MergeExclusive, SetRequired } from 'type-fest'
-import type { ApplyManualLayoutData } from '../graphviz/DotPrinter'
+import { Vector } from 'vecti'
 
-type ManualNode = ViewManualLayout['nodes'][string]
-type ManualEdge = ViewManualLayout['edges'][string]
+type NodeManualLayout = ViewManualLayout['nodes'][string]
 
-type ManualEdgeWithDotPos = SetRequired<ManualEdge, 'dotpos'>
-
+const nodeSep = 100
+const rankSep = 100
+const containerMargin = { top: 50, right: 40, bottom: 40, left: 40 }
 /**
  * When the hash of the diagram view is the same as the previous hash, we can safely apply the layout.
  */
@@ -23,7 +21,7 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
       ...node,
       width,
       height,
-      position: [x, y]
+      position: [x, y],
     } satisfies DiagramNode
   })
   const edges = diagramView.edges.map(edge => {
@@ -33,7 +31,7 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
     }
     return {
       ...edge,
-      ...previous
+      ...previous,
     } satisfies DiagramEdge
   })
   return {
@@ -42,103 +40,186 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
       x: manualLayout.x,
       y: manualLayout.y,
       width: manualLayout.width,
-      height: manualLayout.height
+      height: manualLayout.height,
     },
     nodes,
-    edges
+    edges,
   }
 }
 
-const hasBecomeLarger = (diagramNode: DiagramNode, manualNode: ManualNode) =>
-  diagramNode.width > manualNode.width + 10 || diagramNode.height > manualNode.height + 10
-
 export function applyManualLayout(
   diagramView: DiagramView,
-  manualLayout: ViewManualLayout
-): MergeExclusive<{ diagram: DiagramView }, { relayout: ApplyManualLayoutData }> {
-  if (diagramView.hash === manualLayout.hash) {
-    return {
-      diagram: safeApplyLayout(diagramView, manualLayout)
-    }
+  manualLayout: ViewManualLayout,
+): DiagramView {
+  const nodes = new Map(diagramView.nodes.map(node => [node.id, node]))
+
+  if (
+    diagramView.hash === manualLayout.hash
+    || canApplySafely(diagramView, manualLayout)
+  ) {
+    // We still need to adjust size of compounds as one of their children might have been removed
+    adjustCompoundNodes(diagramView.nodes.filter(node => !node.parent), nodes, manualLayout)
+
+    return safeApplyLayout(diagramView, manualLayout)
   }
 
-  // If the hash is different, we still can safely apply the layout:
+  diagramView.hasLayoutDrift = true
+
+  // Place new nodes
+  const previousBb = BBox.merge(
+    ...diagramView.nodes
+      .map(node => manualLayout.nodes[node.id]!)
+      .filter(n => !!n),
+  )
+  diagramView.nodes
+    .filter(node => node.parent == null)
+    .reduce(
+      (acc, node) => layoutNode(node, acc, nodes, manualLayout),
+      { x: previousBb.x, y: previousBb.y + previousBb.height + rankSep },
+    )
+
+  // Add new edges
+  diagramView.edges
+    .filter(edge => !manualLayout.edges[edge.id])
+    .forEach(edge => layoutEdge(edge, manualLayout))
+
+  return safeApplyLayout(diagramView, manualLayout)
+}
+
+function layoutNode(
+  node: DiagramNode,
+  basePoint: { x: number; y: number },
+  nodes: Map<NodeId, DiagramNode>,
+  manualLayout: ViewManualLayout,
+): { x: number; y: number } {
+  let nodeLayout = manualLayout.nodes[node.id]
+  const wasCompound = nodeLayout?.isCompound ?? false
+  const isNew = !nodeLayout
+  const placeAt = isNew
+    // It's a new node, we'll place it at base point
+    ? basePoint
+    // It's an existing node, we'll leave it where it is
+    : { x: nodeLayout!.x, y: nodeLayout!.y }
+
+  // Layout children
+  const previousChildren = node.children
+    .map(child => manualLayout.nodes[child]!)
+    .filter(n => !!n)
+  const oldChildrenBb = previousChildren.length > 0 && BBox.merge(...previousChildren)
+
+  const placeChildrenAt = wasCompound && oldChildrenBb
+    // Place new children under the old ones
+    ? {
+      x: oldChildrenBb.x,
+      y: oldChildrenBb.y + oldChildrenBb.height + rankSep,
+    }
+    // Place new children as a content of the parent
+    : {
+      x: placeAt.x + containerMargin.left,
+      y: placeAt.y + containerMargin.top,
+    }
+  node.children
+    .map(child => nodes.get(child))
+    .reduce(
+      (acc, child) => layoutNode(child!, acc, nodes, manualLayout),
+      placeChildrenAt,
+    )
+
+  // Layout node itself
+  nodeLayout = node.children.length > 0
+    ? buildCompoundNodeLayout(node, manualLayout)
+    : manualLayout.nodes[node.id] ?? {
+      isCompound: false,
+      width: node.width,
+      height: node.height,
+      x: placeAt.x,
+      y: placeAt.y,
+    }
+  manualLayout.nodes[node.id] = nodeLayout
+
+  return isNew
+    // It's a new node, the next one should be placed to the right
+    ? { x: nodeLayout.x + nodeLayout.width + nodeSep, y: nodeLayout.y }
+    // It's an existing node, it did not use the basePoint
+    : basePoint
+}
+
+function layoutEdge(edge: DiagramEdge, manualLayout: ViewManualLayout) {
+  const source = manualLayout.nodes[edge.source]!
+  const target = manualLayout.nodes[edge.target]!
+
+  const sourceCenter = toVector(BBox.center(source))
+  const targetCenter = toVector(BBox.center(target))
+  const edgeVector = targetCenter.subtract(sourceCenter)
+
+  const labelBBox = {
+    ...(edge?.labelBBox ?? { width: 0, height: 0 }),
+    ...edgeVector.divide(2).add(sourceCenter),
+  }
+
+  const controlPoint = edgeVector.multiply(0.7).add(sourceCenter)
+  const middlePoint = edgeVector.multiply(0.3).add(sourceCenter)
+  manualLayout.edges[edge.id] = {
+    points: [
+      [sourceCenter.x, sourceCenter.y],
+      [middlePoint.x, middlePoint.y],
+      [controlPoint.x, controlPoint.y],
+      [targetCenter.x, targetCenter.y],
+    ],
+    labelBBox,
+    controlPoints: [controlPoint],
+  }
+}
+
+function adjustCompoundNodes(
+  nodesToAdjust: DiagramNode[],
+  nodes: Map<NodeId, DiagramNode>,
+  manualLayout: ViewManualLayout,
+) {
+  nodesToAdjust
+    .filter(node => node.children.length > 0)
+    .forEach(node => {
+      adjustCompoundNodes(
+        node.children
+          .map(child => nodes.get(child)!)
+          .filter(n => !!n),
+        nodes,
+        manualLayout,
+      )
+      manualLayout.nodes[node.id] = buildCompoundNodeLayout(node, manualLayout)
+    })
+}
+
+function buildCompoundNodeLayout(node: DiagramNode, manualLayout: ViewManualLayout): NodeManualLayout {
+  const childrenBb = BBox.merge(...node.children.map(child => manualLayout.nodes[child]!))
+
+  return {
+    isCompound: true,
+    x: childrenBb.x - containerMargin.left,
+    y: childrenBb.y - containerMargin.top,
+    width: childrenBb.width + containerMargin.left + containerMargin.right,
+    height: childrenBb.height + containerMargin.top + containerMargin.bottom,
+  }
+}
+
+function canApplySafely(diagramView: DiagramView, manualLayout: ViewManualLayout): boolean {
+  const isCompound = (node: DiagramNode) => node.children.length > 0
+
+  // We still can safely apply the layout:
   // - autoLayout is the same
   // - no new nodes
   // - compound nodes do not become leaf nodes and vice versa
   // - no new edges
-  // - leaf nodes do not become larger
-  // - edge labels do not become larger
-  if (
-    deepEqual(diagramView.autoLayout, manualLayout.autoLayout)
+  return true
+    && deepEqual(diagramView.autoLayout, manualLayout.autoLayout)
     && diagramView.nodes.every(n => {
       const manualNode = manualLayout.nodes[n.id]
       return !!manualNode
-        && (
-          n.children.length > 0 && manualNode.isCompound
-          || n.children.length === 0 && !manualNode.isCompound
-        )
-        // Only check for leaf nodes
-        && (manualNode.isCompound || hasBecomeLarger(n, manualNode) === false)
+        && isCompound(n) === manualNode.isCompound
     })
-    && diagramView.edges.every(e => {
-      const manualEdge = manualLayout.edges[e.id]
-      return !!manualEdge && (
-        // both edges have no label
-        (!e.labelBBox && !manualEdge.labelBBox) || (
-          // or labelbox has not become larger
-          !!e.labelBBox && !!manualEdge.labelBBox
-          && e.labelBBox.width <= manualEdge.labelBBox.width
-          && e.labelBBox.height <= manualEdge.labelBBox.height
-        )
-      )
-    })
-  ) {
-    return {
-      diagram: safeApplyLayout(diagramView, manualLayout)
-    }
-  }
+    && diagramView.edges.every(e => !!manualLayout.edges[e.id])
+}
 
-  // Re-layout is required, find nodes where we can pin position
-  const pinned = diagramView.nodes.reduce((acc, node) => {
-    const manualNode = manualLayout.nodes[node.id]
-    // We can't pin the position of compounds
-    // Or this is a new node
-    if (node.children.length > 0 || !manualNode) {
-      return acc
-    }
-    const _pinned: ApplyManualLayoutData['nodes'][number] = {
-      id: node.id,
-      center: {
-        x: Math.round(manualNode.x + manualNode.width / 2),
-        y: Math.round(manualNode.y + manualNode.height / 2)
-      }
-    }
-    if (!(manualNode.isCompound || hasBecomeLarger(node, manualNode))) {
-      _pinned.fixedsize = {
-        width: manualNode.width,
-        height: manualNode.height
-      }
-    }
-    acc.push(_pinned)
-    return acc
-  }, [] as ApplyManualLayoutData['nodes'])
-
-  return {
-    relayout: {
-      x: manualLayout.x,
-      y: manualLayout.y,
-      height: manualLayout.height,
-      nodes: pinned,
-      edges: entries(manualLayout.edges).flatMap(([id, edge]) => {
-        if (edge.dotpos) {
-          return {
-            id,
-            dotpos: edge.dotpos
-          }
-        }
-        return []
-      })
-    }
-  }
+function toVector({ x, y }: { x: number; y: number }) {
+  return new Vector(x, y)
 }

@@ -204,6 +204,9 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
+
+    this.build(G)
+    this.postBuild(G)
   }
 
   public get hasEdgesWithCompounds(): boolean {
@@ -259,8 +262,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
 
   public print(): DotSource {
     const G = this.graphvizModel
-    this.build(G)
-    this.postBuild(G)
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',
@@ -649,6 +650,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.esep]: '+10,10',
       [_.start]: 'random2',
       [_.splines]: 'compound',
+      [_.K]: 10,
     })
     this.graphvizModel.delete(_.compound)
     this.graphvizModel.delete(_.rankdir)
