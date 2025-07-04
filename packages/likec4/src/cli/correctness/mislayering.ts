@@ -86,6 +86,26 @@ function getElementLayer(element: any): number | null {
   return isNaN(parsed) ? null : parsed
 }
 
+function findElementsWithoutLayerInfo(model: any): any[] {
+  const elementsWithoutLayer: any[] = []
+
+  try {
+    const elements = [...model.elements()]
+
+    for (const element of elements) {
+      const layer = getElementLayer(element)
+      if (layer === null) {
+        elementsWithoutLayer.push(element)
+      }
+    }
+
+    return elementsWithoutLayer
+  } catch (error) {
+    console.error('Error in findElementsWithoutLayerInfo:', error)
+    return []
+  }
+}
+
 function findRelationshipInDocument(relationshipId: string, document: any): RelationshipInfo | null {
   if (document.parseResult?.value?.$type !== 'LikeC4Grammar') {
     return null
@@ -180,6 +200,78 @@ function formatLocation(relationship: any, model: any, languageServices?: any): 
   return `file: ${file}, line: ${line}, relationship: ${relationship.source?.id} -> ${relationship.target?.id}`
 }
 
+function formatElementLocation(element: any, languageServices?: any): string {
+  let file = 'unknown'
+  let line = 1
+
+  if (!languageServices) {
+    return `file: ${file}, line: ${line}, element: ${element.id}`
+  }
+
+  try {
+    const documents = languageServices.langium.shared.workspace.LangiumDocuments.all.toArray()
+
+    for (const document of documents) {
+      if (document.parseResult?.value?.$type !== 'LikeC4Grammar') {
+        continue
+      }
+
+      const grammar = document.parseResult.value
+      const models = grammar.models || []
+
+      for (const model of models) {
+        if (!model.elements) continue
+
+        const elementInfo = searchElementInStatements(element.id, model.elements, document)
+        if (elementInfo) {
+          const fullPath = document.uri.fsPath || document.uri.path || document.uri.toString()
+          file = calculateRelativePath(fullPath, languageServices?.workspace)
+          line = (elementInfo.statement.$cstNode?.range?.start?.line || 0) + 1
+          break
+        }
+      }
+    }
+  } catch (error) {
+    // Fallback to unknown if any error occurs
+  }
+
+  return `file: ${file}, line: ${line}, element: ${element.id}`
+}
+
+function searchElementInStatements(
+  elementId: string,
+  statements: any[],
+  document: any,
+): { element: string; document: any; statement: any } | null {
+  for (const statement of statements) {
+    if (statement.$type === 'Element') {
+      if (statement.name === elementId) {
+        return { element: elementId, document, statement }
+      }
+
+      // Recursively search in nested elements
+      if (statement.body?.elements) {
+        const nestedInfo = searchElementInStatements(elementId, statement.body.elements, document)
+        if (nestedInfo) {
+          return nestedInfo
+        }
+      }
+    }
+  }
+
+  return null
+}
+
+function hasCheckMislayeringTag(model: any): boolean {
+  try {
+    const specification = model.specification
+    return specification && specification.tags &&
+      Object.prototype.hasOwnProperty.call(specification.tags, 'check-mislayering')
+  } catch (error) {
+    return false
+  }
+}
+
 export function checkMislayering(computedModel: any, languageServices: LikeC4): CorrectnessIssue[] {
   const issues: CorrectnessIssue[] = []
   const mislayeredRelationships = findMislayeredRelationships(computedModel)
@@ -197,6 +289,19 @@ export function checkMislayering(computedModel: any, languageServices: LikeC4): 
         `Relationship '${relationship.source?.id} -> ${relationship.target?.id}' connects non-adjacent layers (${sourceLayer} -> ${targetLayer})`,
       location: formatLocation(relationship, computedModel, languageServices),
     })
+  }
+
+  // Check for elements without layer information only when check-mislayering tag is present
+  if (hasCheckMislayeringTag(computedModel)) {
+    const elementsWithoutLayer = findElementsWithoutLayerInfo(computedModel)
+    for (const element of elementsWithoutLayer) {
+      issues.push({
+        type: 'warning',
+        category: 'MISLAYERING',
+        message: `Element '${element.id}' does not have layer information defined`,
+        location: formatElementLocation(element, languageServices),
+      })
+    }
   }
 
   return issues

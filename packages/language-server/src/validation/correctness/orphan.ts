@@ -1,12 +1,31 @@
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
+import { projectIdFrom } from '../../utils'
 import { tryOrLog } from '../_shared'
 
 const { getDocument } = AstUtils
 
+function hasCheckOrphanTag(services: LikeC4Services, element: ast.Element): boolean {
+  const index = services.shared.workspace.IndexManager
+  const projectId = projectIdFrom(element)
+
+  // Check if check-orphan tag exists in the project
+  const checkOrphanTag = index
+    .projectElements(projectId, ast.Tag)
+    .filter(n => n.name === 'check-orphan')
+    .head()
+
+  return !!checkOrphanTag
+}
+
 export const checkElementConnectivity = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   return tryOrLog((el, accept) => {
+    // Only check if check-orphan tag exists
+    if (!hasCheckOrphanTag(services, el)) {
+      return
+    }
+
     // Skip user and external elements as they are often meant to be boundary elements
     const kindName = el.kind?.ref?.name
     if (kindName === 'user' || kindName === 'external') {

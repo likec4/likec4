@@ -1,6 +1,7 @@
 import { type ValidationCheck } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
+import { projectIdFrom } from '../../utils'
 import { tryOrLog } from '../_shared'
 
 function reconstructCycle(
@@ -32,9 +33,27 @@ function reconstructCycle(
   return cycle
 }
 
+function hasCheckCycleTag(services: LikeC4Services, grammar: ast.LikeC4Grammar): boolean {
+  const index = services.shared.workspace.IndexManager
+  const projectId = projectIdFrom(grammar)
+
+  // Check if check-cycle tag exists in the project
+  const checkCycleTag = index
+    .projectElements(projectId, ast.Tag)
+    .filter(n => n.name === 'check-cycle')
+    .head()
+
+  return !!checkCycleTag
+}
+
 export const checkCyclicDependencies = (services: LikeC4Services): ValidationCheck<ast.LikeC4Grammar> => {
   return tryOrLog((grammar, accept) => {
     if (!grammar || grammar.$type !== 'LikeC4Grammar') {
+      return
+    }
+
+    // Only check if check-cycle tag exists
+    if (!hasCheckCycleTag(services, grammar)) {
       return
     }
 

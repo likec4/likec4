@@ -1,6 +1,7 @@
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
+import { projectIdFrom } from '../../utils'
 import { tryOrLog } from '../_shared'
 
 const { getDocument } = AstUtils
@@ -24,8 +25,26 @@ function getElementLayer(element: ast.Element): number | null {
   return null
 }
 
+function hasCheckMislayeringTag(services: LikeC4Services, node: ast.Element | ast.Relation): boolean {
+  const index = services.shared.workspace.IndexManager
+  const projectId = projectIdFrom(node)
+
+  // Check if check-mislayering tag exists in the project
+  const checkMislayeringTag = index
+    .projectElements(projectId, ast.Tag)
+    .filter(n => n.name === 'check-mislayering')
+    .head()
+
+  return !!checkMislayeringTag
+}
+
 export const checkMislayering = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
   return tryOrLog((relation, accept) => {
+    // Only check if check-mislayering tag exists
+    if (!hasCheckMislayeringTag(services, relation)) {
+      return
+    }
+
     const fqnIndex = services.likec4.FqnIndex
 
     // Get source and target elements
@@ -67,6 +86,28 @@ export const checkMislayering = (services: LikeC4Services): ValidationCheck<ast.
           node: relation,
           property: 'target',
           code: 'mislayered-relationship',
+        },
+      )
+    }
+  })
+}
+
+export const checkElementLayerInfo = (services: LikeC4Services): ValidationCheck<ast.Element> => {
+  return tryOrLog((element, accept) => {
+    // Only check if check-mislayering tag exists
+    if (!hasCheckMislayeringTag(services, element)) {
+      return
+    }
+
+    const layer = getElementLayer(element)
+    if (layer === null) {
+      accept(
+        'warning',
+        `Element '${element.name}' does not have layer information defined`,
+        {
+          node: element,
+          property: 'name',
+          code: 'missing-layer-info',
         },
       )
     }
