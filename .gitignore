@@ -99,3 +99,7 @@ jspm_packages/
 dist
 
 ## Panda
+
+## Devenv
+.devenv*
+devenv.local.nix
