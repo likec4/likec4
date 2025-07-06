@@ -1447,8 +1447,8 @@ importers:
   packages/log:
     dependencies:
       '@logtape/logtape':
-        specifier: ^0.9.1
-        version: 0.9.2
+        specifier: ^1.0.1
+        version: 1.0.2
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -2951,8 +2951,8 @@ packages:
   '@likec4/core@1.31.0':
     resolution: {integrity: sha512-LUoiHyqEaXifq9Me47Ew9InemS5qaUwl1piNkUwtLOGTvNR0Cyrs6dybkyTijm6Smi7qcMAVj0tuPk8nEf5m+w==}
 
-  '@logtape/logtape@0.9.2':
-    resolution: {integrity: sha512-ehmMe+Oe7ldApaAytWguHI5O74TVeCqWFdW5FYVfu7ytdcUzbO79qTFHBm2aoM0ELt7j1zSFcxqNCozxieCQCw==}
+  '@logtape/logtape@1.0.2':
+    resolution: {integrity: sha512-6EWfs4KyTAVsiAnXXSFpzEmUYI2k7qLJogqPv3JqwFd8S8Zr2iUBPv3pbIC+70cW4P6Zpq1l1hnX/jDVZwvc+Q==}
 
   '@mantine/colors-generator@8.1.2':
     resolution: {integrity: sha512-D+58ju6/EvdS+h6RyegwDC/QXYlGLiC8eToKHPckL2xwZeR1z8EG7zO5msjBwrhHtgVbb/c7ZekAHUfoaR0WOA==}
@@ -10555,7 +10555,7 @@ snapshots:
     dependencies:
       type-fest: 4.41.0
 
-  '@logtape/logtape@0.9.2': {}
+  '@logtape/logtape@1.0.2': {}
 
   '@mantine/colors-generator@8.1.2(chroma-js@3.1.2)':
     dependencies:
