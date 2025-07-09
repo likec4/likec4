@@ -40,7 +40,7 @@
     "clean": "pnpm rimraf dist lib"
   },
   "dependencies": {
-    "@logtape/logtape": "^0.9.1"
+    "@logtape/logtape": "^0.12.2"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
