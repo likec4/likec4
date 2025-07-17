@@ -21,6 +21,9 @@ model {
     
     restapi4 = api 'API Service' {
       description 'RESTful API service'
+      metadata {
+        layer '3'
+      }
     }
   }
 

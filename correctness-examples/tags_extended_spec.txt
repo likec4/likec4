@@ -1,0 +1,38 @@
+specification {
+    element person
+    element webapp {
+        #sys-runtime-availability-99_9
+        #sys-runtime-normal-latency-50
+        #sys-runtime-normal-throughput-10
+        #sys-runtime-load-latency-90
+        #sys-runtime-load-throughput-200
+    }
+    element service
+    element api
+    element database
+
+    relationship uses
+    relationship calls
+    relationship accesses
+
+    // tag performance-
+
+    // element - properties
+    tag sys-runtime-availability-99_9
+    tag sys-runtime-normal-latency-50
+    tag sys-runtime-normal-throughput-10
+    tag sys-runtime-load-latency-90
+    tag sys-runtime-load-throughput-200
+
+    // element - units of properties
+    tag sys-unit-availability-percent
+    tag sys-unit-latency-millisecond
+    tag sys-unit-throughput-request_per_second
+
+    // relationship - units of properties
+    tag sys-unit-duration-millisecond
+
+    // relationship - properties
+    tag sys-relationship-duration-100
+    tag sys-style-implicit-invocation
+}

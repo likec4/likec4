@@ -10,7 +10,6 @@ specification {
             load {
                 latency "90ms"
                 throughput "200 req/s"
-                peak_throughput "500 req/s"
             }
             constraints {
                 ...
