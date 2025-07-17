@@ -1,0 +1,96 @@
+model {
+  infectious-diseases-user = person 'Infectious Diseases User' {
+    description 'Medical professional using infectious diseases interface'
+  }
+
+  microbiology-user = person 'Microbiology User' {
+    description 'Medical professional using microbiology interface'
+  }
+
+  pharmacy-user = person 'Pharmacy User' {
+    description 'Medical professional using pharmacy interface'
+  }
+
+  infectious-diseases-ui = webapp 'Infectious Diseases UI' {
+    description 'Browser-based interface for infectious diseases management'
+    metadata {
+      perf-serviceTime '900.0'
+      perf-replication '12'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  microbiology-ui = webapp 'Microbiology UI' {
+    description 'Browser-based interface for microbiology data management'
+    metadata {
+      perf-serviceTime '1500.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  pharmacy-ui = webapp 'Pharmacy UI' {
+    description 'Browser-based interface for pharmacy data management'
+    metadata {
+      perf-serviceTime '1300.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  simple-server = service 'Simple Server' {
+    description 'Main business logic service handling microbiology and pharmacy data'
+    metadata {
+      perf-serviceTime '3000.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  trend-tracker = service 'Trend Tracker' {
+    description 'Analytics service for tracking trends across medical data'
+    metadata {
+      perf-serviceTime '1200.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  microbiology-db = database 'Microbiology Database' {
+    description 'SQL database storing microbiology and germ data'
+    metadata {
+      perf-serviceTime '900.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  pharmacy-db = database 'Pharmacy Database' {
+    description 'SQL database storing pharmacy and drug data'
+    metadata {
+      perf-serviceTime '2200.0'
+      perf-replication '1'
+      perf-maxUtilizationRate '0.75'
+    }
+  }
+
+  infectious-diseases-user .uses infectious-diseases-ui
+  microbiology-user .uses microbiology-ui
+  pharmacy-user .uses pharmacy-ui
+
+  microbiology-ui .calls simple-server
+  pharmacy-ui .calls simple-server
+  infectious-diseases-ui .calls trend-tracker
+
+  simple-server .accesses microbiology-db
+  simple-server .accesses pharmacy-db
+  trend-tracker .accesses microbiology-db
+  trend-tracker .accesses pharmacy-db
+}
+views {
+  view main {
+    title "Base Architecture Overview"
+    include *
+    autoLayout TopBottom
+  }
+} 

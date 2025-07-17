@@ -8,6 +8,7 @@ import {
   checkCyclicDependencies,
   checkElementConnectivity,
   checkElementLayerInfo,
+  checkElementPerformanceMetadata,
   checkMislayering,
 } from './correctness'
 import {
@@ -163,7 +164,12 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
     LikeC4Grammar: checkCyclicDependencies(services),
-    Element: [checkElement(services), checkElementConnectivity(services), checkElementLayerInfo(services)],
+    Element: [
+      checkElement(services),
+      checkElementConnectivity(services),
+      checkElementLayerInfo(services),
+      checkElementPerformanceMetadata(services),
+    ],
     ElementRef: checkElementRef(services),
     ElementKind: checkElementKind(services),
     Relation: [relationChecks(services), checkMislayering(services)],

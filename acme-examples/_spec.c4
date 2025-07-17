@@ -1,0 +1,16 @@
+specification {
+    element person
+    element webapp
+    element service
+    element api
+    element database
+
+    relationship uses
+    relationship calls
+    relationship accesses
+
+    // tag check-orphan
+    // tag check-cycle
+    // tag check-mislayering
+    tag analyze-max-throughput
+}

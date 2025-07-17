@@ -3,6 +3,7 @@ import k from 'tinyrainbow'
 import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger } from '../../logger'
 import { checkCycle } from './cycle'
+import { checkMaxThroughput } from './max-throughput'
 import { checkMislayering } from './mislayering'
 import { checkOrphan } from './orphan'
 
@@ -11,7 +12,7 @@ type HandlerParams = {
   strict: boolean
 }
 
-type CorrectnessIssue = {
+export type CorrectnessIssue = {
   type: 'error' | 'warning'
   category: string
   message: string
@@ -120,7 +121,7 @@ function getDefinedTags(computedModel: any): string[] {
   }
 }
 
-async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Promise<CorrectnessIssue[]> {
+export async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Promise<CorrectnessIssue[]> {
   const issues: CorrectnessIssue[] = []
 
   try {
@@ -149,6 +150,11 @@ async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Prom
         checkFn: checkMislayering,
         checkName: 'mislayering',
       },
+      {
+        tagName: 'analyze-max-throughput',
+        checkFn: checkMaxThroughput,
+        checkName: 'performance metadata validation',
+      },
     ]
 
     // Run conditional checks based on tag presence
@@ -167,6 +173,7 @@ async function runCorrectnessChecks(languageServices: LikeC4, logger: any): Prom
       logger.info(k.gray('  - check-orphan: Check for orphaned elements'))
       logger.info(k.gray('  - check-cycle: Check for cyclic dependencies'))
       logger.info(k.gray('  - check-mislayering: Check for layer violations'))
+      logger.info(k.gray('  - analyze-max-throughput: Check for required performance metadata'))
     }
   } catch (error) {
     logger.error(`Error during correctness check: ${error}`)
