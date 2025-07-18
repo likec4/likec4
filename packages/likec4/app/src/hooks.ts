@@ -66,5 +66,5 @@ export function useCurrentProjectd(): ProjectId {
     select: (params) => params.projectId,
     strict: false,
   })
-  return (projectId ?? projects[0]) as ProjectId
+  return (projectId ?? projects[0].id) as ProjectId
 }

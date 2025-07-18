@@ -9,7 +9,7 @@ import {
   sortByFqnHierarchically,
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
-import type { LangiumDocument } from 'langium'
+import type { LangiumDocument, URI } from 'langium'
 import {
   filter,
   flatMap,
@@ -29,6 +29,7 @@ import type {
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
+import type { ProjectConfig } from '../../config'
 import { logger } from '../../logger'
 import { resolveRelativePaths } from '../../view-utils'
 import { MergedExtends } from './MergedExtends'
@@ -46,7 +47,11 @@ export type BuildModelData = {
  * This function builds a model from all documents, merging the specifications
  * and globals, and applying the extends to the elements.
  */
-export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
+export function buildModelData(project: {
+  id: c4.ProjectId
+  folder: URI
+  config: Readonly<ProjectConfig>
+}, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
   const customColors: c4.CustomColorDefinitions = mapValues(
@@ -232,10 +237,20 @@ export function buildModelData(projectId: string, docs: ParsedLikeC4LangiumDocum
     resolveRulesExtendedViews,
   )
 
+  const projectInfo = {
+    id: project.id,
+    ...(project.config && {
+      config: {
+        name: project.config.name,
+        ...(project.config.title && { title: project.config.title }),
+      },
+    }),
+  }
   return {
     data: {
       [c4._stage]: 'parsed',
-      projectId,
+      projectId: project.id,
+      project: projectInfo,
       specification: {
         tags: c4Specification.tags,
         elements: c4Specification.specs.elements,

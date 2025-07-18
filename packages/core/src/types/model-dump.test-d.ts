@@ -2,7 +2,7 @@ import { describe, expectTypeOf, it } from 'vitest'
 import type * as aux from './_aux'
 import type { Aux, SpecAux } from './_aux'
 import { _stage } from './const'
-import type { AuxFromDump, LikeC4ModelDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
+import type { AuxFromDump, LikeC4ModelDump, ProjectDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
   return value
@@ -110,6 +110,7 @@ describe('AuxFromDump', () => {
     const emptyModel = castModel({
       _stage: 'computed',
       projectId: 'test-project',
+      project: { id: 'test-project', config: { name: 'test-project' } } as ProjectDump,
       elements: {},
       views: {},
       deployments: {},
@@ -140,6 +141,7 @@ describe('AuxFromDump', () => {
     const model = castModel({
       _stage: 'computed',
       projectId: 'test-project',
+      project: { id: 'test-project', config: { name: 'test-project' } } as ProjectDump,
       elements: {
         'element1': {},
         'element2': {},
@@ -241,6 +243,7 @@ describe('AuxFromDump', () => {
     const model = castModel({
       [_stage]: 'layouted',
       projectId: 'test-project',
+      project: { id: 'test-project', config: { name: 'test-project' } } as ProjectDump,
       elements: {
         'e1': {},
         'e2': {},

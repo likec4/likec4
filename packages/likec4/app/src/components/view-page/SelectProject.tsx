@@ -2,10 +2,12 @@ import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
+import { useLikeC4ModelDataAtom } from '../../context/LikeC4ModelContext'
 import { useCurrentProjectd } from '../../hooks'
 
 export function SelectProject() {
   const projectId = useCurrentProjectd()
+  const model = useLikeC4ModelDataAtom()
 
   if (projects.length < 2) return null
 
@@ -19,12 +21,12 @@ export function SelectProject() {
           px={'sm'}
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
           visibleFrom="md">
-          {projectId}
+          {model.value?.project.config?.title ?? model.value?.project.id}
         </Button>
       </MenuTarget>
 
       <MenuDropdown>
-        {projects.map(({ id }) => (
+        {projects.map(({ id, title }) => (
           <MenuItem
             key={id}
             renderRoot={(props) => (
@@ -38,7 +40,7 @@ export function SelectProject() {
               />
             )}
           >
-            {id}
+            {title ?? id}
           </MenuItem>
         ))}
       </MenuDropdown>
