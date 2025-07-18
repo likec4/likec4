@@ -154,6 +154,7 @@ function convertLegacyModel(
   return {
     _stage: 'layouted',
     projectId: 'default',
+    project: { id: 'default' },
     specification: {
       relationships: specification.relationships as Record<string, Partial<RelationshipSpecification>>,
       elements: specification.elements as Record<string, Partial<ElementSpecification>>,

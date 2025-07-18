@@ -350,6 +350,7 @@ export const issue577View = (icon: string) => ({
 export const FakeModel = {
   _type: 'computed',
   projectId: 'test',
+  project: { id: 'test' },
   elements: fakeElements,
   relations: fakeRelations,
   views: {},

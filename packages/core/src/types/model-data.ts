@@ -12,6 +12,7 @@ import type { ComputedView, LayoutedView, ParsedView } from './view'
 
 interface BaseLikeC4ModelData<A extends aux.Any> {
   projectId: aux.ProjectId<A>
+  project: aux.Project<A>
   specification: Specification<A>
   elements: Record<aux.ElementId<A>, Element<A>>
   deployments: {

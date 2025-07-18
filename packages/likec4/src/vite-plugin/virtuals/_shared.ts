@@ -15,6 +15,7 @@ export interface VirtualModule {
     likec4: LikeC4LanguageServices
     projects: NonEmptyArray<{
       id: ProjectId
+      title: string
       folder: URI
     }>
     assetsDir: string

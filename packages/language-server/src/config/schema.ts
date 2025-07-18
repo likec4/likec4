@@ -11,6 +11,13 @@ export const ProjectConfig = v.object({
     v.excludes('#', 'Project name cannot contain "#", try to use A-z, 0-9, _ and -'),
     v.description('Project name, must be unique in the workspace'),
   ),
+  title: v.optional(
+    v.pipe(
+      v.string(),
+      v.nonEmpty('Project title cannot be empty if specified'),
+      v.description('A human readable title for the project'),
+    ),
+  ),
   contactPerson: v.optional(
     v.pipe(
       v.string(),

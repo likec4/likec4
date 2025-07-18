@@ -26,7 +26,7 @@ function RouteComponent() {
                 justifyContent: 'flex-start',
               },
             }}>
-            {v.id}
+            {v.title}
           </Button>
         ))}
       </Stack>
