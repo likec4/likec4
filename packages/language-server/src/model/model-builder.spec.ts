@@ -1140,8 +1140,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'custom-color1': {
         elements: {
           fill: '#ff00ff',
-          hiContrast: '#ffe8ff',
-          loContrast: '#ffceff',
+          hiContrast: '#ffffff',
+          loContrast: '#ffffff',
           stroke: '#e400e4',
         },
         relationships: {
@@ -1153,8 +1153,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'custom-color2': {
         elements: {
           fill: '#ffff00',
-          hiContrast: '#ffffe1',
-          loContrast: '#ffffcc',
+          hiContrast: '#4d5c00',
+          loContrast: '#606e00',
           stroke: '#e3e300',
         },
         relationships: {
