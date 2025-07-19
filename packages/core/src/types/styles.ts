@@ -81,6 +81,10 @@ export interface ElementThemeColorValues {
   hiContrast: ColorLiteral
   // Secondary text (description, etc.)
   loContrast: ColorLiteral
+  // Lighter color to be used with dark background
+  light: ColorLiteral
+  // Darker color to be used with light background
+  dark: ColorLiteral
 }
 
 export type ElementThemeColors = {

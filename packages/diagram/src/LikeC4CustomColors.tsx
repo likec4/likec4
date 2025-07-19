@@ -30,6 +30,10 @@ function keyToCssVar(key: keyof RelationshipThemeColorValues | keyof ElementThem
       return 'hi-contrast'
     case 'loContrast':
       return 'lo-contrast'
+    case 'light':
+      return 'light'
+    case 'dark':
+      return 'dark'
     default:
       nonexhaustive(key)
   }
@@ -43,6 +47,8 @@ function toStyle(name: String, colors: ThemeColorValues): String {
   --colors-likec4-palette-lo-contrast: ${colors.elements.loContrast};
   --colors-likec4-palette-fill: ${colors.elements.fill};
   --colors-likec4-palette-stroke: ${colors.elements.stroke};
+  --colors-likec4-palette-light: ${colors.elements.light};
+  --colors-likec4-palette-dark: ${colors.elements.dark};
   --colors-likec4-relation-stroke: ${colors.relationships.lineColor};
   --colors-likec4-relation-stroke-selected: color-mix(in srgb, ${colors.relationships.lineColor}, var(--colors-likec4-mix-color) 20%);
   --colors-likec4-relation-label: ${colors.relationships.labelColor};
@@ -51,6 +57,8 @@ function toStyle(name: String, colors: ThemeColorValues): String {
 :where(.likec4-compound-node[data-likec4-color=${name}]) {
   --colors-likec4-palette-fill: ${darken(colors.elements.fill)};
   --colors-likec4-palette-stroke: ${darken(colors.elements.stroke)};
+  --colors-likec4-palette-light: ${colors.elements.light};
+  --colors-likec4-palette-dark: ${colors.elements.dark};
 }
   `
 }

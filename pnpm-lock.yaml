@@ -688,6 +688,9 @@ importers:
       '@mantine/colors-generator':
         specifier: catalog:mantine
         version: 8.1.1(chroma-js@3.1.2)
+      '@types/chroma-js':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@types/extend':
         specifier: 3.0.4
         version: 3.0.4

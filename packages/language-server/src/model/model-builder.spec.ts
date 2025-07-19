@@ -1153,8 +1153,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'custom-color2': {
         elements: {
           fill: '#ffff00',
-          hiContrast: '#ffffe1',
-          loContrast: '#ffffcc',
+          hiContrast: '#adae00',
+          loContrast: '#c9ca00',
           stroke: '#e3e300',
         },
         relationships: {

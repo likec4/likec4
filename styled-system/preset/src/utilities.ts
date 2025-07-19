@@ -25,6 +25,8 @@ const likec4Palette = defineUtility({
         ['--colors-likec4-palette-lo-contrast']: token(`colors.likec4.compound${depth}.${color}.loContrast`),
         ['--colors-likec4-palette-fill']: token(`colors.likec4.compound${depth}.${color}.fill`),
         ['--colors-likec4-palette-stroke']: token(`colors.likec4.compound${depth}.${color}.stroke`),
+        ['--colors-likec4-palette-light']: token(`colors.likec4.compound${depth}.${color}.light`),
+        ['--colors-likec4-palette-dark']: token(`colors.likec4.compound${depth}.${color}.dark`),
       }
     } else {
       return {
@@ -33,6 +35,8 @@ const likec4Palette = defineUtility({
         ['--colors-likec4-palette-stroke']: token(`colors.likec4.${color}.element.stroke`),
         ['--colors-likec4-palette-hi-contrast']: token(`colors.likec4.${color}.element.hiContrast`),
         ['--colors-likec4-palette-lo-contrast']: token(`colors.likec4.${color}.element.loContrast`),
+        ['--colors-likec4-palette-light']: token(`colors.likec4.${color}.element.light`),
+        ['--colors-likec4-palette-dark']: token(`colors.likec4.${color}.element.dark`),
       }
     }
   },

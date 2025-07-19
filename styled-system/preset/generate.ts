@@ -119,6 +119,8 @@ const generateLikeC4ElementColor = (color: ThemeColor) => {
       stroke: { value: defaultTheme.elements[color].stroke },
       hiContrast: { value: defaultTheme.elements[color].hiContrast },
       loContrast: { value: defaultTheme.elements[color].loContrast },
+      light: { value: defaultTheme.elements[color].light },
+      dark: { value: defaultTheme.elements[color].dark },
     },
   }
 }

@@ -12,7 +12,6 @@ export const edgeVars = css({
   [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
   [labelColor]: {
     base: '{colors.likec4.relation.label}',
-    _light: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
   },
   [labelBg]: {
     _light: `{colors.likec4.relation.label.bg/60}`,

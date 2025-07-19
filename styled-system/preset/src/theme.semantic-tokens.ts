@@ -38,6 +38,8 @@ export const semanticTokens = defineSemanticTokens({
         stroke: { value: '{colors.likec4.primary.element.stroke}' },
         hiContrast: { value: '{colors.likec4.primary.element.hiContrast}' },
         loContrast: { value: '{colors.likec4.primary.element.loContrast}' },
+        light: { value: '{colors.likec4.primary.element.light}' },
+        dark: { value: '{colors.likec4.primary.element.dark}' },
       },
       relation: {
         stroke: {
