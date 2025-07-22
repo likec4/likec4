@@ -72,6 +72,11 @@ specification {
     tail onormal
   }
 
+  relationship custom {
+    line solid
+    color custom_color1
+  }
+
   tag next
   tag deprecated
   tag v1
@@ -82,4 +87,6 @@ specification {
   tag v2 {
     color #3094FEB9
   }
+
+  color custom_color1 #ffbebe
 }

@@ -16,10 +16,10 @@ model {
       description 'The CMS of the cloud system'
     }
 
-    graphql -> cms 'read and write'
-    graphql -> amazon.cognito 'authenticate'
-    graphql -> amazon.rds.pg 'read and write'
-    graphql -> cloud.billing.subscriptions 'verify access'
+    graphql -[custom]-> cms 'read and write'
+    graphql -[custom]-> amazon.cognito 'authenticate'
+    graphql -[custom]-> amazon.rds.pg 'read and write'
+    graphql -[custom]-> cloud.billing.subscriptions 'verify access'
 
     cms -> amazon.rds.mysql 'store media'
   }
