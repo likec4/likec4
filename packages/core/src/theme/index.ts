@@ -3,9 +3,10 @@ import type { ColorLiteral, HexColor, LikeC4Theme, ThemeColorValues } from '../t
 import { ElementColors } from './element'
 import { RelationshipColors } from './relationships'
 import { isDeepEqual } from 'remeda'
-import { adjustToneRgb, adjustToneHex } from '../utils/color'
 
-const MIN_CONTRAST_WITH_FOREGROUND = 80
+const CONTRAST_MIN_WITH_FOREGROUND = 60
+const CONTRAST_START_TONE_DIFFERENCE = 2
+const CONTRAST_STEP_TONE_DIFFERENCE = 1
 
 export const defaultTheme: LikeC4Theme = {
   elements: ElementColors,
@@ -100,7 +101,7 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
 function getColorPalette(refColor: string): ColorPalette {
   const el_main = refColor as HexColor
   const el_secondary = chroma(el_main).darken(0.8).hex() as HexColor
-  const el_contrastedColor = getContrastedColorAPCA(el_main)
+  const el_contrastedColor = getContrastedColorsAPCA(el_main)
   const el_hiContrast = el_contrastedColor[0] as HexColor
   const el_loContrast = el_contrastedColor[1] as HexColor
   
@@ -109,10 +110,10 @@ function getColorPalette(refColor: string): ColorPalette {
   let el_light
   let el_dark
   const el_mainLuminance = (chroma(el_main)).luminance()
-  if (el_mainLuminance > 0.7) {
+  if (el_mainLuminance > 0.6) {
     el_light = el_main
     el_dark = el_hiContrast
-  } else if (el_mainLuminance < 0.3){
+  } else if (el_mainLuminance < 0.4){
     el_light = el_hiContrast
     el_dark = el_main
   } else {
@@ -120,52 +121,50 @@ function getColorPalette(refColor: string): ColorPalette {
     el_dark = el_secondary
   }
   
-  
-  const rel_light = adjustToneHex(el_main, 0.25) as HexColor
-  const rel_dark = adjustToneHex(el_main, -0.25) as HexColor
-  const rel_secondary = adjustToneHex(el_main, -0.25) as HexColor
-  const rel_contrastedColor = getContrastedColorAPCA(el_main)
+  const el_main_chroma = chroma(el_main)
+  const rel_light = el_main_chroma.brighten(0.25).hex() as HexColor
+  const rel_dark = el_main_chroma.darken(0.25).hex() as HexColor
+  const rel_secondary = el_main_chroma.darken(0.25).hex() as HexColor
+  const rel_contrastedColor = getContrastedColorsAPCA(el_main)
   const rel_hiContrast = rel_contrastedColor[0] as HexColor
 
   return { el_main, el_secondary, el_hiContrast, el_loContrast, el_light, el_dark, rel_light, rel_dark, rel_secondary, rel_hiContrast }
 }
 
-function getContrastedColorAPCA(refColor: string): [string, string] {
-
+function getContrastedColorsAPCA(refColor: string): [string, string] {
   const refColorChroma = chroma(refColor)
 
-  // Start with 30% tone difference from reference
-  let lightColorRgb = refColorChroma.brighten(2);
-  let darkColorRgb = refColorChroma.darken(2);
+  // Start with 2 steps tone difference in the CIELAB color space from reference
+  let lightColorRgb = refColorChroma.brighten(CONTRAST_START_TONE_DIFFERENCE);
+  let darkColorRgb = refColorChroma.darken(CONTRAST_START_TONE_DIFFERENCE);
 
-  let contrastWithLight
   let previousLight
-  let contrastWithDark
   let previousDark
+  let contrastWithLight
+  let contrastWithDark
   do {
     // Store previous colors for loop condition
     previousLight = lightColorRgb
     previousDark = darkColorRgb
 
-    // Change tone by 10% each loop
-    lightColorRgb = lightColorRgb.brighten(1)
-    darkColorRgb = darkColorRgb.darken(1)
+    // Change tone by 1 step each loop
+    lightColorRgb = lightColorRgb.brighten(CONTRAST_STEP_TONE_DIFFERENCE)
+    darkColorRgb = darkColorRgb.darken(CONTRAST_STEP_TONE_DIFFERENCE)
 
     // Calculate contrast of each color with the reference color
     contrastWithLight = chroma.contrastAPCA(refColorChroma, lightColorRgb);
     contrastWithDark = chroma.contrastAPCA(refColorChroma, darkColorRgb);
   }
-  // Stop if one of the contrast is high enough or if we reach max value for each (when they are equal between two rounds)
-  while (Math.abs(contrastWithLight) < MIN_CONTRAST_WITH_FOREGROUND
-    && Math.abs(contrastWithDark) < MIN_CONTRAST_WITH_FOREGROUND
+  // Stop if one of the contrast is high enough or if we reach max value for each (aka when they are equal between two rounds)
+  while (Math.abs(contrastWithLight) < CONTRAST_MIN_WITH_FOREGROUND
+    && Math.abs(contrastWithDark) < CONTRAST_MIN_WITH_FOREGROUND
     && (!isDeepEqual(lightColorRgb, previousLight) || !isDeepEqual(darkColorRgb, previousDark)))
 
   // Choose the max contrast between the two
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
-    return [lightColorRgb.hex(), lightColorRgb.darken(0.4).hex()]
+    return [lightColorRgb.brighten(0.4).hex(), lightColorRgb.hex()]
   } else {
-    return [darkColorRgb.hex(), darkColorRgb.brighten(0.4).hex()]
+    return [darkColorRgb.darken(0.4).hex(), darkColorRgb.hex()]
   }
 }
-
 export { ElementColors, RelationshipColors }
