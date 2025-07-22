@@ -2,6 +2,7 @@ import {
   treeFromElements,
 } from '@likec4/core/compute-view/relationships'
 import type {
+  DeploymentFqn,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -17,7 +18,13 @@ import type {
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import { invariant, RichText } from '@likec4/core'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import type {
+  AnyAux,
+  DeploymentElementModel,
+  ElementModel,
+  LikeC4ViewModel,
+  RelationshipModel,
+} from '@likec4/core/model'
 import {
   DefaultMap,
   ifind,
@@ -125,7 +132,7 @@ const PortSuffix = '-port'
 
 function createNodes(
   column: RelationshipDetailsTypes.Column,
-  elements: ReadonlySet<ElementModel>,
+  elements: ReadonlySet<ElementModel | DeploymentElementModel>,
   g: G,
 ) {
   const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
@@ -219,7 +226,8 @@ export type LayoutResult = {
 export namespace LayoutResult {
   export type Node = Omit<DiagramNode, 'modelRef' | 'description' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
     description: RichTextOrEmpty
-    modelRef: Fqn
+    modelRef?: Fqn
+    deploymentRef?: DeploymentFqn
     column: RelationshipDetailsTypes.Column
     ports: RelationshipDetailsTypes.Ports
     // existsInCurrentView: boolean

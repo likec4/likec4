@@ -4,6 +4,7 @@ import {
   type ExclusiveUnion,
   type Fqn,
   type ViewId,
+  DeploymentFqn,
   invariant,
 } from '@likec4/core'
 import {
@@ -46,8 +47,8 @@ export type Input = ExclusiveUnion<{
     viewId: ViewId
   }
   Between: {
-    source: Fqn
-    target: Fqn
+    source: Fqn | DeploymentFqn
+    target: Fqn | DeploymentFqn
     viewId: ViewId
   }
 }>
@@ -58,8 +59,8 @@ type Subject = {
   target?: never
   // relationships: null
 } | {
-  source: Fqn
-  target: Fqn
+  source: Fqn | DeploymentFqn
+  target: Fqn | DeploymentFqn
   edgeId?: never
   // relationships: null
 }
@@ -80,7 +81,9 @@ export type Context = Readonly<{
   bounds: BBox
 }>
 
-function inputToSubject(input: { edgeId: EdgeId } | { source: Fqn; target: Fqn }): Context['subject'] {
+function inputToSubject(
+  input: { edgeId: EdgeId } | { source: Fqn | DeploymentFqn; target: Fqn | DeploymentFqn },
+): Context['subject'] {
   if ('edgeId' in input) {
     invariant(isString(input.edgeId), 'edgeId is required')
     return {

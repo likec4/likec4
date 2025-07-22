@@ -1,3 +1,4 @@
+import type { Fqn } from '@likec4/core'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
@@ -30,7 +31,7 @@ export const ElementActions = (props: ElementActionsProps) => {
       icon: <IconTransform />,
       onClick: (e) => {
         e.stopPropagation()
-        diagram.openRelationshipsBrowser(fqn)
+        diagram.openRelationshipsBrowser(fqn as Fqn) // TODO: Fqn or DeploymentFqn
       },
     })
   }
@@ -40,7 +41,7 @@ export const ElementActions = (props: ElementActionsProps) => {
       icon: <IconFileSymlink />,
       onClick: (e) => {
         e.stopPropagation()
-        diagram.openSource({ element: fqn })
+        diagram.openSource({ element: fqn as Fqn }) // TODO: Fqn or DeploymentFqn
       },
     })
   }

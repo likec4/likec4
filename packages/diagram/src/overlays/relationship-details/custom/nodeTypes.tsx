@@ -10,6 +10,7 @@ import {
 } from '../../../base/primitives'
 import { ElementActions } from './ElementActions'
 
+import type { Fqn } from '@likec4/core'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { NodeProps } from '../../../base'
@@ -25,7 +26,7 @@ const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTyp
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(props.data.fqn)
+        diagram.openElementDetails(props.data.fqn as Fqn) // TODO: Fqn or DeploymentFqn
       }}
     />
   )

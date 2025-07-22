@@ -1,5 +1,6 @@
 import {
   type Fqn,
+  invariant,
   nonNullable,
   Queue,
   RichText,
@@ -78,7 +79,8 @@ export function layoutResultToXYFlow(
       }),
     } satisfies Omit<RelationshipDetailsTypes.Node, 'data' | 'type'>
 
-    const fqn = node.modelRef
+    const fqn = node.modelRef ?? node.deploymentRef
+    invariant(fqn, 'modelRef nor deploymentRef should not be null')
     const navigateTo = { navigateTo: node.navigateTo ?? null }
 
     switch (true) {

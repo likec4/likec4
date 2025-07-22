@@ -1,20 +1,23 @@
+import type { DeploymentElementModel } from '../../model'
 import type { ElementModel } from '../../model/ElementModel'
-import type { AnyAux, aux } from '../../types'
+import type { AnyAux, aux, DeploymentFqn, Fqn } from '../../types'
 import { nonNullable } from '../../utils'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { DefaultMap } from '../../utils/mnemonist'
 
-export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementModel<M>>) {
-  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel<M>>
+type Element<T extends AnyAux> = ElementModel<T> | DeploymentElementModel<T>
+
+export function treeFromElements<M extends AnyAux>(elements: Iterable<Element<M>>) {
+  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<Element<M>>
   const root = new Set(sorted)
   const map = new Map(sorted.map(e => [e._literalId, e]))
-  const parents = new DefaultMap<ElementModel<M>, ElementModel<M> | null>(() => null)
+  const parents = new DefaultMap<Element<M>, Element<M> | null>(() => null)
   const children = sorted.reduce((acc, parent, index, all) => {
     acc.set(
       parent,
       all
         .slice(index + 1)
-        .filter(isDescendantOf(parent))
+        .filter(isDescendantOf<Fqn | DeploymentFqn>(parent))
         .map(e => {
           root.delete(e)
           return e
@@ -25,17 +28,17 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
             parents.set(el, parent)
           }
           return acc
-        }, [] as ElementModel<M>[]),
+        }, [] as Element<M>[]),
     )
     return acc
-  }, new DefaultMap<ElementModel<M>, ElementModel<M>[]>(() => []))
+  }, new DefaultMap<Element<M>, Element<M>[]>(() => []))
 
   return {
     sorted,
-    byId: (id: aux.ElementId<M>): ElementModel<M> => nonNullable(map.get(id), `Element not found by id: ${id}`),
-    root: root as ReadonlySet<ElementModel<M>>,
-    parent: (el: ElementModel<M>): ElementModel<M> | null => parents.get(el),
-    children: (el: ElementModel<M>): ReadonlyArray<ElementModel<M>> => children.get(el),
+    byId: (id: aux.ElementId<M>): Element<M> => nonNullable(map.get(id), `Element not found by id: ${id}`),
+    root: root as ReadonlySet<Element<M>>,
+    parent: (el: Element<M>): Element<M> | null => parents.get(el),
+    children: (el: Element<M>): ReadonlyArray<Element<M>> => children.get(el),
     /**
      * Flattens the tree structure by removing redundant hierarchy levels.
      * @example
@@ -53,7 +56,7 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
      *   └── F
      *       └── G
      */
-    flatten: (): Set<ElementModel<M>> => {
+    flatten: (): Set<Element<M>> => {
       return new Set([
         ...root,
         ...sorted.reduce((acc, el) => {
@@ -66,7 +69,7 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
             acc.push(..._children)
           }
           return acc
-        }, [] as ElementModel<M>[]),
+        }, [] as Element<M>[]),
       ])
     },
   }

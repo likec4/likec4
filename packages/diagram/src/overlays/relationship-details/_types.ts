@@ -1,5 +1,6 @@
 import type {
   Color,
+  DeploymentFqn,
   DiagramNode,
   Fqn,
   IconUrl,
@@ -39,7 +40,7 @@ export namespace RelationshipDetailsTypes {
     >
     & {
       column: Column
-      fqn: Fqn
+      fqn: Fqn | DeploymentFqn
       icon: IconUrl
       ports: Ports
       description: RichTextOrEmpty
@@ -57,7 +58,7 @@ export namespace RelationshipDetailsTypes {
     >
     & {
       column: Column
-      fqn: Fqn
+      fqn: Fqn | DeploymentFqn
       depth: number
       icon?: IconUrl
       ports: Ports
