@@ -18,12 +18,17 @@ import type {
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import { invariant, RichText } from '@likec4/core'
-import type {
-  AnyAux,
-  DeploymentElementModel,
-  ElementModel,
-  LikeC4ViewModel,
-  RelationshipModel,
+import {
+  type AnyAux,
+  type DeploymentElementModel,
+  type ElementModel,
+  type LikeC4ViewModel,
+  type RelationshipModel,
+  isDeployedInstanceModel,
+  isDeploymentElementModel,
+  isDeploymentNodeModel,
+  isElementModel,
+  NodeModel,
 } from '@likec4/core/model'
 import {
   DefaultMap,
@@ -40,6 +45,7 @@ import {
   sortBy,
   tap,
 } from 'remeda'
+import type { $View } from '../../../../core/src/model/types'
 import type { RelationshipDetailsTypes } from './_types'
 import type { RelationshipDetailsViewData } from './compute'
 
@@ -106,7 +112,7 @@ const Sizes = {
 type NodeData = {
   column: RelationshipDetailsTypes.Column
   portId: string
-  element: ElementModel
+  element: ElementModel | DeploymentElementModel
   isCompound: boolean
   inPorts: string[]
   outPorts: string[]
@@ -135,7 +141,7 @@ function createNodes(
   elements: ReadonlySet<ElementModel | DeploymentElementModel>,
   g: G,
 ) {
-  const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
+  const graphNodes = new DefaultMap<Fqn | DeploymentFqn, { id: string; portId: string }>(key => ({
     id: `${column}-${key}`,
     portId: `${column}-${key}`,
   }))
@@ -394,13 +400,20 @@ export function layoutRelationshipDetails(
     minX = Math.min(minX, position.x)
     minY = Math.min(minY, position.y)
 
-    const navigateTo = scope ? ifind(element.scopedViews(), v => v.id !== scope.id)?.id ?? null : null
+    const modelElement = isElementModel(element) ? element : isDeployedInstanceModel(element) ? element.element : null
+    const navigateTo = modelElement && scope
+      ? ifind(modelElement.scopedViews(), v => v.id !== scope.id)?.id ?? null
+      : null
 
     const inheritFromNode = scope?.findNodeWithElement(element.id)
     const scopedAncestor = scope && !inheritFromNode
-      ? ifind(element.ancestors(), a => !!scope.findNodeWithElement(a.id))?.id
+      ? getScopedAncestor(element, scope)
       : null
     const inheritFromNodeOrAncestor = inheritFromNode ?? (scopedAncestor && scope?.findNodeWithElement(scopedAncestor))
+
+    const icon = getIcon(inheritFromNode, element)
+    const deploymentRef = isDeploymentElementModel(element) ? element.id : undefined
+    const modelRef = modelElement?.id
 
     return {
       id: id as NodeId,
@@ -415,8 +428,9 @@ export function layoutRelationshipDetails(
       links: null,
       color: inheritFromNodeOrAncestor?.color ?? element.color,
       shape: inheritFromNode?.shape ?? element.shape,
-      icon: inheritFromNode?.icon ?? element.icon ?? 'none' as IconUrl,
-      modelRef: element.id,
+      icon: icon,
+      ...(modelRef && { modelRef }),
+      ...(deploymentRef && { deploymentRef }),
       kind: element.kind,
       level: nodeLevel(id),
       labelBBox: {
@@ -427,7 +441,9 @@ export function layoutRelationshipDetails(
       },
       style: {
         ...(inheritFromNode ?? inheritFromNodeOrAncestor)?.style,
-        ...element.$element.style,
+        ...(isElementModel(element) && element.$element.style),
+        ...(isDeploymentNodeModel(element) && element.style),
+        ...(isDeployedInstanceModel(element) && element.style),
       },
       navigateTo,
       ...(children.length > 0 && { depth: nodeDepth(id) }),
@@ -479,5 +495,37 @@ export function layoutRelationshipDetails(
       })
       return acc
     }, [] as LayoutResult.Edge[]),
+  }
+
+  function getIcon(
+    inheritFromNode: NodeModel.WithElement<AnyAux, $View<AnyAux>> | null | undefined,
+    element: ElementModel<AnyAux> | DeploymentElementModel,
+  ): IconUrl {
+    if (inheritFromNode?.icon) {
+      return inheritFromNode.icon
+    }
+
+    switch (true) {
+      case isElementModel(element):
+        return element.icon ?? 'none'
+      case isDeployedInstanceModel(element) || isDeploymentElementModel(element):
+        return element.style.icon ?? 'none'
+      default:
+        return 'none'
+    }
+  }
+
+  function getScopedAncestor(
+    element: ElementModel<AnyAux> | DeploymentElementModel,
+    scope: LikeC4ViewModel,
+  ): Fqn | DeploymentFqn | null | undefined {
+    switch (true) {
+      case isElementModel(element):
+        return ifind(element.ancestors(), a => !!scope.findNodeWithElement(a.id))?.id
+      case isDeployedInstanceModel(element) || isDeploymentElementModel(element):
+        return ifind(element.ancestors(), a => !!scope.findNodeWithElement(a.id))?.id
+      default:
+        return null
+    }
   }
 }

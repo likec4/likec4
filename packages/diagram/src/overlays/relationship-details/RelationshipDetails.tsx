@@ -1,4 +1,24 @@
-import { type DiagramEdge, type DiagramView, invariant, isAncestor, nonNullable } from '@likec4/core'
+import {
+  type AnyAux,
+  type DiagramEdge,
+  type DiagramView,
+  type NonEmptyReadonlyArray,
+  DeploymentFqn,
+  EdgeId,
+  Fqn,
+  invariant,
+  isAncestor,
+  nonNullable,
+} from '@likec4/core'
+import type {
+  Any,
+  DeploymentElementModel,
+  DeploymentRelationModel,
+  ElementModel,
+  LikeC4Model,
+  LikeC4ViewModel,
+  RelationshipModel,
+} from '@likec4/core/model'
 import { cx as clsx } from '@likec4/styles/css'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
@@ -18,6 +38,11 @@ import {
   computeEdgeDetailsViewData,
   computeRelationshipDetailsViewData,
 } from './compute'
+import {
+  type RelationshipDetailsViewData as DeploymentRelationshipDetailsViewData,
+  compute as computeDeployment,
+  findElement,
+} from './compute.deployment'
 import { CompoundNode, ElementNode, RelationshipEdge } from './custom'
 import {
   RelationshipDetailsActorContext,
@@ -25,8 +50,47 @@ import {
   useRelationshipDetailsActor,
   useRelationshipDetailsState,
 } from './hooks'
-import { layoutRelationshipDetails } from './layout'
+import { type LayoutResult, layoutRelationshipDetails } from './layout'
 import { SelectEdge } from './SelectEdge'
+
+type OverlayAux<Fqn extends string, Element, Relation, ViewData> = {
+  Fqn: Fqn
+  Element: Element
+  Relation: Relation
+  ViewData: ViewData
+}
+
+type DeploymentOverlay<M extends AnyAux = AnyAux> = OverlayAux<
+  DeploymentFqn,
+  DeploymentElementModel<M>,
+  DeploymentRelationModel<M>,
+  DeploymentRelationshipDetailsViewData
+>
+type ModelOverlay<M extends AnyAux = AnyAux> = OverlayAux<
+  Fqn,
+  ElementModel<M>,
+  RelationshipModel<M>,
+  RelationshipDetailsViewData
+>
+
+type ComputeOverlay<O extends OverlayAux<string, any, any, any>> = {
+  computeEdgeDetailsViewData: (edges: NonEmptyReadonlyArray<EdgeId>, view: LikeC4ViewModel<AnyAux>) => O['ViewData']
+  computeRelationshipDetailsViewData: (
+    relation: { source: O['Element']; target: O['Element'] },
+  ) => O['ViewData']
+  findElement: (likec4model: LikeC4Model<AnyAux>, fqn: O['Fqn']) => O['Element']
+}
+
+const computeModel = {
+  computeEdgeDetailsViewData,
+  computeRelationshipDetailsViewData,
+  findElement<M extends AnyAux>(likec4model: LikeC4Model<M>, fqn: Fqn) {
+    const element = likec4model.findElement(fqn)
+    invariant(element, `element ${fqn} not found`)
+
+    return element
+  },
+}
 
 const nodeTypes = {
   element: ElementNode,
@@ -85,21 +149,32 @@ const SyncRelationshipDetailsXYFlow = memo(() => {
   const subject = useSelector(actor, selectSubject, deepEqual)
   const likec4model = useLikeC4Model()
   const view = likec4model.findView(subject.viewId) ?? null
+
   const data = useMemo(() => {
-    let data: RelationshipDetailsViewData
-    if ('edgeId' in subject && isTruthy(subject.edgeId)) {
-      invariant(view, `view ${subject.viewId} not found`)
-      const edge = nonNullable(view.findEdge(subject.edgeId), `edge ${subject.edgeId} not found in ${subject.viewId}`)
-      data = computeEdgeDetailsViewData([edge.id], view)
-    } else if (!!subject.source && !!subject.target) {
-      data = computeRelationshipDetailsViewData({
-        source: likec4model.element(subject.source),
-        target: likec4model.element(subject.target),
-      })
-    } else {
-      return null
+    const computeAndLayoutOverlay = <O extends OverlayAux<string, any, any, any>>(
+      compute: ComputeOverlay<O>,
+    ): LayoutResult | null => {
+      let data: O['ViewData']
+      if ('edgeId' in subject && isTruthy(subject.edgeId)) {
+        invariant(view, `view ${subject.viewId} not found`)
+        const edge = nonNullable(view.findEdge(subject.edgeId), `edge ${subject.edgeId} not found in ${subject.viewId}`)
+        console.log('[ISSUE-2094] computeEdgeDetailsViewData')
+        data = compute.computeEdgeDetailsViewData([edge.id], view)
+      } else if (!!subject.source && !!subject.target) {
+        console.log('[ISSUE-2094] computeRelationshipDetailsViewData')
+        data = compute.computeRelationshipDetailsViewData({
+          source: compute.findElement(likec4model, subject.source as O['Fqn']),
+          target: compute.findElement(likec4model, subject.target as O['Fqn']),
+        })
+      } else {
+        return null
+      }
+      return layoutRelationshipDetails(data, view)
     }
-    return layoutRelationshipDetails(data, view)
+
+    return view?.isDeploymentView()
+      ? computeAndLayoutOverlay<DeploymentOverlay>(computeDeployment)
+      : computeAndLayoutOverlay<ModelOverlay>(computeModel)
   }, [
     subject,
     view,

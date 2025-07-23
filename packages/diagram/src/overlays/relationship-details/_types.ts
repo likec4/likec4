@@ -1,4 +1,6 @@
+import type { DeploymentElementModel, ElementModel, RelationshipModel } from '@likec4/core/model'
 import type {
+  AnyAux,
   Color,
   DeploymentFqn,
   DiagramNode,
@@ -7,6 +9,7 @@ import type {
   RelationId,
   RelationshipLineType,
   RichTextOrEmpty,
+  Unknown,
   ViewId,
 } from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
@@ -86,4 +89,14 @@ export namespace RelationshipDetailsTypes {
   >
 
   export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
+}
+
+export type Element<T extends AnyAux = AnyAux> = ElementModel<T> | DeploymentElementModel<T>
+
+export type RelationshipsViewData<M extends AnyAux = Unknown> = {
+  incomers: ReadonlySet<ElementModel<M>>
+  incoming: ReadonlySet<RelationshipModel<M>>
+  subjects: ReadonlySet<ElementModel<M>>
+  outgoing: ReadonlySet<RelationshipModel<M>>
+  outgoers: ReadonlySet<ElementModel<M>>
 }
