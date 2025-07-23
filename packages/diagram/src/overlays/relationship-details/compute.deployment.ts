@@ -19,20 +19,24 @@ import {
   type LikeC4ViewModel,
   type RelationshipModel,
   deploymentConnection,
+  ElementModel,
   isNestedElementOfDeployedInstanceModel,
   modelConnection,
 } from '@likec4/core/model'
 
+type Relation = DeploymentRelationModel | RelationshipModel
+type Element = DeploymentElementModel | ElementModel
+
 export interface RelationshipDetailsViewData {
-  sources: ReadonlySet<DeploymentElementModel>
-  relationships: ReadonlySet<DeploymentRelationModel>
-  targets: ReadonlySet<DeploymentElementModel>
+  sources: ReadonlySet<Element>
+  relationships: ReadonlySet<Relation>
+  targets: ReadonlySet<Element>
 }
 
 const finalize = <M extends AnyAux>(
-  elements: Set<DeploymentElementModel<M>>,
-  explicits: Set<DeploymentElementModel<M>>,
-): Set<DeploymentElementModel<M>> => {
+  elements: Set<Element>,
+  explicits: Set<Element>,
+): Set<Element> => {
   if (elements.size > 2 && explicits.size !== elements.size) {
     return new Set(sortParentsFirst([
       ...treeFromElements(elements).flatten(),
@@ -49,16 +53,16 @@ export function computeEdgeDetailsViewData(
   edges: NonEmptyReadonlyArray<EdgeId>,
   view: LikeC4ViewModel<AnyAux>,
 ): RelationshipDetailsViewData {
-  const sources = new Set<DeploymentElementModel>()
-  const relationships = new Set<DeploymentRelationModel>()
-  const targets = new Set<DeploymentElementModel>()
+  const sources = new Set<Element>()
+  const relationships = new Set<Relation>()
+  const targets = new Set<Element>()
 
   const explicit = {
-    sources: new Set<DeploymentElementModel>(),
-    targets: new Set<DeploymentElementModel>(),
+    sources: new Set<Element>(),
+    targets: new Set<Element>(),
   }
 
-  const addExplicit = (el: DeploymentRelationEndpoint, type: 'source' | 'target') => {
+  const addExplicit = (el: DeploymentRelationEndpoint | ElementModel, type: 'source' | 'target') => {
     const element = isNestedElementOfDeployedInstanceModel(el)
       ? el.instance
       : el
@@ -74,7 +78,7 @@ export function computeEdgeDetailsViewData(
   for (const edgeId of edges) {
     const edge = view.findEdge(edgeId)
     console.log('[ISSUE-2094] computeEdgeDetailsViewData foreach edgeId, edge', edgeId, edge)
-    const _relationships = edge ? [...edge.relationships('deployment')] : []
+    const _relationships = edge ? [...edge.relationships()] : []
     if (!edge || !hasAtLeast(_relationships, 1) || !edge.source.hasElement() || !edge.target.hasElement()) {
       continue
     }
@@ -119,6 +123,9 @@ export function computeEdgeDetailsViewData(
       }
     }
   }
+
+  console.log('[ISSUE-2094] computeEdgeDetailsViewData expicits', explicit)
+  console.log('[ISSUE-2094] computeEdgeDetailsViewData all', { sources, targets })
 
   console.log('[ISSUE-2094] computeEdgeDetailsViewData results', {
     sources: finalize(sources, explicit.sources),
@@ -207,6 +214,9 @@ export function computeRelationshipDetailsViewData({
       }
     }
   }
+
+  console.log('[ISSUE-2094] computeRelationshipDetailsViewData expicits', explicit)
+  console.log('[ISSUE-2094] computeRelationshipDetailsViewData all', { sources, targets })
 
   return {
     sources: finalize(sources, explicit.sources),
