@@ -38,8 +38,9 @@ const finalize = <M extends AnyAux>(
   explicits: Set<Element>,
 ): Set<Element> => {
   if (elements.size > 2 && explicits.size !== elements.size) {
+    const elts = treeFromElements(elements).flatten()
     return new Set(sortParentsFirst([
-      ...treeFromElements(elements).flatten(),
+      ...elts,
       ...explicits,
     ]))
   }

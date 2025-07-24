@@ -6,6 +6,7 @@ export default defineProject({
     conditions: ['sources'],
     // Seems vitest doesn't resolve conditions
     alias: {
+      '@likec4/core/compute-view/relationships': resolve(__dirname, '../core/src/compute-view/relationships-view'),
       '@likec4/core': resolve(__dirname, '../core/src'),
     },
   },
