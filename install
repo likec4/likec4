@@ -1,0 +1,226 @@
+#!/bin/sh
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+DRY_RUN=true
+
+while getopts "y" opt; do
+  case $opt in
+  y) DRY_RUN=false ;;
+  *)
+    echo -e "${RED}Usage: $0 [-y]${NC}"
+    exit 1
+    ;;
+  esac
+done
+
+log_step() {
+  TITLE="$1"
+  STATUS="$2"
+  MARK=""
+  COLOR="${MAGENTA}"
+
+  if [ "$STATUS" = "green" ]; then
+    COLOR="${GREEN}"
+    MARK=" ✅"
+  fi
+
+  echo -e "${MARK} ${COLOR}${TITLE}${NC}"
+}
+
+run() {
+  if [ "$DRY_RUN" = true ]; then
+    echo -e "${YELLOW}$1${NC}"
+  else
+    echo -e "${CYAN}↪ Running: ${NC}$1"
+    if ! eval "$1"; then
+      echo -e "${RED}❌ Command failed: $1${NC}"
+      return 1
+    fi
+  fi
+}
+
+confirm() {
+  if [ "$DRY_RUN" = true ]; then
+    return 0
+  fi
+  printf "%s [${GREEN}Y${NC}/${RED}n${NC}]: " "$1"
+  read -r response
+  case "$response" in
+  "" | [Yy]) return 0 ;;
+  [Nn]) return 1 ;;
+  *)
+    echo -e "${RED}Invalid input.${NC}"
+    return 1
+    ;;
+  esac
+}
+
+check_and_report() {
+  CMD="$1"
+  DESC="$2"
+  SUCCESS="$3"
+  FAIL="$4"
+
+  echo -e "🔍 $DESC with command:"
+  echo -e "    ${CYAN}${CMD}${NC}"
+  if eval "$CMD" >/dev/null 2>&1; then
+    log_step "$SUCCESS" green
+    return 0
+  else
+    echo -e "${RED}❌ $FAIL${NC}"
+    return 1
+  fi
+}
+
+detect_os() {
+  if [ "$(uname)" = "Darwin" ]; then
+    echo "macos"
+  elif grep -qi "arch" /etc/os-release 2>/dev/null; then
+    echo "arch"
+  elif grep -qi "ubuntu" /etc/os-release 2>/dev/null; then
+    echo "ubuntu"
+  else
+    echo "other"
+  fi
+}
+
+print_system_info() {
+  OS=$(detect_os)
+  case $OS in
+  macos) PKG="brew" ;;
+  arch) PKG="pacman" ;;
+  ubuntu) PKG="apt" ;;
+  *) PKG="unknown" ;;
+  esac
+
+  echo
+  echo -e "${CYAN}========================================${NC}"
+  echo -e "${BOLD}🎯 Detected OS:${NC}        $(echo "$OS" | tr '[:lower:]' '[:upper:]')"
+  echo -e "${BOLD}📦 Package Manager:${NC}    $PKG"
+  echo -e "${BOLD}📺 Terminal:${NC}           $TERM"
+  echo -e "${BOLD}🐚 Shell:${NC}              $SHELL"
+  echo -e "${CYAN}========================================${NC}"
+  echo
+}
+
+# === STEP FUNCTIONS ===
+
+step_install_direnv() {
+  SHELL_NAME=$(basename "$SHELL")
+  RC_FILE="$HOME/.${SHELL_NAME}rc"
+  HOOK="eval \"\$(direnv hook $SHELL_NAME)\""
+
+  if command -v direnv >/dev/null 2>&1; then
+    check_and_report "command -v direnv" "Checking direnv installation" "direnv already installed" "direnv not installed."
+  else
+    OS=$(detect_os)
+    case $OS in
+    macos) confirm "Install direnv via Homebrew?" && run "brew install direnv" ;;
+    arch) confirm "Install direnv via pacman?" && run "sudo pacman -Syu direnv" ;;
+    ubuntu) confirm "Install direnv via apt?" && run "sudo apt install -y direnv" ;;
+    *) echo -e "${RED}Unsupported OS. Install manually: https://direnv.net/docs/installation.html${NC}" ;;
+    esac
+  fi
+
+  if grep -qxF "$HOOK" "$RC_FILE"; then
+    check_and_report "command -v direnv" "Checking direnv shell hook" "direnv hook found in $RC_FILE" "direnv not hooked into shell."
+  else
+    confirm "Add direnv hook to $RC_FILE?" && run "echo '$HOOK' >> $RC_FILE"
+    check_and_report "grep -qxF '$HOOK' '$RC_FILE'" "Verifying hook in $RC_FILE" "Hook added successfully." "Failed to add direnv hook."
+  fi
+}
+
+step_install_nix() {
+  if command -v nix >/dev/null 2>&1; then
+    check_and_report "command -v nix" "Checking Nix installation" "Nix already installed." "Nix not installed."
+    return
+  else
+    confirm "Install Nix via Lix Systems script with Flakes? (required)" &&
+      run "curl -sSf -L https://install.lix.systems/lix | sh -s -- install --enable-flakes --no-confirm --extra-conf \"trusted-users = root $USER\"" ||
+      {
+        echo 'Nix installation failed'
+        exit 1
+      }
+  fi
+
+  log_step "Nix installed"
+}
+
+step_install_devenv() {
+  if command -v devenv >/dev/null 2>&1; then
+    check_and_report "command -v devenv" "Checking devenv" "devenv already installed." "devenv not installed."
+    return
+  else
+    confirm "Install devenv? (required)" && run "nix profile install nixpkgs#devenv --extra-experimental-features flakes"
+  fi
+
+  log_step "devenv installed"
+}
+
+step_clone_repo() {
+  REPO_NAME="mira-amm-web"
+  if [ "$(basename "$(pwd)")" = "$REPO_NAME" ] && [ -d ".git" ]; then
+    log_step "Already in project directory" green
+    return
+  fi
+
+  log_step "Clone project repository"
+  confirm "Fork and clone the repository?" && run "gh repo fork likec4/likec4 --clone" && run "cd likec4"
+}
+
+step_enable_direnv() {
+  log_step "Enable direnv in project"
+  run "direnv allow"
+}
+
+step_install_playwright() {
+  CMD="pnpm exec playwright --version"
+
+  if eval "$CMD" >/dev/null 2>&1; then
+    echo -e "🔍 Checking for Playwright CLI with command:"
+    echo -e "    ${CYAN}${CMD}${NC}"
+    echo -e "${GREEN}✅ Playwright CLI detected.${NC}"
+    confirm "Install Playwright browsers?" && run "pnpm exec playwright install --with-deps"
+  else
+    echo -e "${YELLOW}⚠️ Playwright not found via pnpm. Skipping browser install.${NC}"
+    echo -e "💡 You may need to run: ${CYAN}pnpm install playwright${NC}"
+  fi
+  log_step "checked Playwright browsers" green
+}
+
+step_finish() {
+  if [ "$DRY_RUN" = true ]; then
+    log_step "Dry run complete. Re-run with -y to execute"
+  else
+    log_step "Setup complete! Restarting your shell..."
+    echo "🤖 running 'exec \$SHELL'"
+    exec $SHELL
+  fi
+}
+
+# === STEP REGISTRY ===
+
+STEPS="
+  step_install_direnv
+  step_install_nix
+  step_install_devenv
+  step_clone_repo
+  step_enable_direnv
+  step_install_playwright
+  step_finish
+"
+
+# === EXECUTE STEPS ===
+print_system_info
+
+for step in $STEPS; do
+  $step
+done
