@@ -1,16 +1,4 @@
 model {
-  infectious-diseases-user = person 'Infectious Diseases User' {
-    description 'Medical professional using infectious diseases interface'
-  }
-
-  microbiology-user = person 'Microbiology User' {
-    description 'Medical professional using microbiology interface'
-  }
-
-  pharmacy-user = person 'Pharmacy User' {
-    description 'Medical professional using pharmacy interface'
-  }
-
   infectious-diseases-ui = webapp 'Infectious Diseases UI' {
     description 'Browser-based interface for infectious diseases management'
     metadata {
@@ -62,6 +50,25 @@ model {
       perf-serviceTime '900.0'
       perf-replication '1'
       perf-maxUtilizationRate '0.75'
+      perf-requests '
+        ---
+        - dest:
+            - name: process-germ-data;
+              parent: simple-server;
+              prob: 1.0;
+              via: m-db-1
+          name: fetch-data;
+          rate: 0.0;
+          start: false
+        - dest:
+            - name: process-germ-data;
+              parent: simple-server;
+              prob: 1.0;
+              via: m-db-1
+          name: fetch-data;
+          rate: 0.0;
+          start: false
+      '
     }
   }
 
@@ -74,18 +81,50 @@ model {
     }
   }
 
-  infectious-diseases-user .uses infectious-diseases-ui
-  microbiology-user .uses microbiology-ui
-  pharmacy-user .uses pharmacy-ui
+  microbiology-ui .calls simple-server {
+    title 'm-ui'
+    metadata {
+      perf-delayTime '500.0'
+    }
+  }
+  pharmacy-ui .calls simple-server {
+    title 'p-ui'
+    metadata {
+      perf-delayTime '500.0'
+    }
+  }
+  infectious-diseases-ui .calls trend-tracker {
+    title 'i-ui'
+    metadata {
+      perf-delayTime '500.0'
+      // perf-rateOfFailure '0.0'
+    }
+  }
 
-  microbiology-ui .calls simple-server
-  pharmacy-ui .calls simple-server
-  infectious-diseases-ui .calls trend-tracker
-
-  simple-server .accesses microbiology-db
-  simple-server .accesses pharmacy-db
-  trend-tracker .accesses microbiology-db
-  trend-tracker .accesses pharmacy-db
+  simple-server .accesses microbiology-db {
+    title 'm-db-1'
+    metadata {
+      perf-delayTime '100.0'
+    }
+  }
+  simple-server .accesses pharmacy-db {
+    title 'p-db-1'
+    metadata {
+      perf-delayTime '100.0'
+    }
+  }
+  trend-tracker .accesses microbiology-db {
+    title 'm-db-2'
+    metadata {
+      perf-delayTime '100.0'
+    }
+  }
+  trend-tracker .accesses pharmacy-db {
+    title 'p-db-2'
+    metadata {
+      perf-delayTime '100.0'
+    }
+  }
 }
 views {
   view main {

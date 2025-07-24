@@ -120,8 +120,6 @@ function outputResults(results: CapacityResult[], format: string, detailed: bool
 
 function outputTable(results: CapacityResult[], detailed: boolean, logger: any): void {
   logger.info('')
-  logger.info(k.bold('Capacity Planning Analysis Results'))
-  logger.info('')
 
   if (detailed) {
     // Detailed table with calculation breakdown

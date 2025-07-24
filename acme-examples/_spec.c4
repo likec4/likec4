@@ -1,8 +1,6 @@
 specification {
-    element person
     element webapp
     element service
-    element api
     element database
 
     relationship uses
