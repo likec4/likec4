@@ -109,6 +109,9 @@ export class MergedSpecification {
       size ??= __kind.style.size
       padding ??= __kind.style.padding
       textSize ??= __kind.style.textSize
+      description ??= __kind.description
+      links ??= __kind.links
+      title = id.split('.').pop() == title && __kind.title ? __kind.title : title
       return {
         ...(color && { color }),
         ...(shape && { shape }),
@@ -193,11 +196,15 @@ export class MergedSpecification {
         technology = __kind.technology,
         notation = __kind.notation,
         style,
+        title,
         description,
         ...rest
       } = parsed
+      description ??= __kind.description
+      title = parsed.id.split('.').pop() == title && __kind.title ? __kind.title : title
       return {
         ...rest,
+        ...({ title }),
         ...(description && { description }),
         ...(notation && { notation }),
         ...(technology && { technology }),

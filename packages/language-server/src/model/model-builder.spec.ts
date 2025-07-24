@@ -246,6 +246,77 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds model with default values', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { errors, warnings } = await validate(`
+    specification {
+      element component
+      element system {
+        title "system title"
+        description "system description"
+        link https://old-likec4.dev
+      }
+    }
+    model {
+      system system1
+      // override title
+      system system2 "system2 new title"
+      system system3 {
+        // override description
+        description "system3 new description"
+        // override link
+        link https://likec4.dev
+        system systemInside {
+          // override description
+          description "systemInside new description"
+        }
+      }
+      component component1
+    }
+    `)
+    expect(errors).toHaveLength(0)
+    expect(warnings).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toHaveProperty('elements', expect.any(Object))
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'system',
+        title: 'system title',
+        description: { txt: 'system description' },
+        links: [
+          { url: 'https://old-likec4.dev' },
+        ],
+      },
+      system2: {
+        kind: 'system',
+        title: 'system2 new title',
+        description: { txt: 'system description' },
+        links: [
+          { url: 'https://old-likec4.dev' },
+        ],
+      },
+      system3: {
+        kind: 'system',
+        title: 'system title',
+        description: { txt: 'system3 new description' },
+        links: [
+          { url: 'https://likec4.dev' },
+        ],
+      },
+      'system3.systemInside': {
+        kind: 'system',
+        title: 'system title',
+        description: { txt: 'systemInside new description' },
+        links: [
+          { url: 'https://old-likec4.dev' },
+        ],
+      },
+      component1: {
+        kind: 'component',
+      },
+    })
+  })
+
   it('builds model and give default name for index view', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`

@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
 import { ast, parseMarkdownAsString, toRelationshipStyleExcludeDefaults } from '../../ast'
@@ -108,15 +108,25 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       }
       const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
-      const bodyProps = pipe(
+      const links = this.parseLinks(specAst)
+      const stringProps = pipe(
         props.filter(ast.isSpecificationElementStringProperty) ?? [],
         filter(p => this.isValid(p) && isNonNullish(p.value)),
         mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
       )
+      const markdownProps = pipe(
+        props.filter(ast.isSpecificationElementMarkdownProperty) ?? [],
+        filter(p => this.isValid(p)),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
+      const description = this.parseMarkdownOrString(markdownProps.description)
+
       return {
         [kindName]: {
-          ...bodyProps,
+          ...stringProps,
+          ...(description && { description }),
           ...(tags && { tags }),
+          ...(links && c4.isNonEmptyArray(links) && { links }),
           style,
         } satisfies c4.ElementSpecification,
       }
