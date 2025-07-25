@@ -78,7 +78,7 @@ export function computeEdgeDetailsViewData(
 
   for (const edgeId of edges) {
     const edge = view.findEdge(edgeId)
-    console.log('[ISSUE-2094] computeEdgeDetailsViewData foreach edgeId, edge', edgeId, edge)
+    // console.log('[ISSUE-2094] computeEdgeDetailsViewData foreach edgeId, edge', edgeId, edge)
     const _relationships = edge ? [...edge.relationships()] : []
     if (!edge || !hasAtLeast(_relationships, 1) || !edge.source.hasElement() || !edge.target.hasElement()) {
       continue
@@ -89,10 +89,10 @@ export function computeEdgeDetailsViewData(
     addExplicit(source, 'source')
     addExplicit(target, 'target')
 
-    console.log('[ISSUE-2094] computeEdgeDetailsViewData source and target', source, target)
+    // console.log('[ISSUE-2094] computeEdgeDetailsViewData source and target', source, target)
 
     for (const relationship of _relationships) {
-      console.log('[ISSUE-2094] computeEdgeDetailsViewData foreach relationship', relationship)
+      // console.log('[ISSUE-2094] computeEdgeDetailsViewData foreach relationship', relationship)
 
       relationships.add(relationship)
 
@@ -125,14 +125,14 @@ export function computeEdgeDetailsViewData(
     }
   }
 
-  console.log('[ISSUE-2094] computeEdgeDetailsViewData expicits', explicit)
-  console.log('[ISSUE-2094] computeEdgeDetailsViewData all', { sources, targets })
+  // console.log('[ISSUE-2094] computeEdgeDetailsViewData expicits', explicit)
+  // console.log('[ISSUE-2094] computeEdgeDetailsViewData all', { sources, targets })
 
-  console.log('[ISSUE-2094] computeEdgeDetailsViewData results', {
-    sources: finalize(sources, explicit.sources),
-    targets: finalize(targets, explicit.targets),
-    relationships,
-  })
+  // console.log('[ISSUE-2094] computeEdgeDetailsViewData results', {
+  //   sources: finalize(sources, explicit.sources),
+  //   targets: finalize(targets, explicit.targets),
+  //   relationships,
+  // })
 
   return {
     sources: finalize(sources, explicit.sources),
@@ -216,8 +216,8 @@ export function computeRelationshipDetailsViewData({
     }
   }
 
-  console.log('[ISSUE-2094] computeRelationshipDetailsViewData expicits', explicit)
-  console.log('[ISSUE-2094] computeRelationshipDetailsViewData all', { sources, targets })
+  // console.log('[ISSUE-2094] computeRelationshipDetailsViewData expicits', explicit)
+  // console.log('[ISSUE-2094] computeRelationshipDetailsViewData all', { sources, targets })
 
   return {
     sources: finalize(sources, explicit.sources),
