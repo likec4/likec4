@@ -9,7 +9,7 @@ specification {
   deploymentNode environment {
     notation 'Environment'
     style {
-      color gray
+      color custom_color1
     }
   }
 }
@@ -63,18 +63,18 @@ views {
       amazon,
     
     style eu._ {
-      color muted
+      color custom_color1
     }
 
     style server1._, server2._ {
-      color green
+      color custom_color1
     }
     style server3._ {
-      color indigo
+      color custom_color1
     }
 
     style amazon._ {
-      color amber
+      color custom_color1
     }
   	autoLayout TopBottom 100 100
 	}

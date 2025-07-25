@@ -36,7 +36,7 @@ specification {
     notation "External System"
     style {
       opacity 25%
-      color gray
+      color custom_color1
     }
   }
 
@@ -73,7 +73,7 @@ specification {
   }
 
   relationship custom {
-    line solid
+    line dashed
     color custom_color1
   }
 
@@ -88,5 +88,7 @@ specification {
     color #3094FEB9
   }
 
-  color custom_color1 #ffbebe
+  color custom_color1 #350224
+  color custom_color2 #350224
+  color custom_color3 #350224
 }

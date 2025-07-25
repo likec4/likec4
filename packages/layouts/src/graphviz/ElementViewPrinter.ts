@@ -129,7 +129,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: colorValues.lineColor,
+        [_.color]: colorValues.lineColorLight,
         [_.fontcolor]: colorValues.labelColor as HexColor,
       })
     }

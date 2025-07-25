@@ -44,9 +44,8 @@ const titleText = css({
   color: 'likec4.palette.loContrast',
   '[data-compound-title-inverse] &': {
     color: {
-      base: '[{colors.likec4.palette.stroke}/60]',
-      _light: '[{colors.likec4.palette.dark}/60]',
-      _dark: '[{colors.likec4.palette.light}/60]',
+      _light: '[{colors.likec4.palette.dark}]',
+      _dark: '[{colors.likec4.palette.light}]',
     },
   },
 })

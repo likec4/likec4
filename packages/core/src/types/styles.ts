@@ -92,7 +92,8 @@ export type ElementThemeColors = {
 }
 
 export interface RelationshipThemeColorValues {
-  lineColor: ColorLiteral
+  lineColorLight: ColorLiteral
+  lineColorDark: ColorLiteral
   labelBgColor: ColorLiteral
   labelColor: ColorLiteral
 }

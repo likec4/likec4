@@ -97,12 +97,11 @@ const generateCompoundColors = (color: ThemeColor, depth: number) => {
 const generateRelationColors = (color: ThemeColor) => ({
   relation: {
     stroke: {
-      DEFAULT: { value: defaultTheme.relationships[color].lineColor },
+      light: { value: defaultTheme.relationships[color].lineColorLight },
+      dark: { value: defaultTheme.relationships[color].lineColorDark },
       selected: {
-        value: {
-          _light: toRgba(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
-          _dark: toRgba(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
-        },
+        light: { value: toRgba(mix(defaultTheme.relationships[color].lineColorLight, 'black', 85)) },
+        dark: { value: toRgba(mix(defaultTheme.relationships[color].lineColorDark, 'white', 70)) },
       },
     },
     label: {

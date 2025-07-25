@@ -2,28 +2,34 @@ import type { HexColor } from "../../types";
 
 export const lightValue = {
       elements: {
-        fill: "#2ec2fb" as HexColor,
-        stroke: "#1fabe1" as HexColor,
-        hiContrast: "#0084b2" as HexColor,
-        loContrast: "#0098c9" as HexColor,
+        fill: "#caf2ff" as HexColor,
+        stroke: "#a2c9d6" as HexColor,
+        hiContrast: "#2a505b" as HexColor,
+        loContrast: "#3c626d" as HexColor,
+        light: "#caf2ff" as HexColor,
+        dark: "#98bfcc" as HexColor,
       },
       relationships: {
-        lineColor: "#4ccdfb" as HexColor,
-        labelColor: "#6fd8fc" as HexColor,
-        labelBgColor: "#0084b2" as HexColor,
+        lineColorLight: "#caf2ff" as HexColor,
+        lineColorDark: "#98bfcc" as HexColor,
+        labelColor: "#2a505b" as HexColor,
+        labelBgColor: "#caf2ff" as HexColor,
       },
     }
 
 export const darkValue = {
       elements: {
-        fill: "#2c40dc" as HexColor,
-        stroke: "#1f32c4" as HexColor,
-        hiContrast: "#ecefff" as HexColor,
-        loContrast: "#d5dafb" as HexColor,
+        fill: "#1F32C4" as HexColor,
+        stroke: "#00129c" as HexColor,
+        hiContrast: "#ffffff" as HexColor,
+        loContrast: "#ffedff" as HexColor,
+        light: "#665df8" as HexColor,
+        dark: "#1F32C4" as HexColor,
       },
       relationships: {
-        lineColor: "#5362e1" as HexColor,
-        labelColor: "#7a87e9" as HexColor,
-        labelBgColor: "#0a259c" as HexColor,
+        lineColorLight: "#665df8" as HexColor,
+        lineColorDark: "#1F32C4" as HexColor,
+        labelColor: "#ffffff" as HexColor,
+        labelBgColor: "#1F32C4" as HexColor,
       },
     }

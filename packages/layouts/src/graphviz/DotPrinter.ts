@@ -312,7 +312,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
+      [_.color]: Theme.relationships[DefaultRelationshipColor].lineColorLight,
       [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor as HexColor,
     })
   }

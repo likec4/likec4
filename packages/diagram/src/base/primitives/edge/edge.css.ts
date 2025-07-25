@@ -8,18 +8,27 @@ const labelColor = '--xy-edge-label-color'
 const labelBg = '--xy-edge-label-background-color'
 
 export const edgeVars = css({
-  [edgeStroke]: '{colors.likec4.relation.stroke}',
-  [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
+  [edgeStroke]: {
+     _light: `{colors.likec4.relation.stroke.dark}`,
+     _dark: `{colors.likec4.relation.stroke.light}`,
+   },
+  [edgeStrokeSelected]: {
+      _light: `{colors.likec4.relation.stroke.selected.dark}`,
+      _dark: `{colors.likec4.relation.stroke.selected.light}`,
+    },
   [labelColor]: {
     base: '{colors.likec4.relation.label}',
   },
   [labelBg]: {
     _light: `{colors.likec4.relation.label.bg/60}`,
-    _dark: `{colors.likec4.relation.label.bg/50}`,
+    _dark: `{colors.likec4.relation.label.bg/80}`,
   },
   ['--xy-edge-stroke-width']: '3',
   '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
-    [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
+    [edgeStroke]: {
+         _light: `{colors.likec4.relation.stroke.selected.dark}`,
+         _dark: `{colors.likec4.relation.stroke.selected.light}`,
+       },
     _whenSelected: {
       ['--xy-edge-stroke-width']: '4',
     },

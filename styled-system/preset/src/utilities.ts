@@ -52,8 +52,10 @@ const likec4RelationPalette = defineUtility({
     }
     return {
       ['--likec4-palette']: `'likec4.${value}'`,
-      ['--colors-likec4-relation-stroke']: token(`colors.likec4.${value}.relation.stroke`),
-      ['--colors-likec4-relation-stroke-selected']: token(`colors.likec4.${value}.relation.stroke.selected`),
+      ['--colors-likec4-relation-stroke-light']: token(`colors.likec4.${value}.relation.stroke.light`),
+      ['--colors-likec4-relation-stroke-dark']: token(`colors.likec4.${value}.relation.stroke.dark`),
+      ['--colors-likec4-relation-stroke-selected-light']: token(`colors.likec4.${value}.relation.stroke.selected.light`),
+      ['--colors-likec4-relation-stroke-selected-dark']: token(`colors.likec4.${value}.relation.stroke.selected.dark`),
       ['--colors-likec4-relation-label']: token(`colors.likec4.${value}.relation.label`),
       ['--colors-likec4-relation-label-bg']: token(`colors.likec4.${value}.relation.label.bg`),
     }

@@ -6,11 +6,14 @@ export const compoundActionBtn = cva({
     '[data-compound-title-inverse] &': {
       _dark: {
         '--actionbtn-color': '{colors.likec4.palette.light}',
+        '--actionbtn-color-hovered': '{colors.likec4.palette.light}',
+        '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
+        '--actionbtn-bg-hovered': `{colors.likec4.palette.fill/50}`,
+        '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,
       },
       _light: {
-        // TODO dark/light
         '--actionbtn-color': '{colors.likec4.palette.dark}',
-        '--actionbtn-color-hovered': '{colors.likec4.palette.hiContrast}',
+        '--actionbtn-color-hovered': '{colors.likec4.palette.hiContrast/50}',
         '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
         '--actionbtn-bg-hovered': `{colors.likec4.palette.fill/50}`,
         '--actionbtn-bg-hovered-btn': `{colors.likec4.palette.fill}`,

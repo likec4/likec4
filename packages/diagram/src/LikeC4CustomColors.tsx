@@ -16,8 +16,10 @@ interface LikeC4CustomColorsProperties {
 }
 function keyToCssVar(key: keyof RelationshipThemeColorValues | keyof ElementThemeColorValues): string {
   switch (key) {
-    case 'lineColor':
-      return 'line'
+    case 'lineColorLight':
+      return 'lineLight'
+    case 'lineColorDark':
+      return 'lineDark'
     case 'labelBgColor':
       return 'label-bg'
     case 'labelColor':
@@ -49,8 +51,10 @@ function toStyle(name: String, colors: ThemeColorValues): String {
   --colors-likec4-palette-stroke: ${colors.elements.stroke};
   --colors-likec4-palette-light: ${colors.elements.light};
   --colors-likec4-palette-dark: ${colors.elements.dark};
-  --colors-likec4-relation-stroke: ${colors.relationships.lineColor};
-  --colors-likec4-relation-stroke-selected: color-mix(in srgb, ${colors.relationships.lineColor}, var(--colors-likec4-mix-color) 20%);
+  --colors-likec4-relation-stroke-light: ${colors.relationships.lineColorLight};
+  --colors-likec4-relation-stroke-dark: ${colors.relationships.lineColorDark};
+  --colors-likec4-relation-stroke-selected-light: color-mix(in srgb, ${colors.relationships.lineColorLight}, var(--colors-likec4-mix-color) 20%);
+  --colors-likec4-relation-stroke-selected-dark: color-mix(in srgb, ${colors.relationships.lineColorDark}, var(--colors-likec4-mix-color) 20%);
   --colors-likec4-relation-label: ${colors.relationships.labelColor};
   --colors-likec4-relation-label-bg: ${colors.relationships.labelBgColor};
 }

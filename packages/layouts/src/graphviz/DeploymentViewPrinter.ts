@@ -107,7 +107,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: colorValues.lineColor,
+        [_.color]: colorValues.lineColorLight,
         [_.fontcolor]: colorValues.labelColor as HexColor,
       })
     }

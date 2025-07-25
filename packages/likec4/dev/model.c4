@@ -125,10 +125,10 @@ views {
       cloud,
       -> ui.*
     style cloud {
-      color muted
+      color custom_color1
     }
     style customer {
-      color green
+      color custom_color1
     }
   }
 
@@ -146,7 +146,7 @@ views {
 
     include *
     style cloud, cloud.* {
-      color green
+      color custom_color1
     }
   }
 
@@ -162,16 +162,16 @@ views {
     //backend ->
 
     style * {
-      color secondary
+      color custom_color1
     }
     style cloud {
-      color muted
+      color custom_color1
     }
     style ui._ {
-      color green
+      color custom_color1
     }
     style amazon._ {
-      color amber
+      color custom_color1
     }
   }
 
@@ -187,11 +187,11 @@ views {
       color custom_color1
     }
     style cloud, amazon {
-      color custom_color1
+      color custom_color2
     }
 
     style backend, backend.* {
-      color custom_color1
+      color custom_color3
     }
   }
 

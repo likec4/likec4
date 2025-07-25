@@ -7,6 +7,9 @@ import { isDeepEqual } from 'remeda'
 const CONTRAST_MIN_WITH_FOREGROUND = 60
 const CONTRAST_START_TONE_DIFFERENCE = 2
 const CONTRAST_STEP_TONE_DIFFERENCE = 1
+const CONTRAST_LOW_HIGH_TONE_DIFFERENCE = 0.4
+const SECONDARY_TONE_DIFFERENCE = 0.8
+const LIGHT_DARK_TONE_DIFFERENCE = 1
 
 export const defaultTheme: LikeC4Theme = {
   elements: ElementColors,
@@ -59,16 +62,12 @@ export const defaultTheme: LikeC4Theme = {
 }
 
 type ColorPalette = {
-  el_main: ColorLiteral,
-  el_secondary: ColorLiteral,
-  el_hiContrast: ColorLiteral,
-  el_loContrast: ColorLiteral,
-  el_light: ColorLiteral,
-  el_dark: ColorLiteral,
-  rel_light: ColorLiteral,
-  rel_dark: ColorLiteral,
-  rel_secondary: ColorLiteral,
-  rel_hiContrast: ColorLiteral,
+  main: ColorLiteral,
+  secondary: ColorLiteral,
+  hiContrast: ColorLiteral,
+  loContrast: ColorLiteral,
+  light: ColorLiteral,
+  dark: ColorLiteral,
 }
 
 export function computeColorValues(color: ColorLiteral): ThemeColorValues {
@@ -77,17 +76,18 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
 
     return {
       elements: {
-        fill: colors.el_main,
-        stroke: colors.el_secondary,
-        hiContrast: colors.el_hiContrast,
-        loContrast: colors.el_loContrast,
-      	light: colors.el_light,
-      	dark: colors.el_dark,
+        fill: colors.main,
+        stroke: colors.secondary,
+        hiContrast: colors.hiContrast,
+        loContrast: colors.loContrast,
+      	light: colors.light,
+      	dark: colors.dark,
       },
       relationships: {
-        lineColor: colors.rel_light,
-        labelColor: colors.rel_hiContrast,
-        labelBgColor: colors.rel_secondary,
+        lineColorLight: colors.light,
+        lineColorDark: colors.dark,
+        labelColor: colors.hiContrast,
+        labelBgColor: colors.main,
       },
     }
   } else {
@@ -99,38 +99,42 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
 }
 
 function getColorPalette(refColor: string): ColorPalette {
-  const el_main = refColor as HexColor
-  const el_secondary = chroma(el_main).darken(0.8).hex() as HexColor
-  const el_contrastedColor = getContrastedColorsAPCA(el_main)
-  const el_hiContrast = el_contrastedColor[0] as HexColor
-  const el_loContrast = el_contrastedColor[1] as HexColor
+  // main color is the one choosen by the user
+  const main = refColor as HexColor
+  const mainChroma = chroma(main)
+  const secondary = mainChroma.darken(SECONDARY_TONE_DIFFERENCE).hex() as HexColor
+  const contrastedColor = getContrastedColorsAPCA(main)
+  const hiContrast = contrastedColor[0] as HexColor
+  const loContrast = contrastedColor[1] as HexColor
   
   // Define light and dark value in the same tone. It could to be used by light and 
   // dark theme when readability is affected (when using transparency for example)
-  let el_light
-  let el_dark
-  const el_mainLuminance = (chroma(el_main)).luminance()
-  if (el_mainLuminance > 0.6) {
-    el_light = el_main
-    el_dark = el_hiContrast
-  } else if (el_mainLuminance < 0.4){
-    el_light = el_hiContrast
-    el_dark = el_main
+  let light
+  let dark
+  const mainLuminance = mainChroma.luminance()
+  // If the main color is pretty light
+  if (mainLuminance > 0.6) {
+    light = main
+    dark = mainChroma.darken(LIGHT_DARK_TONE_DIFFERENCE).hex() as HexColor
+  // If the main color is pretty dark
+  } else if (mainLuminance < 0.4){
+    light = mainChroma.brighten(LIGHT_DARK_TONE_DIFFERENCE).hex() as HexColor
+    dark = main
+  // If the main color is neither dark or dark
   } else {
-    el_light = chroma(el_main).brighten(0.8).hex() as HexColor
-    el_dark = el_secondary
+    light = mainChroma.brighten(LIGHT_DARK_TONE_DIFFERENCE).hex() as HexColor
+    dark = mainChroma.darken(LIGHT_DARK_TONE_DIFFERENCE).hex() as HexColor
   }
   
-  const el_main_chroma = chroma(el_main)
-  const rel_light = el_main_chroma.brighten(0.25).hex() as HexColor
-  const rel_dark = el_main_chroma.darken(0.25).hex() as HexColor
-  const rel_secondary = el_main_chroma.darken(0.25).hex() as HexColor
-  const rel_contrastedColor = getContrastedColorsAPCA(el_main)
-  const rel_hiContrast = rel_contrastedColor[0] as HexColor
-
-  return { el_main, el_secondary, el_hiContrast, el_loContrast, el_light, el_dark, rel_light, rel_dark, rel_secondary, rel_hiContrast }
+  return { main, secondary, hiContrast, loContrast, light, dark }
 }
 
+/**
+ * Find the best contrasted color for the color passed as argument. Return one "low contrast" color matching the 
+ * CONTRAST_MIN_WITH_FOREGROUND APCA value and one more contrasted color derivated of CONTRAST_LOW_HIGH_TONE_DIFFERENCE step from the "low contrast" color
+ * 
+ * @returns a tuple where the first element is the most contrasted and the second is the less contrasted
+ */
 function getContrastedColorsAPCA(refColor: string): [string, string] {
   const refColorChroma = chroma(refColor)
 
@@ -162,9 +166,9 @@ function getContrastedColorsAPCA(refColor: string): [string, string] {
 
   // Choose the max contrast between the two
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
-    return [lightColorRgb.brighten(0.4).hex(), lightColorRgb.hex()]
+    return [lightColorRgb.brighten(CONTRAST_LOW_HIGH_TONE_DIFFERENCE).hex(), lightColorRgb.hex()]
   } else {
-    return [darkColorRgb.darken(0.4).hex(), darkColorRgb.hex()]
+    return [darkColorRgb.darken(CONTRAST_LOW_HIGH_TONE_DIFFERENCE).hex(), darkColorRgb.hex()]
   }
 }
 export { ElementColors, RelationshipColors }

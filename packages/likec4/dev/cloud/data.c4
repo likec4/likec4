@@ -34,14 +34,14 @@ views {
         amazon.sqs.*
 
     style * {
-      color secondary
+      color custom_color1
     }
 
     style cloud, amazon {
-      color muted
+      color custom_color1
     }
     style cloud.data, cloud.data.* {
-      color green
+      color custom_color1
     }
   }
 

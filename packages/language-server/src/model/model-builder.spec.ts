@@ -1122,8 +1122,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const { validate, buildModel } = createTestServices()
     const { errors, warnings } = await validate(`
       specification {
-        color custom-color1 #FF00FF
-        color custom-color2 #FFFF00
+        color custom-color1 #ff00ff
+        color custom-color2 #ffff00
 
         element component {
           style {
@@ -1140,27 +1140,33 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       'custom-color1': {
         elements: {
           fill: '#ff00ff',
-          hiContrast: '#ffe8ff',
-          loContrast: '#ffceff',
-          stroke: '#e400e4',
+          hiContrast: '#ffffff',
+          loContrast: '#ffffff',
+          stroke: '#d200d5',
+          light: '#ff63ff',
+          dark: '#ff00ff',
         },
         relationships: {
-          labelBgColor: '#b100b2',
-          labelColor: '#ff64ff',
-          lineColor: '#fe37fe',
+          labelBgColor: '#ff00ff',
+          labelColor: '#ffffff',
+          lineColorLight: '#ff63ff',
+          lineColorDark: '#ff00ff',
         },
       },
       'custom-color2': {
         elements: {
           fill: '#ffff00',
-          hiContrast: '#adae00',
-          loContrast: '#c9ca00',
-          stroke: '#e3e300',
+          hiContrast: '#4d5c00',
+          loContrast: '#606e00',
+          stroke: '#d2d600',
+          dark: '#c7cc00',
+          light: '#ffff00',
         },
         relationships: {
-          labelBgColor: '#adae00',
-          labelColor: '#ffff64',
-          lineColor: '#ffff38',
+          labelBgColor: '#ffff00',
+          labelColor: '#4d5c00',
+          lineColorDark: '#c7cc00',
+          lineColorLight: '#ffff00',
         },
       },
     })

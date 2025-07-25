@@ -43,8 +43,12 @@ export const semanticTokens = defineSemanticTokens({
       },
       relation: {
         stroke: {
-          DEFAULT: { value: '{colors.likec4.gray.relation.stroke}' },
-          selected: { value: '{colors.likec4.gray.relation.stroke.selected}' },
+          light: { value: '{colors.likec4.gray.relation.stroke.light}' },
+          dark: { value: '{colors.likec4.gray.relation.stroke.dark}' },
+          selected: { 
+            light: { value: '{colors.likec4.gray.relation.stroke.selected.light}' },
+            dark: { value: '{colors.likec4.gray.relation.stroke.selected.dark}' },
+           },
         },
         label: {
           DEFAULT: { value: '{colors.likec4.gray.relation.label}' },
