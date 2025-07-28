@@ -1,7 +1,13 @@
 import { generateColors } from '@mantine/colors-generator'
+import chroma from 'chroma-js';
 import type { ColorLiteral, HexColor, LikeC4Theme, ThemeColorValues } from '../types'
 import { ElementColors } from './element'
 import { RelationshipColors } from './relationships'
+import { isDeepEqual } from 'remeda'
+
+const CONTRAST_MIN_WITH_FOREGROUND = 60
+const CONTRAST_START_TONE_DIFFERENCE = 2
+const CONTRAST_STEP_TONE_DIFFERENCE = 1
 
 export const defaultTheme: LikeC4Theme = {
   elements: ElementColors,
@@ -57,12 +63,15 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
   if (color.match(/^#([0-9a-f]{3}){1,2}$/i)) {
     const colors = generateColors(color)
 
+    const fillColor = colors[6]
+    const contrastedColors = getContrastedColorsAPCA(fillColor)
+    
     return {
       elements: {
-        fill: colors[6] as HexColor,
+        fill: fillColor as HexColor,
         stroke: colors[7] as HexColor,
-        hiContrast: colors[0] as HexColor,
-        loContrast: colors[1] as HexColor,
+        hiContrast: contrastedColors[0] as HexColor,
+        loContrast: contrastedColors[1] as HexColor,
       },
       relationships: {
         lineColor: colors[4] as HexColor,
@@ -75,6 +84,43 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
       elements: defaultTheme.elements['primary'],
       relationships: defaultTheme.relationships['primary'],
     }
+  }
+}
+
+function getContrastedColorsAPCA(refColor: string): [string, string] {
+  const refColorChroma = chroma(refColor)
+
+  // Start with 2 steps tone difference in the CIELAB color space from reference
+  let lightColorRgb = refColorChroma.brighten(CONTRAST_START_TONE_DIFFERENCE);
+  let darkColorRgb = refColorChroma.darken(CONTRAST_START_TONE_DIFFERENCE);
+
+  let previousLight
+  let previousDark
+  let contrastWithLight
+  let contrastWithDark
+  do {
+    // Store previous colors for loop condition
+    previousLight = lightColorRgb
+    previousDark = darkColorRgb
+
+    // Change tone by 1 step each loop
+    lightColorRgb = lightColorRgb.brighten(CONTRAST_STEP_TONE_DIFFERENCE)
+    darkColorRgb = darkColorRgb.darken(CONTRAST_STEP_TONE_DIFFERENCE)
+
+    // Calculate contrast of each color with the reference color
+    contrastWithLight = chroma.contrastAPCA(refColorChroma, lightColorRgb);
+    contrastWithDark = chroma.contrastAPCA(refColorChroma, darkColorRgb);
+  }
+  // Stop if one of the contrast is high enough or if we reach max value for each (aka when they are equal between two rounds)
+  while (Math.abs(contrastWithLight) < CONTRAST_MIN_WITH_FOREGROUND
+    && Math.abs(contrastWithDark) < CONTRAST_MIN_WITH_FOREGROUND
+    && (!isDeepEqual(lightColorRgb, previousLight) || !isDeepEqual(darkColorRgb, previousDark)))
+
+  // Choose the max contrast between the two
+  if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {
+    return [lightColorRgb.brighten(0.4).hex(), lightColorRgb.hex()]
+  } else {
+    return [darkColorRgb.darken(0.4).hex(), darkColorRgb.hex()]
   }
 }
 
