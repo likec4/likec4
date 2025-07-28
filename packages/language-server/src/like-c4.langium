@@ -304,6 +304,7 @@ type StringProperty =
   RelationStringProperty |
   MetadataAttribute |
   SpecificationElementStringProperty |
+  SpecificationElementMarkdownProperty |
   SpecificationRelationshipStringProperty |
   NotationProperty |
   NotesProperty
