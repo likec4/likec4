@@ -99,3 +99,7 @@ jspm_packages/
 dist
 
 ## Panda
+
+# Eclipse
+/.project
+/.settings/*
