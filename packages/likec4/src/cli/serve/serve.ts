@@ -32,6 +32,11 @@ type HandlerParams = {
 
   webcomponentPrefix: string
 
+  /*
+   * base title of the app pages
+   */
+  title: string | undefined
+
   /**
    * ip address of the network interface to listen on
    * @default '127.0.0.1'
@@ -43,6 +48,7 @@ export async function handler({
   path,
   useDotBin,
   webcomponentPrefix,
+  title,
   useHashHistory,
   useOverview = false,
   base,
@@ -63,6 +69,7 @@ export async function handler({
     hmr: true,
     base,
     webcomponentPrefix,
+    title,
     languageServices,
     useHashHistory,
     useOverviewGraph: useOverview,
