@@ -1,7 +1,9 @@
 views {
 
   view cloud of cloud {
-    title "The Cloud System"
+    title 'Context / Cloud System'
+    link https://github.com/likec4/template 'Repository'
+
 
     include
       *,
@@ -28,10 +30,13 @@ views {
   }
 
   view view-with-custom-colors {
-    include *,
-    cloud -> * with {
-      color custom
-    }
+    title 'Context / View with custom colors'
+
+    include
+      *,
+      cloud -> * with {
+        color custom
+      }
 
     style cloud {
       color custom
