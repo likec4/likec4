@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
+import devtoolsJson from 'vite-plugin-devtools-json'
 import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
@@ -141,6 +142,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       }),
       react(),
       Inspect(),
+      devtoolsJson(),
     ].concat(
       cfg.outputSingleFile ? [viteSingleFile()] : [],
     ),
