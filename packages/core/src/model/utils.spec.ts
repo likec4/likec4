@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getViewFolderPath, getViewTitleFromPath, normalizeViewPath } from './utils'
+import { extractViewTitleFromPath, getViewFolderPath, normalizeViewPath } from './utils'
 
 describe('normalizeViewPath', () => {
   it('should remove spaces from path segments', () => {
@@ -65,28 +65,28 @@ describe('getViewFolderPath', () => {
 
 describe('getViewTitleFromPath', () => {
   it('should return the last path segment', () => {
-    expect(getViewTitleFromPath('One / Tw o / Thre e')).toBe('Thre e')
+    expect(extractViewTitleFromPath('One / Tw o / Thre e')).toBe('Thre e')
   })
 
   it('should return the input for single segment path', () => {
-    expect(getViewTitleFromPath('One')).toBe('One')
+    expect(extractViewTitleFromPath('One')).toBe('One')
   })
 
   it('should handle empty segments correctly', () => {
-    expect(getViewTitleFromPath('One / Two / ')).toBe('Two')
-    expect(getViewTitleFromPath('One / / Two')).toBe('Two')
-    expect(getViewTitleFromPath('One / Two / /')).toBe('Two')
+    expect(extractViewTitleFromPath('One / Two / ')).toBe('Two')
+    expect(extractViewTitleFromPath('One / / Two')).toBe('Two')
+    expect(extractViewTitleFromPath('One / Two / /')).toBe('Two')
   })
 
   it('should handle empty input', () => {
-    expect(getViewTitleFromPath('')).toBe('')
+    expect(extractViewTitleFromPath('')).toBe('')
   })
 
   it('should trim spaces from the title', () => {
-    expect(getViewTitleFromPath('One / Two / Three ')).toBe('Three')
+    expect(extractViewTitleFromPath('One / Two / Three ')).toBe('Three')
   })
 
   it('should handle input with only spaces', () => {
-    expect(getViewTitleFromPath('   ')).toBe('')
+    expect(extractViewTitleFromPath('   ')).toBe('')
   })
 })

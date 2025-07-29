@@ -58,7 +58,7 @@ export const getViewFolderPath = (title: string): string | null => {
  * getViewTitleFromPath('One / Tw o / Thre e') === 'Thre e'
  * getViewTitleFromPath('One') === 'One'
  */
-export const getViewTitleFromPath = (title: string): string => {
+export const extractViewTitleFromPath = (title: string): string => {
   if (!title.includes(VIEW_FOLDERS_SEPARATOR)) {
     return title.trim()
   }

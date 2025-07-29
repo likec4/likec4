@@ -242,7 +242,7 @@ MetadataAttribute:
 // Views -------------------------------------
 
 ModelViews:
-  name='views' '{' (
+  name='views' folder=String? '{' (
       views+=LikeC4ViewRule |
       styles+=ViewRuleStyleOrGlobalRef
     )*

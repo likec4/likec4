@@ -63,3 +63,10 @@ export type {
 } from '../types'
 
 export { RichText, type RichTextEmpty, type RichTextOrEmpty } from '../types'
+
+export {
+  extractViewTitleFromPath,
+  getViewFolderPath,
+  normalizeViewPath,
+  VIEW_FOLDERS_SEPARATOR,
+} from './utils'

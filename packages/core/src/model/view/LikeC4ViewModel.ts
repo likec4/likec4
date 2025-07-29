@@ -18,7 +18,7 @@ import {
   type NodeOrId,
   type WithTags,
 } from '../types'
-import { getId, getViewTitleFromPath } from '../utils'
+import { extractViewTitleFromPath, getId } from '../utils'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -43,6 +43,8 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   public readonly $view: V
   public readonly $model: LikeC4Model<A>
+
+  public readonly title: string | null
 
   /**
    * View folder this view belongs to.
@@ -90,6 +92,8 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       }
       this.#edges.set(edge.id, edgeModel)
     }
+
+    this.title = this.$view.title ? extractViewTitleFromPath(this.$view.title) : null
   }
 
   get _type(): V[_type] {
@@ -98,15 +102,6 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   get id(): aux.StrictViewId<A> {
     return this.$view.id
-  }
-
-  get title(): string | null {
-    return memoizeProp(this, 'title', () => {
-      if (!this.$view.title) {
-        return null
-      }
-      return getViewTitleFromPath(this.$view.title)
-    })
   }
 
   /**
