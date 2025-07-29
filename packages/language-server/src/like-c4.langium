@@ -46,24 +46,19 @@ SpecificationElementKind:
     tags=Tags?
     props+=(
       SpecificationElementStringProperty |
-      SpecificationElementMarkdownProperty |
       LinkProperty |
       ElementStyleProperty
     )*
   '}')?;
 
 SpecificationElementStringProperty:
-  key=('title' | 'technology' | 'notation') ':'? value=String ';'?;
-
-SpecificationElementMarkdownProperty:
-  key=('description') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 SpecificationDeploymentNodeKind:
   'deploymentNode' kind=DeploymentNodeKind ('{'
     tags=Tags?
     props+=(
       SpecificationElementStringProperty |
-      SpecificationElementMarkdownProperty |
       LinkProperty |
       ElementStyleProperty
     )*
@@ -304,7 +299,6 @@ type StringProperty =
   RelationStringProperty |
   MetadataAttribute |
   SpecificationElementStringProperty |
-  SpecificationElementMarkdownProperty |
   SpecificationRelationshipStringProperty |
   NotationProperty |
   NotesProperty

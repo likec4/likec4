@@ -109,22 +109,28 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
       const links = this.parseLinks(specAst)
-      const stringProps = pipe(
+      const bodyProps = pipe(
         props.filter(ast.isSpecificationElementStringProperty) ?? [],
-        filter(p => this.isValid(p) && isNonNullish(p.value)),
-        mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
-      )
-      const markdownProps = pipe(
-        props.filter(ast.isSpecificationElementMarkdownProperty) ?? [],
         filter(p => this.isValid(p)),
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
-      const description = this.parseMarkdownOrString(markdownProps.description)
+
+      const { title, description, technology } = this.parseTitleDescriptionTechnology(
+        {
+          title: undefined,
+          description: undefined,
+          technology: undefined,
+        },
+        bodyProps,
+      )
+      const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
 
       return {
         [kindName]: {
-          ...stringProps,
+          ...(title && { title }),
           ...(description && { description }),
+          ...(technology && { technology }),
+          ...(notation && { notation }),
           ...(tags && { tags }),
           ...(links && c4.isNonEmptyArray(links) && { links }),
           style,

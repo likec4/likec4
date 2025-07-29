@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import { MultiMap } from '@likec4/core'
 import {
   FqnRef,
@@ -111,7 +111,7 @@ export class MergedSpecification {
       textSize ??= __kind.style.textSize
       description ??= __kind.description
       links ??= __kind.links
-      title = id.split('.').pop() == title && __kind.title ? __kind.title : title
+      title = title === c4.nameFromFqn(id) && __kind.title ? __kind.title : title
       return {
         ...(color && { color }),
         ...(shape && { shape }),
@@ -201,7 +201,7 @@ export class MergedSpecification {
         ...rest
       } = parsed
       description ??= __kind.description
-      title = parsed.id.split('.').pop() == title && __kind.title ? __kind.title : title
+      title = title === c4.nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
       return {
         ...rest,
         ...({ title }),
