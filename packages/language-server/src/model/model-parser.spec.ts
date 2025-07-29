@@ -941,7 +941,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         views {
           deployment view test {
-            include 
+            include
               ins.child1 <-> child2,
           }
         }

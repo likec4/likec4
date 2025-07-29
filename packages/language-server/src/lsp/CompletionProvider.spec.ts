@@ -60,7 +60,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['technology', 'notation', 'style'],
+      expectedItems: ['title', 'description', 'technology', 'notation', 'link', 'style'],
     })
     await completion({
       text,
