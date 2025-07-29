@@ -23,7 +23,6 @@ export function ViewReact() {
   })
 
   const title = view ? (view.title ?? view.id) : `View not found`
-  console.log(pageTitle)
   useDocumentTitle(`${title} - ${pageTitle}`)
 
   if (!view) {
