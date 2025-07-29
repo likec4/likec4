@@ -10,13 +10,13 @@ export const getId = <Id extends string, Scalar extends AnyScalar<Id>>(element: 
   return typeof element === 'string' ? element as unknown as Scalar : element.id
 }
 
-export const VIEW_GROUP_SEPARATOR = '/'
+export const VIEW_FOLDERS_SEPARATOR = '/'
 
 const splitViewTitle = (title: string): NonEmptyArray<string> => {
   invariant(!title.includes('\n'), 'View title cannot contain newlines')
-  if (title.includes(VIEW_GROUP_SEPARATOR)) {
+  if (title.includes(VIEW_FOLDERS_SEPARATOR)) {
     const segments = title
-      .split(VIEW_GROUP_SEPARATOR)
+      .split(VIEW_FOLDERS_SEPARATOR)
       .map(s => s.trim())
       .filter(s => s.length > 0)
     if (hasAtLeast(segments, 1)) {
@@ -34,22 +34,22 @@ const splitViewTitle = (title: string): NonEmptyArray<string> => {
  * normalizeViewPath('One / Tw o / Thre e') === 'One/Tw o/Thre e'
  */
 export const normalizeViewPath = (title: string): string => {
-  return splitViewTitle(title).join(VIEW_GROUP_SEPARATOR)
+  return splitViewTitle(title).join(VIEW_FOLDERS_SEPARATOR)
 }
 
 /**
  * Returns view group path if it is used as a path
  * Returns empty string if it is not a path
  * @example
- * getViewGroupPath('One / Tw o / Thre e') === 'One/Tw o'
- * getViewGroupPath('One') === ''
+ * getViewFolderPath('One / Tw o / Thre e') === 'One/Tw o'
+ * getViewFolderPath('One') === ''
  */
-export const getViewGroupPath = (title: string): string | null => {
+export const getViewFolderPath = (title: string): string | null => {
   const segments = splitViewTitle(title)
   if (!hasAtLeast(segments, 2)) {
     return null
   }
-  return segments.slice(0, -1).join(VIEW_GROUP_SEPARATOR)
+  return segments.slice(0, -1).join(VIEW_FOLDERS_SEPARATOR)
 }
 
 /**
@@ -59,7 +59,7 @@ export const getViewGroupPath = (title: string): string | null => {
  * getViewTitleFromPath('One') === 'One'
  */
 export const getViewTitleFromPath = (title: string): string => {
-  if (!title.includes(VIEW_GROUP_SEPARATOR)) {
+  if (!title.includes(VIEW_FOLDERS_SEPARATOR)) {
     return title.trim()
   }
   return splitViewTitle(title).pop() ?? title

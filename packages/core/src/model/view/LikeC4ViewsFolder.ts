@@ -4,16 +4,16 @@ import { invariant, memoizeProp } from '../../utils'
 import type { LikeC4Model } from '../LikeC4Model'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
+export class LikeC4ViewsFolder<A extends aux.Any = aux.Any> {
   public readonly $model: LikeC4Model<A>
 
   /**
-   * Path to this view group, e.g. "Group 1/Group 2/Group 3"
+   * Path to this view folder, e.g. "Folder 1/Folder 2/Folder 3"
    */
   public readonly path: string
 
   /**
-   * Title of this view group, e.g. "Group 3" if path is "Group 1/Group 2/Group 3"
+   * Title of this view folder, e.g. "Folder 3" if path is "Folder 1/Folder 2/Folder 3"
    */
   public readonly title: string
 
@@ -46,20 +46,20 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
   }
 
   /**
-   * Default view of this view group.\
-   * It is for the case when there is a view at the same path as this group.\
+   * Default view of this view folder.\
+   * It is for the case when there is a view at the same path as this folder.\
    * (if there are multiple views at the same path, the first one is chosen)
    *
    * @example
    * ```
    * // Assume the following views exist:
    * const views = [
-   *   "Group 1/ Group 2 / View",
-   *   "Group 1/ Group 2 / View / Subview",
+   *   "Folder 1/ Folder 2 / View",
+   *   "Folder 1/ Folder 2 / View / Subview",
    * ]
    * ```
-   * Group with path `Group 1/ Group 2 / View`\
-   * will have default view `Group 1/ Group 2 / View`
+   * Group with path `Folder 1/ Folder 2 / View`\
+   * will have default view `Folder 1/ Folder 2 / View`
    */
   get defaultView(): LikeC4ViewModel<A> | null {
     if (!this.defaultViewId) {
@@ -69,12 +69,12 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
   }
 
   /**
-   * Returns path to this view group as an array of ancestors (excluding root) and this view group as the last element
+   * Returns path to this view folder as an array of ancestors (excluding root) and this view folder as the last element
    *
-   * @throws Error if this is the root group.
+   * @throws Error if this is the root folder.
    */
-  get breadcrumbs(): [...LikeC4ViewsGroup<A>[], this] {
-    invariant(!this.isRoot, 'Root view group has no breadcrumbs')
+  get breadcrumbs(): [...LikeC4ViewsFolder<A>[], this] {
+    invariant(!this.isRoot, 'Root view folder has no breadcrumbs')
     return memoizeProp(this, 'breadcrumbs', () => {
       const parent = this.parent
       if (parent) {
@@ -88,45 +88,44 @@ export class LikeC4ViewsGroup<A extends aux.Any = aux.Any> {
   }
 
   /**
-   * Returns parent group
+   * Returns parent folder
+   *
+   * @throws Error if this is the root folder.
    */
-  get parent(): LikeC4ViewsGroup<A> | null {
-    // invariant(!this.isRoot, 'Root view group has no parent')
-    if (this.parentPath === undefined) {
+  get parent(): LikeC4ViewsFolder<A> | null {
+    invariant(!this.isRoot, 'Root view folder has no parent')
+    if (isEmpty(this.parentPath)) {
       return null
     }
-    // if (isEmpty(this.parentPath)) {
-    //   return null
-    // }
-    return this.$model.viewGroup(this.parentPath)
+    return this.$model.viewFolder(this.parentPath)
   }
 
   /**
    * Returns sorted set of children
-   * - First groups
+   * - First folders
    * - Then views
    */
-  get children(): ReadonlySet<LikeC4ViewsGroup<A> | LikeC4ViewModel<A>> {
-    return this.$model.viewGroupChildren(this.path)
+  get children(): ReadonlySet<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>> {
+    return this.$model.viewFolderItems(this.path)
   }
 
   /**
-   * Returns sorted array of children groups
+   * Returns sorted array of children folders
    */
-  get groups(): ReadonlyArray<LikeC4ViewsGroup<A>> {
-    return memoizeProp(this, 'groups', () => {
-      const groups: LikeC4ViewsGroup<A>[] = []
+  get folders(): ReadonlyArray<LikeC4ViewsFolder<A>> {
+    return memoizeProp(this, 'folders', () => {
+      const folders: LikeC4ViewsFolder<A>[] = []
       for (const child of this.children) {
-        if (child instanceof LikeC4ViewsGroup) {
-          groups.push(child)
+        if (child instanceof LikeC4ViewsFolder) {
+          folders.push(child)
         }
       }
-      return groups
+      return folders
     })
   }
 
   /**
-   * Returns all views in this view group.
+   * Returns all views in this view folder.
    */
   get views(): ReadonlyArray<LikeC4ViewModel<A>> {
     return memoizeProp(this, 'views', () => {

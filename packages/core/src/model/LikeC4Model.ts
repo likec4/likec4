@@ -37,9 +37,9 @@ import {
   type OutgoingFilter,
   type RelationOrId,
 } from './types'
-import { getId, getViewGroupPath, normalizeViewPath, VIEW_GROUP_SEPARATOR } from './utils'
+import { getId, getViewFolderPath, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
-import { LikeC4ViewsGroup } from './view/LikeC4ViewsGroup'
+import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends Any = aux.Unknown> {
@@ -69,12 +69,12 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 
   protected readonly _views = new Map<aux.ViewId<A>, LikeC4ViewModel<A>>()
 
-  protected readonly _rootViewGroup: LikeC4ViewsGroup<A>
-  protected readonly _viewGroups = new Map<string, LikeC4ViewsGroup<A>>()
+  protected readonly _rootViewFolder: LikeC4ViewsFolder<A>
+  protected readonly _viewFolders = new Map<string, LikeC4ViewsFolder<A>>()
 
-  protected readonly _viewGroupChildren = new DefaultMap<
+  protected readonly _viewFolderItems = new DefaultMap<
     string,
-    Set<LikeC4ViewsGroup<A> | LikeC4ViewModel<A>>
+    Set<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>>
   >(
     () => new Set(),
   )
@@ -176,22 +176,22 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     this.deployment = new LikeC4DeploymentModel(this)
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
-      const compare = compareNaturalHierarchically(VIEW_GROUP_SEPARATOR)
+      const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
       const views = pipe(
         values($data.views as Record<string, $View<A>>),
         map(view => ({
           view,
           path: normalizeViewPath(view.title ?? view.id),
-          group: view.title && getViewGroupPath(view.title) || '',
+          folderPath: view.title && getViewFolderPath(view.title) || '',
         })),
         // Sort hierarchically by groups, but keep same order within groups
-        sort((a, b) => compare(a.group, b.group)),
+        sort((a, b) => compare(a.folderPath, b.folderPath)),
       )
 
-      const getOrCreateGroup = (path: string) => {
-        let group = this._viewGroups.get(path)
-        if (!group) {
-          const segments = split(path, VIEW_GROUP_SEPARATOR)
+      const getOrCreateFolder = (path: string) => {
+        let folder = this._viewFolders.get(path)
+        if (!folder) {
+          const segments = split(path, VIEW_FOLDERS_SEPARATOR)
           invariant(hasAtLeast(segments, 1), `View group path "${path}" must have at least one element`)
           let defaultView
           // Root group has "index" as default view
@@ -200,40 +200,41 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
           } else {
             defaultView = views.find(view => view.path === path)
           }
-          group = new LikeC4ViewsGroup(this, segments, defaultView?.view.id)
-          this._viewGroups.set(path, group)
+          folder = new LikeC4ViewsFolder(this, segments, defaultView?.view.id)
+          this._viewFolders.set(path, folder)
         }
-        return group
+        return folder
       }
 
-      this._rootViewGroup = getOrCreateGroup('')
+      this._rootViewFolder = getOrCreateFolder('')
 
       // Process view groups
       // Sort in natural order to preserve hierarchy
-      for (const { group } of views) {
-        if (this._viewGroups.has(group)) {
+      for (const { folderPath } of views) {
+        if (this._viewFolders.has(folderPath)) {
           continue
         }
         // Create groups for each segment of the path
-        split(group, VIEW_GROUP_SEPARATOR).reduce((parent, segment) => {
+        split(folderPath, VIEW_FOLDERS_SEPARATOR).reduce((parent, segment) => {
           const path = [...parent, segment]
-          const group = getOrCreateGroup(path.join(VIEW_GROUP_SEPARATOR))
-          this._viewGroupChildren.get(parent.join(VIEW_GROUP_SEPARATOR)).add(group)
+          const folder = getOrCreateFolder(path.join(VIEW_FOLDERS_SEPARATOR))
+          this._viewFolderItems.get(parent.join(VIEW_FOLDERS_SEPARATOR)).add(folder)
           return path
         }, [] as string[])
       }
 
-      for (const { view, group } of views) {
-        const vm = new LikeC4ViewModel(this, view, group === '' ? null : getOrCreateGroup(group))
-        this._viewGroupChildren.get(group).add(vm)
+      for (const { view, folderPath } of views) {
+        const vm = new LikeC4ViewModel(this, view, getOrCreateFolder(folderPath))
+        this._viewFolderItems.get(folderPath).add(vm)
         this._views.set(view.id, vm)
         for (const tag of vm.tags) {
           this._allTags.get(tag).add(vm)
         }
       }
     } else {
-      this._rootViewGroup = new LikeC4ViewsGroup(this, [''], undefined)
-      this._viewGroups.set(this._rootViewGroup.path, this._rootViewGroup)
+      // Model is not computed or layouted, but we still need to create root folder
+      this._rootViewFolder = new LikeC4ViewsFolder(this, [''], undefined)
+      this._viewFolders.set(this._rootViewFolder.path, this._rootViewFolder)
     }
   }
 
@@ -453,39 +454,39 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
 
   /**
-   * Returns a view group by its path.
+   * Returns a view folder by its path.
    * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
-   * @throws Error if view group is not found.
+   * @throws Error if view folder is not found.
    */
-  public viewGroup(path: string): LikeC4ViewsGroup<A> {
-    return nonNullable(this._viewGroups.get(path), `View group ${path} not found`)
+  public viewFolder(path: string): LikeC4ViewsFolder<A> {
+    return nonNullable(this._viewFolders.get(path), `View folder ${path} not found`)
   }
 
   /**
-   * Root group is special group with an empty path and used only for internal purposes.
-   * It is not visible to the user and should be used only to get top-level groups or views.
+   * Root folder is a special one with an empty path and used only for internal purposes.
+   * It is not visible to the user and should be used only to get top-level folders and views.
    */
-  get rootViewGroup(): LikeC4ViewsGroup<A> {
-    return this._rootViewGroup
+  get rootViewFolder(): LikeC4ViewsFolder<A> {
+    return this._rootViewFolder
   }
 
   /**
-   * Whether the model has any view groups.
+   * Whether the model has any view folders.
    */
-  get hasViewGroups(): boolean {
-    // Root view group is always present
-    return this._viewGroups.size > 1
+  get hasViewFolders(): boolean {
+    // Root view folder is always present
+    return this._viewFolders.size > 1
   }
 
   /**
-   * Returns all children of a view group.
+   * Returns all children of a view folder.
    * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
    *
-   * @throws Error if view group is not found.
+   * @throws Error if view folder is not found.
    */
-  public viewGroupChildren(path: string): ReadonlySet<LikeC4ViewsGroup<A> | LikeC4ViewModel<A>> {
-    invariant(this._viewGroups.has(path), `View group ${path} not found`)
-    return this._viewGroupChildren.get(path)
+  public viewFolderItems(path: string): ReadonlySet<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>> {
+    invariant(this._viewFolders.has(path), `View folder ${path} not found`)
+    return this._viewFolderItems.get(path)
   }
 
   /**

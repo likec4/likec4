@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getViewGroupPath, getViewTitleFromPath, normalizeViewPath } from './utils'
+import { getViewFolderPath, getViewTitleFromPath, normalizeViewPath } from './utils'
 
 describe('normalizeViewPath', () => {
   it('should remove spaces from path segments', () => {
@@ -31,32 +31,32 @@ describe('normalizeViewPath', () => {
   })
 })
 
-describe('getViewGroupPath', () => {
+describe('getViewFolderPath', () => {
   it('should return the parent path segments', () => {
-    expect(getViewGroupPath('One / Tw o / Thre e')).toBe('One/Tw o')
+    expect(getViewFolderPath('One / Tw o / Thre e')).toBe('One/Tw o')
   })
 
   it('should return null for single segment path', () => {
-    expect(getViewGroupPath('One')).toBeNull()
+    expect(getViewFolderPath('One')).toBeNull()
   })
 
   it('should handle empty segments correctly', () => {
-    expect(getViewGroupPath(' / ')).toBeNull()
-    expect(getViewGroupPath('One /  / Three')).toBe('One')
-    expect(getViewGroupPath('One / Tw o / / Three')).toBe('One/Tw o')
+    expect(getViewFolderPath(' / ')).toBeNull()
+    expect(getViewFolderPath('One /  / Three')).toBe('One')
+    expect(getViewFolderPath('One / Tw o / / Three')).toBe('One/Tw o')
   })
 
   it('should handle leading slashes', () => {
-    expect(getViewGroupPath(' / One / Two')).toBe('One')
+    expect(getViewFolderPath(' / One / Two')).toBe('One')
   })
 
   it('should return null for empty input', () => {
-    expect(getViewGroupPath('')).toBeNull()
-    expect(getViewGroupPath('   ')).toBeNull()
+    expect(getViewFolderPath('')).toBeNull()
+    expect(getViewFolderPath('   ')).toBeNull()
   })
 
   it('should handle trailing slashes', () => {
-    expect(getViewGroupPath('One / Two /')).toBe('One')
+    expect(getViewFolderPath('One / Two /')).toBe('One')
   })
   it('should throw for multiline input', () => {
     expect(() => normalizeViewPath('One\nTwo')).toThrow()

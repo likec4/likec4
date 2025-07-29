@@ -20,7 +20,7 @@ import {
 } from '../types'
 import { getId, getViewTitleFromPath } from '../utils'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
-import type { LikeC4ViewsGroup } from './LikeC4ViewsGroup'
+import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
@@ -45,19 +45,19 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   public readonly $model: LikeC4Model<A>
 
   /**
-   * View group this view belongs to.
-   * If view is top-level, this is null.
+   * View folder this view belongs to.
+   * If view is top-level, this is the root folder.
    */
-  public readonly viewGroup: LikeC4ViewsGroup<A> | null
+  public readonly folder: LikeC4ViewsFolder<A>
 
   constructor(
     model: LikeC4Model<A>,
     view: V,
-    viewGroup: LikeC4ViewsGroup<A> | null,
+    folder: LikeC4ViewsFolder<A>,
   ) {
     this.$model = model
     this.$view = view
-    this.viewGroup = viewGroup
+    this.folder = folder
     for (const node of view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
@@ -111,15 +111,17 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   /**
    * Returns path to this view as an array of groups and this view as the last element
+   * If view is top-level, returns only this view.
+   *
    * @example
    * "Group 1",
    * "Group 1/Group 2",
    * "Group 1/Group 2/View",
    */
-  get breadcrumbs(): [...LikeC4ViewsGroup<A>[], this] {
+  get breadcrumbs(): [...LikeC4ViewsFolder<A>[], this] {
     return memoizeProp(this, 'breadcrumbs', () => {
-      if (this.viewGroup) {
-        return [...this.viewGroup.breadcrumbs, this]
+      if (!this.folder.isRoot) {
+        return [...this.folder.breadcrumbs, this]
       }
       return [this]
     })

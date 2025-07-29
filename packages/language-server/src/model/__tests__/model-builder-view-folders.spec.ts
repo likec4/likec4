@@ -1,8 +1,8 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe('LikeC4ModelBuilder -- view groups', () => {
-  it('without view groups', async ({ expect }) => {
+describe('LikeC4ModelBuilder -- view folders', () => {
+  it('without view folders', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -20,14 +20,14 @@ describe('LikeC4ModelBuilder -- view groups', () => {
     `)
     expect(errors).toEqual([])
     const model = await buildLikeC4Model()
-    expect(model.hasViewGroups).toBe(false)
-    expect([...model.rootViewGroup.children]).toEqual([
+    expect(model.hasViewFolders).toBe(false)
+    expect([...model.rootViewFolder.children]).toEqual([
       model.view('index'),
       model.view('v1'),
     ])
   })
 
-  it('view groups are created', async ({ expect }) => {
+  it('view folders are created', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -50,9 +50,9 @@ describe('LikeC4ModelBuilder -- view groups', () => {
     `)
     expect(errors).toEqual([])
     const model = await buildLikeC4Model()
-    expect(model.hasViewGroups).toBe(true)
-    expect([...model.rootViewGroup.children]).toEqual([
-      model.viewGroup('Group 1'),
+    expect(model.hasViewFolders).toBe(true)
+    expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Group 1'),
       model.view('index'),
     ])
   })
