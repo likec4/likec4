@@ -64,6 +64,8 @@ export default definePreset({
         padding: '0px',
         margin: '0px',
         border: '0px solid transparent',
+        containerName: 'likec4-root',
+        containerType: 'size',
       },
       [`${root} .react-flow:is(.not-initialized)`]: {
         opacity: 0,

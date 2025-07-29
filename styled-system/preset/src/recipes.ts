@@ -2,7 +2,7 @@ import { defineRecipe } from '@pandacss/dev'
 
 export const actionBtn = defineRecipe({
   className: 'action-btn',
-  description: 'The styles for the Action Buttons',
+  description: 'Action Button within Diagram Node (Bottom-Center)',
   base: {
     pointerEvents: 'all',
     cursor: 'pointer',
@@ -138,6 +138,7 @@ export const likec4tag = defineRecipe({
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
   jsx: ['MarkdownBlock'],
+  description: 'Block with Markdown content',
   base: {
     pointerEvents: 'all',
     '--text-fz': '1rem',
