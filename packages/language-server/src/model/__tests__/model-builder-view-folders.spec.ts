@@ -1,3 +1,4 @@
+import { keys } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
@@ -97,6 +98,49 @@ describe('LikeC4ModelBuilder -- view folders', () => {
       model.viewFolder('Group 1/Subgroup 2'),
       model.view('g1_sub1'),
       model.view('untitled'),
+    ])
+  })
+
+  it('preserves view order', async ({ expect }) => {
+    const { validate, buildModel, buildLikeC4Model } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+      }
+      views 'Group 1' {
+        view b {
+          include *
+        }
+        view c {
+          include *
+        }
+        view a {
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+    const computed = await buildModel()
+    expect(keys(computed.views)).toEqual([
+      'index',
+      'b',
+      'c',
+      'a',
+    ])
+
+    const model = await buildLikeC4Model()
+    expect(model.hasViewFolders).toBe(true)
+    expect([...model.rootViewFolder.children]).toEqual([
+      model.viewFolder('Group 1'),
+      model.view('index'),
+    ])
+    expect([...model.viewFolder('Group 1').views]).toEqual([
+      model.view('b'),
+      model.view('c'),
+      model.view('a'),
     ])
   })
 })
