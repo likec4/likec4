@@ -41,6 +41,7 @@ export {
 export {
   ifilter,
   ifind,
+  ifirst,
   iflat,
   ihead,
   imap,
