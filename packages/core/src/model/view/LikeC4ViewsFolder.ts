@@ -8,18 +8,28 @@ export class LikeC4ViewsFolder<A extends aux.Any = aux.Any> {
   public readonly $model: LikeC4Model<A>
 
   /**
-   * Path to this view folder, e.g. "Folder 1/Folder 2/Folder 3"
+   * Path to this view folder, processed by {@link normalizeViewPath}
+   *
+   * @example
+   * "Folder 1/Folder 2/Folder 3"
    */
   public readonly path: string
 
   /**
-   * Title of this view folder, e.g. "Folder 3" if path is "Folder 1/Folder 2/Folder 3"
+   * Title of this view folder.
+   *
+   * @example
+   * // title is the last segment of the path
+   * path = "Folder 1/Folder 2/Folder 3"
+   * title = "Folder 3"
    */
   public readonly title: string
 
   /**
-   * Whether this is the root view group.
-   * Root group is special group with an empty path and used only for internal purposes.
+   * Whether this is the root view folder.
+   *
+   * !NOTE
+   * Root folder is special folder with an empty path and used only for internal purposes. \
    * It is not visible to the user and should not be used in the code.
    */
   public readonly isRoot: boolean

@@ -1,12 +1,30 @@
+import { cx } from '@likec4/styles/css'
 import { navigationLink } from '@likec4/styles/recipes'
-import { NavLink } from '@mantine/core'
-import type { FunctionComponent } from 'react'
+import { type NavLinkProps, NavLink } from '@mantine/core'
+import { forwardRef } from 'react'
 
-export const NavigationLink = NavLink.withProps({
-  component: 'button',
-  className: 'group',
-  classNames: navigationLink({
-    truncateLabel: true,
-  }),
-})
-;(NavigationLink as FunctionComponent).displayName = 'NavigationLink'
+export interface NavigationLinkProps
+  extends NavLinkProps, Omit<React.ComponentPropsWithoutRef<'button'>, keyof NavLinkProps>
+{
+  truncateLabel?: boolean
+}
+
+export const NavigationLink = forwardRef<HTMLButtonElement, NavigationLinkProps>((
+  { className, truncateLabel = true, ...others },
+  ref,
+) => (
+  <NavLink
+    {...others}
+    component="button"
+    classNames={navigationLink({
+      truncateLabel,
+    })}
+    className={cx(
+      'group',
+      className,
+    )}
+    ref={ref}
+  />
+))
+
+NavigationLink.displayName = 'NavigationLink'

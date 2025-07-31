@@ -5,10 +5,10 @@ import { useEnabledFeatures } from '../context'
 import { useDiagram } from '../hooks/useDiagram'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
+import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { DynamicViewWalkthrough, NotationPanel } from './ui'
-import { DiagramBreadcrumbs } from './ui/breadcrumbs/DiagramBreadcrumbs'
 
 export const DiagramUI = memo(() => {
   const {
@@ -31,7 +31,7 @@ export const DiagramUI = memo(() => {
           margin: 'sm',
         })}
       >
-        <DiagramBreadcrumbs />
+        <NavigationPanel />
         {
           /* {enableSearch && (
           <SearchControl

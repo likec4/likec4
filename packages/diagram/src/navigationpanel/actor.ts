@@ -1,23 +1,24 @@
-import type { LikeC4ViewsFolder } from '@likec4/core/model'
-import { isEmpty, prop } from 'remeda'
+import { ViewId } from '@likec4/core/types'
+import { isEmpty } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRefFrom,
   type SnapshotFrom,
   assertEvent,
   assign,
+  emit,
   raise,
   setup,
 } from 'xstate'
-import type { CurrentViewModel } from '../../../likec4model/LikeC4ModelContext'
+import type { CurrentViewModel } from '../likec4model/LikeC4ModelContext'
 
-export interface BreadcrumbsActorInput {
+export interface NavigationPanelActorInput {
   viewModel: CurrentViewModel
 }
 
-export type BreadcrumbsActorEvent =
+export type NavigationPanelActorEvent =
   // Logic events
-  | { type: 'update.inputs'; inputs: BreadcrumbsActorInput }
+  | { type: 'update.inputs'; inputs: NavigationPanelActorInput }
   | { type: 'searchQuery.change'; value?: string }
   | { type: 'searchQuery.changed' }
   | { type: 'select.folder'; folderPath: string }
@@ -35,6 +36,8 @@ export type BreadcrumbsActorEvent =
   | { type: 'dropdown.mouseEnter' }
   | { type: 'dropdown.mouseLeave' }
   | { type: 'dropdown.dismiss' }
+
+export type NavigationPanelActorEmitted = { type: 'trigger.navigateTo'; viewId: ViewId }
 
 export type BreadcrumbItem =
   | { type: 'folder'; folderPath: string; title: string }
@@ -56,16 +59,14 @@ export type DropdownColumnItem =
     selected: boolean
   }
 
-export interface BreadcrumbsContext {
+export interface NavigationPanelActorContext {
   viewModel: CurrentViewModel
-  breadcrumbs: Array<BreadcrumbItem>
   /**
-   * Who initiated the dropdown
-   * (mouseEnter coming from)
-   * @default 'root'
+   * Who activated the dropdown
+   * (if `click` then the dropdown is always open until dismissed)
+   * @default 'hover'
    */
-  initiator: 'root' | 'viewtitle' | { folderPath: string }
-  initiateEvent: 'hover' | 'click'
+  activatedBy: 'hover' | 'click'
 
   /**
    * The folder that is currently selected in the dropdown
@@ -74,68 +75,35 @@ export interface BreadcrumbsContext {
   selectedFolder: string
 
   searchQuery: string
-
-  folderColumns: Array<{
-    folderPath: string
-    items: Array<DropdownColumnItem>
-  }>
 }
 
-function folderColumn(
-  folder: LikeC4ViewsFolder,
-  context: Pick<BreadcrumbsContext, 'selectedFolder' | 'viewModel'>,
-): {
-  folderPath: string
-  items: Array<DropdownColumnItem>
-} {
-  return {
-    folderPath: folder.path,
-    items: [
-      ...folder.folders.map(s => ({
-        type: 'folder' as const,
-        folderPath: s.path,
-        title: s.title,
-        selected: context.selectedFolder.startsWith(s.path),
-      })),
-      ...folder.views.map(s => ({
-        type: 'view' as const,
-        viewType: s.id === 'index' ? 'index' as const : s._type,
-        viewId: s.id,
-        title: s.title ?? s.id,
-        description: s.description.nonEmpty && s.description.text || null,
-        selected: s.id === context.viewModel.id,
-      })),
-    ],
-  }
-}
-
-const _breadcrumbsActorLogic = setup({
+const _actorLogic = setup({
   types: {
-    context: {} as BreadcrumbsContext,
-    events: {} as BreadcrumbsActorEvent,
+    context: {} as NavigationPanelActorContext,
+    events: {} as NavigationPanelActorEvent,
     tags: 'active',
-    input: {} as BreadcrumbsActorInput,
+    input: {} as NavigationPanelActorInput,
+    emitted: {} as NavigationPanelActorEmitted,
   },
   delays: {
     'open timeout': 350,
     'close timeout': 350,
   },
   actions: {
-    'update breadcrumbs': assign({
-      breadcrumbs: ({ context }): BreadcrumbItem[] => {
-        const folder = context.viewModel.folder
-        return [
-          ...(folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
-            type: 'folder' as const,
-            folderPath: s.path,
-            title: s.title,
-          }))),
-          { type: 'viewtitle', title: context.viewModel.title ?? 'Untitled' },
-        ]
+    'update activatedBy': assign({
+      activatedBy: ({ context, event }) => {
+        switch (true) {
+          case event.type.includes('click'):
+            return 'click'
+          case event.type.includes('mouseEnter'):
+            return 'hover'
+          default:
+            return context.activatedBy
+        }
       },
     }),
     'keep dropdown open': assign({
-      initiateEvent: 'click',
+      activatedBy: 'click',
     }),
     'update selected folder': assign(({ event }) => {
       assertEvent(event, ['breadcrumbs.click.folder', 'select.folder'])
@@ -144,43 +112,6 @@ const _breadcrumbsActorLogic = setup({
     'reset selected folder': assign({
       selectedFolder: ({ context }) => context.viewModel.folder.path,
     }),
-    'update folder columns': assign(({ context }) => {
-      const viewModel = context.viewModel
-      const likec4model = viewModel.$model
-      const columns: BreadcrumbsContext['folderColumns'] = [
-        folderColumn(likec4model.rootViewFolder, context),
-      ]
-      const folder = likec4model.viewFolder(context.selectedFolder)
-      if (!folder.isRoot) {
-        for (const b of folder.breadcrumbs) {
-          columns.push(folderColumn(b, context))
-        }
-      }
-      return { folderColumns: columns }
-    }),
-    'update initiator': assign({
-      initiator: ({ event, context }) => {
-        switch (event.type) {
-          case 'breadcrumbs.mouseEnter.root':
-          case 'breadcrumbs.click.root':
-            return 'root'
-          case 'breadcrumbs.mouseEnter.viewtitle':
-          case 'breadcrumbs.click.viewtitle':
-            return 'viewtitle'
-          case 'breadcrumbs.mouseEnter.folder':
-          case 'breadcrumbs.click.folder':
-            return { folderPath: event.folderPath }
-          default:
-            return context.initiator
-        }
-      },
-      initiateEvent: ({ event }) => {
-        return event.type.includes('click') ? 'click' : 'hover'
-      },
-    }),
-    'trigger navigateTo': (_, params: { viewId: string }) => {
-      throw new Error('Not implemented')
-    },
     'update inputs': assign(({ context, event }) => {
       assertEvent(event, 'update.inputs')
       let selectedFolder = context.selectedFolder
@@ -199,9 +130,16 @@ const _breadcrumbsActorLogic = setup({
       assertEvent(event, 'searchQuery.change')
       return { searchQuery: event.value ?? '' }
     }),
+    'emit trigger.navigateTo': emit(({ event }) => {
+      assertEvent(event, 'select.view')
+      return {
+        type: 'trigger.navigateTo' as const,
+        viewId: ViewId(event.viewId),
+      }
+    }),
   },
   guards: {
-    'was opened on hover': ({ context }) => context.initiateEvent === 'hover',
+    'was opened on hover': ({ context }) => context.activatedBy === 'hover',
     'has search query': ({ context }) => !isEmpty(context.searchQuery),
     'search query is empty': ({ context }) => isEmpty(context.searchQuery),
   },
@@ -210,24 +148,19 @@ const _breadcrumbsActorLogic = setup({
   context: ({ input }) => ({
     ...input,
     breadcrumbs: [],
-    initiator: 'root',
-    initiateEvent: 'hover',
+    activatedBy: 'hover',
     selectedFolder: '',
     searchQuery: '',
     folderColumns: [],
   }),
   initial: 'idle',
   entry: [
-    'update breadcrumbs',
+    'update activatedBy',
     'reset selected folder',
   ],
   on: {
     'update.inputs': {
-      actions: [
-        'update inputs',
-        'update breadcrumbs',
-        'update folder columns',
-      ],
+      actions: 'update inputs',
     },
     'searchQuery.change': {
       actions: [
@@ -242,11 +175,11 @@ const _breadcrumbsActorLogic = setup({
       on: {
         'breadcrumbs.mouseEnter.*': {
           target: 'pending',
-          actions: 'update initiator',
+          actions: 'update activatedBy',
         },
         'breadcrumbs.click.*': {
           target: 'active',
-          actions: 'update initiator',
+          actions: 'update activatedBy',
         },
       },
     },
@@ -254,14 +187,14 @@ const _breadcrumbsActorLogic = setup({
     pending: {
       on: {
         'breadcrumbs.mouseEnter.*': {
-          actions: 'update initiator',
+          actions: 'update activatedBy',
         },
         'breadcrumbs.mouseLeave': {
           target: 'idle',
         },
         'breadcrumbs.click.*': {
           target: 'active',
-          actions: 'update initiator',
+          actions: 'update activatedBy',
         },
       },
       after: {
@@ -303,7 +236,6 @@ const _breadcrumbsActorLogic = setup({
           ],
         },
         opened: {
-          entry: 'update folder columns',
           on: {
             'searchQuery.changed': {
               guard: 'has search query',
@@ -324,16 +256,12 @@ const _breadcrumbsActorLogic = setup({
               actions: [
                 'keep dropdown open',
                 'update selected folder',
-                'update folder columns',
               ],
             },
             'select.view': {
               actions: [
                 'keep dropdown open',
-                {
-                  type: 'trigger navigateTo',
-                  params: prop('event'),
-                },
+                'emit trigger.navigateTo',
               ],
             },
           },
@@ -355,10 +283,9 @@ const _breadcrumbsActorLogic = setup({
               target: 'opened',
             },
             'select.view': {
-              actions: {
-                type: 'trigger navigateTo',
-                params: prop('event'),
-              },
+              actions: [
+                'emit trigger.navigateTo',
+              ],
             },
           },
         },
@@ -382,8 +309,8 @@ const _breadcrumbsActorLogic = setup({
   },
 })
 
-export interface BreadcrumbsActorLogic extends ActorLogicFrom<typeof _breadcrumbsActorLogic> {}
-export const breadcrumbsActorLogic: BreadcrumbsActorLogic = _breadcrumbsActorLogic
+export interface NavigationPanelActorLogic extends ActorLogicFrom<typeof _actorLogic> {}
+export const navigationPanelActorLogic: NavigationPanelActorLogic = _actorLogic
 
-export type BreadcrumbsActorSnapshot = SnapshotFrom<BreadcrumbsActorLogic>
-export interface BreadcrumbsActorRef extends ActorRefFrom<BreadcrumbsActorLogic> {}
+export type NavigationPanelActorSnapshot = SnapshotFrom<NavigationPanelActorLogic>
+export interface NavigationPanelActorRef extends ActorRefFrom<NavigationPanelActorLogic> {}
