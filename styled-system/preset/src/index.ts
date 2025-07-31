@@ -53,8 +53,8 @@ export default definePreset({
       },
       '.likec4-shadow-root': {
         display: 'contents',
-        '--mantine-font-family': 'var(--likec4-app-font-default)',
-        '--mantine-font-family-headings': 'var(--likec4-app-font-default)',
+        '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
+        '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
       },
       [`${root}`]: {
         overflow: 'hidden',

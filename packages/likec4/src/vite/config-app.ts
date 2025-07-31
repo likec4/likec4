@@ -1,5 +1,5 @@
 import { viteAliases } from '@/vite/aliases'
-import pandaCss from '@likec4/styles/postcss'
+import pandaCss from '@pandacss/dev/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
@@ -8,8 +8,6 @@ import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
-import devtoolsJson from 'vite-plugin-devtools-json'
-import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
@@ -125,7 +123,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     css: {
       postcss: {
-        plugins: [pandaCss()],
+        plugins: [pandaCss() as any],
       },
     },
     customLogger,
@@ -141,8 +139,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         quoteStyle: 'single',
       }),
       react(),
-      Inspect(),
-      devtoolsJson(),
+      // Inspect(),
     ].concat(
       cfg.outputSingleFile ? [viteSingleFile()] : [],
     ),

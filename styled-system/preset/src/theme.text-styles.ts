@@ -65,7 +65,7 @@ export const textStyles = defineTextStyles({
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: 500,
-          fontSize: '[var(--likec4-text-size)]',
+          fontSize: 'var(--likec4-text-size)',
           lineHeight: 1.15,
           textWrapStyle: 'balance',
           whiteSpace: 'preserve-breaks',
@@ -76,7 +76,7 @@ export const textStyles = defineTextStyles({
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: 400,
-          fontSize: `[var(--likec4-text-size) * 0.74]`,
+          fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
           lineHeight: 1.3,
           textWrapStyle: 'pretty',
           '--text-fz': `[calc(var(--likec4-text-size) * 0.74)]`,

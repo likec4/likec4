@@ -10,7 +10,6 @@ import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../con
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
-import { DiagramBreadcrumbs } from '../breadcrumbs/DiagramBreadcrumbs'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { LayoutDriftNotification } from './LayoutDriftNotification'
@@ -52,8 +51,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
     )}
     onClick={stopPropagation}
   >
-    {
-      /* <Stack align="flex-start" gap="xs">
+    <Stack align="flex-start" gap="xs">
       <LayoutGroup>
         <Group
           className={cx(css.navigationButtons, 'likec4-navigation-webview')}
@@ -66,9 +64,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
     </Stack>
     <Box>
       {search}
-    </Box> */
-    }
-    <DiagramBreadcrumbs />
+    </Box>
   </m.div>
 )
 

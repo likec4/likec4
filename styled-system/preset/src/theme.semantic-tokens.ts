@@ -13,6 +13,19 @@ export const semanticTokens = defineSemanticTokens({
   },
   colors: {
     likec4: {
+      background: {
+        DEFAULT: {
+          description: 'Background color',
+          value: '{colors.mantine.colors.body}',
+        },
+        pattern: {
+          description: 'Background pattern color',
+          value: {
+            base: '{colors.mantine.colors.dark[5]}',
+            _light: '{colors.mantine.colors.gray[4]}',
+          },
+        },
+      },
       mixColor: {
         description: 'Color to be used in color-mix',
         value: {
@@ -47,6 +60,46 @@ export const semanticTokens = defineSemanticTokens({
         label: {
           DEFAULT: { value: '{colors.likec4.gray.relation.label}' },
           bg: { value: '{colors.likec4.gray.relation.label.bg}' },
+        },
+      },
+      panel: {
+        bg: {
+          DEFAULT: {
+            description: 'LikeC4 panel background color',
+            value: {
+              base: `{colors.mantine.colors.body/90}`,
+              _dark: `{colors.mantine.colors.dark[6]/70}`,
+            },
+          },
+          whenPanning: {
+            description: 'LikeC4 panel background color when panning',
+            value: {
+              base: `{colors.mantine.colors.body}`,
+              _dark: `{colors.mantine.colors.dark[6]}`,
+            },
+          },
+        },
+        border: {
+          description: 'LikeC4 panel border color',
+          value: {
+            base: 'transparent',
+            _light: `{colors.mantine.colors.defaultBorder/30}`,
+          },
+        },
+      },
+      dropdown: {
+        bg: {
+          DEFAULT: {
+            description: 'LikeC4 dropdown background color',
+            value: {
+              base: `#FFF`,
+              _dark: `{colors.mantine.colors.dark[6]}`,
+            },
+          },
+        },
+        border: {
+          description: 'LikeC4 dropdown border color',
+          value: '{colors.likec4.panel.border}',
         },
       },
     },

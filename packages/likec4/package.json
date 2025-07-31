@@ -212,7 +212,6 @@
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "unbuild": "catalog:",
-    "vite-plugin-devtools-json": "^0.4.1",
     "vite-plugin-dts": "catalog:vite",
     "vite-plugin-inspect": "^11.1.0",
     "vite-plugin-singlefile": "^2.2.0",

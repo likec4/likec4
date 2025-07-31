@@ -39,19 +39,46 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
   const color = mantineVars.colors[colorkey] as MantineColorValues
   return ({
     [prefix]: {
-      DEFAULT: { value: color[6] },
-      filled: { value: color.filled },
-      filledHover: { value: color.filledHover },
-      light: { value: color.light },
-      lightHover: { value: color.lightHover },
-      lightColor: { value: color.lightColor },
-      outline: { value: color.outline },
-      outlineHover: { value: color.outlineHover },
+      DEFAULT: {
+        description: `Mantine color ${colorkey}`,
+        value: color[6],
+      },
+      filled: {
+        description: `Mantine color ${colorkey} filled`,
+        value: color.filled,
+      },
+      filledHover: {
+        description: `Mantine color ${colorkey} filled hover`,
+        value: color.filledHover,
+      },
+      light: {
+        description: `Mantine color ${colorkey} light`,
+        value: color.light,
+      },
+      lightHover: {
+        description: `Mantine color ${colorkey} light hover`,
+        value: color.lightHover,
+      },
+      lightColor: {
+        description: `Mantine color ${colorkey} light color`,
+        value: color.lightColor,
+      },
+      outline: {
+        description: `Mantine color ${colorkey} outline`,
+        value: color.outline,
+      },
+      outlineHover: {
+        description: `Mantine color ${colorkey} outline hover`,
+        value: color.outlineHover,
+      },
     },
     ...mapToObj(range(0, 10), idx => [
       `${prefix}[${idx}]`,
       // @ts-ignore
-      { value: color[idx] },
+      {
+        description: `Mantine color ${colorkey}.${idx}`,
+        value: color[idx],
+      },
     ]),
   })
 }
@@ -186,19 +213,6 @@ const likec4theme = {
   semanticTokens: {
     colors: {
       likec4: {
-        background: {
-          DEFAULT: {
-            description: 'Background color',
-            value: '{colors.mantine.colors.body}',
-          },
-          pattern: {
-            description: 'Background pattern color',
-            value: {
-              base: '{colors.mantine.colors.dark[5]}',
-              _light: '{colors.mantine.colors.gray[4]}',
-            },
-          },
-        },
         ...fromKeys(ThemeColors, (color) => ({
           ...generateLikeC4ElementColor(color),
           ...generateRelationColors(color),

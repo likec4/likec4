@@ -1,7 +1,7 @@
-views {
+views 'Context' {
 
   view cloud of cloud {
-    title 'Context / Cloud System'
+    title 'Cloud System'
     link https://github.com/likec4/template 'Repository'
 
 
@@ -30,7 +30,7 @@ views {
   }
 
   view view-with-custom-colors {
-    title 'Context / View with custom colors'
+    title 'View with custom colors'
 
     include
       *,

@@ -952,17 +952,17 @@ model {
 
 }
 
-views {
+views "Theme Colors" {
 
   view themecolors of colors {
-    title "Theme Colors"
+    title "All"
     include *
     exclude compoundtest
   }
 
 
   view themecolor_primary of primary {
-    title "Theme Color: primary"
+    title "Primary"
     include *, colors
 
     include element.kind = compound
@@ -972,7 +972,7 @@ views {
   }
 
   view themecolor_blue of blue {
-    title "Theme Color: blue"
+    title "Blue"
     include *, colors
 
     include element.kind = compound
@@ -982,7 +982,7 @@ views {
   }
 
   view themecolor_secondary of secondary {
-    title "Theme Color: secondary"
+    title "Secondary"
     include *, colors
 
     include element.kind = compound
@@ -992,7 +992,7 @@ views {
   }
 
   view themecolor_sky of sky {
-    title "Theme Color: sky"
+    title "Sky"
     include *, colors
 
     include element.kind = compound
@@ -1002,7 +1002,7 @@ views {
   }
 
   view themecolor_muted of muted {
-    title "Theme Color: muted"
+    title "Muted"
     include *, colors
 
     include element.kind = compound
@@ -1012,7 +1012,7 @@ views {
   }
 
   view themecolor_slate of slate {
-    title "Theme Color: slate"
+    title "Slate"
     include *, colors
 
     include element.kind = compound
@@ -1022,7 +1022,7 @@ views {
   }
 
   view themecolor_gray of gray {
-    title "Theme Color: gray"
+    title "Gray"
     include *, colors
 
     include element.kind = compound
@@ -1032,7 +1032,7 @@ views {
   }
 
   view themecolor_red of red {
-    title "Theme Color: red"
+    title "Red"
     include *, colors
 
     include element.kind = compound
@@ -1042,7 +1042,7 @@ views {
   }
 
   view themecolor_green of green {
-    title "Theme Color: green"
+    title "Green"
     include *, colors
 
     include element.kind = compound
@@ -1052,7 +1052,7 @@ views {
   }
 
   view themecolor_amber of amber {
-    title "Theme Color: amber"
+    title "Amber"
     include *, colors
 
     include element.kind = compound
@@ -1062,7 +1062,7 @@ views {
   }
 
   view themecolor_indigo of indigo {
-    title "Theme Color: indigo"
+    title "Indigo"
     include *, colors
 
     include element.kind = compound

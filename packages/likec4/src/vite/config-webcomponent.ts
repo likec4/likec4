@@ -1,6 +1,6 @@
 import { viteAliases } from '@/vite/aliases'
 import { logger as consola } from '@likec4/log'
-import pandaCss from '@likec4/styles/postcss'
+import pandaCss from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -78,7 +78,7 @@ export async function viteWebcomponentConfig({
     },
     css: {
       postcss: {
-        plugins: [pandaCss()],
+        plugins: [pandaCss() as any],
       },
     },
     plugins: [
