@@ -3,14 +3,16 @@ import { css } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
 import {
   Burger,
+  Divider,
   Popover,
   PopoverTarget,
+  ThemeIcon,
   UnstyledButton,
 } from '@mantine/core'
-import { ThemeIcon } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import { memo } from 'react'
 import { useMantinePortalProps } from '../../../hooks/useMantinePortalProps'
+import { Breadcrumbs } from './_common'
 import {
   BreadcrumbsActorContext,
   useBreadcrumbsActorRef,
@@ -88,17 +90,20 @@ const DiagramBreadcrumbsImpl = () => {
       offset={{
         mainAxis: 4,
       }}
+      middlewares={{
+        flip: false,
+      }}
       opened={opened}
       shadow="md"
       position="bottom-start"
       trapFocus
+      withinPortal={false}
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-      onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
-      {...portalProps}>
+      onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}>
       <PopoverTarget>
         <HStack
           layerStyle="likec4.panel"
-          gap={1}
+          gap={'2xs'}
           cursor="pointer"
           paddingRight="md"
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
@@ -113,10 +118,10 @@ const DiagramBreadcrumbsImpl = () => {
               actor.send({ type: 'breadcrumbs.click.root' })
             }}
           />
-          {breadcrumbs.flatMap((s, index) => [
-            <BreadcrumbsSeparator key={`separator-${index}`} />,
-            s,
-          ])}
+          {breadcrumbs.length > 1 && <Divider orientation="vertical" />}
+          <Breadcrumbs>
+            {breadcrumbs}
+          </Breadcrumbs>
         </HStack>
       </PopoverTarget>
       <DiagramBreadcrumbsDropdown />
@@ -126,7 +131,7 @@ const DiagramBreadcrumbsImpl = () => {
 
 const RootFolderBtn = Burger.withProps({
   size: 'xs',
-  mr: 'var(--spacing-2)',
+  // mr: 'var(--spacing-2)',
   className: css({
     '--burger-color': {
       base: '{colors.mantine.colors.dimmed}',

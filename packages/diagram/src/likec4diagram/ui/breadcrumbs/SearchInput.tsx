@@ -23,21 +23,28 @@ export function SearchInput({ onKeyDown, ...props }: {
       value={_value}
       onKeyDown={onKeyDown}
       onChange={e => handleChange(e.currentTarget.value)}
-      className={css({
-        backgroundColor: {
-          base: 'mantine.colors.gray[0]',
-          _dark: 'mantine.colors.dark[5]/80',
-          _hover: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[4]',
+      classNames={{
+        wrapper: css({
+          backgroundColor: {
+            base: 'mantine.colors.gray[0]',
+            _dark: 'mantine.colors.dark[5]/80',
+            _hover: {
+              base: 'mantine.colors.gray[1]',
+              _dark: 'mantine.colors.dark[4]',
+            },
+            _focus: {
+              base: 'mantine.colors.gray[1]',
+              _dark: 'mantine.colors.dark[4]',
+            },
           },
+          rounded: 'sm',
+        }),
+        input: css({
           _focus: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[4]',
+            outline: 'none',
           },
-        },
-        rounded: 'sm',
-      })}
+        }),
+      }}
       style={{
         ['--input-fz']: 'var(--mantine-font-size-sm)',
       }}

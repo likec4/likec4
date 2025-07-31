@@ -68,7 +68,7 @@ export const semanticTokens = defineSemanticTokens({
             description: 'LikeC4 panel background color',
             value: {
               base: `{colors.mantine.colors.body/90}`,
-              _dark: `{colors.mantine.colors.dark[6]/70}`,
+              _dark: `{colors.mantine.colors.dark[6]/80}`,
             },
           },
           whenPanning: {

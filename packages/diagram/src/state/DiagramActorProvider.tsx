@@ -3,6 +3,7 @@ import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
@@ -117,9 +118,11 @@ export function DiagramActorProvider({
   return (
     <DiagramActorContextProvider value={actorRef}>
       <DiagramFeatures overrides={toggledFeatures}>
-        <CurrentViewModelProvider>
-          {children}
-        </CurrentViewModelProvider>
+        <ErrorBoundary>
+          <CurrentViewModelProvider>
+            {children}
+          </CurrentViewModelProvider>
+        </ErrorBoundary>
       </DiagramFeatures>
     </DiagramActorContextProvider>
   )
@@ -130,17 +133,24 @@ function CurrentViewModelProvider({
 }: PropsWithChildren) {
   const viewId = useCurrentViewId()
   const likec4model = useLikeC4Model()
-  const [viewmodel, setViewmodel] = useState(() => likec4model.findView(viewId))
+  const [viewmodel, setViewmodel] = useState(() => likec4model.view(viewId))
 
   useEffect(() => {
-    setViewmodel(likec4model.findView(viewId))
+    setViewmodel(current => {
+      const nextviewmodel = likec4model.findView(viewId)
+      if (!nextviewmodel) {
+        console.error(`View "${viewId}" not found in likec4model, current viewmodel: ${current.id}`, {
+          currentViewModel: current,
+          likec4model,
+        })
+        return current
+      }
+      return nextviewmodel
+    })
   }, [likec4model, viewId])
 
-  if (!viewmodel) {
-    throw new Error(`View "${viewId}" not found`)
-  }
   if (!viewmodel.isDiagram()) {
-    throw new Error(`View "${viewId}" is not diagram`)
+    console.warn(`View "${viewId}" is not diagram.\nMake sure you have LikeC4ModelProvider with layouted model.`)
   }
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>

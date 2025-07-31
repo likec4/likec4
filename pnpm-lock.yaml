@@ -809,6 +809,9 @@ importers:
       d3-shape:
         specifier: ^3.2.0
         version: 3.2.0
+      esm-env:
+        specifier: catalog:utils
+        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2

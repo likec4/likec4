@@ -1,9 +1,9 @@
 import { defineSlotRecipe } from '@pandacss/dev'
 
-export const navBtn = defineSlotRecipe({
-  className: 'likec4-navbtn',
-  description: 'Navigation Button (based on Mantine NavLink)',
-  jsx: ['NavBtn'],
+export const navigationLink = defineSlotRecipe({
+  className: 'likec4-navlink',
+  description: 'Navigation Link (classes for Mantine NavLink)',
+  jsx: ['NavLink'],
   slots: ['root', 'body', 'section', 'label', 'description'],
   base: {
     root: {
@@ -19,7 +19,7 @@ export const navBtn = defineSlotRecipe({
       },
     },
     body: {
-      gap: 2,
+      gap: '2',
       display: 'flex',
       flexDirection: 'column',
     },
@@ -33,7 +33,7 @@ export const navBtn = defineSlotRecipe({
       display: 'block',
       fontSize: 'sm',
       fontWeight: '500',
-      lineHeight: 1.1,
+      lineHeight: 1.2,
     },
     description: {
       display: 'block',

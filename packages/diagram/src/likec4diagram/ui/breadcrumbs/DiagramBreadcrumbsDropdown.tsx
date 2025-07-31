@@ -1,7 +1,7 @@
 import { LikeC4ViewModel, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
 import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
-import { HStack, VStack } from '@likec4/styles/jsx'
+import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
 import {
   Breadcrumbs,
@@ -23,7 +23,7 @@ import {
 import { useSelector } from '@xstate/react'
 import type { ComponentPropsWithoutRef } from 'react'
 import { isArray, pipe, sort } from 'remeda'
-import { NavBtn } from '../../../components/NavBtn'
+import { NavigationLink } from '../../../components/NavigationLink'
 import { useLikeC4Model } from '../../../likec4model'
 import type { BreadcrumbsActorSnapshot, DropdownColumnItem } from './actor'
 import {
@@ -282,7 +282,6 @@ const ViewTypeIcon = {
 
 const DropdownScrollArea = ScrollAreaAutosize.withProps({
   scrollbars: 'y',
-  offsetScrollbars: true,
   className: css({
     maxHeight: [
       '70vh',
@@ -293,10 +292,10 @@ const DropdownScrollArea = ScrollAreaAutosize.withProps({
 
 function FolderColumns({ columns }: { columns: Selected['columns'] }) {
   return (
-    <div className={hstack({ gap: '0', alignItems: 'flex-start', position: 'relative' })}>
+    <div className={hstack({ gap: 'xs', alignItems: 'flex-start', position: 'relative' })}>
       {columns.flatMap((column, i) => [
-        i > 0 && <Divider orientation="vertical" mr={'xs'} key={'divider' + i} />,
-        <FolderColumn key={'column' + i} items={column.items} />,
+        i > 0 && <Divider orientation="vertical" key={'divider' + i} />,
+        <FolderColumn key={column.folderPath} items={column.items} />,
       ])}
     </div>
   )
@@ -310,7 +309,7 @@ function FolderColumn({ items }: {
     switch (item.type) {
       case 'folder':
         return (
-          <NavBtn
+          <NavigationLink
             key={item.folderPath}
             variant="light"
             active={item.selected}
@@ -327,7 +326,7 @@ function FolderColumn({ items }: {
         )
       case 'view':
         return (
-          <NavBtn
+          <NavigationLink
             key={item.viewId}
             variant="filled"
             active={item.selected}
@@ -349,10 +348,12 @@ function FolderColumn({ items }: {
   })
 
   return (
-    <DropdownScrollArea>
-      <VStack gap={1}>
-        {components}
-      </VStack>
-    </DropdownScrollArea>
+    <Box pb={'4'}>
+      <DropdownScrollArea>
+        <VStack gap={1}>
+          {components}
+        </VStack>
+      </DropdownScrollArea>
+    </Box>
   )
 }
