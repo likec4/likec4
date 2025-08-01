@@ -16,7 +16,7 @@ export const Route = createFileRoute('/share/$shareId/view/$viewId')({
 })
 
 function useLikeC4DiagramView(viewId: string): DiagramView | null {
-  const viewModel = useLikeC4Model('layouted').findView(viewId)
+  const viewModel = useLikeC4Model().findView(viewId)
   if (!viewModel || !viewModel.isDiagram()) {
     return null
   }
