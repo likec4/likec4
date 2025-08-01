@@ -1,7 +1,8 @@
 import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import { useCustomCompareEffect, useDeepCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
@@ -95,13 +96,21 @@ export function DiagramActorProvider({
   )
 
   const features = useEnabledFeatures()
-  useEffect(() => {
-    actorRef.send({ type: 'update.features', features })
-  }, [features])
+  useCustomCompareEffect(
+    () => {
+      actorRef.send({ type: 'update.features', features })
+    },
+    [features],
+    shallowEqual,
+  )
 
-  useEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
-  }, [zoomable, pannable, fitViewPadding, nodesSelectable])
+  useCustomCompareEffect(
+    () => {
+      actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
+    },
+    [zoomable, pannable, fitViewPadding, nodesSelectable],
+    deepEqual,
+  )
 
   const { xyedges, xynodes } = useViewToNodesEdges({
     view,
