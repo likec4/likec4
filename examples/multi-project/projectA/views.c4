@@ -3,6 +3,8 @@ views 'Context' {
   view cloud of cloud {
     title 'Cloud System'
     link https://github.com/likec4/template 'Repository'
+    link http://localhost:5173/project/projectA/view/cloud/
+
 
 
     include

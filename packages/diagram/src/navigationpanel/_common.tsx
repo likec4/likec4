@@ -1,6 +1,17 @@
-import { css } from '@likec4/styles/css'
-import { ActionIcon, Breadcrumbs as MantineBreadcrumbs, ThemeIcon } from '@mantine/core'
-import { IconChevronRight, IconMenu2 } from '@tabler/icons-react'
+import { css, cx } from '@likec4/styles/css'
+import {
+  type NavigationPanelActionIconVariant,
+  navigationPanelActionIcon,
+} from '@likec4/styles/recipes'
+import {
+  type ActionIconProps,
+  ActionIcon,
+  Breadcrumbs as MantineBreadcrumbs,
+  createPolymorphicComponent,
+  ThemeIcon,
+} from '@mantine/core'
+import { IconChevronRight } from '@tabler/icons-react'
+import { forwardRef } from 'react'
 
 export const BreadcrumbsSeparator = () => (
   <ThemeIcon variant="transparent" size={16}>
@@ -20,23 +31,43 @@ export const Breadcrumbs = MantineBreadcrumbs.withProps({
   separatorMargin: 4,
 })
 
-export const RootActionIcon = ActionIcon.withProps({
-  size: 'md',
-  variant: 'subtle',
-  radius: 'md',
-  color: 'gray',
-  children: <IconMenu2 style={{ width: '80%', height: '80%' }} />,
-  className: css({
-    color: {
-      base: 'mantine.colors.dimmed',
-      _hover: 'mantine.colors.text',
-    },
-  }),
-  // mr: 'var(--spacing-2)',
-  // className: css({
-  //   '--burger-color': {
-  //     base: '{colors.mantine.colors.dimmed}',
-  //     _hover: '{colors.mantine.colors.text}',
-  //   },
-  // }),
-})
+export type PanelActionIconProps =
+  & Partial<NavigationPanelActionIconVariant>
+  & Omit<ActionIconProps, keyof NavigationPanelActionIconVariant>
+// & ElementProps<'button'>
+
+export const PanelActionIcon = createPolymorphicComponent<'button', PanelActionIconProps>(
+  forwardRef<HTMLButtonElement, PanelActionIconProps>(({
+    variant = 'default',
+    className,
+    ...others
+  }, ref) => (
+    <ActionIcon
+      size="md"
+      variant="transparent"
+      radius="sm"
+      {...others}
+      className={cx(
+        className,
+        navigationPanelActionIcon({ variant }),
+      )}
+      ref={ref} />
+  )),
+)
+
+// export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProps>(({
+//   variant = 'default',
+//   className,
+//   ...props
+// }, ref) => (
+//   <ActionIcon
+//     size="md"
+//     variant="transparent"
+//     radius="sm"
+//     {...props}
+//     className={cx(
+//       className,
+//       navigationPanelActionIcon({ variant }),
+//     )}
+//     ref={ref} />
+// ))

@@ -21,6 +21,7 @@ export const NavigationLink = forwardRef<HTMLButtonElement, NavigationLinkProps>
     })}
     className={cx(
       'group',
+      'mantine-active',
       className,
     )}
     ref={ref}

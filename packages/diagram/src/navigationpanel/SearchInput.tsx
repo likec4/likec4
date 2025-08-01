@@ -1,8 +1,9 @@
 import { css } from '@likec4/styles/css'
-import { Input, rem, ThemeIcon } from '@mantine/core'
+import { Button, Input, rem } from '@mantine/core'
 import { useUncontrolled } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
 import type { KeyboardEventHandler } from 'react'
+import { isEmpty } from 'remeda'
 
 export function SearchInput({ onKeyDown, ...props }: {
   value?: string
@@ -17,7 +18,7 @@ export function SearchInput({ onKeyDown, ...props }: {
   return (
     <Input
       size="xs"
-      placeholder="Search"
+      placeholder="Search by title or id"
       variant="unstyled"
       height={rem(26)}
       value={_value}
@@ -25,6 +26,7 @@ export function SearchInput({ onKeyDown, ...props }: {
       onChange={e => handleChange(e.currentTarget.value)}
       classNames={{
         wrapper: css({
+          flexGrow: 1,
           backgroundColor: {
             base: 'mantine.colors.gray[1]',
             _dark: 'mantine.colors.dark[5]/80',
@@ -40,6 +42,9 @@ export function SearchInput({ onKeyDown, ...props }: {
           rounded: 'sm',
         }),
         input: css({
+          _placeholder: {
+            color: 'mantine.colors.dimmed',
+          },
           _focus: {
             outline: 'none',
           },
@@ -48,11 +53,25 @@ export function SearchInput({ onKeyDown, ...props }: {
       style={{
         ['--input-fz']: 'var(--mantine-font-size-sm)',
       }}
-      leftSection={
-        <ThemeIcon variant="transparent" size={14} c="dimmed">
-          <IconSearch />
-        </ThemeIcon>
-      }
+      leftSection={<IconSearch size={14} />}
+      rightSectionPointerEvents="all"
+      rightSectionWidth={'min-content'}
+      rightSection={!props.value || isEmpty(props.value)
+        ? null
+        : (
+          <Button
+            variant="subtle"
+            h="100%"
+            size={'compact-xs'}
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleChange('')
+            }}
+          >
+            clear
+          </Button>
+        )}
     />
   )
 }

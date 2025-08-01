@@ -1,20 +1,34 @@
+import { cx } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
 import {
-  Divider,
+  Button,
   Popover,
   PopoverTarget,
+  Tooltip,
   UnstyledButton,
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
+import {
+  IconInfoCircleFilled,
+  IconInfoSquareRounded,
+  IconLink,
+  IconMenu2,
+  IconPlayerPlayFilled,
+} from '@tabler/icons-react'
 import { useActorRef, useSelector } from '@xstate/react'
 import { deepEqual } from 'fast-equals'
-import { forwardRef, memo, useEffect } from 'react'
+import * as m from 'motion/react-m'
+import { memo, useEffect } from 'react'
+import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useDiagramActorRef } from '../hooks/safeContext'
+import { useDiagram } from '../hooks/useDiagram'
 import { useCurrentViewModel } from '../likec4model/useCurrentViewModel'
-import { Breadcrumbs, RootActionIcon } from './_common'
+import { BreadcrumbsSeparator, PanelActionIcon } from './_common'
 import { type NavigationPanelActorRef, type NavigationPanelActorSnapshot, navigationPanelActorLogic } from './actor'
-import { NavigationPanelActorContextProvider } from './hooks'
+import { NavigationPanelActorContextProvider, useNavigationActor } from './hooks'
+import { NavigationButtons } from './NavigationButtons'
 import { NavigationPanelDropdown } from './NavigationPanelDropdown'
+import { SearchControl } from './SearchControl'
 import { breadcrumbTitle } from './styles.css'
 
 export const NavigationPanel = memo(() => {
@@ -68,9 +82,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
     >
-      <PopoverTarget>
-        <ViewBreadcrumbs actor={actor} />
-      </PopoverTarget>
+      <NavigationPanelPopoverTarget actor={actor} />
       <NavigationPanelDropdown />
     </Popover>
   )
@@ -84,6 +96,8 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
       title: s.title,
     })),
     viewTitle: context.viewModel.titleOrUntitled,
+    isDynamicView: context.viewModel.isDynamicView(),
+    hasLinks: context.viewModel.links.length > 0,
     //   id: context.viewModel.id,
     //   path: context.viewModel.viewPath,
     //   title: context.viewModel.titleOrUntitled,
@@ -92,16 +106,25 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
   }
 }
 
-const ViewBreadcrumbs = forwardRef<HTMLDivElement, { actor: NavigationPanelActorRef }>(({ actor }, ref) => {
+const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRef }) => {
+  const {
+    enableSearch,
+    enableNavigationButtons,
+    enableDynamicViewWalkthrough,
+  } = useEnabledFeatures()
   const {
     folders,
     viewTitle,
+    isDynamicView,
   } = useSelector(actor, selectBreadcrumbs, deepEqual)
 
-  const folderBreadcrumbs = folders.map(f => (
+  const folderBreadcrumbs = folders.flatMap((f, i) => [
     <UnstyledButton
       key={f.path}
-      className={breadcrumbTitle({ dimmed: true, truncate: true })}
+      className={cx(
+        breadcrumbTitle({ dimmed: true, truncate: true }),
+        'mantine-active',
+      )}
       title={f.title}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath: f.path })}
       onClick={e => {
@@ -110,13 +133,17 @@ const ViewBreadcrumbs = forwardRef<HTMLDivElement, { actor: NavigationPanelActor
       }}
     >
       {f.title}
-    </UnstyledButton>
-  ))
+    </UnstyledButton>,
+    <BreadcrumbsSeparator key={`separator-${i}`} />,
+  ])
 
   const viewBreadcrumb = (
     <UnstyledButton
       key={'view-title'}
-      className={breadcrumbTitle({ truncate: true })}
+      className={cx(
+        breadcrumbTitle({ truncate: true }),
+        'mantine-active',
+      )}
       maw={300}
       title={viewTitle}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.viewtitle' })}
@@ -130,28 +157,99 @@ const ViewBreadcrumbs = forwardRef<HTMLDivElement, { actor: NavigationPanelActor
   )
 
   return (
-    <HStack
-      ref={ref}
-      layerStyle="likec4.panel"
-      gap={'2xs'}
-      cursor="pointer"
-      paddingRight="md"
-      onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
+    <PopoverTarget>
+      <HStack
+        layerStyle="likec4.panel"
+        gap={'xs'}
+        cursor="pointer"
+        paddingRight="md"
+        onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
+      >
+        <PanelActionIcon
+          variant="subtle"
+          component={m.button}
+          whileHover={{
+            scale: 1.085,
+          }}
+          whileTap={{
+            scale: 1,
+            translateY: 1,
+          }}
+          onMouseEnter={e => {
+            actor.send({ type: 'breadcrumbs.mouseEnter.root' })
+          }}
+          onClick={e => {
+            e.stopPropagation()
+            actor.send({ type: 'breadcrumbs.click.root' })
+          }}
+          children={<IconMenu2 style={{ width: '80%', height: '80%' }} />}
+        />
+        {enableNavigationButtons && <NavigationButtons />}
+        <HStack gap={3} mr={'md'}>
+          {folderBreadcrumbs}
+          {viewBreadcrumb}
+        </HStack>
+        {
+          /* <HStack gap={1}>
+          <PanelActionIcon
+            variant="subtle"
+            size={24}
+            component={m.button}
+            whileHover={{
+              scale: 1.085,
+            }}
+            whileTap={{
+              scale: 1,
+              translateY: 1,
+            }}
+            children={<IconInfoCircleFilled style={{ width: '85%', height: '85%' }} />}
+          />
+          <PanelActionIcon
+            variant="subtle"
+            size={24}
+            component={m.button}
+            whileHover={{
+              scale: 1.085,
+            }}
+            whileTap={{
+              scale: 1,
+              translateY: 1,
+            }}
+            children={<IconLink style={{ width: '85%', height: '85%' }} />}
+          />
+        </HStack> */
+        }
+
+        {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewWalkthrough />}
+        {enableSearch && <SearchControl />}
+      </HStack>
+    </PopoverTarget>
+  )
+}
+
+const DynamicViewWalkthrough = () => {
+  const diagram = useDiagram()
+  const actor = useNavigationActor()
+  return (
+    <Tooltip
+      label="Start Dynamic View Walkthrough"
+      offset={10}
+      openDelay={300}
+      color="dark"
     >
-      <RootActionIcon
-        key="root"
-        onMouseEnter={e => {
-          actor.send({ type: 'breadcrumbs.mouseEnter.root' })
-        }}
+      <Button
+        variant="filled"
+        size="xs"
+        fw="500"
         onClick={e => {
           e.stopPropagation()
-          actor.send({ type: 'breadcrumbs.click.root' })
-        }} />
-      {folderBreadcrumbs.length > 1 && <Divider orientation="vertical" />}
-      <Breadcrumbs>
-        {folderBreadcrumbs}
-        {viewBreadcrumb}
-      </Breadcrumbs>
-    </HStack>
+          actor.closeDropdown()
+          diagram.startWalkthrough()
+        }}
+        rightSection={<IconPlayerPlayFilled size={10} />}
+      >
+        Start
+      </Button>
+    </Tooltip>
   )
-})
+}

@@ -74,7 +74,7 @@ export const layerStyles = defineLayerStyles({
     panel: {
       description: 'LikeC4 panel layer',
       value: {
-        paddingInline: 'sm',
+        paddingInline: 'xs',
         paddingBlock: '2xs',
         backgroundColor: {
           base: 'likec4.panel.bg',

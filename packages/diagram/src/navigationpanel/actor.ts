@@ -114,6 +114,7 @@ const _actorLogic = setup({
     }),
     'update inputs': assign(({ context, event }) => {
       assertEvent(event, 'update.inputs')
+      const viewChanged = event.inputs.viewModel.id !== context.viewModel.id
       let selectedFolder = context.selectedFolder
       if (!event.inputs.viewModel.folder.path.startsWith(selectedFolder)) {
         selectedFolder = event.inputs.viewModel.folder.path
@@ -121,6 +122,8 @@ const _actorLogic = setup({
       return {
         viewModel: event.inputs.viewModel,
         selectedFolder,
+        // allow dropdown to close on mouse leave if view changed
+        activatedBy: viewChanged ? 'hover' : context.activatedBy,
       }
     }),
     'reset search query': assign({
@@ -260,7 +263,6 @@ const _actorLogic = setup({
             },
             'select.view': {
               actions: [
-                'keep dropdown open',
                 'emit trigger.navigateTo',
               ],
             },

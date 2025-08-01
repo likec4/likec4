@@ -402,3 +402,55 @@ export const markdownBlock = defineRecipe({
     conditions: ['hover'],
   }],
 })
+
+export const navigationPanelActionIcon = defineRecipe({
+  className: 'likec4-navigation-panel-icon',
+  jsx: ['PanelActionIcon'],
+  description: 'ActionIcon for navigation panel',
+  base: {
+    color: {
+      base: 'mantine.colors.text/70',
+      _disabled: 'mantine.colors.dimmed',
+      _hover: {
+        base: 'mantine.colors.text',
+        _disabled: 'mantine.colors.dimmed',
+      },
+    },
+    _disabled: {
+      opacity: 0.5,
+    },
+  },
+  variants: {
+    variant: {
+      'default': {
+        backgroundColor: {
+          base: 'mantine.colors.gray[1]',
+          _dark: 'mantine.colors.dark[7]/70',
+          _hover: {
+            _notDisabled: {
+              base: 'mantine.colors.gray[2]',
+              _dark: 'mantine.colors.dark[8]',
+            },
+          },
+        },
+      },
+      'subtle': {
+        backgroundColor: {
+          base: '[transparent]',
+          _hover: {
+            _notDisabled: {
+              base: 'mantine.colors.gray[2]/80',
+              _dark: 'mantine.colors.dark[8]/80',
+            },
+          },
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+  staticCss: [{
+    variant: ['*'],
+  }],
+})

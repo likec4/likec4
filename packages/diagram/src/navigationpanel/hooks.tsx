@@ -1,6 +1,6 @@
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { type DependencyList, createContext, useContext } from 'react'
+import { type DependencyList, createContext, useContext, useMemo } from 'react'
 import type { NavigationPanelActorContext, NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
 
 const NavigationPanelActorSafeContext = createContext<NavigationPanelActorRef>(null as any)
@@ -11,7 +11,7 @@ export const NavigationPanelActorContextProvider = NavigationPanelActorSafeConte
 export const useNavigationActorRef = () => {
   const ctx = useContext(NavigationPanelActorSafeContext)
   if (ctx === null) {
-    throw new Error('NavigationPanelActorRef is not provided')
+    throw new Error('NavigationPanelActorRef is not found in the context')
   }
   return ctx
 }
@@ -31,4 +31,14 @@ export function useNavigationActorContext<T = unknown>(
   deps?: DependencyList,
 ): T {
   return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare, deps)
+}
+
+export function useNavigationActor() {
+  const actorRef = useNavigationActorRef()
+
+  return useMemo(() => ({
+    send: actorRef.send,
+    clearSearch: () => actorRef.send({ type: 'searchQuery.change', value: '' }),
+    closeDropdown: () => actorRef.send({ type: 'dropdown.dismiss' }),
+  }), [actorRef])
 }

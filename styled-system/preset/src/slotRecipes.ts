@@ -10,10 +10,11 @@ export const navigationLink = defineSlotRecipe({
       rounded: 'sm',
       px: 'xs',
       py: '2xs',
-      _dark: {
+      backgroundColor: {
         _hover: {
           '&:not([data-active])': {
-            backgroundColor: 'mantine.colors.dark[5]',
+            base: 'mantine.colors.gray[1]',
+            _dark: 'mantine.colors.dark[5]',
           },
         },
       },

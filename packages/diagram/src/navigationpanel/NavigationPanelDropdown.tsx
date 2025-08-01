@@ -55,21 +55,37 @@ export function NavigationPanelDropdown() {
         'nowheel',
         vstack({
           layerStyle: 'likec4.dropdown',
-          gap: 'xs',
+          gap: 'sm',
         }),
       )}
       data-likec4-breadcrumbs-dropdown
       onMouseLeave={() => actor.send({ type: 'dropdown.mouseLeave' })}
       onMouseEnter={() => actor.send({ type: 'dropdown.mouseEnter' })}
     >
-      <SearchInput
-        value={searchQuery}
-        onChange={setSearchQuery}
-        data-likec4-focusable
-        onKeyDown={scopedKeydownHandler}
-      />
+      <HStack gap="xs">
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          data-likec4-focusable
+          onKeyDown={scopedKeydownHandler}
+        />
+        {
+          /* <Button
+          variant="default"
+          size={'xs'}
+          onClick={(e) => {
+            e.stopPropagation()
+            actor.send({ type: 'dropdown.dismiss' })
+          }}
+        >
+          Close
+        </Button> */
+        }
+      </HStack>
       <ScrollAreaAutosize
-        scrollbars="x"
+        scrollbars="xy"
+        type="auto"
+        offsetScrollbars="present"
         classNames={{
           root: css({
             maxWidth: [
@@ -111,7 +127,7 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
   const highlight = isSearchByPath ? searchQuery.split(VIEW_FOLDERS_SEPARATOR) : searchQuery
 
   return (
-    <DropdownScrollArea
+    <ScrollAreaAutosize
       scrollbars="xy"
       offsetScrollbars={false}
       className={css({
@@ -141,7 +157,7 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
           />
         ))}
       </VStack>
-    </DropdownScrollArea>
+    </ScrollAreaAutosize>
   )
 }
 interface FoundedViewProps {
@@ -258,8 +274,8 @@ const folderIcon = (
     className={css({
       opacity: {
         base: 0.3,
-        _groupHover: 0.4,
-        _groupActive: 0.7,
+        _groupHover: 0.5,
+        _groupActive: 0.5,
       },
     })} />
 )
@@ -269,7 +285,7 @@ const viewTypeIconCss = css({
     base: 0.3,
     _dark: 0.5,
     _groupHover: 0.7,
-    _groupActive: 0.8,
+    _groupActive: 0.7,
   },
 })
 const ViewTypeIcon = {
@@ -284,12 +300,12 @@ const ViewTypeIcon = {
   dynamic: <IconStack2 size={16} stroke={1.5} className={viewTypeIconCss} />,
 }
 
-const DropdownScrollArea = ScrollAreaAutosize.withProps({
+const ColumnScrollArea = ScrollAreaAutosize.withProps({
   scrollbars: 'y',
   className: css({
     maxHeight: [
-      '70vh',
-      'calc(100cqh - 250px)',
+      'calc(100vh - 50px)',
+      'calc(100cqh - 50px)',
     ],
   }),
 })
@@ -370,7 +386,7 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
   const actor = useNavigationActorRef()
   return (
     <Box pb={'4'}>
-      <DropdownScrollArea>
+      <ColumnScrollArea>
         <VStack gap={1}>
           {data.items.map((item, i) => (
             <FolderColumnItem
@@ -387,7 +403,7 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
             />
           ))}
         </VStack>
-      </DropdownScrollArea>
+      </ColumnScrollArea>
     </Box>
   )
 }
