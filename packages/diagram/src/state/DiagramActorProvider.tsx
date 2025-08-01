@@ -8,7 +8,7 @@ import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
 import { useCurrentViewId } from '../hooks/useCurrentViewId'
-import type { PaddingWithUnit } from '../LikeC4Diagram.props'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
 import { CurrentViewModelContext } from '../likec4model/LikeC4ModelContext'
@@ -18,7 +18,7 @@ import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorSnapshot } from './types'
 
 const selectToggledFeatures = (state: DiagramActorSnapshot) => {
-  if (state.context.features.enableReadOnly) {
+  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
     return {
       ...state.context.toggledFeatures,
       enableReadOnly: true,
@@ -39,7 +39,7 @@ export function DiagramActorProvider({
   view: DiagramView
   zoomable: boolean
   pannable: boolean
-  fitViewPadding: PaddingWithUnit
+  fitViewPadding: ViewPadding
   nodesSelectable: boolean
   where: WhereOperator | null
 }>) {

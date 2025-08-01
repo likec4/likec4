@@ -7,22 +7,37 @@ import {
   type ActionIconProps,
   ActionIcon,
   Breadcrumbs as MantineBreadcrumbs,
-  createPolymorphicComponent,
   ThemeIcon,
+  Tooltip as MantineTooltip,
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
+import type { HTMLMotionProps } from 'motion/react'
+import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 
+export const Tooltip = MantineTooltip.withProps({
+  color: 'dark',
+  fz: 'xs',
+  openDelay: 600,
+  closeDelay: 120,
+  label: '',
+  children: null,
+  offset: 8,
+  withinPortal: false,
+})
+
 export const BreadcrumbsSeparator = () => (
-  <ThemeIcon variant="transparent" size={16}>
-    <IconChevronRight
-      // size={14}
-      className={css({
-        color: {
-          base: 'mantine.colors.gray[5]',
-          _dark: 'mantine.colors.dark[3]',
-        },
-      })} />
+  <ThemeIcon
+    visibleFrom="sm"
+    variant="transparent"
+    size={16}
+    className={css({
+      color: {
+        base: 'mantine.colors.gray[5]',
+        _dark: 'mantine.colors.dark[3]',
+      },
+    })}>
+    <IconChevronRight />
   </ThemeIcon>
 )
 
@@ -34,40 +49,33 @@ export const Breadcrumbs = MantineBreadcrumbs.withProps({
 export type PanelActionIconProps =
   & Partial<NavigationPanelActionIconVariant>
   & Omit<ActionIconProps, keyof NavigationPanelActionIconVariant>
-// & ElementProps<'button'>
+  & HTMLMotionProps<'button'>
 
-export const PanelActionIcon = createPolymorphicComponent<'button', PanelActionIconProps>(
-  forwardRef<HTMLButtonElement, PanelActionIconProps>(({
-    variant = 'default',
-    className,
-    ...others
-  }, ref) => (
-    <ActionIcon
-      size="md"
-      variant="transparent"
-      radius="sm"
-      {...others}
-      className={cx(
-        className,
-        navigationPanelActionIcon({ variant }),
-      )}
-      ref={ref} />
-  )),
-)
-
-// export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProps>(({
-//   variant = 'default',
-//   className,
-//   ...props
-// }, ref) => (
-//   <ActionIcon
-//     size="md"
-//     variant="transparent"
-//     radius="sm"
-//     {...props}
-//     className={cx(
-//       className,
-//       navigationPanelActionIcon({ variant }),
-//     )}
-//     ref={ref} />
-// ))
+export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProps>(({
+  variant = 'default',
+  className,
+  disabled = false,
+  ...others
+}, ref) => (
+  <ActionIcon
+    size="md"
+    variant="transparent"
+    radius="sm"
+    component={m.button}
+    {...!disabled && {
+      whileHover: {
+        scale: 1.085,
+      },
+      whileTap: {
+        scale: 1,
+        translateY: 1,
+      },
+    }}
+    disabled={disabled}
+    {...others}
+    className={cx(
+      className,
+      navigationPanelActionIcon({ variant }),
+    )}
+    ref={ref} />
+))

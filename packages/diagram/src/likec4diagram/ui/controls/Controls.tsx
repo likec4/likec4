@@ -8,7 +8,7 @@ import { SearchControl } from '../../../components/SearchControl'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../context/ControlsCustomLayout'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
@@ -111,7 +111,6 @@ export const Controls = memo(() => {
               }}
             />
           )}
-          syncInProgressBadge={<SyncLayoutBadge />}
           actionsGroup={
             <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
               {enableVscode && (
@@ -152,13 +151,3 @@ export const Controls = memo(() => {
     </>
   )
 })
-
-const SyncLayoutBadge = () => {
-  const isPending = useDiagramSyncLayoutState(s => s.hasTag('pending'))
-  if (!isPending) return null
-  return (
-    <Badge color="pink" radius={'xs'} size="xs" variant="light" leftSection={<Loader color={'orange'} size={8} />}>
-      Pending...
-    </Badge>
-  )
-}

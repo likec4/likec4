@@ -1,7 +1,9 @@
+import { VStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import {
   Popover,
   PopoverTarget,
+  Portal,
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
@@ -10,8 +12,10 @@ import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
 import { useDiagramActorRef } from '../hooks/safeContext'
 import { useDiagramContext } from '../hooks/useDiagram'
+import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 import { useCurrentViewModel } from '../likec4model/useCurrentViewModel'
 import { type NavigationPanelActorRef, navigationPanelActorLogic } from './actor'
+import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
 import { NavigationPanelControls } from './NavigationPanelControls'
 import { NavigationPanelDropdown } from './NavigationPanelDropdown'
@@ -20,6 +24,7 @@ import { ActiveWalkthroughControls } from './walkthrough'
 export const NavigationPanel = memo(() => {
   const diagramActor = useDiagramActorRef()
   const viewModel = useCurrentViewModel()
+  const { portalProps } = useMantinePortalProps()
 
   const actorRef = useActorRef(
     navigationPanelActorLogic,
@@ -43,16 +48,45 @@ export const NavigationPanel = memo(() => {
   }, [viewModel])
 
   return (
-    <NavigationPanelActorContextProvider value={actorRef}>
-      <NavigationPanelImpl actor={actorRef} />
-    </NavigationPanelActorContextProvider>
+    <Portal {...portalProps}>
+      <VStack
+        className="react-flow__panel"
+        css={{
+          gap: 'sm',
+          margin: 'sm',
+          alignItems: 'flex-start',
+          pointerEvents: 'none',
+          top: 0,
+          left: 0,
+          maxWidth: [
+            'calc(100vw - 2 * {spacing.sm})',
+            'calc(100cqw - 2 * {spacing.sm})',
+          ],
+          width: 'max-content',
+          overflow: 'hidden',
+          smDown: {
+            margin: 0,
+            width: '100%',
+            gap: '2xs',
+            maxWidth: [
+              'calc(100vw)',
+              'calc(100cqw)',
+            ],
+          },
+        }}>
+        <NavigationPanelActorContextProvider value={actorRef}>
+          <NavigationPanelImpl actor={actorRef} />
+          <EditorPanel />
+        </NavigationPanelActorContextProvider>
+      </VStack>
+    </Portal>
   )
 })
-NavigationPanel.displayName = 'DiagramBreadcrumbs'
+NavigationPanel.displayName = 'NavigationPanel'
 
 const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
   const opened = useSelector(actor, s => s.hasTag('active'))
-  // const portalProps = useMantinePortalProps()
+  const portalProps = useMantinePortalProps()
 
   return (
     <Popover
@@ -64,7 +98,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       shadow="md"
       position="bottom-start"
       trapFocus
-      withinPortal={false}
+      {...portalProps}
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
     >
@@ -81,17 +115,18 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
       <PopoverTarget>
         <m.div
           layout
-          initial={false}
           className={hstack({
             layerStyle: 'likec4.panel',
             position: 'relative',
             gap: 'xs',
             cursor: 'pointer',
             paddingRight: 'md',
+            pointerEvents: 'all',
+            width: '100%',
           })}
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
         >
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {isActiveWalkthrough ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
           </AnimatePresence>
         </m.div>

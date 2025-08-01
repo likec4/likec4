@@ -159,7 +159,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
                 enableRelationshipDetails
                 enableSearch
                 enableElementTags
-                controls
+                controls="next"
                 readonly
                 fitView
                 fitViewPadding={'32px'}

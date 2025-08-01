@@ -2,7 +2,6 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
 import { useNavigate } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
-import { SidebarDrawerOps } from '../components/sidebar/state'
 import { pageTitle } from '../const'
 import { useCurrentDiagram } from '../hooks'
 
@@ -38,8 +37,13 @@ export function ViewReact() {
       readonly
       zoomable
       pannable
-      controls
-      fitViewPadding={'48px'}
+      controls="next"
+      fitViewPadding={{
+        top: '70px',
+        bottom: '10px',
+        left: '10px',
+        right: '10px',
+      }}
       showDiagramTitle
       showNavigationButtons
       enableFocusMode
@@ -53,7 +57,11 @@ export function ViewReact() {
       nodesDraggable={false}
       nodesSelectable
       onNavigateTo={onNavigateTo}
-      onBurgerMenuClick={SidebarDrawerOps.open}
+      onBurgerMenuClick={() => {
+        navigate({
+          to: '/',
+        })
+      }}
     />
   )
 }

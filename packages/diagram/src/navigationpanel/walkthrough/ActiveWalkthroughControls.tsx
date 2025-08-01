@@ -1,6 +1,6 @@
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import { Badge, Button, Portal, Tooltip } from '@mantine/core'
+import { Badge, Button, Portal } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
   IconPlayerSkipBackFilled,
@@ -12,6 +12,7 @@ import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
 import { useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 
 const TriggerWalkthroughButton = Button.withProps({
@@ -28,12 +29,7 @@ export const StartWalkthroughButton = () => {
   const diagram = useDiagram()
   const actor = useNavigationActor()
   return (
-    <Tooltip
-      label="Start Dynamic View Walkthrough"
-      offset={10}
-      openDelay={300}
-      color="dark"
-    >
+    <Tooltip label="Start Dynamic View Walkthrough">
       <TriggerWalkthroughButton
         onClick={e => {
           e.stopPropagation()

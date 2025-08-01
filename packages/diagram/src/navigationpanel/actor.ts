@@ -89,7 +89,7 @@ const _actorLogic = setup({
     emitted: {} as NavigationPanelActorEmitted,
   },
   delays: {
-    'open timeout': 350,
+    'open timeout': 500,
     'close timeout': 350,
   },
   actions: {

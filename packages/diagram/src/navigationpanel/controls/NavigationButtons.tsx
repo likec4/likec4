@@ -1,8 +1,8 @@
 import { hstack } from '@likec4/styles/patterns'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
-import { PanelActionIcon } from './_common'
+import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { PanelActionIcon } from '../_common'
 
 export const NavigationButtons = () => {
   const diagram = useDiagram()
@@ -14,18 +14,9 @@ export const NavigationButtons = () => {
     hasStepForward: s.navigationHistory.currentIndex < s.navigationHistory.history.length - 1,
   }))
   return (
-    <m.div layout="position" className={hstack({ gap: 1 })}>
+    <m.div layout="position" className={hstack({ gap: 1, mdDown: { display: 'none' } })}>
       <PanelActionIcon
         disabled={!hasStepBack}
-        variant="subtle"
-        component={m.button}
-        whileHover={{
-          scale: 1.085,
-        }}
-        whileTap={{
-          scale: 1,
-          translateY: 1,
-        }}
         onClick={e => {
           e.stopPropagation()
           diagram.navigate('back')
@@ -34,15 +25,6 @@ export const NavigationButtons = () => {
       />
       <PanelActionIcon
         disabled={!hasStepForward}
-        variant="subtle"
-        component={m.button}
-        whileHover={{
-          scale: 1.085,
-        }}
-        whileTap={{
-          scale: 1,
-          translateY: 1,
-        }}
         onClick={e => {
           e.stopPropagation()
           diagram.navigate('forward')

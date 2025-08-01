@@ -86,7 +86,11 @@ export const layerStyles = defineLayerStyles({
         backdropFilter: 'blur(10px)',
         _whenPanning: {
           boxShadow: 'none',
-          borderRadius: '0px',
+          borderRadius: 0,
+        },
+        smDown: {
+          padding: '4',
+          borderRadius: 0,
         },
       },
     },

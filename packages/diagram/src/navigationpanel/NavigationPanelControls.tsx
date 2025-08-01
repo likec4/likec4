@@ -1,24 +1,17 @@
-import { cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
+import { css, cx } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import {
   UnstyledButton,
 } from '@mantine/core'
-import {
-  IconMenu2,
-  IconSearch,
-} from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { isMacOs } from '@xyflow/system'
 import { deepEqual } from 'fast-equals'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
-import { useDiagram } from '../hooks/useDiagram'
-import { BreadcrumbsSeparator, PanelActionIcon } from './_common'
+import { BreadcrumbsSeparator } from './_common'
 import { type NavigationPanelActorSnapshot } from './actor'
+import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly } from './controls'
 import { useNavigationActorRef } from './hooks'
-import { NavigationButtons } from './NavigationButtons'
 import { breadcrumbTitle } from './styles.css'
 import { StartWalkthroughButton } from './walkthrough'
 
@@ -42,6 +35,7 @@ export const NavigationPanelControls = () => {
     enableSearch,
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
+    enableReadOnly,
   } = useEnabledFeatures()
   const {
     folders,
@@ -56,7 +50,11 @@ export const NavigationPanelControls = () => {
       className={cx(
         breadcrumbTitle({ dimmed: true, truncate: true }),
         'mantine-active',
+        css({
+          maxWidth: '200px',
+        }),
       )}
+      visibleFrom="sm"
       title={title}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath })}
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
@@ -75,10 +73,9 @@ export const NavigationPanelControls = () => {
       key={'view-title'}
       component={m.button}
       className={cx(
-        breadcrumbTitle({ truncate: true }),
         'mantine-active',
+        breadcrumbTitle({ truncate: true }),
       )}
-      maw={300}
       title={viewTitle}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.viewtitle' })}
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.viewtitle' })}
@@ -93,34 +90,18 @@ export const NavigationPanelControls = () => {
 
   return (
     <AnimatePresence propagate>
-      <PanelActionIcon
-        variant="subtle"
-        layout="position"
-        component={m.button}
-        whileHover={{
-          scale: 1.085,
-        }}
-        whileTap={{
-          scale: 1,
-          translateY: 1,
-        }}
-        onMouseEnter={e => {
-          actor.send({ type: 'breadcrumbs.mouseEnter.root' })
-        }}
-        onMouseLeave={e => {
-          actor.send({ type: 'breadcrumbs.mouseLeave.root' })
-        }}
-        onClick={e => {
-          e.stopPropagation()
-          actor.send({ type: 'breadcrumbs.click.root' })
-        }}
-        children={<IconMenu2 style={{ width: '80%', height: '80%' }} />}
-      />
+      <BurgerButton />
       {enableNavigationButtons && <NavigationButtons />}
       <m.div
+        layout="position"
         className={hstack({
           gap: 3,
-          marginRight: 'md',
+          flexShrink: 1,
+          flexGrow: 1,
+          overflow: 'hidden',
+          md: {
+            marginRight: 'md',
+          },
         })}>
         {folderBreadcrumbs}
         {viewBreadcrumb}
@@ -157,71 +138,18 @@ export const NavigationPanelControls = () => {
       }
 
       {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton />}
+      <m.div
+        layout="position"
+        className={hstack({
+          gap: 1,
+          _empty: {
+            display: 'none',
+          },
+        })}>
+        <OpenSource />
+        <ToggleReadonly />
+      </m.div>
       {enableSearch && <SearchControl />}
     </AnimatePresence>
-  )
-}
-
-function SearchControl() {
-  const diagram = useDiagram()
-  const isMac = isMacOs()
-
-  return (
-    <UnstyledButton
-      component={m.button}
-      layout="position"
-      onClick={e => {
-        e.stopPropagation()
-        diagram.openSearch()
-      }}
-      whileTap={{
-        translateY: 1,
-      }}
-      className={cx(
-        'group',
-        hstack({
-          gap: '2xs',
-          paddingInline: 'sm',
-          paddingBlock: '2xs',
-          rounded: 'sm',
-          userSelect: 'none',
-          cursor: 'pointer',
-          color: {
-            base: 'mantine.colors.dark.lightColor',
-            _dark: 'mantine.colors.text/80',
-            _hover: {
-              base: 'mantine.colors.dark.lightColor',
-              _dark: 'mantine.colors.text',
-            },
-          },
-          backgroundColor: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[7]/70',
-            _hover: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[8]',
-            },
-          },
-          // backgroundColor: {
-          //   base: 'mantine.colors.dark.light/80',
-          //   _dark: 'mantine.colors.dark[7]/70',
-          //   _hover: {
-          //     base: 'mantine.colors.dark.lightHover/80',
-          //     _dark: 'mantine.colors.dark[8]',
-          //   },
-          // },
-        }),
-      )}>
-      <IconSearch size={14} stroke={2.5} />
-      <Box
-        css={{
-          fontSize: '11px',
-          fontWeight: 600,
-          lineHeight: 1,
-          opacity: 0.8,
-        }}>
-        {isMac ? '⌘ + K' : 'Ctrl + K'}
-      </Box>
-    </UnstyledButton>
   )
 }

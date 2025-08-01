@@ -410,12 +410,10 @@ export const navigationPanelActionIcon = defineRecipe({
   base: {
     color: {
       base: 'likec4.panel.action-icon.text',
-      _hover: 'likec4.panel.action-icon.text.hover',
-      // _hover: {
-      //   base: 'likec4.panel.action-icon.text.hover',
-      //   // _disabled: 'likec4.panel.action-icon.text.dimmed',
-      // },
       _disabled: 'likec4.panel.action-icon.text.disabled',
+      _notDisabled: {
+        _hover: 'likec4.panel.action-icon.text.hover',
+      },
     },
     _disabled: {
       opacity: 0.5,
@@ -426,15 +424,17 @@ export const navigationPanelActionIcon = defineRecipe({
       'default': {
         backgroundColor: {
           base: '[transparent]',
-          _hover: 'likec4.panel.action-icon.bg.hover',
-          _disabled: '[transparent]',
+          _notDisabled: {
+            _hover: 'likec4.panel.action-icon.bg.hover',
+          },
         },
       },
       'filled': {
         backgroundColor: {
           base: 'likec4.panel.action-icon.bg',
-          _hover: 'likec4.panel.action-icon.bg.hover',
-          _disabled: 'likec4.panel.action-icon.bg',
+          _notDisabled: {
+            _hover: 'likec4.panel.action-icon.bg.hover',
+          },
         },
       },
     },

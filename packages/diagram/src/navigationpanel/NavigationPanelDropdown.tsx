@@ -60,6 +60,7 @@ export function NavigationPanelDropdown() {
         vstack({
           layerStyle: 'likec4.dropdown',
           gap: 'sm',
+          pointerEvents: 'all',
         }),
       )}
       data-likec4-breadcrumbs-dropdown

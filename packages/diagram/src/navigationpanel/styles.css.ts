@@ -5,7 +5,7 @@ export const breadcrumbTitle = cva({
     fontSize: 'sm',
     fontWeight: '500',
     transition: 'fast',
-    width: 'max-content',
+    // width: 'max-content',
     alignSelf: 'stretch',
     color: {
       base: 'mantine.colors.text/90',
@@ -16,7 +16,6 @@ export const breadcrumbTitle = cva({
     truncate: {
       'true': {
         truncate: true,
-        maxWidth: '200px',
       },
     },
     dimmed: {
