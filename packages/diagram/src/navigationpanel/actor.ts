@@ -19,16 +19,19 @@ export interface NavigationPanelActorInput {
 export type NavigationPanelActorEvent =
   // Logic events
   | { type: 'update.inputs'; inputs: NavigationPanelActorInput }
-  | { type: 'searchQuery.change'; value?: string }
+  | { type: 'searchQuery.change'; value: string }
   | { type: 'searchQuery.changed' }
   | { type: 'select.folder'; folderPath: string }
-  | { type: 'select.view'; viewId: string }
+  | { type: 'select.view'; viewId: ViewId }
   // Events from the UI
   // - From breadcrumbs
   | { type: 'breadcrumbs.mouseLeave' }
   | { type: 'breadcrumbs.mouseEnter.root' }
+  | { type: 'breadcrumbs.mouseLeave.root' }
   | { type: 'breadcrumbs.mouseEnter.folder'; folderPath: string }
+  | { type: 'breadcrumbs.mouseLeave.folder'; folderPath: string }
   | { type: 'breadcrumbs.mouseEnter.viewtitle' }
+  | { type: 'breadcrumbs.mouseLeave.viewtitle' }
   | { type: 'breadcrumbs.click.root' }
   | { type: 'breadcrumbs.click.folder'; folderPath: string }
   | { type: 'breadcrumbs.click.viewtitle' }
@@ -192,7 +195,7 @@ const _actorLogic = setup({
         'breadcrumbs.mouseEnter.*': {
           actions: 'update activatedBy',
         },
-        'breadcrumbs.mouseLeave': {
+        'breadcrumbs.mouseLeave.*': {
           target: 'idle',
         },
         'breadcrumbs.click.*': {

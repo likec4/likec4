@@ -86,6 +86,38 @@ export const semanticTokens = defineSemanticTokens({
             _light: `{colors.mantine.colors.defaultBorder/30}`,
           },
         },
+        'action-icon': {
+          text: {
+            DEFAULT: {
+              description: 'LikeC4 action icon text color',
+              value: '{colors.mantine.colors.text/70}',
+            },
+            hover: {
+              description: 'LikeC4 action icon text color on hover',
+              value: '{colors.mantine.colors.text}',
+            },
+            disabled: {
+              description: 'LikeC4 action icon text color when disabled',
+              value: '{colors.mantine.colors.dimmed}',
+            },
+          },
+          bg: {
+            DEFAULT: {
+              description: 'LikeC4 action icon background color',
+              value: {
+                base: '{colors.mantine.colors.gray[1]}',
+                _dark: '{colors.mantine.colors.dark[7]/70}',
+              },
+            },
+            hover: {
+              description: 'LikeC4 action icon background color on hover',
+              value: {
+                base: '{colors.mantine.colors.gray[2]}',
+                _dark: '{colors.mantine.colors.dark[8]}',
+              },
+            },
+          },
+        },
       },
       dropdown: {
         bg: {

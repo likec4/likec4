@@ -87,7 +87,6 @@ export const layerStyles = defineLayerStyles({
         _whenPanning: {
           boxShadow: 'none',
           borderRadius: '0px',
-          borderColor: 'transparent',
         },
       },
     },

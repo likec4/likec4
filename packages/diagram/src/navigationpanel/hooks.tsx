@@ -1,7 +1,13 @@
+import type { ViewId } from '@likec4/core'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { type DependencyList, createContext, useContext, useMemo } from 'react'
-import type { NavigationPanelActorContext, NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
+import type {
+  NavigationPanelActorContext,
+  NavigationPanelActorEvent,
+  NavigationPanelActorRef,
+  NavigationPanelActorSnapshot,
+} from './actor'
 
 const NavigationPanelActorSafeContext = createContext<NavigationPanelActorRef>(null as any)
 NavigationPanelActorSafeContext.displayName = 'NavigationPanelActorSafeContext'
@@ -33,11 +39,31 @@ export function useNavigationActorContext<T = unknown>(
   return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare, deps)
 }
 
-export function useNavigationActor() {
+export type NavigationActor = {
+  readonly actorRef: NavigationPanelActorRef
+  send: (event: NavigationPanelActorEvent) => void
+  selectFolder: (folderPath: string) => void
+  selectView: (viewId: ViewId) => void
+  /**
+   * If the navigation dropdown is opened
+   */
+  isOpened: () => boolean
+  clearSearch: () => void
+  closeDropdown: () => void
+}
+
+export function useNavigationActor(): NavigationActor {
   const actorRef = useNavigationActorRef()
 
   return useMemo(() => ({
-    send: actorRef.send,
+    actorRef,
+    send: (event: NavigationPanelActorEvent) => actorRef.send(event),
+    selectFolder: (folderPath: string) => actorRef.send({ type: 'select.folder', folderPath }),
+    selectView: (viewId: ViewId) => actorRef.send({ type: 'select.view', viewId }),
+    isOpened: () => {
+      const snapshot = actorRef.getSnapshot()
+      return snapshot.hasTag('active')
+    },
     clearSearch: () => actorRef.send({ type: 'searchQuery.change', value: '' }),
     closeDropdown: () => actorRef.send({ type: 'dropdown.dismiss' }),
   }), [actorRef])

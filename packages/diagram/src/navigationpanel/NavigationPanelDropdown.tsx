@@ -1,34 +1,38 @@
 import { type LikeC4ViewsFolder, LikeC4ViewModel, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
+import type { ViewId } from '@likec4/core/types'
 import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
 import {
   Breadcrumbs,
+  Button,
   createScopedKeydownHandler,
   Divider,
   Highlight,
+  Input,
   PopoverDropdown,
+  rem,
   ScrollAreaAutosize,
   UnstyledButton,
 } from '@mantine/core'
-import { useThrottledCallback } from '@mantine/hooks'
+import { useThrottledCallback, useUncontrolled } from '@mantine/hooks'
 import {
   IconChevronRight,
   IconFolderFilled,
+  IconSearch,
   IconStack2,
   IconStarFilled,
   IconZoomScan,
 } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { deepEqual } from 'fast-equals'
-import type { ComponentPropsWithoutRef } from 'react'
-import { isArray, pipe, sort } from 'remeda'
+import type { ComponentPropsWithoutRef, KeyboardEventHandler } from 'react'
+import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import type { NavigationPanelActorContext } from './actor'
-import { useNavigationActorContext, useNavigationActorRef } from './hooks'
-import { SearchInput } from './SearchInput'
+import { useNavigationActor, useNavigationActorContext, useNavigationActorRef } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 
 const scopedKeydownHandler = createScopedKeydownHandler({
@@ -40,8 +44,8 @@ const scopedKeydownHandler = createScopedKeydownHandler({
 })
 
 export function NavigationPanelDropdown() {
-  const actor = useNavigationActorRef()
-  const searchQuery = useSelector(actor, s => s.context.searchQuery)
+  const actor = useNavigationActor()
+  const searchQuery = useSelector(actor.actorRef, s => s.context.searchQuery)
 
   const setSearchQuery = useThrottledCallback((value: string) => {
     actor.send({ type: 'searchQuery.change', value })
@@ -106,7 +110,7 @@ export function NavigationPanelDropdown() {
 const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
 function SearchResults({ searchQuery }: { searchQuery: string }) {
   const likec4model = useLikeC4Model()
-  const actor = useNavigationActorRef()
+  const actor = useNavigationActor()
   const isSearchByPath = searchQuery.includes(VIEW_FOLDERS_SEPARATOR)
 
   const found = pipe(
@@ -150,7 +154,7 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
             onClick={e => {
               console.log('click')
               e.stopPropagation()
-              actor.send({ type: 'select.view', viewId: v.id })
+              actor.selectView(v.id)
             }}
             data-likec4-focusable
             onKeyDown={scopedKeydownHandler}
@@ -320,7 +324,7 @@ type ColumnItem =
   | {
     type: 'view'
     viewType: 'element' | 'deployment' | 'dynamic' | 'index'
-    viewId: string
+    viewId: ViewId
     title: string
     description: string | null
     selected: boolean
@@ -384,6 +388,16 @@ function FolderColumns() {
 
 function FolderColumn({ data }: { data: FolderColumnData }) {
   const actor = useNavigationActorRef()
+
+  const onItemClicked = (item: ColumnItem) => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (item.type === 'folder') {
+      actor.send({ type: 'select.folder', folderPath: item.folderPath })
+    } else {
+      actor.send({ type: 'select.view', viewId: item.viewId })
+    }
+  }
+
   return (
     <Box pb={'4'}>
       <ColumnScrollArea>
@@ -392,14 +406,7 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
             <FolderColumnItem
               key={`${data.folderPath}/${item.type}/${i}`}
               columnItem={item}
-              onClick={e => {
-                e.stopPropagation()
-                if (item.type === 'folder') {
-                  actor.send({ type: 'select.folder', folderPath: item.folderPath })
-                } else {
-                  actor.send({ type: 'select.view', viewId: item.viewId })
-                }
-              }}
+              onClick={onItemClicked(item)}
             />
           ))}
         </VStack>
@@ -441,4 +448,75 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
     default:
       nonexhaustive(columnItem)
   }
+}
+
+function SearchInput({ onKeyDown, ...props }: {
+  value?: string
+  defaultValue?: string
+  onChange?: (value: string) => void
+  onKeyDown?: KeyboardEventHandler<HTMLElement>
+}) {
+  const [_value, handleChange] = useUncontrolled({
+    ...props,
+    finalValue: '',
+  })
+  return (
+    <Input
+      size="xs"
+      placeholder="Search by title or id"
+      variant="unstyled"
+      height={rem(26)}
+      value={_value}
+      onKeyDown={onKeyDown}
+      onChange={e => handleChange(e.currentTarget.value)}
+      classNames={{
+        wrapper: css({
+          flexGrow: 1,
+          backgroundColor: {
+            base: 'mantine.colors.gray[1]',
+            _dark: 'mantine.colors.dark[5]/80',
+            _hover: {
+              base: 'mantine.colors.gray[2]',
+              _dark: 'mantine.colors.dark[4]',
+            },
+            _focus: {
+              base: 'mantine.colors.gray[2]',
+              _dark: 'mantine.colors.dark[4]',
+            },
+          },
+          rounded: 'sm',
+        }),
+        input: css({
+          _placeholder: {
+            color: 'mantine.colors.dimmed',
+          },
+          _focus: {
+            outline: 'none',
+          },
+        }),
+      }}
+      style={{
+        ['--input-fz']: 'var(--mantine-font-size-sm)',
+      }}
+      leftSection={<IconSearch size={14} />}
+      rightSectionPointerEvents="all"
+      rightSectionWidth={'min-content'}
+      rightSection={!props.value || isEmpty(props.value)
+        ? null
+        : (
+          <Button
+            variant="subtle"
+            h="100%"
+            size={'compact-xs'}
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleChange('')
+            }}
+          >
+            clear
+          </Button>
+        )}
+    />
+  )
 }

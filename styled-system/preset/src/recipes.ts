@@ -409,12 +409,13 @@ export const navigationPanelActionIcon = defineRecipe({
   description: 'ActionIcon for navigation panel',
   base: {
     color: {
-      base: 'mantine.colors.text/70',
-      _disabled: 'mantine.colors.dimmed',
-      _hover: {
-        base: 'mantine.colors.text',
-        _disabled: 'mantine.colors.dimmed',
-      },
+      base: 'likec4.panel.action-icon.text',
+      _hover: 'likec4.panel.action-icon.text.hover',
+      // _hover: {
+      //   base: 'likec4.panel.action-icon.text.hover',
+      //   // _disabled: 'likec4.panel.action-icon.text.dimmed',
+      // },
+      _disabled: 'likec4.panel.action-icon.text.disabled',
     },
     _disabled: {
       opacity: 0.5,
@@ -424,25 +425,16 @@ export const navigationPanelActionIcon = defineRecipe({
     variant: {
       'default': {
         backgroundColor: {
-          base: 'mantine.colors.gray[1]',
-          _dark: 'mantine.colors.dark[7]/70',
-          _hover: {
-            _notDisabled: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[8]',
-            },
-          },
+          base: '[transparent]',
+          _hover: 'likec4.panel.action-icon.bg.hover',
+          _disabled: '[transparent]',
         },
       },
-      'subtle': {
+      'filled': {
         backgroundColor: {
-          base: '[transparent]',
-          _hover: {
-            _notDisabled: {
-              base: 'mantine.colors.gray[2]/80',
-              _dark: 'mantine.colors.dark[8]/80',
-            },
-          },
+          base: 'likec4.panel.action-icon.bg',
+          _hover: 'likec4.panel.action-icon.bg.hover',
+          _disabled: 'likec4.panel.action-icon.bg',
         },
       },
     },

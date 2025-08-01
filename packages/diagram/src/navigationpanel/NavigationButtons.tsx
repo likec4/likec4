@@ -1,9 +1,6 @@
-import { IconChevronRight } from '@tabler/icons-react'
-
-import { m } from 'motion/react'
-
-import { HStack } from '@likec4/styles/jsx'
-import { IconChevronLeft } from '@tabler/icons-react'
+import { hstack } from '@likec4/styles/patterns'
+import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
+import * as m from 'motion/react-m'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import { PanelActionIcon } from './_common'
 
@@ -17,7 +14,7 @@ export const NavigationButtons = () => {
     hasStepForward: s.navigationHistory.currentIndex < s.navigationHistory.history.length - 1,
   }))
   return (
-    <HStack gap={1}>
+    <m.div layout="position" className={hstack({ gap: 1 })}>
       <PanelActionIcon
         disabled={!hasStepBack}
         variant="subtle"
@@ -33,7 +30,7 @@ export const NavigationButtons = () => {
           e.stopPropagation()
           diagram.navigate('back')
         }}
-        children={<IconChevronLeft stroke={3} />}
+        children={<IconArrowLeft size={14} />}
       />
       <PanelActionIcon
         disabled={!hasStepForward}
@@ -50,8 +47,8 @@ export const NavigationButtons = () => {
           e.stopPropagation()
           diagram.navigate('forward')
         }}
-        children={<IconChevronRight stroke={3} />}
+        children={<IconArrowRight size={14} />}
       />
-    </HStack>
+    </m.div>
   )
 }
