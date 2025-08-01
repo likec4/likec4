@@ -21,7 +21,7 @@ export const DiagramUI = memo(() => {
 
   return (
     <>
-      {enableControls === 'next' ? <NavigationPanel /> : (enableControls && <Controls />)}
+      {enableControls === 'next' ? <NavigationPanel /> : <Controls />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
       {enableControls !== 'next' && (

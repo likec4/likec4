@@ -93,7 +93,7 @@ function WorkspaceDiagramPage() {
           <LikeC4Diagram
             view={_diagram}
             readonly={false}
-            controls
+            controls="next"
             fitView
             fitViewPadding={'32px'}
             experimentalEdgeEditing
