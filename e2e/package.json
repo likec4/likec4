@@ -23,7 +23,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "std-env": "^3.9.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vitest": "^3.2.4",
     "wrangler": "^4.21.2",
     "zx": "^8.6.0"

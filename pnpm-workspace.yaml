@@ -5,7 +5,7 @@ packages:
   - "!packages/create-likec4"
 
 catalog:
-  typescript: 5.8.3
+  typescript: 5.9.2
   wireit: 0.14.12
   wrangler: 4.22.0
   "@types/node": ~20.19.2
@@ -99,7 +99,7 @@ catalogs:
     "@xyflow/system": 0.0.61
   langium:
     langium: 3.5.0
-    langium-cli: 3.5.0
+    langium-cli: 3.5.2
   astro:
     "@astrojs/check": ^0.9.4
     "@astrojs/react": 4.3.0
