@@ -69,8 +69,8 @@ model {
           description: "A facade onto the mainframe banking system."
           technology: "Spring Bean"
         }
-        emailComponent = component "E-mail Component"{
-          description:  "Sends e-mails to users."
+        emailComponent = component "E-mail Component" {
+          description: "Sends e-mails to users."
           technology: "Spring Bean"
         }
 
@@ -124,7 +124,7 @@ views {
   }
 
   view context of bigbank {
-    title "Internet Banking System - SystemContext"
+    title "Internet Banking System / SystemContext"
     include
       bigbank,
       mainframe,
@@ -134,7 +134,7 @@ views {
   }
 
   view ibsContainers of internetBankingSystem {
-    title "Internet Banking System - Containers"
+    title "Internet Banking System / Containers"
 
     include
       *,
@@ -149,21 +149,6 @@ views {
     exclude webApplication
   }
 
-  view spa of singlePageApplication {
-    include
-      *,
-      apiApplication,
-      internetBankingSystem,
-      -> singlePageApplication ->
-
-    style internetBankingSystem {
-      color muted
-    }
-    style singlePageApplication {
-      color green
-    }
-  }
-
   view support of supportStaff {
     include
       *,
@@ -172,7 +157,7 @@ views {
   }
 
   view apiApp of internetBankingSystem.apiApplication {
-    title "API Application - Components"
+    title "Applications / API Application"
 
     include *
 
@@ -190,6 +175,7 @@ views {
   }
 
   view webapp of webApplication {
+    title "Applications / Web Application"
     include
       *,
       internetBankingSystem,
@@ -204,6 +190,7 @@ views {
   }
 
   view mobileApp of mobileApp {
+    title "Applications / Mobile Application"
     include
       *,
       internetBankingSystem,
@@ -223,4 +210,19 @@ views {
     }
   }
 
+  view spa of singlePageApplication {
+    title "Applications / Single Page Application"
+    include
+      *,
+      apiApplication,
+      internetBankingSystem,
+      -> singlePageApplication ->
+
+    style internetBankingSystem {
+      color muted
+    }
+    style singlePageApplication {
+      color green
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { type Preset, definePreset } from '@pandacss/dev'
 import radixColorsPreset from 'pandacss-preset-radix-colors'
 import { conditions } from './conditions'
-import { nodeOrEdge, radixColors, root, rootNotReduced } from './const'
+import { iconSize, nodeOrEdge, radixColors, root, rootNotReduced } from './const'
 import { compoundColors, globalCss, themeColors } from './generated'
 import { patterns } from './patterns'
 import { theme } from './theme'
@@ -35,6 +35,11 @@ export default definePreset({
         // initialValue: '1rem',
       },
       '--likec4-spacing': {
+        syntax: '<length-percentage>',
+        inherits: false,
+        // initialValue: '1rem',
+      },
+      [iconSize]: {
         syntax: '<length-percentage>',
         inherits: false,
         // initialValue: '1rem',

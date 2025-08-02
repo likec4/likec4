@@ -95,7 +95,12 @@ function WorkspaceDiagramPage() {
             readonly={false}
             controls="next"
             fitView
-            fitViewPadding={'32px'}
+            fitViewPadding={{
+              top: '70px',
+              bottom: '10px',
+              left: '60px',
+              right: '10px',
+            }}
             experimentalEdgeEditing
             nodesSelectable
             nodesDraggable

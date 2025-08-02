@@ -63,8 +63,7 @@ export const navigationLink = defineSlotRecipe({
   staticCss: [{
     truncateLabel: ['true', 'false'],
     conditions: ['hover'],
-  }, {
-    truncateLabel: ['true', 'false'],
-    conditions: ['hover'],
   }],
 })
+
+export { elementNodeData } from './slotRecipes.elementNodeData'
