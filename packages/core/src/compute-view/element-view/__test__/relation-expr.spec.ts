@@ -198,4 +198,64 @@ describe('relation-expr', () => {
     expect(nodeIds.length).toEqual(0)
     expect(edgeIds.length).toEqual(0)
   })
+
+  // Issue #2117
+  describe('does not produce self-relations from descendants wildcards', () => {
+    it('cloud.** <-> *', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('cloud.** <-> *', {
+          where: {
+            and: [
+              { tag: { eq: 'next' } },
+              { kind: { eq: 'graphlql' } },
+            ],
+          },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend.dashboard:cloud.backend.graphql'])
+      expect(nodeIds).toEqual(['cloud.frontend.dashboard', 'cloud.backend', 'cloud.backend.graphql'])
+    })
+    it('* <-> cloud.**', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('* <-> cloud.**', {
+          where: {
+            and: [
+              { tag: { eq: 'next' } },
+              { kind: { eq: 'graphlql' } },
+            ],
+          },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend.dashboard:cloud.backend.graphql'])
+      expect(nodeIds).toEqual(['cloud.frontend', 'cloud.frontend.dashboard', 'cloud.backend.graphql'])
+    })
+    it('* -> cloud.**', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('* -> cloud.**', {
+          where: {
+            and: [
+              { tag: { eq: 'next' } },
+              { kind: { eq: 'graphlql' } },
+            ],
+          },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend.dashboard:cloud.backend.graphql'])
+      expect(nodeIds).toEqual(['cloud.frontend.dashboard', 'cloud.backend.graphql'])
+    })
+    it('cloud.** -> *', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('cloud.** -> *', {
+          where: {
+            and: [
+              { tag: { eq: 'next' } },
+              { kind: { eq: 'graphlql' } },
+            ],
+          },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend.dashboard:cloud.backend.graphql'])
+      expect(nodeIds).toEqual(['cloud.frontend.dashboard', 'cloud.backend.graphql'])
+    })
+  })
 })
