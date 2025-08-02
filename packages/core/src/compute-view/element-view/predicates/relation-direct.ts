@@ -1,5 +1,5 @@
-import { concat, constant, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
-import type { RelationshipModel } from '../../../model'
+import { concat, constant, filter, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
+import type { ElementModel, RelationshipModel } from '../../../model'
 import { ConnectionModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
 import { invariant, isSameHierarchy } from '../../../utils'
@@ -16,6 +16,8 @@ import {
 } from './_utils'
 
 const isWildcard = ModelFqnExpr.isWildcard
+const isAncestorOrDescendantOf = (a: ElementModel<AnyAux>, b: ElementModel<AnyAux>) =>
+  a.isAncestorOf(b) || a.isDescendantOf(b)
 
 export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Direct<AnyAux>> = {
   include: ({ expr: { source, target, isBidirectional = false }, memory, model, stage, where, filterWhere }) => {
@@ -75,6 +77,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
                 concat(
                   pipe(
                     outgoing,
+                    filter(r => !isAncestorOrDescendantOf(source, r.target)),
                     map(outgoing =>
                       new ConnectionModel(
                         source,
@@ -85,6 +88,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
                   ),
                   pipe(
                     incoming,
+                    filter(r => !isAncestorOrDescendantOf(source, r.source)),
                     map(incoming =>
                       new ConnectionModel(
                         incoming.source,
@@ -133,6 +137,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
                 concat(
                   pipe(
                     outgoing,
+                    filter(r => !isAncestorOrDescendantOf(target, r.target)),
                     map(outgoing =>
                       new ConnectionModel(
                         target,
@@ -143,6 +148,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
                   ),
                   pipe(
                     incoming,
+                    filter(r => !isAncestorOrDescendantOf(target, r.source)),
                     map(incoming =>
                       new ConnectionModel(
                         incoming.source,
