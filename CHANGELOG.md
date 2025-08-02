@@ -1,3 +1,47 @@
+# [1.35.0](https://github.com/likec4/likec4/compare/v1.34.2...v1.35.0) (2025-08-02)
+
+### 🚀 Features
+
+* **Organize Views**  
+  You can organize views into folders to keep the workspace clean and easy to navigate.  
+  Use the `/` in the view titles:
+  
+  ```zig
+  views {
+    deployment view {
+      title 'Deployment / Production'    
+    }
+  }
+  ```
+
+  New navigation panel.
+
+  Example:
+  <img src="https://github.com/user-attachments/assets/a3404237-2cce-4a08-acb0-58c65601c33d" />
+
+  [📖 Documentation](https://likec4.dev/dsl/views/organize/)
+
+* **Extended specification**  
+  You may define `title`, `description` and `links` in specification, if it is common for all of the kind:
+  ```zig
+  specification {
+    element mobileApp {
+      title 'Mobile App'
+      description 'Universal mobile application'
+    }
+  }
+  ```
+  thanks @CookiesEater, ([#2111](https://github.com/likec4/likec4/issues/2111))
+  
+* color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast, [#2100](https://github.com/likec4/likec4/issues/2100), thanks @Kiiv
+* **cli:** added `title` option to `serve` command [#2098](https://github.com/likec4/likec4/issues/2098), closes [#2096](https://github.com/likec4/likec4/issues/2096), thanks @pavelpykhtin
+
+### Bug Fixes
+
+* **core:** do not create loop connections from descendant selectors, [#2118](https://github.com/likec4/likec4/issues/2118), closes [#2117](https://github.com/likec4/likec4/issues/2117), thanks @pavelpykhtin
+* improve stability of the manual layout on model/view changes, [#2086](https://github.com/likec4/likec4/issues/2086), thanks @pavelpykhtin
+
+
 ## [1.34.2](https://github.com/likec4/likec4/compare/v1.34.1...v1.34.2) (2025-07-01)
 
 
