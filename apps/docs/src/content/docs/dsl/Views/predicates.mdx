@@ -1,8 +1,8 @@
 ---
-title: Views
+title: Views Predicates
 description: How to visualize software architecture in diagrams using LikeC4
 sidebar: 
-  label: Views
+  label: Predicates
   order: 8
 tableOfContents:
   minHeadingLevel: 2
@@ -10,108 +10,6 @@ tableOfContents:
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
-
-LikeC4 is model-based, and views are projections of the model from various perspectives, scopes, and levels of detail, such as:
-
--	System/service overviews
--	Component interactions in specific use cases
--	Data flows and sequence diagrams
-
-LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included; it’s entirely up to you and your context.  
-
-## View definition
-
-Views are defined in `views` section.  
-They can be named (must be unique) or unnamed (can’t be referenced, but still can be exported):
-
-```likec4
-views {
-  // with name
-  view index {
-  }
-  // unnamed
-  view {
-  }
-}
-```
-
-The view’s name is used as an image filename during export and as part of the URL when sharing, so it’s advisable to define one.
-
-<Aside title="Default view">
-  `index` is a special view, and is rendered by default if no view name is specified.  
-  If it is not defined - will be generated and include top-level elements
-</Aside>
-
-### View properties
-
-Views can have a `title`, `description`, `tags` and `links`:
-
-```likec4
-views {
-
-  view epic12 {
-    #next, #epic-12
-    title "Cloud System - Changes in Epic-12"
-
-    // Description can be Markdown with triple quotes
-    description """
-      This diagram shows the **high-level**
-      components and interactions.
-    """
-
-    link https://my.jira/epic/12 'Epic-12'
-
-  }
-
-}
-```
-
-Properties must be defined before [predicates](#view-predicates).  
-
-## Scoped views
-
-A view can be defined for a specific element (`view of ..`).  
-The view will then inherit the [scope](/dsl/references#scope) of that element:
-
-```likec4
-views {
-
-  view {
-    include api // ⛔️ Error: 'api' is not found
-  }
-
-  view of cloud.backend {
-    include api // ✅ This is OK, resolves to 'cloud.backend.api'
-  }
-
-  view of legacy {
-    include api // ✅ This is OK, resolves to 'legacy.api'
-  }
-
-}
-```
-
-Additionally, a scoped view becomes the default for the element:
-
-```likec4
-views {
-
-  view {
-    // on click navigates to 'view1',
-    // because it is default for 'cloud.backend'
-    include cloud.backend
-  }
-
-  view view1 of cloud.backend {
-    include *
-  }
-
-}
-```
-
-You can define multiple views for the same element, with the default determined by their order.
-
-## View predicates
 
 Views are not static, they are generated from the model. Any changes in the model are applied immediately and update views.
 Two types of predicates define what is visible: element and relationship predicates.
@@ -121,7 +19,7 @@ Two types of predicates define what is visible: element and relationship predica
   Connections represent merged relationships - direct between elements and/or those derived from their nested elements.
 </Aside>
 
-#### Element predicates
+## Element predicates
 
 Element predicates explicitly define which elements are visible. Each included element brings in its relationships with already visible elements.
 
@@ -156,7 +54,7 @@ view {
   Excludes apply only to elements/relationships included earlier.
 </Aside>
 
-##### Combining
+### Combining
 
 Predicates can be combined. The following is the same as example above:
 
@@ -172,7 +70,7 @@ view {
 }
 ```
 
-##### Wildcard
+### Wildcard
 
 Wildcard predicates can be used to reference "everything" (but it differs for scoped/unscoped views).  
 Consider the following model:
@@ -216,7 +114,7 @@ views {
 }
 ```
 
-##### With overrides
+### With overrides
 
 You can modify element properties specifically for the view:
 
@@ -240,7 +138,7 @@ include cloud.* with {
 
 `with` may be used only within `include`.
 
-##### With custom navigation
+### With custom navigation
 
 You can define custom navigation and links between views:
 
@@ -263,7 +161,7 @@ view view3 {
 }
 ```
 
-##### By element kind or tag
+### By element kind or tag
 
 ```likec4
 // elements by kind
@@ -279,9 +177,9 @@ exclude element.tag = #next
 These predicates may be deprecated in the future, please consider [`where`](#filter) operator
 :::
 
-#### Element Selectors
+### Element Selectors
 
-##### Children `.*`
+#### Children `.*`
 
 The children selector includes element's children and their relationships with visible elements.
 
@@ -293,7 +191,7 @@ include cloud.backend
 include cloud.ui
 ```
 
-##### Descendants `.**`
+#### Descendants `.**`
 
 The descendants selector includes element's descendants **IF** they have a relationship with visible elements.
 
@@ -306,7 +204,7 @@ include cloud.ui
 include cloud.ui.webApp
 ```
 
-##### Expand `._`
+#### Expand `._`
 
 The expand selector includes element's children **IF** they have a relationship with visible elements.
 All other children are omitted.
@@ -319,11 +217,11 @@ include cloud
 include -> cloud.* ->
 ```
 
-#### Relationship predicates
+## Relationship predicates
 
 Relationship predicates include elements only if they have relationships that meet the specified predicate conditions.
 
-##### Directed relationships
+### Directed relationships
 
 Include elements if they have **directed** relationships (or their nested elements):
 
@@ -335,7 +233,7 @@ include customer -> cloud
 include customer -> cloud.*
 ```
 
-##### Any relationship
+### Any relationship
 
 Include elements if they have any relationships:
 
@@ -343,7 +241,7 @@ Include elements if they have any relationships:
 include customer <-> cloud
 ```
 
-##### Incoming
+### Incoming
 
 Include elements if they have incoming relationships from already visible elements.  
 Here’s an example based on the model from the [wildcard example](#wildcard):
@@ -377,7 +275,7 @@ view {
 Relationship predicates are useful for refining your diagrams, allowing you to narrow the scope and focus on specific parts of the system.
 :::
 
-##### Outgoing
+### Outgoing
 
 Include elements if only they have outgoing relationships to already visible elements:
 
@@ -386,7 +284,7 @@ include customer ->
 include cloud.* ->
 ```
 
-##### In/Out
+### In/Out
 
 Include nested elements of `cloud`, that have any relationships with visible elements:
 
@@ -394,7 +292,7 @@ Include nested elements of `cloud`, that have any relationships with visible ele
 include -> cloud.* ->
 ```
 
-##### Relationship customization
+### Relationship customization
 
 Relationships can be customized inside view:
 
@@ -432,7 +330,7 @@ It is possible to customize relationships with known endpoints only
 For example, `* -> *` can be customized (in other words, all relationships on the view), but outgoing `cloud.* ->` can not.
 :::
 
-##### Relationship navigation
+### Relationship navigation
 
 To customize [navigation](/dsl/relationships/#navigate-to) from relationship:
 
@@ -443,7 +341,7 @@ include
   }
 ```
 
-### Filter
+## Filter
 
 `where` operator narrows down results by applying additional conditions:
 
@@ -532,7 +430,7 @@ Together with [predicate groups](#global-predicate-groups) you may define a "bas
 
 :::
 
-### Global predicate groups
+## Global predicate groups
 
 If you find yourself repeating the same predicates in multiple views, you can define them as global group:
 
@@ -939,3 +837,4 @@ views {
   }
 
 }
+```

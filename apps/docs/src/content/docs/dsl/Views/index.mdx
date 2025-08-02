@@ -1,0 +1,165 @@
+---
+title: Views
+description: How to visualize software architecture in diagrams using LikeC4
+sidebar: 
+  label: Views
+  order: 8
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+LikeC4 is model-based, and views are projections of the model from various perspectives, scopes, and levels of detail, such as:
+
+-	System/service overviews
+-	Component interactions in specific use cases
+-	Data flows and sequence diagrams
+
+LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included; it’s entirely up to you and your context.  
+
+## View definition
+
+Views are defined in `views` section.  
+They can be named (must be unique) or unnamed (can’t be referenced, but still can be exported):
+
+```likec4
+views {
+  // with name
+  view index {
+  }
+  // unnamed
+  view {
+  }
+}
+```
+
+The view’s name is used as an image filename during export and as part of the URL when sharing, so it’s advisable to define one.
+
+<Aside title="Default view">
+  `index` is a special view, and is rendered by default if no view name is specified.  
+  If it is not defined - will be generated and include top-level elements
+</Aside>
+
+### View properties
+
+Views can have a `title`, `description`, `tags` and `links`:
+
+```likec4
+views {
+
+  view epic12 {
+    #next, #epic-12
+    title "Cloud System - Changes in Epic-12"
+
+    // Description can be Markdown with triple quotes
+    description """
+      This diagram shows the **high-level**
+      components and interactions.
+    """
+
+    link https://my.jira/epic/12 'Epic-12'
+
+  }
+
+}
+```
+
+Properties must be defined before [predicates](/dsl/views/predicates/).  
+
+## Scoped views
+
+A view can be defined for a specific element (`view of ..`).  
+The view will then inherit the [scope](/dsl/references#scope) of that element:
+
+:::note
+You will learn about `include` and `exclude` in the [predicates](/dsl/views/predicates/) section.
+:::
+
+```likec4
+views {
+
+  view {
+    include api // ⛔️ Error: 'api' is not found
+  }
+
+  view of cloud.backend {
+    include api // ✅ This is OK, resolves to 'cloud.backend.api'
+  }
+
+  view of legacy {
+    include api // ✅ This is OK, resolves to 'legacy.api'
+  }
+
+}
+```
+
+Additionally, a scoped view becomes the default for the element:
+
+```likec4
+views {
+
+  view {
+    // on click navigates to 'view1',
+    // because it is default for 'cloud.backend'
+    include cloud.backend
+  }
+
+  view view1 of cloud.backend {
+    include *
+  }
+
+}
+```
+
+You can define multiple views for the same element, with the default determined by their order.
+
+## Extend views
+
+Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+
+  view view2 extends view1 {
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+
+    include * -> some.backend
+  }
+
+}
+```
+
+The predicates and style rules of extended views applied after the ones from ancestors.
+
+Extended view also inherits the scope:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```
