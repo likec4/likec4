@@ -52,9 +52,12 @@ export const NavigationPanelControls = () => {
         'mantine-active',
         css({
           maxWidth: '200px',
+          display: {
+            base: 'none',
+            '@/md': 'block',
+          },
         }),
       )}
-      visibleFrom="sm"
       title={title}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath })}
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
@@ -90,55 +93,64 @@ export const NavigationPanelControls = () => {
 
   return (
     <AnimatePresence propagate>
-      <BurgerButton />
-      {enableNavigationButtons && <NavigationButtons />}
+      <BurgerButton key="burger-button" />
+      {enableNavigationButtons && <NavigationButtons key="nav-buttons" />}
       <m.div
+        key="breadcrumbs"
         layout="position"
         className={hstack({
           gap: 3,
           flexShrink: 1,
           flexGrow: 1,
           overflow: 'hidden',
-          md: {
-            marginRight: 'md',
-          },
         })}>
         {folderBreadcrumbs}
         {viewBreadcrumb}
       </m.div>
       {
         /* <HStack gap={1}>
-          <PanelActionIcon
-            variant="subtle"
-            size={24}
-            component={m.button}
-            whileHover={{
-              scale: 1.085,
-            }}
-            whileTap={{
-              scale: 1,
-              translateY: 1,
-            }}
-            children={<IconInfoCircleFilled style={{ width: '85%', height: '85%' }} />}
-          />
-          <PanelActionIcon
-            variant="subtle"
-            size={24}
-            component={m.button}
-            whileHover={{
-              scale: 1.085,
-            }}
-            whileTap={{
-              scale: 1,
-              translateY: 1,
-            }}
-            children={<IconLink style={{ width: '85%', height: '85%' }} />}
-          />
-        </HStack> */
-      }
-
-      {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton />}
+        <PanelActionIcon
+          variant="subtle"
+          size={24}
+          component={m.button}
+          whileHover={{
+            scale: 1.085,
+          }}
+          whileTap={{
+            scale: 1,
+            translateY: 1,
+          }}
+          children={<IconInfoCircleFilled style={{ width: '85%', height: '85%' }} />}
+        />
+        <PanelActionIcon
+          variant="subtle"
+          size={24}
+          component={m.button}
+          whileHover={{
+            scale: 1.085,
+          }}
+          whileTap={{
+            scale: 1,
+            translateY: 1,
+          }}
+          children={<IconLink style={{ width: '85%', height: '85%' }} />}
+        />
+      </HStack>
       <m.div
+        key="links-control"
+        layout="position"
+        className={hstack({
+          gap: 1,
+          _empty: {
+            display: 'none',
+          },
+        })}>
+        {hasLinks && <LinksControl />}
+      </m.div>*/
+      }
+      {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="walkthrough-button" />}
+      <m.div
+        key="actions"
         layout="position"
         className={hstack({
           gap: 1,
@@ -149,7 +161,7 @@ export const NavigationPanelControls = () => {
         <OpenSource />
         <ToggleReadonly />
       </m.div>
-      {enableSearch && <SearchControl />}
+      {enableSearch && <SearchControl key="search-control" />}
     </AnimatePresence>
   )
 }

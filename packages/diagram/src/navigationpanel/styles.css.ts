@@ -5,8 +5,6 @@ export const breadcrumbTitle = cva({
     fontSize: 'sm',
     fontWeight: '500',
     transition: 'fast',
-    // width: 'max-content',
-    alignSelf: 'stretch',
     color: {
       base: 'mantine.colors.text/90',
       _hover: 'mantine.colors.text',

@@ -43,8 +43,9 @@ export function SearchControl() {
             base: 'likec4.panel.action-icon.bg',
             _hover: 'likec4.panel.action-icon.bg.hover',
           },
-          smDown: {
-            display: 'none',
+          display: {
+            base: 'none',
+            '@/md': 'flex',
           },
         }),
       )}>

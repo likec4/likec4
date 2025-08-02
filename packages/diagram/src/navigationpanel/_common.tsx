@@ -28,10 +28,13 @@ export const Tooltip = MantineTooltip.withProps({
 
 export const BreadcrumbsSeparator = () => (
   <ThemeIcon
-    visibleFrom="sm"
     variant="transparent"
     size={16}
     className={css({
+      display: {
+        base: 'none',
+        '@/md': 'flex',
+      },
       color: {
         base: 'mantine.colors.gray[5]',
         _dark: 'mantine.colors.dark[3]',

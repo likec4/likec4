@@ -18,6 +18,13 @@ export const theme: ExtendableTheme = {
     semanticTokens,
     recipes,
     slotRecipes,
+    containerNames: ['likec4-root', 'likec4-dialog'],
+    containerSizes: {
+      xs: '384px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+    },
     keyframes: {
       'indicatorStrokeOpacity': {
         '0%': {

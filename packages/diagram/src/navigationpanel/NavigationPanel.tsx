@@ -52,25 +52,25 @@ export const NavigationPanel = memo(() => {
       <VStack
         className="react-flow__panel"
         css={{
-          gap: 'sm',
-          margin: 'sm',
           alignItems: 'flex-start',
           pointerEvents: 'none',
           top: 0,
           left: 0,
-          maxWidth: [
-            'calc(100vw - 2 * {spacing.sm})',
-            'calc(100cqw - 2 * {spacing.sm})',
-          ],
-          width: 'max-content',
           overflow: 'hidden',
-          smDown: {
-            margin: 0,
-            width: '100%',
-            gap: '2xs',
+          margin: 0,
+          width: '100%',
+          gap: '2xs',
+          maxWidth: [
+            'calc(100vw)',
+            'calc(100cqw)',
+          ],
+          '@/sm': {
+            margin: 'sm',
+            gap: 'sm',
+            width: 'max-content',
             maxWidth: [
-              'calc(100vw)',
-              'calc(100cqw)',
+              'calc(100vw - 2 * {spacing.md})',
+              'calc(100cqw - 2 * {spacing.md})',
             ],
           },
         }}>

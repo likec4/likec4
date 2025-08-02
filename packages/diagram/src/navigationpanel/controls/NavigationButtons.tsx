@@ -14,7 +14,15 @@ export const NavigationButtons = () => {
     hasStepForward: s.navigationHistory.currentIndex < s.navigationHistory.history.length - 1,
   }))
   return (
-    <m.div layout="position" className={hstack({ gap: 1, mdDown: { display: 'none' } })}>
+    <m.div
+      layout="position"
+      className={hstack({
+        gap: 1,
+        display: {
+          base: 'none',
+          '@likec4-root/sm': 'flex',
+        },
+      })}>
       <PanelActionIcon
         disabled={!hasStepBack}
         onClick={e => {

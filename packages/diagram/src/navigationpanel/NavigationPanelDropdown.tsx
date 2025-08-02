@@ -94,8 +94,8 @@ export function NavigationPanelDropdown() {
         classNames={{
           root: css({
             maxWidth: [
-              'calc(100vw - 20px)',
-              'calc(100cqw - 20px)',
+              'calc(100vw - 50px)',
+              'calc(100cqw - 50px)',
             ],
           }),
         }}
@@ -138,12 +138,12 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
       className={css({
         width: '100%',
         maxWidth: [
-          '70vw',
+          'calc(100vw - 250px)',
           'calc(100cqw - 250px)',
         ],
         maxHeight: [
-          '70vh',
-          'calc(100cqh - 250px)',
+          'calc(100vh - 200px)',
+          'calc(100cqh - 200px)',
         ],
       })}>
       <VStack gap={1}>
@@ -309,8 +309,8 @@ const ColumnScrollArea = ScrollAreaAutosize.withProps({
   scrollbars: 'y',
   className: css({
     maxHeight: [
-      'calc(100vh - 50px)',
-      'calc(100cqh - 50px)',
+      'calc(100vh - 160px)',
+      'calc(100cqh - 160px)',
     ],
   }),
 })

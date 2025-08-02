@@ -36,7 +36,7 @@ const dialog = css.raw({
 
 const body = css.raw({
   position: 'relative',
-  containerName: 'overlay-dialog',
+  containerName: 'likec4-dialog',
   containerType: 'size',
   border: `0 solid transparent`,
   overflow: 'hidden',

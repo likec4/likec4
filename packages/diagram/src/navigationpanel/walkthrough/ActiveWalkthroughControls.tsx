@@ -23,6 +23,9 @@ const TriggerWalkthroughButton = Button.withProps({
   variant: 'filled',
   size: 'xs',
   fw: '500',
+  className: css({
+    flexShrink: 0,
+  }),
 })
 
 export const StartWalkthroughButton = () => {
@@ -100,6 +103,7 @@ export const ActiveWalkthroughControls = () => {
   return (
     <AnimatePresence propagate>
       <TriggerWalkthroughButton
+        key="trigger-dynamic-walkthrough"
         variant="light"
         color="orange"
         mr={'sm'}
@@ -122,6 +126,7 @@ export const ActiveWalkthroughControls = () => {
       </PrevNextButton>
 
       <Badge
+        key="step-badge"
         component={m.div}
         size="md"
         radius="sm"
