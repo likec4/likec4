@@ -79,7 +79,7 @@ export const actionBtn = defineRecipe({
     size: ['md'],
     radius: ['md'],
     variant: ['*'],
-    conditions: ['whenHovered', 'hover', 'reducedGraphics'],
+    conditions: ['*'],
   }],
 })
 
@@ -399,8 +399,8 @@ export const markdownBlock = defineRecipe({
   },
 
   staticCss: [{
-    uselikec4palette: ['true'],
-    conditions: ['hover'],
+    uselikec4palette: ['*'],
+    conditions: ['*'],
   }],
 })
 
@@ -450,8 +450,8 @@ export const navigationPanelActionIcon = defineRecipe({
 })
 
 const varIconSize = `var(${iconSize})`
-export const elementIcon = defineRecipe({
-  className: 'likec4-element-icon',
+export const elementNodeIcon = defineRecipe({
+  className: 'likec4-element-node-icon',
   description: 'Element Icon displayed in diagram nodes',
   base: {
     flex: `0 0 ${varIconSize}`,

@@ -172,7 +172,9 @@ export const elementNodeData = defineSlotRecipe({
     hasIcon: false,
   },
   staticCss: [{
-    properties: ['*'],
+    hasIcon: ['*'],
+    hasDescription: ['*'],
+    hasTechnology: ['*'],
     conditions: ['*'],
   }],
 })

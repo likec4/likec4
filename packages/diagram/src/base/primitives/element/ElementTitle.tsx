@@ -1,7 +1,7 @@
 import type { DiagramNode, RichTextOrEmpty } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import { elementIcon as elementIconRecipe, elementNodeData } from '@likec4/styles/recipes'
+import { elementNodeData, elementNodeIcon as elementIconRecipe } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
