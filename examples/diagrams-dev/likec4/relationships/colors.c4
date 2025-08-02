@@ -233,30 +233,18 @@ model {
   }
 }
 
-views {
+views 'Relationship Colors' {
 
   view relationshipcolors of relationship_colors {
+    title 'All'
+
     include relationship_colors
     include element.tag == #source
   }
 
-  
-  view relationship_primary of primary_source {
-    include relationship_colors,
-      primary_source with {
-        technology 'source'
-        description: '
-          Example of primary relationship color
-          above muted color'
-      },
-      primary_target with {
-        technology 'target'
-        description: '
-          Example of primary relationship color
-          above primary color'
-      }
-  }
   view relationship_primary_target of primary_target {
+    title 'Primary / Target'
+
     include relationship_colors,
       primary_source with {
         technology 'source'
@@ -274,8 +262,28 @@ views {
       color primary
     }
   }
-  
+
+  view relationship_primary of primary_source {
+    title 'Primary / Source'
+
+    include relationship_colors,
+      primary_source with {
+        technology 'source'
+        description: '
+          Example of primary relationship color
+          above muted color'
+      },
+      primary_target with {
+        technology 'target'
+        description: '
+          Example of primary relationship color
+          above primary color'
+      }
+  }
+
   view relationship_blue of blue_source {
+    title 'Blue / Blue Source'
+
     include relationship_colors,
       blue_source with {
         technology 'source'
@@ -291,6 +299,8 @@ views {
       }
   }
   view relationship_blue_target of blue_target {
+    title 'Blue / Blue Target'
+
     include relationship_colors,
       blue_source with {
         technology 'source'
@@ -308,8 +318,10 @@ views {
       color blue
     }
   }
-  
+
   view relationship_secondary of secondary_source {
+    title 'Secondary / Secondary Source'
+
     include relationship_colors,
       secondary_source with {
         technology 'source'
@@ -325,6 +337,8 @@ views {
       }
   }
   view relationship_secondary_target of secondary_target {
+    title 'Secondary / Secondary Target'
+
     include relationship_colors,
       secondary_source with {
         technology 'source'
@@ -342,8 +356,10 @@ views {
       color secondary
     }
   }
-  
+
   view relationship_sky of sky_source {
+    title 'Sky / Sky Source'
+
     include relationship_colors,
       sky_source with {
         technology 'source'
@@ -359,6 +375,8 @@ views {
       }
   }
   view relationship_sky_target of sky_target {
+    title 'Sky / Sky Target'
+
     include relationship_colors,
       sky_source with {
         technology 'source'
@@ -376,8 +394,10 @@ views {
       color sky
     }
   }
-  
+
   view relationship_muted of muted_source {
+    title 'Muted / Muted Source'
+
     include relationship_colors,
       muted_source with {
         technology 'source'
@@ -393,6 +413,8 @@ views {
       }
   }
   view relationship_muted_target of muted_target {
+    title 'Muted / Muted Target'
+
     include relationship_colors,
       muted_source with {
         technology 'source'
@@ -410,8 +432,10 @@ views {
       color muted
     }
   }
-  
+
   view relationship_slate of slate_source {
+    title 'Slate / Slate Source'
+
     include relationship_colors,
       slate_source with {
         technology 'source'
@@ -427,6 +451,8 @@ views {
       }
   }
   view relationship_slate_target of slate_target {
+    title 'Slate / Slate Target'
+
     include relationship_colors,
       slate_source with {
         technology 'source'
@@ -444,8 +470,10 @@ views {
       color slate
     }
   }
-  
+
   view relationship_gray of gray_source {
+    title 'Gray / Gray Source'
+
     include relationship_colors,
       gray_source with {
         technology 'source'
@@ -461,6 +489,8 @@ views {
       }
   }
   view relationship_gray_target of gray_target {
+    title 'Gray / Gray Target'
+
     include relationship_colors,
       gray_source with {
         technology 'source'
@@ -478,8 +508,10 @@ views {
       color gray
     }
   }
-  
+
   view relationship_red of red_source {
+    title 'Red / Red Source'
+
     include relationship_colors,
       red_source with {
         technology 'source'
@@ -495,6 +527,8 @@ views {
       }
   }
   view relationship_red_target of red_target {
+    title 'Red / Red Target'
+
     include relationship_colors,
       red_source with {
         technology 'source'
@@ -512,8 +546,10 @@ views {
       color red
     }
   }
-  
+
   view relationship_green of green_source {
+    title 'Green / Green Source'
+
     include relationship_colors,
       green_source with {
         technology 'source'
@@ -529,6 +565,8 @@ views {
       }
   }
   view relationship_green_target of green_target {
+    title 'Green / Green Target'
+
     include relationship_colors,
       green_source with {
         technology 'source'
@@ -546,8 +584,10 @@ views {
       color green
     }
   }
-  
+
   view relationship_amber of amber_source {
+    title 'Amber / Amber Source'
+
     include relationship_colors,
       amber_source with {
         technology 'source'
@@ -563,6 +603,8 @@ views {
       }
   }
   view relationship_amber_target of amber_target {
+    title 'Amber / Amber Target'
+
     include relationship_colors,
       amber_source with {
         technology 'source'
@@ -580,8 +622,10 @@ views {
       color amber
     }
   }
-  
+
   view relationship_indigo of indigo_source {
+    title 'Indigo / Indigo Source'
+
     include relationship_colors,
       indigo_source with {
         technology 'source'
@@ -597,6 +641,8 @@ views {
       }
   }
   view relationship_indigo_target of indigo_target {
+    title 'Indigo / Indigo Target'
+
     include relationship_colors,
       indigo_source with {
         technology 'source'
@@ -614,6 +660,6 @@ views {
       color indigo
     }
   }
-  
+
 
 }

@@ -82,4 +82,6 @@ specification {
   tag v2 {
     color #3094FEB9
   }
+  tag in-progress
+  tag planned
 }

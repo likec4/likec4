@@ -1,6 +1,7 @@
 import type { Config } from '@pandacss/dev'
 import { theme as generated } from './generated'
 import * as recipes from './recipes'
+import * as slotRecipes from './slotRecipes'
 import { layerStyles } from './theme.layer-styles'
 import { semanticTokens } from './theme.semantic-tokens'
 import { textStyles } from './theme.text-styles'
@@ -16,6 +17,7 @@ export const theme: ExtendableTheme = {
     tokens,
     semanticTokens,
     recipes,
+    slotRecipes,
     keyframes: {
       'indicatorStrokeOpacity': {
         '0%': {

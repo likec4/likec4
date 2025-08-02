@@ -76,9 +76,14 @@ export default function App() {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
-          fitViewPadding={'32px'}
+          fitViewPadding={{
+            top: '70px',
+            bottom: '10px',
+            left: '60px',
+            right: '10px',
+          }}
           readonly={false}
-          controls
+          controls="next"
           nodesDraggable={nodesDraggable}
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode

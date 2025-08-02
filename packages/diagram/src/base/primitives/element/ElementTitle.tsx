@@ -1,6 +1,7 @@
 import type { DiagramNode, RichTextOrEmpty } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
+import { elementNodeData, elementNodeIcon as elementIconRecipe } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
@@ -8,7 +9,6 @@ import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps, NonOptional } from '../../types'
 import { MarkdownBlock } from '../MarkdownBlock'
 import { nodeSizes } from './ElementNodeContainer'
-import * as styles from './ElementTitle.css'
 
 type Data = Simplify<
   & NonOptional<
@@ -37,9 +37,9 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
       title: data.title,
       icon: data.icon,
     },
-    className: styles.elementIcon,
+    className: elementIconRecipe(),
   })
-  const classes = styles.elementTitle({
+  const classes = elementNodeData({
     hasIcon: isTruthy(elementIcon),
     hasDescription: !!data.description?.nonEmpty,
     hasTechnology: !isEmpty(data.technology ?? ''),
@@ -56,7 +56,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
       style={isNumber(iconSize)
         ? {
           // @ts-ignore
-          [styles.iconSize]: `${iconSize}px`,
+          ['--likec4-icon-size']: `${iconSize}px`,
         }
         : undefined}
     >

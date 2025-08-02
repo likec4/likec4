@@ -20,18 +20,18 @@ model {
 views {
 
   view cloud_data of cloud.data {
-    title "[context] Data Services"
+    title 'Context / Data Services'
     description '
         Process page hits.
         Search for anomalies.
       '
     include
-        *,
-        cloud,
-        amazon,
-        amazon.kinesis,
-        amazon.sqs,
-        amazon.sqs.*
+      *,
+      cloud,
+      amazon,
+      amazon.kinesis,
+      amazon.sqs,
+      amazon.sqs.*
 
     style * {
       color secondary

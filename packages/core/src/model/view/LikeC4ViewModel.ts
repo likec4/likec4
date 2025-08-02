@@ -7,10 +7,9 @@ import type {
   scalar,
   ViewWithType,
 } from '../../types'
-import { _stage, _type } from '../../types'
-import { type RichTextOrEmpty, RichText } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
-import { DefaultMap, ifind, nonNullable } from '../../utils'
+import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import {
@@ -18,9 +17,10 @@ import {
   type EdgeOrId,
   type NodeOrId,
   type WithTags,
-  getId,
 } from '../types'
+import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
+import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
@@ -44,9 +44,29 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   public readonly $view: V
   public readonly $model: LikeC4Model<A>
 
-  constructor(model: LikeC4Model<A>, view: V) {
+  public readonly title: string | null
+
+  /**
+   * View folder this view belongs to.
+   * If view is top-level, this is the root folder.
+   */
+  public readonly folder: LikeC4ViewsFolder<A>
+  /**
+   * Path to this view, processed by {@link normalizeViewPath}
+   *
+   * @example
+   * "Group 1/Group 2/View"
+   */
+  public readonly viewPath: string
+
+  constructor(
+    model: LikeC4Model<A>,
+    view: V,
+    folder: LikeC4ViewsFolder<A>,
+  ) {
     this.$model = model
     this.$view = view
+    this.folder = folder
     for (const node of view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
@@ -79,6 +99,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       }
       this.#edges.set(edge.id, edgeModel)
     }
+
+    this.title = this.$view.title ? extractViewTitleFromPath(this.$view.title) : null
+    this.viewPath = this.$view.title ? normalizeViewPath(this.$view.title) : this.$view.id
   }
 
   get _type(): V[_type] {
@@ -89,8 +112,40 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     return this.$view.id
   }
 
-  get title(): string | null {
-    return this.$view.title
+  /**
+   * Returns title if defined, otherwise returns its {@link id}
+   */
+  get titleOrId(): string {
+    return this.title ?? this.id
+  }
+
+  /**
+   * Returns title if defined, otherwise returns `Untitled`.
+   */
+  get titleOrUntitled(): string {
+    return this.title ?? 'Untitled'
+  }
+
+  /**
+   * Returns path to this view as an array of groups and this view as the last element
+   * If view is top-level, returns only this view.
+   *
+   * @example
+   * viewPath = "Group 1/Group 2/View"
+   *
+   * breadcrumbs = [
+   *   "Group 1",             // folder
+   *   "Group 1/Group 2",     // folder
+   *   "Group 1/Group 2/View" // view
+   * ]
+   */
+  get breadcrumbs(): [...LikeC4ViewsFolder<A>[], this] {
+    return memoizeProp(this, 'breadcrumbs', () => {
+      if (!this.folder.isRoot) {
+        return [...this.folder.breadcrumbs, this]
+      }
+      return [this]
+    })
   }
 
   get description(): RichTextOrEmpty {

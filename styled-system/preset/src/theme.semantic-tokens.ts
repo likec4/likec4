@@ -13,6 +13,19 @@ export const semanticTokens = defineSemanticTokens({
   },
   colors: {
     likec4: {
+      background: {
+        DEFAULT: {
+          description: 'Background color',
+          value: '{colors.mantine.colors.body}',
+        },
+        pattern: {
+          description: 'Background pattern color',
+          value: {
+            base: '{colors.mantine.colors.dark[5]}',
+            _light: '{colors.mantine.colors.gray[4]}',
+          },
+        },
+      },
       mixColor: {
         description: 'Color to be used in color-mix',
         value: {
@@ -47,6 +60,78 @@ export const semanticTokens = defineSemanticTokens({
         label: {
           DEFAULT: { value: '{colors.likec4.gray.relation.label}' },
           bg: { value: '{colors.likec4.gray.relation.label.bg}' },
+        },
+      },
+      panel: {
+        bg: {
+          DEFAULT: {
+            description: 'LikeC4 panel background color',
+            value: {
+              base: `{colors.mantine.colors.body/90}`,
+              _dark: `{colors.mantine.colors.dark[6]/80}`,
+            },
+          },
+          whenPanning: {
+            description: 'LikeC4 panel background color when panning',
+            value: {
+              base: `{colors.mantine.colors.body}`,
+              _dark: `{colors.mantine.colors.dark[6]}`,
+            },
+          },
+        },
+        border: {
+          description: 'LikeC4 panel border color',
+          value: {
+            base: 'transparent',
+            _light: `{colors.mantine.colors.defaultBorder/30}`,
+          },
+        },
+        'action-icon': {
+          text: {
+            DEFAULT: {
+              description: 'LikeC4 action icon text color',
+              value: '{colors.mantine.colors.text/70}',
+            },
+            hover: {
+              description: 'LikeC4 action icon text color on hover',
+              value: '{colors.mantine.colors.text}',
+            },
+            disabled: {
+              description: 'LikeC4 action icon text color when disabled',
+              value: '{colors.mantine.colors.dimmed}',
+            },
+          },
+          bg: {
+            DEFAULT: {
+              description: 'LikeC4 action icon background color',
+              value: {
+                base: '{colors.mantine.colors.gray[1]}',
+                _dark: '{colors.mantine.colors.dark[7]/70}',
+              },
+            },
+            hover: {
+              description: 'LikeC4 action icon background color on hover',
+              value: {
+                base: '{colors.mantine.colors.gray[2]}',
+                _dark: '{colors.mantine.colors.dark[8]}',
+              },
+            },
+          },
+        },
+      },
+      dropdown: {
+        bg: {
+          DEFAULT: {
+            description: 'LikeC4 dropdown background color',
+            value: {
+              base: `#FFF`,
+              _dark: `{colors.mantine.colors.dark[6]}`,
+            },
+          },
+        },
+        border: {
+          description: 'LikeC4 dropdown border color',
+          value: '{colors.likec4.panel.border}',
         },
       },
     },

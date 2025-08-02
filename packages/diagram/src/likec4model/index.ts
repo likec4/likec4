@@ -1,4 +1,7 @@
 export {
+  useCurrentViewModel,
+} from './useCurrentViewModel'
+export {
   useLikeC4ElementsTree,
 } from './useLikeC4ElementsTree'
 export {

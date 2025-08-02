@@ -1,6 +1,6 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { filter, isArray, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
+import { filter, isArray, isDefined, isEmpty, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
@@ -37,6 +37,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
         })
 
+        // Common folder for all views in the block
+        const folder = viewBlock.folder && !isEmpty(viewBlock.folder.trim()) ? viewBlock.folder : null
+
         for (const view of viewBlock.views) {
           try {
             if (!isValid(view)) {
@@ -54,6 +57,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
                 break
               default:
                 nonexhaustive(view)
+            }
+            if (folder) {
+              const view = this.doc.c4Views.at(-1)!
+              view.title = folder + ' / ' + (view.title || view.id)
             }
           } catch (e) {
             logWarnError(e)

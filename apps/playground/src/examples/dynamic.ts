@@ -125,7 +125,7 @@ model {
 views {
 
   dynamic view index {
-    title 'Story 1.1 - User dashboard'
+    title 'Use Cases / Story 1.1 - User dashboard'
 
     customer -> web '' {
       notes '
@@ -229,7 +229,7 @@ views {
   }
 
   dynamic view authTokenUpdateFlow {
-    title 'Auth token update'
+    title 'Use Cases / Story 1.2 - Auth token update'
     customer -> web 'interacts'
     web -> auth {
       notes '

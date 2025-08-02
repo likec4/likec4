@@ -69,7 +69,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
   renderNodes,
   ...props
 }) => {
-  const likec4model = useLikeC4Model('layouted')
+  const likec4model = useLikeC4Model()
   const colorScheme = useColorScheme(explicitColorScheme)
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
@@ -159,7 +159,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
                 enableRelationshipDetails
                 enableSearch
                 enableElementTags
-                controls
+                controls="next"
                 readonly
                 fitView
                 fitViewPadding={'32px'}

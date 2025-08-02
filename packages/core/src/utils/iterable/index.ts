@@ -5,6 +5,7 @@ export { isIterable } from './_types'
  */
 export { ifilter } from './filter'
 export { ifind } from './find'
+export { ifirst } from './first'
 export { iflat } from './flat'
 export { ihead } from './head'
 export { imap } from './map'

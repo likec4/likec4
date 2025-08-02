@@ -30,8 +30,8 @@ import {
   type IncomingFilter,
   type OutgoingFilter,
   type RelationOrId,
-  getId,
 } from './types'
+import { getId } from './utils'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export class LikeC4DeploymentModel<A extends Any = Any> {

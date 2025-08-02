@@ -43,10 +43,10 @@ model {
 views {
 
   view backoffice of cloud.backoffice {
-    title "[context] Back Office"
+    title 'Context / Back Office'
     include
-        *,
-        cloud
+      *,
+      cloud
 
     style * {
       color secondary

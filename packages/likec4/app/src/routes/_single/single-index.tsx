@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_single/single-index')({
 
 function RouteComponent() {
   useDocumentTitle(pageTitle)
-  const views = [...useLikeC4Model('layouted').views()]
+  const views = [...useLikeC4Model().views()]
   return (
     <Container size={'xl'}>
       <SimpleGrid

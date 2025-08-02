@@ -1,15 +1,14 @@
-import { css, sva } from '@likec4/styles/css'
+import { type SystemStyleObject, defineSlotRecipe } from '@pandacss/dev'
+import { iconSize } from './const'
 
-export const iconSize = '--icon-size'
-
-const title = css.raw({
+const title: SystemStyleObject = {
   textStyle: 'likec4.node.primary',
   flex: '0 0 auto',
   textAlign: 'center',
   color: 'likec4.palette.hiContrast',
-})
+}
 
-const description = css.raw({
+const description: SystemStyleObject = {
   flexGrow: '0',
   flexShrink: '1',
 
@@ -24,9 +23,9 @@ const description = css.raw({
   _smallZoom: {
     display: 'none',
   },
-})
+}
 
-const technology = css.raw({
+const technology: SystemStyleObject = {
   flex: '0 0 auto',
   textStyle: 'likec4.node.secondary',
   color: 'likec4.palette.loContrast',
@@ -47,42 +46,11 @@ const technology = css.raw({
   _smallZoom: {
     display: 'none',
   },
-})
+}
 
-const varIconSize = `var(${iconSize})`
-export const elementIcon = css({
-  flex: `0 0 ${varIconSize}`,
-  height: varIconSize,
-  width: varIconSize,
-  display: 'flex',
-  alignSelf: 'flex-start',
-  alignItems: 'center',
-  justifyContent: 'center',
-  mixBlendMode: {
-    base: 'hard-light',
-    _reduceGraphicsOnPan: 'normal',
-  },
-  [`& svg, & img`]: {
-    width: '100%',
-    height: 'auto',
-    maxHeight: '100%',
-    pointerEvents: 'none',
-    filter: {
-      base: [
-        'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
-        'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
-        'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
-      ],
-      _reduceGraphicsOnPan: 'none',
-    },
-  },
-  [`& img`]: {
-    objectFit: 'contain',
-  },
-})
-
-export const elementTitle = sva({
-  slots: ['root', 'textContainer', 'title', 'description', 'technology'],
+export const elementNodeData = defineSlotRecipe({
+  className: 'likec4-el-node-data',
+  slots: ['root', 'textContainer', 'title', 'description', 'technology', 'icon'],
   base: {
     root: {
       position: 'relative',
@@ -166,7 +134,7 @@ export const elementTitle = sva({
           gap: '16px',
         },
         textContainer: {
-          minWidth: `calc(50% + ${varIconSize})`,
+          minWidth: `calc(50% + var(${iconSize}))`,
           alignItems: 'flex-start',
         },
         title: {
@@ -203,4 +171,10 @@ export const elementTitle = sva({
   defaultVariants: {
     hasIcon: false,
   },
+  staticCss: [{
+    hasIcon: ['*'],
+    hasDescription: ['*'],
+    hasTechnology: ['*'],
+    conditions: ['*'],
+  }],
 })

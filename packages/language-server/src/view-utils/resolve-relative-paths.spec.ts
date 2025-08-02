@@ -27,8 +27,8 @@ describe('resolveRelativePaths', () => {
       { id: '_3', relativePath: 'file3.c4' },
       { id: '_10', relativePath: 'file10.c4' },
       { id: '_a', relativePath: 'a/file.c4' },
-      { id: '_a2', relativePath: 'a/file.c4' },
       { id: '_a10', relativePath: 'a/file.c4' },
+      { id: '_a2', relativePath: 'a/file.c4' },
       { id: '_b', relativePath: 'b/file.c4' },
       { id: '_ab', relativePath: 'a/b/file.c4' },
     ])
@@ -37,13 +37,16 @@ describe('resolveRelativePaths', () => {
   it('should ignore empty docUri', () => {
     const result = resolveRelativePaths([
       d('virtual'),
-      d('_a', 'a/file.c4'),
-      d('_b', 'b/file.c4'),
       d('_bc', 'b/c/file.c4'),
+      d('_b', 'b/file.c4'),
+      d('_ab', 'a/file.c4'),
+      d('_aa', 'a/file.c4'),
     ])
     expect(result).toMatchObject([
       { id: 'virtual', relativePath: '' },
-      { id: '_a', relativePath: 'a/file.c4' },
+      // _aa and _ab in the same file, keep original order
+      { id: '_ab', relativePath: 'a/file.c4' },
+      { id: '_aa', relativePath: 'a/file.c4' },
       { id: '_b', relativePath: 'b/file.c4' },
       { id: '_bc', relativePath: 'b/c/file.c4' },
     ])

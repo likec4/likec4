@@ -280,4 +280,11 @@ describe.concurrent('views', () => {
         include *
       }
     }`
+
+  test('view folders').valid`${model}
+    views "Folder" {
+      view index {
+        include *
+      }
+    }`
 })

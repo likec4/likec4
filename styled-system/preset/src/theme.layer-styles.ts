@@ -71,5 +71,44 @@ export const layerStyles = defineLayerStyles({
         borderRadius: 3,
       },
     },
+    panel: {
+      description: 'LikeC4 panel layer',
+      value: {
+        paddingInline: 'xs',
+        paddingBlock: '2xs',
+        backgroundColor: {
+          base: 'likec4.panel.bg',
+          _whenPanning: 'likec4.panel.bg.whenPanning',
+        },
+        boxShadow: 'lg',
+        border: '1px solid {colors.likec4.panel.border}',
+        borderRadius: 'md',
+        backdropFilter: 'blur(10px)',
+        _whenPanning: {
+          boxShadow: 'none',
+          borderRadius: 0,
+        },
+        smDown: {
+          padding: '4',
+          borderRadius: 0,
+        },
+      },
+    },
+    dropdown: {
+      description: 'LikeC4 dropdown layer',
+      value: {
+        paddingInline: '2xs',
+        paddingBlock: '2xs',
+        backgroundColor: 'likec4.dropdown.bg',
+        border: '1px solid {colors.likec4.dropdown.border}',
+        boxShadow: 'lg',
+        borderRadius: 'md',
+        _whenPanning: {
+          boxShadow: 'none',
+          borderRadius: '0px',
+          borderColor: 'transparent',
+        },
+      },
+    },
   },
 })

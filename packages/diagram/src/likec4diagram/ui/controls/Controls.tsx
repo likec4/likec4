@@ -1,4 +1,5 @@
 import { cx } from '@likec4/styles/css'
+import { hstack } from '@likec4/styles/patterns'
 import { ActionIconGroup, Badge, Box, Group, Loader, Stack } from '@mantine/core'
 import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { LayoutGroup, m } from 'motion/react'
@@ -7,7 +8,7 @@ import { SearchControl } from '../../../components/SearchControl'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { type ControlsCustomLayout, useControlsCustomLayout } from '../../../context/ControlsCustomLayout'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
@@ -23,9 +24,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
   search,
   actionsGroup,
 }) => (
-  <Group
-    component={m.div}
-    // @ts-expect-error group component not fully polymorphic
+  <m.div
     initial={{
       opacity: 0.05,
       translateX: -30,
@@ -41,13 +40,15 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
       translateX: -30,
       translateY: -10,
     }}
-    align="flex-start"
     className={cx(
+      hstack({
+        gap: 'sm',
+        alignItems: 'flex-start',
+      }),
       'react-flow__panel',
       css.panel,
       'likec4-top-left-panel',
     )}
-    gap="xs"
     onClick={stopPropagation}
   >
     <Stack align="flex-start" gap="xs">
@@ -64,7 +65,7 @@ const ControlsDefaultLayout: ControlsCustomLayout = ({
     <Box>
       {search}
     </Box>
-  </Group>
+  </m.div>
 )
 
 export const Controls = memo(() => {
@@ -110,7 +111,6 @@ export const Controls = memo(() => {
               }}
             />
           )}
-          syncInProgressBadge={<SyncLayoutBadge />}
           actionsGroup={
             <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
               {enableVscode && (
@@ -151,13 +151,3 @@ export const Controls = memo(() => {
     </>
   )
 })
-
-const SyncLayoutBadge = () => {
-  const isPending = useDiagramSyncLayoutState(s => s.hasTag('pending'))
-  if (!isPending) return null
-  return (
-    <Badge color="pink" radius={'xs'} size="xs" variant="light" leftSection={<Loader color={'orange'} size={8} />}>
-      Pending...
-    </Badge>
-  )
-}

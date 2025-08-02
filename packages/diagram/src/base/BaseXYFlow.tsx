@@ -10,7 +10,7 @@ import { Fragment, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
-import type { PaddingWithUnit } from '../LikeC4Diagram.props'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -23,7 +23,7 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     nodesSelectable?: boolean
     nodesDraggable?: boolean
     background?: 'transparent' | 'solid' | XYBackground
-    fitViewPadding?: PaddingWithUnit | undefined
+    fitViewPadding?: ViewPadding | undefined
     onViewportResize?: undefined | (() => void)
   }
   & SetRequired<
@@ -122,12 +122,12 @@ export const BaseXYFlow = <
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={useMemo(() => ({
+      fitViewOptions={{
         minZoom: MinZoom,
         maxZoom: 1,
         padding: fitViewPadding,
         includeHiddenNodes: false,
-      }), [fitViewPadding])}
+      }}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"

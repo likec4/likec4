@@ -1,8 +1,9 @@
 import { defineRecipe } from '@pandacss/dev'
+import { iconSize } from './const'
 
 export const actionBtn = defineRecipe({
   className: 'action-btn',
-  description: 'The styles for the Action Buttons',
+  description: 'Action Button within Diagram Node (Bottom-Center)',
   base: {
     pointerEvents: 'all',
     cursor: 'pointer',
@@ -78,7 +79,7 @@ export const actionBtn = defineRecipe({
     size: ['md'],
     radius: ['md'],
     variant: ['*'],
-    conditions: ['whenHovered', 'hover', 'reducedGraphics'],
+    conditions: ['*'],
   }],
 })
 
@@ -138,6 +139,7 @@ export const likec4tag = defineRecipe({
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
   jsx: ['MarkdownBlock'],
+  description: 'Block with Markdown content',
   base: {
     pointerEvents: 'all',
     '--text-fz': '1rem',
@@ -292,7 +294,7 @@ export const markdownBlock = defineRecipe({
     '& :where(ul, ol):not([data-type="taskList"])': {
       marginBottom: 'var(--typography-spacing)',
       paddingInlineStart: 'var(--typography-spacing)',
-      listStylePosition: 'outside',
+      listStylePosition: 'inside',
     },
 
     '& :where(table)': {
@@ -397,7 +399,91 @@ export const markdownBlock = defineRecipe({
   },
 
   staticCss: [{
-    uselikec4palette: ['true'],
-    conditions: ['hover'],
+    uselikec4palette: ['*'],
+    conditions: ['*'],
+  }],
+})
+
+export const navigationPanelActionIcon = defineRecipe({
+  className: 'likec4-navigation-panel-icon',
+  jsx: ['PanelActionIcon'],
+  description: 'ActionIcon for navigation panel',
+  base: {
+    color: {
+      base: 'likec4.panel.action-icon.text',
+      _disabled: 'likec4.panel.action-icon.text.disabled',
+      _notDisabled: {
+        _hover: 'likec4.panel.action-icon.text.hover',
+      },
+    },
+    _disabled: {
+      opacity: 0.5,
+    },
+  },
+  variants: {
+    variant: {
+      'default': {
+        backgroundColor: {
+          base: '[transparent]',
+          _notDisabled: {
+            _hover: 'likec4.panel.action-icon.bg.hover',
+          },
+        },
+      },
+      'filled': {
+        backgroundColor: {
+          base: 'likec4.panel.action-icon.bg',
+          _notDisabled: {
+            _hover: 'likec4.panel.action-icon.bg.hover',
+          },
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+  staticCss: [{
+    variant: ['*'],
+    conditions: ['*'],
+  }],
+})
+
+const varIconSize = `var(${iconSize})`
+export const elementNodeIcon = defineRecipe({
+  className: 'likec4-element-node-icon',
+  description: 'Element Icon displayed in diagram nodes',
+  base: {
+    flex: `0 0 ${varIconSize}`,
+    height: varIconSize,
+    width: varIconSize,
+    display: 'flex',
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
+    mixBlendMode: {
+      base: 'hard-light',
+      _reduceGraphicsOnPan: 'normal',
+    },
+    '& svg, & img': {
+      width: '100%',
+      height: 'auto',
+      maxHeight: '100%',
+      pointerEvents: 'none',
+      filter: {
+        base: [
+          'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
+          'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
+          'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
+        ],
+        _reduceGraphicsOnPan: 'none',
+      },
+    },
+    '& img': {
+      objectFit: 'contain',
+    },
+  },
+  staticCss: [{
+    conditions: ['*'],
   }],
 })

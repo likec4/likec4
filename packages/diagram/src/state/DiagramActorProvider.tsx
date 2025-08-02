@@ -1,20 +1,25 @@
 import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import { useCustomCompareEffect, useDeepCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
+import { deepEqual, shallowEqual } from 'fast-equals'
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
-import type { PaddingWithUnit } from '../LikeC4Diagram.props'
+import { useCurrentViewId } from '../hooks/useCurrentViewId'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
+import { CurrentViewModelContext } from '../likec4model/LikeC4ModelContext'
+import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorSnapshot } from './types'
 
 const selectToggledFeatures = (state: DiagramActorSnapshot) => {
-  if (state.context.features.enableReadOnly) {
+  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
     return {
       ...state.context.toggledFeatures,
       enableReadOnly: true,
@@ -35,7 +40,7 @@ export function DiagramActorProvider({
   view: DiagramView
   zoomable: boolean
   pannable: boolean
-  fitViewPadding: PaddingWithUnit
+  fitViewPadding: ViewPadding
   nodesSelectable: boolean
   where: WhereOperator | null
 }>) {
@@ -91,13 +96,21 @@ export function DiagramActorProvider({
   )
 
   const features = useEnabledFeatures()
-  useEffect(() => {
-    actorRef.send({ type: 'update.features', features })
-  }, [features])
+  useCustomCompareEffect(
+    () => {
+      actorRef.send({ type: 'update.features', features })
+    },
+    [features],
+    shallowEqual,
+  )
 
-  useEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
-  }, [zoomable, pannable, fitViewPadding, nodesSelectable])
+  useCustomCompareEffect(
+    () => {
+      actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
+    },
+    [zoomable, pannable, fitViewPadding, nodesSelectable],
+    deepEqual,
+  )
 
   const { xyedges, xynodes } = useViewToNodesEdges({
     view,
@@ -114,8 +127,43 @@ export function DiagramActorProvider({
   return (
     <DiagramActorContextProvider value={actorRef}>
       <DiagramFeatures overrides={toggledFeatures}>
-        {children}
+        <ErrorBoundary>
+          <CurrentViewModelProvider>
+            {children}
+          </CurrentViewModelProvider>
+        </ErrorBoundary>
       </DiagramFeatures>
     </DiagramActorContextProvider>
+  )
+}
+
+function CurrentViewModelProvider({
+  children,
+}: PropsWithChildren) {
+  const viewId = useCurrentViewId()
+  const likec4model = useLikeC4Model()
+  const [viewmodel, setViewmodel] = useState(() => likec4model.view(viewId))
+
+  useEffect(() => {
+    setViewmodel(current => {
+      const nextviewmodel = likec4model.findView(viewId)
+      if (!nextviewmodel) {
+        console.error(`View "${viewId}" not found in likec4model, current viewmodel: ${current.id}`, {
+          currentViewModel: current,
+          likec4model,
+        })
+        return current
+      }
+      return nextviewmodel
+    })
+  }, [likec4model, viewId])
+
+  if (!viewmodel.isDiagram()) {
+    console.warn(`View "${viewId}" is not diagram.\nMake sure you have LikeC4ModelProvider with layouted model.`)
+  }
+  return (
+    <CurrentViewModelContext.Provider value={viewmodel}>
+      {children}
+    </CurrentViewModelContext.Provider>
   )
 }

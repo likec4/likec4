@@ -1,7 +1,7 @@
 import { type Preset, definePreset } from '@pandacss/dev'
 import radixColorsPreset from 'pandacss-preset-radix-colors'
 import { conditions } from './conditions'
-import { nodeOrEdge, radixColors, root, rootNotReduced } from './const'
+import { iconSize, nodeOrEdge, radixColors, root, rootNotReduced } from './const'
 import { compoundColors, globalCss, themeColors } from './generated'
 import { patterns } from './patterns'
 import { theme } from './theme'
@@ -39,6 +39,11 @@ export default definePreset({
         inherits: false,
         // initialValue: '1rem',
       },
+      [iconSize]: {
+        syntax: '<length-percentage>',
+        inherits: false,
+        // initialValue: '1rem',
+      },
     },
   },
   globalCss: {
@@ -53,8 +58,8 @@ export default definePreset({
       },
       '.likec4-shadow-root': {
         display: 'contents',
-        '--mantine-font-family': 'var(--likec4-app-font-default)',
-        '--mantine-font-family-headings': 'var(--likec4-app-font-default)',
+        '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
+        '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
       },
       [`${root}`]: {
         overflow: 'hidden',
@@ -64,6 +69,8 @@ export default definePreset({
         padding: '0px',
         margin: '0px',
         border: '0px solid transparent',
+        containerName: 'likec4-root',
+        containerType: 'size',
       },
       [`${root} .react-flow:is(.not-initialized)`]: {
         opacity: 0,

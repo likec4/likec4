@@ -3,9 +3,6 @@ title: Dynamic views
 description: How to describe particular use-case or scenario in LikeC4
 sidebar: 
   order: 9
-tableOfContents:
-  minHeadingLevel: 3
-  maxHeadingLevel: 4
 ---
 
 import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -15,7 +12,7 @@ import DynamicLikeC4View from '@components/dynamic-view/DynamicLikeC4View.astro'
 
 Dynamic view describes a particular use-case or scenario, with specific elements and interactions, defined only in the view (without polluting the model).
 
-### Dynamic view definition
+## Dynamic view definition
 
 ```likec4 showLineNumbers copy collapse={1-54}
 //dynamic-view.c4
@@ -100,7 +97,7 @@ Check this <a href="https://github.com/likec4/likec4/discussions/816" target='_b
 Feel free to share your ideas.
 :::
 
-#### Parallel steps
+### Parallel steps
 
 ```likec4 copy
 dynamic view parallelexample {
@@ -120,7 +117,7 @@ dynamic view parallelexample {
 
 Nested parallel blocks are not possible - <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>see this discussion</a>
 
-#### Navigation
+### Navigation
 
 Control the flow of the walk-through:
 
@@ -138,7 +135,7 @@ dynamic view moreDetails {
 }
 ```
 
-#### Notes 
+### Notes 
 
 `notes` is for additional comments during walk-through:
 
@@ -168,7 +165,7 @@ dynamic view stepnotes {
 }
 ```
 
-### Example
+## Example
 
 <DynamicLikeC4View viewId="index"/>
 

@@ -32,6 +32,9 @@ export {
 } from '../hooks/useXYFlow'
 
 export {
+  useCurrentViewModel,
+} from '../likec4model/useCurrentViewModel'
+export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,

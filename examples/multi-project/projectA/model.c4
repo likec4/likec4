@@ -80,6 +80,8 @@ views {
   }
 
   view customer of customer {
+    title 'Context / Customer'
+    link https://github.com/likec4/template 'Repository'
     include customer
 
     group {
@@ -98,7 +100,7 @@ views {
   }
 
   dynamic view dynamic-view-1 {
-    title 'Dynamic View Example'
+    title 'Use Cases / Dynamic View Example'
 
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
@@ -139,7 +141,7 @@ views {
   }
 
   dynamic view cloud-to-amazon {
-    title 'Cloud to amazon'
+    title 'Use Cases / Cloud to amazon'
 
     next.backend -> next.events {
       notes '

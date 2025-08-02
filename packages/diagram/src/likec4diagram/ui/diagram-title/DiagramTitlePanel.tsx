@@ -7,25 +7,28 @@ import { AnimatePresence, m } from 'motion/react'
 import { MarkdownBlock } from '../../../base/primitives'
 import { Link } from '../../../components/Link'
 import { useDiagramContext } from '../../../hooks/useDiagram'
+import { useCurrentViewModel } from '../../../likec4model'
 import type { DiagramContext } from '../../../state/types'
 import * as styles from './DiagramTitlePanel.css'
 
 function selector(context: DiagramContext) {
   return {
-    id: context.view.id,
-    title: context.view.title ?? 'untitled',
-    description: RichText.from(context.view.description),
-    links: context.view.links,
+    // id: context.view.id,
+    // title: context.view.title ?? 'untitled',
+    // description: RichText.from(context.view.description),
+    // links: context.view.links,
     isNotActiveWalkthrough: context.activeWalkthrough === null,
   }
 }
 
 export function DiagramTitlePanel() {
-  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(selector)
+  const view = useCurrentViewModel()
+  const { isNotActiveWalkthrough } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,
   })
+  const title = view.title ?? 'untitled'
   const toggle = () => setCollapsed(v => !v)
 
   return (
@@ -124,10 +127,10 @@ export function DiagramTitlePanel() {
                       userSelect: 'all',
                     }}>
                     <span style={{ userSelect: 'none' }}>id:{' '}</span>
-                    {id}
+                    {view.id}
                   </Text>
                 </Group>
-                {description.nonEmpty && (
+                {view.description.nonEmpty && (
                   <Spoiler
                     maxHeight={60}
                     showLabel={
@@ -143,10 +146,10 @@ export function DiagramTitlePanel() {
                     <MarkdownBlock
                       className={styles.description}
                       textScale={0.9}
-                      value={description} />
+                      value={view.description} />
                   </Spoiler>
                 )}
-                {description.isEmpty && (
+                {view.description.isEmpty && (
                   <Text
                     component={'div'}
                     size="xs"
@@ -154,13 +157,13 @@ export function DiagramTitlePanel() {
                     no description
                   </Text>
                 )}
-                {links && (
+                {view.links.length > 0 && (
                   <Stack
                     mt={'xs'}
                     gap={4}
                     justify="stretch"
                     align="stretch">
-                    {links.map((link) => <Link value={link} key={link.url} />)}
+                    {view.links.map((link) => <Link value={link} key={link.url} />)}
                   </Stack>
                 )}
               </>

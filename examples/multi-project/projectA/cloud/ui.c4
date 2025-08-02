@@ -10,10 +10,10 @@ model {
       }
     }
 
-    dashboard -> cloud.graphql.myAccount "fetches via GraphQL"
-    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"
+    dashboard -> cloud.graphql.myAccount 'fetches via GraphQL'
+    dashboard -> cloud.graphql.updateAccount 'mutates via GraphQL'
 
-    dashboard -> cloud.legacy.services "fetches via REST"
+    dashboard -> cloud.legacy.services 'fetches via REST'
 
     mobile = mobileApp {
       title 'Customer Mobile App'
@@ -23,17 +23,17 @@ model {
       '
       link /view/mobile 'view'
 
-      .requests cloud.graphql.myAccount "fetches via GraphQL"
-      .uses cloud.graphql.updateAccount "mutates via GraphQL"
-      .uses cloud.legacy.services "fetches via REST"
+      .requests cloud.graphql.myAccount 'fetches via GraphQL'
+      .uses cloud.graphql.updateAccount 'mutates via GraphQL'
+      .uses cloud.legacy.services 'fetches via REST'
     }
 
     supportPanel = app {
       title 'Support Panel'
       description 'Retoool Application'
       icon tech:astro
-      -> cloud.next.graphql "updates data in case of a support request"
-      -> amazon.aurora.tblUsers "reads users from the database" {
+      -> cloud.next.graphql 'updates data in case of a support request'
+      -> amazon.aurora.tblUsers 'reads users from the database' {
         navigateTo cloud-to-amazon
         technology 'postgres-rest'
       }
@@ -41,15 +41,17 @@ model {
 
   }
 
-  customer -> dashboard "opens in the browser vit HTTPS"
-  customer -> mobile "opens on a mobile device"
-  cloud.supportUser -> supportPanel "accesses via browser with encrypted VPN connection"
+  customer -> dashboard 'opens in the browser vit HTTPS'
+  customer -> mobile 'opens on a mobile device'
+  cloud.supportUser -> supportPanel 'accesses via browser with encrypted VPN connection'
 
 }
 
 views {
 
   view cloud_ui of cloud.ui {
+    title 'Context / Cloud / UI'
+
     include *
     include cloud
 
@@ -71,6 +73,8 @@ views {
   }
 
   view mobile of mobile {
+    title 'Context / Cloud / UI / Mobile'
+
     include *
     include cloud
 
@@ -83,6 +87,8 @@ views {
   }
 
   view cloud_ui_dashboard of dashboard {
+    title 'Context / Cloud / UI / Dashboard'
+
     include *
     exclude * -> dashboard
     include cloud.ui
@@ -99,6 +105,8 @@ views {
   }
 
   view cloud_ui_supportPanel of supportPanel {
+    title 'Context / Cloud / UI / Support Panel'
+
     include
       *,
       cloud.ui,

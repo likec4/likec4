@@ -25,8 +25,13 @@ const FeatureNames = [
   'ElementTags',
 ] as const
 export type FeatureName = typeof FeatureNames[number]
+
+type CustomFeatures = {
+  enableControls: 'next' | boolean
+}
+
 export type EnabledFeatures = {
-  [P in `enable${FeatureName}`]: boolean
+  [P in `enable${FeatureName}`]: P extends keyof CustomFeatures ? CustomFeatures[P] : boolean
 }
 
 export const AllDisabled: EnabledFeatures = mapToObj(

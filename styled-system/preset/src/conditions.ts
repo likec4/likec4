@@ -9,6 +9,8 @@ export const conditions = {
     light: '[data-mantine-color-scheme="light"] &',
     dark: '[data-mantine-color-scheme="dark"] &',
 
+    notDisabled: '&:not(:is(:disabled, [disabled], [data-disabled]))',
+
     // This is used to hide certain elements when the diagram is in reduced graphics mode (large)
     reduceGraphics: [
       `${root}:is([data-likec4-reduced-graphics])`,

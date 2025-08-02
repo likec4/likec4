@@ -33,7 +33,7 @@ model {
 views {
 
   view billing of cloud.billing {
-    title '[context] Billing'
+    title 'Context / Billing Diagram with Stripe and very long title'
     include
       *,
       cloud,

@@ -1,10 +1,11 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
 import type { Any } from '@likec4/core/types'
+import { DEV } from 'esm-env'
 import type { ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
 import type { Types } from '../likec4diagram/types'
-import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 
 function customDiagramNode<
   P extends {
@@ -15,7 +16,14 @@ function customDiagramNode<
   Node: (props: P) => ReactNode,
 ): (props: P['nodeProps']) => ReactNode {
   return customNode((props) => {
-    const viewModel = useLikeC4Model().view(props.data.viewId)
+    const viewModel = useLikeC4ViewModel(props.data.viewId)
+    if (!viewModel) {
+      if (DEV) {
+        throw new Error(`View "${props.data.viewId}" not found, requested by customNode "${props.id}"`)
+      }
+      console.error(`View "${props.data.viewId}" not found in likec4model`, { props })
+      return null
+    }
     const model = viewModel.node(props.id)
     // @ts-ignore
     return <Node nodeProps={props} nodeModel={model} />

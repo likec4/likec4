@@ -1,7 +1,13 @@
 import type { WhereOperator } from '@likec4/core/types'
 import type * as aux from '@likec4/core/types/_aux'
 import type { CSSProperties } from 'react'
-import type { CustomNodes, ElementIconRenderer, OverrideReactFlowProps, PaddingWithUnit } from '../LikeC4Diagram.props'
+import type {
+  CustomNodes,
+  ElementIconRenderer,
+  OverrideReactFlowProps,
+  PaddingWithUnit,
+  ViewPadding,
+} from '../LikeC4Diagram.props'
 
 export interface LikeC4ViewProps<A extends aux.Any> {
   /**
@@ -69,8 +75,10 @@ export interface LikeC4ViewProps<A extends aux.Any> {
   /**
    * Padding around the diagram
    * @default '8px'
+   *
+   * @see {@link ViewPadding}
    */
-  fitViewPadding?: PaddingWithUnit | undefined
+  fitViewPadding?: ViewPadding | undefined
 
   /**
    * Display diagram title / description
@@ -182,9 +190,11 @@ export interface LikeC4BrowserProps {
 
   /**
    * Show/hide panel with top left controls,
-   * @default true
+   * - `next` - show navigation panel (Experimental)
+   *
+   * @default `next`
    */
-  controls?: boolean | undefined
+  controls?: boolean | 'next' | undefined
 
   /**
    * Display diagram title / description
