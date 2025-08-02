@@ -1,3 +1,38 @@
+# [1.35.0](https://github.com/likec4/likec4/compare/v1.34.2...v1.35.0) (2025-08-02)
+
+
+### Bug Fixes
+
+* **core:** do not create loop connections from descendant selectors ([#2118](https://github.com/likec4/likec4/issues/2118)) ([9161418](https://github.com/likec4/likec4/commit/9161418140afbc47e09d99eb748bfb5fad0813e3)), closes [#2117](https://github.com/likec4/likec4/issues/2117)
+* update natural hierarchical string comparison to sort lexicographically first ([9731bdb](https://github.com/likec4/likec4/commit/9731bdb27f861934ac719917da462e4e546ba4b1))
+
+
+### Features
+
+* add view groups support and relationship filtering to model API ([2420069](https://github.com/likec4/likec4/commit/2420069582993a7901fefb82b72512c1dde47004))
+* **cli:** added `title` option to `serve` command ([#2098](https://github.com/likec4/likec4/issues/2098)) ([8674daa](https://github.com/likec4/likec4/commit/8674daa1195bc3f1f8bcb94299f592073facc8e2))
+* **cli:** added `title` option to `serve` command ([#2098](https://github.com/likec4/likec4/issues/2098)) ([1a3b8d3](https://github.com/likec4/likec4/commit/1a3b8d3d5b54f62488eda601cd81771eb79192ed))
+* color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast ([#2100](https://github.com/likec4/likec4/issues/2100))  ([#2105](https://github.com/likec4/likec4/issues/2105)) ([37ca5b1](https://github.com/likec4/likec4/commit/37ca5b14cf9ef73d5b9055053e86a390da6edacb))
+* color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast ([#2100](https://github.com/likec4/likec4/issues/2100))  ([#2105](https://github.com/likec4/likec4/issues/2105)) ([a78da37](https://github.com/likec4/likec4/commit/a78da37a9ebaee1b8af3c163f7b37a68764a753d))
+* implement breadcrumbs navigation with search and dropdown UI ([a2f3bb7](https://github.com/likec4/likec4/commit/a2f3bb724446abfdc122e7b88d2692845765fe4d))
+* implement breadcrumbs navigation with views hierarchy ([2c79b45](https://github.com/likec4/likec4/commit/2c79b458e390dd8ffa7fbd9b18457595407682be))
+* implement navigation panel with search and folder navigation ([aff7ecf](https://github.com/likec4/likec4/commit/aff7ecf44b57a16dbd3431703ca0cba1f5bf4697))
+* implement navigation panel with search and folder navigation ([c9478ae](https://github.com/likec4/likec4/commit/c9478ae79193c3205176a473263810601283cfb6))
+* implement new navigation panel with editor controls and layout tools ([7fb12ee](https://github.com/likec4/likec4/commit/7fb12eed5d3df9ddaa90632695bbb0eae2470d33))
+* implement view groups and hierarchical paths for views ([7732014](https://github.com/likec4/likec4/commit/7732014704f51fd30eb24a645212a52b2379b781))
+* improve stability of the manual layout on model/view changes ([#2086](https://github.com/likec4/likec4/issues/2086)) ([0384acf](https://github.com/likec4/likec4/commit/0384acf507c395edc5d5f5a36829163e51e1a716))
+* improve stability of the manual layout on model/view changes ([#2086](https://github.com/likec4/likec4/issues/2086)) ([7ad9797](https://github.com/likec4/likec4/commit/7ad979760c3da8af1995ea0da10e74ec70eddf31))
+* switch diagram controls to new navigation panel UI ([3f2a281](https://github.com/likec4/likec4/commit/3f2a2819fbe5e4e6a14d5e8fda67fcbf3b079ae2))
+* title, description and links added to spec and can be inherit in model ([#2111](https://github.com/likec4/likec4/issues/2111)) ([3f33b55](https://github.com/likec4/likec4/commit/3f33b55a2a7dcaabbca0364193f54faf2a2a6e2e))
+* title, description and links added to spec and can be inherit in model ([#2111](https://github.com/likec4/likec4/issues/2111)) ([eaf99d0](https://github.com/likec4/likec4/commit/eaf99d02d4e62287daad573d0bc6de00d117d6d2))
+
+
+### Performance Improvements
+
+* optimize rendering with deep comparison and memoization in diagram flow components ([0ae1642](https://github.com/likec4/likec4/commit/0ae1642a35a2c4587dd8bdbe89fad007edced3d8))
+
+
+
 ## [1.34.2](https://github.com/likec4/likec4/compare/v1.34.1...v1.34.2) (2025-07-01)
 
 
