@@ -87,37 +87,30 @@ export const likec4tag = defineRecipe({
   className: 'likec4-tag',
   base: {
     pointerEvents: 'all',
-    display: 'flex',
+    display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 40,
     width: 'min-content',
     transition: 'fast',
     fontSize: 'xs',
+    gap: '1px',
     cursor: 'default',
     fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-    fontWeight: 500,
-    '& > span': {
-      display: 'inline-block',
-      lineHeight: 1.4,
-      _first: {
-        opacity: 0.7,
-      },
-    },
+    fontWeight: 'bold',
     layerStyle: 'likec4.tag',
     whiteSpace: 'nowrap',
     px: 4,
     py: 0,
-    textShadow: {
-      base: '1px 1px 1px rgba(0 0 0 / 25%)',
-      _hover: 'none',
-    },
   },
   variants: {
     autoTextColor: {
       false: {
         '& > span': {
           color: 'likec4.tag.text',
+          _first: {
+            opacity: 0.65,
+          },
         },
       },
       true: {
