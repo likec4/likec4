@@ -169,30 +169,30 @@
               "name": "punctuation.definition.string.likec4"
             }
           },
-          "name": "block.markdown.likec4",
-          "contentName": "meta.embedded.block.text.html.markdown",
+          "contentName": "meta.embedded.text.html.markdown",
           "patterns": [{
             "include": "text.html.markdown"
           }]
         },
         {
-          "begin": "(''')\\s*$",
+          "begin": "('{3})\\s*$",
           "beginCaptures": {
             "0": {
               "name": "punctuation.definition.string.likec4"
             }
           },
-          "end": "^\\s*(''')\\s*$",
+          "end": "\\s*('{3})\\s*$",
           "endCaptures": {
             "0": {
               "name": "punctuation.definition.string.likec4"
             }
           },
-          "name": "block.markdown.likec4",
-          "contentName": "meta.embedded.block.text.html.markdown",
-          "patterns": [{
-            "include": "text.html.markdown"
-          }]
+          "contentName": "meta.embedded.text.html.markdown",
+          "patterns": [
+            {
+              "include": "text.html.markdown"
+            }
+          ]
         }
       ]
     },
