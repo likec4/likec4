@@ -121,7 +121,7 @@ catalogs:
     "@hono/node-server": ^1.14.4
   xstate:
     xstate: ^5.20.1
-    "@xstate/react": ^5.0.5
+    "@xstate/react": ^6.0.0
 
 onlyBuiltDependencies:
   - dprint
