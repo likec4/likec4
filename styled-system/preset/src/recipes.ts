@@ -94,19 +94,23 @@ export const likec4tag = defineRecipe({
     width: 'min-content',
     transition: 'fast',
     fontSize: 'xs',
+    cursor: 'default',
     fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
     fontWeight: 500,
     '& > span': {
       display: 'inline-block',
-      // lineHeight: 1.5,
+      lineHeight: 1.4,
+      _first: {
+        opacity: 0.7,
+      },
     },
+    layerStyle: 'likec4.tag',
     whiteSpace: 'nowrap',
-    px: 5,
-    border: 'none',
-    borderRadius: 3,
-    backgroundColor: {
-      base: 'likec4.tag.bg',
-      _hover: 'likec4.tag.bg.hover',
+    px: 4,
+    py: 0,
+    textShadow: {
+      base: '1px 1px 1px rgba(0 0 0 / 25%)',
+      _hover: 'none',
     },
   },
   variants: {

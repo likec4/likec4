@@ -207,7 +207,22 @@ function FoundedView(
       className={cx(
         inheritColor,
         breadcrumbTitle({ truncate: true }),
+        css({
+          '& > mark': {
+            backgroundColor: {
+              base: 'mantine.colors.yellow[2]/90',
+              _dark: 'mantine.colors.yellow[5]/80',
+              _groupFocus: '[transparent]',
+            },
+            color: {
+              _groupFocus: '[inherit!]',
+            },
+          },
+        }),
       )}
+      // highlightStyles={(theme) => ({
+      //   backgroundColor: theme.colors.
+      // })}
       maw={350}
       highlight={highlight}
     >
@@ -281,6 +296,7 @@ const folderIcon = (
         base: 0.3,
         _groupHover: 0.5,
         _groupActive: 0.5,
+        _groupFocus: 0.5,
       },
     })} />
 )
@@ -289,8 +305,9 @@ const viewTypeIconCss = css({
   opacity: {
     base: 0.3,
     _dark: 0.5,
-    _groupHover: 0.7,
-    _groupActive: 0.7,
+    _groupHover: 0.8,
+    _groupActive: 0.8,
+    _groupFocus: 0.8,
   },
 })
 const ViewTypeIcon = {

@@ -70,7 +70,7 @@ export const utilities: ExtendableUtilityConfig = {
           }
         }
         return {
-          transition: `all ${token('durations.fast')}  ${token('easings.inOut')}`,
+          transition: `all ${token('durations.fast')} ${token('easings.inOut')}`,
         }
       },
     },

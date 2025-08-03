@@ -40,9 +40,9 @@ export function ViewReact() {
       controls="next"
       fitViewPadding={{
         top: '70px',
-        bottom: '10px',
-        left: '10px',
-        right: '10px',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
       }}
       showDiagramTitle
       showNavigationButtons

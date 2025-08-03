@@ -113,7 +113,7 @@ views {
 
   view index {
     title 'Landscape'
-    link https://github.com/likec4/likec4
+    link https://github.com/likec4/likec4 'Source'
 
     include *
   }

@@ -15,10 +15,11 @@ import type { NodeProps } from '../../types'
 
 export type ElementTagProps = {
   tag: string
+  cursor?: 'pointer' | 'default'
 } & Omit<BoxProps, 'children'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
-  ({ tag, className, ...props }, ref) => {
+  ({ tag, cursor = 'default', className, ...props }, ref) => {
     const spec = useTagSpecification(tag)
     return (
       <Box
@@ -31,8 +32,9 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
           className,
         )}
         {...props}
+        style={{ cursor }}
       >
-        <span style={{ opacity: 0.7, fontSize: '1.05em' }}>#</span>
+        <span>#</span>
         <span>{tag}</span>
       </Box>
     )
@@ -148,6 +150,7 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
           ref={tagsToolbarRef}
           css={{
             gap: 4,
+            alignItems: 'baseline',
             flexWrap: 'wrap',
             pb: 'sm',
             translate: 'auto',

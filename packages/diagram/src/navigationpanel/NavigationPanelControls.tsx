@@ -10,8 +10,8 @@ import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
 import { type NavigationPanelActorSnapshot } from './actor'
-import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly } from './controls'
-import { useNavigationActorRef } from './hooks'
+import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly, ViewDetailsCard } from './controls'
+import { useNavigationActor, useNavigationActorRef } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { StartWalkthroughButton } from './walkthrough'
 
@@ -25,12 +25,11 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
     viewId: context.viewModel.id,
     viewTitle: context.viewModel.titleOrUntitled,
     isDynamicView: context.viewModel.isDynamicView(),
-    hasLinks: context.viewModel.links.length > 0,
   }
 }
 
 export const NavigationPanelControls = () => {
-  const actor = useNavigationActorRef()
+  const actor = useNavigationActor()
   const {
     enableSearch,
     enableNavigationButtons,
@@ -41,7 +40,7 @@ export const NavigationPanelControls = () => {
     folders,
     viewTitle,
     isDynamicView,
-  } = useSelector(actor, selectBreadcrumbs, deepEqual)
+  } = useSelector(actor.actorRef, selectBreadcrumbs, deepEqual)
 
   const folderBreadcrumbs = folders.flatMap(({ folderPath, title }, i) => [
     <UnstyledButton
@@ -63,7 +62,7 @@ export const NavigationPanelControls = () => {
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
       onClick={e => {
         e.stopPropagation()
-        actor.send({ type: 'breadcrumbs.click.folder', folderPath })
+        actor.selectFolder(folderPath)
       }}
     >
       {title}
@@ -107,60 +106,23 @@ export const NavigationPanelControls = () => {
         {folderBreadcrumbs}
         {viewBreadcrumb}
       </m.div>
-      {
-        /* <HStack gap={1}>
-        <PanelActionIcon
-          variant="subtle"
-          size={24}
-          component={m.button}
-          whileHover={{
-            scale: 1.085,
-          }}
-          whileTap={{
-            scale: 1,
-            translateY: 1,
-          }}
-          children={<IconInfoCircleFilled style={{ width: '85%', height: '85%' }} />}
-        />
-        <PanelActionIcon
-          variant="subtle"
-          size={24}
-          component={m.button}
-          whileHover={{
-            scale: 1.085,
-          }}
-          whileTap={{
-            scale: 1,
-            translateY: 1,
-          }}
-          children={<IconLink style={{ width: '85%', height: '85%' }} />}
-        />
-      </HStack>
-      <m.div
-        key="links-control"
-        layout="position"
-        className={hstack({
-          gap: 1,
-          _empty: {
-            display: 'none',
-          },
-        })}>
-        {hasLinks && <LinksControl />}
-      </m.div>*/
-      }
-      {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="walkthrough-button" />}
       <m.div
         key="actions"
         layout="position"
         className={hstack({
           gap: 1,
+          flexGrow: 0,
           _empty: {
             display: 'none',
           },
         })}>
+        <ViewDetailsCard
+          onOpen={() => actor.closeDropdown()}
+        />
         <OpenSource />
         <ToggleReadonly />
       </m.div>
+      {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="walkthrough-button" />}
       {enableSearch && <SearchControl key="search-control" />}
     </AnimatePresence>
   )

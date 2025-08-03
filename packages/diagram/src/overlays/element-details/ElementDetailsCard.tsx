@@ -9,6 +9,7 @@ import {
   type ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
+import { HStack } from '@likec4/styles/jsx'
 import {
   type TextProps,
   ActionIcon,
@@ -349,9 +350,7 @@ export function ElementDetailsCard({
                     <ElementTag
                       key={tag}
                       tag={tag}
-                      css={{
-                        cursor: 'pointer',
-                      }}
+                      cursor="pointer"
                       onClick={e => {
                         e.stopPropagation()
                         diagram.openSearch(`#${tag}`)
@@ -446,9 +445,9 @@ export function ElementDetailsCard({
                   {elementModel.links.length > 0 && (
                     <>
                       <PropertyLabel>links</PropertyLabel>
-                      <Stack gap={'xs'} align="flex-start">
+                      <HStack gap={'xs'} flexWrap="wrap">
                         {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
-                      </Stack>
+                      </HStack>
                     </>
                   )}
                   {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}

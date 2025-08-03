@@ -1,7 +1,7 @@
 import { type RichTextOrEmpty as RichTextType } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
-import { type MarkdownBlockVariant, markdownBlock } from '@likec4/styles/recipes'
+import { markdownBlock } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
 import { forwardRef } from 'react'
 
@@ -44,7 +44,7 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
   }
   const content = value.nonEmpty
     ? { dangerouslySetInnerHTML: { __html: value.html } }
-    : { children: <Text component="span" fz={'xs'} c="dimmed">{emptyText}</Text> }
+    : { children: <Text component="span" fz={'xs'} c="dimmed" style={{ userSelect: 'none' }}>{emptyText}</Text> }
   return (
     <Box
       ref={ref}

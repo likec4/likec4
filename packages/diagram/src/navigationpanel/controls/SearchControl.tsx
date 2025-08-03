@@ -24,6 +24,7 @@ export function SearchControl() {
         diagram.openSearch()
       }}
       whileTap={{
+        scale: 0.95,
         translateY: 1,
       }}
       className={cx(

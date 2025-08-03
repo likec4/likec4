@@ -58,10 +58,10 @@ views {
   }
 
   view checkout of boutique.checkout {
-    description '
-      Retrieves user cart, prepares order and
-      orchestrates the payment, shipping and the email notification.
-    '
+    description '''
+      Retrieves **user cart**, prepares **order** and
+      orchestrates **payments**, **shipping** and the **email notification**.
+    '''
     link https://github.com/likec4/template 'Repository'
     include
       *,
