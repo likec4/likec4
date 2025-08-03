@@ -11,7 +11,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range } from 'vscode-languageserver-types'
 
 export namespace DidChangeModelNotification {

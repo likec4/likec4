@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core'
 import { type AstNodeDescription, type LangiumDocument, type Stream, DefaultIndexManager, stream } from 'langium'
-import { CancellationToken } from 'vscode-jsonrpc'
+import type { CancellationToken } from 'vscode-languageserver'
 import type { LikeC4SharedServices } from '../module'
 
 export class IndexManager extends DefaultIndexManager {
@@ -8,7 +8,7 @@ export class IndexManager extends DefaultIndexManager {
     super(services)
   }
 
-  override async updateContent(document: LangiumDocument, cancelToken = CancellationToken.None): Promise<void> {
+  override async updateContent(document: LangiumDocument, cancelToken?: CancellationToken): Promise<void> {
     const projects = this.services.workspace.ProjectsManager
     // Ensure the document is assigned to a project
     document.likec4ProjectId = projects.belongsTo(document.uri)
