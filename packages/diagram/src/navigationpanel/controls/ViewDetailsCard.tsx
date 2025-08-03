@@ -82,7 +82,7 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
         }),
         ``,
       )}>
-      <IconId size={16} stroke={1.8} />
+      <IconId size={16} stroke={1.25} />
       {linksCount > 0 && (
         <HStack gap={1}>
           <IconLink size={14} stroke={2} />

@@ -13,10 +13,10 @@ export function ProjectsMenu(props: ButtonProps) {
   }
 
   return (
-    <HStack gap={2} alignItems={'baseline'}>
+    <HStack gap={'2'} alignItems={'baseline'}>
       <Box
         css={{
-          fontWeight: 400,
+          fontWeight: '400',
           fontSize: 'xxs',
           color: 'mantine.colors.dimmed',
           userSelect: 'none',
@@ -33,7 +33,7 @@ export function ProjectsMenu(props: ButtonProps) {
             color="gray"
             classNames={{
               root: css({
-                fontWeight: 400,
+                fontWeight: '400',
                 fontSize: 'xxs',
                 height: 'auto',
                 lineHeight: 1.1,
@@ -47,7 +47,7 @@ export function ProjectsMenu(props: ButtonProps) {
                 },
               }),
             }}
-            rightSection={<IconChevronDown opacity={0.5} size={14} />}
+            rightSection={<IconChevronDown opacity={0.5} size={12} stroke={1.5} />}
             {...props}>
             {projectId}
           </Button>
