@@ -14,7 +14,7 @@ NavigationPanelActorSafeContext.displayName = 'NavigationPanelActorSafeContext'
 
 export const NavigationPanelActorContextProvider = NavigationPanelActorSafeContext.Provider
 
-export const useNavigationActorRef = () => {
+export const useNavigationActorRef = (): NavigationPanelActorRef => {
   const ctx = useContext(NavigationPanelActorSafeContext)
   if (ctx === null) {
     throw new Error('NavigationPanelActorRef is not found in the context')
@@ -39,7 +39,7 @@ export function useNavigationActorContext<T = unknown>(
   return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare, deps)
 }
 
-export type NavigationActor = {
+export interface NavigationActor {
   readonly actorRef: NavigationPanelActorRef
   send: (event: NavigationPanelActorEvent) => void
   selectFolder: (folderPath: string) => void

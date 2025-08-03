@@ -35,7 +35,7 @@ export const NavigationPanel = memo(() => {
     },
   )
   useEffect(() => {
-    const subscription = actorRef.on('trigger.navigateTo', (event) => {
+    const subscription = actorRef.on('navigateTo', (event) => {
       if (diagramActor.getSnapshot().context.view.id !== event.viewId) {
         diagramActor.send({ type: 'navigate.to', viewId: event.viewId })
       }
@@ -56,7 +56,6 @@ export const NavigationPanel = memo(() => {
           pointerEvents: 'none',
           top: 0,
           left: 0,
-          overflow: 'hidden',
           margin: 0,
           width: '100%',
           gap: '2xs',
@@ -65,8 +64,8 @@ export const NavigationPanel = memo(() => {
             'calc(100cqw)',
           ],
           '@/sm': {
-            margin: 'sm',
-            gap: 'sm',
+            margin: 'xs',
+            gap: 'xs',
             width: 'max-content',
             maxWidth: [
               'calc(100vw - 2 * {spacing.md})',
@@ -95,7 +94,6 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       }}
       middlewares={{ flip: false }}
       opened={opened}
-      shadow="md"
       position="bottom-start"
       trapFocus
       {...portalProps}

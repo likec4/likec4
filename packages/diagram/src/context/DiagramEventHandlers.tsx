@@ -1,4 +1,4 @@
-import type { Any } from '@likec4/core/types'
+import type { aux } from '@likec4/core/types'
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
 import { isFunction, mapToObj } from 'remeda'
@@ -22,18 +22,18 @@ const HandlerNames = [
   'onCanvasDblClick',
 ] as const
 
-type DiagramEventHandlersContextValue = RequiredOrNull<LikeC4DiagramEventHandlers<Any>> & {
-  handlersRef: RefObject<LikeC4DiagramEventHandlers<Any>>
+export type DiagramEventHandlersContext = RequiredOrNull<LikeC4DiagramEventHandlers<aux.Any>> & {
+  handlersRef: RefObject<LikeC4DiagramEventHandlers<aux.Any>>
 }
 
-const DiagramEventHandlersContext = createContext<DiagramEventHandlersContextValue>({
+const DiagramEventHandlersReactContext = createContext<DiagramEventHandlersContext>({
   ...mapToObj(HandlerNames, (name) => [name, null]),
   handlersRef: {
     current: {},
   },
 })
 
-export function DiagramEventHandlers<A extends Any>({
+export function DiagramEventHandlers<A extends aux.Any>({
   handlers,
   children,
 }: PropsWithChildren<{ handlers: LikeC4DiagramEventHandlers<A> }>) {
@@ -41,7 +41,7 @@ export function DiagramEventHandlers<A extends Any>({
 
   const deps = HandlerNames.map((name) => isFunction(handlers[name]))
 
-  const value = useMemo((): DiagramEventHandlersContextValue => ({
+  const value = useMemo((): DiagramEventHandlersContext => ({
     ...mapToObj(HandlerNames, (name) => {
       if (handlersRef.current[name]) {
         // @ts-expect-error TODO: fix this
@@ -53,16 +53,16 @@ export function DiagramEventHandlers<A extends Any>({
   }), [handlersRef, ...deps])
 
   return (
-    <DiagramEventHandlersContext.Provider value={value}>
+    <DiagramEventHandlersReactContext.Provider value={value}>
       {children}
-    </DiagramEventHandlersContext.Provider>
+    </DiagramEventHandlersReactContext.Provider>
   )
 }
 
-export function useDiagramEventHandlers() {
-  return useContext(DiagramEventHandlersContext)
+export function useDiagramEventHandlers(): DiagramEventHandlersContext {
+  return useContext(DiagramEventHandlersReactContext)
 }
 
-export function useDiagramEventHandlersRef() {
-  return useContext(DiagramEventHandlersContext).handlersRef
+export function useDiagramEventHandlersRef<A extends aux.Any = aux.Any>(): RefObject<LikeC4DiagramEventHandlers<A>> {
+  return useContext(DiagramEventHandlersReactContext).handlersRef
 }

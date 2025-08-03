@@ -9,3 +9,11 @@ export {
   useLikeC4Specification,
   useLikeC4ViewModel,
 } from './useLikeC4Model'
+
+export {
+  useChangeLikeC4Project,
+  useHasProjects,
+  useLikeC4ProjectId,
+  useLikeC4Projects,
+  useLikeC4ProjectsContext,
+} from './useLikeC4Project'

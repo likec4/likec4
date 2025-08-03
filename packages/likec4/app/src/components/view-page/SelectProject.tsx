@@ -24,21 +24,21 @@ export function SelectProject() {
       </MenuTarget>
 
       <MenuDropdown>
-        {projects.map((projectId) => (
+        {projects.map(({ id }) => (
           <MenuItem
-            key={projectId}
+            key={id}
             renderRoot={(props) => (
               <Link
                 {...props}
                 to={'/project/$projectId/view/$viewId/'}
                 params={{
-                  projectId,
+                  projectId: id,
                   viewId: 'index',
                 }}
               />
             )}
           >
-            {projectId}
+            {id}
           </MenuItem>
         ))}
       </MenuDropdown>

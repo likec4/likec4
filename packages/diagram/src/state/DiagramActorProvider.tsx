@@ -1,11 +1,11 @@
 import type { DiagramView, WhereOperator } from '@likec4/core/types'
-import { useCustomCompareEffect, useDeepCompareEffect } from '@react-hookz/web'
+import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
-import { useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
+import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
 import { useCurrentViewId } from '../hooks/useCurrentViewId'
@@ -16,7 +16,7 @@ import { CurrentViewModelContext } from '../likec4model/LikeC4ModelContext'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import type { DiagramActorSnapshot } from './types'
+import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
 const selectToggledFeatures = (state: DiagramActorSnapshot) => {
   if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
@@ -44,28 +44,12 @@ export function DiagramActorProvider({
   nodesSelectable: boolean
   where: WhereOperator | null
 }>) {
-  const handlersRef = useDiagramEventHandlersRef()
+  const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
   const machineRef = useRef<DiagramMachine | null>(null)
   if (!machineRef.current) {
     machineRef.current = diagramMachine.provide({
-      actions: {
-        'trigger:NavigateTo': ((_, { viewId }) => {
-          // Slightly defer callback for better responsiveness
-          setTimeout(() => {
-            handlersRef.current.onNavigateTo?.(viewId)
-          }, 40)
-        }),
-
-        'trigger:OnChange': ((_, params) => {
-          handlersRef.current.onChange?.(params)
-        }),
-
-        'trigger:OpenSource': ((_, params) => {
-          handlersRef.current.onOpenSource?.(params)
-        }),
-      },
       actors: {
         syncManualLayoutActorLogic: syncManualLayoutActorLogic.provide({
           actions: {
@@ -94,6 +78,8 @@ export function DiagramActorProvider({
       },
     },
   )
+
+  useActorEventHandlers(actorRef)
 
   const features = useEnabledFeatures()
   useCustomCompareEffect(
@@ -166,4 +152,43 @@ function CurrentViewModelProvider({
       {children}
     </CurrentViewModelContext.Provider>
   )
+}
+
+function useActorEventHandlers(
+  actorRef: DiagramActorRef,
+) {
+  const {
+    onChange,
+    onNavigateTo,
+    onOpenSource,
+  } = useDiagramEventHandlers()
+
+  useEffect(() => {
+    if (!onChange) return
+    const subscription = actorRef.on('viewChange', ({ change }) => onChange({ change }))
+    return () => subscription.unsubscribe()
+  }, [actorRef, onChange])
+
+  useEffect(() => {
+    if (!onNavigateTo) return
+    let frame: number
+
+    const subscription = actorRef.on('navigateTo', ({ viewId }) => {
+      cancelAnimationFrame(frame)
+      // Slightly defer callback for better responsiveness
+      frame = requestAnimationFrame(() => {
+        onNavigateTo(viewId)
+      })
+    })
+    return () => {
+      cancelAnimationFrame(frame)
+      subscription.unsubscribe()
+    }
+  }, [actorRef, onNavigateTo])
+
+  useEffect(() => {
+    if (!onOpenSource) return
+    const subscription = actorRef.on('openSource', ({ params }) => onOpenSource(params))
+    return () => subscription.unsubscribe()
+  }, [actorRef, onOpenSource])
 }

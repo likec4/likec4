@@ -40,7 +40,7 @@ export type NavigationPanelActorEvent =
   | { type: 'dropdown.mouseLeave' }
   | { type: 'dropdown.dismiss' }
 
-export type NavigationPanelActorEmitted = { type: 'trigger.navigateTo'; viewId: ViewId }
+export type NavigationPanelActorEmitted = { type: 'navigateTo'; viewId: ViewId }
 
 export type BreadcrumbItem =
   | { type: 'folder'; folderPath: string; title: string }
@@ -109,6 +109,9 @@ const _actorLogic = setup({
       activatedBy: 'click',
     }),
     'update selected folder': assign(({ event }) => {
+      if (event.type === 'breadcrumbs.click.root') {
+        return { selectedFolder: '' } // reset to root
+      }
       assertEvent(event, ['breadcrumbs.click.folder', 'select.folder'])
       return { selectedFolder: event.folderPath }
     }),
@@ -136,10 +139,10 @@ const _actorLogic = setup({
       assertEvent(event, 'searchQuery.change')
       return { searchQuery: event.value ?? '' }
     }),
-    'emit trigger.navigateTo': emit(({ event }) => {
+    'emit navigateTo': emit(({ event }) => {
       assertEvent(event, 'select.view')
       return {
-        type: 'trigger.navigateTo' as const,
+        type: 'navigateTo' as const,
         viewId: ViewId(event.viewId),
       }
     }),
@@ -248,15 +251,11 @@ const _actorLogic = setup({
               actions: 'keep dropdown open',
               target: 'search',
             },
-            'breadcrumbs.click.folder': {
-              actions: 'update selected folder',
-              target: 'opened',
-              reenter: true,
-            },
             'breadcrumbs.click.viewtitle': {
               actions: 'reset selected folder',
-              reenter: true,
-              target: 'opened',
+            },
+            'breadcrumbs.click.*': {
+              actions: 'update selected folder',
             },
             'select.folder': {
               actions: [
@@ -266,30 +265,30 @@ const _actorLogic = setup({
             },
             'select.view': {
               actions: [
-                'emit trigger.navigateTo',
+                'emit navigateTo',
               ],
             },
           },
         },
         search: {
           on: {
-            'breadcrumbs.click.folder': {
-              actions: [
-                'reset search query',
-                'update selected folder',
-              ],
-              target: 'opened',
-            },
-            'breadcrumbs.click.*': {
+            'breadcrumbs.click.viewtitle': {
               actions: [
                 'reset search query',
                 'reset selected folder',
               ],
               target: 'opened',
             },
+            'breadcrumbs.click.*': {
+              actions: [
+                'reset search query',
+                'update selected folder',
+              ],
+              target: 'opened',
+            },
             'select.view': {
               actions: [
-                'emit trigger.navigateTo',
+                'emit navigateTo',
               ],
             },
           },

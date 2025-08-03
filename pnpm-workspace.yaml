@@ -64,12 +64,12 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
   mantine:
-    "@mantine/core": 8.2.1
-    "@mantine/hooks": 8.2.1
-    "@mantine/vanilla-extract": 8.2.1
-    "@mantine/modals": 8.2.1
-    "@mantine/notifications": 8.2.1
-    "@mantine/colors-generator": 8.2.1
+    "@mantine/core": 8.2.2
+    "@mantine/hooks": 8.2.2
+    "@mantine/vanilla-extract": 8.2.2
+    "@mantine/modals": 8.2.2
+    "@mantine/notifications": 8.2.2
+    "@mantine/colors-generator": 8.2.2
   vite:
     "@vitejs/plugin-react": ^4.6.0
     vite: ^6.3.5
@@ -120,7 +120,7 @@ catalogs:
     hono-sessions: ^0.7.3
     "@hono/node-server": ^1.14.4
   xstate:
-    xstate: ^5.20.0
+    xstate: ^5.20.1
     "@xstate/react": ^5.0.5
 
 onlyBuiltDependencies:
