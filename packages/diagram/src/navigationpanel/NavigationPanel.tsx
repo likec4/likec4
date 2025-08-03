@@ -54,9 +54,10 @@ export const NavigationPanel = memo(() => {
         css={{
           alignItems: 'flex-start',
           pointerEvents: 'none',
-          top: 0,
-          left: 0,
-          margin: 0,
+
+          top: '0',
+          left: '0',
+          margin: '0',
           width: '100%',
           gap: '2xs',
           maxWidth: [

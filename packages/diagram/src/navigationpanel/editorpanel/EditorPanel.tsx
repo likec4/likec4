@@ -16,11 +16,12 @@ export function EditorPanel() {
         <m.div
           layout="position"
           className={vstack({
+            marginLeft: 'micro',
             gap: 'sm',
             layerStyle: 'likec4.panel',
             position: 'relative',
             cursor: 'pointer',
-            padding: '4',
+            padding: 'micro',
             pointerEvents: 'all',
           })}
           initial={{

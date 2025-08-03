@@ -159,13 +159,10 @@ const likec4theme = {
       ...mapValues(DEFAULT_THEME.spacing, (value) => ({ value })),
       likec4: {
         ...mapValues(defaultTheme.spacing, (value, key) => ({
-          description: `LikeC4 style spacing: ${key}`,
+          description: `LikeC4 Diagram Spacing: ${key}`,
           value: `${value}px`,
         })),
       },
-    },
-    radii: {
-      ...mapValues(mantineVars.radius, (value) => ({ value })),
     },
     fontSizes: {
       'xxs': {
@@ -174,7 +171,7 @@ const likec4theme = {
       ...mapValues(DEFAULT_THEME.fontSizes, (value) => ({ value })),
       likec4: {
         ...mapValues(defaultTheme.textSizes, (value, key) => ({
-          description: `LikeC4 style text size: ${key}`,
+          description: `LikeC4 Diagram Text Size: ${key}`,
           value: rem(value),
         })),
       },
@@ -205,9 +202,6 @@ const likec4theme = {
           ...mapcolors('yellow'),
         },
       },
-    },
-    shadows: {
-      ...mapValues(DEFAULT_THEME.shadows, (value) => ({ value })),
     },
   },
   semanticTokens: {
