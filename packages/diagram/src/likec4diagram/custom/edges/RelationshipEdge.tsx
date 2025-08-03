@@ -324,7 +324,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     const notes = props.data.notes
     if (notes && activeWalkthroughStep === props.id) {
       edgeLabel = (
-        <NotePopover notes={notes}>
+        <NotePopover notes={notes.txt ?? notes.md}>
           {edgeLabel}
         </NotePopover>
       )

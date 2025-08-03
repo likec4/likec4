@@ -229,6 +229,32 @@ describe('dynamic-view', () => {
     })
   })
 
+  it('should handle notes property with MarkdownOrString type', () => {
+    const { edges } = compute([
+      $step('customer -> cloud.frontend.dashboard', {
+        notes: { txt: 'open dashboard' },
+      }),
+      $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
+      $step('cloud.backend.graphql <- cloud.frontend.dashboard', {
+        notes: { md: 'return **data**' },
+      }),
+    ])
+
+    expect(edges).toMatchObject([
+      {
+        id: 'step-01',
+        notes: { txt: 'open dashboard' },
+      },
+      {
+        id: 'step-02',
+      },
+      {
+        id: 'step-03',
+        notes: { md: 'return **data**' },
+      },
+    ])
+  })
+
   it('should include nodes and edges from rules', () => {
     const { nodeIds, edgeIds, nodes, edges } = compute([
       $step('customer -> cloud.frontend.dashboard'),

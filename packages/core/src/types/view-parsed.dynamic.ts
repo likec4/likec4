@@ -5,7 +5,7 @@ import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import type { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
-import { isStepEdgeId } from './scalar'
+import { type MarkdownOrString, isStepEdgeId } from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
 import type {
   BaseParsedViewProperties,
@@ -23,7 +23,7 @@ export interface DynamicViewStep<A extends AnyAux = AnyAux> {
   readonly technology?: string
   readonly notation?: string
   // Notes for walkthrough
-  readonly notes?: string
+  readonly notes?: MarkdownOrString
   readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
