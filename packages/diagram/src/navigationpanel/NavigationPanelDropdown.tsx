@@ -32,6 +32,7 @@ import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import type { NavigationPanelActorContext } from './actor'
+import { ProjectsMenu } from './dropdown/ProjectsMenu'
 import { useNavigationActor, useNavigationActorContext, useNavigationActorRef } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 
@@ -59,7 +60,7 @@ export function NavigationPanelDropdown() {
         'nowheel',
         vstack({
           layerStyle: 'likec4.dropdown',
-          gap: 'sm',
+          gap: '2xs',
           pointerEvents: 'all',
         }),
       )}
@@ -67,6 +68,8 @@ export function NavigationPanelDropdown() {
       onMouseLeave={() => actor.send({ type: 'dropdown.mouseLeave' })}
       onMouseEnter={() => actor.send({ type: 'dropdown.mouseEnter' })}
     >
+      <ProjectsMenu />
+
       <HStack gap="xs">
         <SearchInput
           value={searchQuery}

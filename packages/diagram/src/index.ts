@@ -17,6 +17,11 @@ export {
   type LikeC4ModelProviderProps,
 } from './LikeC4ModelProvider'
 
+export {
+  LikeC4ProjectsProvider,
+  type LikeC4ProjectsProviderProps,
+} from './LikeC4ProjectsProvider'
+
 export * from './custom/hooks'
 
 export type {

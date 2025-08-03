@@ -86,19 +86,21 @@ model {
 
     billing = service 'Billing' {
       #v1
-      description '
+      description '''
         Billing services, process
         payments and subscriptions
-      '
+
+      '''
     }
 
     backoffice = service 'Back Office' {
       #v2
-      description '
+      description '''
         Back office services,
         providing tenant management,
         customer support and billing
-      '
+
+      '''
       style {
         shape browser
       }

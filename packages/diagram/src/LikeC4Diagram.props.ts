@@ -319,7 +319,7 @@ export type OpenSourceParams<A extends aux.Any = aux.Any> =
     view: aux.StrictViewId<A>
   }
 
-export interface LikeC4DiagramEventHandlers<A extends aux.Any> {
+export interface LikeC4DiagramEventHandlers<A extends aux.Any = aux.Any> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined

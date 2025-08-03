@@ -35,6 +35,7 @@ import {
   assertEvent,
   assign,
   cancel,
+  emit,
   enqueueActions,
   or,
   raise,
@@ -179,6 +180,11 @@ export type Events =
   | { type: 'tag.unhighlight' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
+export type EmittedEvents =
+  | { type: 'navigateTo'; viewId: ViewId }
+  | { type: 'viewChange'; change: ViewChange }
+  | { type: 'openSource'; params: OpenSourceParams }
+
 export type ActionArg = { context: Context; event: Events }
 
 // TODO: naming convention for actors
@@ -193,6 +199,7 @@ const _diagramMachine = setup({
       search: 'searchActorLogic'
     },
     events: {} as Events,
+    emitted: {} as EmittedEvents,
   },
   actors: {
     syncManualLayoutActorLogic,
@@ -241,14 +248,20 @@ const _diagramMachine = setup({
     },
   },
   actions: {
-    'trigger:NavigateTo': (_, _params: { viewId: ViewId }) => {
-      // navigate to view
-    },
-    'trigger:OnChange': (_, _params: { change: ViewChange }) => {
-      // apply change
-    },
-    'trigger:OpenSource': (_, _params: OpenSourceParams) => {
-    },
+    'trigger:NavigateTo': emit(({ context }) => ({
+      type: 'navigateTo',
+      viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
+    })),
+
+    'trigger:OnChange': emit((_, _params: { change: ViewChange }) => ({
+      type: 'viewChange',
+      change: _params.change,
+    })),
+
+    'trigger:OpenSource': emit((_, _params: OpenSourceParams) => ({
+      type: 'openSource',
+      params: _params,
+    })),
 
     'assign lastClickedNode': assign(({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
@@ -1023,14 +1036,7 @@ const _diagramMachine = setup({
         'closeAllOverlays',
         'closeSearch',
         'stopSyncLayout',
-        enqueueActions(({ enqueue, context }) => {
-          enqueue({
-            type: 'trigger:NavigateTo',
-            params: {
-              viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
-            },
-          })
-        }),
+        'trigger:NavigateTo',
       ],
       on: {
         'update.view': {

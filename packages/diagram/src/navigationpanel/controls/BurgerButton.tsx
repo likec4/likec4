@@ -1,10 +1,10 @@
 import { IconMenu2 } from '@tabler/icons-react'
-import { useDiagramEventHandlers } from '../../context'
+import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { PanelActionIcon } from '../_common'
-import { useNavigationActorRef } from '../hooks'
+import { useNavigationActor } from '../hooks'
 
 export const BurgerButton = () => {
-  const actor = useNavigationActorRef()
+  const actor = useNavigationActor()
   const { onBurgerMenuClick } = useDiagramEventHandlers()
   return (
     <PanelActionIcon
@@ -17,14 +17,12 @@ export const BurgerButton = () => {
       }}
       onClick={e => {
         e.stopPropagation()
-        if (onBurgerMenuClick) {
-          actor.send({ type: 'breadcrumbs.mouseLeave.root' })
+        if (onBurgerMenuClick && actor.isOpened()) {
           setTimeout(() => {
             onBurgerMenuClick()
           }, 100)
-        } else {
-          actor.send({ type: 'breadcrumbs.click.root' })
         }
+        actor.send({ type: 'breadcrumbs.click.root' })
       }}
       children={<IconMenu2 style={{ width: '80%', height: '80%' }} />}
     />

@@ -1,6 +1,7 @@
 declare module 'likec4:projects' {
+  import type { LikeC4Project } from 'likec4/model'
   export const isSingleProject: boolean
-  export const projects: readonly [string, ...string[]]
+  export const projects: readonly [LikeC4Project, ...LikeC4Project[]]
 }
 
 declare module 'likec4:icons' {

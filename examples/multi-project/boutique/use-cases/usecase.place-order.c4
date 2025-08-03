@@ -1,6 +1,6 @@
-views {
+views "Use Cases" {
   dynamic view place-order {
-    title 'Usecase 01: Placing an Order'
+    title 'Usecase 01 Placing an Order'
     description '
       This use case describes the process of placing an order.
     '
@@ -10,7 +10,7 @@ views {
         The customer interacts with the web application to place an order.
       '
     }
-    boutique.frontend -> boutique.cart 'creates or updates cart'
+    boutique.frontend -> boutique.cart 'Creates or updates cart'
     customer -> boutique.frontend 'enters shipping information' {
       notes '
         Custmer enters shipping information to get shipping cost estimates.
