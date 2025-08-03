@@ -60,7 +60,7 @@ export function NavigationPanelDropdown() {
         'nowheel',
         vstack({
           layerStyle: 'likec4.dropdown',
-          gap: '2xs',
+          gap: 'xs',
           pointerEvents: 'all',
         }),
       )}
@@ -69,7 +69,6 @@ export function NavigationPanelDropdown() {
       onMouseEnter={() => actor.send({ type: 'dropdown.mouseEnter' })}
     >
       <ProjectsMenu />
-
       <HStack gap="xs">
         <SearchInput
           value={searchQuery}
@@ -223,9 +222,6 @@ function FoundedView(
           },
         }),
       )}
-      // highlightStyles={(theme) => ({
-      //   backgroundColor: theme.colors.
-      // })}
       maw={350}
       highlight={highlight}
     >
@@ -420,7 +416,7 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
   }
 
   return (
-    <Box pb={'4'}>
+    <Box mb={'4'}>
       <ColumnScrollArea>
         <VStack gap={1}>
           {data.items.map((item, i) => (

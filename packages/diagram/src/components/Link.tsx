@@ -7,7 +7,7 @@ import { GithubIcon } from './GithubIcon'
 
 const GITHUB_PREFIX = 'https://github.com/'
 
-export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children'> & { value: LinkData }>(
+export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'classNames'> & { value: LinkData }>(
   ({ value, className, ...props }, ref) => {
     // If the url is already a full url, use it as is.
     // Otherwise, it's a relative url and we need to make it absolute.
@@ -56,6 +56,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children'> & { 
             flexWrap: 'nowrap',
             minHeight: 24,
             maxWidth: 500,
+            userSelect: 'all',
             pr: 0,
             _hover: {
               backgroundColor: {

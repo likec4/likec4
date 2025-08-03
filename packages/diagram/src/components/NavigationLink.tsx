@@ -2,9 +2,10 @@ import { cx } from '@likec4/styles/css'
 import { navigationLink } from '@likec4/styles/recipes'
 import { type NavLinkProps, NavLink } from '@mantine/core'
 import { forwardRef } from 'react'
+import { type ComponentPropsWithoutRef } from 'react'
 
 export interface NavigationLinkProps
-  extends NavLinkProps, Omit<React.ComponentPropsWithoutRef<'button'>, keyof NavLinkProps>
+  extends Omit<NavLinkProps, 'classNames'>, Omit<ComponentPropsWithoutRef<'button'>, keyof NavLinkProps>
 {
   truncateLabel?: boolean
 }

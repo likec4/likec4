@@ -19,12 +19,14 @@ export function ProjectsMenu(props: ButtonProps) {
           fontWeight: 400,
           fontSize: 'xxs',
           color: 'mantine.colors.dimmed',
+          userSelect: 'none',
         }}>
         Project
       </Box>
       <Menu shadow="md" position="bottom-start" offset={{ mainAxis: 2 }} closeOnItemClick>
         <MenuTarget>
           <Button
+            tabIndex={-1}
             autoFocus={false}
             variant="subtle"
             size="compact-xs"
@@ -34,6 +36,10 @@ export function ProjectsMenu(props: ButtonProps) {
                 fontWeight: 400,
                 fontSize: 'xxs',
                 height: 'auto',
+                lineHeight: 1.1,
+                color: {
+                  _light: 'mantine.colors.gray[9]',
+                },
               }),
               section: css({
                 '&:is([data-position="right"])': {
@@ -41,8 +47,6 @@ export function ProjectsMenu(props: ButtonProps) {
                 },
               }),
             }}
-            // color="gray"
-            // px={'sm'}
             rightSection={<IconChevronDown opacity={0.5} size={14} />}
             {...props}>
             {projectId}

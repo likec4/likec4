@@ -2,6 +2,7 @@ import { type RichTextOrEmpty as RichTextType } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
+import type { JsxStyleProps } from '@likec4/styles/types'
 import { Text } from '@mantine/core'
 import { forwardRef } from 'react'
 
@@ -14,10 +15,17 @@ export type MarkdownBlockProps = Omit<BoxProps, 'dangerouslySetInnerHTML' | 'chi
    */
   uselikec4palette?: boolean
   /**
-   * Scale factor for the font size.
+   * Scale factor for the block
    * @default 1
    */
   textScale?: number
+
+  /**
+   * Font size for the block
+   * @default 'md'
+   */
+  fontSize?: JsxStyleProps['fontSize']
+
   /**
    * If true, the component will not render anything if the value is empty.
    * @default false

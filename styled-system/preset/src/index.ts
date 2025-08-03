@@ -39,6 +39,11 @@ export default definePreset({
         inherits: false,
         // initialValue: '1rem',
       },
+      '--text-fz': {
+        syntax: '<length-percentage>',
+        inherits: false,
+        // initialValue: '1rem',
+      },
       [iconSize]: {
         syntax: '<length-percentage>',
         inherits: false,

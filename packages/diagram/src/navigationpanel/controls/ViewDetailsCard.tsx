@@ -101,6 +101,16 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
   </Popover.Target>
 )
 
+const SectionHeader = styled('div', {
+  base: {
+    fontSize: 'xs',
+    color: 'mantine.colors.dimmed',
+    fontWeight: 500,
+    userSelect: 'none',
+    mb: '2xs',
+  },
+})
+
 const ViewDetailsCardDropdown = ({
   data: {
     id,
@@ -119,14 +129,14 @@ const ViewDetailsCardDropdown = ({
         vstack({
           margin: 'xs',
           layerStyle: 'likec4.dropdown',
-          gap: '2xs',
-          py: 'sm',
-          px: 'md',
+          gap: 'md',
+          padding: 'md',
           pointerEvents: 'all',
           maxWidth: 'calc(100cqw - 32px)',
           minWidth: 'calc(100cqw - 50px)',
           maxHeight: 'calc(100cqh - 100px)',
           width: 'max-content',
+          cursor: 'default',
           '@/sm': {
             minWidth: 400,
             maxWidth: 550,
@@ -136,43 +146,48 @@ const ViewDetailsCardDropdown = ({
           },
         }),
       )}>
-      <Text component="div" fw={500} size="xl">{title}</Text>
-      <HStack alignItems={'flex-start'}>
-        <ViewBadge label="id" value={id} />
-        {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
-        <HStack gap={'xs'} flexWrap={'wrap'}>
-          {tags.map((tag, i) => (
-            <ElementTag
-              key={tag}
-              tag={tag}
-              cursor="pointer"
-              onClick={e => {
-                e.stopPropagation()
-                diagram.openSearch(`#${tag}`)
-              }} />
-          ))}
+      <section>
+        <Text component="div" fw={500} size="xl">{title}</Text>
+        <HStack alignItems={'flex-start'} mt="4">
+          <ViewBadge label="id" value={id} />
+          {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
+          <HStack gap={'xs'} flexWrap={'wrap'}>
+            {tags.map((tag, i) => (
+              <ElementTag
+                key={tag}
+                tag={tag}
+                cursor="pointer"
+                onClick={e => {
+                  e.stopPropagation()
+                  diagram.openSearch(`#${tag}`)
+                }} />
+            ))}
+          </HStack>
         </HStack>
-      </HStack>
+      </section>
       {links.length > 0 && (
-        <>
-          <Text component="div" fw={500} size="xs" c="dimmed" mt="sm">Links</Text>
+        <section className={hstack({ alignItems: 'baseline' })}>
+          <SectionHeader>Links</SectionHeader>
           <HStack gap={'xs'} flexWrap={'wrap'}>
             {links.map((link, i) => <Link key={`${i}-${link.url}`} value={link} />)}
           </HStack>
-        </>
+        </section>
       )}
-      {description.isEmpty && <Text component="div" fw={500} size="xs" c="dimmed" my="md">No description</Text>}
+      {description.isEmpty && (
+        <Text component="div" fw={500} size="xs" c="dimmed" my="md" style={{ userSelect: 'none' }}>No description</Text>
+      )}
       {description.nonEmpty && (
-        <>
-          <Text component="div" fw={500} size="xs" c="dimmed" mt="sm">Description</Text>
+        <section>
+          <SectionHeader>Description</SectionHeader>
           <MarkdownBlock
             value={description}
+            fontSize="sm"
             emptyText="No description"
             className={css({
               userSelect: 'all',
             })}
           />
-        </>
+        </section>
       )}
     </Popover.Dropdown>
   )
@@ -224,5 +239,6 @@ const ViewBadgeLabel = styled('div', {
     color: 'mantine.colors.dimmed',
     fontWeight: 500,
     fontSize: 'xxs',
+    userSelect: 'none',
   },
 })

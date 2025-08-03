@@ -148,8 +148,8 @@ export const markdownBlock = defineRecipe({
     pointerEvents: 'all',
     '--text-fz': '1rem',
     '--typography-spacing': 'calc(0.75 * var(--text-fz) * var(--mantine-scale, 1))',
-    '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale) / 1.125)',
-    '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale))',
+    '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale, 1) / 1.125)',
+    '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale, 1))',
     '--text-fw-headings': '600',
 
     paddingBottom: 'calc(.5 * var(--typography-spacing) + 1px)',
