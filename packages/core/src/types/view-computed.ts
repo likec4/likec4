@@ -66,7 +66,7 @@ export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<
   kind?: aux.RelationKind<A> | typeof scalar.StepEdgeKind
   notation?: string
   // Notes for walkthrough
-  notes?: string
+  notes?: scalar.MarkdownOrString | null
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

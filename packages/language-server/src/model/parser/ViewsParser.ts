@@ -404,10 +404,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               break
             }
             case ast.isRelationStringProperty(prop):
-            case ast.isNotationProperty(prop):
-            case ast.isNotesProperty(prop): {
+            case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
                 step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
+              }
+              break
+            }
+            case ast.isNotesProperty(prop): {
+              if (isDefined(prop.value)) {
+                step[prop.key] = removeIndent(prop.value)
               }
               break
             }

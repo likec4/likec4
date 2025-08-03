@@ -44,6 +44,8 @@ namespace DynamicViewCompute {
     title: string | null
     description?: string
     technology?: string
+    // Notes for walkthrough
+    notes?: scalar.MarkdownOrString
     color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType
