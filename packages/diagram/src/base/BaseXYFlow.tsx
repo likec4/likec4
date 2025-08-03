@@ -1,4 +1,4 @@
-import { css, cx } from '@likec4/styles/css'
+import { css, cva, cx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
@@ -6,7 +6,7 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
@@ -44,32 +44,26 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
   >
 >
 
-const cssTransparentBg = css({
-  background: 'transparent !important',
-  ['--xy-background-color']: 'transparent !important',
-})
-
-const cssReactFlow = css({
-  // '@supports': {
-  //   // https://wojtek.im/journal/targeting-safari-with-css-media-query
-  //   '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
-  //     // TODO: this workaround disables animations in Safari (to improve performance)
-  //     vars: {
-  //       [vars.safariAnimationHook]: '',
-  //     },
-  //   },
-  // },
-
-  ['--xy-background-color']: '{colors.mantine.colors.body}',
-  ['--xy-background-pattern-color']: {
-    _dark: '{colors.mantine.colors.dark[5]}',
-    _light: '{colors.mantine.colors.gray[4]}',
+const cssReactFlow = cva({
+  base: {
+    '& .react-flow__pane': {
+      WebkitUserSelect: 'none',
+    },
+    '& .react-flow__attribution': {
+      display: 'none',
+    },
   },
-  '& .react-flow__pane': {
-    WebkitUserSelect: 'none',
-  },
-  '& .react-flow__attribution': {
-    display: 'none',
+  variants: {
+    transparent: {
+      true: {
+        background: 'transparent !important',
+        ['--xy-background-color']: 'transparent !important',
+      },
+      false: {
+        ['--xy-background-color']: '{colors.likec4.background}',
+        ['--xy-background-pattern-color']: '{colors.likec4.background.pattern}',
+      },
+    },
   },
 })
 
@@ -106,8 +100,9 @@ export const BaseXYFlow = <
       nodes={nodes}
       edges={edges}
       className={cx(
-        cssReactFlow,
-        background === 'transparent' && cssTransparentBg,
+        cssReactFlow({
+          transparent: background === 'transparent',
+        }),
         className,
       )}
       {...isZoomTooSmall && {

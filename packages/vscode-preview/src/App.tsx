@@ -1,11 +1,18 @@
 import type { scalar } from '@likec4/core'
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { IconRenderer } from '@likec4/icons/all'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
-import { changeViewId, refetchCurrentDiagram, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
+import {
+  changeViewId,
+  refetchCurrentDiagram,
+  setLastClickedNode,
+  useIsModelLoaded,
+  useLikeC4State,
+  useVscodeAppState,
+} from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
@@ -35,6 +42,26 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 )
 
 export default function App() {
+  const isModelLoaded = useIsModelLoaded()
+  if (!isModelLoaded) {
+    return (
+      <>
+        <section>
+          <p>Parsing your model...</p>
+          <Loader />
+          <p>
+            <Button color="gray" onClick={extensionApi.closeMe}>
+              Close
+            </Button>
+          </p>
+        </section>
+      </>
+    )
+  }
+  return <Initialized />
+}
+
+function Initialized() {
   const [{
     nodesDraggable,
     edgesEditable,
@@ -44,7 +71,8 @@ export default function App() {
     state,
     view,
     error,
-  } = useLikeC4View()
+    likec4model,
+  } = useLikeC4State()
 
   // Debounce loading state to prevent flickering
   const [isLoading] = useDebouncedValue(state === 'pending' || state === 'stale', 100)
@@ -68,7 +96,7 @@ export default function App() {
     )
   }
   return (
-    <>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LoadingOverlay
           visible={isLoading}
@@ -128,6 +156,6 @@ export default function App() {
         />
       </div>
       {error && <ErrorMessage error={error} />}
-    </>
+    </LikeC4ModelProvider>
   )
 }

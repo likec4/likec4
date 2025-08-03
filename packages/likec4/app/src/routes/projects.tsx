@@ -16,17 +16,17 @@ function RouteComponent() {
         <Text fz={'lg'}>Select a project</Text>
         {projects.map(v => (
           <Button
-            key={v}
+            key={v.id}
             variant="default"
             size="lg"
             fw={400}
-            renderRoot={props => <Link {...props} to={`/project/$projectId/`} params={{ projectId: v }} />}
+            renderRoot={props => <Link {...props} to={`/project/$projectId/`} params={{ projectId: v.id }} />}
             styles={{
               inner: {
                 justifyContent: 'flex-start',
               },
             }}>
-            {v}
+            {v.id}
           </Button>
         ))}
       </Stack>

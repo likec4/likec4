@@ -21,7 +21,7 @@ export const semanticTokens = defineSemanticTokens({
         pattern: {
           description: 'Background pattern color',
           value: {
-            base: '{colors.mantine.colors.dark[5]}',
+            _dark: '{colors.mantine.colors.dark[4]/70}',
             _light: '{colors.mantine.colors.gray[4]}',
           },
         },

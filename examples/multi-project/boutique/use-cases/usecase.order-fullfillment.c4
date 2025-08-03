@@ -1,4 +1,4 @@
-views {
+views "Use Cases" {
 
   dynamic view order-fulfillment {
     title 'Usecase 02: Order Fulfillment'

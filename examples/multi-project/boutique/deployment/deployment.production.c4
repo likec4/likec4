@@ -1,5 +1,4 @@
-views {
-
+views "Deployment" {
   deployment view production-env {
     title 'Environment: Production'
     description '

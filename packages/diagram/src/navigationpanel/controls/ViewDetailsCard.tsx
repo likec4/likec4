@@ -85,7 +85,7 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
       <IconId size={16} stroke={1.8} />
       {linksCount > 0 && (
         <HStack gap={1}>
-          <IconLink size={16} stroke={2} />
+          <IconLink size={14} stroke={2} />
           <Box
             css={{
               fontSize: '11px',
@@ -139,7 +139,7 @@ const ViewDetailsCardDropdown = ({
       <Text component="div" fw={500} size="xl">{title}</Text>
       <HStack alignItems={'flex-start'}>
         <ViewBadge label="id" value={id} />
-        {relativePath && <ViewBadge label="source" value={relativePath} />}
+        {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
         <HStack gap={'xs'} flexWrap={'wrap'}>
           {tags.map((tag, i) => (
             <ElementTag
@@ -188,42 +188,41 @@ const ViewBadge = ({
   return (
     <HStack gap={2}>
       <ViewBadgeLabel>{label}</ViewBadgeLabel>
-      <ViewBadgeValue>{value}</ViewBadgeValue>
+      <Badge
+        size="sm"
+        radius="sm"
+        variant="light"
+        color="gray"
+        tt="none"
+        fw={500}
+        classNames={{
+          root: css({
+            width: 'max-content',
+            overflow: 'visible',
+            px: '4',
+            color: {
+              _light: 'mantine.colors.gray[8]',
+            },
+          }),
+          label: css({
+            overflow: 'visible',
+          }),
+          section: css({
+            opacity: 0.5,
+            userSelect: 'none',
+            marginInlineEnd: 2,
+          }),
+        }}>
+        {value}
+      </Badge>
     </HStack>
   )
 }
 
-const ViewBadgeLabel = styled(Box, {
+const ViewBadgeLabel = styled('div', {
   base: {
     color: 'mantine.colors.dimmed',
     fontWeight: 500,
     fontSize: 'xxs',
-  },
-})
-
-const ViewBadgeValue = Badge.withProps({
-  size: 'sm',
-  radius: 'sm',
-  variant: 'light',
-  color: 'gray',
-  tt: 'none',
-  fw: 500,
-  classNames: {
-    root: css({
-      width: 'max-content',
-      overflow: 'visible',
-      px: '4',
-      color: {
-        _light: 'mantine.colors.gray[8]',
-      },
-    }),
-    label: css({
-      overflow: 'visible',
-    }),
-    section: css({
-      opacity: 0.5,
-      userSelect: 'none',
-      marginInlineEnd: 2,
-    }),
   },
 })
