@@ -910,7 +910,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
            notes "Note 1"
          }
          system2 -> system3 {
-           notes "Note 2"
+           notes """
+           **Notes** support markdown syntax
+           """
          }
        }
       }
@@ -928,7 +930,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(step2).toHaveProperty('notes', { txt: 'Note 1' })
     expect(step2).toHaveProperty('label', 'label1')
 
-    expect(step3).toHaveProperty('notes', { txt: 'Note 2' })
+    expect(step3).toHaveProperty('notes', { md: '**Notes** support markdown syntax' })
     expect(step3).toHaveProperty('label', null)
   })
 

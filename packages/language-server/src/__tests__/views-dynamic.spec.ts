@@ -171,6 +171,28 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
+  it('valid dynamic view with markdown notes', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view index1 {
+        user -> system.frontend 'User uses System'
+        system.frontend -> system.backend 'frontend uses backend'
+        system.frontend <- system.backend {
+          title 'backend uses frontend'
+          notes: "
+            # Title
+            - bullet
+          "
+        }
+
+        style * {
+          color red
+        }
+        autoLayout BottomTop
+      }
+    `)
+  })
+
   it('valid dynamic view with correct navigateTo', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`
