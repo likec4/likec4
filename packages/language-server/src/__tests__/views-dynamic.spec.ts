@@ -179,10 +179,10 @@ describe.concurrent('dynamic views', () => {
         system.frontend -> system.backend 'frontend uses backend'
         system.frontend <- system.backend {
           title 'backend uses frontend'
-          notes: "
+          notes: """
             # Title
             - bullet
-          "
+          """
         }
 
         style * {
