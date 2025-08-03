@@ -4,6 +4,7 @@
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Bundled React SVG icons, used in LikeC4 Diagram",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",

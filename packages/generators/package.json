@@ -5,6 +5,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Converts LikeC4 Model to other formats, like Mermaid, PlantUML, SVG, etc. Also generates typings for Model API and React",
   "files": [
     "dist",
     "src"

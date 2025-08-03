@@ -1,5 +1,6 @@
 {
   "name": "likec4",
+  "description": "Toolchain for your architecture diagrams",
   "version": "1.35.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",

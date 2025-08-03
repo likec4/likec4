@@ -4,6 +4,7 @@
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "A core package for LikeC4, containing types, api, utilities and guards.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
