@@ -17,7 +17,7 @@ import { Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers';
 
 LikeC4 Docker image is a self-contained environment for running LikeC4 commands and can be used as a drop-in replacement for `likec4` CLI.  
-It is hosted in [GitHub Container Registry](https://github.com/likec4/likec4/pkgs/container/likec4) and includes:
+It is hosted in [GitHub Container Registry](https://github.com/likec4/likec4/pkgs/container/likec4) and [Docker Hub](https://hub.docker.com/r/likec4/likec4) and includes:
 
 - Node.js (22.x)
 - Graphviz (built from sources of the [latest release](https://gitlab.com/graphviz/graphviz/-/releases))
@@ -28,7 +28,7 @@ You can find the [Dockerfile](https://github.com/likec4/likec4/blob/main/Dockerf
 
 ```sh copy title="Run any CLI command"
 # Example: Help for export command
-docker run --rm -t ghcr.io/likec4/likec4 export png -h
+docker run --rm -t likec4/likec4 export png -h
 ```
 
 ## Usage
@@ -50,7 +50,7 @@ docker run --rm \
   -t \
   -p 5173:5173 \
   -p 24678:24678 \
-  ghcr.io/likec4/likec4 \
+  likec4/likec4 \
   start
 ```
 
@@ -63,11 +63,11 @@ You can override it with `--no-use-dot` flag.
 ### Build static website
 
 ```sh copy title="Build static website"
-docker run -v $PWD:/data ghcr.io/likec4/likec4 build -o dist
+docker run -v $PWD:/data likec4/likec4 build -o dist
 ```
 
 ### Export to PNG
 
 ```sh copy title="Export to PNG"
-docker run -v $PWD:/data ghcr.io/likec4/likec4 export png --output assets --theme dark
+docker run -v $PWD:/data likec4/likec4 export png --output assets --theme dark
 ```
