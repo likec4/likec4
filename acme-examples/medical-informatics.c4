@@ -1,4 +1,3 @@
-// System property: perf-arrivalRate = 0.0
 model {
   infectious-diseases-ui = webapp 'Infectious Diseases UI' {
     description 'Browser-based interface for infectious diseases management'
@@ -167,7 +166,6 @@ model {
     metadata {
       perf-serviceTime '900.0'
       perf-replication '1'
-      perf-maxUtilizationRate '0.75'
       perf-visits '0.0'
       tier 'datastore'
       perf-requests '

@@ -10,5 +10,5 @@ specification {
     // tag check-orphan
     // tag check-cycle
     // tag check-mislayering
-    tag analyze-max-throughput
+    // tag analyze-max-throughput
 }
