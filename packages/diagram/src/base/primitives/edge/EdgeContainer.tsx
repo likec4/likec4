@@ -1,6 +1,6 @@
 import { invariant } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { type PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
@@ -38,12 +38,10 @@ export function EdgeContainer({
 }: EdgeContainerProps) {
   const props = {
     className: cx(
-      css({
-        likec4RelationPalette: color,
-      }),
+      className,
       styles.edgeVars,
       styles.edgeContainer,
-      className,
+      'likec4-edge-container',
     ),
     'data-likec4-color': color,
     'data-edge-dir': data.dir ?? 'forward',

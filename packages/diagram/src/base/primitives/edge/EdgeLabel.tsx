@@ -1,13 +1,13 @@
 import { extractStep, isStepEdgeId } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
+import { edgeLabel } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
-import { labelsva } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -40,27 +40,33 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   ref,
 ) => {
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
-  const classes = labelsva({
+  const classes = edgeLabel({
     isStepEdge: stepNum !== null,
   })
 
   return (
-    <Box ref={ref} className={cx(classes.root!, className)} {...rest}>
+    <Box ref={ref} className={cx(classes.root, className)} {...rest}>
       {stepNum !== null && (
-        <Box className={classes.stepNumber!}>
+        <Box className={classes.stepNumber}>
           {stepNum}
         </Box>
       )}
-      <Box className={classes.labelContents!}>
+      <Box className={classes.labelContents}>
         {isTruthy(label) && (
-          <Text component="div" className={classes.labelText!} lineClamp={5}>
+          <Box
+            className={cx(
+              classes.labelText,
+              css({
+                lineClamp: 5,
+              }),
+            )}>
             {label}
-          </Text>
+          </Box>
         )}
         {isTruthy(technology) && (
-          <Text component="div" className={classes.labelTechnology!}>
+          <Box className={classes.labelTechnology}>
             {'[ ' + technology + ' ]'}
-          </Text>
+          </Box>
         )}
         {children}
       </Box>

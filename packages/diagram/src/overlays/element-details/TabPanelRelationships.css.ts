@@ -7,9 +7,9 @@ export const fqn = css({
   whiteSpace: 'nowrap',
   padding: '[3px 6px]',
   borderRadius: 3,
-  background: `likec4.palette.fill/75`,
+  background: `var(--likec4-palette-fill)/75`,
   lineHeight: 1.2,
-  color: 'likec4.palette.hiContrast',
+  color: 'var(--likec4-palette-hiContrast)',
   // selectors: {
   //   [`${whereDark} &`]: {
   //   }

@@ -17,15 +17,15 @@ export const endpoint = css({
   whiteSpace: 'nowrap',
   padding: '[2px 4px]',
   borderRadius: '0.5',
-  background: `likec4.palette.fill/30`,
+  background: `var(--likec4-palette-fill)/30`,
   lineHeight: '[1.11]',
   mixBlendMode: 'hard-light',
   color: {
-    _light: `[color-mix(in srgb, {colors.likec4.palette.stroke}, {colors.likec4.mixColor} 60%)]`,
-    _dark: 'likec4.palette.loContrast',
+    _light: `[color-mix(in srgb, var(--likec4-palette-stroke), {colors.likec4.mixColor} 60%)]`,
+    _dark: 'var(--likec4-palette-loContrast)',
   },
   // _dark: {
-  //   background: `likec4.palette.fill/60`,
+  //   background: `var(--likec4-palette-fill)/60`,
   // },
 })
 

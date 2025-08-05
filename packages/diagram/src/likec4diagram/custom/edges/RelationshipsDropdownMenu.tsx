@@ -5,7 +5,7 @@ import {
   nameFromFqn,
 } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import {
   type StackProps,
   ActionIcon,
@@ -203,11 +203,11 @@ const Relationship = forwardRef<
   return (
     <Stack ref={ref} className={cx(styles.menuItemRelationship, className)} {...props}>
       <Group gap={4}>
-        <Text component="div" className={cx(css({ likec4Palette: sourceNode.color }), styles.endpoint)}>
+        <Text component="div" data-likec4-color={sourceNode.color} className={styles.endpoint}>
           {sourceId}
         </Text>
         <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
-        <Text component="div" className={cx(css({ likec4Palette: targetNode.color }), styles.endpoint)}>
+        <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
           {targetId}
         </Text>
         {(navigateTo || !!onOpenSource) && (

@@ -818,6 +818,9 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
+      khroma:
+        specifier: 2.1.0
+        version: 2.1.0
       motion:
         specifier: catalog:react
         version: 12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)

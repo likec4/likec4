@@ -41,11 +41,11 @@ const titleText = css({
   fontSize: '15px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  color: 'likec4.palette.loContrast',
+  color: 'var(--likec4-palette-loContrast)',
   '[data-compound-title-inverse] &': {
     color: {
-      base: '[color-mix(in srgb, {colors.likec4.palette.loContrast} 60%, {colors.likec4.palette.fill})]',
-      _light: 'likec4.palette.stroke',
+      base: '[color-mix(in srgb, var(--likec4-palette-loContrast) 60%, var(--likec4-palette-fill))]',
+      _light: 'var(--likec4-palette-stroke)',
     },
   },
 })
