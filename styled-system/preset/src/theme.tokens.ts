@@ -12,24 +12,75 @@ export const tokens = defineTokens({
     default: { value: '1px solid {colors.mantine.colors.defaultBorder}' },
   },
   spacing: {
+    DEFAULT: {
+      value: '4px', // 4px
+    },
     '0': {
       value: '0px',
     },
-    // '2': {
-    //   value: '2px',
-    // },
-    // '4': {
-    //   value: '4px',
-    // },
-    'xxs': {
-      value: 'calc(0.5rem * var(--mantine-scale))',
+    '0.5': {
+      value: '2px', // spacing * <value>
     },
-    // '2xs': {`
-    //   value: '8px',
-    // },
-    // '8': {
-    //   value: '8px',
-    // },
+    '1': {
+      value: '4px',
+    },
+    '1.5': {
+      value: '6px', // spacing * <value>
+    },
+    '2': {
+      value: '8px',
+    },
+    '2.5': {
+      value: '10px', // spacing * <value>
+    },
+    '3': {
+      value: '12px',
+    },
+    '3.5': {
+      value: '14px',
+    },
+    '4': {
+      value: '16px',
+    },
+    '4.5': {
+      value: '18px',
+    },
+    '5': {
+      value: '20px',
+    },
+    '6': {
+      value: '24px',
+    },
+    '7': {
+      value: '28px',
+    },
+    '8': {
+      value: '32px',
+    },
+    '9': {
+      value: '36px',
+    },
+    '10': {
+      value: '40px',
+    },
+    xxs: {
+      value: 'calc(0.5rem * var(--mantine-scale))', // 8px
+    },
+    xs: {
+      value: 'calc(0.625rem * var(--mantine-scale))', // 10px
+    },
+    sm: {
+      value: 'calc(0.75rem * var(--mantine-scale))', // 12px
+    },
+    md: {
+      value: 'calc(1rem * var(--mantine-scale))', // 16px
+    },
+    lg: {
+      value: 'calc(1.25rem * var(--mantine-scale))', // 20px
+    },
+    xl: {
+      value: 'calc(2rem * var(--mantine-scale))', // 32px
+    },
   },
   radii: {
     xs: {

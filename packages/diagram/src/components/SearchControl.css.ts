@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 export const root = css({
   height: '30px',
   paddingLeft: 'sm',
-  paddingRight: '[4px]',
+  paddingRight: '1',
   borderRadius: 'sm',
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
@@ -41,7 +41,7 @@ export const root = css({
 export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
-  paddingRight: '[10px]',
+  paddingRight: '2.5', // 10px
   color: 'mantine.colors.placeholder',
   flex: '1',
   sm: {

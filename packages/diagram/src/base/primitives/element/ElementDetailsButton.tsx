@@ -15,8 +15,8 @@ type ElementDetailsButtonProps = NodeProps & {
 
 const container = css({
   position: 'absolute',
-  top: '[2px]',
-  right: '[2px]',
+  top: '0.5',
+  right: '0.5',
   _shapeBrowser: {
     right: '[5px]',
   },
@@ -28,7 +28,7 @@ const container = css({
   },
   _shapeQueue: {
     top: '[1px]',
-    right: '[12px]',
+    right: '3', // 12px
   },
   _smallZoom: {
     display: 'none',

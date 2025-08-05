@@ -41,7 +41,7 @@ export const pickview = css({
 })
 
 export const pickviewGroup = css({
-  marginTop: '[8px]',
+  marginTop: '2',
   '& + &': {
     marginTop: '[32px]',
   },

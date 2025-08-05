@@ -416,7 +416,7 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
   }
 
   return (
-    <Box mb={'[4px]'}>
+    <Box mb={'1'}>
       <ColumnScrollArea>
         <VStack gap="[1px]">
           {data.items.map((item, i) => (

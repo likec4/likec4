@@ -43,7 +43,7 @@ export function ProjectsMenu(props: ButtonProps) {
               }),
               section: css({
                 '&:is([data-position="right"])': {
-                  marginInlineStart: '[4px]',
+                  marginInlineStart: '1',
                 },
               }),
             }}

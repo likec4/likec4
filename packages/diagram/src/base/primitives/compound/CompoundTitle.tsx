@@ -19,7 +19,7 @@ const titleContainer = css({
   position: 'absolute',
   display: 'flex',
   alignItems: 'center',
-  gap: '[6px]',
+  gap: '1.5', // 6px
   left: '[14px]',
   top: '[4px]',
   right: '[30px]',

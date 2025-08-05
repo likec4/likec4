@@ -45,7 +45,7 @@ export const instanceLabel = cx(
     flexWrap: 'nowrap',
     height: '36px',
     paddingInlineStart: '[16px]',
-    paddingInlineEnd: '[10px]',
+    paddingInlineEnd: '2.5', // 10px
     borderRadius: 'sm',
     alignItems: 'center',
     color: 'mantine.colors.gray[7]',

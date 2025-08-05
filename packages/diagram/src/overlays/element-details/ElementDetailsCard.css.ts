@@ -163,8 +163,8 @@ export const tabsList = css({
   background: 'mantine.colors.gray[1]',
   borderRadius: 'sm',
   flexWrap: 'nowrap',
-  gap: '[6px]',
-  padding: '[4px]',
+  gap: '1.5', // 6px
+  padding: '1',
   _dark: {
     background: 'mantine.colors.dark[7]',
   },
@@ -208,15 +208,15 @@ export const tabsPanel = css({
   overflow: 'hidden',
   position: 'relative',
   '&:not(:has(.mantine-ScrollArea-root))': {
-    paddingLeft: '[4px]',
-    paddingRight: '[4px]',
+    paddingLeft: '1',
+    paddingRight: '1',
   },
   '& .mantine-ScrollArea-root': {
     width: '100%',
     height: '100%',
     '& > div': {
-      paddingLeft: '[4px]',
-      paddingRight: '[4px]',
+      paddingLeft: '1',
+      paddingRight: '1',
     },
   },
 })
@@ -246,8 +246,8 @@ export const resizeHandle = css({
   borderTop: 'none',
   borderLeft: 'none',
   borderRadius: '2px',
-  bottom: '[2px]',
-  right: '[2px]',
+  bottom: '0.5',
+  right: '0.5',
   transition: 'fast',
   cursor: 'se-resize',
   _hover: {

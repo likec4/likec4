@@ -156,7 +156,6 @@ const likec4theme = {
   },
   tokens: {
     spacing: {
-      ...mapValues(DEFAULT_THEME.spacing, (value) => ({ value })),
       likec4: {
         ...mapValues(defaultTheme.spacing, (value, key) => ({
           description: `LikeC4 Diagram Spacing: ${key}`,

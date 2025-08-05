@@ -78,7 +78,7 @@ export const ManualLayoutToolsButton = (props: PopoverProps) => {
         className={hstack({
           gap: '[1px]',
           layerStyle: 'likec4.panel',
-          p: '[2px]',
+          p: '0.5',
         })}>
         <TooltipGroup>
           <Action

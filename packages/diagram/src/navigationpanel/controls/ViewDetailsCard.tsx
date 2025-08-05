@@ -62,7 +62,7 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
       className={cx(
         'group',
         hstack({
-          gap: '[8px]',
+          gap: '2',
           paddingInline: 'xxs',
           paddingBlock: 'xxs',
           rounded: 'sm',
@@ -214,7 +214,7 @@ const ViewBadge = ({
           root: css({
             width: 'max-content',
             overflow: 'visible',
-            px: '[4px]',
+            px: '1',
             color: {
               _light: 'mantine.colors.gray[8]',
             },
@@ -225,7 +225,7 @@ const ViewBadge = ({
           section: css({
             opacity: 0.5,
             userSelect: 'none',
-            marginInlineEnd: '[2px]',
+            marginInlineEnd: '0.5',
           }),
         }}>
         {value}

@@ -13,7 +13,7 @@ const edgeEnpoint = css.raw({
 })
 
 export const edgeSource = css({
-  paddingLeft: '[4px]',
+  paddingLeft: '1',
   gridColumn: 1,
 }, edgeEnpoint)
 
@@ -23,7 +23,7 @@ export const edgeArrow = css({
 
 export const edgeTarget = css({
   gridColumn: 3,
-  paddingRight: '[4px]',
+  paddingRight: '1',
 }, edgeEnpoint)
 
 const edgeLabelclass = 'likec4-edge-label'

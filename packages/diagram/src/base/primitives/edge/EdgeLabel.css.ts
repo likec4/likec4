@@ -4,8 +4,8 @@ const labelBorderRadius = '4px'
 
 export const edgeNoteCloseButton = css({
   position: 'absolute',
-  top: '[4px]',
-  right: '[4px]',
+  top: '1',
+  right: '1',
 })
 
 export const edgeNoteText = css({
@@ -75,7 +75,7 @@ export const labelsva = sva({
       alignItems: 'center',
       width: 'max-content',
       maxWidth: '100%',
-      gap: '[2px]',
+      gap: '0.5',
     },
     stepNumber: {
       alignSelf: 'stretch',
@@ -122,7 +122,7 @@ export const labelsva = sva({
       true: {
         root: {
           flexDirection: 'row',
-          gap: '[2px]',
+          gap: '0.5',
           padding: '0',
         },
         labelContents: {

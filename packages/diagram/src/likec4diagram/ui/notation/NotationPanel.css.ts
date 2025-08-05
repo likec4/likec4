@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 export const container = css({
   bottom: '0',
   right: '0',
-  padding: '[8px]',
+  padding: '2',
   margin: '0',
 })
 

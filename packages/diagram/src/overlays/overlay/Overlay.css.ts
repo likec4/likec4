@@ -60,7 +60,7 @@ export const overlay = sva({
             width: 'calc(100vw - 2 * var(--_inset))',
             height: 'calc(100vh - var(--_offset) - var(--_inset))',
             [borderRadius]: '6px',
-            padding: '[6px]',
+            padding: '1.5', // 6px
             [offset]: '1rem',
           },
           md: {

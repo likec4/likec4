@@ -33,7 +33,7 @@ export const ToggleReadonly = () => {
       className={cx(
         'group',
         hstack({
-          gap: '[2px]',
+          gap: '0.5',
           paddingInline: 'xxs',
           paddingBlock: 'xxs',
           rounded: 'sm',
