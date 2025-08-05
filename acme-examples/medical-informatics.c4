@@ -1,280 +1,280 @@
-model {
-  infectious-diseases-ui = webapp 'Infectious Diseases UI' {
-    description 'Browser-based interface for infectious diseases management'
-    metadata {
-      perf-serviceTime '900.0'
-      perf-replication '12'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'presentation'
-      perf-requests '
-        ---
-        - dest: []
-          name: present-item
-          start: false
-          rate: 0.0
-        - dest:
-            - name: fetch-combined-item
-              parent: trend-tracker
-              via: i-ui
-              prob: 1.0
-          name: start-task
-          start: true
-          rate: 0.03
-      '
-    }
-  }
+// model {
+//   infectious-diseases-ui = webapp 'Infectious Diseases UI' {
+//     description 'Browser-based interface for infectious diseases management'
+//     metadata {
+//       perf-serviceTime '900.0'
+//       perf-replication '12'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'presentation'
+//       perf-requests '
+//         ---
+//         - dest: []
+//           name: present-item
+//           start: false
+//           rate: 0.0
+//         - dest:
+//             - name: fetch-combined-item
+//               parent: trend-tracker
+//               via: i-ui
+//               prob: 1.0
+//           name: start-task
+//           start: true
+//           rate: 0.03
+//       '
+//     }
+//   }
 
-  microbiology-ui = webapp 'Microbiology UI' {
-    description 'Browser-based interface for microbiology data management'
-    metadata {
-      perf-serviceTime '1500.0'
-      perf-replication '1'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'presentation'
-      perf-requests '
-        ---
-        - dest:
-            - name: fetch-germ-item
-              parent: simple-server
-              prob: 1.0
-              via: m-ui
-          name: start-task
-          rate: 0.01
-          start: true
-        - dest: []
-          name: present-item
-          rate: 0.0
-          start: false
-      '
-    }
-  }
+//   microbiology-ui = webapp 'Microbiology UI' {
+//     description 'Browser-based interface for microbiology data management'
+//     metadata {
+//       perf-serviceTime '1500.0'
+//       perf-replication '1'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'presentation'
+//       perf-requests '
+//         ---
+//         - dest:
+//             - name: fetch-germ-item
+//               parent: simple-server
+//               prob: 1.0
+//               via: m-ui
+//           name: start-task
+//           rate: 0.01
+//           start: true
+//         - dest: []
+//           name: present-item
+//           rate: 0.0
+//           start: false
+//       '
+//     }
+//   }
 
-  pharmacy-ui = webapp 'Pharmacy UI' {
-    description 'Browser-based interface for pharmacy data management'
-    metadata {
-      perf-serviceTime '1300.0'
-      perf-replication '1'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'presentation'
-      perf-requests '
-        ---
-        - dest: []
-          name: present-item
-          rate: 0.0
-          start: false
-        - dest:
-            - name: fetch-drug-item
-              parent: simple-server
-              prob: 1.0
-              via: p-ui
-          name: start-task
-          rate: 0.01
-          start: true
-      '
-    }
-  }
+//   pharmacy-ui = webapp 'Pharmacy UI' {
+//     description 'Browser-based interface for pharmacy data management'
+//     metadata {
+//       perf-serviceTime '1300.0'
+//       perf-replication '1'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'presentation'
+//       perf-requests '
+//         ---
+//         - dest: []
+//           name: present-item
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: fetch-drug-item
+//               parent: simple-server
+//               prob: 1.0
+//               via: p-ui
+//           name: start-task
+//           rate: 0.01
+//           start: true
+//       '
+//     }
+//   }
 
-  simple-server = service 'Simple Server' {
-    description 'Main business logic service handling microbiology and pharmacy data'
-    metadata {
-      perf-serviceTime '3000.0'
-      perf-replication '1'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'businesslogic'
-      perf-requests '
-        ---
-        - dest:
-            - name: fetch-data
-              parent: microbiology-db
-              prob: 1.0
-              via: m-db-1
-          name: fetch-germ-item
-          rate: 0.0
-          start: false
-        - dest:
-            - name: fetch-data
-              parent: pharmacy-db
-              prob: 1.0
-              via: p-db-1
-          name: fetch-drug-item
-          rate: 0.0
-          start: false
-        - dest:
-            - name: present-item
-              parent: microbiology-ui
-              prob: 1.0
-              via: m-ui
-          name: process-germ-data
-          rate: 0.0
-          start: false
-        - dest:
-            - name: present-item
-              parent: pharmacy-ui
-              prob: 1.0
-              via: p-ui
-          name: process-drug-data
-          rate: 0.0
-          start: false
-      '
-    }
-  }
+//   simple-server = service 'Simple Server' {
+//     description 'Main business logic service handling microbiology and pharmacy data'
+//     metadata {
+//       perf-serviceTime '3000.0'
+//       perf-replication '1'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'businesslogic'
+//       perf-requests '
+//         ---
+//         - dest:
+//             - name: fetch-data
+//               parent: microbiology-db
+//               prob: 1.0
+//               via: m-db-1
+//           name: fetch-germ-item
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: fetch-data
+//               parent: pharmacy-db
+//               prob: 1.0
+//               via: p-db-1
+//           name: fetch-drug-item
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: present-item
+//               parent: microbiology-ui
+//               prob: 1.0
+//               via: m-ui
+//           name: process-germ-data
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: present-item
+//               parent: pharmacy-ui
+//               prob: 1.0
+//               via: p-ui
+//           name: process-drug-data
+//           rate: 0.0
+//           start: false
+//       '
+//     }
+//   }
 
-  trend-tracker = service 'Trend Tracker' {
-    description 'Analytics service for tracking trends across medical data'
-    metadata {
-      perf-serviceTime '1200.0'
-      perf-replication '1'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'businesslogic'
-      perf-requests '
-        ---
-        - dest:
-            - name: fetch-data2
-              parent: microbiology-db
-              prob: 1.0
-              via: m-db-2
-          name: fetch-combined-item
-          rate: 0.0
-          start: false
-        - dest:
-            - name: present-item
-              parent: infectious-diseases-ui
-              prob: 1.0
-              via: i-ui
-          name: process-drug-data
-          rate: 0.0
-          start: false
-        - dest:
-            - name: fetch-data2
-              parent: pharmacy-db
-              prob: 1.0
-              via: p-db-2
-          name: process-germ-data
-          rate: 0.0
-          start: false
-      '
-    }
-  }
+//   trend-tracker = service 'Trend Tracker' {
+//     description 'Analytics service for tracking trends across medical data'
+//     metadata {
+//       perf-serviceTime '1200.0'
+//       perf-replication '1'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'businesslogic'
+//       perf-requests '
+//         ---
+//         - dest:
+//             - name: fetch-data2
+//               parent: microbiology-db
+//               prob: 1.0
+//               via: m-db-2
+//           name: fetch-combined-item
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: present-item
+//               parent: infectious-diseases-ui
+//               prob: 1.0
+//               via: i-ui
+//           name: process-drug-data
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: fetch-data2
+//               parent: pharmacy-db
+//               prob: 1.0
+//               via: p-db-2
+//           name: process-germ-data
+//           rate: 0.0
+//           start: false
+//       '
+//     }
+//   }
 
-  microbiology-db = database 'Microbiology Database' {
-    description 'SQL database storing microbiology and germ data'
-    metadata {
-      perf-serviceTime '900.0'
-      perf-replication '1'
-      perf-visits '0.0'
-      tier 'datastore'
-      perf-requests '
-        ---
-        - dest:
-            - name: process-germ-data
-              parent: simple-server
-              prob: 1.0
-              via: m-db-1
-          name: fetch-data
-          rate: 0.0
-          start: false
-        - dest:
-            - name: process-germ-data
-              parent: trend-tracker
-              prob: 1.0
-              via: m-db-2
-          name: fetch-data2
-          rate: 0.0
-          start: false
-      '
-    }
-  }
+//   microbiology-db = database 'Microbiology Database' {
+//     description 'SQL database storing microbiology and germ data'
+//     metadata {
+//       perf-serviceTime '900.0'
+//       perf-replication '1'
+//       perf-visits '0.0'
+//       tier 'datastore'
+//       perf-requests '
+//         ---
+//         - dest:
+//             - name: process-germ-data
+//               parent: simple-server
+//               prob: 1.0
+//               via: m-db-1
+//           name: fetch-data
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: process-germ-data
+//               parent: trend-tracker
+//               prob: 1.0
+//               via: m-db-2
+//           name: fetch-data2
+//           rate: 0.0
+//           start: false
+//       '
+//     }
+//   }
 
-  pharmacy-db = database 'Pharmacy Database' {
-    description 'SQL database storing pharmacy and drug data'
-    metadata {
-      perf-serviceTime '2200.0'
-      perf-replication '1'
-      perf-maxUtilizationRate '0.75'
-      perf-visits '0.0'
-      tier 'datastore'
-      perf-requests '
-        ---
-        - dest:
-            - name: process-drug-data
-              parent: simple-server
-              prob: 1.0
-              via: p-db-1
-          name: fetch-data
-          rate: 0.0
-          start: false
-        - dest:
-            - name: process-drug-data
-              parent: trend-tracker
-              prob: 1.0
-              via: p-db-2
-          name: fetch-data2
-          rate: 0.0
-          start: false
-      '
-    }
-  }
+//   pharmacy-db = database 'Pharmacy Database' {
+//     description 'SQL database storing pharmacy and drug data'
+//     metadata {
+//       perf-serviceTime '2200.0'
+//       perf-replication '1'
+//       perf-maxUtilizationRate '0.75'
+//       perf-visits '0.0'
+//       tier 'datastore'
+//       perf-requests '
+//         ---
+//         - dest:
+//             - name: process-drug-data
+//               parent: simple-server
+//               prob: 1.0
+//               via: p-db-1
+//           name: fetch-data
+//           rate: 0.0
+//           start: false
+//         - dest:
+//             - name: process-drug-data
+//               parent: trend-tracker
+//               prob: 1.0
+//               via: p-db-2
+//           name: fetch-data2
+//           rate: 0.0
+//           start: false
+//       '
+//     }
+//   }
 
-  microbiology-ui .calls simple-server {
-    title 'm-ui'
-    metadata {
-      perf-delayTime '500.0'
-      perf-visits '0.0'
-    }
-  }
-  pharmacy-ui .calls simple-server {
-    title 'p-ui'
-    metadata {
-      perf-delayTime '500.0'
-      perf-visits '0.0'
-    }
-  }
-  infectious-diseases-ui .calls trend-tracker {
-    title 'i-ui'
-    metadata {
-      perf-delayTime '500.0'
-      perf-visits '0.0'
-    }
-  }
+//   microbiology-ui .calls simple-server {
+//     title 'm-ui'
+//     metadata {
+//       perf-delayTime '500.0'
+//       perf-visits '0.0'
+//     }
+//   }
+//   pharmacy-ui .calls simple-server {
+//     title 'p-ui'
+//     metadata {
+//       perf-delayTime '500.0'
+//       perf-visits '0.0'
+//     }
+//   }
+//   infectious-diseases-ui .calls trend-tracker {
+//     title 'i-ui'
+//     metadata {
+//       perf-delayTime '500.0'
+//       perf-visits '0.0'
+//     }
+//   }
 
-  simple-server .accesses microbiology-db {
-    title 'm-db-1'
-    metadata {
-      perf-delayTime '100.0'
-      perf-visits '0.0'
-    }
-  }
-  simple-server .accesses pharmacy-db {
-    title 'p-db-1'
-    metadata {
-      perf-delayTime '100.0'
-      perf-visits '0.0'
-    }
-  }
-  trend-tracker .accesses microbiology-db {
-    title 'm-db-2'
-    metadata {
-      perf-delayTime '100.0'
-      perf-visits '0.0'
-    }
-  }
-  trend-tracker .accesses pharmacy-db {
-    title 'p-db-2'
-    metadata {
-      perf-delayTime '100.0'
-      perf-visits '0.0'
-    }
-  }
-}
-views {
-  view main {
-    title "Base Architecture Overview"
-    include *
-    autoLayout TopBottom
-  }
-} 
+//   simple-server .accesses microbiology-db {
+//     title 'm-db-1'
+//     metadata {
+//       perf-delayTime '100.0'
+//       perf-visits '0.0'
+//     }
+//   }
+//   simple-server .accesses pharmacy-db {
+//     title 'p-db-1'
+//     metadata {
+//       perf-delayTime '100.0'
+//       perf-visits '0.0'
+//     }
+//   }
+//   trend-tracker .accesses microbiology-db {
+//     title 'm-db-2'
+//     metadata {
+//       perf-delayTime '100.0'
+//       perf-visits '0.0'
+//     }
+//   }
+//   trend-tracker .accesses pharmacy-db {
+//     title 'p-db-2'
+//     metadata {
+//       perf-delayTime '100.0'
+//       perf-visits '0.0'
+//     }
+//   }
+// }
+// views {
+//   view main {
+//     title "Base Architecture Overview"
+//     include *
+//     autoLayout TopBottom
+//   }
+// } 

@@ -1,82 +1,192 @@
-<div align="center">
-  <h1>
-    Architecture as a code
-  </h1>
-  <h4>
-    Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
-  </h4>
+# LikeC4 Correctness Validation - Local Development Setup
 
-<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
-<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/likec4)</a>
-<a href="https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode" target="_blank">![VSCode Installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/likec4.likec4-vscode?label=vscode%20installs)</a>
-<a href="https://open-vsx.org/extension/likec4/likec4-vscode" target="_blank">![Open VSX Installs](https://img.shields.io/open-vsx/dt/likec4/likec4-vscode?label=open-vsx
-)</a>
+This repository contains an enhanced version of LikeC4 with **correctness validation capabilities** that can detect architectural issues like disconnected elements, cyclic dependencies, mislayering, and performance metadata problems.
 
-[docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/index)
+## Prerequisites
 
-![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
+- **Node.js** 20.19.1+ (tested with v22.12.0)
+- **pnpm** 10.11.1+
+- **VSCode** editor
 
-</div>
+## Quick Setup
 
-## What is LikeC4? Why "like"?
+1. **Clone and install dependencies**
+   ```bash
+   git clone https://github.com/Nikhil-CMU/likec4
+   cd likec4
+   pnpm install
+   ```
 
-LikeC4 is a modeling language for describing software architecture and tools to generate diagrams from the model.
+2. **Build the project**
+   ```bash
+   pnpm turbo run build
+   ```
 
-LikeC4 is inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but provides some flexibility.
-You customize or define your own notation, element types, and any number of nested levels in architecture model.\
-Perfectly tailored to your needs.
+3. **Test the correctness validation**
+   ```bash
+   cd packages/likec4
+   pnpm start correctness ../../acme-examples
+   ```
 
-## What does LikeC4 look like?
+## What We Added
 
-LikeC4 source:
+This implementation extends LikeC4 with tag-based correctness validation. The system supports four types of architectural checks:
 
-<div align="center">
-  <img src="https://github.com/likec4/.github/assets/824903/c0f22106-dba6-469e-ab47-85e7b8565513" width="675px">
-</div>
+### Validation Types
+- **`check-orphan`** - Detects disconnected/orphaned elements
+- **`check-cycle`** - Identifies cyclic dependencies  
+- **`check-mislayering`** - Finds layer violation issues
+- **`analyze-max-throughput`** - Validates performance metadata requirements
 
-Run [CLI](./packages/likec4/README.md) to preview:
+### Key Files Modified
 
-```sh
-npx likec4 start
+#### CLI Implementation
+- `packages/likec4/src/cli/correctness/` - New correctness command and validation logic
+- `packages/likec4/src/cli/index.ts` - Registered correctness command
+
+#### Language Server Integration  
+- `packages/language-server/src/validation/correctness/` - Real-time validation in editors
+- `packages/language-server/src/validation/index.ts` - Registered validation checks
+
+#### Test Examples
+- `acme-examples/` - Contains architecture files with validation tags
+
+## Running Correctness Validation
+
+### CLI Usage
+
+Navigate to the CLI package:
+```bash
+cd packages/likec4
 ```
 
-And result:
+**Basic validation:**
+```bash
+pnpm start correctness ../../acme-examples
+```
 
-<div align="center">
-  <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
-</div>
+**Strict mode (warnings as errors):**
+```bash
+pnpm start correctness ../../acme-examples --strict
+```
 
-Template repository - [likec4/template](https://github.com/likec4/template)\
-Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/index)
+**View available options:**
+```bash
+pnpm start correctness --help
+```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
+### Expected CLI Output
+The tool will:
+- Detect validation tags in your `.c4` files
+- Run corresponding checks (orphan, cycle, mislayering, performance)  
+- Report issues with suggestions for fixes
+- Exit with code 1 if issues found
 
-> StackBlitz does not support extensions, so no validation, syntax highlighting and etc.\
-> You can try with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4) and suggested extension.
+## Language Server Integration
 
-Check [Tutorial](https://likec4.dev/tutorial/) - for a quick overview of LikeC4.
+### Setup VSCode Extension
 
-## Getting help
+Use the automated setup script (recommended):
+```bash
+./reinstall-local-language-server
+```
 
-We are always happy to help you get started:
+This script will:
+- Clean all caches and build artifacts
+- Rebuild the language server and VSCode extension
+- Package and install the extension
+- Restart language server processes
 
-- [Join Discord community](https://discord.gg/86ZSpjKAdA) – it is the easiest way to get help
-- [GitHub Discussions](https://github.com/likec4/likec4/discussions) – ask anything about the project or give feedback
+Then open test files:
+```bash
+code acme-examples/
+```
 
-## Contributors
+### Expected VSCode Behavior
+- **Squiggly lines** appear under problematic elements
+- **Hover tooltips** show detailed error messages
+- **Real-time validation** as you type
+- **Diagnostic codes** like `disconnected-element`
 
-<a href="https://github.com/likec4/likec4/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=likec4/likec4" />
-</a>
+## Development Scripts
 
-[Become a contributor](./CONTRIBUTING.md)
+### Language Server Restart (For Active Development)
+```bash
+# Cleanup and rebuild (recommended for development)
+./reinstall-local-language-server
 
-## Support development
+# Or restart just the language server
+# In VSCode: Cmd+Shift+P → "Developer: Reload Window"
+```
 
-LikeC4 is a MIT-licensed open source project with its ongoing development made possible entirely by your support.\
-If you like the project, please consider contributing financially to help grow and improve it.\
-You can support us via [OpenCollective](https://opencollective.com/likec4) or [GitHub Sponsors](https://github.com/sponsors/likec4).
+### Build Commands
+```bash
+# Build everything
+pnpm turbo run build
 
-## License
+# Build only language server  
+pnpm build --filter=@likec4/language-server
 
-This project is released under the [MIT License](LICENSE)
+# Build only VSCode extension
+cd packages/vscode && pnpm run build
+```
+
+### Testing Commands
+```bash
+# Run all tests
+pnpm test
+
+# Test specific correctness validation
+cd packages/likec4
+pnpm start correctness ../../acme-examples
+
+# Test with different architecture files
+pnpm start correctness ../../examples/cloud-system
+```
+
+## Project Structure
+
+```
+likec4/
+├── packages/
+│   ├── likec4/                    # CLI tool with correctness command
+│   ├── language-server/           # VSCode integration
+│   └── vscode/                    # Editor extension
+├── acme-examples/                 # Test files with validation tags
+├── reinstall-local-language-server # Development script
+└── commands.md                    # Detailed setup guide
+```
+
+## Troubleshooting
+
+### Language Server Issues
+```bash
+# Complete rebuild
+./reinstall-local-language-server
+
+# Manual restart in editor
+# VSCode: Cmd+Shift+P → "Developer: Reload Window"
+```
+
+### Build Issues
+```bash
+# Clean and rebuild
+pnpm clean
+pnpm install
+pnpm turbo run build
+```
+
+### Extension Not Working
+```bash
+# Check installation
+code --list-extensions | grep likec4
+
+# Reinstall extension (use the automated script)
+./reinstall-local-language-server
+```
+
+## Branch Information
+
+Current branch: `feature/correctness-validation`
+
+This implementation adds comprehensive correctness validation to LikeC4, enabling both CLI-based checks and real-time VSCode validation for architectural correctness.

@@ -9,3 +9,31 @@ pnpm turbo run build --force --no-cache --no-daemon
 cd packages/likec4 &&
 pnpm start correctness ../../correctness-examples &&
 cd ../..
+
+
+
+cd packages/likec4 &&
+pnpm start correctness ../../correctness-examples &&
+cd ../..
+
+
+connection specs - validation + configuration
+
+filter styles - STYLES (Use notes + demo)
+    pipe and filter -> one input/output per filter
+
+generic way to specify all the analysis? + implementation
+
+
+LOW HANGING
+- cyclic,  mislayered
+- relationship specs as configuration
+- configuration of all the static test
+
+IMPORTANT
+- arch styles - each one if we can make a check (+ configuration)
+- generic way to do configuration (for the longer list)
+    - understand likec4 parser working
+    - * add to language itself (property + metadata to the specs/model itself?)
+
+change the meeting schedule to 3:30 PM to 4:00 PM

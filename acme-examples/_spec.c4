@@ -1,14 +1,13 @@
-specification {
-    element webapp
-    element service
-    element database
+// specification {
+//     element webapp
+//     element service
+//     element database
 
-    relationship uses
-    relationship calls
-    relationship accesses
+//     relationship uses
+//     relationship calls
+//     relationship accesses
 
-    // tag check-orphan
-    // tag check-cycle
-    // tag check-mislayering
-    // tag analyze-max-throughput
-}
+//     // tag check-orphan
+//     // tag check-cycle
+//     // tag check-mislayering
+// }
