@@ -17,7 +17,7 @@ export const NavigationButtons = () => {
     <m.div
       layout="position"
       className={hstack({
-        gap: 1,
+        gap: '[1px]',
         display: {
           base: 'none',
           '@likec4-root/sm': 'flex',

@@ -62,9 +62,9 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
       className={cx(
         'group',
         hstack({
-          gap: '8',
-          paddingInline: '2xs',
-          paddingBlock: '2xs',
+          gap: '[8px]',
+          paddingInline: 'xxs',
+          paddingBlock: 'xxs',
           rounded: 'sm',
           userSelect: 'none',
           cursor: 'pointer',
@@ -84,7 +84,7 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
       )}>
       <IconId size={16} stroke={1.25} />
       {linksCount > 0 && (
-        <HStack gap={1}>
+        <HStack gap={'[1px]'}>
           <IconLink size={14} stroke={2} />
           <Box
             css={{
@@ -107,7 +107,7 @@ const SectionHeader = styled('div', {
     color: 'mantine.colors.dimmed',
     fontWeight: 500,
     userSelect: 'none',
-    mb: '2xs',
+    mb: 'xxs',
   },
 })
 
@@ -148,10 +148,10 @@ const ViewDetailsCardDropdown = ({
       )}>
       <section>
         <Text component="div" fw={500} size="xl">{title}</Text>
-        <HStack alignItems={'flex-start'} mt="4">
+        <HStack alignItems={'flex-start'} mt="[4px]">
           <ViewBadge label="id" value={id} />
           {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
-          <HStack gap={'xs'} flexWrap={'wrap'}>
+          <HStack gap="xs" flexWrap="wrap">
             {tags.map((tag, i) => (
               <ElementTag
                 key={tag}
@@ -168,7 +168,7 @@ const ViewDetailsCardDropdown = ({
       {links.length > 0 && (
         <section className={hstack({ alignItems: 'baseline' })}>
           <SectionHeader>Links</SectionHeader>
-          <HStack gap={'xs'} flexWrap={'wrap'}>
+          <HStack gap="xs" flexWrap="wrap">
             {links.map((link, i) => <Link key={`${i}-${link.url}`} value={link} />)}
           </HStack>
         </section>
@@ -201,7 +201,7 @@ const ViewBadge = ({
   value: string
 }) => {
   return (
-    <HStack gap={2}>
+    <HStack gap="[2px]">
       <ViewBadgeLabel>{label}</ViewBadgeLabel>
       <Badge
         size="sm"
@@ -214,7 +214,7 @@ const ViewBadge = ({
           root: css({
             width: 'max-content',
             overflow: 'visible',
-            px: '4',
+            px: '[4px]',
             color: {
               _light: 'mantine.colors.gray[8]',
             },
@@ -225,7 +225,7 @@ const ViewBadge = ({
           section: css({
             opacity: 0.5,
             userSelect: 'none',
-            marginInlineEnd: 2,
+            marginInlineEnd: '[2px]',
           }),
         }}>
         {value}

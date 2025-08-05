@@ -35,7 +35,7 @@ export const card = css({
 })
 
 export const tabPanel = css({
-  padding: '2xs',
+  padding: 'xxs',
 })
 
 // export const description = css({
@@ -84,8 +84,8 @@ export const shapeSvg = css({
 export const shapeBadge = css({
   fontWeight: 500,
   letterSpacing: '0.2px',
-  paddingTop: 0,
-  paddingBottom: 0,
+  paddingTop: '[0px]',
+  paddingBottom: '[0px]',
   textTransform: 'lowercase',
   transition: 'all 150ms ease-in-out',
   cursor: 'pointer',

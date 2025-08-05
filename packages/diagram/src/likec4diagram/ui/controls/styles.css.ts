@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const navigationButtons = css({
-  gap: 'micro',
+  gap: 'xxs',
   _empty: {
     display: 'none',
   },

@@ -520,7 +520,7 @@ export function ElementDetailsCard({
             dragElastic={0}
             dragMomentum={false}
             onDrag={handleDrag}
-            dragConstraints={{ top: '0', left: '0', right: 0, bottom: 0 }} />
+            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
         </Card>
       </RemoveScroll>
     </m.dialog>
@@ -608,7 +608,7 @@ function ElementMetata({
           gap: `[4px 4px]`,
           alignItems: 'baseline',
           justifyItems: 'stretch',
-          paddingRight: '2xs',
+          paddingRight: 'xxs',
         })}>
         {entries(metadata).map(([key, value]) => (
           <div
@@ -653,7 +653,7 @@ function ElementMetata({
                 <div
                   className={css({
                     fontSize: 'sm',
-                    padding: '2xs',
+                    padding: 'xxs',
                     whiteSpace: 'pre',
                     fontFamily: '[var(--mantine-font-family-monospace)]',
                     userSelect: 'all',

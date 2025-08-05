@@ -13,7 +13,7 @@ export function ProjectsMenu(props: ButtonProps) {
   }
 
   return (
-    <HStack gap={'2'} alignItems={'baseline'}>
+    <HStack gap="[2px]" alignItems="baseline">
       <Box
         css={{
           fontWeight: '400',
@@ -43,7 +43,7 @@ export function ProjectsMenu(props: ButtonProps) {
               }),
               section: css({
                 '&:is([data-position="right"])': {
-                  marginInlineStart: '4',
+                  marginInlineStart: '[4px]',
                 },
               }),
             }}

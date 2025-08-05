@@ -7,7 +7,7 @@ const whenContainerIsNarrow = `@container likec4-tree (max-width: 450px)`
 
 export const treeNode = css({
   outline: 'none',
-  marginBottom: '8px',
+  marginBottom: '[8px]',
 })
 export const treeRoot = css(
   container.raw({
@@ -22,10 +22,10 @@ export const treeLabel = css({
   display: 'flex',
   alignItems: 'baseline',
   outline: 'none !important',
-  gap: '4px',
+  gap: '[4px]',
 })
 export const treeSubtree = css({
-  marginTop: '8px',
+  marginTop: '[8px]',
 })
 
 // const iconSize = '--likec4-icon-size'
@@ -44,7 +44,7 @@ export const elementTitleAndId = css({
   [whenContainerIsNarrow]: {
     flexDirection: 'column-reverse',
     alignItems: 'flex-start',
-    gap: 2,
+    gap: '[2px]',
   },
 })
 
@@ -56,7 +56,7 @@ export const elementId = css({
   display: 'block',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '1px 5px',
+  padding: '[1px 5px]',
   borderRadius: '4px',
   background: `mantine.colors.dark[9]/30`,
   _light: {

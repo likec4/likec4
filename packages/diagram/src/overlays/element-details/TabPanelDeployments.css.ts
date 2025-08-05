@@ -8,8 +8,8 @@ export const treeNode = css({
 
 export const treeNodeLabel = css({
   cursor: 'default',
-  marginTop: 0,
-  marginBottom: 0,
+  marginTop: '0',
+  marginBottom: '0',
 })
 
 const label = css({
@@ -44,8 +44,8 @@ export const instanceLabel = cx(
     justifyContent: 'stretch',
     flexWrap: 'nowrap',
     height: '36px',
-    paddingInlineStart: '16px',
-    paddingInlineEnd: '10px',
+    paddingInlineStart: '[16px]',
+    paddingInlineEnd: '[10px]',
     borderRadius: 'sm',
     alignItems: 'center',
     color: 'mantine.colors.gray[7]',
