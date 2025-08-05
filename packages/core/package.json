@@ -1,9 +1,10 @@
 {
   "name": "@likec4/core",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "A core package for LikeC4, containing types, api, utilities and guards.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
@@ -14,6 +15,7 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
+    "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "pnpm rimraf dist lib",
@@ -79,12 +81,12 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./types/aux": {
-      "sources": "./src/types/aux.ts",
+    "./types/_aux": {
+      "sources": "./src/types/_aux.ts",
       "default": {
-        "types": "./dist/types/aux.d.mts",
-        "import": "./dist/types/aux.mjs",
-        "default": "./dist/types/aux.mjs"
+        "types": "./dist/types/_aux.d.mts",
+        "import": "./dist/types/_aux.mjs",
+        "default": "./dist/types/_aux.mjs"
       }
     },
     "./types": {
@@ -103,14 +105,30 @@
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "catalog:utils"
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-to-string": "^4.0.0",
+    "rehype-format": "5.0.1",
+    "rehype-raw": "7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-stringify": "10.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
+    "type-fest": "catalog:utils",
+    "unified": "11.0.5"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.4",
+    "@types/chroma-js": "^3.1.1",
+    "@dagrejs/dagre": "1.1.5",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
+    "@types/extend": "3.0.4",
+    "@types/hast": "3.0.4",
+    "@types/mdast": "4.0.4",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
+    "@types/unist": "3.0.3",
+    "@types/node": "catalog:",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
     "fdir": "catalog:utils",
@@ -126,6 +144,5 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

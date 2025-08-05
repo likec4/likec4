@@ -68,7 +68,13 @@ async function dotCodegenAction(
         view,
         specification: model.specification,
       })
-      const relativePath = view.relativePath ?? ''
+      let relativePath = view.relativePath ?? '.'
+      // remove file name from relative path
+      if (relativePath.includes('/')) {
+        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
+      } else {
+        relativePath = '.'
+      }
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })
         createdDirs.add(relativePath)
@@ -124,6 +130,7 @@ async function multipleFilesCodegenAction(
     const view = vm.$view
     try {
       let relativePath = view.relativePath ?? '.'
+      // remove file name from relative path
       if (relativePath.includes('/')) {
         relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
       } else {

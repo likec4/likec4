@@ -19,6 +19,7 @@ export const Assets = ['favicon.ico', 'robots.txt']
 export const viteBuild = async ({
   buildWebcomponent = true,
   webcomponentPrefix = 'likec4',
+  title,
   languageServices,
   likec4AssetsDir,
   outputSingleFile,
@@ -31,6 +32,7 @@ export const viteBuild = async ({
     languageServices,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     outputSingleFile,
   })
 
@@ -67,16 +69,6 @@ export const viteBuild = async ({
         )
       }
     })
-
-    if (buildWebcomponent) {
-      const webcomponentConfig = await viteWebcomponentConfig({
-        webcomponentPrefix,
-        languageServices,
-        outDir: publicDir,
-        base: config.base,
-      })
-      await build(webcomponentConfig)
-    }
   } else {
     for (const project of projects) {
       const computed = await languageServices.viewsService.computedViews(project.id)
@@ -86,6 +78,16 @@ export const viteBuild = async ({
         config.customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
       }
     }
+  }
+
+  if (buildWebcomponent) {
+    const webcomponentConfig = await viteWebcomponentConfig({
+      webcomponentPrefix,
+      languageServices,
+      outDir: publicDir,
+      base: config.base,
+    })
+    await build(webcomponentConfig)
   }
 
   // Static website

@@ -1,3 +1,148 @@
+# [1.35.0](https://github.com/likec4/likec4/compare/v1.34.2...v1.35.0) (2025-08-02)
+
+### 🚀 Features
+
+* **Organize Views**  
+  You can organize views into folders to keep the workspace clean and easy to navigate.  
+  Use the `/` in the view titles:
+  
+  ```zig
+  views {
+    deployment view {
+      title 'Deployment / Production'    
+    }
+  }
+  ```
+
+  New navigation panel.
+
+  Example:
+  <img src="https://github.com/user-attachments/assets/a3404237-2cce-4a08-acb0-58c65601c33d" />
+
+  [📖 Documentation](https://likec4.dev/dsl/views/organize/)
+
+* **Extended specification**  
+  You may define `title`, `description` and `links` in specification, if it is common for all of the kind:
+  ```zig
+  specification {
+    element mobileApp {
+      title 'Mobile App'
+      description 'Universal mobile application'
+    }
+  }
+  ```
+  thanks @CookiesEater, ([#2111](https://github.com/likec4/likec4/issues/2111))
+  
+* color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast, [#2100](https://github.com/likec4/likec4/issues/2100), thanks @Kiiv
+* **cli:** added `title` option to `serve` command [#2098](https://github.com/likec4/likec4/issues/2098), closes [#2096](https://github.com/likec4/likec4/issues/2096), thanks @pavelpykhtin
+
+### Bug Fixes
+
+* **core:** do not create loop connections from descendant selectors, [#2118](https://github.com/likec4/likec4/issues/2118), closes [#2117](https://github.com/likec4/likec4/issues/2117), thanks @pavelpykhtin
+* improve stability of the manual layout on model/view changes, [#2086](https://github.com/likec4/likec4/issues/2086), thanks @pavelpykhtin
+
+
+## [1.34.2](https://github.com/likec4/likec4/compare/v1.34.1...v1.34.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* **cli:** can't generate single page html ([19bb4fb](https://github.com/likec4/likec4/commit/19bb4fbd93f40f58e185c3a41b54e6085de5a2ba)), closes [#2076](https://github.com/likec4/likec4/issues/2076)
+
+
+
+## [1.34.1](https://github.com/likec4/likec4/compare/v1.34.0...v1.34.1) (2025-07-01)
+
+### Bug Fixes
+* **vscode:** request likec4/layout-view failed, closes [#2073](https://github.com/likec4/likec4/issues/2073)
+  
+
+# [1.34.0](https://github.com/likec4/likec4/compare/v1.33.0...v1.34.0) (2025-07-01)
+
+### 🚀 Features
+
+* **Docker**
+  
+  ```sh
+  docker run -v $PWD:/data ghcr.io/likec4/likec4 build -o dist
+  ```
+  
+  Long-baked [#1840](https://github.com/likec4/likec4/issues/1840), supports everything from CLI.  
+  [📖 Documentation](https://likec4.dev/tooling/docker/)
+  
+### Improvements
+
+* **cli:** title option in cli, thanks @pavelpykhtin ([#2056](https://github.com/likec4/likec4/issues/2056)) ([f4cfbe1](https://github.com/likec4/likec4/commit/f4cfbe1771f2a01e0db008038bb17e7ec21d141c)), closes [#1942](https://github.com/likec4/likec4/issues/1942)
+* **dsl:** short syntax for constraints on kind, thanks @pavelpykhtin ([#2054](https://github.com/likec4/likec4/issues/2054)) ([0d16fe8](https://github.com/likec4/likec4/commit/0d16fe883bccabfb8ff2e07e64f33b0ff654442d)), closes [#1994](https://github.com/likec4/likec4/issues/1994)
+* **mcp:** improve MCP tools with structured outputs, aware of metadata, and can "open" the preview if needed ([cfe23f8](https://github.com/likec4/likec4/commit/cfe23f853405c5e4a25f2db2e91435640ba3d766))
+
+
+### Bug Fixes
+
+* **dev-env:** aux.* files renamed to match windows constraints on reserved filenames, thanks @pavelpykhtin  ([92f6cff](https://github.com/likec4/likec4/commit/92f6cffbf185be310842aafba99ecc7657100180))
+* **dsl:** element identifier conflict with HEX ([#2050](https://github.com/likec4/likec4/issues/2050)) ([8059b10](https://github.com/likec4/likec4/commit/8059b1094e420e4bbf0b78190eade97553edc008)), closes [#2049](https://github.com/likec4/likec4/issues/2049)
+* **dsl:** spec parsing bug with boolean strings ([105ffc0](https://github.com/likec4/likec4/commit/105ffc06d4a7f131de8c3e94ffa2980239c62bce)), closes [#2057](https://github.com/likec4/likec4/issues/2057)
+* **formatter:** Fixed handling of internal quotes, thanks @pavelpykhtin  [#2005](https://github.com/likec4/likec4/issues/2005) ([3f8f8df](https://github.com/likec4/likec4/commit/3f8f8df35d03b7fe6db13f6798c05aa91345134b))
+
+
+
+# [1.33.0](https://github.com/likec4/likec4/compare/v1.32.2...v1.33.0) (2025-06-25)
+
+### 🚀 Features
+
+* **Markdown**
+  
+  Strings with triple qoutes (`""" markdown """` or `''' markdown '''`) are now parsed as Markdown.  
+  This is the first step in adopting Markdown support, and it’s currently limited to descriptions only:
+
+  ```zig
+  model {
+    mobile = application {
+      description '''
+        ### Multi-platform application
+  
+        [React Native](https://reactnative.dev)
+      '''
+    }
+  
+    web = application {
+      description """
+        ### Web Application
+  
+        > Provides services to customers through
+        > the web interface.
+  
+        | checks     |     |
+        | :--------- | :-- |
+        | check 1    | ✅  |
+        | check 2    | ⛔️  |
+        | check 3    | ✅  |
+      """
+    }
+  }
+  ```
+  Closes [#1124](https://github.com/likec4/likec4/issues/1124)
+
+### Bug Fixes
+
+* **dsl:** resilient parser for specification tags ([ba9619b](https://github.com/likec4/likec4/commit/ba9619b9d1b5bd996c5fbe136890f9b1cbf579aa))
+* **api:** inherit deployed instances titles from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
+* **layout:** round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
+
+
+## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
+
+### Bug Fixes
+
+* memory leak on MCP server restarts ([0b01bb4](https://github.com/likec4/likec4/commit/0b01bb434944cc0a73c5ffd7c8f60f97544e67bc))
+* relationship descriptions not displayed in tooltip, closes [#1981](https://github.com/likec4/likec4/issues/1981)
+
+### Improvements
+
+* show error message if  MCP server fails to start
+* validate project name ([#2008](https://github.com/likec4/likec4/issues/2008))
+* improve error logging in vscode extension (to help with [#1716](https://github.com/likec4/likec4/issues/1716))
+
 ## [1.32.1](https://github.com/likec4/likec4/compare/v1.32.0...v1.32.1) (2025-06-12)
 
 

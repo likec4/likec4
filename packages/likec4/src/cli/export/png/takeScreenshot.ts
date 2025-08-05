@@ -82,13 +82,14 @@ export async function takeScreenshot({
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
 
+      await page.waitForSelector('.react-flow.initialized')
+
       const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
       if (hasImages) {
         await waitAllImages(page, timeout)
       }
 
-      await page.waitForSelector('.react-flow.initialized')
-      await page.screenshot({
+      await page.getByTestId('export-page').screenshot({
         animations: 'disabled',
         path,
         omitBackground: true,
@@ -123,11 +124,11 @@ async function waitAllImages(page: Page, timeout: number) {
   const promises = locators.map(locator =>
     locator.evaluate<unknown, HTMLImageElement>(
       image =>
-        image.complete || new Promise((res, rej) => {
-          image.onload = res
-          image.onerror = rej
+        image.complete || new Promise(resolve => {
+          image.onload = resolve
+          image.onerror = resolve
         }),
-      { timeout: Math.max(30_000, timeout) }, // wait at least 30s to load image
+      { timeout: Math.max(15_000, timeout) }, // wait at least 15s to load image
     )
   )
   // Wait for all once

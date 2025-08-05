@@ -1,4 +1,4 @@
-import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core/types'
+import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, RichTextOrEmpty, ViewId } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
@@ -21,7 +21,6 @@ export namespace Types {
         | 'id'
         | 'title'
         | 'technology'
-        | 'description'
         | 'color'
         | 'shape'
         | 'width'
@@ -33,6 +32,7 @@ export namespace Types {
       >
     >
     & {
+      description: RichTextOrEmpty
       /**
        * View this node belongs to
        */

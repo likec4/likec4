@@ -1,4 +1,4 @@
-import { createSingletonComposable, effectScope, onWatcherCleanup, useVscodeContext, watch } from 'reactive-vscode'
+import { createSingletonComposable, effectScope, useVscodeContext, watch } from 'reactive-vscode'
 import { logError, logger } from '../logger'
 
 /**
@@ -15,8 +15,11 @@ export const useIsActivated = createSingletonComposable(() => {
 
 export function whenExtensionActive(callback: () => void, onDeactivate?: () => void) {
   const activated = useIsActivated()
-  watch(activated, (isActivate) => {
-    if (!isActivate) {
+  watch(activated, (isActive, prevActive, onCleanup) => {
+    if (prevActive && !isActive) {
+      onDeactivate?.()
+    }
+    if (!isActive) {
       return
     }
     const scope = effectScope()
@@ -28,9 +31,8 @@ export function whenExtensionActive(callback: () => void, onDeactivate?: () => v
       }
     })
 
-    onWatcherCleanup(() => {
+    onCleanup(() => {
       try {
-        onDeactivate?.()
         scope.stop()
       } catch (e) {
         logError(e)

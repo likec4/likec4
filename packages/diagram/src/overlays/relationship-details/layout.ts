@@ -12,10 +12,11 @@ import type {
   NonEmptyArray,
   Point,
   RelationId,
+  RichTextOrEmpty,
 } from '@likec4/core/types'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { invariant } from '@likec4/core'
+import { invariant, RichText } from '@likec4/core'
 import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
@@ -216,16 +217,18 @@ export type LayoutResult = {
 }
 
 export namespace LayoutResult {
-  export type Node = Omit<DiagramNode, 'modelRef' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
+  export type Node = Omit<DiagramNode, 'modelRef' | 'description' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
+    description: RichTextOrEmpty
     modelRef: Fqn
     column: RelationshipDetailsTypes.Column
     ports: RelationshipDetailsTypes.Ports
     // existsInCurrentView: boolean
   }
-  export type Edge = Omit<DiagramEdge, 'relations'> & {
+  export type Edge = Omit<DiagramEdge, 'relations' | 'description'> & {
     relationId: RelationId
     sourceHandle: string
     targetHandle: string
+    description: RichTextOrEmpty
     // existsInCurrentView: boolean
     // column: RelationshipsBrowserTypes.Column
   }
@@ -398,7 +401,7 @@ export function layoutRelationshipDetails(
       y: position.y,
       position: [position.x, position.y],
       title: element.title,
-      description: element.description,
+      description: RichText.from(element.description),
       technology: element.technology,
       tags: [...element.tags],
       links: null,

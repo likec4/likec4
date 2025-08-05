@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import { MultiMap } from '@likec4/core'
 import {
   FqnRef,
@@ -109,6 +109,9 @@ export class MergedSpecification {
       size ??= __kind.style.size
       padding ??= __kind.style.padding
       textSize ??= __kind.style.textSize
+      description ??= __kind.description
+      links ??= __kind.links
+      title = title === c4.nameFromFqn(id) && __kind.title ? __kind.title : title
       return {
         ...(color && { color }),
         ...(shape && { shape }),
@@ -125,8 +128,8 @@ export class MergedSpecification {
         },
         links: links ?? null,
         tags: tags ?? [],
-        technology: technology ?? null,
-        description: description ?? null,
+        ...(technology && { technology }),
+        ...(description && { description }),
         title,
         kind,
         id,
@@ -180,6 +183,7 @@ export class MergedSpecification {
       }
     }
     if ('element' in parsed) {
+      logger.warn`Invalid ParsedAstDeployment ${parsed.id}, has both element and kind properties`
       return null
     }
     try {
@@ -192,9 +196,16 @@ export class MergedSpecification {
         technology = __kind.technology,
         notation = __kind.notation,
         style,
+        title,
+        description,
+        ...rest
       } = parsed
+      description ??= __kind.description
+      title = title === c4.nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
       return {
-        ...parsed,
+        ...rest,
+        ...({ title }),
+        ...(description && { description }),
         ...(notation && { notation }),
         ...(technology && { technology }),
         style: {

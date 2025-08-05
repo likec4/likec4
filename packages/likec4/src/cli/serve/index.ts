@@ -1,6 +1,6 @@
 import type { CommandModule } from 'yargs'
 import { ensureReact } from '../ensure-react'
-import { base, listen, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix } from '../options'
+import { base, listen, path, title, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 
 export const serveCmd = {
@@ -12,8 +12,9 @@ export const serveCmd = {
       .positional('path', path)
       .option('base', base)
       .option('webcomponent-prefix', webcomponentPrefix)
+      .option('title', title)
       .option('use-hash-history', useHashHistory)
-      .option('use-overview', useOverview)
+      // .option('use-overview', useOverview)
       .option('use-dot', useDotBin)
       .option('listen', listen),
   handler: async args => {
@@ -22,8 +23,9 @@ export const serveCmd = {
       path: args.path,
       useDotBin: args['use-dot'],
       base: args.base,
-      useOverview: args['use-overview'] ?? false,
+      // useOverview: args['use-overview'] ?? false,
       webcomponentPrefix: args['webcomponent-prefix'],
+      title: args['title'],
       useHashHistory: args['use-hash-history'],
       listen: args['listen'],
     })
@@ -33,8 +35,9 @@ export const serveCmd = {
   'use-dot': boolean
   'use-hash-history': boolean | undefined
   base?: string | undefined
-  'use-overview': boolean | undefined
+  // 'use-overview': boolean | undefined
   'webcomponent-prefix': string
+  'title': string | undefined
   'listen': string
 }>
 // } satisfies CommandModule<object, {

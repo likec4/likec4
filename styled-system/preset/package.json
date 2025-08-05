@@ -1,7 +1,8 @@
 {
   "name": "@likec4/style-preset",
+  "description": "Shared PandaCSS preset used in LikeC4",
   "license": "MIT",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -11,6 +12,9 @@
     "generate": "pnpm tsx --conditions=sources ./generate.ts",
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf dist lib"
   },
   "publishConfig": {
@@ -52,6 +56,5 @@
     "remeda": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

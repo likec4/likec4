@@ -18,3 +18,7 @@ export function delay(...args: number[]): Promise<string> {
     }, ms ?? 100)
   })
 }
+
+export function promiseNextTick(): Promise<void> {
+  return Promise.resolve().then(() => void 0)
+}

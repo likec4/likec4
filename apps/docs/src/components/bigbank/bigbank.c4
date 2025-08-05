@@ -69,8 +69,8 @@ model {
           description: "A facade onto the mainframe banking system."
           technology: "Spring Bean"
         }
-        emailComponent = component "E-mail Component"{
-          description:  "Sends e-mails to users."
+        emailComponent = component "E-mail Component" {
+          description: "Sends e-mails to users."
           technology: "Spring Bean"
         }
 
@@ -119,12 +119,12 @@ model {
 views {
 
   view index of bigbank {
-    title "Big Bank - Landscape"
+    title "Landscape"
     include *
   }
 
   view context of bigbank {
-    title "Internet Banking System - SystemContext"
+    title "Internet Banking System / SystemContext"
     include
       bigbank,
       mainframe,
@@ -134,7 +134,7 @@ views {
   }
 
   view ibsContainers of internetBankingSystem {
-    title "Internet Banking System - Containers"
+    title "Internet Banking System / Containers"
 
     include
       *,
@@ -142,6 +142,8 @@ views {
   }
 
   view customer of customer {
+    title "Customer"
+
     include
       *,
       customer -> internetBankingSystem.*,
@@ -149,22 +151,9 @@ views {
     exclude webApplication
   }
 
-  view spa of singlePageApplication {
-    include
-      *,
-      apiApplication,
-      internetBankingSystem,
-      -> singlePageApplication ->
-
-    style internetBankingSystem {
-      color muted
-    }
-    style singlePageApplication {
-      color green
-    }
-  }
-
   view support of supportStaff {
+    title "Support"
+
     include
       *,
       bigbank,
@@ -172,7 +161,7 @@ views {
   }
 
   view apiApp of internetBankingSystem.apiApplication {
-    title "API Application - Components"
+    title "Internet Banking System / Applications / API Application"
 
     include *
 
@@ -190,6 +179,7 @@ views {
   }
 
   view webapp of webApplication {
+    title "Internet Banking System / Applications / Web Application"
     include
       *,
       internetBankingSystem,
@@ -203,7 +193,24 @@ views {
     }
   }
 
+  view spa of singlePageApplication {
+    title "Internet Banking System / Applications / Single Page Application"
+    include
+      *,
+      apiApplication,
+      internetBankingSystem,
+      -> singlePageApplication ->
+
+    style internetBankingSystem {
+      color muted
+    }
+    style singlePageApplication {
+      color green
+    }
+  }
+
   view mobileApp of mobileApp {
+    title "Internet Banking System / Applications / Mobile App"
     include
       *,
       internetBankingSystem,

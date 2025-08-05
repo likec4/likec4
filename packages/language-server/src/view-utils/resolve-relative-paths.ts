@@ -8,7 +8,7 @@ function commonAncestorPath(views: LikeC4View[], sep = '/') {
     views,
     map(v => v.docUri),
     filter(isTruthy),
-    unique()
+    unique(),
   )
   if (uniqURIs.length === 0) return ''
   if (uniqURIs.length === 1) {
@@ -48,14 +48,14 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
         if (!view.docUri) {
           return {
             view,
-            parts: []
+            parts: [],
           }
         }
         let path = parsePath(view.docUri).pathname
         if (commonPrefix.length > 0) {
           invariant(
             path.startsWith(commonPrefix),
-            `Expect path "${path}" to start with common prefix: "${commonPrefix}"`
+            `Expect path "${path}" to start with common prefix: "${commonPrefix}"`,
           )
           path = path.slice(commonPrefix.length)
         } else {
@@ -63,7 +63,7 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
         }
         return {
           view,
-          parts: path.split(sep)
+          parts: path.split(sep),
         }
       })
       // Sort views by path segments
@@ -77,13 +77,14 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
             return compare
           }
         }
-        return compareNatural(a.view.title ?? a.view.id, b.view.title ?? b.view.id)
+        // If paths are equal, keep original order
+        return 0
       })
       // Build relativePath from path segments
       .map(({ parts, view }) => {
         return {
           ...view,
-          relativePath: parts.join(sep)
+          relativePath: parts.join(sep),
         }
       })
   )

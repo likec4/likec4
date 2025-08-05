@@ -1,4 +1,4 @@
-import { find } from 'remeda'
+import { find, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $include, computeView } from './fixture'
 
@@ -91,7 +91,7 @@ describe('DeploymentRefPredicate', () => {
   })
 
   it('should include descendants and ensure sort', () => {
-    const { nodeIds, edgeIds } = computeView(
+    const { nodeIds, edgeIds, nodes } = computeView(
       $include('prod.eu.**'),
       $exclude('prod.eu.auth'),
     )
@@ -115,6 +115,10 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.zone2.api:prod.eu.db',
       'prod.eu.zone2.ui:prod.eu.media',
     ])
+    const prodEuZone1Ui = find(nodes, n => n.id === 'prod.eu.zone1.ui')!
+    expect(prodEuZone1Ui.title).toBe('prod.eu.zone1/dashboard')
+    const prodEuZone2Ui = find(nodes, n => n.id === 'prod.eu.zone2.ui')!
+    expect(prodEuZone2Ui.title).toBe('prod.eu.zone2/dashboard')
   })
 
   it('should expand node 1', () => {
@@ -205,5 +209,26 @@ describe('DeploymentRefPredicate', () => {
         'prod.eu.db',
       ],
     })
+  })
+
+  it('nodes should inherit titles from deployed instances', () => {
+    const { nodeIds, nodes } = computeView(
+      $include('prod.eu.zone1.ui'),
+      $include('prod.eu.zone2.ui'),
+      $include('prod.us.zone1.ui'),
+      $include('acc.eu.ui'),
+    )
+    expect(nodeIds).toEqual([
+      'prod.eu.zone1.ui',
+      'prod.eu.zone2.ui',
+      'prod.us.zone1.ui',
+      'acc.eu.ui',
+    ])
+    expect(map(nodes, prop('title'))).toEqual([
+      'prod.eu.zone1/dashboard',
+      'prod.eu.zone2/dashboard',
+      'prod.us.zone1/dashboard',
+      'Dashboard',
+    ])
   })
 })

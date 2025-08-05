@@ -11,6 +11,9 @@ describe.concurrent('specification', () => {
           }
         }
         element person {
+          title "person title"
+          description "person description"
+          link https://person.com
           style {
             shape: person
           }
@@ -186,9 +189,31 @@ describe.concurrent('specification', () => {
         }
       }`
 
-    test('with notation and technology').valid`
+    test('with title').valid`
       specification {
         element Container {
+          title "c4"
+        }
+        element softwareSystem {
+          title: "c4";
+        }
+      }`
+
+    test('with description').valid`
+      specification {
+        element Container {
+          description "LikeC4"
+        }
+        element softwareSystem {
+          description: "LikeC4";
+        }
+      }`
+
+    test('with title, description, notation and technology').valid`
+      specification {
+        element Container {
+          title "c4"
+          description "LikeC4"
           technology "docker"
           notation "C4 Container"
         }
@@ -202,9 +227,11 @@ describe.concurrent('specification', () => {
         }
       }`
 
-    test('with notation, technology and style').valid`
+    test('with title, description, notation, technology and style').valid`
       specification {
         element Container {
+          title "c4"
+          description "LikeC4"
           technology "docker"
           notation "C4 Container"
           style {
@@ -218,6 +245,8 @@ describe.concurrent('specification', () => {
             shape storage
           }
           notation "C4 Container"
+          description "LikeC4"
+          title "c4"
         }
       }`
   })
@@ -233,10 +262,26 @@ describe.concurrent('specification', () => {
         }
       }
 
-      color custom-color1 #00ffff
-      color custom-color2 rgb(201 200 6)
-      color custom-color3 rgba(201, 6, 6, 0.9)
-      color custom-color4 rgba(201 200 6 80%)
+      color custom-color1 #123
+      color custom-color2 #00ffff
+      color custom-color3 rgb(201 200 6)
+      color custom-color4 rgba(201, 6, 6, 0.9)
+      color custom-color5 rgba(201 200 6 80%)
+    }`
+
+  test('custom color with invalid hex (wrong symbol)').invalid`
+    specification {
+      color custom-color1 #00fgff
+    }`
+  test('custom color with invalid hex (starts with _ from ID)').invalid`
+    specification {
+      color custom-color1 #_FF
+    }`
+
+  // https://github.com/likec4/likec4/issues/2057
+  test('custom color name does not coflict with Boolean').valid`
+    specification {
+      color truered #dc0005
     }`
 
   describe('for tags', () => {

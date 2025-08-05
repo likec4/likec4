@@ -59,8 +59,8 @@ model {
         '
       }
 
-      fn_enrich -> queue1 "reads raw data"
-      fn_enrich -> queue2 "writes enriched data"
+      fn_enrich -> queue1 'reads raw data'
+      fn_enrich -> queue2 'writes enriched data'
     }
   }
 
@@ -69,7 +69,7 @@ model {
 views {
 
   view amazon of amazon {
-    title "Overview Amazon"
+    title 'Overview Amazon'
 
     include
       *,
@@ -93,6 +93,11 @@ views {
     include
       *,
       amazon
+
+    style amazon {
+      color muted
+      opacity 100%
+    }
   }
 
   view amazon_lambdas of lambdas {

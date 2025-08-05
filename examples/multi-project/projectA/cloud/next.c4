@@ -78,8 +78,8 @@ model {
       navigateTo cloud-to-amazon
     }
 
-    backend -> events "triggers" {
-      technology "REST"
+    backend -> events 'triggers' {
+      technology 'REST'
     }
   }
 
@@ -88,6 +88,8 @@ model {
 views {
 
   view cloud_next of cloud.next {
+    title 'Context / Cloud / Next'
+
     include cloud.ui
 
     group {
@@ -95,11 +97,11 @@ views {
     }
 
     include
-        amazon._,
-        cloud.* -> amazon.* with {
-          color indigo
-          line solid
-        }
+      amazon._,
+      cloud.* -> amazon.* with {
+        color indigo
+        line solid
+      }
 
     exclude
       cloud.ui -> amazon
@@ -118,7 +120,9 @@ views {
     }
   }
 
-  view backend of backend {
+  view backend of cloud.next.backend {
+    title 'Context / Cloud / Next / Backend'
+
     include
       *,
       cloud,
@@ -136,7 +140,9 @@ views {
     }
   }
 
-  view graphql of graphql {
+  view graphql of cloud.next.graphql {
+    title 'Context / Cloud / Next / GraphQL'
+
     include *, cloud.next
 
     style * {

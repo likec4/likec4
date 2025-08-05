@@ -1,10 +1,11 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "A React component library for rendering software architecture diagrams",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
@@ -65,7 +66,6 @@
     "./src": "./src/index.ts",
     "./src/*": "./src/*"
   },
-  "packageManager": "pnpm@10.11.1",
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build:dist": "vite build -m production",
@@ -74,22 +74,22 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
-    "clean": "pnpm rimraf dist lib bundle"
+    "clean": "pnpm rimraf dist lib bundle *.tgz",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.4",
+    "@dagrejs/dagre": "1.1.5",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
-    "@likec4/style-preset": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@react-hookz/web": "catalog:react",
-    "@tabler/icons-react": "catalog:react",
-    "@xstate/react": "^5.0.4",
+    "@xstate/react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
+    "esm-env": "catalog:utils",
     "d3-shape": "^3.2.0",
     "fast-equals": "catalog:utils",
     "motion": "catalog:react",
@@ -98,21 +98,28 @@
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
-    "xstate": "^5.19.3"
+    "xstate": "catalog:xstate"
   },
   "peerDependencies": {
+    "@pandacss/dev": "catalog:css",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
+  },
+  "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
+    "@tabler/icons-react": "catalog:react",
     "@types/bezier-js": "^4.1.3",
     "@types/d3-shape": "^3.1.7",
+    "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:vite",
     "postcss": "catalog:css",
     "react": "catalog:react",

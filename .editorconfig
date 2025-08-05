@@ -9,5 +9,9 @@ indent_size = 2
 trim_trailing_whitespace = true
 max_line_length = 120
 
+# Disable trim_trailing_whitespace to keep trailing whitespace in JSDoc comments
+[*.{ts,tsx}]
+trim_trailing_whitespace = false
+
 [*.{md,mdx}]
 trim_trailing_whitespace = false

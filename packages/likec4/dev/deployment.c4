@@ -38,7 +38,7 @@ deployment {
         }
         node server3 {
           instanceOf cloud.backend.cms
-          instanceOf cloud.data        
+          instanceOf cloud.data
         }
 
         group amazon {
@@ -53,15 +53,15 @@ deployment {
 views {
 
   deployment view production {
-    title 'Production deployment'
-    
+    title 'Deployment / Production'
+
     include
       customer.customer,
       eu.**
 
     exclude
       amazon,
-    
+
     style eu._ {
       color muted
     }
@@ -76,7 +76,7 @@ views {
     style amazon._ {
       color amber
     }
-  	autoLayout TopBottom 100 100
-	}
+    autoLayout TopBottom 100 100
+  }
 
 }

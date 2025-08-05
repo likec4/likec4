@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.11.1",
   "type": "module",
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -14,19 +14,19 @@
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots"
   },
-  "devDependencies": {
+  "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
-    "@playwright/test": "^1.53.0",
+    "@playwright/test": "1.54.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "likec4": "file:../packages/likec4/package.tgz",
-    "@types/react": "^19.1.5",
-    "@types/react-dom": "^19.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "std-env": "^3.9.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.3",
-    "wrangler": "^4.19.2",
-    "zx": "^8.5.5"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.21.2",
+    "zx": "^8.6.0"
   },
   "pnpm": {
     "overrides": {

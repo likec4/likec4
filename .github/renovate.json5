@@ -1,33 +1,37 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  configMigration: true,
-  extends: [
+  "extends": [
     'config:recommended',
-    'group:monorepos',
-    'npm:unpublishSafe',
     'helpers:disableTypesNodeMajor',
+    'group:monorepos',
+    'npm:unpublishSafe'
   ],
-  prHourlyLimit: 20,
-  prConcurrentLimit: 5,
-  rangeStrategy: 'bump',
-  updateInternalDeps: true,
-  labels: [
-    'dependencies',
+  "prHourlyLimit": 20,
+  "prConcurrentLimit": 5,
+  "rangeStrategy": 'bump',
+  "postUpdateOptions": [
+    "pnpmDedupe"
   ],
-  ignorePaths: [
+  "labels": [
+    "dependencies"
+  ],
+  "ignorePaths": [
     "e2e/**",
-    "examples/**"
+    "examples/**",
+    "packages/create-likec4/**"
   ],
   packageRules: [
     {
       matchCategories: [
         'ci',
       ],
+      automergeType: "branch",
       automerge: true,
       pinDigests: false,
     },
     {
       automerge: true,
+      automergeType: "branch",
       matchPackageNames: [
         'dprint',
         'type-fest',
@@ -38,7 +42,8 @@
         'pnpm',
         'semver',
         'terser',
-        '@fontsource{/,}**',
+        '@fontsource-variable/**',
+        '@fontsource/**',
       ]
     },
     {
@@ -51,19 +56,25 @@
       groupName: '@nanostores',
       matchPackageNames: [
         'nanostores',
-        '@nanostores{/,}**',
+        '@nanostores/**',
       ],
     },
     {
       groupName: '@xyflow',
       matchPackageNames: [
-        '@xyflow{/,}**',
+        '@xyflow/**',
       ],
     },
     {
       groupName: '@expressive-code',
       matchPackageNames: [
-        '@expressive-code{/,}**',
+        '@expressive-code/**',
+      ],
+    },
+    {
+      groupName: 'reactive-vscode',
+      matchPackageNames: [
+        '/reactive-vscode/',
       ],
     },
     {

@@ -86,19 +86,21 @@ model {
 
     billing = service 'Billing' {
       #v1
-      description '
+      description '''
         Billing services, process
         payments and subscriptions
-      '
+
+      '''
     }
 
     backoffice = service 'Back Office' {
       #v2
-      description '
+      description '''
         Back office services,
         providing tenant management,
         customer support and billing
-      '
+
+      '''
       style {
         shape browser
       }
@@ -113,13 +115,13 @@ views {
 
   view index {
     title 'Landscape'
-    link https://github.com/likec4/likec4
+    link https://github.com/likec4/likec4 'Source'
 
     include *
   }
 
   view customer of customer {
-    title '[context] Customer'
+    title 'Context / Customer'
     include
       *,
       cloud,
@@ -134,7 +136,7 @@ views {
 
   view cloud of cloud {
     #v1
-    title '[system] Cloud'
+    title 'System / Cloud'
     description '
       Some description with
       multi-lines
@@ -152,7 +154,7 @@ views {
 
   view cloud_ui of ui {
     #v2 #next
-    title '[context] Cloud UI'
+    title 'Context / Cloud UI'
     link ./model.c4#L127
 
     include
@@ -176,7 +178,7 @@ views {
   }
 
   view cloud_backend of backend {
-    title '[context] Cloud Backend'
+    title 'Context / Cloud Backend'
     include
       cloud,
       amazon,

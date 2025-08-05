@@ -1,5 +1,5 @@
 import type { Any, DiagramView } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/aux'
+import type * as aux from '@likec4/core/types/_aux'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
@@ -8,6 +8,7 @@ import { memo, useState } from 'react'
 import { isBoolean } from 'remeda'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { LikeC4Diagram } from '../LikeC4Diagram'
+import type { ViewPadding } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { Overlay } from '../overlays/overlay/Overlay'
 import type { LikeC4ViewProps } from './LikeC4View.props'
@@ -35,6 +36,13 @@ export function LikeC4View<A extends aux.Any = aux.UnknownLayouted>({
   }
 
   return <LikeC4ViewInner view={view.$view} {...props} />
+}
+
+const DEFAULT_BROWSER_PADDING: ViewPadding = {
+  top: '50px',
+  bottom: '16px',
+  left: '16px',
+  right: '16px',
 }
 
 type LikeC4ViewInnerProps<A extends aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
@@ -69,7 +77,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
   renderNodes,
   ...props
 }) => {
-  const likec4model = useLikeC4Model('layouted')
+  const likec4model = useLikeC4Model()
   const colorScheme = useColorScheme(explicitColorScheme)
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
@@ -159,10 +167,10 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
                 enableRelationshipDetails
                 enableSearch
                 enableElementTags
-                controls
+                controls="next"
                 readonly
                 fitView
-                fitViewPadding={'32px'}
+                fitViewPadding={DEFAULT_BROWSER_PADDING}
                 {...props}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&

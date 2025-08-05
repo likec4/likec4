@@ -11,6 +11,7 @@ export {
   ElementTag,
   ElementTags,
   ElementTitle,
+  MarkdownBlock,
 } from '../base/primitives'
 
 export {
@@ -41,6 +42,7 @@ export {
   IfEnabled,
   IfNotEnabled,
   IfNotReadOnly,
+  IfReadOnly,
 } from '../context/DiagramFeatures'
 
 export {

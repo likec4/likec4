@@ -157,7 +157,7 @@ Generic guards are also available in `@likec4/core/model`:
 
 ```ts
 import {
-  isElementModel,,
+  isElementModel,
   isDeployedInstanceModel,
   isLikeC4ViewModel,
   // ... other guards

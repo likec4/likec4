@@ -1,5 +1,6 @@
 import {
   type AnyAux,
+  type aux,
   type ComputedView,
   type DiagramView,
   type Specification,
@@ -16,16 +17,18 @@ import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
 import type { DotSource } from './types'
 import type { GraphvizJson } from './types-dot'
+import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
 
-export interface GraphvizPort {
+export interface GraphvizPort extends Disposable {
   get concurrency(): number
   unflatten(dot: DotSource): Promise<DotSource>
   acyclic(dot: DotSource): Promise<DotSource>
   layoutJson(dot: DotSource): Promise<string>
   svg(dot: DotSource): Promise<string>
+  dispose(): void
 }
 
-const getPrinter = <A extends AnyAux>({ view, specification }: Params<A>) => {
+const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<A>) => {
   switch (true) {
     case isDynamicView(view):
       return new DynamicViewPrinter(view, specification)
@@ -38,25 +41,38 @@ const getPrinter = <A extends AnyAux>({ view, specification }: Params<A>) => {
   }
 }
 
-export type Params<A extends AnyAux = AnyAux> = {
+export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
   specification: Specification<A>
 }
 
-export type LayoutResult = {
+export type LayoutResult<A extends aux.Any = aux.Any> = {
   dot: DotSource
-  diagram: DiagramView
+  diagram: DiagramView<A>
 }
-const logger = rootLogger.getChild('graphviz-layouter')
+const logger = rootLogger.getChild(['layouter'])
 
-export class GraphvizLayouter {
-  constructor(private graphviz: GraphvizPort) {}
+export class GraphvizLayouter implements Disposable {
+  private graphviz: GraphvizPort
 
-  get port() {
+  constructor(graphviz?: GraphvizPort) {
+    this.graphviz = graphviz ?? new GraphvizWasmAdapter()
+  }
+
+  dispose(): void {
+    this.graphviz.dispose()
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
+  }
+
+  get graphvizPort(): GraphvizPort {
     return this.graphviz
   }
 
   changePort(graphviz: GraphvizPort) {
+    this.graphviz.dispose()
     this.graphviz = graphviz
   }
 
@@ -78,48 +94,31 @@ export class GraphvizLayouter {
     }
   }
 
-  async layout<A extends AnyAux>(params: Params<A>): Promise<LayoutResult> {
+  async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     try {
+      logger.debug`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
       const { view } = params
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
 
       if (view.manualLayout) {
-        const result = applyManualLayout(diagram, view.manualLayout)
-        if (result.diagram) {
-          diagram = result.diagram
-        } else {
-          // apply manual layout if only new diagram has some nodes
-          // from the previous layout
-          if (result.relayout.nodes.length > 0) {
-            const printer = getPrinter(params)
-            // TODO: apply manual layout fails when there are edges with compounds
-            if (printer.hasEdgesWithCompounds) {
-              // edges with coumpoudns are using _.ltail, _.lhead
-              // This is not supported by FDP
-              logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
-            } else {
-              printer.applyManualLayout(result.relayout)
-              const rawjson = await this.dotToJson(printer.print())
-              diagram = parseGraphvizJson(rawjson, view)
-            }
-          }
-          diagram.hasLayoutDrift = true
-        }
+        diagram = applyManualLayout(diagram, view.manualLayout)
       }
 
       dot = dot
         .split('\n')
         .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
         .join('\n') as DotSource
+
+      logger.debug`layouting view ${params.view.id} done`
       return { dot, diagram }
     } catch (e) {
       throw new Error(`Error during layout: ${params.view.id}`, { cause: e })
     }
   }
 
-  async svg<A extends AnyAux>(params: Params<A>) {
+  async svg<A extends AnyAux>(params: LayoutTaskParams<A>) {
     let dot = await this.dot(params)
     dot = dot
       .split('\n')
@@ -132,7 +131,7 @@ export class GraphvizLayouter {
     }
   }
 
-  async dot<A extends AnyAux>(params: Params<A>): Promise<DotSource> {
+  async dot<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<DotSource> {
     const printer = getPrinter(params)
     let dot = printer.print()
     if (!isElementView(params.view)) {

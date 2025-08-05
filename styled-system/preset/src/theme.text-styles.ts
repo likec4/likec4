@@ -58,6 +58,42 @@ import { defineTextStyles } from '@pandacss/dev'
 // })
 
 export const textStyles = defineTextStyles({
+  xxs: {
+    value: {
+      fontSize: '0.625rem',
+      lineHeight: '1rem',
+    },
+  },
+  xs: {
+    value: {
+      fontSize: '0.75rem',
+      lineHeight: '1rem',
+    },
+  },
+  sm: {
+    value: {
+      fontSize: '0.875rem',
+      lineHeight: '1.25rem',
+    },
+  },
+  md: {
+    value: {
+      fontSize: '1rem',
+      lineHeight: '1.5rem',
+    },
+  },
+  lg: {
+    value: {
+      fontSize: '1.125rem',
+      lineHeight: '1.75rem',
+    },
+  },
+  xl: {
+    value: {
+      fontSize: '1.25rem',
+      lineHeight: '1.75rem',
+    },
+  },
   likec4: {
     node: {
       primary: {
@@ -65,9 +101,9 @@ export const textStyles = defineTextStyles({
         value: {
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: 500,
-          fontSize: '[var(--likec4-text-size)]',
+          fontSize: 'var(--likec4-text-size)',
           lineHeight: 1.15,
-          textWrap: 'balance',
+          textWrapStyle: 'balance',
           whiteSpace: 'preserve-breaks',
         },
       },
@@ -77,9 +113,9 @@ export const textStyles = defineTextStyles({
           fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
           fontWeight: 400,
           fontSize: `[calc(var(--likec4-text-size) * 0.74)]`,
-          lineHeight: 1.2,
-          textWrap: 'pretty',
-          whiteSpace: 'preserve-breaks',
+          lineHeight: 1.3,
+          textWrapStyle: 'pretty',
+          '--text-fz': `[calc(var(--likec4-text-size) * 0.74)]`,
         },
       },
     },

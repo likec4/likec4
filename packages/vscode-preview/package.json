@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.32.1",
+  "version": "1.35.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -17,7 +17,7 @@
     "clean": "pnpm rimraf dist lib"
   },
   "devDependencies": {
-    "@fontsource-variable/ibm-plex-sans": "^5.2.5",
+    "@fontsource-variable/ibm-plex-sans": "^5.2.6",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",

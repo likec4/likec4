@@ -1,6 +1,7 @@
 declare module 'likec4:projects' {
+  import type { LikeC4Project } from 'likec4/model'
   export const isSingleProject: boolean
-  export const projects: readonly [string, ...string[]]
+  export const projects: readonly [LikeC4Project, ...LikeC4Project[]]
 }
 
 declare module 'likec4:icons' {
@@ -20,9 +21,89 @@ declare module 'likec4:icons' {
 
 declare module 'likec4:model' {
   import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { nano } from 'likec4/react'
 
-  export type Atom<T> = nano.ReadableAtom<T>
+  /**
+   * Temporary copy-paste of the `Atom` interface from `nanostores` to avoid
+   * type errors in the Vite plugin.
+   */
+  export interface Atom<T> {
+    /**
+     * Get store value.
+     *
+     * In contrast with {@link Atom#value} this value will be always
+     * initialized even if store had no listeners.
+     *
+     * ```js
+     * $store.get()
+     * ```
+     *
+     * @returns Store value.
+     */
+    get(): T
+
+    /**
+     * Listeners count.
+     */
+    readonly lc: number
+
+    /**
+     * Subscribe to store changes.
+     *
+     * In contrast with {@link Store#subscribe} it do not call listener
+     * immediately.
+     *
+     * @param listener Callback with store value and old value.
+     * @returns Function to remove listener.
+     */
+    listen(
+      listener: (
+        value: T,
+        oldValue: T,
+      ) => void,
+    ): () => void
+
+    /**
+     * Low-level method to notify listeners about changes in the store.
+     *
+     * Can cause unexpected behaviour when combined with frontend frameworks
+     * that perform equality checks for values, such as React.
+     */
+    notify(oldValue?: ReadonlyIfObject<Value>): void
+
+    /**
+     * Unbind all listeners.
+     */
+    off(): void
+
+    /**
+     * Subscribe to store changes and call listener immediately.
+     *
+     * ```
+     * import { $router } from '../store'
+     *
+     * $router.subscribe(page => {
+     *   console.log(page)
+     * })
+     * ```
+     *
+     * @param listener Callback with store value and old value.
+     * @returns Function to remove listener.
+     */
+    subscribe(
+      listener: (
+        value: T,
+        oldValue?: T,
+      ) => void,
+    ): () => void
+
+    /**
+     * Low-level method to read store’s value without calling `onStart`.
+     *
+     * Try to use only {@link Atom#get}.
+     * Without subscribers, value can be undefined.
+     */
+    readonly value: undefined | T
+  }
 
   export type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
 

@@ -73,6 +73,8 @@ const defaultConfig = defineConfig({
       input: [
         'src/index.ts',
         'src/bundle/index.ts',
+        'src/bundle/custom.ts',
+        'src/custom/index.ts',
         'src/styles.css',
         'src/styles-font.css',
         'src/styles-min.css',

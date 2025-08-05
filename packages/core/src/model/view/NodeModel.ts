@@ -10,11 +10,13 @@ import {
   type IconUrl,
   type IteratorLike,
   type Link,
+  type RichTextOrEmpty,
   type scalar,
   GroupElementKind,
   isGroupElementKind,
+  RichText,
 } from '../../types'
-import type * as aux from '../../types/aux'
+import type * as aux from '../../types/_aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
@@ -46,8 +48,8 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.#node.kind as any
   }
 
-  get description(): string | null {
-    return this.#node.description ?? null
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.#node.description)
   }
 
   get technology(): string | null {

@@ -1,10 +1,11 @@
 {
   "name": "@likec4/generators",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Converts LikeC4 Model to other formats, like Mermaid, PlantUML, SVG, etc. Also generates typings for Model API and React",
   "files": [
     "dist",
     "src"
@@ -50,6 +51,5 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:vitest"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

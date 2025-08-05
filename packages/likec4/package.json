@@ -1,6 +1,7 @@
 {
   "name": "likec4",
-  "version": "1.32.1",
+  "description": "Toolchain for your architecture diagrams",
+  "version": "1.35.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -19,7 +20,7 @@
     "graph"
   ],
   "engines": {
-    "node": ">=20.19.1"
+    "node": ">=20.19.3"
   },
   "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -61,6 +62,10 @@
     "./vite-plugin-modules": {
       "types": "./vite-plugin-modules.d.ts"
     },
+    "./vite-plugin/internal": {
+      "sources": "./src/vite-plugin/internal.ts",
+      "default": "./dist/vite-plugin/internal.mjs"
+    },
     "./vite-plugin": {
       "sources": "./src/vite-plugin/index.ts",
       "default": {
@@ -95,6 +100,7 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
+    "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
@@ -134,8 +140,8 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.4",
-    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "@dagrejs/dagre": "1.1.5",
+    "@fontsource/ibm-plex-sans": "^5.2.6",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -176,6 +182,7 @@
     "fdir": "catalog:utils",
     "get-port": "^7.1.0",
     "html-to-image": "^1.11.13",
+    "is-inside-container": "^1.0.0",
     "json5": "catalog:utils",
     "ky": "^1.8.1",
     "langium": "catalog:langium",
@@ -194,12 +201,12 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^3.0.2",
+    "react-resizable-panels": "^3.0.3",
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "semver": "^7.7.2",
     "std-env": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tinyrainbow": "^2.0.0",
     "tsx": "catalog:",
     "turbo": "catalog:",
@@ -217,6 +224,5 @@
     "which": "^5.0.0",
     "wireit": "catalog:",
     "yargs": "17.7.2"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

@@ -2,6 +2,7 @@ import useLanguageClient from '#useLanguageClient'
 import {
   type BuildDocuments,
   type ChangeView,
+  type DidRequestOpenViewNotification,
   type FetchViewsFromAllProjects,
   type GetDocumentTags,
   type LayoutView,
@@ -11,13 +12,14 @@ import {
   FetchTelemetryMetrics,
 } from '@likec4/language-server/protocol'
 import { createSingletonComposable, nextTick, triggerRef, useDisposable } from 'reactive-vscode'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import { NotificationType, NotificationType1, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { BaseLanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
 import { computedModels } from './state'
 
 // #region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
+const onRequestOpenView = new NotificationType<DidRequestOpenViewNotification.Params>('likec4/onRequestOpenView')
 // #endregion
 
 // #region To server
@@ -35,6 +37,7 @@ const getDocumentTags: GetDocumentTags.Req = new RequestType('likec4/document-ta
 
 const lsp = {
   onDidChangeModel,
+  onRequestOpenView,
   fetchViewsFromAllProjects,
   // computeView,
   fetchComputedModel,
@@ -81,6 +84,10 @@ export const useRpc = createSingletonComposable(() => {
     useDisposable(client.onNotification(lsp.onDidChangeModel, cb))
   }
 
+  function onRequestOpenView(cb: (params: DidRequestOpenViewNotification.Params) => void) {
+    useDisposable(client.onNotification(lsp.onRequestOpenView, cb))
+  }
+
   async function layoutView(params: LayoutView.Params) {
     const { result } = await queue(() => client.sendRequest(lsp.layoutView, params))
     return result
@@ -110,6 +117,7 @@ export const useRpc = createSingletonComposable(() => {
   return {
     client,
     onDidChangeModel,
+    onRequestOpenView,
     fetchComputedModel,
     fetchMetrics,
     layoutView,

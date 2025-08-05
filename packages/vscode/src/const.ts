@@ -2,13 +2,6 @@ import * as vscode from 'vscode'
 export const languageId = 'likec4'
 export const extensionName = 'likec4'
 export const extensionTitle = 'LikeC4'
-export const cmdReady = `${extensionName}.ready` as const
-export const cmdOpenPreview = `${extensionName}.open-preview` as const
-export const cmdRebuild = `${extensionName}.rebuild` as const
-export const cmdPreviewContextOpenSource = `${extensionName}.preview-context-open-source` as const
-export const cmdLocate = `${extensionName}.locate` as const
-export const cmdPrintDot = `${extensionName}.print-dot-of-currentview` as const
-export const cmdValidateLayout = `${extensionName}.validate-layout` as const
 
 export const fileExtensions = ['.c4', '.likec4', '.like-c4'] as const
 

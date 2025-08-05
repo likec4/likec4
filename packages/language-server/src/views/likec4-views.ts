@@ -1,14 +1,13 @@
 import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
-import { GraphvizLayouter } from '@likec4/layouts'
+import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
-import PQueue from 'p-queue'
-import prettyMs from 'pretty-ms'
 import { values } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
 import { logError, logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
+import { performanceMark } from '../utils'
 
 export type GraphvizOut = {
   dot: string
@@ -36,20 +35,23 @@ export interface LikeC4Views {
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
   // overviewGraph(): Promise<OverviewGraph>
+
+  openView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<void>
 }
+
+const viewsLogger = rootLogger.getChild('views')
 
 export class DefaultLikeC4Views implements LikeC4Views {
   private cache = new WeakMap<ComputedView, GraphvizOut>()
 
   private viewsWithReportedErrors = new Set<ViewId>()
   private ModelBuilder: LikeC4ModelBuilder
-  private queue = new PQueue({ concurrency: 2, timeout: 20_000, throwOnTimeout: true })
 
   constructor(private services: LikeC4Services) {
     this.ModelBuilder = services.likec4.ModelBuilder
   }
 
-  get layouter(): GraphvizLayouter {
+  get layouter(): QueueGraphvizLayoter {
     return this.services.likec4.Layouter
   }
 
@@ -70,23 +72,14 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (views.length === 0) {
       return []
     }
-
-    const logger = rootLogger.getChild(['views', projectId ?? ''])
+    const m0 = performanceMark()
+    const logger = projectId ? viewsLogger.getChild(projectId) : viewsLogger
     logger.debug`layoutAll: ${views.length} views`
 
-    if (this.queue.pending + this.queue.size > 0) {
-      logger.debug`wait for previous layouts to finish`
-      // wait for any previous layout to finish
-      await this.queue.onIdle()
-    }
-
-    if (this.layouter.port.concurrency !== this.queue.concurrency) {
-      this.queue.concurrency = this.layouter.port.concurrency
-      logger.debug`set queue concurrency to ${this.layouter.port.concurrency}`
-    }
+    const tasks = [] as LayoutTaskParams[]
     const specification = likeC4Model.$data.specification
     const results = [] as GraphvizOut[]
-    // const tasks = [] as Promise<GraphvizOut>[]
+    //
     for (const view of views) {
       let cached = this.cache.get(view)
       if (cached) {
@@ -94,37 +87,28 @@ export class DefaultLikeC4Views implements LikeC4Views {
         results.push(cached)
         continue
       }
-
-      if (this.queue.pending > this.queue.concurrency + 4) {
-        await this.queue.onSizeLessThan(this.queue.concurrency + 1)
-      }
-      this.queue
-        .add(async () => {
-          logger.debug`layouting view ${view.id}...`
-          return await this.layouter.layout({
-            view,
-            specification,
-          })
-        })
-        .then(result => {
-          if (!result) {
-            throw new Error(`Layout queue returned null for view ${view.id}`)
-          }
-          this.viewsWithReportedErrors.delete(view.id)
-          logger.debug`done layout view ${view.id}`
-          this.cache.set(view, result)
-          results.push(result)
-        })
-        .catch(e => {
-          logger.error(`Fail layout view ${view.id}`, { e })
-          this.cache.delete(view)
-        })
+      tasks.push({
+        view,
+        specification,
+      })
     }
-    await this.queue.onIdle()
+    if (tasks.length > 0) {
+      await this.layouter.batchLayout({
+        batch: tasks,
+        onSuccess: (task, result) => {
+          this.viewsWithReportedErrors.delete(task.view.id)
+          this.cache.set(task.view, result)
+          results.push(result)
+        },
+        onError: (task, error) => {
+          logger.warn(`Fail layout view ${task.view.id}`, { error })
+        },
+      })
+    }
     if (results.length !== views.length) {
-      logger.warn`layouted ${results.length} of ${views.length} views`
+      logger.warn`layouted ${results.length} of ${views.length} views in ${m0.pretty}`
     } else if (results.length > 0) {
-      logger.debug`layouted all ${results.length} views`
+      logger.debug`layouted all ${results.length} views in ${m0.pretty}`
     }
 
     return results
@@ -137,7 +121,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
   ): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
-    const logger = rootLogger.getChild(['views', projectId ?? ''])
+    const logger = projectId ? viewsLogger.getChild(projectId) : viewsLogger
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
       return null
@@ -148,25 +132,14 @@ export class DefaultLikeC4Views implements LikeC4Views {
       return await Promise.resolve(cached)
     }
     try {
-      const start = performance.now()
-      if (this.queue.pending + this.queue.size > 0) {
-        logger.debug`wait for previous layouts to finish`
-        // wait for any previous layout to finish
-        await this.queue.onIdle()
-      }
-      const result = await this.queue.add(async () => {
-        logger.debug`layouting view ${view.id}...`
-        return await this.layouter.layout({
-          view,
-          specification: model.$data.specification,
-        })
+      const m0 = performanceMark()
+      const result = await this.layouter.layout({
+        view,
+        specification: model.$data.specification,
       })
-      if (!result) {
-        throw new Error(`Failed to layout view ${viewId}`)
-      }
       this.viewsWithReportedErrors.delete(viewId)
       this.cache.set(view, result)
-      logger.debug(`layout {viewId} ready in ${prettyMs(performance.now() - start)}`, { viewId })
+      logger.debug(`layout {viewId} ready in ${m0.pretty}`, { viewId })
       return result
     } catch (e) {
       if (!this.viewsWithReportedErrors.has(viewId)) {
@@ -223,6 +196,13 @@ export class DefaultLikeC4Views implements LikeC4Views {
     }
     cache.set(KEY, succeed)
     return succeed
+  }
+
+  /**
+   * Open a view in the preview panel.
+   */
+  async openView(viewId: ViewId, projectId: ProjectId): Promise<void> {
+    await this.services.Rpc.openView({ viewId, projectId })
   }
 
   // async overviewGraph(): Promise<OverviewGraph> {

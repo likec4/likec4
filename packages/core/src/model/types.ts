@@ -10,26 +10,19 @@ import type {
   ViewType,
   ViewWithType,
 } from '../types'
-import type * as aux from '../types/aux'
+import type * as aux from '../types/_aux'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
 export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
 
-type AnyScalar<V extends string> =
+export type AnyScalar<V extends string> =
   | Tagged<V, 'Fqn'>
   | Tagged<V, 'DeploymentFqn'>
   | Tagged<V, 'ViewId'>
   | Tagged<V, 'NodeId'>
   | Tagged<V, 'EdgeId'>
   | Tagged<V, 'RelationId'>
-
-/**
- * Utility function to extract `id` from the given element.
- */
-export function getId<Id extends string, Scalar extends AnyScalar<Id>>(element: Id | { id: Scalar }): Scalar {
-  return typeof element === 'string' ? element as unknown as Scalar : element.id
-}
 
 export type ElementOrFqn<A extends AnyAux> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
@@ -68,6 +61,7 @@ export interface WithTags<A extends AnyAux> {
 }
 
 export interface WithMetadata<A extends AnyAux> {
+  hasMetadata(): boolean
   getMetadata(): aux.Metadata<A>
   getMetadata(field: aux.MetadataKey<A>): string | undefined
 }

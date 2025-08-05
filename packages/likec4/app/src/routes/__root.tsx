@@ -1,14 +1,16 @@
-import { createRootRouteWithContext } from '@tanstack/react-router'
+import { useMantineColorScheme } from '@mantine/core'
+import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
+import { useEffect } from 'react'
 
-const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
+const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
   if (typeof v !== 'string') {
-    return undefined
+    return 'auto'
   }
   const vlower = v.toLowerCase()
   if (vlower === 'light' || vlower === 'dark') {
     return vlower
   }
-  return undefined
+  return 'auto'
 }
 
 const asPadding = (v: unknown) => {
@@ -18,16 +20,16 @@ const asPadding = (v: unknown) => {
     case typeof v === 'string':
       return Math.round(parseFloat(v))
   }
-  return undefined
+  return 20
 }
 
 export type SearchParams = {
-  theme?: 'light' | 'dark' | undefined
-  padding?: number | undefined
+  theme?: 'light' | 'dark' | 'auto'
+  padding?: number
 }
 
 export const Route = createRootRouteWithContext<{}>()({
-  // component: RootComponent,
+  component: RootComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     // validate and parse the search params into a typed state
     return {
@@ -35,14 +37,37 @@ export const Route = createRootRouteWithContext<{}>()({
       theme: asTheme(search.theme),
     }
   },
+  search: {
+    middlewares: [
+      stripSearchParams({
+        padding: 20,
+        theme: 'auto',
+      }),
+    ],
+  },
 })
 
-// function RootComponent() {
-//   const { theme } = Route.useSearch()
-//   return (
-//     <>
-//       <Outlet />
-//       {/* <TanStackRouterDevtools /> */}
-//     </>
-//   )
-// }
+function RootComponent() {
+  return (
+    <>
+      <Outlet />
+      <ThemeSync />
+    </>
+  )
+}
+
+const ThemeSync = () => {
+  const { theme } = Route.useSearch()
+  const mantineColorScheme = useMantineColorScheme()
+
+  useEffect(() => {
+    if (!theme) {
+      return
+    }
+    if (theme !== mantineColorScheme.colorScheme) {
+      mantineColorScheme.setColorScheme(theme)
+    }
+  }, [theme])
+
+  return null
+}

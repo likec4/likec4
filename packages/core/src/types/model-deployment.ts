@@ -1,10 +1,11 @@
 import { isTruthy } from 'remeda'
+import type * as aux from './_aux'
+import type { AnyAux, Unknown } from './_aux'
 import type { Link } from './_common'
-import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 import type { Icon } from './scalar'
+import type * as scalar from './scalar'
 import type { Color, ElementShape } from './styles'
 
 export interface DeploymentElementStyle extends ElementStyle {
@@ -25,12 +26,12 @@ export interface DeploymentNode<A extends AnyAux = Unknown>
   readonly id: aux.StrictDeploymentFqn<A>
   readonly kind: aux.DeploymentKind<A>
   readonly title: string
-  readonly description?: string | null
+  readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null
   readonly style: DeploymentElementStyle
-  readonly notation?: string
+  readonly notation?: string | null
   readonly metadata?: aux.Metadata<A>
 }
 
@@ -49,7 +50,7 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly id: aux.StrictDeploymentFqn<A>
   readonly element: aux.StrictFqn<A>
   readonly title?: string
-  readonly description?: string | null
+  readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
   readonly tags?: aux.Tags<A> | null
   readonly links?: readonly Link[] | null

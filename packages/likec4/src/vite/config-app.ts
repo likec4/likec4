@@ -1,5 +1,5 @@
 import { viteAliases } from '@/vite/aliases'
-import pandaCss from '@likec4/styles/postcss'
+import pandaCss from '@pandacss/dev/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
-import Inspect from 'vite-plugin-inspect'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
@@ -46,17 +45,20 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   }
 
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
+  const title = cfg.title ?? 'LikeC4'
 
   return {
     isDev: true,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     root,
     languageServices,
     configFile: false,
     mode: 'development',
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
+      PAGE_TITLE: JSON.stringify(title),
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"',
@@ -121,7 +123,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     css: {
       postcss: {
-        plugins: [pandaCss()],
+        plugins: [pandaCss() as any],
       },
     },
     customLogger,
@@ -137,7 +139,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         quoteStyle: 'single',
       }),
       react(),
-      Inspect(),
+      // Inspect(),
     ].concat(
       cfg.outputSingleFile ? [viteSingleFile()] : [],
     ),

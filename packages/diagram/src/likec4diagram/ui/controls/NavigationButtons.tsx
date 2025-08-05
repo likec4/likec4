@@ -19,6 +19,7 @@ export const NavigationButtons = () => {
     <AnimatePresence>
       {hasStepBack && (
         <ActionIcon
+          variant="subtle"
           component={m.button}
           onClick={e => {
             e.stopPropagation()
@@ -38,6 +39,7 @@ export const NavigationButtons = () => {
       )}
       {hasStepForward && (
         <ActionIcon
+          variant="subtle"
           component={m.button}
           layout
           initial={{ opacity: 0.05, transform: 'translateX(10px)' }}

@@ -2,12 +2,14 @@ import { memo } from 'react'
 import { useEnabledFeatures } from '../context'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
+import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
 export const DiagramUI = memo(() => {
   const {
+    enableControls,
     enableViewTitle,
     enableNotations,
     enableDynamicViewWalkthrough,
@@ -19,11 +21,15 @@ export const DiagramUI = memo(() => {
 
   return (
     <>
-      <Controls />
+      {enableControls === 'next' ? <NavigationPanel /> : <Controls />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
-      {enableViewTitle && <DiagramTitlePanel />}
       {enableNotations && <NotationPanel />}
-      {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
+      {enableControls !== 'next' && (
+        <>
+          {enableViewTitle && <DiagramTitlePanel />}
+          {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
+        </>
+      )}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
     </>
   )

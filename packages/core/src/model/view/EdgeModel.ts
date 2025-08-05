@@ -11,6 +11,7 @@ import {
   extractStep,
   isStepEdgeId,
 } from '../../types'
+import { type RichTextOrEmpty, RichText } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { $View, WithTags } from '../types'
@@ -39,11 +40,11 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
   }
 
   get label(): string | null {
-    return this.#edge.label
+    return this.#edge.label ?? null
   }
 
-  get description(): string | null {
-    return this.#edge.description ?? null
+  get description(): RichTextOrEmpty {
+    return RichText.memoize(this, this.#edge.description)
   }
 
   get technology(): string | null {

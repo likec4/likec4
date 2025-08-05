@@ -6,7 +6,7 @@ import type {
   ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/aux'
+import type * as aux from '@likec4/core/types/_aux'
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { SetRequired } from 'type-fest'
@@ -86,6 +86,26 @@ export type OverrideReactFlowProps = Pick<
 export type PaddingUnit = 'px' | '%'
 export type PaddingWithUnit = `${number}${PaddingUnit}` | number
 
+/**
+ * Padding around the diagram
+ *
+ * @example
+ * {
+ *   top: '8px',
+ *   right: '8px',
+ *   bottom: '8px',
+ *   left: '8px',
+ * }
+ */
+export type ViewPadding = PaddingWithUnit | {
+  top?: PaddingWithUnit
+  right?: PaddingWithUnit
+  bottom?: PaddingWithUnit
+  left?: PaddingWithUnit
+  x?: PaddingWithUnit
+  y?: PaddingWithUnit
+}
+
 export interface LikeC4DiagramProperties<A extends aux.Any> {
   view: LayoutedView<A>
 
@@ -108,10 +128,11 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
   readonly?: boolean | undefined
   /**
    * Show/hide panel with top left controls,
+   * - `next` - Experimental navigation panel
    *
    * @default true if not readonly
    */
-  controls?: boolean | undefined
+  controls?: boolean | 'next' | undefined
   /**
    * If set, initial viewport will show all nodes & edges
    * @default true
@@ -121,8 +142,29 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
   /**
    * Padding around the diagram
    * @default '8px'
+   *
+   * @see {@link ViewPadding}
+   *
+   * @example
+   * ```tsx
+   * <LikeC4Diagram
+   *   fitViewPadding={{
+   *     x: '16px',
+   *     y: '16px',
+   *   }}
+   * />
+   *
+   * <LikeC4Diagram
+   *   fitViewPadding={{
+   *     top: '8px',
+   *     right: '8px',
+   *     bottom: '8px',
+   *     left: '8px',
+   *   }}
+   * />
+   * ```
    */
-  fitViewPadding?: PaddingWithUnit | undefined
+  fitViewPadding?: ViewPadding | undefined
 
   /**
    * @default false if readonly
@@ -223,8 +265,9 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
    * Enable it if you have a large or static view
+   * - `auto` - will be `true` if view has more then 3000 * 2000 pixels
    *
-   * @default 'auto' - will be `true` if view has more then 3000 * 2000 pixels
+   * @default 'auto'
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
@@ -236,6 +279,11 @@ export interface LikeC4DiagramProperties<A extends aux.Any> {
 
   /**
    * Customize layout of the controls on the top left
+   *
+   * @note
+   * Ignored if `controls="next"`
+   *
+   * @see {@link controls}
    */
   renderControls?: ControlsCustomLayout | undefined
 
@@ -271,7 +319,7 @@ export type OpenSourceParams<A extends aux.Any = aux.Any> =
     view: aux.StrictViewId<A>
   }
 
-export interface LikeC4DiagramEventHandlers<A extends aux.Any> {
+export interface LikeC4DiagramEventHandlers<A extends aux.Any = aux.Any> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined

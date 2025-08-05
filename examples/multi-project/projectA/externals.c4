@@ -59,8 +59,8 @@ model {
         '
       }
 
-      fn_enrich -> queue1 "reads raw data"
-      fn_enrich -> queue2 "writes enriched data"
+      fn_enrich -> queue1 'reads raw data'
+      fn_enrich -> queue2 'writes enriched data'
     }
   }
 
@@ -69,7 +69,7 @@ model {
 views {
 
   view amazon of amazon {
-    title "Overview Amazon"
+    title 'External / Overview Amazon'
 
     include
       *,
@@ -88,7 +88,7 @@ views {
   }
 
   view amazon_sqs of sqs {
-    title 'Overview Amazon SQS'
+    title 'External / Amazon / SQS'
 
     include
       *,
@@ -96,7 +96,7 @@ views {
   }
 
   view amazon_lambdas of lambdas {
-    title: 'Overview Amazon Lambdas'
+    title: 'External / Amazon / Lambdas'
 
     include
       *,
@@ -116,7 +116,7 @@ views {
   }
 
   view amazon_rds of amazon.rds {
-    title 'Overview Amazon RDS'
+    title 'External / Amazon / RDS'
 
     include
       *,

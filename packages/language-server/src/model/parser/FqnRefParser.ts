@@ -1,11 +1,11 @@
 import type * as c4 from '@likec4/core'
-import { type ProjectId, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
-import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
+import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
 import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
-import { parseWhereClause } from '../model-parser-where'
+import { createBinaryOperator, parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
 
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
@@ -96,7 +96,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           }
           if (ast.isElementStringProperty(prop)) {
             if (isDefined(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value) || ''
+              acc.custom[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) || ''
             }
             return acc
           }
@@ -133,8 +133,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             return acc
           }
           if (ast.isNotationProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = removeIndent(prop.value)
+            const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
+            if (value) {
+              acc.custom[prop.key] = value
             }
             return acc
           }
@@ -278,8 +279,9 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return props.reduce(
         (acc, prop) => {
           if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
-            if (isDefined(prop.value)) {
-              acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
+            const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
+            if (value) {
+              acc.customRelation[prop.key] = value
             }
             return acc
           }
@@ -334,32 +336,50 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         !ast.isRelationExprWhere(astNode.subject),
         'RelationExprWhere is not allowed as subject of RelationExprWhere',
       )
+      const relationOrWhereExpr = this.parseRelationExpr(astNode.subject)
+      const expr = relationOrWhereExpr.where?.expr ?? relationOrWhereExpr
+      const kindCondition = relationOrWhereExpr.where?.condition
+      const whereCondition = astNode.where ? parseWhereClause(astNode.where) : null
+
+      let condition: c4.WhereOperator
+
+      if (whereCondition && kindCondition) {
+        condition = createBinaryOperator(
+          'and',
+          kindCondition,
+          whereCondition,
+        )
+      } else {
+        condition = whereCondition
+          ?? kindCondition
+          ?? { kind: { neq: '--always-true--' } }
+      }
+
       return {
         where: {
-          expr: this.parseRelationExpr(astNode.subject),
-          condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' },
-          },
+          expr: expr,
+          condition: condition,
         },
       }
     }
 
-    parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
+    parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr.OrWhere {
       switch (astNode.$type) {
         case 'DirectedRelationExpr':
-          return {
+          return this.wrapInWhere({
             source: this.parseFqnExpr(astNode.source.from),
             target: this.parseFqnExpr(astNode.target),
             isBidirectional: astNode.source.isBidirectional,
-          }
+          }, this.parseInlineKindCondition(astNode.source))
         case 'InOutRelationExpr':
           return {
             inout: this.parseFqnExpr(astNode.inout.to),
           }
         case 'OutgoingRelationExpr':
-          return {
-            outgoing: this.parseFqnExpr(astNode.from),
-          }
+          return this.wrapInWhere(
+            { outgoing: this.parseFqnExpr(astNode.from) },
+            this.parseInlineKindCondition(astNode),
+          )
         case 'IncomingRelationExpr':
           return {
             incoming: this.parseFqnExpr(astNode.to),
@@ -367,6 +387,20 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         default:
           nonexhaustive(astNode)
       }
+    }
+
+    parseInlineKindCondition(astNode: ast.OutgoingRelationExpr): c4.WhereOperator | null {
+      const kind = astNode.kind ?? astNode.dotKind?.kind
+
+      if (kind) {
+        invariant(kind.ref, 'Kind is not resolved: ' + astNode.$cstNode?.text)
+        return { kind: { eq: kind.ref?.name } }
+      }
+      return null
+    }
+
+    wrapInWhere(expr: c4.RelationExpr, condition: c4.WhereOperator | null): c4.RelationExpr.OrWhere {
+      return condition ? { where: { expr, condition } } : expr
     }
   }
 }

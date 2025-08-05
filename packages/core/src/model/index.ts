@@ -36,6 +36,7 @@ export { LikeC4DeploymentModel } from './DeploymentModel'
 
 export { EdgeModel } from './view/EdgeModel'
 export { LikeC4ViewModel } from './view/LikeC4ViewModel'
+export { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 export { NodeModel } from './view/NodeModel'
 
 export type {
@@ -60,3 +61,12 @@ export type {
   AuxFromLikeC4ModelData,
   SpecAux,
 } from '../types'
+
+export { RichText, type RichTextEmpty, type RichTextOrEmpty } from '../types'
+
+export {
+  extractViewTitleFromPath,
+  getViewFolderPath,
+  normalizeViewPath,
+  VIEW_FOLDERS_SEPARATOR,
+} from './utils'

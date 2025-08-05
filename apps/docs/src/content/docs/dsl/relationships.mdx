@@ -170,12 +170,25 @@ model {
 }
 ```
 
-:::caution
+Same as for elements, you can use markdown in `description` with triple quotes: 
 
-Description is not displayed in the diagrams yet  
-In progress
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    description '''
+      **Customer** opens the frontend in the browser
+      to interact with the system
 
-:::
+
+      | checks    |    |
+      |:--------- |:-- |
+      | check 1   | ✅ |
+      | check 2   | ⛔️ |
+      | check 3   | ✅ |
+    '''
+  }
+}
+```
 
 ### Tags
 
@@ -215,7 +228,7 @@ model {
 
 ### Navigate To
 
-Relationship may have a `navigateTo` property, which is a link to some [dynamic view](/dsl/dynamic-views).  
+Relationship may have a `navigateTo` property, which is a link to some [dynamic view](/dsl/views/dynamic).  
 This allows to "zoom-in" and see more details about this relationship.
 
 ```likec4 copy

@@ -1,7 +1,34 @@
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import { test } from './asserts'
 
 describe.concurrent('model', () => {
+  // https://github.com/likec4/likec4/issues/2049
+  test('name does not coflict with hex').valid`
+    specification {
+      element system
+    }
+    model {
+      aaa-a = system
+      aa1 = system
+    }`
+
+  test('name does not start with number').invalid`
+    specification {
+      element system
+    }
+    model {
+      1aa = system
+    }`
+
+  // https://github.com/likec4/likec4/issues/2057
+  test('name does not coflict with Boolean').valid`
+    specification {
+      element system
+    }
+    model {
+      system truesys
+    }`
+
   test('name on the right side').valid`
     specification {
       element person

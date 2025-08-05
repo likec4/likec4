@@ -39,9 +39,9 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.initialized === b.initialized &&
   a.pannable === b.pannable &&
   a.zoomable === b.zoomable &&
-  a.fitViewPadding === b.fitViewPadding &&
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
+  shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport ?? null, b.viewport ?? null)

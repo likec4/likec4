@@ -6,11 +6,7 @@ import type { LogErrorOptions, LogType } from 'vite'
 
 export const logger: LOGGER = rootLogger.getChild('cli')
 
-const ERROR = k.bold(k.bgRed(k.white('ERROR')))
-const WARN = k.bold(k.yellow('WARN'))
-const INFO = k.bold(k.green('INFO'))
-
-export function createLikeC4Logger(prefix: string) {
+export function createLikeC4Logger(prefix: string | readonly [string, ...string[]]) {
   const logger = rootLogger.getChild(prefix)
   return {
     info(msg: string) {
@@ -37,12 +33,11 @@ export function createLikeC4Logger(prefix: string) {
           logger.error(`${k.red(error.name + ' ' + error.message)}`, { error })
           return
         }
-        ;``
-        logger.error(`${msg}`, { error })
+        logger.error(k.red(msg), { error })
         return
       }
       if (typeof msg === 'string') {
-        logger.error(`${k.red(msg)}`)
+        logger.error(k.red(msg))
         return
       }
       logger.error`${msg}`

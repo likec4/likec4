@@ -1,7 +1,11 @@
 import { Box } from '@likec4/styles/jsx'
 import { Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import type { FallbackProps } from 'react-error-boundary'
+import {
+  type ErrorBoundaryProps,
+  type FallbackProps,
+  ErrorBoundary as ErrorBoundaryComponent,
+} from 'react-error-boundary'
 
 export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorString = error instanceof Error ? error.message : 'Unknown error'
@@ -26,5 +30,16 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         </Group>
       </Notification>
     </Box>
+  )
+}
+
+export function ErrorBoundary(props: Pick<ErrorBoundaryProps, 'onReset' | 'onError' | 'children'>) {
+  return (
+    <ErrorBoundaryComponent
+      FallbackComponent={ErrorFallback}
+      onError={(err, info) => {
+        console.error(err, info)
+      }}
+      {...props} />
   )
 }

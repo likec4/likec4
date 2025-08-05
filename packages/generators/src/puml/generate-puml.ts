@@ -1,13 +1,14 @@
 import type { aux, LikeC4ViewModel } from '@likec4/core/model'
-import type {
-  ComputedEdge,
-  ComputedNode,
-  ElementThemeColorValues,
-  KeysOf,
-  NodeId,
-  ProcessedView,
-  RelationshipThemeColorValues,
-  ThemeColorValues,
+import {
+  type ComputedEdge,
+  type ComputedNode,
+  type ElementThemeColorValues,
+  type KeysOf,
+  type NodeId,
+  type ProcessedView,
+  type RelationshipThemeColorValues,
+  type ThemeColorValues,
+  RichText,
 } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
@@ -167,12 +168,14 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const tech = escapeLabel(node.technology)
     names.set(node.id, fqn)
 
+    const description = RichText.from(node.description)
+
     return new CompositeGeneratorNode()
       .append(shape, ' ')
       .append('"')
       .append('==', label)
       .appendIf(!!tech, '\\n', '<size:10>[', tech!, ']</size>')
-      .appendIf(!!node.description, '\\n\\n', escapeLabel(node.description)!)
+      .appendIf(description.nonEmpty, '\\n\\n', escapeLabel(description.text)!)
       .append('"', ' <<', fqn, '>> ', 'as ', fqn, NL)
   }
 

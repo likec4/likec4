@@ -10,8 +10,6 @@
   --likec4-default-font-family: var(--likec4-app-font);
   --mantine-default-font-family: var(--likec4-app-font);
   --mantine-font-family: var(--likec4-default-font-family);
-  --mantine-color-body: var(--vscode-editor-background);
-  --likec4-background-color: var(--vscode-editor-background);
 }
 
 html, body {
@@ -29,6 +27,10 @@ html, body {
   height: 100%;
 }
 
-.react-flow .react-flow__attribution {
+:where(#root) .react-flow .react-flow__attribution {
   display: none;
+}
+
+:where(#root) .likec4-root {
+  --colors-likec4-background: var(--vscode-editor-background);
 }

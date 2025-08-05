@@ -17,6 +17,7 @@ import {
   ChangeView,
   ComputeView,
   DidChangeModelNotification,
+  DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchLayoutedModel,
   FetchProjects,
@@ -215,12 +216,15 @@ export class Rpc extends ADisposable {
             return Promise.reject(new Error(`Model is empty`))
           }
           return {
-            elementKinds: keys(model.$model.specification.elements).length,
-            relationshipKinds: keys(model.$model.specification.relationships).length,
-            tags: keys(model.$model.specification.tags ?? {}).length,
-            elements: keys(model.$model.elements).length,
-            relationships: keys(model.$model.relations).length,
-            views: keys(model.$model.views).length,
+            elementKinds: keys(model.specification.elements).length,
+            deploymentKinds: keys(model.specification.deployments).length,
+            relationshipKinds: keys(model.specification.relationships).length,
+            tags: keys(model.specification.tags).length,
+            customColors: keys(model.specification.customColors ?? {}).length,
+            elements: keys(model.$data.elements).length,
+            deploymentNodes: [...model.deployment.nodes()].length,
+            relationships: keys(model.$data.relations).length,
+            views: keys(model.$data.views).length,
             projects: 1,
           }
         })
@@ -232,9 +236,12 @@ export class Rpc extends ADisposable {
         const metrics = values.length > 0
           ? values.reduce((acc, r) => ({
             elementKinds: acc.elementKinds + r.elementKinds,
+            deploymentKinds: acc.deploymentKinds + r.deploymentKinds,
             relationshipKinds: acc.relationshipKinds + r.relationshipKinds,
             tags: acc.tags + r.tags,
+            customColors: acc.customColors + r.customColors,
             elements: acc.elements + r.elements,
+            deploymentNodes: acc.deploymentNodes + r.deploymentNodes,
             relationships: acc.relationships + r.relationships,
             views: acc.views + r.views,
             projects: acc.projects + 1,
@@ -270,5 +277,17 @@ export class Rpc extends ADisposable {
         }),
       )
     }
+  }
+
+  async openView(params: DidRequestOpenViewNotification.Params): Promise<void> {
+    const lspConnection = this.services.shared.lsp.Connection
+    if (!lspConnection) {
+      logger.error('No LSP connection')
+      return
+    }
+    await lspConnection.sendNotification<DidRequestOpenViewNotification.Params>(
+      DidRequestOpenViewNotification.type,
+      params,
+    )
   }
 }

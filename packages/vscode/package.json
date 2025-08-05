@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -111,7 +111,10 @@
       {
         "language": "likec4",
         "scopeName": "source.likec4",
-        "path": "likec4.tmLanguage.json"
+        "path": "likec4.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.text.html.markdown": "markdown"
+        }
       }
     ],
     "configuration": {
@@ -263,7 +266,7 @@
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@reactive-vscode/vueuse": "^0.2.19",
+    "@reactive-vscode/vueuse": "^0.3.0",
     "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
@@ -278,7 +281,7 @@
     "langium": "catalog:langium",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
-    "reactive-vscode": "^0.2.19",
+    "reactive-vscode": "^0.3.0",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "tslib": "^2.8.1",
@@ -296,6 +299,5 @@
     "vscode-messenger-common": "^0.5.1",
     "playwright": "catalog:",
     "vscode-uri": "catalog:vscode"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

@@ -1,28 +1,27 @@
 import { LikeC4Model } from '@likec4/core/model'
 import {
-  type aux,
   type ComputedLikeC4ModelData,
+  type ComputedView,
   type DiagramNode,
   type DiagramView,
   type scalar,
   type ViewId,
 } from '@likec4/core/types'
+import { shallowEqual } from '@mantine/hooks'
 import { useStore } from '@nanostores/react'
-import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
+import { atom, batched, computed, map as mapStore, onMount, task } from 'nanostores'
 import { useRef } from 'react'
-import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
+import { entries, isDeepEqual, prop, values } from 'remeda'
 import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
 import { type VscodeState, ExtensionApi, getVscodeState, messenger, saveVscodeState } from './vscode'
 
-const {
-  viewId,
-  projectId,
-  view,
-  ...appstate
-} = getVscodeState()
+const vscodeState = getVscodeState()
 
-type VscodeAppState = Omit<VscodeState, 'viewId' | 'view'>
-const $appstate = atom(appstate)
+type VscodeAppState = Omit<VscodeState, 'viewId' | 'projectId' | 'layouted'>
+const $appstate = atom({
+  nodesDraggable: vscodeState.nodesDraggable,
+  edgesEditable: vscodeState.edgesEditable,
+})
 
 const setVscodeAppstate = (state: Partial<VscodeAppState>) => {
   const nextstate = {
@@ -44,19 +43,31 @@ export const useVscodeAppState = () => {
 }
 
 /**
- * If model was loaded
- */
-export const $initialized = atom(!!view)
-
-export const useIsModelLoaded = () => useStore($initialized)
-
-/**
  * Current view id
  */
-export const $viewId = atom(viewId)
-export const $projectId = atom(projectId)
+export const $viewId = atom(vscodeState.viewId)
+export const $projectId = atom(vscodeState.projectId)
 
 export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId) => {
+  projectId = projectId ?? $projectId.get()
+  if ($projectId.get() !== projectId) {
+    $projectId.set(projectId)
+    $initialized.set(false)
+    $likeC4Diagrams.set({
+      [viewId]: {
+        state: 'pending',
+        view: null,
+        error: null,
+      },
+    })
+    $viewId.set(viewId)
+    fetchComputedModel().finally(() => {
+      $initialized.set(true)
+    })
+    saveVscodeState({ viewId, projectId })
+    return
+  }
+
   const diagramState = $likeC4Diagrams.get()[viewId]
   if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {
@@ -71,11 +82,6 @@ export const changeViewId = (viewId: scalar.ViewId, projectId?: scalar.ProjectId
     })
   }
   $viewId.set(viewId)
-  projectId = projectId ?? $projectId.get()
-  if ($projectId.get() !== projectId) {
-    $projectId.set(projectId)
-    fetchComputedModel()
-  }
   saveVscodeState({ viewId, projectId })
 }
 
@@ -83,83 +89,55 @@ messenger.onNotification(OnOpenView, ({ viewId, projectId }) => {
   changeViewId(viewId, projectId)
 })
 
-export type LikeC4DiagramsAtom = Record<
-  ViewId,
-  {
-    // Never loaded
-    state: 'pending'
-    view: null
-    error: null
-  } | {
-    state: 'success'
-    view: DiagramView
-    error: null
-  } | {
-    state: 'error'
-    view: DiagramView | null
-    error: string
-  } | {
-    state: 'stale'
-    view: DiagramView | null
-    error: string | null
-  }
->
-export const $likeC4Diagrams = map<LikeC4DiagramsAtom>(
-  view
-    ? {
-      [view.id]: {
-        state: 'stale',
-        view,
-        error: null,
-      },
-    }
-    : {},
-)
-
-const EMPTY: ComputedLikeC4ModelData<aux.Unknown> = {
-  _stage: 'computed',
-  projectId: 'default',
-  specification: {
-    tags: {},
-    elements: {},
-    relationships: {},
-    deployments: {},
-  },
-  elements: {},
-  relations: {},
-  globals: {
-    predicates: {},
-    dynamicPredicates: {},
-    styles: {},
-  },
-  views: {},
-  deployments: {
-    elements: {},
-    relations: {},
-  },
-  imports: {},
+export type ViewState = {
+  state: 'pending'
+  view: null
+  error: null
+} | {
+  state: 'success'
+  view: DiagramView
+  error: null
+} | {
+  state: 'error'
+  view: DiagramView | null
+  error: string
+} | {
+  state: 'stale'
+  view: DiagramView | null
+  error: string | null
 }
 
-export const $likeC4ModelSource = deepMap({ ...EMPTY })
+export type LikeC4DiagramsAtom = Record<ViewId, ViewState>
 
-function updateLikeC4ModelSource(model: ComputedLikeC4ModelData) {
-  const currentViews = $likeC4ModelSource.get().views
+const { view } = getVscodeState()
+export const $likeC4Diagrams = mapStore<LikeC4DiagramsAtom>({
+  [vscodeState.viewId]: view
+    ? {
+      state: 'stale',
+      view,
+      error: null,
+    }
+    : {
+      state: 'pending',
+      view: null,
+      error: null,
+    },
+})
+
+const $computedData = atom<ComputedLikeC4ModelData>(LikeC4Model.EMPTY.$data)
+
+function updateLikeC4ModelSource(next: ComputedLikeC4ModelData) {
+  if (isDeepEqual($computedData.get(), next)) {
+    return
+  }
+  const currentViews = $computedData.get().views
+  $computedData.set(next)
 
   const likeC4Diagrams = $likeC4Diagrams.get()
 
-  keys(model).forEach(key => {
-    if (key === 'views') {
-      return
-    }
-    $likeC4ModelSource.setKey(key, model[key])
-  })
-
-  const oldKeys = new Set([...keys(currentViews)] as ViewId[])
-  for (const view of values(model.views)) {
-    oldKeys.delete(view.id)
-    const likeC4Diagram = likeC4Diagrams[view.id]
-    if (isNullish(currentViews[view.id]) || !isDeepEqual(currentViews[view.id], view)) {
-      $likeC4ModelSource.setKey('views.' + view.id as any, view)
+  for (const view of values(next.views)) {
+    if (!isDeepEqual(currentViews[view.id], view)) {
+      const likeC4Diagram = likeC4Diagrams[view.id]
       if (likeC4Diagram) {
         $likeC4Diagrams.setKey(view.id, {
           ...likeC4Diagram,
@@ -175,13 +153,9 @@ function updateLikeC4ModelSource(model: ComputedLikeC4ModelData) {
     }
   }
 
-  for (const key of oldKeys.values()) {
-    $likeC4ModelSource.setKey('views.' + key as any, undefined)
-  }
-
   // Mark views as not found
   for (const [key, likeC4Diagram] of entries(likeC4Diagrams)) {
-    if (!(key in model.views)) {
+    if (!(key in next.views)) {
       $likeC4Diagrams.setKey(key as ViewId, {
         ...likeC4Diagram,
         error: 'View is not found',
@@ -196,44 +170,78 @@ async function fetchComputedModel() {
   if (model) {
     updateLikeC4ModelSource(model)
   }
+  return model
 }
-
-onMount($likeC4ModelSource, () => {
+messenger.onNotification(BroadcastModelUpdate, () => {
+  fetchComputedModel()
+})
+/**
+ * If model was loaded
+ */
+const $initialized = atom(false)
+onMount($initialized, () => {
   task(async () => {
     await fetchComputedModel()
     $initialized.set(true)
   })
 })
 
-messenger.onNotification(BroadcastModelUpdate, () => {
-  fetchComputedModel()
+export const useIsModelLoaded = () => useStore($initialized)
+
+const $viewstate = atom<ViewState>({
+  state: 'error',
+  view: null,
+  error: 'View is not loaded',
 })
+const $current = computed([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId] ?? null)
+const $view = computed($viewstate, prop('view'))
+const $state = computed($viewstate, prop('state'))
 
-export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.create(m as ComputedLikeC4ModelData))
+const $likec4model = atom(LikeC4Model.EMPTY)
+const $modelerror = atom<string | null>(null)
 
-const $likeC4View = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.view ?? null)
-const $likeC4ViewState = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.state ?? null)
-const $likeC4ViewError = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.error ?? null)
-
-onMount($likeC4View, () => {
-  return $likeC4View.listen(view => {
-    if (view) {
-      saveVscodeState({
-        viewId: view.id,
-        view,
-      })
-    }
-  })
-})
-
-onMount($likeC4ViewState, () => {
-  return $likeC4ViewState.subscribe((state) => {
-    if (state === 'pending' || state === 'stale') {
-      setTimeout(() => {
+onMount($viewstate, () => {
+  const subscribers = [
+    $current.subscribe((next, prev) => {
+      if (next && !shallowEqual(next, prev)) {
+        $viewstate.set(next)
+      }
+    }),
+    // Update vscode state on view change
+    $view.listen((view) => {
+      if (view) {
+        saveVscodeState({
+          viewId: view.id,
+          view,
+        })
+      }
+    }),
+    // Initialize load
+    $state.subscribe((next, prev) => {
+      if (next !== prev && (next === 'pending' || next === 'stale')) {
         fetchDiagramView($viewId.get()).catch(e => console.error(e))
-      }, 10)
-    }
-  })
+      }
+    }),
+    computed([$view, $computedData], (view, data) => ({ view, data })).subscribe((next, prev) => {
+      if (next.view && !shallowEqual(next, prev)) {
+        try {
+          $likec4model.set(LikeC4Model.create({
+            ...next.data,
+            views: {
+              ...next.data.views,
+              [next.view.id]: next.view as unknown as ComputedView,
+            },
+          }))
+          $modelerror.set(null)
+        } catch (e) {
+          console.error('Error creating LikeC4Model', e)
+          $modelerror.set(e instanceof Error ? e.message : '' + e)
+        }
+      }
+    }),
+  ]
+
+  return () => subscribers.forEach(off => off())
 })
 
 async function fetchDiagramView(viewId: ViewId) {
@@ -269,7 +277,7 @@ async function fetchDiagramView(viewId: ViewId) {
     $likeC4Diagrams.setKey(viewId, {
       state: 'error',
       view: $likeC4Diagrams.get()[viewId]?.view ?? null,
-      error: e instanceof Error ? (e.stack ?? e.message) : '' + e,
+      error: e instanceof Error ? e.message : '' + e,
     })
   }
 }
@@ -294,19 +302,32 @@ export function refetchCurrentDiagram() {
   )
 }
 
-export function useLikeC4View() {
-  const state = useStore($likeC4ViewState)
-  const error = useStore($likeC4ViewError)
-  const view = useStore($likeC4View)
+const all = batched([$viewstate, $modelerror, $likec4model], (viewstate, modelerror, likec4model) => ({
+  viewstate,
+  modelerror,
+  likec4model,
+}))
+export function useLikeC4State() {
+  const {
+    viewstate: {
+      view,
+      state,
+      error,
+    },
+    modelerror,
+    likec4model,
+  } = useStore(all)
   const prevViewRef = useRef(view)
   // if view is not null - save it as previous
   if (view) {
     prevViewRef.current = view
   }
+
   return {
-    state: state ?? 'pending',
+    state,
+    error: error ?? modelerror,
+    likec4model,
     view: view ?? prevViewRef.current,
-    error,
   }
 }
 

@@ -1,16 +1,16 @@
 {
   "name": "root",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.11.1",
+  "packageManager": "pnpm@10.13.1",
   "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": ">=20.19.1"
+    "node": "~20.19.3"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
@@ -19,6 +19,7 @@
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "typecheck:all": "turbo run typecheck",
+    "lint:package": "turbo run lint:package --filter=\"!./apps/*\"",
     "generate": "turbo run generate --filter=\"!@likec4/docs-astro\"",
     "generate:all": "turbo run generate",
     "ci:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
@@ -31,11 +32,10 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
     "pretest:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\"",
-    "test:e2e": "cd e2e && pnpm install && pnpm install:chromium && pnpm bootstrap && pnpm test",
+    "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.0",
     "execa": "^9.6.0",
@@ -71,9 +71,6 @@
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch"
-    },
-    "configDependencies": {
-      "@pnpm/types-fixer": "0.1.0+sha512-h8iYCPyf0FrMH/pyu3EYryOaGUEI8NsQxsCcdp+XO9sYqUr9jw3ARTEv0Ifl4WHhoLhdxud2zwto1Y9WuOT3QA=="
     }
   },
   "nano-staged": {

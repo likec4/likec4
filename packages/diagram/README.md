@@ -16,6 +16,7 @@ See:
 
 Contents:
 
+- [Model Provider](#model-provider)
 - [Bundled Version](#bundled-version)
   - [LikeC4View](#likec4view)
   - [ReactLikeC4](#reactlikec4)
@@ -27,6 +28,13 @@ Contents:
   - [Node renderer](#custom-node-renderer)
   - [Styles](#custom-styles)
 
+## Model Provider
+
+Diagram requires instance of `LikeC4Model.Layouted` to render.\
+You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component.
+
+See [📖 Documentation](https://likec4.dev/tooling/react/#likec4modelprovider) for examples.
+
 ## Bundled version
 
 The easiest way to use this package is the bundled version.\
@@ -35,12 +43,11 @@ Diagram renders inside shadow DOM and has its own styles.
 ### LikeC4View
 
 ```tsx
-import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram/bundle'
-
-// instance of LikeC4Model
-// See https://likec4.dev/tooling/model-api/
-const likec4model = LikeC4Model.fromDump()
+/**
+ * See https://likec4.dev/tooling/react/#likec4modelprovider
+ */
+import { likec4model } from './likec4-model.ts'
 
 function App() {
   return (
@@ -333,3 +340,28 @@ TODO: add example
 ## Local Development
 
 Use [packages/likec4](../likec4/) workspace
+
+## Getting help
+
+We are always happy to help you get started:
+
+- [Join Discord community](https://discord.gg/86ZSpjKAdA) – it is the easiest way to get help
+- [GitHub Discussions](https://github.com/likec4/likec4/discussions) – ask anything about the project or give feedback
+
+## Contributors
+
+<a href="https://github.com/likec4/likec4/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=likec4/likec4" />
+</a>
+
+[Become a contributor](../../CONTRIBUTING.md)
+
+## Support development
+
+LikeC4 is a MIT-licensed open source project with its ongoing development made possible entirely by your support.\
+If you like the project, please consider contributing financially to help grow and improve it.\
+You can support us via [OpenCollective](https://opencollective.com/likec4) or [GitHub Sponsors](https://github.com/sponsors/likec4).
+
+## License
+
+This project is released under the [MIT License](LICENSE)

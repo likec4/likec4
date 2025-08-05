@@ -63,3 +63,5 @@ export const radixColors = [
   'grass',
   'lime',
 ] satisfies RadixColor[]
+
+export const iconSize = '--likec4-icon-size'

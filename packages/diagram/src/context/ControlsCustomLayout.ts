@@ -6,7 +6,6 @@ export type ControlsCustomLayoutProps = {
   navigationButtons: ReactNode
   search: ReactNode
   actionsGroup: ReactNode
-  syncInProgressBadge: ReactNode
 }
 export type ControlsCustomLayout = (props: ControlsCustomLayoutProps) => ReactNode
 

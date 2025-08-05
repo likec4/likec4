@@ -1,7 +1,7 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
-import { filter, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
-import { ast, toRelationshipStyleExcludeDefaults } from '../../ast'
+import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
+import { ast, parseMarkdownAsString, toRelationshipStyleExcludeDefaults } from '../../ast'
 import { logger, logWarnError } from '../../logger'
 import { type Base, removeIndent } from './Base'
 
@@ -48,7 +48,8 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           const bodyProps = pipe(
             props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
             filter(p => this.isValid(p) && isNonNullish(p.value)),
-            mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
+            mapToObj(p => [p.key, removeIndent(parseMarkdownAsString(p.value))!] satisfies [string, string]),
+            omitBy(isNullish),
           )
           c4Specification.relationships[kindName] = {
             ...bodyProps,
@@ -61,14 +62,18 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
 
       const tags_specs = specifications.flatMap(s => s.tags.filter(this.isValid))
       for (const tagSpec of tags_specs) {
-        const tag = tagSpec.tag.name as c4.Tag
-        const astPath = this.getAstNodePath(tagSpec.tag)
-        const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
-        if (isTruthy(tag)) {
-          c4Specification.tags[tag] = {
-            astPath,
-            ...(color ? { color } : {}),
+        try {
+          const tag = tagSpec.tag.name as c4.Tag
+          const astPath = this.getAstNodePath(tagSpec.tag)
+          const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
+          if (isTruthy(tag)) {
+            c4Specification.tags[tag] = {
+              astPath,
+              ...(color ? { color } : {}),
+            }
           }
+        } catch (e) {
+          logWarnError(e)
         }
       }
 
@@ -103,15 +108,31 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       }
       const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
+      const links = this.parseLinks(specAst)
       const bodyProps = pipe(
         props.filter(ast.isSpecificationElementStringProperty) ?? [],
-        filter(p => this.isValid(p) && isNonNullish(p.value)),
-        mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string]),
+        filter(p => this.isValid(p)),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
+
+      const { title, description, technology } = this.parseTitleDescriptionTechnology(
+        {
+          title: undefined,
+          description: undefined,
+          technology: undefined,
+        },
+        bodyProps,
+      )
+      const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
+
       return {
         [kindName]: {
-          ...bodyProps,
+          ...(title && { title }),
+          ...(description && { description }),
+          ...(technology && { technology }),
+          ...(notation && { notation }),
           ...(tags && { tags }),
+          ...(links && c4.isNonEmptyArray(links) && { links }),
           style,
         } satisfies c4.ElementSpecification,
       }

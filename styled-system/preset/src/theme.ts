@@ -1,6 +1,7 @@
 import type { Config } from '@pandacss/dev'
 import { theme as generated } from './generated'
 import * as recipes from './recipes'
+import * as slotRecipes from './slotRecipes'
 import { layerStyles } from './theme.layer-styles'
 import { semanticTokens } from './theme.semantic-tokens'
 import { textStyles } from './theme.text-styles'
@@ -16,6 +17,14 @@ export const theme: ExtendableTheme = {
     tokens,
     semanticTokens,
     recipes,
+    slotRecipes,
+    containerNames: ['likec4-root', 'likec4-dialog'],
+    containerSizes: {
+      xs: '384px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+    },
     keyframes: {
       'indicatorStrokeOpacity': {
         '0%': {

@@ -1,9 +1,10 @@
 {
   "name": "@likec4/icons",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "Bundled React SVG icons, used in LikeC4 Diagram",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
@@ -51,7 +52,8 @@
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
     "generate": "pnpm node scripts/generate.mjs",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true"
+    "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
@@ -68,6 +70,5 @@
     "react-dom": "catalog:react",
     "typescript": "catalog:",
     "wireit": "catalog:"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

@@ -252,14 +252,6 @@ export function useDiagramActorSnapshot<T = unknown>(
   return useXstateSelector(actorRef, useCallbackRef(selector), compare)
 }
 
-export function useDiagramSyncLayoutState<T = unknown>(
-  selector: (state: SyncLayoutActorSnapshot) => T,
-  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-): T {
-  const syncLayoutActorRef = useDiagramActorSnapshot(s => s.context.syncLayoutActorRef as SyncLayoutActorRef)
-  return useXstateSelector(syncLayoutActorRef, useCallbackRef(selector), compare)
-}
-
 /**
  * Read diagram context
  */

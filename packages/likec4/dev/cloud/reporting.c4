@@ -18,7 +18,9 @@ model {
 views {
 
   view reporting of cloud.reporting {
-    title "[context] Reporting"
+    #team-two #next #planned
+
+    title 'Context / Cloud / Reporting service'
 
     link https://github.com/likec4/likec4 'source'
     link /view/reporting/editor

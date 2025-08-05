@@ -37,7 +37,6 @@ cd packages/likec4
 pnpm start correctness ../../correctness-example
 ```
 
-### Language Server Testing
 ```bash
 ./reinstall-local-language-server
 code correctness-example/

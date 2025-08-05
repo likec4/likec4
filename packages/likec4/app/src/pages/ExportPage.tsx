@@ -76,7 +76,7 @@ export function ExportPage() {
       }
       const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
       viewports.forEach((el) => {
-        el.style.transform = ''
+        el.style.transform = 'translate(' + padding + 'px, ' + padding + 'px)'
       })
     },
   )
@@ -119,7 +119,6 @@ export function ExportPage() {
       data-testid="export-page"
       className={cx(cssExportView)}
       style={{
-        padding,
         minWidth: width,
         width: width,
         minHeight: height,
@@ -127,7 +126,14 @@ export function ExportPage() {
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <StaticLikeC4Diagram
-        view={diagram}
+        view={{
+          ...diagram,
+          bounds: {
+            ...diagram.bounds,
+            x: padding,
+            y: padding,
+          },
+        }}
         fitView={false}
         fitViewPadding={0}
         background={'transparent'}

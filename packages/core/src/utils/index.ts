@@ -41,6 +41,7 @@ export {
 export {
   ifilter,
   ifind,
+  ifirst,
   iflat,
   ihead,
   imap,
@@ -52,11 +53,9 @@ export {
   toSet,
 } from './iterable'
 export { memoizeProp } from './memoize-prop'
-export { delay } from './promises'
+export { delay, promiseNextTick } from './promises'
 
-export {
-  compareRelations,
-} from './relations'
+export { compareRelations } from './relations'
 
 export {
   difference,
@@ -66,10 +65,7 @@ export {
   union,
 } from './set'
 
-export {
-  stringHash,
-} from './string-hash'
+export { objectHash } from './object-hash'
+export { stringHash } from './string-hash'
 
-export {
-  objectHash,
-} from './object-hash'
+export { markdownToHtml, markdownToText } from './markdown'

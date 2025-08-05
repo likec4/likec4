@@ -4,14 +4,16 @@ import {
 } from 'reactive-vscode'
 import { activateExtension } from '../activate'
 import { initWorkspace } from '../common/initWorkspace'
+import { useExtensionLogger } from '../common/useExtensionLogger'
 import { whenExtensionActive } from '../common/useIsActivated'
-import { extensionLogger, logError } from '../logger'
+import { logError } from '../logger'
 
 export const { activate, deactivate } = defineExtension(() => {
+  const { logger } = useExtensionLogger()
   try {
     activateExtension('web')
   } catch (e) {
-    extensionLogger.error(loggable(e))
+    logger.error(loggable(e))
   }
   whenExtensionActive(async () => {
     try {

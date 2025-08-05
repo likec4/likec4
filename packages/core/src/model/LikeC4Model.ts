@@ -1,4 +1,4 @@
-import { entries, map, pipe, prop, sort, sortBy, values } from 'remeda'
+import { entries, hasAtLeast, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
 import type {
   Any,
   Aux,
@@ -16,8 +16,8 @@ import type {
   WhereOperator,
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
-import type * as aux from '../types/aux'
-import { compareNatural, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
+import type * as aux from '../types/_aux'
+import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
 import type {
@@ -36,9 +36,10 @@ import {
   type IncomingFilter,
   type OutgoingFilter,
   type RelationOrId,
-  getId,
 } from './types'
+import { getId, getViewFolderPath, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends Any = aux.Unknown> {
@@ -67,6 +68,16 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   protected readonly _internal = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
   protected readonly _views = new Map<aux.ViewId<A>, LikeC4ViewModel<A>>()
+
+  protected readonly _rootViewFolder: LikeC4ViewsFolder<A>
+  protected readonly _viewFolders = new Map<string, LikeC4ViewsFolder<A>>()
+
+  protected readonly _viewFolderItems = new DefaultMap<
+    string,
+    Set<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>>
+  >(
+    () => new Set(),
+  )
 
   protected readonly _allTags = new DefaultMap<
     aux.Tag<A>,
@@ -165,17 +176,65 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     this.deployment = new LikeC4DeploymentModel(this)
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
+      const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
       const views = pipe(
         values($data.views as Record<string, $View<A>>),
-        sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
+        map(view => ({
+          view,
+          path: normalizeViewPath(view.title ?? view.id),
+          folderPath: view.title && getViewFolderPath(view.title) || '',
+        })),
+        // Sort hierarchically by groups, but keep same order within groups
+        sort((a, b) => compare(a.folderPath, b.folderPath)),
       )
-      for (const view of views) {
-        const vm = new LikeC4ViewModel(this, view)
+
+      const getOrCreateFolder = (path: string) => {
+        let folder = this._viewFolders.get(path)
+        if (!folder) {
+          const segments = split(path, VIEW_FOLDERS_SEPARATOR)
+          invariant(hasAtLeast(segments, 1), `View group path "${path}" must have at least one element`)
+          let defaultView
+          // Root group has "index" as default view
+          if (path === '') {
+            defaultView = views.find(view => view.view.id === 'index')
+          } else {
+            defaultView = views.find(view => view.path === path)
+          }
+          folder = new LikeC4ViewsFolder(this, segments, defaultView?.view.id)
+          this._viewFolders.set(path, folder)
+        }
+        return folder
+      }
+
+      this._rootViewFolder = getOrCreateFolder('')
+
+      // Process view groups
+      // Sort in natural order to preserve hierarchy
+      for (const { folderPath } of views) {
+        if (this._viewFolders.has(folderPath)) {
+          continue
+        }
+        // Create groups for each segment of the path
+        split(folderPath, VIEW_FOLDERS_SEPARATOR).reduce((parent, segment) => {
+          const path = [...parent, segment]
+          const folder = getOrCreateFolder(path.join(VIEW_FOLDERS_SEPARATOR))
+          this._viewFolderItems.get(parent.join(VIEW_FOLDERS_SEPARATOR)).add(folder)
+          return path
+        }, [] as string[])
+      }
+
+      for (const { view, folderPath } of views) {
+        const vm = new LikeC4ViewModel(this, view, getOrCreateFolder(folderPath))
+        this._viewFolderItems.get(folderPath).add(vm)
         this._views.set(view.id, vm)
         for (const tag of vm.tags) {
           this._allTags.get(tag).add(vm)
         }
       }
+    } else {
+      // Model is not computed or layouted, but we still need to create root folder
+      this._rootViewFolder = new LikeC4ViewsFolder(this, [''], undefined)
+      this._viewFolders.set(this._rootViewFolder.path, this._rootViewFolder)
     }
   }
 
@@ -254,6 +313,21 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     }))
   }
 
+  /**
+   * Returns the element with the given FQN.
+   *
+   * @throws Error if element is not found\
+   * Use {@link findElement} if you don't want to throw an error
+   *
+   * @note Method is type-safe for typed model
+
+   * @example
+   * model.element('cloud.frontend')
+   * // or object with id property of scalar.Fqn
+   * model.element({
+   *   id: 'dashboard',
+   * })
+   */
   public element(el: ElementOrFqn<A>): ElementModel<A> {
     if (el instanceof ElementModel) {
       return el
@@ -261,6 +335,16 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     const id = getId(el)
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
+
+  /**
+   * Returns the element with the given FQN.
+   *
+   * @returns Element if found, null otherwise
+   * @note Method is not type-safe as {@link element}
+   *
+   * @example
+   * model.findElement('cloud.frontend')
+   */
   public findElement(el: aux.LooseElementId<A>): ElementModel<A> | null {
     return this._elements.get(getId(el)) ?? null
   }
@@ -342,13 +426,67 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 
   /**
    * Returns a specific view by its ID.
+   * @note Method is type-safe for typed model
+   * @throws Error if view is not found\
+   * Use {@link findView} if you don't want to throw an error
+   *
+   * @example
+   * model.view('index')
+   * // or object with id property of scalar.ViewId
+   * model.view({
+   *   id: 'index',
+   * })
    */
   public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A, $View<A>> {
     const id = getId(viewId)
     return nonNullable(this._views.get(id), `View ${id} not found`)
   }
+
+  /**
+   * Returns a specific view by its ID.
+   * @note Method is not type-safe as {@link view}
+   *
+   * @example
+   * model.findView('index')
+   */
   public findView(viewId: aux.LooseViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
     return this._views.get(viewId as aux.ViewId<A>) ?? null
+  }
+
+  /**
+   * Returns a view folder by its path.
+   * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
+   * @throws Error if view folder is not found.
+   */
+  public viewFolder(path: string): LikeC4ViewsFolder<A> {
+    return nonNullable(this._viewFolders.get(path), `View folder ${path} not found`)
+  }
+
+  /**
+   * Root folder is a special one with an empty path and used only for internal purposes.
+   * It is not visible to the user and should be used only to get top-level folders and views.
+   */
+  get rootViewFolder(): LikeC4ViewsFolder<A> {
+    return this._rootViewFolder
+  }
+
+  /**
+   * Whether the model has any view folders.
+   */
+  get hasViewFolders(): boolean {
+    // Root view folder is always present
+    return this._viewFolders.size > 1
+  }
+
+  /**
+   * Returns all children of a view folder.
+   * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
+   *
+   * @throws Error if view folder is not found.
+   */
+  public viewFolderItems(path: string): ReadonlySet<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>> {
+    invariant(this._viewFolders.has(path), `View folder ${path} not found`)
+    return this._viewFolderItems.get(path)
   }
 
   /**
@@ -452,7 +590,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
 
   /**
-   * Returns all tags used in the model, sorted alphabetically.
+   * Returns array of all tags used in the model, sorted naturally.\
+   * Use {@link specification.tags} to get all defined tags
    */
   get tags(): aux.Tags<A> {
     return memoizeProp(this, 'tags', () => sort([...this._allTags.keys()], compareNatural))

@@ -1,24 +1,34 @@
+import { RichText } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
 import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
+import { MarkdownBlock } from '../../../base/primitives'
 import { Link } from '../../../components/Link'
 import { useDiagramContext } from '../../../hooks/useDiagram'
+import { useCurrentViewModel } from '../../../likec4model'
+import type { DiagramContext } from '../../../state/types'
 import * as styles from './DiagramTitlePanel.css'
 
+function selector(context: DiagramContext) {
+  return {
+    // id: context.view.id,
+    // title: context.view.title ?? 'untitled',
+    // description: RichText.from(context.view.description),
+    // links: context.view.links,
+    isNotActiveWalkthrough: context.activeWalkthrough === null,
+  }
+}
+
 export function DiagramTitlePanel() {
-  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(s => ({
-    id: s.view.id,
-    title: s.view.title ?? 'untitled',
-    description: s.view.description,
-    links: s.view.links,
-    isNotActiveWalkthrough: s.activeWalkthrough === null,
-  }))
+  const view = useCurrentViewModel()
+  const { isNotActiveWalkthrough } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,
   })
+  const title = view.title ?? 'untitled'
   const toggle = () => setCollapsed(v => !v)
 
   return (
@@ -117,12 +127,12 @@ export function DiagramTitlePanel() {
                       userSelect: 'all',
                     }}>
                     <span style={{ userSelect: 'none' }}>id:{' '}</span>
-                    {id}
+                    {view.id}
                   </Text>
                 </Group>
-                {description && (
+                {view.description.nonEmpty && (
                   <Spoiler
-                    maxHeight={42}
+                    maxHeight={60}
                     showLabel={
                       <Button component={'div'} color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>
                         show more
@@ -133,15 +143,13 @@ export function DiagramTitlePanel() {
                         hide
                       </Button>
                     }>
-                    <Text
-                      component={'div'}
-                      size="sm"
-                      className={styles.description}>
-                      {description || 'no description'}
-                    </Text>
+                    <MarkdownBlock
+                      className={styles.description}
+                      textScale={0.9}
+                      value={view.description} />
                   </Spoiler>
                 )}
-                {!description && (
+                {view.description.isEmpty && (
                   <Text
                     component={'div'}
                     size="xs"
@@ -149,13 +157,13 @@ export function DiagramTitlePanel() {
                     no description
                   </Text>
                 )}
-                {links && (
+                {view.links.length > 0 && (
                   <Stack
                     mt={'xs'}
                     gap={4}
                     justify="stretch"
                     align="stretch">
-                    {links.map((link) => <Link value={link} key={link.url} />)}
+                    {view.links.map((link) => <Link value={link} key={link.url} />)}
                   </Stack>
                 )}
               </>

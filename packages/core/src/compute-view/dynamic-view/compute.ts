@@ -44,6 +44,8 @@ namespace DynamicViewCompute {
     title: string | null
     description?: string
     technology?: string
+    // Notes for walkthrough
+    notes?: scalar.MarkdownOrString
     color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType
@@ -154,7 +156,7 @@ class DynamicViewCompute<A extends AnyAux> {
       [...this.explicits].map(elementModelToNodeSource),
     )
 
-    const edges = this.steps.map(({ id, source, target, relations, title, isBackward, tags, ...step }) => {
+    const edges = this.steps.map(({ id, source, target, relations, title, description, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
@@ -164,6 +166,7 @@ class DynamicViewCompute<A extends AnyAux> {
         target: targetNode.id,
         label: title,
         relations,
+        description: description ? { txt: description } : null,
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
         head: DefaultArrowType,

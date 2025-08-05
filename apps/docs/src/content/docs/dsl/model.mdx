@@ -65,7 +65,7 @@ model {
 ```
 
 LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.\
-Check the [Big Bank example](/examples/bigbank).
+Check the [Big Bank example](/showcases/bigbank).
 
 All properties are optional, and element's name will be used as a title by default:
 
@@ -125,16 +125,50 @@ model {
 ```
 
 :::tip
-You may define technology in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
+You may define title, description and technology in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
 
 ```likec4
 specification {
   element mobileApp {
+    title 'Mobile App'
+    description 'Universal mobile application'
     technology 'React Native'
   }
 }
 ```
 :::
+
+#### Markdown
+
+You can use markdown in `description` with triple quotes: 
+
+```likec4 copy
+model {
+  mobile = application {     
+    title 'Mobile Application'
+    description '''
+      ### Multi-platform application
+      
+      [React Native](https://reactnative.dev)
+    '''
+  }
+
+  web = application {
+    description """
+      ### Web Application
+      
+      > Provides services to customers through
+      > the web interface.
+
+      | checks     |     |
+      | :--------- | :-- |
+      | check 1    | ✅  |
+      | check 2    | ⛔️  |
+      | check 3    | ✅  |
+    """
+  }  
+}
+```
 
 ### Element Tags
 

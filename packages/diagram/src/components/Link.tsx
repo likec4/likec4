@@ -1,119 +1,108 @@
 import type { Link as LinkData } from '@likec4/core'
-import { css, cva, cx } from '@likec4/styles/css'
-import { ActionIcon, Anchor, Box, CopyButton, Text } from '@mantine/core'
+import { css, cx } from '@likec4/styles/css'
+import { type BadgeProps, ActionIcon, Badge, CopyButton } from '@mantine/core'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
-import { stopPropagation } from '../utils'
+import { forwardRef } from 'react'
+import { GithubIcon } from './GithubIcon'
 
-const link = cva({
-  base: {
-    display: 'flex',
-    overflow: 'hidden',
-    alignItems: 'center',
-    gap: 'micro',
-    justifyContent: 'stretch',
-    transitionProperty: 'all',
-    transitionDuration: 'fast',
-    transitionTimingFunction: 'inOut',
-    border: `1px dashed {colors.mantine.colors.defaultBorder}`,
-    rounded: 'sm',
-    cursor: 'pointer',
-    color: 'mantine.colors.gray[7]',
-    _dark: {
-      color: 'mantine.colors.dark[1]',
-    },
-    _hover: {
-      transitionTimingFunction: 'out',
-      color: 'mantine.colors.defaultColor',
-      background: 'mantine.colors.defaultHover',
-    },
-  },
-  variants: {
-    size: {
-      sm: {
-        minHeight: '22px',
-        padding: '2px 8px 2px 2px',
-      },
-      md: {
-        minHeight: '30px',
-        padding: '3px 16px 3px 3px',
-      },
-    },
-  },
-})
+const GITHUB_PREFIX = 'https://github.com/'
 
-const titleBox = css({
-  flex: '1 1 100%',
-  transition: `transform 100ms {easings.inOut}`,
-  _groupHover: {
-    transitionTimingFunction: 'out',
-    transitionDelay: '50ms',
-    transform: 'translateX(1px)',
-  },
-})
+export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'classNames'> & { value: LinkData }>(
+  ({ value, className, ...props }, ref) => {
+    // If the url is already a full url, use it as is.
+    // Otherwise, it's a relative url and we need to make it absolute.
+    const url = value.url.includes('://') ? value.url : new window.URL(value.url, window.location.href).toString()
+    let isGithub = url.startsWith(GITHUB_PREFIX)
 
-export function Link({
-  value,
-  size = 'md',
-}: {
-  size?: 'sm' | 'md'
-  value: LinkData
-}) {
-  const isNormalSize = size === 'md'
-  // If the url is already a full url, use it as is.
-  // Otherwise, it's a relative url and we need to make it absolute.
-  const url = value.url.includes('://') ? value.url : new window.URL(value.url, window.location.href).toString()
-  return (
-    <CopyButton value={url}>
-      {({ copied, copy }) => (
-        <Anchor
-          href={url}
-          target="_blank"
-          underline="never"
-          className={cx(
-            'group',
-            link({ size }),
-          )}
-          onClick={stopPropagation}>
-          <ActionIcon
-            className={css({
-              flex: '0',
-            })}
-            tabIndex={-1}
-            size={isNormalSize ? 24 : 20}
-            variant={copied ? 'light' : 'subtle'}
-            color={copied ? 'teal' : 'gray'}
-            onClick={e => {
-              e.stopPropagation()
-              e.preventDefault()
-              copy()
-            }}
-          >
-            {copied ? <IconCheck /> : <IconCopy style={{ width: '65%', opacity: 0.65 }} />}
-          </ActionIcon>
-          <Box className={titleBox}>
-            <Text
-              component="div"
-              fz={isNormalSize ? 'xs' : 11}
-              truncate
-              lh={isNormalSize ? 1.3 : 1.2}
-              fw={value.title ? 500 : 400}>
-              {value.title || url}
-            </Text>
-            {value.title && (
-              <Text component="div" fz={isNormalSize ? 10 : 9} c={'dimmed'} lh={isNormalSize ? 1.2 : 1.1} truncate>
-                {url}
-              </Text>
+    return (
+      <Badge
+        ref={ref}
+        variant="default"
+        radius="sm"
+        size="sm"
+        tt="none"
+        leftSection={value.title ? <>{value.title}</> : null}
+        rightSection={
+          <CopyButton value={url} timeout={1500}>
+            {({ copy, copied }) => (
+              <ActionIcon
+                className={css({
+                  opacity: copied ? 1 : 0.45,
+                  transition: 'fast',
+                  _hover: {
+                    opacity: 1,
+                  },
+                })}
+                tabIndex={-1}
+                size={'20'}
+                variant={copied ? 'light' : 'transparent'}
+                color={copied ? 'teal' : 'gray'}
+                data-active={copied}
+                onClick={e => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  copy()
+                }}
+              >
+                {copied ? <IconCheck /> : <IconCopy stroke={2.5} />}
+              </ActionIcon>
             )}
-          </Box>
-        </Anchor>
-      )}
-    </CopyButton>
-  )
-  // <Anchor href={value.url} fz={'sm'}>
-  //   {value.title || url}
-  // </Anchor><Button variant='default' size='sm'>
-  //     {value.title || value.url}
-  //   </Button>
-  //  </Box>
-  // )
-}
+          </CopyButton>
+        }
+        {...props}
+        className={cx(className, 'group')}
+        classNames={{
+          root: css({
+            flexWrap: 'nowrap',
+            minHeight: 24,
+            maxWidth: 500,
+            userSelect: 'all',
+            pr: 0,
+            _hover: {
+              backgroundColor: {
+                base: 'mantine.colors.gray[1]',
+                _dark: 'mantine.colors.dark[5]',
+              },
+            },
+          }),
+          section: css({
+            '&:is([data-position="left"])': {
+              color: 'mantine.colors.dimmed',
+              userSelect: 'none',
+              pointerEvents: 'none',
+              _groupHover: {
+                color: '[inherit]',
+                opacity: .7,
+              },
+            },
+          }),
+          label: css({
+            '& > a': {
+              color: '[inherit]',
+              cursor: 'pointer',
+              transition: 'fast',
+              opacity: {
+                base: 0.7,
+                _hover: 1,
+              },
+              textDecoration: {
+                base: 'none',
+                _hover: 'underline',
+              },
+            },
+          }),
+        }}
+      >
+        <a href={url} target="_blank">
+          {isGithub && (
+            <GithubIcon
+              height="12"
+              width="12"
+              style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+          )}
+          {isGithub ? url.replace(GITHUB_PREFIX, '') : url}
+        </a>
+      </Badge>
+    )
+  },
+)

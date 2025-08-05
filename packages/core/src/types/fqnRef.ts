@@ -1,7 +1,7 @@
 import { isString } from 'remeda'
+import type * as aux from './_aux'
+import type { AnyAux, Unknown } from './_aux'
 import type { ExclusiveUnion } from './_common'
-import type * as aux from './aux'
-import type { AnyAux, Unknown } from './aux'
 import { GlobalFqn } from './scalar'
 
 export namespace FqnRef {

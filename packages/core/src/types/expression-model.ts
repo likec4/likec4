@@ -1,6 +1,6 @@
+import type * as aux from './_aux'
+import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
-import type * as aux from './aux'
-import type { AnyAux } from './aux'
 import type { PredicateSelector } from './expression'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'

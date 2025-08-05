@@ -1,4 +1,4 @@
-views {
+views "Use Cases" {
 
   dynamic view order-fulfillment {
     title 'Usecase 02: Order Fulfillment'
@@ -6,7 +6,8 @@ views {
       This use case describes the process of fulfilling an order.
     '
 
-    customer -> boutique 'places order' {
+    customer -> boutique {
+      title 'Customer places order'
       navigateTo place-order
       notes '
         The customer interacts with the web application to place an order.
@@ -37,7 +38,7 @@ views {
       }
       boutique.checkout -> boutique.db 'updates order status' {
         notes '
-          The order status is updated to "paid".
+          The order status is updated to \'paid\'.
         '
       }
     }

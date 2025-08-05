@@ -63,7 +63,7 @@ export const notesPropertyRuleChecks = (
 export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.ColorLiteral> => {
   return (node, accept) => {
     if (node.$type === 'HexColor') {
-      if (node.hex === undefined) {
+      if (node.hex === undefined || (isString(node.hex) && !node.hex.match(/^[a-fA-F0-9]+$/))) {
         accept('error', `Invalid HEX`, {
           node,
           property: 'hex',

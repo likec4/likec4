@@ -19,25 +19,38 @@ model {
     link https://github.com/likec4/template 'Repository'
     link ./model.c4#L18 'Model'
 
-    description '
-      E-commerce app for browsing items, add them to the cart,
-      and purchasing them.
-    '
+    description '''
+      ## E-commerce application
+      for [browsing](./model.c4#L18) items, add them
+      to the ```cart``` and purchasing them
+
+      | checks     |     |
+      | :--------- | :-- |
+      | check 1    | ✅  |
+      | check 2    | ⛔️  |
+      | check 3    | ✅  |
+    '''
 
     email = service 'Email Service' {
       description 'Sends emails to customers using templates and customer data.'
-
+      link https://github.com/likec4/template 'Repository'
+      metadata {
+        npm '@boutique/email'
+        version '1.0.0'
+      }
       -> email-provider 'delegates email sending'
     }
 
     checkout = service 'Checkout Service' {
       #teamB
       icon tech:nodejs
-      description 'Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.'
+      description '''
+        **Retrieves** user cart, **prepares** order and **orchestrates** payments, shipping and the email notifications.
+      '''
       link https://github.com/likec4/template 'Repository'
       metadata {
         npm '@boutique/checkout'
-        version: '1.0.0'
+        version '1.0.0'
       }
 
       -> payments.processor 'sends payment request' {
@@ -53,7 +66,9 @@ model {
     cart = service 'Cart Service' {
       #teamA
       icon tech:nodejs
-      description "Stores the items in the user's shopping cart in Redis and retrieves it."
+      description '''
+        Stores the items in the user\'s shopping cart in [Redis](https://redis.io/) and retrieves it.
+      '''
 
       api = component 'Cart API' {
         #v1, #teamA
@@ -63,7 +78,7 @@ model {
         link https://github.com/likec4/template 'Repository'
         metadata {
           npm '@boutique/cart-api'
-          version : '1.0.0'
+          version '1.0.0'
         }
       }
 
@@ -81,11 +96,13 @@ model {
 
     actionLog = service 'Action Log Service' {
       icon tech:go
+      technology 'Go'
       description 'Manages user activity and search history.'
     }
 
     payments = service 'Payment Service' {
       icon tech:scala
+      technology 'Scala'
       description 'Charges the given credit card info with the given amount and returns a transaction ID.'
 
       processor = component 'Payment Processor' {
@@ -103,7 +120,10 @@ model {
 
     shipping = service 'Shipping Service' {
       icon tech:net
-      description 'Gives shipping cost estimates based on the shopping cart. Ships items to the given address.'
+      description '
+        Gives shipping cost estimates based on the shopping cart.
+        Ships items to the given address.
+      '
 
       -> db.orders 'updates shipping data'
     }
@@ -174,12 +194,14 @@ model {
   }
 
   payment-gateway = external-system 'Payment Gateway' {
+    technology 'Stripe'
     description '
       Platform to process online payments
     '
   }
 
   email-provider = external-system 'Email Provider' {
+    technology 'SendGrid'
     description '
       3rd Party Platform to send transactional emails
     '

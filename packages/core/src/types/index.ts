@@ -1,6 +1,6 @@
 export * from './_common'
 
-export type * as aux from './aux'
+export type * as aux from './_aux'
 
 export type {
   Any,
@@ -11,7 +11,7 @@ export type {
   UnknownComputed,
   UnknownLayouted,
   UnknownParsed,
-} from './aux'
+} from './_aux'
 
 export * from './const'
 export * from './expression'
@@ -25,6 +25,7 @@ export * from './model-dump'
 export * from './model-logical'
 export * from './model-spec'
 export * from './operators'
+export * from './project'
 export * from './scalar'
 export * from './styles'
 export * from './view'
@@ -37,3 +38,5 @@ export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
 export type * as scalar from './scalar'
+
+export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'

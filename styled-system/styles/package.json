@@ -1,7 +1,8 @@
 {
   "name": "@likec4/styles",
+  "description": "Shared PandaCSS preset and generated styles, used in LikeC4",
   "license": "MIT",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -11,7 +12,8 @@
     "dist",
     "*.mts",
     "*.mjs",
-    "*.ts"
+    "*.ts",
+    "!build.config.ts"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -22,7 +24,10 @@
     "build": "unbuild",
     "generate": "panda codegen && panda cssgen",
     "emit-pkg": "panda emit-pkg --base dist",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "pnpm rimraf dist lib",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-styles-$npm_package_version.tgz package.tgz || true",
+    "lint:package": "pnpx publint ./package.tgz"
   },
   "exports": {
     "./css": {
@@ -65,7 +70,13 @@
   "peerDependencies": {
     "@pandacss/dev": "catalog:css"
   },
+  "peerDependenciesMeta": {
+    "@pandacss/dev": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@likec4/style-preset": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
@@ -79,6 +90,5 @@
     "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",
     "typescript": "catalog:"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

@@ -1,8 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.32.1",
-  "packageManager": "pnpm@10.11.1",
+  "version": "1.35.0",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -23,6 +22,9 @@
     "@astrojs/starlight": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
+    "@types/picomatch": "catalog:utils",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "astro": "catalog:astro",
     "astro-og-canvas": "catalog:astro",
     "canvaskit-wasm": "0.40.0",
@@ -32,14 +34,12 @@
     "sharp": "catalog:utils",
     "shiki": "catalog:astro",
     "starlight-heading-badges": "catalog:astro",
+    "starlight-image-zoom": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro",
-    "@types/picomatch": "catalog:utils",
-    "@types/react": "catalog:react",
-    "@types/react-dom": "catalog:react",
-    "vite": "catalog:vite",
     "tsx": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:vite",
     "wrangler": "catalog:"
   }
 }

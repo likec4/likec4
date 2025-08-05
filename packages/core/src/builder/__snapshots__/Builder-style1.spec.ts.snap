@@ -10,7 +10,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
   "elements": {
     "s1": {
       "color": "green",
-      "description": null,
       "id": "s1",
       "kind": "system",
       "links": null,
@@ -25,7 +24,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
     "s1.c1": {
       "color": "primary",
-      "description": null,
       "id": "s1.c1",
       "kind": "component",
       "links": null,
@@ -39,7 +37,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
     "s2": {
       "color": "green",
-      "description": null,
       "id": "s2",
       "kind": "system",
       "links": null,
@@ -54,7 +51,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
     "s2.c1": {
       "color": "primary",
-      "description": null,
       "id": "s2.c1",
       "kind": "component",
       "links": null,
@@ -68,7 +64,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
     "s2.c1.c2": {
       "color": "primary",
-      "description": null,
       "id": "s2.c1.c2",
       "kind": "component",
       "links": null,
@@ -82,7 +77,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     },
     "s2.c1.c2.c3": {
       "color": "primary",
-      "description": null,
       "id": "s2.c1.c2.c3",
       "kind": "component",
       "links": null,
@@ -176,7 +170,6 @@ exports[`Builder (style1) > should build view  1`] = `
   "elements": {
     "c1": {
       "color": "primary",
-      "description": null,
       "id": "c1",
       "kind": "component",
       "links": null,
@@ -188,7 +181,6 @@ exports[`Builder (style1) > should build view  1`] = `
     },
     "c2": {
       "color": "primary",
-      "description": null,
       "id": "c2",
       "kind": "component",
       "links": null,
@@ -200,7 +192,6 @@ exports[`Builder (style1) > should build view  1`] = `
     },
     "c3": {
       "color": "primary",
-      "description": null,
       "id": "c3",
       "kind": "component",
       "links": null,
@@ -310,7 +301,6 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   "elements": {
     "c1": {
       "color": "primary",
-      "description": null,
       "id": "c1",
       "kind": "component",
       "links": null,
@@ -322,7 +312,6 @@ exports[`Builder (style1) > should build viewOf  1`] = `
     },
     "c2": {
       "color": "primary",
-      "description": null,
       "id": "c2",
       "kind": "component",
       "links": null,
@@ -334,7 +323,6 @@ exports[`Builder (style1) > should build viewOf  1`] = `
     },
     "c2.c3": {
       "color": "primary",
-      "description": null,
       "id": "c2.c3",
       "kind": "component",
       "links": null,
@@ -346,7 +334,6 @@ exports[`Builder (style1) > should build viewOf  1`] = `
     },
     "c2.c3.c4": {
       "color": "primary",
-      "description": null,
       "id": "c2.c3.c4",
       "kind": "component",
       "links": null,

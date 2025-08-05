@@ -2,11 +2,9 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
 import express, { type Request, type Response } from 'express'
 import type { AsyncDisposable } from 'langium'
 import http from 'node:http'
-import { logger as mainLogger } from '../../logger'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4MCPServer } from '../LikeC4MCPServerFactory'
-
-const logger = mainLogger.getChild('LikeC4MCPServer')
+import type { LikeC4MCPServer } from '../interfaces'
+import { logger } from '../utils'
 
 export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   // Store transports by session ID to send notifications
@@ -77,18 +75,19 @@ export class SSELikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   }
 
   async stop(): Promise<void> {
+    this.transports = {}
     const server = this.server
     if (!server) {
       return
     }
-    logger.info('Stopping server')
+    logger.info('Stopping MCP server')
     this.server = undefined
-    this.transports = {}
     return new Promise((resolve) => {
       server.close((err) => {
         if (err) {
-          logger.error('Failed to stop SSE server', { err })
+          logger.error('Failed to stop MCP server', { err })
         }
+        logger.info('MCP server stopped')
         resolve()
       })
     })

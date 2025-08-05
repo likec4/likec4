@@ -16,10 +16,10 @@ views {
   }
 
   view boutique of boutique {
-    description '
-      E-commerce app for browsing items, add them to the cart,
+    description '''
+      **E-commerce app** for browsing items, add them to the cart,
       and purchasing them.
-    '
+    '''
     include
       *,
       customer with {
@@ -39,6 +39,10 @@ views {
   }
 
   view frontend of boutique.frontend {
+    title 'Frontend'
+    description '''
+      Interactions of **Frontend**
+    '''
     include
       *,
       boutique
@@ -54,10 +58,10 @@ views {
   }
 
   view checkout of boutique.checkout {
-    description '
-      Retrieves user cart, prepares order and
-      orchestrates the payment, shipping and the email notification.
-    '
+    description '''
+      Retrieves **user cart**, prepares **order** and
+      orchestrates **payments**, **shipping** and the **email notification**.
+    '''
     link https://github.com/likec4/template 'Repository'
     include
       *,

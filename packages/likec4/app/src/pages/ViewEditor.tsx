@@ -2,8 +2,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
-import { SidebarDrawerOps } from '../components/sidebar/state'
-import { isDevelopment, withOverviewGraph } from '../const'
+import { isDevelopment } from '../const'
 import { useCurrentDiagram } from '../hooks'
 
 export function ViewEditor() {
@@ -35,9 +34,15 @@ export function ViewEditor() {
       readonly={false}
       zoomable
       pannable
+      controls="next"
       nodesDraggable
       experimentalEdgeEditing
-      fitViewPadding={'48px'}
+      fitViewPadding={{
+        top: '70px',
+        bottom: '10px',
+        left: '50px',
+        right: '10px',
+      }}
       showDiagramTitle
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}
@@ -49,14 +54,11 @@ export function ViewEditor() {
       enableElementTags
       onNavigateTo={onNavigateTo}
       onChange={(e) => console.log(e)}
-      onBurgerMenuClick={withOverviewGraph
-        ? () => {
-          router.navigate({
-            to: '/',
-            search: true,
-          })
-        }
-        : SidebarDrawerOps.open}
+      onBurgerMenuClick={() => {
+        router.navigate({
+          to: '/',
+        })
+      }}
     />
   )
 }

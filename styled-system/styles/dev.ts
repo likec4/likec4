@@ -27,7 +27,29 @@ export function defineConfig(config: Config) {
       // @ts-ignore
       // pluginRemoveUnusedCss(),
       // @ts-ignore
-      pluginStrictTokensScope({ categories: ['fonts', 'colors', 'animations', 'easings'] }),
+      pluginStrictTokensScope({
+        categories: [
+          'fonts',
+          'colors',
+          'animations',
+          'easings',
+          // 'spacing',
+          // 'sizes',
+          // 'lineHeights',
+          // 'shadows',
+          // 'zIndex',
+          // 'opacity',
+          // 'radii',
+          // 'borders',
+          // 'durations',
+          // 'letterSpacings',
+          // 'gradients',
+          // 'assets',
+          // 'borderWidths',
+          // 'aspectRatios',
+          // 'containerNames',
+        ],
+      }),
       // @ts-ignore
       pluginRemoveNegativeSpacing({ spacingTokenType: true, tokenType: true }),
     ],

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.32.1",
+  "version": "1.35.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -20,7 +20,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=20.19.1"
+    "node": ">=20.19.3"
   },
   "engineStrict": true,
   "type": "module",
@@ -92,12 +92,14 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "pack": "pnpm pack",
+    "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
     "pregenerate": "rm -f src/generated/*",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate && tsx scripts/generate-icons.ts",
     "dev": "run-p \"watch:*\"",
     "lint": "run -T eslint src/ --fix",
+    "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf dist contrib lib src/generated src/generated-lib",
     "test": "vitest run --no-isolate",
     "test-dbg": "vitest run --no-isolate -t formating",
@@ -115,9 +117,9 @@
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@msgpack/msgpack": "^3.1.1",
+    "@msgpack/msgpack": "^3.1.2",
     "@smithy/util-base64": "^4.0.0",
-    "@types/express": "^5.0.2",
+    "@types/express": "^5.0.3",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
     "@types/which": "^3.0.4",
@@ -137,12 +139,12 @@
     "picomatch": "catalog:utils",
     "pretty-ms": "^9.2.0",
     "remeda": "catalog:utils",
-    "strip-indent": "^4.0.0",
+    "strip-indent": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
-    "ufo": "^1.6.1",
+    "ufo": "catalog:utils",
     "unbuild": "catalog:",
     "valibot": "catalog:utils",
     "vitest": "catalog:vitest",
@@ -153,6 +155,5 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "zod": "catalog:utils"
-  },
-  "packageManager": "pnpm@10.11.1"
+  }
 }

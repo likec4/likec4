@@ -13,22 +13,20 @@ export function compareNatural(a: string | undefined, b: string | undefined): -1
 }
 
 /**
- * Compares two strings hierarchically based on their depth.
+ * Compares two strings lexicographically first, then hierarchically based on their depth.\
  * From parent nodes to leaves
  *
  * @example
  * const lines = [
+ *   'b.c',
+ *   'b',
  *   'a.b.c',
- *   'a',
- *   'a.b',
- *   'a.c.c',
  * ]
  * lines.sort(compareNaturalHierarchically('.'))
  * // [
- * //   'a',
- * //   'a.b',
  * //   'a.b.c',
- * //   'a.c.c',
+ * //   'b',
+ * //   'b.c',
  * // ]
  */
 export function compareNaturalHierarchically(
@@ -40,10 +38,12 @@ export function compareNaturalHierarchically(
     if (!b) return 1
     const aParts = a.split(separator)
     const bParts = b.split(separator)
-    if (aParts.length !== bParts.length) {
-      return aParts.length - bParts.length
-    }
-    for (let i = 0; i < aParts.length; i++) {
+
+    // Find the minimum length to avoid out-of-bounds access
+    const minLength = Math.min(aParts.length, bParts.length)
+
+    // Compare segments until we find a difference
+    for (let i = 0; i < minLength; i++) {
       const aPart = aParts[i]!
       const bPart = bParts[i]!
       const comparison = compare(aPart, bPart)
@@ -51,6 +51,8 @@ export function compareNaturalHierarchically(
         return comparison
       }
     }
-    return 0
+
+    // If all common segments are equal, shorter paths come first
+    return aParts.length - bParts.length
   }
 }

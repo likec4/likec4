@@ -11,18 +11,26 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range } from 'vscode-languageserver-types'
 
 export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
   export type Type = typeof type
 }
-
-// export namespace DidChangeModelNotification {
-//   export const type = new NotificationType<string>('likec4/onDidChangeModel')
-//   export type Type = typeof type
-// }
+/**
+ * When server requests to open a likec4 preview panel
+ * (available only in the editor).
+ * (not the best place, but seems to be working)
+ */
+export namespace DidRequestOpenViewNotification {
+  export type Params = {
+    viewId: ViewId
+    projectId: ProjectId
+  }
+  export const type = new NotificationType<Params>('likec4/onRequestOpenView')
+  export type Type = typeof type
+}
 
 /**
  * Request to fetch the computed model data
@@ -218,9 +226,12 @@ export namespace FetchTelemetryMetrics {
   export type Res = {
     metrics: null | {
       elementKinds: number
+      deploymentKinds: number
       relationshipKinds: number
       tags: number
+      customColors: number
       elements: number
+      deploymentNodes: number
       relationships: number
       views: number
       projects: number

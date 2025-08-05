@@ -1,4 +1,4 @@
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
+import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import {
   type Module,
   DocumentState,
@@ -22,7 +22,6 @@ import {
   LikeC4GeneratedSharedModule,
 } from './generated/module'
 import { type LikeC4LanguageServices, DefaultLikeC4LanguageServices } from './LikeC4LanguageServices'
-import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -35,10 +34,8 @@ import {
 import {
   type LikeC4MCPServer,
   type LikeC4MCPServerFactory,
-  NoopLikeC4MCPServer,
-  NoopLikeC4MCPServerFactory,
-} from './mcp/LikeC4MCPServerFactory'
-import { type LikeC4MCPTools, DefaultLikeC4MCPTools } from './mcp/LikeC4MCPTools'
+} from './mcp/interfaces'
+import { NoopLikeC4MCPServer, NoopLikeC4MCPServerFactory } from './mcp/NoopLikeC4MCPServer'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -46,6 +43,7 @@ import {
   FqnIndex,
   LikeC4ModelLocator,
   LikeC4ModelParser,
+  LikeC4ValueConverter,
 } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
 import {
@@ -112,14 +110,13 @@ export interface LikeC4AddedServices {
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   mcp: {
-    Tools: LikeC4MCPTools
     Server: LikeC4MCPServer
     ServerFactory: LikeC4MCPServerFactory
   }
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
-    Layouter: GraphvizLayouter
+    Layouter: QueueGraphvizLayoter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
@@ -143,6 +140,9 @@ export interface LikeC4AddedServices {
     ScopeProvider: LikeC4ScopeProvider
   }
   shared?: LikeC4SharedServices
+  parser: {
+    ValueConverter: LikeC4ValueConverter
+  }
 }
 
 export type LikeC4Services = LangiumServices & LikeC4AddedServices
@@ -158,15 +158,15 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   mcp: {
-    Tools: bind(DefaultLikeC4MCPTools),
     Server: bind(NoopLikeC4MCPServer),
     ServerFactory: bind(NoopLikeC4MCPServerFactory),
   },
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),
     Layouter: (_services: LikeC4Services) => {
-      logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
-      return new GraphvizLayouter(new GraphvizWasmAdapter())
+      return new QueueGraphvizLayoter({
+        graphviz: new GraphvizWasmAdapter(),
+      })
     },
     Views: bind(DefaultLikeC4Views),
     DeploymentsIndex: bind(DeploymentsIndex),
@@ -194,6 +194,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     NameProvider: bind(LikeC4NameProvider),
     ScopeComputation: bind(LikeC4ScopeComputation),
     ScopeProvider: bind(LikeC4ScopeProvider),
+  },
+  parser: {
+    ValueConverter: bind(LikeC4ValueConverter),
   },
 }
 

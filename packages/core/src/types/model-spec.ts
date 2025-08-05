@@ -1,6 +1,7 @@
 import type { IsNever } from 'type-fest'
-import type * as aux from './aux'
-import type { Any } from './aux'
+import type * as aux from './_aux'
+import type { Any } from './_aux'
+import type { Link, NonEmptyArray } from './_common'
 import type * as scalar from './scalar'
 import type {
   Icon,
@@ -24,8 +25,11 @@ import type {
  */
 export interface ElementSpecification {
   tags?: scalar.Tag[]
+  title?: string
+  description?: scalar.MarkdownOrString
   technology?: string
   notation?: string
+  links?: NonEmptyArray<Link>
   style: {
     shape?: ElementShape
     icon?: Icon

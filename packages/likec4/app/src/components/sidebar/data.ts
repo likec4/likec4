@@ -1,9 +1,9 @@
-import { compareNatural, isDeploymentView, nonexhaustive } from '@likec4/core'
+import { compareNatural, nonexhaustive } from '@likec4/core'
+import { type LikeC4ViewModel } from '@likec4/core/model'
+import { useLikeC4Model } from '@likec4/diagram'
 import type { TreeNodeData } from '@mantine/core'
-import { type DiagramView } from 'likec4/model'
 import { useMemo } from 'react'
 import { find } from 'remeda'
-import { useLikeC4Views } from '../../hooks'
 
 interface DiagramTreeNodeData {
   label: string
@@ -34,7 +34,7 @@ function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   return compareNatural(a.label, b.label)
 }
 
-function buildDiagramTreeData(views: readonly DiagramView[], groupBy: GroupBy): DiagramTreeNodeData[] {
+function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupBy): DiagramTreeNodeData[] {
   const root: DiagramTreeNodeData = {
     value: '',
     label: 'Diagrams',
@@ -67,10 +67,10 @@ function buildDiagramTreeData(views: readonly DiagramView[], groupBy: GroupBy): 
     let relativePath
     switch (groupBy) {
       case 'by-files':
-        relativePath = view.relativePath ?? ''
+        relativePath = view.$view.relativePath ?? ''
         break
       case 'by-folders':
-        relativePath = dropFilename(view.relativePath ?? '')
+        relativePath = dropFilename(view.$view.relativePath ?? '')
         break
       case 'none':
         relativePath = ''
@@ -82,7 +82,7 @@ function buildDiagramTreeData(views: readonly DiagramView[], groupBy: GroupBy): 
     parent.children.push({
       value: view.id,
       label: view.title ?? view.id,
-      type: isDeploymentView(view) ? 'deployment-view' : 'view',
+      type: view.isDeploymentView() ? 'deployment-view' : 'view',
       children: [],
     })
     if (parent !== root) {
@@ -97,6 +97,6 @@ function buildDiagramTreeData(views: readonly DiagramView[], groupBy: GroupBy): 
 }
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
-  const views = useLikeC4Views()
-  return useMemo(() => buildDiagramTreeData(views, groupBy), [views, groupBy])
+  const model = useLikeC4Model()
+  return useMemo(() => buildDiagramTreeData([...model.views()], groupBy), [model, groupBy])
 }

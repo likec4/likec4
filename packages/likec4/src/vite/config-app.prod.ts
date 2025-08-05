@@ -15,6 +15,7 @@ export type LikeC4ViteConfig = {
   languageServices: LikeC4
   outputDir?: string | undefined
   base?: string | undefined
+  title?: string | undefined
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
   useOverviewGraph?: boolean | undefined
@@ -29,7 +30,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
   const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
-  customLogger.info(k.cyan('output') + ' ' + k.dim(outDir))
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   let base = '/'
   if (cfg.base) {
@@ -43,11 +44,15 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   }
 
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
+  const title = cfg.title ?? 'LikeC4'
+
+  const isSingleFile = cfg.outputSingleFile ?? false
 
   return {
     isDev: false,
     likec4AssetsDir,
     webcomponentPrefix,
+    title,
     root,
     languageServices,
     clearScreen: false,
@@ -69,18 +74,32 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'production',
     optimizeDeps: {
-      force: true,
       include: [
         'react',
         'react-dom',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
-        'react/jsx-dev-runtime',
         'react-dom/client',
+        '@likec4/core/types',
+        '@likec4/core/model',
+        '@likec4/core/compute-view/relationships',
+        '@likec4/core/utils',
+        '@likec4/core',
+        'likec4/vite-plugin/internal',
       ],
+      noDiscovery: true,
+    },
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          target: 'ESNext',
+          jsx: 'react-jsx',
+        },
+      },
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
+      PAGE_TITLE: JSON.stringify(title),
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"',
@@ -90,7 +109,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       modulePreload: false,
       emptyOutDir: false,
       sourcemap: false,
-      cssCodeSplit: true,
       cssMinify: true,
       minify: true,
       copyPublicDir: true,
@@ -99,10 +117,23 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         treeshake: {
           preset: 'recommended',
         },
-        output: {
-          hoistTransitiveImports: false,
-          compact: true,
-        },
+        ...(!isSingleFile && {
+          input: [
+            resolve(root, 'index.html'),
+            resolve(root, 'src', 'main.js'),
+            resolve(root, 'src', 'fonts.css'),
+            resolve(root, 'src', 'style.css'),
+          ],
+          output: {
+            compact: true,
+            manualChunks: (id) => {
+              if (id.includes('/likec4/node_modules/')) {
+                return 'vendors'
+              }
+              return undefined
+            },
+          },
+        }),
       },
     },
     customLogger,
@@ -112,6 +143,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         languageServices: languageServices.languageServices,
         useOverviewGraph: useOverviewGraph,
       }),
-    ].concat(cfg.outputSingleFile ? [viteSingleFile()] : []),
+      // Enable single file output
+      isSingleFile ? viteSingleFile() : undefined,
+    ].filter(Boolean),
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }
