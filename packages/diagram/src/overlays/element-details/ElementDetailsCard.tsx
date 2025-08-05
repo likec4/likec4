@@ -267,12 +267,8 @@ export function ElementDetailsCard({
           dragElastic={0}
           dragMomentum={false}
           dragListener={false}
-          className={cx(
-            css({
-              likec4Palette: nodeModel?.color ?? elementModel.color,
-            }),
-            styles.card,
-          )}
+          data-likec4-color={nodeModel?.color ?? elementModel.color}
+          className={styles.card}
           initial={{
             top,
             left,

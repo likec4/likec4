@@ -16,7 +16,7 @@ export const endpoint = css({
   fontWeight: 500,
   whiteSpace: 'nowrap',
   padding: '[2px 4px]',
-  borderRadius: '0.5',
+  borderRadius: '[2px]',
   background: `var(--likec4-palette-fill)/30`,
   lineHeight: '[1.11]',
   mixBlendMode: 'hard-light',

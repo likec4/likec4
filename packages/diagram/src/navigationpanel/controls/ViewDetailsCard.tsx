@@ -148,7 +148,7 @@ const ViewDetailsCardDropdown = ({
       )}>
       <section>
         <Text component="div" fw={500} size="xl">{title}</Text>
-        <HStack alignItems={'flex-start'} mt="[4px]">
+        <HStack alignItems={'flex-start'} mt="1">
           <ViewBadge label="id" value={id} />
           {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
           <HStack gap="xs" flexWrap="wrap">
@@ -201,7 +201,7 @@ const ViewBadge = ({
   value: string
 }) => {
   return (
-    <HStack gap="[2px]">
+    <HStack gap="0.5">
       <ViewBadgeLabel>{label}</ViewBadgeLabel>
       <Badge
         size="sm"

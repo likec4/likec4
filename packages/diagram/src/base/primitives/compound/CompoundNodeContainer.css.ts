@@ -1,14 +1,5 @@
 import { css, sva } from '@likec4/styles/css'
 
-// export const _compoundOpacity = '--_compound-opacity'
-// const compoundOpacity = `var(${_compoundOpacity})`
-// // const varCompoundOpacity = createVar('compound-opacity')
-
-// export const _borderTransparency = '--_compound-border-transparency'
-// const borderTransparency = `var(${_borderTransparency})`
-
-// export const _borderWidth =
-// const borderWidth = `var(${_borderWidth})`
 export const borderWidth = {
   var: '--_border-width',
   ref: 'var(--_border-width, 2px)',

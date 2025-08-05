@@ -13,7 +13,7 @@ export function ProjectsMenu(props: ButtonProps) {
   }
 
   return (
-    <HStack gap="[2px]" alignItems="baseline">
+    <HStack gap="0.5" alignItems="baseline">
       <Box
         css={{
           fontWeight: '400',
