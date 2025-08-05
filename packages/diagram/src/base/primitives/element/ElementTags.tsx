@@ -108,7 +108,7 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
             width: '100%',
             bottom: '0',
             left: '0',
-            padding: '0.5',
+            padding: '1',
             _shapeCylinder: {
               bottom: '[5px]',
             },
@@ -167,7 +167,7 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
                 cursor: 'pointer',
                 ...(zoomIsLargeEnough && {
                   fontSize: 'lg',
-                  borderRadius: '1',
+                  borderRadius: '[4px]',
                   px: '1.5', // 6px
                 }),
               })}

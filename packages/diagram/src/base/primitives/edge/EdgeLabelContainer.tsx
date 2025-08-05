@@ -1,12 +1,11 @@
 import type { DiagramEdge } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { type HTMLAttributes } from 'react'
 import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
-import { edgeVars } from './edge.css'
 import { edgeLabelContainer, translate as _translate } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<

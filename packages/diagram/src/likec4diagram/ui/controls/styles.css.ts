@@ -8,8 +8,8 @@ export const navigationButtons = css({
 })
 
 export const panel = css({
-  top: '[1rem]',
-  left: '[1rem]',
+  top: 'md',
+  left: 'md',
   margin: '0',
   pointerEvents: 'none',
   '& :where(button, .action-icon, [role=\'dialog\'])': {

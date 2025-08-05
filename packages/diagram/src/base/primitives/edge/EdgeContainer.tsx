@@ -39,7 +39,6 @@ export function EdgeContainer({
   const props = {
     className: cx(
       className,
-      styles.edgeVars,
       styles.edgeContainer,
       'likec4-edge-container',
     ),

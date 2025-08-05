@@ -84,8 +84,8 @@ export const shapeSvg = css({
 export const shapeBadge = css({
   fontWeight: 500,
   letterSpacing: '0.2px',
-  paddingTop: '[0px]',
-  paddingBottom: '[0px]',
+  paddingTop: '0',
+  paddingBottom: '0',
   textTransform: 'lowercase',
   transition: 'all 150ms ease-in-out',
   cursor: 'pointer',
