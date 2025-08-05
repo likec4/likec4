@@ -116,7 +116,7 @@ const ControlsLayout: ControlsCustomLayout = ({
           })}>
           <Logo width={100} />
         </UnstyledButton>
-        <HStack gap="2xs">
+        <HStack gap="xxs">
           {navigationButtons}
         </HStack>
         <Box w={250} maxW={300}>

@@ -72,7 +72,7 @@ function ViewCard({ view }: { view: LikeC4ViewModel<aux.UnknownLayouted> }) {
         textScale={0.75}
         emptyText="No description"
         lineClamp={3}
-        mt="2"
+        mt="[2px]"
         css={{
           transition: 'fast',
           opacity: {

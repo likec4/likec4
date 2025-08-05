@@ -28,7 +28,7 @@ const Alert = MantineAlert.withProps({
       padding: 'xs',
     }),
     body: css({
-      gap: '1',
+      gap: '[1px]',
     }),
     label: css({
       fontSize: 'xs',
