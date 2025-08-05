@@ -2,8 +2,10 @@ import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mant
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
 
 export function ColorSchemeToggle() {
-  const { setColorScheme } = useMantineColorScheme()
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true })
+  const { setColorScheme } = useMantineColorScheme({
+    keepTransitions: true,
+  })
+  const computedColorScheme = useComputedColorScheme('light')
 
   return (
     <ActionIcon

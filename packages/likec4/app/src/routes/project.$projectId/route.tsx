@@ -1,6 +1,6 @@
 import { IconRendererProvider, LikeC4ProjectsProvider } from '@likec4/diagram'
-import { Box } from '@mantine/core'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Box, Button, Container, Stack, Title } from '@mantine/core'
+import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
 import { ProjectIcons } from 'likec4:icons'
 import { loadModel } from 'likec4:model'
 import { projects } from 'likec4:projects'
@@ -12,6 +12,9 @@ import * as css from '../_single/view.css'
 export const Route = createFileRoute('/project/$projectId')({
   staleTime: Infinity,
   loader: async ({ params }) => {
+    if (!projects.some(project => project.id === params.projectId)) {
+      throw notFound()
+    }
     const { $likec4data, $likec4model } = await loadModel(params.projectId)
     return {
       $likec4data,
@@ -20,6 +23,16 @@ export const Route = createFileRoute('/project/$projectId')({
     }
   },
   component: RouteComponent,
+  notFoundComponent: () => (
+    <Box className={css.cssViewOutlet}>
+      <Container py={'xl'}>
+        <Stack align="flex-start">
+          <Title>Project not found</Title>
+          <Button component={Link} to="/" search size="md">Open overview</Button>
+        </Stack>
+      </Container>
+    </Box>
+  ),
 })
 
 function RouteComponent() {

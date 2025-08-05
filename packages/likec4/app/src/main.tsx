@@ -6,7 +6,7 @@ import { theme } from './theme'
 
 createRoot(document.getElementById('likec4-root')!).render(
   <StrictMode>
-    <MantineProvider defaultColorScheme={'auto'} theme={theme}>
+    <MantineProvider theme={theme}>
       <Routes />
     </MantineProvider>
   </StrictMode>,
