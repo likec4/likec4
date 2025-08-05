@@ -91,12 +91,6 @@ export function LikeC4Styles() {
   const customColors = useLikeC4Specification().customColors
   const customColorsStyles = customColors ? generateCustomColorStyles(customColors) : ''
 
-  // const [styles, setStyles] = useState(() => generateCustomColorStyles(customColors))
-
-  // useUpdateEffect(() => {
-  //   setStyles(generateCustomColorStyles(customColors))
-  // }, [customColors])
-
   return (
     <>
       <style type="text/css" data-likec4-global dangerouslySetInnerHTML={{ __html: globalsCss }} nonce={nonce} />
