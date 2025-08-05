@@ -17,69 +17,91 @@ export const tokens = defineTokens({
   spacing: {
     ...generated.spacing,
     '0': {
+      description: 'Non-scalable spacing value - 0px',
       value: '0px',
     },
     '0.5': {
-      value: '2px', // spacing * <value>
+      description: 'Non-scalable spacing value - (0.5 * 4px)',
+      value: '2px',
     },
     '1': {
+      description: 'Non-scalable spacing value - (1 * 4px)',
       value: '4px',
     },
     '1.5': {
-      value: '6px', // spacing * <value>
+      description: 'Non-scalable spacing value - (1.5 * 4px)',
+      value: '6px',
     },
     '2': {
+      description: 'Non-scalable spacing value - (2 * 4px)',
       value: '8px',
     },
     '2.5': {
-      value: '10px', // spacing * <value>
+      description: 'Non-scalable spacing value - (2.5 * 4px)',
+      value: '10px',
     },
     '3': {
+      description: 'Non-scalable spacing value - (3 * 4px)',
       value: '12px',
     },
     '3.5': {
+      description: 'Non-scalable spacing value - (3.5 * 4px)',
       value: '14px',
     },
     '4': {
+      description: 'Non-scalable spacing value - (4 * 4px)',
       value: '16px',
     },
     '4.5': {
+      description: 'Non-scalable spacing value - (4.5 * 4px)',
       value: '18px',
     },
     '5': {
+      description: 'Non-scalable spacing value - (5 * 4px)',
       value: '20px',
     },
     '6': {
+      description: 'Non-scalable spacing value - (6 * 4px)',
       value: '24px',
     },
     '7': {
+      description: 'Non-scalable spacing value - (7 * 4px)',
       value: '28px',
     },
     '8': {
+      description: 'Non-scalable spacing value - (8 * 4px)',
       value: '32px',
     },
     '9': {
+      description: 'Non-scalable spacing value - (9 * 4px)',
       value: '36px',
     },
     '10': {
+      description: 'Non-scalable spacing value - (10 * 4px)',
       value: '40px',
     },
     xxs: {
+      description: 'Scalable spacing value - (0.5rem * var(--scale)) (8px)',
       value: 'calc(0.5rem * var(--mantine-scale))', // 8px
     },
     xs: {
+      description: 'Scalable spacing value - (0.625rem * var(--scale)) (10px)',
       value: 'calc(0.625rem * var(--mantine-scale))', // 10px
     },
     sm: {
+      description: 'Scalable spacing value - (0.75rem * var(--scale)) (12px)',
       value: 'calc(0.75rem * var(--mantine-scale))', // 12px
     },
     md: {
+      description: 'Scalable spacing value - (1rem * var(--scale)) (16px)',
       value: 'calc(1rem * var(--mantine-scale))', // 16px
     },
     lg: {
+      description: 'Scalable spacing value - (1.25rem * var(--scale)) (20px)',
       value: 'calc(1.25rem * var(--mantine-scale))', // 20px
     },
     xl: {
+      description: 'Scalable spacing value - (2rem * var(--scale)) (32px)',
       value: 'calc(2rem * var(--mantine-scale))', // 32px
     },
   },
