@@ -1,5 +1,4 @@
 import { viteAliases } from '@/vite/aliases'
-import pandaCss from '@pandacss/dev/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
@@ -120,11 +119,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       //     hoistTransitiveImports: false,
       //   }
       // }
-    },
-    css: {
-      postcss: {
-        plugins: [pandaCss() as any],
-      },
     },
     customLogger,
     plugins: [

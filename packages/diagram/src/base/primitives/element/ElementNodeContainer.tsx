@@ -92,9 +92,6 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
     <m.div
       ref={ref}
       className={cx(
-        css({
-          likec4Palette: data.color,
-        }),
         styles.container,
         'group',
         'likec4-element-node',

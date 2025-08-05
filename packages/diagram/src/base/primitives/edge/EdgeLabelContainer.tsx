@@ -71,10 +71,6 @@ export function EdgeLabelContainer({
       <div
         key={id}
         className={cx(
-          css({
-            likec4RelationPalette: color,
-          }),
-          edgeVars,
           edgeLabelContainer,
           'nodrag nopan',
           'likec4-edge-label-container',

@@ -72,7 +72,7 @@ const OArrow = (props: SVGProps<SVGMarkerElement>) => (
     <path
       d="M 0 0 L 8 3 L 0 6 L 1 3 z"
       stroke="context-stroke"
-      fill="var(--likec4-background-color)"
+      fill="context-stroke"
       strokeWidth={1.25}
       strokeLinejoin="miter"
       strokeLinecap={'square'}
@@ -113,7 +113,7 @@ const ODiamond = (props: SVGProps<SVGMarkerElement>) => (
     <path
       d="M5,0 L10,4 L5,8 L0,4 Z"
       stroke="context-stroke"
-      fill="var(--likec4-background-color)"
+      fill="context-stroke"
       strokeWidth={1.25}
       strokeLinecap={'round'}
     />
@@ -149,7 +149,7 @@ const ODot = (props: SVGProps<SVGMarkerElement>) => (
     <circle
       strokeWidth={1.25}
       stroke="context-stroke"
-      fill="var(--likec4-background-color)"
+      fill="context-stroke"
       cx={4}
       cy={4}
       r={3}

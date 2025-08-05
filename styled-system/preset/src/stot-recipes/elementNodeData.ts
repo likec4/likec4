@@ -1,11 +1,11 @@
 import { type SystemStyleObject, defineSlotRecipe } from '@pandacss/dev'
-import { iconSize } from './const'
+import { iconSize } from '../const'
 
 const title: SystemStyleObject = {
   textStyle: 'likec4.node.primary',
   flex: '0 0 auto',
   textAlign: 'center',
-  color: 'likec4.palette.hiContrast',
+  color: 'var(--likec4-palette-hiContrast)',
 }
 
 const description: SystemStyleObject = {
@@ -13,7 +13,7 @@ const description: SystemStyleObject = {
   flexShrink: '1',
 
   textStyle: 'likec4.node.secondary',
-  color: 'likec4.palette.loContrast',
+  color: 'var(--likec4-palette-loContrast)',
   textAlign: 'center',
   textOverflow: 'ellipsis',
   overflow: 'hidden',
@@ -28,7 +28,7 @@ const description: SystemStyleObject = {
 const technology: SystemStyleObject = {
   flex: '0 0 auto',
   textStyle: 'likec4.node.secondary',
-  color: 'likec4.palette.loContrast',
+  color: 'var(--likec4-palette-loContrast)',
   fontSize: `calc(var(--likec4-text-size) * 0.635)`,
   lineHeight: 1.125,
   textAlign: 'center',
@@ -59,7 +59,7 @@ export const elementNodeData = defineSlotRecipe({
       width: 'fit-content',
       maxHeight: '100%',
       maxWidth: '100%',
-      margin: '0 auto',
+      margin: '[0 auto]',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -70,24 +70,24 @@ export const elementNodeData = defineSlotRecipe({
       paddingRight: 'calc(var(--likec4-spacing) + 8px)',
       overflow: 'hidden',
       pointerEvents: 'none',
-      gap: '12px',
+      gap: '3',
       _shapeQueue: {
-        paddingLeft: '46px',
-        paddingRight: '16px',
+        paddingLeft: '[46px]',
+        paddingRight: '[16px]',
       },
       _shapeMobile: {
-        paddingLeft: '46px',
-        paddingRight: '16px',
+        paddingLeft: '[46px]',
+        paddingRight: '[16px]',
       },
       _shapeCylinder: {
-        paddingTop: '30px',
+        paddingTop: '[30px]',
       },
       _shapeStorage: {
-        paddingTop: '30px',
+        paddingTop: '[30px]',
       },
       _shapeBrowser: {
-        paddingTop: '32px',
-        paddingBottom: '28px',
+        paddingTop: '[32px]',
+        paddingBottom: '[28px]',
       },
 
       _shapeSizeXs: {
@@ -101,11 +101,11 @@ export const elementNodeData = defineSlotRecipe({
       },
       _shapeSizeLg: {
         [iconSize]: '82px',
-        gap: '16px',
+        gap: '4',
       },
       _shapeSizeXl: {
         [iconSize]: '90px',
-        gap: '16px',
+        gap: '4',
       },
     },
     textContainer: {

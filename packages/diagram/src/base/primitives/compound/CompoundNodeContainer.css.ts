@@ -46,7 +46,7 @@ const root = css.raw({
     width: '100%',
     height: '100%',
     border: 'transparent',
-    background: 'likec4.palette.fill',
+    background: 'var(--likec4-palette-fill)',
     backgroundClip: 'padding-box',
     transitionDelay: '.075ms',
   },
@@ -84,7 +84,7 @@ const compoundBorder = css.raw({
   background: 'transparent',
   borderStyle: 'dashed',
   borderWidth: `[${borderWidth.ref}]`,
-  borderColor: `[color-mix(in srgb, {colors.likec4.palette.stroke} ${borderOpacityPercent.ref}, transparent)]`,
+  borderColor: `[color-mix(in srgb, var(--likec4-palette-stroke) ${borderOpacityPercent.ref}, transparent)]`,
 })
 
 const indicatorSvg = css.raw({
@@ -108,12 +108,12 @@ const indicatorSvg = css.raw({
 })
 
 const indicatorRect = css.raw({
-  stroke: `[color-mix(in srgb, {colors.likec4.palette.stroke} 60%, {colors.likec4.palette.hiContrast})]`,
+  stroke: `[color-mix(in srgb, var(--likec4-palette-stroke) 60%, var(--likec4-palette-hiContrast))]`,
   strokeWidth: '4',
   fill: '[none]',
   animationStyle: 'indicator',
   _light: {
-    stroke: `[color-mix(in srgb, {colors.likec4.palette.stroke} 80%, {colors.likec4.palette.hiContrast})]`,
+    stroke: `[color-mix(in srgb, var(--likec4-palette-stroke) 80%, var(--likec4-palette-hiContrast))]`,
   },
 })
 

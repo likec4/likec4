@@ -1,0 +1,76 @@
+.likec4-shadow-root {
+  display: contents;
+  --mantine-font-family: var(--likec4-app-font, var(--likec4-app-font-default));
+  --mantine-font-family-headings: var(--likec4-app-font, var(--likec4-app-font-default));
+}
+.likec4-root {
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  border: 0px solid transparent;
+  container-name: likec4-root;
+  container-type: size;
+}
+.likec4-root .react-flow:is(.not-initialized) {
+  opacity: 0;
+}
+:where(.likec4-root .mantine-ActionIcon-icon) .tabler-icon {
+  width: 75%;
+  height: 75%;
+}
+
+.likec4-root :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed]) {
+  opacity: 0.25;
+}
+
+.likec4-root:not([data-likec4-reduced-graphics])
+  :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed]) {
+  filter: grayscale(85%) blur(3px);
+}
+
+.likec4-root:not([data-likec4-reduced-graphics])
+  :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed="true"]) {
+  transition-property: opacity, filter;
+  transition-timing-function: cubic-bezier(0.50, 0, 0.2, 1);
+  transition-duration: 600ms;
+}
+
+[data-mantine-color-scheme="dark"]
+  .likec4-root:not([data-likec4-reduced-graphics])
+  :where(.react-flow__edges, .react-flow__edgelabel-renderer)
+  > svg {
+  mix-blend-mode: plus-lighter;
+}
+
+/* [data-mantine-color-scheme="light"]
+  .likec4-root:not([data-likec4-reduced-graphics])
+  :where(.react-flow__edges, .react-flow__edgelabel-renderer)
+  > svg {
+  mix-blend-mode: screen;
+} */
+
+.likec4-root :where(.likec4-edge-container, .likec4-edge-label-container) {
+  --xy-edge-stroke-width: 3;
+  --xy-edge-stroke: var(--likec4-palette-relation-stroke);
+  --xy-edge-stroke-selected: var(--likec4-palette-relation-stroke-selected);
+  --xy-edge-label-color: var(--likec4-palette-relation-label);
+  --xy-edge-label-background-color: var(--likec4-palette-relation-label-bg);
+}
+
+.likec4-root
+  :where(.likec4-edge-container, .likec4-edge-label-container):is([data-likec4-hovered="true"], [data-edge-active="true"]) {
+  --xy-edge-stroke-width: 4;
+  --xy-edge-stroke: var(--likec4-palette-relation-stroke-selected);
+}
+
+[data-mantine-color-scheme="dark"] .likec4-root :where(.likec4-edge-container, .likec4-edge-label-container) {
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-palette-relation-label-bg) 50%, transparent);
+}
+
+[data-mantine-color-scheme="light"] .likec4-root :where(.likec4-edge-container, .likec4-edge-label-container) {
+  --xy-edge-label-color: color-mix(in srgb, var(--likec4-palette-relation-label), rgba(255 255 255 / 0.85) 40%);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-palette-relation-label-bg) 60%, transparent);
+}

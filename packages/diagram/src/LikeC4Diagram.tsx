@@ -11,10 +11,10 @@ import {
 } from './context'
 import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
 import { ReduceGraphicsContext } from './context/ReduceGraphics'
-import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
+import { LikeC4Styles } from './LikeC4Styles'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
@@ -129,8 +129,8 @@ export function LikeC4Diagram<A extends Any = Any>({
                 onBurgerMenuClick,
               }}>
               <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
+                <LikeC4Styles />
                 <RootContainer className={className} reduceGraphics={isReducedGraphicsMode}>
-                  <LikeC4CustomColors />
                   <XYFlowProvider
                     fitView={fitView}
                     {...initialRef.current}

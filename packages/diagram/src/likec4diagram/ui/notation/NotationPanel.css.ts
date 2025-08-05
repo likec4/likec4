@@ -69,8 +69,8 @@ export const elementNotation = css({
 })
 
 export const shapeSvg = css({
-  fill: 'likec4.palette.fill',
-  stroke: 'likec4.palette.stroke',
+  fill: 'var(--likec4-palette-fill)',
+  stroke: 'var(--likec4-palette-stroke)',
   strokeWidth: 1,
   overflow: 'visible',
   width: '100%',
@@ -94,6 +94,6 @@ export const shapeBadge = css({
   ['--badge-padding-x']: '3px',
   ['--badge-height']: '13.5px',
   ['--badge-lh']: '1',
-  ['--badge-bg']: '{colors.likec4.palette.fill}',
-  ['--badge-color']: '{colors.likec4.palette.hiContrast}',
+  ['--badge-bg']: 'var(--likec4-palette-fill)',
+  ['--badge-color']: 'var(--likec4-palette-hiContrast)',
 })

@@ -91,7 +91,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
   return (
     <Popover
       offset={{
-        mainAxis: 4,
+        mainAxis: 2,
       }}
       middlewares={{ flip: false }}
       opened={opened}

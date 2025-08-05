@@ -1,7 +1,10 @@
 import { defineTokens } from '@pandacss/dev'
+import { tokens as generated } from './generated'
 
 export const tokens = defineTokens({
+  ...generated,
   lineHeights: {
+    ...generated.lineHeights,
     '1': {
       value: '1',
     },
@@ -12,9 +15,7 @@ export const tokens = defineTokens({
     default: { value: '1px solid {colors.mantine.colors.defaultBorder}' },
   },
   spacing: {
-    DEFAULT: {
-      value: '4px', // 4px
-    },
+    ...generated.spacing,
     '0': {
       value: '0px',
     },
@@ -83,6 +84,9 @@ export const tokens = defineTokens({
     },
   },
   radii: {
+    0: {
+      value: '0px',
+    },
     xs: {
       value: '0.125rem',
     },
@@ -100,6 +104,7 @@ export const tokens = defineTokens({
     },
   },
   colors: {
+    ...generated.colors,
     // For typesafety, otherwise wrap with []
     transparent: { value: 'transparent' },
   },

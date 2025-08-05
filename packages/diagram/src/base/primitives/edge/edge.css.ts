@@ -8,23 +8,23 @@ const labelColor = '--xy-edge-label-color'
 const labelBg = '--xy-edge-label-background-color'
 
 export const edgeVars = css({
-  [edgeStroke]: '{colors.likec4.relation.stroke}',
-  [edgeStrokeSelected]: '{colors.likec4.relation.stroke.selected}',
-  [labelColor]: {
-    base: '{colors.likec4.relation.label}',
-    _light: `color-mix(in srgb, {colors.likec4.relation.label}, rgba(255 255 255 / 0.85) 40%)`,
-  },
-  [labelBg]: {
-    _light: `{colors.likec4.relation.label.bg/60}`,
-    _dark: `{colors.likec4.relation.label.bg/50}`,
-  },
-  ['--xy-edge-stroke-width']: '3',
-  '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
-    [edgeStroke]: '{colors.likec4.relation.stroke.selected}',
-    _whenSelected: {
-      ['--xy-edge-stroke-width']: '4',
-    },
-  },
+  // [edgeStroke]: 'var(--likec4-palette-relation-stroke)',
+  // [edgeStrokeSelected]: 'var(--likec4-palette-relation-stroke-selected)',
+  // [labelColor]: {
+  //   base: 'var(--likec4-palette-relation-label)',
+  //   _light: `color-mix(in srgb, var(--likec4-palette-relation-label), rgba(255 255 255 / 0.85) 40%)`,
+  // },
+  // [labelBg]: {
+  //   _light: `var(--likec4-palette-relation-label-bg)/60`,
+  //   _dark: `var(--likec4-palette-relation-label-bg)/50`,
+  // },
+  // ['--xy-edge-stroke-width']: '3',
+  // '&:is([data-likec4-hovered=\'true\'],[data-edge-active=\'true\'])': {
+  //   [edgeStroke]: 'var(--likec4-palette-relation-stroke-selected)',
+  //   _whenSelected: {
+  //     ['--xy-edge-stroke-width']: '4',
+  //   },
+  // },
 })
 
 export const edgeContainer = css({
