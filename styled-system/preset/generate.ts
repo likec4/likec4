@@ -78,6 +78,10 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
   })
 }
 
+function rem(pixels: number) {
+  return `${(pixels / 16).toPrecision(3)}rem`
+}
+
 const tokens = {
   spacing: {
     likec4: {
