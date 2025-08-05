@@ -49,7 +49,7 @@
   .likec4-root:not([data-likec4-reduced-graphics])
   :where(.react-flow__edges, .react-flow__edgelabel-renderer)
   > svg {
-  mix-blend-mode: normal;
+  mix-blend-mode: screen;
 }
 
 .likec4-root :where(.likec4-edge-container, .likec4-edge-label-container) {
