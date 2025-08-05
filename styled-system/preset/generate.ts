@@ -1,9 +1,8 @@
-import { type ThemeColor, defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
+import { defaultTheme, ElementShapes, ThemeColors } from '@likec4/core/src'
 import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
 import type { Config } from '@pandacss/dev'
 import JSON5 from 'json5'
-import { mix, scale, toHex, toRgba } from 'khroma'
 import { writeFileSync } from 'node:fs'
 import {
   capitalize,
@@ -79,73 +78,6 @@ const mapcolors = (colorkey: keyof MantineColors, prefix = colorkey) => {
   })
 }
 
-function rem(pixels: number) {
-  return `${(pixels / 16).toPrecision(3)}rem`
-}
-
-const MAX_DEPTH = 5
-const generateCompoundColors = (color: ThemeColor, depth: number) => {
-  const compoundDarkColor = (color: string) =>
-    toHex(
-      scale(color, {
-        l: -22 - 5 * depth,
-        s: -10 - 6 * depth,
-      }),
-    )
-  const compoundLightColor = (color: string) =>
-    toHex(
-      scale(color, {
-        l: -20 - 3 * depth,
-        s: -3 - 6 * depth,
-      }),
-    )
-  return {
-    hiContrast: { value: `{colors.likec4.${color}.element.hiContrast}` },
-    loContrast: { value: `{colors.likec4.${color}.element.loContrast}` },
-    fill: {
-      value: {
-        _light: compoundLightColor(defaultTheme.elements[color].fill),
-        _dark: compoundDarkColor(defaultTheme.elements[color].fill),
-      },
-    },
-    stroke: {
-      value: {
-        _light: compoundLightColor(defaultTheme.elements[color].stroke),
-        _dark: compoundDarkColor(defaultTheme.elements[color].stroke),
-      },
-    },
-  }
-}
-
-const generateRelationColors = (color: ThemeColor) => ({
-  relation: {
-    stroke: {
-      DEFAULT: { value: defaultTheme.relationships[color].lineColor },
-      selected: {
-        value: {
-          _light: toRgba(mix(defaultTheme.relationships[color].lineColor, 'black', 85)),
-          _dark: toRgba(mix(defaultTheme.relationships[color].lineColor, 'white', 70)),
-        },
-      },
-    },
-    label: {
-      DEFAULT: { value: defaultTheme.relationships[color].labelColor },
-      bg: { value: defaultTheme.relationships[color].labelBgColor },
-    },
-  },
-})
-
-const generateLikeC4ElementColor = (color: ThemeColor) => {
-  return {
-    element: {
-      fill: { value: defaultTheme.elements[color].fill },
-      stroke: { value: defaultTheme.elements[color].stroke },
-      hiContrast: { value: defaultTheme.elements[color].hiContrast },
-      loContrast: { value: defaultTheme.elements[color].loContrast },
-    },
-  }
-}
-
 const tokens = {
   spacing: {
     likec4: {
@@ -194,22 +126,6 @@ const tokens = {
       },
     },
   },
-  // semanticTokens: {
-  //   colors: {
-  //     likec4: {
-  //       ...fromKeys(ThemeColors, (color) => ({
-  //         ...generateLikeC4ElementColor(color),
-  //         ...generateRelationColors(color),
-  //       })),
-  //       ...mapToObj(range(1, MAX_DEPTH + 1), (depth) => [
-  //         `compound${depth}`,
-  //         fromKeys(ThemeColors, (color) => ({
-  //           ...generateCompoundColors(color, depth),
-  //         })),
-  //       ]),
-  //     },
-  //   },
-  // },
 } satisfies ExtendableTheme['tokens']
 
 const globalVars = {
@@ -235,10 +151,6 @@ ${map(ThemeColors, (color) => `  '${color}' as const`).join(',\n')}
 export const conditions = ${
   JSON5.stringify(
     {
-      // ...mapToObj(ThemeColors, (color) => [
-      //   'likec4Color' + capitalize(color),
-      //   `:where([data-likec4-color='${color}']) &`,
-      // ]),
       ...pipe(
         defaultTheme.sizes,
         mapValues((_, key) => `:where([data-likec4-shape-size='${key}']) &`),
@@ -269,7 +181,6 @@ export const globalCss = ${
           '--likec4-spacing': `{spacing.likec4.${size}}`,
         },
       ]),
-      // ...generateCompoundColors(),
     },
     null,
     2,
