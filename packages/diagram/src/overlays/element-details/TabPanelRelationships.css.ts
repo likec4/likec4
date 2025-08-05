@@ -5,11 +5,11 @@ export const fqn = css({
   fontSize: 'sm',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '3px 6px',
+  padding: '[3px 6px]',
   borderRadius: 3,
-  background: `likec4.palette.fill/75`,
+  background: `var(--likec4-palette-fill)/75`,
   lineHeight: 1.2,
-  color: 'likec4.palette.hiContrast',
+  color: 'var(--likec4-palette-hiContrast)',
   // selectors: {
   //   [`${whereDark} &`]: {
   //   }
@@ -55,9 +55,9 @@ export const panelScope = css({
   _before: {
     content: '"scope:"',
     position: 'absolute',
-    top: 0,
-    left: 8,
-    fontSize: '2xs',
+    top: '0',
+    left: '2',
+    fontSize: 'xxs',
     fontWeight: 500,
     lineHeight: '1',
     color: 'mantine.colors.dimmed',
@@ -75,7 +75,7 @@ export const edgeNum = css({
   display: 'inline-block',
   fontSize: 'xl',
   fontWeight: 600,
-  padding: '1px 5px',
+  padding: '[1px 5px]',
   minWidth: 24,
   textAlign: 'center',
   borderRadius: 'sm',

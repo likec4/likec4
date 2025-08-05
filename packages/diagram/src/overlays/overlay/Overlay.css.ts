@@ -10,7 +10,7 @@ const inset = '--_inset'
 const borderRadius = '--_border-radius'
 const dialog = css.raw({
   boxSizing: 'border-box',
-  margin: 0,
+  margin: '0',
   position: 'fixed',
   width: '100vw',
   height: '100vh',
@@ -30,8 +30,8 @@ const dialog = css.raw({
   _backdrop: {
     cursor: 'zoom-out',
   },
-  inset: 0,
-  padding: 0,
+  inset: '0',
+  padding: '0',
 })
 
 const body = css.raw({
@@ -60,7 +60,7 @@ export const overlay = sva({
             width: 'calc(100vw - 2 * var(--_inset))',
             height: 'calc(100vh - var(--_offset) - var(--_inset))',
             [borderRadius]: '6px',
-            padding: '6px',
+            padding: '1.5', // 6px
             [offset]: '1rem',
           },
           md: {
@@ -81,8 +81,8 @@ export const overlay = sva({
       },
       true: {
         dialog: {
-          inset: 0,
-          padding: 0,
+          inset: '0',
+          padding: '0',
         },
       },
     },

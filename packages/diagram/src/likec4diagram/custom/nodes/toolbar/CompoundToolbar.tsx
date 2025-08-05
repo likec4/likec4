@@ -105,8 +105,8 @@ function BorderStyleOption({
         }}
         styles={{
           label: {
-            paddingTop: 2,
-            paddingBottom: 2,
+            paddingTop: '0.5',
+            paddingBottom: '0.5',
           },
         }}
         data={[

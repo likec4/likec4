@@ -6,14 +6,14 @@ export const controlPointsContainer = css({
   overflow: 'visible',
   position: 'absolute',
   pointerEvents: 'none',
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   mixBlendMode: 'normal',
 })
 
 export const controlPoint = css({
-  fill: `likec4.relation.stroke`,
-  stroke: `likec4.relation.stroke`,
+  fill: `var(--likec4-palette-relation-stroke)`,
+  stroke: `var(--likec4-palette-relation-stroke)`,
   fillOpacity: 0.75,
   strokeWidth: 1,
   cursor: 'grab',

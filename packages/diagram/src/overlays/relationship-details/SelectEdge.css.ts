@@ -3,7 +3,7 @@ import { css, cx } from '@likec4/styles/css'
 const edgeEnpoint = css.raw({
   display: 'inline-flex',
   alignItems: 'center',
-  padding: '6px 2px 0 2px',
+  padding: '[6px 2px 0 2px]',
   '& .mantine-Text-root': {
     color: 'mantine.colors.text/90',
     fontSize: 'xs',
@@ -13,7 +13,7 @@ const edgeEnpoint = css.raw({
 })
 
 export const edgeSource = css({
-  paddingLeft: 4,
+  paddingLeft: '1',
   gridColumn: 1,
 }, edgeEnpoint)
 
@@ -23,7 +23,7 @@ export const edgeArrow = css({
 
 export const edgeTarget = css({
   gridColumn: 3,
-  paddingRight: 4,
+  paddingRight: '1',
 }, edgeEnpoint)
 
 const edgeLabelclass = 'likec4-edge-label'
@@ -35,8 +35,8 @@ export const edgeLabel = cx(
     gridColumnEnd: 4,
     borderBottom: `1px solid`,
     borderBottomColor: 'mantine.colors.defaultBorder',
-    marginBottom: '0px',
-    padding: '0 4px 5px 4px',
+    marginBottom: '0',
+    padding: '[0 4px 5px 4px]',
     width: '100%',
     '& .mantine-Text-root': {
       fontSize: 'xxs',
@@ -51,7 +51,7 @@ export const edgeRow = css({
   display: 'contents',
   [`&:last-child .${edgeLabelclass}`]: {
     borderBottom: 'none',
-    marginBottom: 0,
+    marginBottom: '0',
   },
   '& > *': {
     transition: 'all 0.15s ease-in',
@@ -67,7 +67,7 @@ export const edgeGrid = css({
   display: 'grid',
   gridTemplateColumns: '1fr 30px 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: 0,
+  gap: '0',
   alignItems: 'stretch',
 })
 
@@ -75,7 +75,7 @@ export const edgeDataGrid = css({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: '10px 12px',
+  gap: '[10px 12px]',
   alignItems: 'baseline',
   justifyItems: 'start',
 })

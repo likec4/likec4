@@ -27,16 +27,16 @@ export const likec4Container = css({
 // })
 
 export const likec4ParsingScreen = css({
-  padding: '1rem',
+  padding: 'md',
   '& section': {
-    marginTop: '1rem',
-    marginBottom: '1rem',
+    marginTop: 'md',
+    marginBottom: 'md',
   },
 })
 
 export const stateAlert = css({
   position: 'absolute',
-  top: '0.75rem',
-  left: '0.5rem',
+  top: '[0.75rem]',
+  left: '[0.5rem]',
   userSelect: 'none',
 })

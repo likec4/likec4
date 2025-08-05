@@ -15,9 +15,9 @@ type ElementActionButtonsProps = NodeProps & {
 const container = css({
   position: 'absolute',
   zIndex: 1,
-  top: `calc(100% - 30px)`,
+  top: `[calc(100% - 30px)]`,
   transform: 'translateX(-50%)',
-  left: `50%`,
+  left: `[50%]`,
   width: 'auto',
   minHeight: '30px',
   display: 'flex',

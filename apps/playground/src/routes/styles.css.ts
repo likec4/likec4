@@ -50,8 +50,8 @@ export const resize = css({
 
 export const stateAlert = css({
   position: 'absolute',
-  top: '0.75rem',
-  left: '0.5rem',
+  top: '[0.75rem]',
+  left: '[0.5rem]',
   userSelect: 'none',
   '& .mantine-Notification-description': {
     whiteSpace: 'pre-line',

@@ -30,9 +30,9 @@ export function SearchControl() {
       className={cx(
         'group',
         hstack({
-          gap: '2xs',
+          gap: 'xxs',
           paddingInline: 'sm',
-          paddingBlock: '2xs',
+          paddingBlock: 'xxs',
           rounded: 'sm',
           userSelect: 'none',
           cursor: 'pointer',

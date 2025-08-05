@@ -15,20 +15,20 @@ type ElementDetailsButtonProps = NodeProps & {
 
 const container = css({
   position: 'absolute',
-  top: 2,
-  right: 2,
+  top: '0.5',
+  right: '0.5',
   _shapeBrowser: {
-    right: '5px',
+    right: '[5px]',
   },
   _shapeCylinder: {
-    top: '14px',
+    top: '[14px]',
   },
   _shapeStorage: {
-    top: '14px',
+    top: '[14px]',
   },
   _shapeQueue: {
-    top: '1px',
-    right: '12px',
+    top: '[1px]',
+    right: '3', // 12px
   },
   _smallZoom: {
     display: 'none',

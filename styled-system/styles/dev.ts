@@ -33,7 +33,7 @@ export function defineConfig(config: Config) {
           'colors',
           'animations',
           'easings',
-          // 'spacing',
+          'spacing',
           // 'sizes',
           // 'lineHeights',
           // 'shadows',

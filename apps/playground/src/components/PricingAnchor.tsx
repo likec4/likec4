@@ -11,7 +11,7 @@ export const PricingAnchor = ({
     underline="hover"
     className={hstack({
       display: 'inline-flex',
-      gap: '1',
+      gap: '[1px]',
       alignItems: 'center',
       fontSize: 'xs',
       whiteSpace: 'nowrap',

@@ -45,23 +45,6 @@ export const semanticTokens = defineSemanticTokens({
           value: `{colors.tomato.12}`,
         },
       },
-      palette: {
-        DEFAULT: { value: `var(--likec4-palette,'likec4.primary')` },
-        fill: { value: '{colors.likec4.primary.element.fill}' },
-        stroke: { value: '{colors.likec4.primary.element.stroke}' },
-        hiContrast: { value: '{colors.likec4.primary.element.hiContrast}' },
-        loContrast: { value: '{colors.likec4.primary.element.loContrast}' },
-      },
-      relation: {
-        stroke: {
-          DEFAULT: { value: '{colors.likec4.gray.relation.stroke}' },
-          selected: { value: '{colors.likec4.gray.relation.stroke.selected}' },
-        },
-        label: {
-          DEFAULT: { value: '{colors.likec4.gray.relation.label}' },
-          bg: { value: '{colors.likec4.gray.relation.label.bg}' },
-        },
-      },
       panel: {
         bg: {
           DEFAULT: {

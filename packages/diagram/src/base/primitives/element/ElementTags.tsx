@@ -101,23 +101,23 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
           'likec4-element-tags',
           hstack({
             pointerEvents: 'all',
-            gap: 4,
+            gap: '1',
             alignItems: 'flex-end',
             justifyItems: 'stretch',
             position: 'absolute',
             width: '100%',
-            bottom: 0,
-            left: 0,
-            padding: 4,
+            bottom: '0',
+            left: '0',
+            padding: '1',
             _shapeCylinder: {
-              bottom: 5,
+              bottom: '[5px]',
             },
             _shapeStorage: {
-              bottom: 5,
+              bottom: '[5px]',
             },
             _shapeQueue: {
-              bottom: 0,
-              paddingLeft: 14,
+              bottom: '0',
+              paddingLeft: '[14px]',
             },
           }),
         )}
@@ -149,12 +149,12 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
         <HStack
           ref={tagsToolbarRef}
           css={{
-            gap: 4,
+            gap: '0.5',
             alignItems: 'baseline',
             flexWrap: 'wrap',
             pb: 'sm',
             translate: 'auto',
-            x: -8,
+            x: '[-8px]',
             maxWidth,
           }}
         >
@@ -167,8 +167,8 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
                 cursor: 'pointer',
                 ...(zoomIsLargeEnough && {
                   fontSize: 'lg',
-                  borderRadius: 4,
-                  px: 6,
+                  borderRadius: '[4px]',
+                  px: '1.5', // 6px
                 }),
               })}
               onClick={e => {

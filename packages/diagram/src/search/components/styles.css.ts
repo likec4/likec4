@@ -18,7 +18,7 @@ export const input = css({
 
 export const pickviewBackdrop = css({
   position: 'absolute',
-  inset: 0,
+  inset: '0',
   width: '100%',
   height: '100%',
   backgroundColor: '[rgb(34 34 34 / 0.7)]',
@@ -31,8 +31,8 @@ export const pickviewBackdrop = css({
 })
 export const pickview = css({
   position: 'absolute',
-  top: '2rem',
-  left: '50%',
+  top: '[2rem]',
+  left: '[50%]',
   width: '100%',
   maxWidth: '600px',
   minWidth: '200px',
@@ -41,9 +41,9 @@ export const pickview = css({
 })
 
 export const pickviewGroup = css({
-  marginTop: '8px',
+  marginTop: '2',
   '& + &': {
-    marginTop: '32px',
+    marginTop: '[32px]',
   },
 })
 

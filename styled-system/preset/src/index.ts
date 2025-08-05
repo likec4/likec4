@@ -1,11 +1,71 @@
 import { type Preset, definePreset } from '@pandacss/dev'
 import radixColorsPreset from 'pandacss-preset-radix-colors'
 import { conditions } from './conditions'
-import { iconSize, nodeOrEdge, radixColors, root, rootNotReduced } from './const'
-import { compoundColors, globalCss, themeColors } from './generated'
+import { radixColors } from './const'
+import { breakpoints, globalCss } from './generated'
+import { globalVars } from './globalVars'
+import { layerStyles } from './layer-styles'
 import { patterns } from './patterns'
-import { theme } from './theme'
+import * as recipes from './recipes'
+import { semanticTokens } from './semantic-tokens'
+import * as slotRecipes from './stot-recipes'
+import { textStyles } from './text-styles'
+import { tokens } from './tokens'
 import { utilities } from './utilities'
+
+export const theme = {
+  breakpoints,
+  textStyles,
+  layerStyles,
+  tokens,
+  semanticTokens,
+  recipes,
+  slotRecipes,
+  containerNames: ['likec4-root', 'likec4-dialog'],
+  containerSizes: {
+    xs: '384px',
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+  },
+  keyframes: {
+    'indicatorStrokeOpacity': {
+      '0%': {
+        strokeOpacity: 0.8,
+      },
+      '100%': {
+        strokeOpacity: 0.4,
+      },
+    },
+    'xyedgeAnimated': {
+      '0%': {
+        strokeDashoffset: 18 * 2 + 10,
+      },
+      '100%': {
+        strokeDashoffset: 10,
+      },
+    },
+  },
+  animationStyles: {
+    'indicator': {
+      value: {
+        animationDuration: '1s',
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+        animationName: 'indicatorStrokeOpacity',
+      },
+    },
+    'xyedgeAnimated': {
+      value: {
+        animationDuration: '800ms',
+        animationIterationCount: 'infinite',
+        animationTimingFunction: 'linear',
+        animationFillMode: 'both',
+        animationName: 'xyedgeAnimated',
+      },
+    },
+  },
+}
 
 export default definePreset({
   name: 'likec4',
@@ -22,112 +82,18 @@ export default definePreset({
       colorScales: radixColors,
     }) as unknown as Preset,
   ],
-  globalVars: {
-    extend: {
-      '--likec4-palette': {
-        syntax: '*',
-        inherits: false,
-        // initialValue: `'likec4.primary'`,
-      },
-      '--likec4-text-size': {
-        syntax: '<length-percentage>',
-        inherits: false,
-        // initialValue: '1rem',
-      },
-      '--likec4-spacing': {
-        syntax: '<length-percentage>',
-        inherits: false,
-        // initialValue: '1rem',
-      },
-      '--text-fz': {
-        syntax: '<length-percentage>',
-        inherits: false,
-        // initialValue: '1rem',
-      },
-      [iconSize]: {
-        syntax: '<length-percentage>',
-        inherits: false,
-        // initialValue: '1rem',
-      },
-    },
-  },
-  globalCss: {
-    extend: {
-      // '@supports ((hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none))': {
-      //   // TODO: this workaround disables animations in Safari (to improve performance)
-      //   ['--likec4-safari-animation-hook']: ' ',
-      // },
-      ':where(:host, :root)': {
-        ['--likec4-app-font-default']:
-          `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
-      },
-      '.likec4-shadow-root': {
-        display: 'contents',
-        '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
-        '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
-      },
-      [`${root}`]: {
-        overflow: 'hidden',
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        padding: '0px',
-        margin: '0px',
-        border: '0px solid transparent',
-        containerName: 'likec4-root',
-        containerType: 'size',
-      },
-      [`${root} .react-flow:is(.not-initialized)`]: {
-        opacity: 0,
-      },
-      [`:where(${root} .mantine-ActionIcon-icon) .tabler-icon`]: {
-        width: '75%',
-        height: '75%',
-      },
-      [`${root} ${nodeOrEdge}:has([data-likec4-dimmed])`]: {
-        opacity: 0.25,
-      },
-      [`${rootNotReduced} ${nodeOrEdge}:has([data-likec4-dimmed])`]: {
-        filter: 'auto',
-        grayscale: 0.85,
-        blur: '3px',
-      },
-      [`${rootNotReduced} ${nodeOrEdge}:has([data-likec4-dimmed="true"])`]: {
-        transitionProperty: 'opacity, filter',
-        transitionTimingFunction: '{easings.inOut}',
-        transitionDuration: '600ms',
-        // transitionDelay: '100ms',
-      },
-      [`[data-mantine-color-scheme="dark"] ${rootNotReduced} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
-        {
-          mixBlendMode: 'plus-lighter',
-        },
-      [`[data-mantine-color-scheme="light"] ${rootNotReduced} :where(.react-flow__edges, .react-flow__edgelabel-renderer) > svg`]:
-        {
-          mixBlendMode: 'screen',
-        },
-      ...globalCss,
-    },
-  },
+  globalVars,
+  globalCss,
   staticCss: {
     extend: {
       themes: ['light', 'dark'],
-      css: [{
-        properties: {
-          color: [
-            'likec4.palette.hiContrast',
-            'likec4.palette.loContrast',
-          ],
-          likec4Palette: [...themeColors, ...compoundColors],
-          likec4RelationPalette: themeColors,
-        },
-      }],
+      recipes: '*',
     },
   },
   conditions,
   patterns,
   utilities,
-  theme,
+  theme: {
+    extend: theme,
+  },
 })
-
-export { theme }

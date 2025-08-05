@@ -88,6 +88,7 @@
     "@xstate/react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
+    "khroma": "2.1.0",
     "bezier-js": "^6.1.4",
     "esm-env": "catalog:utils",
     "d3-shape": "^3.2.0",

@@ -7,7 +7,7 @@ export const menuDropdown = css({
 })
 
 export const menuItemRelationship = css({
-  gap: 4,
+  gap: '1',
 })
 
 export const endpoint = css({
@@ -15,17 +15,17 @@ export const endpoint = css({
   fontSize: 'xxs',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '2px 4px',
-  borderRadius: 2,
-  background: `likec4.palette.fill/30`,
+  padding: '[2px 4px]',
+  borderRadius: '[2px]',
+  background: `var(--likec4-palette-fill)/30`,
   lineHeight: '[1.11]',
   mixBlendMode: 'hard-light',
   color: {
-    _light: `[color-mix(in srgb, {colors.likec4.palette.stroke}, {colors.likec4.mixColor} 60%)]`,
-    _dark: 'likec4.palette.loContrast',
+    _light: `[color-mix(in srgb, var(--likec4-palette-stroke), {colors.likec4.mixColor} 60%)]`,
+    _dark: 'var(--likec4-palette-loContrast)',
   },
   // _dark: {
-  //   background: `likec4.palette.fill/60`,
+  //   background: `var(--likec4-palette-fill)/60`,
   // },
 })
 

@@ -6,6 +6,7 @@ type ExtendableConditions = NonNullable<Config['conditions']>
 
 export const conditions = {
   extend: {
+    ...generated,
     light: '[data-mantine-color-scheme="light"] &',
     dark: '[data-mantine-color-scheme="dark"] &',
 
@@ -44,8 +45,6 @@ export const conditions = {
     whenSelected: ':where(.react-flow__node.selected, .react-flow__edge.selected) &',
     whenDimmed: ':where([data-likec4-dimmed]) &',
     whenFocused: ':where(.react-flow__node, .react-flow__edge):is(:focus-visible, :focus, :focus-within) &',
-
     // likec4Color: ':where([data-likec4-color]) &',
-    ...generated,
   },
 } satisfies ExtendableConditions

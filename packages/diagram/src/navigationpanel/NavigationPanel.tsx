@@ -59,7 +59,7 @@ export const NavigationPanel = memo(() => {
           left: '0',
           margin: '0',
           width: '100%',
-          gap: '2xs',
+          gap: 'xxs',
           maxWidth: [
             'calc(100vw)',
             'calc(100cqw)',
@@ -91,7 +91,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
   return (
     <Popover
       offset={{
-        mainAxis: 4,
+        mainAxis: 2,
       }}
       middlewares={{ flip: false }}
       opened={opened}

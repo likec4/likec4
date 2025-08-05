@@ -3,17 +3,17 @@ import type { SystemStyleObject } from '@likec4/styles/types'
 
 export const container = css({
   position: 'absolute',
-  bottom: '0.5rem',
-  left: '50%',
+  bottom: 'xxs',
+  left: '[50%]',
   transform: 'translateX(-50%)',
-  padding: 0,
-  margin: 0,
+  padding: '[0px]',
+  margin: '[0px]',
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.4rem',
+  gap: '[0.4rem]',
   alignItems: 'center',
   md: {
-    gap: '0.6rem',
+    gap: '[0.6rem]',
   },
 })
 
@@ -55,10 +55,10 @@ export const btn = css({
 
 export const parallelStateFrame = css({
   position: 'absolute',
-  margin: 0,
-  padding: 0,
-  top: 0,
-  left: 0,
+  margin: '0',
+  padding: '0',
+  top: '0',
+  left: '0',
   width: '100%',
   height: '100%',
   border: `2px solid`,

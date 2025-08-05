@@ -11,7 +11,7 @@ import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
 import { type NavigationPanelActorSnapshot } from './actor'
 import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly, ViewDetailsCard } from './controls'
-import { useNavigationActor, useNavigationActorRef } from './hooks'
+import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { StartWalkthroughButton } from './walkthrough'
 
@@ -50,6 +50,7 @@ export const NavigationPanelControls = () => {
         breadcrumbTitle({ dimmed: true, truncate: true }),
         'mantine-active',
         css({
+          userSelect: 'none',
           maxWidth: '200px',
           display: {
             base: 'none',
@@ -62,7 +63,7 @@ export const NavigationPanelControls = () => {
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
       onClick={e => {
         e.stopPropagation()
-        actor.selectFolder(folderPath)
+        actor.send({ type: 'breadcrumbs.click.folder', folderPath })
       }}
     >
       {title}
@@ -77,6 +78,9 @@ export const NavigationPanelControls = () => {
       className={cx(
         'mantine-active',
         breadcrumbTitle({ truncate: true }),
+        css({
+          userSelect: 'none',
+        }),
       )}
       title={viewTitle}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.viewtitle' })}
@@ -98,7 +102,7 @@ export const NavigationPanelControls = () => {
         key="breadcrumbs"
         layout="position"
         className={hstack({
-          gap: 3,
+          gap: '[3px]',
           flexShrink: 1,
           flexGrow: 1,
           overflow: 'hidden',
@@ -110,7 +114,7 @@ export const NavigationPanelControls = () => {
         key="actions"
         layout="position"
         className={hstack({
-          gap: 1,
+          gap: '[1px]',
           flexGrow: 0,
           _empty: {
             display: 'none',

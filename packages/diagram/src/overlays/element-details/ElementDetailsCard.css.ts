@@ -5,10 +5,10 @@ export const backdropOpacity = '--_opacity'
 
 export const dialog = css({
   boxSizing: 'border-box',
-  margin: 0,
-  padding: 0,
+  margin: '0',
+  padding: '0',
   position: 'fixed',
-  inset: 0,
+  inset: '0',
   width: '100vw',
   height: '100vh',
   maxWidth: '100vw',
@@ -34,12 +34,12 @@ export const card = css({
   border: `none`,
   backgroundImage: `
     linear-gradient(180deg,
-      color-mix(in srgb, {colors.likec4.palette.fill} 60%, transparent),
-      color-mix(in srgb, {colors.likec4.palette.fill} 20%, transparent) 8px,
-      color-mix(in srgb, {colors.likec4.palette.fill} 14%, transparent) 20px,
+      color-mix(in srgb, var(--likec4-palette-fill) 60%, transparent),
+      color-mix(in srgb, var(--likec4-palette-fill) 20%, transparent) 8px,
+      color-mix(in srgb, var(--likec4-palette-fill) 14%, transparent) 20px,
       transparent 80px
     ),
-    linear-gradient(180deg, {colors.likec4.palette.fill}, {colors.likec4.palette.fill} 4px, transparent 4px)
+    linear-gradient(180deg, var(--likec4-palette-fill), var(--likec4-palette-fill) 4px, transparent 4px)
   `,
   '& .react-flow__attribution': {
     display: 'none',
@@ -99,7 +99,7 @@ export const viewButton = css({
   width: '100%',
   background: 'mantine.colors.body',
   borderRadius: 'sm',
-  padding: `10px 8px`,
+  padding: `[10px 8px]`,
   // gap: 6,
   // alignItems: 'flex-start',
   transition: 'fast',
@@ -163,8 +163,8 @@ export const tabsList = css({
   background: 'mantine.colors.gray[1]',
   borderRadius: 'sm',
   flexWrap: 'nowrap',
-  gap: '6px',
-  padding: '4px',
+  gap: '1.5', // 6px
+  padding: '1',
   _dark: {
     background: 'mantine.colors.dark[7]',
   },
@@ -174,7 +174,7 @@ export const tabsTab = css({
   fontSize: 'xs',
   fontWeight: 500,
   flexGrow: 1,
-  padding: '6px 8px',
+  padding: '[6px 8px]',
   transition: 'fast',
   borderRadius: 'sm',
   color: 'mantine.colors.gray[7]',
@@ -208,15 +208,15 @@ export const tabsPanel = css({
   overflow: 'hidden',
   position: 'relative',
   '&:not(:has(.mantine-ScrollArea-root))': {
-    paddingLeft: '4px',
-    paddingRight: '4px',
+    paddingLeft: '1',
+    paddingRight: '1',
   },
   '& .mantine-ScrollArea-root': {
     width: '100%',
     height: '100%',
     '& > div': {
-      paddingLeft: '4px',
-      paddingRight: '4px',
+      paddingLeft: '1',
+      paddingRight: '1',
     },
   },
 })
@@ -246,8 +246,8 @@ export const resizeHandle = css({
   borderTop: 'none',
   borderLeft: 'none',
   borderRadius: '2px',
-  bottom: '2px',
-  right: '2px',
+  bottom: '0.5',
+  right: '0.5',
   transition: 'fast',
   cursor: 'se-resize',
   _hover: {
