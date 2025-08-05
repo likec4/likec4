@@ -19,10 +19,10 @@ const titleContainer = css({
   position: 'absolute',
   display: 'flex',
   alignItems: 'center',
-  gap: '6px',
-  left: '14px',
-  top: '4px',
-  right: '30px',
+  gap: '[6px]',
+  left: '[14px]',
+  top: '[4px]',
+  right: '[30px]',
   width: 'auto',
   minHeight: '30px',
   [`:where(.react-flow__node.draggable) &`]: {
@@ -30,7 +30,7 @@ const titleContainer = css({
     cursor: 'grab',
   },
   [`.likec4-compound-node:has(.compound-action) &`]: {
-    paddingLeft: '22px',
+    paddingLeft: '[22px]',
   },
 })
 

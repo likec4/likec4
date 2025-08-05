@@ -42,8 +42,8 @@ export const fillMixStroke = css({
 })
 
 const shapeBase = css.raw({
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   position: 'absolute',
   width: '100%',
   height: '100%',

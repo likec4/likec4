@@ -6,8 +6,8 @@ export const controlPointsContainer = css({
   overflow: 'visible',
   position: 'absolute',
   pointerEvents: 'none',
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   mixBlendMode: 'normal',
 })
 

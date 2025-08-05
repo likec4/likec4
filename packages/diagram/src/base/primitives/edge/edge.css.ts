@@ -117,11 +117,11 @@ export const actionBtn = css({
   '--ai-size': `var(--ai-size-sm)`,
   '--ai-radius': `var(--mantine-radius-sm)`,
   _hover: {
-    translateY: '1px',
+    translateY: '[1px]',
     scale: 1.15,
   },
   _active: {
-    translateY: '-1px',
+    translateY: '[-1px]',
     scale: '0.9',
   },
   _whenHovered: {

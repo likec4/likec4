@@ -55,7 +55,7 @@ export const panelScope = css({
   _before: {
     content: '"scope:"',
     position: 'absolute',
-    top: 0,
+    top: '0',
     left: 8,
     fontSize: '2xs',
     fontWeight: 500,

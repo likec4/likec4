@@ -520,7 +520,7 @@ export function ElementDetailsCard({
             dragElastic={0}
             dragMomentum={false}
             onDrag={handleDrag}
-            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
+            dragConstraints={{ top: '0', left: '0', right: 0, bottom: 0 }} />
         </Card>
       </RemoveScroll>
     </m.dialog>

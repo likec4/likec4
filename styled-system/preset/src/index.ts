@@ -30,22 +30,22 @@ export default definePreset({
         // initialValue: `'likec4.primary'`,
       },
       '--likec4-text-size': {
-        syntax: '<length-percentage>',
+        syntax: '<length> | <percentage>',
         inherits: false,
         // initialValue: '1rem',
       },
       '--likec4-spacing': {
-        syntax: '<length-percentage>',
+        syntax: '<length> | <percentage>',
         inherits: false,
-        // initialValue: '1rem',
+        initialValue: '0.125rem',
       },
       '--text-fz': {
-        syntax: '<length-percentage>',
+        syntax: '<length> | <percentage>',
         inherits: false,
         // initialValue: '1rem',
       },
       [iconSize]: {
-        syntax: '<length-percentage>',
+        syntax: '<length> | <percentage>',
         inherits: false,
         // initialValue: '1rem',
       },

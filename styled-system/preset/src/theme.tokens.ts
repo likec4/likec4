@@ -15,21 +15,21 @@ export const tokens = defineTokens({
     '0': {
       value: '0px',
     },
-    '2': {
-      value: '2px',
+    // '2': {
+    //   value: '2px',
+    // },
+    // '4': {
+    //   value: '4px',
+    // },
+    'xxs': {
+      value: 'calc(0.5rem * var(--mantine-scale))',
     },
-    '4': {
-      value: '4px',
-    },
-    'micro': {
-      value: '4px',
-    },
-    '2xs': {
-      value: '8px',
-    },
-    '8': {
-      value: '8px',
-    },
+    // '2xs': {`
+    //   value: '8px',
+    // },
+    // '8': {
+    //   value: '8px',
+    // },
   },
   radii: {
     xs: {

@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 export const root = css({
   height: '30px',
   paddingLeft: 'sm',
-  paddingRight: '4px',
+  paddingRight: '[4px]',
   borderRadius: 'sm',
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.colors.placeholder)',
@@ -41,14 +41,14 @@ export const root = css({
 export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 500,
-  paddingRight: '10px',
+  paddingRight: '[10px]',
   color: 'mantine.colors.placeholder',
   flex: '1',
   sm: {
-    paddingRight: '30px',
+    paddingRight: '[30px]',
   },
   md: {
-    paddingRight: '50px',
+    paddingRight: '[50px]',
   },
 })
 
@@ -56,7 +56,7 @@ export const shortcut = css({
   fontSize: '11px',
   fontWeight: 600,
   lineHeight: 1,
-  padding: '4px 7px',
+  padding: '[4px 7px]',
   borderRadius: 'sm',
   border: '1px solid',
   transition: 'fast',

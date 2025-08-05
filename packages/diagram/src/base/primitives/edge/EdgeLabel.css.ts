@@ -4,8 +4,8 @@ const labelBorderRadius = '4px'
 
 export const edgeNoteCloseButton = css({
   position: 'absolute',
-  top: 4,
-  right: 4,
+  top: '[4px]',
+  right: '[4px]',
 })
 
 export const edgeNoteText = css({
@@ -26,8 +26,8 @@ export const translate = {
 } as const
 
 export const edgeLabelContainer = css({
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',
@@ -69,13 +69,13 @@ export const labelsva = sva({
     root: {
       pointerEvents: 'all',
       fontFamily: 'likec4.relation',
-      padding: '3px 5px 5px 5px',
+      padding: '[3px 5px 5px 5px]',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       width: 'max-content',
       maxWidth: '100%',
-      gap: '4px',
+      gap: '[2px]',
     },
     stepNumber: {
       alignSelf: 'stretch',
@@ -83,7 +83,7 @@ export const labelsva = sva({
       fontWeight: 600,
       fontSize: '14px',
       lineHeight: '1',
-      padding: '5px 5px',
+      padding: '[5px 5px]',
       textAlign: 'center',
       minWidth: '22px',
       borderTopLeftRadius: labelBorderRadius,
@@ -122,17 +122,17 @@ export const labelsva = sva({
       true: {
         root: {
           flexDirection: 'row',
-          gap: '4px',
-          padding: '0px',
+          gap: '[2px]',
+          padding: '0',
         },
         labelContents: {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          padding: '2px 5px 4px 0px',
+          padding: '[2px 5px 4px 0px]',
         },
         labelText: {
-          padding: '2px 6px 4px 0px',
+          padding: '[2px 6px 4px 0px]',
         },
       },
     },
