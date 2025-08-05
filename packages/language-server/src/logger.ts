@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import {
   type Logger,
   type Sink,
@@ -40,6 +41,7 @@ export function getLspConnectionSink(connection: Connection, props?: LspConnecti
   return (logObj) => {
     try {
       switch (logObj.level) {
+        case 'trace':
         case 'debug':
           connection.console.debug(format(logObj))
           break
@@ -54,6 +56,8 @@ export function getLspConnectionSink(connection: Connection, props?: LspConnecti
           connection.console.error(format(logObj))
           break
         }
+        default:
+          nonexhaustive(logObj.level)
       }
     } catch (e) {
       console.error('Error while logging to LSP connection:', e)

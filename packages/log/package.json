@@ -40,13 +40,13 @@
     "clean": "pnpm rimraf dist lib"
   },
   "dependencies": {
-    "@logtape/logtape": "^0.12.2"
+    "@logtape/logtape": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
-    "safe-stringify": "^1.2.0",
+    "safe-stringify": "catalog:utils",
     "std-env": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:",

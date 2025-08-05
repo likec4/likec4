@@ -43,6 +43,8 @@ catalogs:
     zod: 3.25.67
     sharp: 0.34.2
     nanoid: 5.1.5
+    "@logtape/logtape": ^0.12.2
+    safe-stringify: ^1.2.0
   esbuild:
     esbuild: 0.25.5
     esbuild-node-externals: 1.18.0

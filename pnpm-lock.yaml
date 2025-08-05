@@ -151,6 +151,9 @@ catalogs:
     '@hpcc-js/wasm-graphviz':
       specifier: 1.10.0
       version: 1.10.0
+    '@logtape/logtape':
+      specifier: ^0.12.2
+      version: 0.12.2
     '@types/picomatch':
       specifier: ^4.0.2
       version: 4.0.2
@@ -205,6 +208,9 @@ catalogs:
     remeda:
       specifier: ^2.23.1
       version: 2.23.1
+    safe-stringify:
+      specifier: ^1.2.0
+      version: 1.2.0
     std-env:
       specifier: ^3.9.0
       version: 3.9.0
@@ -1466,7 +1472,7 @@ importers:
   packages/log:
     dependencies:
       '@logtape/logtape':
-        specifier: ^0.12.2
+        specifier: catalog:utils
         version: 0.12.2
     devDependencies:
       '@likec4/tsconfig':
@@ -1479,7 +1485,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       safe-stringify:
-        specifier: ^1.2.0
+        specifier: catalog:utils
         version: 1.2.0
       std-env:
         specifier: catalog:utils
