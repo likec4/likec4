@@ -170,7 +170,7 @@ export const conditions = ${
   )
 }
 
-export const globalCss = ${
+export const generatedGlobalCss = ${
   JSON5.stringify(
     {
       ...mapToObj(entries(defaultTheme.textSizes), ([size]) => [
