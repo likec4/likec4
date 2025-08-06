@@ -54,17 +54,17 @@ export function ProjectsMenu(props: ButtonProps) {
         </MenuTarget>
 
         <MenuDropdown>
-          {projects.map((project) => (
+          {projects.map(({ id, title }) => (
             <MenuItem
-              key={project.id}
+              key={id}
               onClick={(e) => {
-                if (projectId === project.id) {
+                if (projectId === id) {
                   e.stopPropagation()
                   return
                 }
-                onProjectChange(project.id)
+                onProjectChange(id)
               }}>
-              {project.id}
+              {title ?? id}
             </MenuItem>
           ))}
         </MenuDropdown>
