@@ -7,10 +7,8 @@ type ExtendableGlobalVars = NonNullable<Config['globalVars']>
 export const globalVars: ExtendableGlobalVars = {
   extend: {
     ...paletteGlobalVars,
-    '--likec4-app-font': {
-      syntax: '<font-family>',
-      inherits: false,
-    },
+    '--likec4-app-font-default':
+      `'IBM Plex Sans','ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'`,
     '--likec4-text-size': {
       syntax: '<length> | <percentage>',
       inherits: false,

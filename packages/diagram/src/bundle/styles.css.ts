@@ -18,7 +18,7 @@ export const DefaultTheme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',
-  fontFamily: 'var(--fonts-likec4)',
+  fontFamily: 'var(--likec4-app-font, var(--likec4-app-font-default))',
   headings: {
     fontWeight: '500',
     sizes: {

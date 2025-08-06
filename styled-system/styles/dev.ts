@@ -17,6 +17,7 @@ export function defineConfig(config: Config) {
     presets: [
       likec4preset,
     ],
+    cssVarRoot: ':where(:host, :root)',
     // hash: isProduction,
     // globalVars: {},
     // hash: true,

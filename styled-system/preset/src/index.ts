@@ -87,7 +87,6 @@ export default definePreset({
   staticCss: {
     extend: {
       themes: ['light', 'dark'],
-      recipes: '*',
     },
   },
   conditions,
