@@ -29,12 +29,6 @@ test('Builder types - style 2', () => {
       },
       metadataKeys: ['key1', 'key2', 'key1', 'key3'],
     })
-    .project(({ name, title, _ }) =>
-      _(
-        name('Test project'),
-        title('Test project title'),
-      )
-    )
     .model(({ actor, system, component, relTo }, _) =>
       _(
         actor('alice'),
