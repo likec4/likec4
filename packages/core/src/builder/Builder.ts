@@ -58,7 +58,6 @@ import type {
 } from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
 import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
-import type { ProjectBuilder, ProjectBuilderFunction, ProjectHelpers } from './Builder.project'
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
@@ -80,7 +79,6 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
     model: ModelHelpers<T>
     views: ViewsHelpers
     deployment: DeloymentModelHelpers<T>
-    project: ProjectHelpers<T>
   }
 
   /**
@@ -173,21 +171,6 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    */
   views<Out extends AnyTypes>(
     callback: ViewsBuilderFunction<T, Out>,
-  ): Builder<Out>
-  /**
-   * Sets project properties views
-   *
-   * @example
-   *  builder.project(({ id, title, name }, _) =>
-   *    _(
-   *      id('proj1'),
-   *      name('proj1'),
-   *      title('Project 1'),
-   *    )
-   *  )
-   */
-  project<Out extends AnyTypes>(
-    callback: ProjectBuilderFunction<T, Out>,
   ): Builder<Out>
 
   /**
@@ -815,40 +798,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           },
         ) as AddDeploymentNodeHelpers<T>,
       },
-      project: {
-        project: (...ops: ((b: ProjectBuilder<T>) => ProjectBuilder<T>)[]) => {
-          return (b: Builder<T>) => {
-            return ops.reduce((b, op) => op(b), b as any as ProjectBuilder<T>)
-          }
-        },
-        id: (id: string) => (b: ProjectBuilder<T>) => {
-          _project.id = id
-          return b as any
-        },
-        name: (name: string) => (b: ProjectBuilder<T>) => {
-          if (isNullish(_project.config)) {
-            _project.config = { name }
-          }
-          else {
-            _project.config.name = name
-          }
-          return b as any
-        },
-        title: (title: string) => (b: ProjectBuilder<T>) => {
-          if (isNullish(_project.config)) {
-            _project.config = { title }
-          }
-          else {
-            _project.config.title = title
-          }
-          return b as any
-        },
-      },
     } as {
       model: ModelHelpers<T>
       views: ViewsHelpers
       deployment: DeloymentModelHelpers<T>
-      project: ProjectHelpers<T>
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
       return ops.reduce((b, op) => op(b), self as Builder<T>).clone()
@@ -872,12 +825,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         ...helpers,
         _: helpers.views as any,
       } as any, helpers.views as any)(b as Internals<T>) as any
-    },
-    project: <Out extends AnyTypes>(cb: ProjectBuilderFunction<T, Out>) => {
-      const b = self.clone()
-      const helpers = b.helpers().project
-      const _ = helpers.project as any
-      return cb({ ...helpers, _ })(b as Internals<T>) as any
     },
   }
 
