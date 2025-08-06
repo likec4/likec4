@@ -3,10 +3,8 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { projects } from 'likec4:projects'
 import { useLikeC4ModelDataAtom } from '../../context/LikeC4ModelContext'
-import { useCurrentProjectd } from '../../hooks'
 
 export function SelectProject() {
-  const projectId = useCurrentProjectd()
   const model = useLikeC4ModelDataAtom()
 
   if (projects.length < 2) return null
