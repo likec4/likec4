@@ -23,7 +23,7 @@ export function ViewReact() {
   })
 
   const title = view ? (view.title ?? view.id) : `View not found`
-  const pageTitle = model.project.config?.title ?? defaultPageTitle
+  const pageTitle = model.project.title ?? defaultPageTitle
   useDocumentTitle(`${title} - ${pageTitle}`)
 
   if (!view) {

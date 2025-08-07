@@ -18,6 +18,7 @@ import type {
   Any,
   DeployedInstance,
   DeploymentFqn,
+  LikeC4Project,
   ParsedElementView,
   ParsedLikeC4ModelData,
   Specification,
@@ -45,7 +46,6 @@ import {
   isDeployedInstance,
   isElementView,
 } from '../types'
-import type { ProjectInfo } from '../types/_aux'
 import { invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
@@ -178,7 +178,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
+  build(project?: LikeC4Project): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
    * Returns Computed LikeC4Model
@@ -215,7 +215,6 @@ function validateSpec(specification: BuilderSpecification) {
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
-  _project: ProjectInfo = { id: 'from-builder' },
   _elements = new Map<string, Element<Any>>(),
   _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
@@ -292,7 +291,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     clone: () => {
       return builder(
         structuredClone(spec),
-        structuredClone(_project),
         structuredClone(_elements),
         structuredClone(_relations),
         structuredClone(_views),
@@ -398,9 +396,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       })
       return self
     },
-    build: () => ({
+    build: (project?: LikeC4Project) => ({
       [_stage]: 'parsed',
-      projectId: 'from-builder',
+      projectId: project?.id ?? 'from-builder',
+      project: project ?? { id: 'from-builder' },
       specification: toLikeC4Specification(),
       elements: fromEntries(
         structuredClone(

@@ -8,7 +8,6 @@ function expectAuxTypes<A>() {
   return expectTypeOf<{
     stage: aux.Stage<A>
     projectId: aux.ProjectId<A>
-    project: aux.Project<A>
     fqn: aux.Fqn<A>
     elementId: aux.ElementId<A>
     viewId: aux.ViewId<A>
@@ -52,7 +51,6 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: 'computed'
       projectId: 'test-project'
-      project: aux.ProjectInfo<'test-project'>
       fqn: scalar.Fqn<'e1' | 'e2' | 'e3'>
       elementId: 'e1' | 'e2' | 'e3'
       viewId: 'v1' | 'v2' | 'v3'
@@ -109,7 +107,6 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: 'computed'
       projectId: never
-      project: aux.ProjectInfo<never>
       fqn: scalar.Fqn<'e1' | 'e2' | 'e3'>
       elementId: 'e1' | 'e2' | 'e3'
       viewId: 'v1' | 'v2' | 'v3'
@@ -138,7 +135,6 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: 'computed' | 'layouted'
       projectId: string
-      project: aux.ProjectInfo
       fqn: scalar.Fqn<string>
       elementId: string
       viewId: string
@@ -169,7 +165,6 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: never
       projectId: never
-      project: aux.ProjectInfo<never>
       fqn: never
       elementId: never
       viewId: never
@@ -196,7 +191,6 @@ describe('Aux', () => {
     expectAuxTypes<never>().toEqualTypeOf<{
       stage: never
       projectId: never
-      project: never
       fqn: never
       elementId: never
       viewId: never
@@ -227,7 +221,6 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<{
       stage: ModelStage
       projectId: string
-      project: aux.ProjectInfo
       fqn: scalar.Fqn<string>
       elementId: string
       viewId: string
@@ -257,7 +250,6 @@ describe('Aux', () => {
     expectAuxTypes<any>().toEqualTypeOf<{
       stage: ModelStage
       projectId: string
-      project: aux.ProjectInfo
       fqn: scalar.Fqn<string>
       elementId: string
       viewId: string

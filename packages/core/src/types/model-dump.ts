@@ -64,10 +64,8 @@ export type LikeC4ModelDump = {
 
 export type ProjectDump = {
   id: string
-  config?: {
-    name?: string
-    title?: string | undefined
-  }
+  name?: string
+  title?: string | undefined
 }
 
 export type AuxFromDump<D> = D extends LikeC4ModelDump ? aux.Aux<

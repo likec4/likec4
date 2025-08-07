@@ -8,6 +8,7 @@ import type {
   IteratorLike,
   LayoutedLikeC4ModelData,
   LikeC4ModelDump,
+  LikeC4Project,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -297,7 +298,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     return this.$data.projectId ?? 'unknown' as any
   }
 
-  get project(): aux.Project<A> {
+  get project(): LikeC4Project {
     return this.$data.project
   }
 
@@ -812,7 +813,7 @@ export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create<aux.UnknownComputed>({
     _stage: 'computed',
     projectId: 'default' as never,
-    project: { id: 'default' },
+    project: { id: 'default' as never },
     specification: {
       elements: {},
       relationships: {},
