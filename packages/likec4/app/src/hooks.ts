@@ -1,4 +1,4 @@
-import type { DiagramView, ProjectId } from '@likec4/core'
+import type { DiagramView } from '@likec4/core'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
 import { shallowEqual } from 'fast-equals'
@@ -61,10 +61,10 @@ export function useCurrentDiagram(): DiagramView | null {
   return view
 }
 
-export function useCurrentProjectd(): ProjectId {
+export function useCurrentProject() {
   const projectId = useParams({
     select: (params) => params.projectId,
     strict: false,
   })
-  return (projectId ?? projects[0].id) as ProjectId
+  return (projects.find(p => p.id === projectId) ?? projects[0])
 }
