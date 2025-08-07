@@ -26,14 +26,6 @@ export interface SpecAux<
 }
 export type AnySpec = SpecAux<any, any, any, any, any>
 
-export interface ProjectInfo<A = string> {
-  id: A
-  config?: {
-    name?: string
-    title?: string | undefined
-  }
-}
-
 /**
  * Auxilary interface to keep inferred types
  *
@@ -54,7 +46,6 @@ export interface Aux<
 > {
   Stage: Stage
   ProjectId: Project
-  Project: ProjectInfo<Project>
   ElementId: Element
   DeploymentId: Deployment
 
@@ -157,13 +148,6 @@ export type toLayouted<A> = A extends Aux<any, infer E, infer D, infer V, infer 
  * Project identifier from Aux
  */
 export type ProjectId<A> = A extends infer T extends Any ? Coalesce<T['ProjectId']> : never
-
-/**
- * Project from Aux
- */
-export type Project<A> = A extends infer T extends Any
-  ? (ProjectId<T> extends string ? ProjectInfo<ProjectId<T>> : T['Project'])
-  : never
 
 /**
  * Element FQN from Aux as branded type

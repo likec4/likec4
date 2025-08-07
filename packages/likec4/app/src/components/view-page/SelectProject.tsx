@@ -19,7 +19,7 @@ export function SelectProject() {
           px={'sm'}
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
           visibleFrom="md">
-          {model.value?.project.config?.title ?? model.value?.project.id}
+          {model.value?.project.title ?? model.value?.project.id}
         </Button>
       </MenuTarget>
 

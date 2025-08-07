@@ -239,12 +239,8 @@ export function buildModelData(project: {
 
   const projectInfo = {
     id: project.id,
-    ...(project.config && {
-      config: {
-        name: project.config.name,
-        ...(project.config.title && { title: project.config.title }),
-      },
-    }),
+    name: project.config.name,
+    ...(project.config.title && { title: project.config.title }),
   }
   return {
     data: {

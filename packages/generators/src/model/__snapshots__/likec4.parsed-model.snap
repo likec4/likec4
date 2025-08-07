@@ -86,6 +86,9 @@ export type $MetadataKey = $Aux['MetadataKey']
 export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ParsedLikeC4ModelData<$Aux>>({
   _stage: 'parsed',
   projectId: 'from-builder',
+  project: {
+    id: 'from-builder',
+  },
   specification: {
     elements: {
       person: {
