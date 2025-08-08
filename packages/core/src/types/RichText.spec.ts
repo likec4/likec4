@@ -45,11 +45,19 @@ describe('RichText', () => {
       expect(rt.text).toBe('plain text')
     })
 
+    it('should not convert MarkdownOrString.txt to html', () => {
+      const rt = RichText.from({ txt: '**markdown**' })
+      expect(rt.text).toBe('**markdown**')
+      expect(rt.md).toBe('**markdown**')
+      expect(rt.html).toBe('**markdown**')
+    })
+
     it('should create from MarkdownOrString.md', () => {
       const rt = RichText.from({ md: '**markdown**' })
       expect(rt.isEmpty).toBe(false)
-      // Note: markdownToText is mocked, so we just check it's not empty
-      expect(rt.text).toBeDefined()
+      expect(rt.text).toBe('markdown')
+      expect(rt.md).toBe('**markdown**')
+      expect(rt.html).toBe('<p><strong>markdown</strong></p>')
     })
 
     it('should handle empty strings correctly', () => {
@@ -67,14 +75,14 @@ describe('RichText', () => {
       const source = { txt: 'memoized' }
       const result1 = RichText.memoize(obj, source)
       const result2 = RichText.memoize(obj, source)
-      expect(result1).toBe(result2)
+      expect(result1).toStrictEqual(result2)
       expect(result1.text).toBe('memoized')
     })
 
     it('should return EMPTY for null/undefined source', () => {
       const obj = {}
-      expect(RichText.memoize(obj, null)).toBe(RichText.EMPTY)
-      expect(RichText.memoize(obj, undefined)).toBe(RichText.EMPTY)
+      expect(RichText.memoize(obj, null)).toStrictEqual(RichText.EMPTY)
+      expect(RichText.memoize(obj, undefined)).toStrictEqual(RichText.EMPTY)
     })
   })
 

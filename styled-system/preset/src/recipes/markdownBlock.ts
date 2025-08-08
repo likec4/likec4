@@ -71,7 +71,6 @@ export const markdownBlock = defineRecipe({
       fontSize: 'var(--text-fz-md)',
       marginTop: '0',
       marginBottom: 'var(--typography-spacing)',
-      whiteSpace: 'preserve-breaks',
     },
 
     '& :where(strong)': {
@@ -115,8 +114,8 @@ export const markdownBlock = defineRecipe({
       padding: 'var(--mantine-spacing-xs)',
       lineHeight: 'var(--mantine-line-height)',
       margin: '0',
-      marginTop: 'var(--mantine-spacing-md)',
-      marginBottom: 'var(--mantine-spacing-md)',
+      marginTop: 'var(--typography-spacing)',
+      marginBottom: 'var(--typography-spacing)',
       overflowX: 'auto',
       fontFamily: 'var(--mantine-font-family-monospace)',
       fontSize: 'var(--text-fz-sm)',
@@ -165,7 +164,7 @@ export const markdownBlock = defineRecipe({
       width: '100%',
       borderCollapse: 'collapse',
       captionSide: 'bottom',
-      marginBottom: 'var(--mantine-spacing-md)',
+      marginBottom: 'var(--typography-spacing)',
 
       _light: {
         ['--table-border-color']: 'var(--mantine-color-gray-3)',
@@ -176,7 +175,7 @@ export const markdownBlock = defineRecipe({
       },
 
       '& :where(caption)': {
-        marginTop: 'var(--mantine-spacing-xs)',
+        marginTop: 'calc(.5 * var(--typography-spacing) + 1px)',
         fontSize: 'var(--text-fz-sm)',
         color: 'var(--mantine-color-dimmed)',
       },
@@ -185,7 +184,7 @@ export const markdownBlock = defineRecipe({
         textAlign: 'left',
         fontWeight: 'bold',
         fontSize: 'var(--text-fz-sm)',
-        padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-xs)',
+        padding: 'var(--typography-spacing)',
       },
 
       '& :where(thead th)': {
@@ -199,7 +198,7 @@ export const markdownBlock = defineRecipe({
       },
 
       '& :where(td)': {
-        padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-xs)',
+        padding: 'var(--typography-spacing)',
         borderBottom: '1px solid',
         borderColor: 'var(--table-border-color)',
         fontSize: 'var(--text-fz-sm)',
@@ -212,7 +211,7 @@ export const markdownBlock = defineRecipe({
 
     '& :where(blockquote)': {
       fontSize: 'var(--text-fz-md)',
-      lineHeight: 'var(--mantine-line-height)',
+      // lineHeight: 'var(--mantine-line-height)',
       margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
       padding: 'xs',
@@ -236,7 +235,7 @@ export const markdownBlock = defineRecipe({
      */
     uselikec4palette: {
       true: {
-        '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
+        // '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
         '& :where(a)': {
           color: 'var(--likec4-palette-fill)/45',
           mixBlendMode: 'difference',
@@ -250,7 +249,7 @@ export const markdownBlock = defineRecipe({
           color: `color-mix(in srgb , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
         },
         '& :where(blockquote)': {
-          padding: '2xs',
+          padding: 'xxs',
           backgroundColor: 'var(--likec4-palette-stroke)/65',
         },
       },
