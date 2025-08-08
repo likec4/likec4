@@ -67,7 +67,7 @@ views {
 
     group {
       color green
-      opacity 10%
+      opacity 40%
       include
         customer with {
           color green
@@ -77,10 +77,19 @@ views {
 
     group 'System' {
       color primary
-      opacity 20%
+      opacity 100%
       border dotted
 
       include *
+      include
+        cloud with {
+          description 'Test multiline
+
+              non-markdown description
+
+              with  line breaks
+            '
+        }
       exclude -> customer
     }
   }

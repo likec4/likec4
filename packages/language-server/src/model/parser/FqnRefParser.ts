@@ -96,7 +96,14 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           }
           if (ast.isElementStringProperty(prop)) {
             if (isDefined(prop.value)) {
-              acc.custom[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) || ''
+              if (prop.key === 'description') {
+                const parsed = this.parseMarkdownOrString(prop.value)
+                if (parsed) {
+                  acc.custom['description'] = parsed
+                }
+              } else {
+                acc.custom[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) || ''
+              }
             }
             return acc
           }

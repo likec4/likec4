@@ -70,7 +70,19 @@ views {
 
   view mobile of mobile {
     include *
-    include cloud
+    include
+      cloud,
+      cloud.legacy with {
+        description '''
+          The legacy version of our SaaS
+
+          ```
+          Code block
+          Line 2
+          ```
+        '''
+      }
+    exclude cloud.legacy <-> cloud.next
 
     style * {
       color secondary

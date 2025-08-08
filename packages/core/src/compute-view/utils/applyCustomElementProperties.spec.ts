@@ -113,7 +113,7 @@ describe('applyElementCustomProperties', () => {
       $include($custom('customer', {
         title: null as any, // null should be ignored
         technology: undefined as any, // undefined should be ignored
-        description: '',
+        description: { txt: '' },
         border: undefined as any, // undefined should be ignored
         shape: 'queue',
         color: 'indigo',

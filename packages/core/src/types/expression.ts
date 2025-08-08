@@ -3,7 +3,7 @@ import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
-import { type Icon } from './scalar'
+import type * as scalar from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -86,12 +86,12 @@ export namespace FqnExpr {
     custom: {
       expr: OrWhere<A>
       title?: string
-      description?: string
+      description?: scalar.MarkdownOrString
       technology?: string
       notation?: string
       shape?: ElementShape
       color?: Color
-      icon?: Icon
+      icon?: scalar.Icon
       border?: BorderStyle
       opacity?: number
       navigateTo?: aux.StrictViewId<A>
