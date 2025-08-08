@@ -11,7 +11,6 @@ const title: SystemStyleObject = {
 const description: SystemStyleObject = {
   flexGrow: '0',
   flexShrink: '1',
-
   textStyle: 'likec4.node.secondary',
   color: 'var(--likec4-palette-loContrast)',
   textAlign: 'center',
@@ -22,6 +21,14 @@ const description: SystemStyleObject = {
   },
   _smallZoom: {
     display: 'none',
+  },
+
+  '&:not(.likec4-markdown-block)': {
+    whiteSpace: 'preserve-breaks',
+  },
+
+  '& a': {
+    pointerEvents: 'all',
   },
 }
 

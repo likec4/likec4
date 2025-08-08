@@ -2,6 +2,7 @@ import type { DiagramView, ViewId, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
+import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
@@ -141,7 +142,7 @@ function CurrentViewModelProvider({
         })
         return current
       }
-      if (!nextviewmodel.isDiagram()) {
+      if (DEV && !nextviewmodel.isDiagram()) {
         console.warn(`View "${viewId}" is not diagram.\nMake sure you have LikeC4ModelProvider with layouted model.`)
       }
       return nextviewmodel

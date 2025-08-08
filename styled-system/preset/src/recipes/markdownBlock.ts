@@ -5,7 +5,6 @@ export const markdownBlock = defineRecipe({
   jsx: ['MarkdownBlock'],
   description: 'Block with Markdown content',
   base: {
-    pointerEvents: 'all',
     '--text-fz': '1rem',
     '--typography-spacing': 'calc(0.75 * var(--text-fz) * var(--mantine-scale, 1))',
     '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale, 1) / 1.125)',

@@ -132,6 +132,11 @@ export const createWrapperConfig = (params: {
         likec4: {
           name: 'likec4',
           clientOptions: {
+            workspaceFolder: {
+              index: 0,
+              name: 'playground',
+              uri: monaco.Uri.parse('file:///playground/'),
+            },
             documentSelector: [{ language: 'likec4' }],
             markdown: {
               isTrusted: true,
