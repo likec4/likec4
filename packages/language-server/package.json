@@ -110,7 +110,8 @@
     "@hpcc-js/wasm-graphviz": "catalog:utils"
   },
   "devDependencies": {
-    "@types/chroma-js": "^3.1.1",
+    "@types/chroma-js": "catalog:utils",
+    "@types/natural-compare-lite": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -132,7 +133,7 @@
     "json5": "catalog:utils",
     "langium": "catalog:langium",
     "langium-cli": "catalog:langium",
-    "natural-compare-lite": "^1.4.0",
+    "natural-compare-lite": "catalog:utils",
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",

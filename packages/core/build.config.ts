@@ -13,6 +13,7 @@ export default defineBuildConfig({
     'src/theme/index.ts',
     'src/types/index.ts',
     'src/types/_aux.ts',
+    'src/types/scalar.ts',
     'src/utils/iterable/index.ts',
     'src/utils/index.ts',
   ],
