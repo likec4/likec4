@@ -40,6 +40,7 @@ export const Header = memo(() => {
   const { breakpoints } = useMantineTheme()
   const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
+
   return (
     <Paper
       className={styles.cssHeader}

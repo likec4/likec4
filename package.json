@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.50.0",
+    "dprint": "^0.50.1",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",

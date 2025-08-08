@@ -7,6 +7,7 @@ export const listProjects = likec4Tool({
 Lists all available LikeC4 projects in the workspace.
 Returns array of projects with:
 - name: project name (project id)
+- title: human readable title
 - folder: project folder
 - sources: array of project sources
 `,
@@ -16,6 +17,7 @@ Returns array of projects with:
   outputSchema: {
     projects: z.array(z.object({
       name: z.string(),
+      title: z.string().optional(),
       folder: z.string(),
       sources: z.array(z.string()),
     })),
@@ -25,6 +27,7 @@ Returns array of projects with:
   return {
     projects: projects.map(p => ({
       name: p.id,
+      title: p.config?.title,
       folder: p.folder.toString(),
       sources: p.documents?.map(d => d.toString()) ?? [],
     })),

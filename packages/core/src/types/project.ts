@@ -5,4 +5,5 @@ import * as scalar from './scalar'
  */
 export interface LikeC4Project {
   id: scalar.ProjectId
+  title?: string
 }

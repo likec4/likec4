@@ -18,6 +18,7 @@ import type {
   Any,
   DeployedInstance,
   DeploymentFqn,
+  LikeC4Project,
   ParsedElementView,
   ParsedLikeC4ModelData,
   Specification,
@@ -177,7 +178,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
+  build(project?: LikeC4Project): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
    * Returns Computed LikeC4Model
@@ -395,9 +396,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       })
       return self
     },
-    build: () => ({
+    build: (project?: LikeC4Project) => ({
       [_stage]: 'parsed',
-      projectId: 'from-builder',
+      projectId: project?.id ?? 'from-builder',
+      project: project ?? { id: 'from-builder' },
       specification: toLikeC4Specification(),
       elements: fromEntries(
         structuredClone(

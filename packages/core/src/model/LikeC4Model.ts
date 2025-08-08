@@ -8,6 +8,7 @@ import type {
   IteratorLike,
   LayoutedLikeC4ModelData,
   LikeC4ModelDump,
+  LikeC4Project,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -119,6 +120,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     const {
       _stage: stage = 'layouted',
       projectId = 'unknown',
+      project,
       globals,
       imports,
       deployments,
@@ -130,6 +132,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     return new LikeC4Model({
       [_stage]: stage as 'layouted',
       projectId,
+      project,
       globals: {
         predicates: globals?.predicates ?? {},
         dynamicPredicates: globals?.dynamicPredicates ?? {},
@@ -293,6 +296,10 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 
   get projectId(): aux.ProjectId<A> {
     return this.$data.projectId ?? 'unknown' as any
+  }
+
+  get project(): LikeC4Project {
+    return this.$data.project
   }
 
   get specification(): Specification<A> {
@@ -806,6 +813,7 @@ export namespace LikeC4Model {
   export const EMPTY = LikeC4Model.create<aux.UnknownComputed>({
     _stage: 'computed',
     projectId: 'default' as never,
+    project: { id: 'default' as never },
     specification: {
       elements: {},
       relationships: {},
@@ -831,24 +839,24 @@ export namespace LikeC4Model {
     // dprint-ignore
     aux.Unknown extends A
       ? LikeC4Model<aux.UnknownParsed>
-      : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-        ? LikeC4Model<Aux<'parsed', E, D, V, P, Spec>>
+      : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
+        ? LikeC4Model<Aux<'parsed', E, D, V, PID, Spec>>
         : never
 
   export type Computed<A = aux.Unknown> =
     // dprint-ignore
     aux.Unknown extends A
     ? LikeC4Model<aux.UnknownComputed>
-    : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-      ? LikeC4Model<Aux<'computed', E, D, V, P, Spec>>
+    : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
+      ? LikeC4Model<Aux<'computed', E, D, V, PID, Spec>>
       : never
 
   export type Layouted<A = aux.Unknown> =
     // dprint-ignore
     aux.Unknown extends A
       ? LikeC4Model<aux.UnknownLayouted>
-      : A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-        ? LikeC4Model<Aux<'layouted', E, D, V, P, Spec>>
+      : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
+        ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
         : never
 
   export type Node<A = aux.Unknown> = A extends aux.AnyAux ? NodeModel<A> : never

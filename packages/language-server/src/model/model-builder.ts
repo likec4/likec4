@@ -113,13 +113,14 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     }
     return cache.get(key, () => {
       try {
+        const project = this.projects.getProject(projectId)
         const docs = this.documents(projectId)
         if (docs.length === 0) {
           logger.debug`no documents to build model`
           return null
         }
         logger.debug`unsafeSyncBuildModelData`
-        return buildModelData(projectId, docs)
+        return buildModelData(project, docs)
       } catch (e) {
         logWarnError(e)
         return null

@@ -59,6 +59,10 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     "styles": {},
   },
   "imports": {},
+  "project": {
+    "id": "default",
+    "name": "default",
+  },
   "projectId": "default",
   "relations": {
     "90t726": {
@@ -228,6 +232,10 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "styles": {},
   },
   "imports": {},
+  "project": {
+    "id": "default",
+    "name": "default",
+  },
   "projectId": "default",
   "relations": {
     "14imtre": {
@@ -567,6 +575,10 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     "styles": {},
   },
   "imports": {},
+  "project": {
+    "id": "default",
+    "name": "default",
+  },
   "projectId": "default",
   "relations": {
     "1qlbaph": {
@@ -710,6 +722,10 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     "styles": {},
   },
   "imports": {},
+  "project": {
+    "id": "default",
+    "name": "default",
+  },
   "projectId": "default",
   "relations": {
     "1qlbaph": {
@@ -846,6 +862,10 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     "styles": {},
   },
   "imports": {},
+  "project": {
+    "id": "default",
+    "name": "default",
+  },
   "projectId": "default",
   "relations": {
     "1qlbaph": {

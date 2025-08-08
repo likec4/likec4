@@ -1,4 +1,4 @@
-import type { ProjectId } from '@likec4/core'
+import { type ProjectId, invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { relative } from 'node:path'
 import k from 'tinyrainbow'
@@ -157,11 +157,17 @@ export function LikeC4VitePlugin({
       }
       for (const module of virtuals) {
         if (module.virtualId === id) {
-          const projects = await likec4.projects()
+          const projects = (await likec4.projects()).map(p => ({
+            id: p.id,
+            title: p.config.title ?? p.id,
+            folder: p.folder,
+          }))
+          invariant(isNonEmptyArray(projects))
+
           return await module.load({
             logger,
             likec4,
-            projects,
+            projects: projects,
             assetsDir,
             useOverviewGraph,
           })
