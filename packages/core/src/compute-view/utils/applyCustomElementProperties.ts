@@ -67,7 +67,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
         node = {
           ...node,
           isCustomized: true,
-          description: { txt: description },
+          description,
         }
       }
 
