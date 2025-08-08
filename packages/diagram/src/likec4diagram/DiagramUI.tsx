@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { useEnabledFeatures } from '../context'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
+import { EnsureCurrentViewModel } from '../likec4model/LikeC4ModelContext'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
@@ -15,13 +16,18 @@ export const DiagramUI = memo(() => {
     enableDynamicViewWalkthrough,
     enableSearch,
   } = useEnabledFeatures()
-
   const overlaysActorRef = useOverlaysActorRef()
   const searchActorRef = useSearchActorRef()
 
   return (
     <>
-      {enableControls === 'next' ? <NavigationPanel /> : <Controls />}
+      {enableControls === 'next'
+        ? (
+          <EnsureCurrentViewModel>
+            <NavigationPanel />
+          </EnsureCurrentViewModel>
+        )
+        : <Controls />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
       {enableControls !== 'next' && (

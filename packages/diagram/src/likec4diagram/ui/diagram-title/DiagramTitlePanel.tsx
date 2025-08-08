@@ -1,4 +1,3 @@
-import { RichText } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
 import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
@@ -7,7 +6,7 @@ import { AnimatePresence, m } from 'motion/react'
 import { MarkdownBlock } from '../../../base/primitives'
 import { Link } from '../../../components/Link'
 import { useDiagramContext } from '../../../hooks/useDiagram'
-import { useCurrentViewModel } from '../../../likec4model'
+import { useOptionalCurrentViewModel } from '../../../likec4model/useCurrentViewModel'
 import type { DiagramContext } from '../../../state/types'
 import * as styles from './DiagramTitlePanel.css'
 
@@ -22,13 +21,13 @@ function selector(context: DiagramContext) {
 }
 
 export function DiagramTitlePanel() {
-  const view = useCurrentViewModel()
+  const view = useOptionalCurrentViewModel()
   const { isNotActiveWalkthrough } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,
   })
-  const title = view.title ?? 'untitled'
+  const title = view?.title ?? 'untitled'
   const toggle = () => setCollapsed(v => !v)
 
   return (
@@ -49,7 +48,7 @@ export function DiagramTitlePanel() {
         </div>
       </ViewportPortal> */
       }
-      {isNotActiveWalkthrough && (
+      {view && isNotActiveWalkthrough && (
         <m.div
           initial={{ opacity: 0.05, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
