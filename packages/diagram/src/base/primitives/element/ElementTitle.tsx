@@ -77,17 +77,29 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
           </Text>
         )}
 
-        {data.description && (
-          <MarkdownBlock
-            className={cx(classes.description, 'likec4-element-description')}
-            value={data.description}
-            uselikec4palette
-            hideIfEmpty
-            // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
-            maxHeight={data.description.isMarkdown ? '8rem' : undefined}
-            // textScale={0.95}
-            lineClamp={isSmOrXs ? 3 : 5}
-          />
+        {data.description?.nonEmpty && (
+          data.description.isMarkdown
+            ? (
+              <MarkdownBlock
+                className={cx(classes.description, 'likec4-element-description')}
+                value={data.description}
+                uselikec4palette
+                hideIfEmpty
+                // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
+                maxHeight={data.description.isMarkdown ? '8rem' : undefined}
+                // textScale={0.95}
+                lineClamp={isSmOrXs ? 3 : 5}
+              />
+            )
+            : (
+              <Text
+                component="div"
+                className={cx(classes.description, 'likec4-element-description')}
+                lineClamp={isSmOrXs ? 3 : 5}
+              >
+                {data.description.text}
+              </Text>
+            )
         )}
       </Box>
     </Box>
