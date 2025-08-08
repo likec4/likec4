@@ -39,7 +39,7 @@ export type SpecTypesFromDump<J> = J extends SpecificationDump ? aux.SpecAux<
 export type LikeC4ModelDump = {
   [_stage]?: 'computed' | 'layouted'
   projectId?: string
-  project: ProjectDump
+  project?: ProjectDump
   specification: SpecificationDump
   elements?: {
     [kind: string]: object

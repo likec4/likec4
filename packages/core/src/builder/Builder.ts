@@ -16,6 +16,7 @@ import { computeLikeC4Model } from '../compute-view/compute-view'
 import { LikeC4Model } from '../model/LikeC4Model'
 import type {
   Any,
+  aux,
   DeployedInstance,
   DeploymentFqn,
   LikeC4Project,
@@ -48,7 +49,7 @@ import {
 } from '../types'
 import { invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
-import type { AnyTypes, BuilderSpecification, Types } from './_types'
+import type { AnyTypes, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
 import type {
   AddDeploymentNodeHelpers,
@@ -178,11 +179,19 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Views are not computed or layouted
    * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(project?: LikeC4Project): ParsedLikeC4ModelData<Types.ToAux<T>>
+  build<const Project extends BuilderProjectSpecification>(
+    project: Project,
+  ): ParsedLikeC4ModelData<aux.setProject<Types.ToAux<T>, Project['id']>>
+
+  build(): ParsedLikeC4ModelData<Types.ToAux<T>>
 
   /**
    * Returns Computed LikeC4Model
    */
+  toLikeC4Model<const Project extends BuilderProjectSpecification>(
+    project: Project,
+  ): LikeC4Model.Computed<aux.setProject<Types.ToAux<T>, Project['id']>>
+
   toLikeC4Model(): LikeC4Model.Computed<Types.ToAux<T>>
 }
 
@@ -423,9 +432,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       ),
       imports: {},
     } as any),
-    toLikeC4Model: () => {
-      const parsed = self.build()
-      return computeLikeC4Model(parsed)
+    toLikeC4Model: (project?: LikeC4Project) => {
+      const parsed = self.build(project as any)
+      return computeLikeC4Model(parsed) as any
     },
     helpers: () => ({
       model: {
