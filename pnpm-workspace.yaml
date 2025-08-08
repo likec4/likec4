@@ -23,6 +23,7 @@ catalogs:
     fast-equals: ^5.2.2
     std-env: ^3.9.0
     consola: ^3.4.2
+    "@types/chroma-js": ^3.1.1
     chroma-js: ^3.1.2
     "@hpcc-js/wasm-graphviz": 1.10.0
     valibot: ^1.1.0
@@ -45,6 +46,9 @@ catalogs:
     nanoid: 5.1.5
     "@logtape/logtape": ^0.12.2
     safe-stringify: ^1.2.0
+    "@types/natural-compare-lite": "^1.4.2"
+    "natural-compare-lite": "^1.4.0"
+
   esbuild:
     esbuild: 0.25.5
     esbuild-node-externals: 1.18.0

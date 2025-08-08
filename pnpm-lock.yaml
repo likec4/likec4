@@ -154,6 +154,12 @@ catalogs:
     '@logtape/logtape':
       specifier: ^0.12.2
       version: 0.12.2
+    '@types/chroma-js':
+      specifier: ^3.1.1
+      version: 3.1.1
+    '@types/natural-compare-lite':
+      specifier: ^1.4.2
+      version: 1.4.2
     '@types/picomatch':
       specifier: ^4.0.2
       version: 4.0.2
@@ -184,6 +190,9 @@ catalogs:
     nanoid:
       specifier: 5.1.5
       version: 5.1.5
+    natural-compare-lite:
+      specifier: ^1.4.0
+      version: 1.4.0
     object-hash:
       specifier: ^3.0.0
       version: 3.0.0
@@ -667,6 +676,12 @@ importers:
 
   packages/core:
     dependencies:
+      '@mantine/colors-generator':
+        specifier: catalog:mantine
+        version: 8.2.2(chroma-js@3.1.2)
+      chroma-js:
+        specifier: catalog:utils
+        version: 3.1.2
       mdast-util-from-markdown:
         specifier: ^2.0.2
         version: 2.0.2
@@ -707,11 +722,8 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@mantine/colors-generator':
-        specifier: catalog:mantine
-        version: 8.2.2(chroma-js@3.1.2)
       '@types/chroma-js':
-        specifier: ^3.1.1
+        specifier: catalog:utils
         version: 3.1.1
       '@types/extend':
         specifier: 3.0.4
@@ -723,7 +735,7 @@ importers:
         specifier: 4.0.4
         version: 4.0.4
       '@types/natural-compare-lite':
-        specifier: ^1.4.2
+        specifier: catalog:utils
         version: 1.4.2
       '@types/node':
         specifier: 'catalog:'
@@ -734,9 +746,6 @@ importers:
       '@types/unist':
         specifier: 3.0.3
         version: 3.0.3
-      chroma-js:
-        specifier: ^3.1.2
-        version: 3.1.2
       defu:
         specifier: ^6.1.4
         version: 6.1.4
@@ -756,7 +765,7 @@ importers:
         specifier: 0.40.3
         version: 0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a)
       natural-compare-lite:
-        specifier: ^1.4.0
+        specifier: catalog:utils
         version: 1.4.0
       object-hash:
         specifier: catalog:utils
@@ -999,11 +1008,14 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       '@types/chroma-js':
-        specifier: ^3.1.1
+        specifier: catalog:utils
         version: 3.1.1
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
+      '@types/natural-compare-lite':
+        specifier: catalog:utils
+        version: 1.4.2
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.2
@@ -1041,7 +1053,7 @@ importers:
         specifier: catalog:langium
         version: 3.5.2
       natural-compare-lite:
-        specifier: ^1.4.0
+        specifier: catalog:utils
         version: 1.4.0
       p-debounce:
         specifier: catalog:utils

@@ -1,8 +1,8 @@
-import type * as aux from '@likec4/core/types/_aux'
+import type { Any, UnknownLayouted } from '@likec4/core/types'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 
-export type StaticLikeC4DiagramProps<A extends aux.Any> = Pick<
+export type StaticLikeC4DiagramProps<A extends Any> = Pick<
   LikeC4DiagramProperties<A>,
   | 'view'
   | 'className'
@@ -21,7 +21,7 @@ export type StaticLikeC4DiagramProps<A extends aux.Any> = Pick<
   | 'where'
 >
 
-export function StaticLikeC4Diagram<A extends aux.Any = aux.UnknownLayouted>({
+export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
   view,
   fitView = true,
   fitViewPadding = '8px',

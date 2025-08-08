@@ -1,5 +1,4 @@
-import type { WhereOperator } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/_aux'
+import type { aux, WhereOperator } from '@likec4/core/types'
 import type { CSSProperties } from 'react'
 import type {
   CustomNodes,

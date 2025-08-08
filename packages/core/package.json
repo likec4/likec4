@@ -81,14 +81,6 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./types/_aux": {
-      "sources": "./src/types/_aux.ts",
-      "default": {
-        "types": "./dist/types/_aux.d.mts",
-        "import": "./dist/types/_aux.mjs",
-        "default": "./dist/types/_aux.mjs"
-      }
-    },
     "./types": {
       "sources": "./src/types/index.ts",
       "default": {
@@ -98,6 +90,7 @@
       }
     },
     "./src": "./src/index.ts",
+    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -115,28 +108,28 @@
     "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
     "type-fest": "catalog:utils",
-    "unified": "11.0.5"
+    "unified": "11.0.5",
+    "chroma-js": "catalog:utils",
+    "@mantine/colors-generator": "catalog:mantine"
   },
   "devDependencies": {
-    "@types/chroma-js": "^3.1.1",
+    "@types/chroma-js": "catalog:utils",
     "@dagrejs/dagre": "1.1.5",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "catalog:mantine",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
     "@types/mdast": "4.0.4",
-    "@types/natural-compare-lite": "^1.4.2",
+    "@types/natural-compare-lite": "catalog:utils",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
     "@types/node": "catalog:",
-    "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
     "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
     "mnemonist": "0.40.3",
-    "natural-compare-lite": "^1.4.0",
+    "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
     "remeda": "catalog:utils",
