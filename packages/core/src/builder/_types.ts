@@ -41,6 +41,16 @@ export type BuilderSpecification = {
   metadataKeys?: string[]
 }
 
+/**
+ * We need with `id: string` to be able to derive the project id
+ *
+ * @see {@link LikeC4Project}
+ */
+export type BuilderProjectSpecification = {
+  id: string
+  title?: string
+}
+
 export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends true ? never :
   IsLiteral<MetadataKey> extends true ? {
       [key in MetadataKey]?: string

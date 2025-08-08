@@ -299,7 +299,9 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   }
 
   get project(): LikeC4Project {
-    return this.$data.project
+    return this.$data.project ?? memoizeProp(this, Symbol.for('project'), () => ({
+      id: this.projectId as unknown as scalar.ProjectId,
+    }))
   }
 
   get specification(): Specification<A> {

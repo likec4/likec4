@@ -182,6 +182,44 @@ test('Builder types - style 2', () => {
     >
   >()
 
+  expectTypeOf(b1.build({ id: 'project-a' })).toEqualTypeOf<
+    ParsedLikeC4ModelData<
+      Aux<
+        'parsed',
+        'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
+        'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
+        'view' | 'view-of' | 'deployment',
+        'project-a', // <----
+        SpecAux<
+          'actor' | 'system' | 'component',
+          'env' | 'vm',
+          'like' | 'dislike',
+          'tag1' | 'tag2',
+          'key1' | 'key2' | 'key3'
+        >
+      >
+    >
+  >()
+
+  expectTypeOf(b1.toLikeC4Model({ id: 'project-a' })).toEqualTypeOf<
+    LikeC4Model<
+      Aux<
+        'computed',
+        'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
+        'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
+        'view' | 'view-of' | 'deployment',
+        'project-a', // <----
+        SpecAux<
+          'actor' | 'system' | 'component',
+          'env' | 'vm',
+          'like' | 'dislike',
+          'tag1' | 'tag2',
+          'key1' | 'key2' | 'key3'
+        >
+      >
+    >
+  >()
+
   const m = b1.toLikeC4Model()
   expectTypeOf(m).toEqualTypeOf<
     LikeC4Model<
