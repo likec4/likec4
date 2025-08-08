@@ -1,3 +1,22 @@
+# [1.36.0](https://github.com/likec4/likec4/compare/v1.35.0...v1.36.0) (2025-08-08)
+
+### 🚀 Features
+
+* **dynamic-view:** support markdown in dynamic view notes (not rendered yet), thanks @cry999, [#2122](https://github.com/likec4/likec4/pull/2122) ([7017cf9](https://github.com/likec4/likec4/commit/7017cf94c224b5d187492f388de2be536e256ea9))
+* **api:** include project data into model and display title from likec4rc in UI, thanks @pavelpykhtin, [#2103](https://github.com/likec4/likec4/pull/2103), closes [#2097](https://github.com/likec4/likec4/pull/20-9) ([9f72907](https://github.com/likec4/likec4/commit/9f72907686594da7ef1a712539ca7a8b6c417198))
+* **react:** switch project from navigation panel ([e0feea0](https://github.com/likec4/likec4/commit/e0feea0dec6c49973468c41bd8af494651f7a54b))
+* **react:** dropdown with View details ([f010bed](https://github.com/likec4/likec4/commit/f010bed825ef7667a066cc95be0c87e737712bd8))
+
+### Bug Fixes
+
+* **docker:** correct Playwright version, closes [#2132](https://github.com/likec4/likec4/issues/2132)
+* **vscode:** Client LikeC4 Language Server: connection to server is erroring ([#2131](https://github.com/likec4/likec4/issues/2131)) ([5f16746](https://github.com/likec4/likec4/commit/5f16746028b00b706d51e44b4deb0ba6deb43af0))
+* **vscode:** improve state management and error handling in preview panel ([846b9a4](https://github.com/likec4/likec4/commit/846b9a4918f9c7ab2be9aae54cf81954314ec03a))
+* **react:** correct scopes for embedded markdown ([0bb9e1a](https://github.com/likec4/likec4/commit/0bb9e1a1e3f17d80c039229f2c00d20f486e9dfd))
+* **react:** font family in webcomponents ([504c4a3](https://github.com/likec4/likec4/commit/504c4a3dc50394d63d7ca6902e26ca11c492c392))
+
+
+
 # [1.35.0](https://github.com/likec4/likec4/compare/v1.34.2...v1.35.0) (2025-08-02)
 
 ### 🚀 Features
