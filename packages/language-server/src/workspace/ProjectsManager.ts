@@ -55,7 +55,9 @@ export class ProjectsManager {
       name: ProjectsManager.DefaultProjectId,
       exclude: ['**/node_modules/**/*'],
     },
-    exclude: picomatch('**/node_modules/**/*'),
+    exclude: picomatch('**/node_modules/**/*', {
+      dot: true,
+    }),
   }
 
   constructor(protected services: LikeC4SharedServices) {
@@ -92,11 +94,18 @@ export class ProjectsManager {
   } {
     const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId || this.belongsTo(arg))
     if (id === ProjectsManager.DefaultProjectId) {
-      const folder = this.services.workspace.WorkspaceManager.workspaceUri
+      let folder
+      try {
+        folder = this.services.workspace.WorkspaceManager.workspaceUri
+      } catch (error) {
+        logger.warn('Failed to get workspace URI, using default folder', { error })
+        folder = URI.file('')
+        // ignore - workspace not initialized
+      }
       return {
-        id,
-        folder,
+        id: ProjectsManager.DefaultProjectId,
         config: this.defaultGlobalProject.config,
+        folder,
       }
     }
     const {
@@ -194,7 +203,9 @@ export class ProjectsManager {
     if (isNullish(config.exclude)) {
       project.exclude = this.defaultGlobalProject.exclude
     } else if (hasAtLeast(config.exclude, 1)) {
-      project.exclude = picomatch(config.exclude)
+      project.exclude = picomatch(config.exclude, {
+        dot: true,
+      })
     }
     this._projects = pipe(
       [...this._projects, project],
@@ -204,6 +215,9 @@ export class ProjectsManager {
     )
     this.projectIdToFolder.set(id, folder)
     logger.info`register project ${id} folder: ${folder}`
+
+    this.mappingsToProject.clear()
+
     return project
   }
 
