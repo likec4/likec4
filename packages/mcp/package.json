@@ -2,7 +2,7 @@
   "name": "@likec4/mcp",
   "description": "Model Context Protocol server for LikeC4",
   "license": "MIT",
-  "version": "1.36.0",
+  "version": "1.36.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",

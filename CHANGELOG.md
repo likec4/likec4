@@ -1,3 +1,12 @@
+## [1.36.1](https://github.com/likec4/likec4/compare/v1.36.0...v1.36.1) (2025-08-08)
+
+### Bug Fixes
+
+* **lsp:** handle case, when workspace not yet initialized  ([ac42915](https://github.com/likec4/likec4/commit/ac429154f17a7f1c4a120f057ca066472bef3e60))
+* **react:** adjust navigation panel styles and icon dimensions for better mobile support ([cf4785f](https://github.com/likec4/likec4/commit/cf4785fdf4bc65e686b86dc1b906ceff7eccf4d6))
+* **react:** `CurrentViewModel` maybe empty in dev mode ([256214e](https://github.com/likec4/likec4/commit/256214ef8c1e726e4c1d90ad5c50f67a3432f863))
+
+
 # [1.36.0](https://github.com/likec4/likec4/compare/v1.35.0...v1.36.0) (2025-08-08)
 
 ### 🚀 Features
