@@ -82,15 +82,16 @@ export const layerStyles = defineLayerStyles({
           _whenPanning: 'likec4.panel.bg.whenPanning',
         },
         border: '1px solid {colors.likec4.panel.border}',
-        backdropFilter: 'blur(10px)',
         '@/sm': {
           boxShadow: 'lg',
           borderRadius: 'md',
           padding: '2xs',
+          backdropFilter: 'blur(10px)',
         },
         _whenPanning: {
           boxShadow: 'none',
           borderRadius: '0',
+          backdropFilter: 'none',
         },
       },
     },
