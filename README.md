@@ -2,6 +2,30 @@
 
 Enhanced LikeC4 with correctness validation capabilities for detecting architectural issues.
 
+## Prerequisites
+
+- **Node.js** 20.19.3+ 
+- **pnpm** 10.11.1+
+
+### Install Prerequisites
+
+**Node.js:**
+```bash
+# Check current version
+node --version
+
+# If you need to update, download from https://nodejs.org/
+# Or use nvm:
+nvm install 20.19.3
+nvm use 20.19.3
+```
+
+**pnpm:**
+```bash
+# Install pnpm globally
+npm install -g pnpm
+```
+
 ## How to Clone
 
 ```bash
