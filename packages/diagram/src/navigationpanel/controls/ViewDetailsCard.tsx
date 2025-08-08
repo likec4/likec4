@@ -137,6 +137,8 @@ const ViewDetailsCardDropdown = ({
           maxHeight: 'calc(100cqh - 100px)',
           width: 'max-content',
           cursor: 'default',
+          overflow: 'auto',
+          overscrollBehavior: 'contain',
           '@/sm': {
             minWidth: 400,
             maxWidth: 550,

@@ -51,7 +51,9 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
     return null
   }
   const content = value.nonEmpty
-    ? { dangerouslySetInnerHTML: { __html: value.html } }
+    ? value.isMarkdown
+      ? { dangerouslySetInnerHTML: { __html: value.html } }
+      : { children: <p>{value.text}</p> }
     : { children: <Text component="span" fz={'xs'} c="dimmed" style={{ userSelect: 'none' }}>{emptyText}</Text> }
   return (
     <Box
@@ -64,6 +66,9 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
         className,
       )}
       style={{
+        ...props.fontSize && {
+          '--text-fz': `var(--font-sizes-${props.fontSize}, var(--font-sizes-md))`,
+        },
         // @ts-expect-error
         ['--mantine-scale']: textScale,
       }}
