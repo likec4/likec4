@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.36.0",
+  "version": "1.36.1",
   "private": true,
   "license": "MIT",
   "packageManager": "pnpm@10.14.0",
