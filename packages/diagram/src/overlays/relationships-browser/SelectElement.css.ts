@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const node = css({
-  margin: 0,
+  margin: '0',
 })
 
 export const label = css({

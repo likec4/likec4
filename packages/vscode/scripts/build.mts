@@ -106,7 +106,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'browser'],
+  conditions: ['sources', 'worker', 'browser'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -116,7 +116,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'browser'],
+  conditions: ['sources', 'worker', 'browser'],
 })
 
 let hasErrors = false

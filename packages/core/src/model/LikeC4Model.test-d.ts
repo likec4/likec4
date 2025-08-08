@@ -426,6 +426,7 @@ test('LikeC4Model.create: should have defined types and never for missing', () =
 test('LikeC4Model.fromDump: should have types', () => {
   const m = LikeC4Model.fromDump({
     [_stage]: 'layouted',
+    project: { id: 'test-project', config: { name: 'test-project' } },
     specification: {
       tags: {
         tag1: {},

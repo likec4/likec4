@@ -1,5 +1,4 @@
-import type { Any, DiagramView } from '@likec4/core/types'
-import type * as aux from '@likec4/core/types/_aux'
+import type { Any, aux, DiagramView } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'

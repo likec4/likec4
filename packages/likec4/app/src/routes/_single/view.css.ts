@@ -4,7 +4,7 @@ import { css } from '@likec4/styles/css'
 
 export const cssPreviewCardLink = css({
   position: 'absolute',
-  inset: 0,
+  inset: '0',
   zIndex: 1,
 })
 
@@ -24,8 +24,8 @@ export const headerHeight = {
 } as const
 
 export const cssViewOutlet = css({
-  padding: 0,
-  margin: 0,
+  padding: '0',
+  margin: '0',
   // paddingTop: headerHeight,
   width: '100%',
   height: '100%',
@@ -46,8 +46,8 @@ export const cssViewOutlet = css({
 export const cssExportView = css({
   boxSizing: 'border-box',
   border: '0px solid transparent',
-  padding: 0,
-  margin: 0,
+  padding: '0',
+  margin: '0',
   marginRight: 'auto',
   marginBottom: 'auto',
   background: 'transparent',
@@ -55,7 +55,7 @@ export const cssExportView = css({
 
 export const cssWebcomponentView = css({
   position: 'fixed',
-  inset: 0,
+  inset: '0',
   width: '100%',
   height: '100%',
 })

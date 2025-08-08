@@ -1,10 +1,10 @@
 import { css } from '@likec4/styles/css'
 
 export const container = css({
-  bottom: 0,
-  right: 0,
-  padding: 8,
-  margin: 0,
+  bottom: '0',
+  right: '0',
+  padding: '2',
+  margin: '0',
 })
 
 export const icon = css({
@@ -35,7 +35,7 @@ export const card = css({
 })
 
 export const tabPanel = css({
-  padding: '2xs',
+  padding: 'xxs',
 })
 
 // export const description = css({
@@ -69,8 +69,8 @@ export const elementNotation = css({
 })
 
 export const shapeSvg = css({
-  fill: 'likec4.palette.fill',
-  stroke: 'likec4.palette.stroke',
+  fill: 'var(--likec4-palette-fill)',
+  stroke: 'var(--likec4-palette-stroke)',
   strokeWidth: 1,
   overflow: 'visible',
   width: '100%',
@@ -84,8 +84,8 @@ export const shapeSvg = css({
 export const shapeBadge = css({
   fontWeight: 500,
   letterSpacing: '0.2px',
-  paddingTop: 0,
-  paddingBottom: 0,
+  paddingTop: '0',
+  paddingBottom: '0',
   textTransform: 'lowercase',
   transition: 'all 150ms ease-in-out',
   cursor: 'pointer',
@@ -94,6 +94,6 @@ export const shapeBadge = css({
   ['--badge-padding-x']: '3px',
   ['--badge-height']: '13.5px',
   ['--badge-lh']: '1',
-  ['--badge-bg']: '{colors.likec4.palette.fill}',
-  ['--badge-color']: '{colors.likec4.palette.hiContrast}',
+  ['--badge-bg']: 'var(--likec4-palette-fill)',
+  ['--badge-color']: 'var(--likec4-palette-hiContrast)',
 })

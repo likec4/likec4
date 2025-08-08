@@ -32,8 +32,8 @@ export function CompoundActionButton({
       className={cx(
         css({
           position: 'absolute',
-          top: '5px',
-          left: '4px',
+          top: '[5px]',
+          left: '[4px]',
           _smallZoom: {
             display: 'none',
           },

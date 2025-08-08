@@ -29,13 +29,13 @@ export function SearchByTags() {
       ref={ref}
       css={{
         gap: 'md',
-        paddingLeft: 48,
+        paddingLeft: '[48px]',
         flexWrap: 'nowrap',
       }}
     >
       <HStack
         css={{
-          gap: 6,
+          gap: '1.5', // 6px
           flexWrap: 'wrap',
           opacity: isFiltered ? 1 : .3,
           grayscale: isFiltered ? 0 : .9,

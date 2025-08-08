@@ -7,11 +7,13 @@ import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
+import type { LikeC4Project } from './project'
 import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
 
 interface BaseLikeC4ModelData<A extends aux.Any> {
   projectId: aux.ProjectId<A>
+  project: LikeC4Project
   specification: Specification<A>
   elements: Record<aux.ElementId<A>, Element<A>>
   deployments: {

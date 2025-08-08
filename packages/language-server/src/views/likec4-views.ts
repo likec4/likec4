@@ -3,39 +3,58 @@ import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } fr
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
 import { values } from 'remeda'
-import { CancellationToken } from 'vscode-jsonrpc'
+import type { CancellationToken } from 'vscode-languageserver'
 import { logError, logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 import { performanceMark } from '../utils'
 
 export type GraphvizOut = {
-  dot: string
-  diagram: DiagramView
+  readonly dot: string
+  readonly diagram: DiagramView
 }
 
 type GraphvizSvgOut = {
-  id: ViewId
-  dot: string
-  svg: string
+  readonly id: ViewId
+  readonly dot: string
+  readonly svg: string
 }
 
 export interface LikeC4Views {
   readonly layouter: GraphvizLayouter
+  /**
+   * Returns computed views (i.e. views with predicates computed)
+   */
   computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
+  /**
+   * Returns all layouted views (i.e. views with layout computed)
+   * Result includes dot and diagram
+   */
   layoutAllViews(
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
-  ): Promise<Array<Readonly<GraphvizOut>>>
+  ): Promise<GraphvizOut[]>
+  /**
+   * Returns layouted view (i.e. view with layout computed)
+   * Result includes dot and diagram
+   */
   layoutView(
     viewId: ViewId,
     projectId?: ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<GraphvizOut | null>
+  /**
+   * Returns diagrams (i.e. views with layout computed)
+   */
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
+  /**
+   * Returns all layouted views as Graphviz output (i.e. views with layout computed)
+   */
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
-  // overviewGraph(): Promise<OverviewGraph>
-
+  /**
+   * Open view in the preview panel.
+   * (works only if running as a vscode extension)
+   */
   openView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<void>
 }
 
@@ -57,7 +76,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   async computedViews(
     projectId?: ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<ComputedView[]> {
     const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     return values(likeC4Model.$data.views)
@@ -65,8 +84,8 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   async layoutAllViews(
     projectId?: ProjectId | undefined,
-    cancelToken = CancellationToken.None,
-  ): Promise<Array<Readonly<GraphvizOut>>> {
+    cancelToken?: CancellationToken,
+  ): Promise<GraphvizOut[]> {
     const likeC4Model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const views = values(likeC4Model.$data.views)
     if (views.length === 0) {
@@ -117,7 +136,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
   async layoutView(
     viewId: ViewId,
     projectId?: ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
@@ -154,7 +173,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   async diagrams(
     projectId?: ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<Array<DiagramView>> {
     const layouted = await this.layoutAllViews(projectId, cancelToken)
     return layouted.map(l => l.diagram)
@@ -162,7 +181,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
 
   async viewsAsGraphvizOut(
     projectId?: ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<Array<GraphvizSvgOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
     const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>

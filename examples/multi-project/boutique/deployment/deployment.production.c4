@@ -12,7 +12,7 @@ views "Deployment" {
 
     exclude
       boutique.frontend -> boutique.payments,
-      boutique.* -> prod.dbvm2.db,
+      boutique -> prod.dbvm2.db,
       boutique.payments -> prod.dbvm2.db,
       boutique.shipping -> prod.dbvm2.db
 

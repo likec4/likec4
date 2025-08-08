@@ -149,6 +149,12 @@ export type toLayouted<A> = A extends Aux<any, infer E, infer D, infer V, infer 
  */
 export type ProjectId<A> = A extends infer T extends Any ? Coalesce<T['ProjectId']> : never
 
+export type setProject<A, P extends string> =
+  // dprint-ignore
+  A extends Aux<infer S, infer E, infer D, infer V, any, infer Spec>
+      ? Aux<S, E, D, V, P, Spec>
+      : never
+
 /**
  * Element FQN from Aux as branded type
  */

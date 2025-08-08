@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import {
   type Sink,
   type TextFormatter,
@@ -56,6 +57,7 @@ export function getOutputChannelSink(channel: LogOutputChannel, props?: OutputCh
   return (logObj) => {
     try {
       switch (logObj.level) {
+        case 'trace':
         case 'debug':
           channel.debug(format(logObj).trimEnd())
           break
@@ -69,6 +71,8 @@ export function getOutputChannelSink(channel: LogOutputChannel, props?: OutputCh
         case 'fatal':
           channel.error(format(logObj).trimEnd())
           break
+        default:
+          nonexhaustive(logObj.level)
       }
     } catch (e) {
       channel.error(loggable(e))

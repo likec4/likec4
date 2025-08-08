@@ -21,7 +21,7 @@ export const OpenSource = () => {
           e.stopPropagation()
           onOpenSource?.({ view: viewId })
         }}
-        children={<IconFileSymlink stroke={1.5} style={{ width: '65%' }} />}
+        children={<IconFileSymlink style={{ width: '60%', height: '60%' }} />}
       />
     </Tooltip>
   )

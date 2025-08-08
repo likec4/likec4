@@ -1,9 +1,9 @@
 {
   "name": "root",
-  "version": "1.35.0",
+  "version": "1.36.1",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.50.0",
+    "dprint": "^0.50.1",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",

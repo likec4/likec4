@@ -128,7 +128,6 @@ export function LanguageClientSync({ config, wrapper }: {
 
   const applyViewChanges = useCallbackRef(async (viewId: ViewId, change: ViewChange) => {
     try {
-      languageClient().diagnostics
       const location = await languageClient().sendRequest(ChangeView.Req, { viewId, change })
       if (location) {
         revealLocation(location)

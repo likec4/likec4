@@ -1,137 +1,4 @@
 import { defineRecipe } from '@pandacss/dev'
-import { iconSize } from './const'
-
-export const actionBtn = defineRecipe({
-  className: 'action-btn',
-  description: 'Action Button within Diagram Node (Bottom-Center)',
-  base: {
-    pointerEvents: 'all',
-    cursor: 'pointer',
-    color: 'var(--actionbtn-color)',
-    opacity: 0.75,
-
-    '--actionbtn-color': '{colors.likec4.palette.loContrast}',
-    '--actionbtn-color-hovered': '{colors.likec4.palette.loContrast}',
-    '--actionbtn-color-hovered-btn': '{colors.likec4.palette.hiContrast}',
-
-    '--actionbtn-bg-idle': `color-mix(in srgb , {colors.likec4.palette.fill},  transparent 99%)`,
-    '--actionbtn-bg-hovered': `color-mix(in srgb , {colors.likec4.palette.fill} 65%, {colors.likec4.palette.stroke})`,
-    '--actionbtn-bg-hovered-btn':
-      `color-mix(in srgb , {colors.likec4.palette.fill} 50%, {colors.likec4.palette.stroke})`,
-
-    '--ai-bg': `var(--actionbtn-bg-idle)`,
-
-    background: `var(--ai-bg)`,
-
-    _whenHovered: {
-      opacity: 1,
-      color: 'var(--actionbtn-color-hovered)',
-      '--ai-bg': `var(--actionbtn-bg-hovered)`,
-    },
-    _hover: {
-      opacity: 1,
-      color: 'var(--actionbtn-color-hovered-btn)',
-      '--ai-bg': `var(--actionbtn-bg-hovered-btn)`,
-    },
-    _reduceGraphicsOnPan: {
-      display: 'none',
-    },
-    _smallZoom: {
-      display: 'none',
-    },
-    '& *': {
-      pointerEvents: 'none',
-    },
-  },
-
-  variants: {
-    variant: {
-      transparent: {
-        '--actionbtn-bg-hovered': `var(--actionbtn-bg-idle)`,
-      },
-      filled: {
-        boxShadow: {
-          base: '1px 1px 3px 0px transparent',
-          _whenHovered: '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
-          _reduceGraphics: 'none',
-        },
-      },
-    },
-    size: {
-      sm: {
-        ['--ai-size']: `var(--ai-size-sm)`,
-      },
-      md: {
-        ['--ai-size']: `var(--ai-size-md)`,
-      },
-    },
-    radius: {
-      sm: { '--ai-radius': `var(--mantine-radius-sm)` },
-      md: { '--ai-radius': `var(--mantine-radius-md)` },
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-    radius: 'md',
-    variant: 'filled',
-  },
-  staticCss: [{
-    size: ['md'],
-    radius: ['md'],
-    variant: ['*'],
-    conditions: ['*'],
-  }],
-})
-
-export const likec4tag = defineRecipe({
-  className: 'likec4-tag',
-  base: {
-    pointerEvents: 'all',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 40,
-    width: 'min-content',
-    transition: 'fast',
-    fontSize: 'xs',
-    gap: '1px',
-    cursor: 'default',
-    fontFamily: 'var(--likec4-element-font, {fonts.likec4})',
-    fontWeight: 'bold',
-    layerStyle: 'likec4.tag',
-    whiteSpace: 'nowrap',
-    px: 4,
-    py: 0,
-  },
-  variants: {
-    autoTextColor: {
-      false: {
-        '& > span': {
-          color: 'likec4.tag.text',
-          _first: {
-            opacity: 0.65,
-          },
-        },
-      },
-      true: {
-        '& > span': {
-          color: '[transparent]',
-          filter: 'invert(1) grayscale(1) brightness(1.3) contrast(1000)',
-          background: 'inherit',
-          backgroundClip: 'text',
-          mixBlendMode: 'plus-lighter',
-        },
-      },
-    },
-  },
-  defaultVariants: {
-    autoTextColor: false,
-  },
-  staticCss: [{
-    autoTextColor: ['true', 'false'],
-    conditions: ['hover'],
-  }],
-})
 
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
@@ -149,11 +16,11 @@ export const markdownBlock = defineRecipe({
     fontSize: 'var(--text-fz-md)',
 
     '& :first-child': {
-      marginTop: 0,
+      marginTop: '0',
     },
 
     '& :last-child': {
-      marginBottom: 0,
+      marginBottom: '0',
     },
     '& :where(h1, h2, h3, h4, h5, h6)': {
       lineHeight: '1.5',
@@ -371,20 +238,20 @@ export const markdownBlock = defineRecipe({
       true: {
         '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
         '& :where(a)': {
-          color: 'likec4.palette.fill/45',
+          color: 'var(--likec4-palette-fill)/45',
           mixBlendMode: 'difference',
         },
         '& :where(code)': {
-          borderColor: 'likec4.palette.stroke/85',
-          color: 'likec4.palette.hiContrast',
-          backgroundColor: 'likec4.palette.stroke/70',
+          borderColor: 'var(--likec4-palette-stroke)/85',
+          color: 'var(--likec4-palette-loContrast)',
+          backgroundColor: 'var(--likec4-palette-stroke)/70',
         },
         '& :where(strong)': {
-          color: `color-mix(in srgb , {colors.likec4.palette.hiContrast} 50%,  {colors.likec4.palette.loContrast})`,
+          color: `color-mix(in srgb , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
         },
         '& :where(blockquote)': {
           padding: '2xs',
-          backgroundColor: 'likec4.palette.stroke/65',
+          backgroundColor: 'var(--likec4-palette-stroke)/65',
         },
       },
       false: {},
@@ -397,90 +264,6 @@ export const markdownBlock = defineRecipe({
 
   staticCss: [{
     uselikec4palette: ['*'],
-    conditions: ['*'],
-  }],
-})
-
-export const navigationPanelActionIcon = defineRecipe({
-  className: 'likec4-navigation-panel-icon',
-  jsx: ['PanelActionIcon'],
-  description: 'ActionIcon for navigation panel',
-  base: {
-    color: {
-      base: 'likec4.panel.action-icon.text',
-      _disabled: 'likec4.panel.action-icon.text.disabled',
-      _notDisabled: {
-        _hover: 'likec4.panel.action-icon.text.hover',
-      },
-    },
-    _disabled: {
-      opacity: 0.5,
-    },
-  },
-  variants: {
-    variant: {
-      'default': {
-        backgroundColor: {
-          base: '[transparent]',
-          _notDisabled: {
-            _hover: 'likec4.panel.action-icon.bg.hover',
-          },
-        },
-      },
-      'filled': {
-        backgroundColor: {
-          base: 'likec4.panel.action-icon.bg',
-          _notDisabled: {
-            _hover: 'likec4.panel.action-icon.bg.hover',
-          },
-        },
-      },
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-  staticCss: [{
-    variant: ['*'],
-    conditions: ['*'],
-  }],
-})
-
-const varIconSize = `var(${iconSize})`
-export const elementNodeIcon = defineRecipe({
-  className: 'likec4-element-node-icon',
-  description: 'Element Icon displayed in diagram nodes',
-  base: {
-    flex: `0 0 ${varIconSize}`,
-    height: varIconSize,
-    width: varIconSize,
-    display: 'flex',
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-    justifyContent: 'center',
-    mixBlendMode: {
-      base: 'hard-light',
-      _reduceGraphicsOnPan: 'normal',
-    },
-    '& svg, & img': {
-      width: '100%',
-      height: 'auto',
-      maxHeight: '100%',
-      pointerEvents: 'none',
-      filter: {
-        base: [
-          'drop-shadow(0 0 3px rgb(0 0 0 / 12%))',
-          'drop-shadow(0 1px 8px rgb(0 0 0 / 8%))',
-          'drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))',
-        ],
-        _reduceGraphicsOnPan: 'none',
-      },
-    },
-    '& img': {
-      objectFit: 'contain',
-    },
-  },
-  staticCss: [{
     conditions: ['*'],
   }],
 })

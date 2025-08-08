@@ -16,12 +16,11 @@ export function EditorPanel() {
         <m.div
           layout="position"
           className={vstack({
-            marginLeft: 'micro',
-            gap: 'sm',
+            gap: 'xs',
             layerStyle: 'likec4.panel',
             position: 'relative',
             cursor: 'pointer',
-            padding: 'micro',
+            padding: 'xxs',
             pointerEvents: 'all',
           })}
           initial={{
@@ -37,7 +36,7 @@ export function EditorPanel() {
             translateX: -20,
           }}
         >
-          <TooltipGroup>
+          <TooltipGroup openDelay={600} closeDelay={120}>
             <ChangeAutoLayoutButton />
             <ManualLayoutToolsButton />
             <LayoutDriftNotification />

@@ -4,8 +4,8 @@ const labelBorderRadius = '4px'
 
 export const edgeNoteCloseButton = css({
   position: 'absolute',
-  top: 4,
-  right: 4,
+  top: '1',
+  right: '1',
 })
 
 export const edgeNoteText = css({
@@ -26,8 +26,8 @@ export const translate = {
 } as const
 
 export const edgeLabelContainer = css({
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',
@@ -60,84 +60,5 @@ export const edgeLabelContainer = css({
   },
   _reduceGraphicsOnPan: {
     display: 'none',
-  },
-})
-
-export const labelsva = sva({
-  slots: ['root', 'stepNumber', 'labelContents', 'labelText', 'labelTechnology'],
-  base: {
-    root: {
-      pointerEvents: 'all',
-      fontFamily: 'likec4.relation',
-      padding: '3px 5px 5px 5px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      width: 'max-content',
-      maxWidth: '100%',
-      gap: '4px',
-    },
-    stepNumber: {
-      alignSelf: 'stretch',
-      flex: '0 0 auto',
-      fontWeight: 600,
-      fontSize: '14px',
-      lineHeight: '1',
-      padding: '5px 5px',
-      textAlign: 'center',
-      minWidth: '22px',
-      borderTopLeftRadius: labelBorderRadius,
-      borderBottomLeftRadius: labelBorderRadius,
-      background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 10%)]`,
-      fontVariantNumeric: 'tabular-nums',
-      // _dark: {
-      [':where([data-likec4-color="gray"]) &']: {
-        _dark: {
-          background: `[color-mix(in srgb, {colors.likec4.relation.label.bg}, {colors.likec4.mixColor} 15%)]`,
-        },
-      },
-    },
-    labelContents: {
-      display: 'contents',
-      _empty: {
-        display: 'none !important',
-      },
-    },
-    labelText: {
-      whiteSpaceCollapse: 'preserve-breaks',
-      fontSize: '14px',
-      lineHeight: '1.185',
-    },
-    labelTechnology: {
-      textAlign: 'center',
-      whiteSpaceCollapse: 'preserve-breaks',
-      fontSize: '11px',
-      lineHeight: '1',
-      opacity: 0.75,
-    },
-  },
-  variants: {
-    isStepEdge: {
-      false: {},
-      true: {
-        root: {
-          flexDirection: 'row',
-          gap: '4px',
-          padding: '0px',
-        },
-        labelContents: {
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '2px 5px 4px 0px',
-        },
-        labelText: {
-          padding: '2px 6px 4px 0px',
-        },
-      },
-    },
-  },
-  defaultVariants: {
-    isStepEdge: false,
   },
 })

@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-import { headerHeight } from './view.css'
 
 // Index page
 
@@ -19,5 +18,5 @@ export const cssCodeBlock = css({
 })
 
 export const viewWithTopPadding = css({
-  paddingTop: headerHeight.ref,
+  paddingTop: '[var(--header-height)]',
 })

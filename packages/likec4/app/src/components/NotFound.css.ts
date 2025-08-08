@@ -2,11 +2,11 @@ import { css } from '@likec4/styles/css'
 import { rem } from '@mantine/core'
 
 export const content = css({
-  paddingTop: 120,
+  paddingTop: '[120px]',
   position: 'relative',
   zIndex: '1',
   sm: {
-    paddingTop: 220,
+    paddingTop: '[220px]',
   },
 })
 
@@ -21,15 +21,15 @@ export const inner = css({
 })
 
 export const root = css({
-  paddingTop: '80px',
-  paddingBottom: '80px',
+  paddingTop: '[80px]',
+  paddingBottom: '[80px]',
 })
 
 export const description = css({
   maxWidth: rem(540),
   margin: 'auto',
   marginTop: 'xl',
-  marginBottom: `calc({spacing.xl}*1.5)`,
+  marginBottom: '[calc({spacing.xl}*1.5)]',
 })
 
 export const title = css({

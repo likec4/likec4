@@ -23,7 +23,7 @@ export const viewButton = cx(
 // export const viewDescription = css(description)
 
 export const viewButtonDescription = css({
-  marginTop: '4px',
+  marginTop: '1',
   // transition: transitions.fast,
   // color: `[var(${descriptionColor}, {colors.mantine.colors.dimmed})]`,
   fontSize: '13px',

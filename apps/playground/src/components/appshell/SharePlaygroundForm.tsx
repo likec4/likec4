@@ -41,7 +41,7 @@ const Alert = MantineAlert.withProps({
       padding: 'xs',
     }),
     body: css({
-      gap: '1',
+      gap: '[1px]',
     }),
     label: css({
       fontSize: 'xs',
@@ -134,7 +134,7 @@ export function SharePlaygroundForm() {
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
-                        y: '-1',
+                        y: '[-1px]',
                       },
                     })}
                     onClick={generateRandomPincode}>
@@ -148,7 +148,7 @@ export function SharePlaygroundForm() {
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
-                        y: '-1',
+                        y: '[-1px]',
                       },
                       _disabled: {
                         opacity: 0.5,
@@ -274,7 +274,7 @@ export function SharePlaygroundForm() {
                     {copied ? 'Copied' : 'Copy to clipboard'}
                   </Button>
                   <Anchor fz={'2xs'} c="green" href={shareLink} target="_blank" underline="hover">
-                    <div className={hstack({ gap: '1', alignItems: 'center' })}>
+                    <div className={hstack({ gap: '[1px]', alignItems: 'center' })}>
                       <span>Open in new tab</span>
                       <IconExternalLink size={10} />
                     </div>

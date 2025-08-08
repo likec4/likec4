@@ -15,7 +15,7 @@ const SearchExtension = [
   ...ProjectsManager.ConfigFileNames,
 ]
 
-const hasExtensionAndNotInsideNodeModules = (path: string) => SearchExtension.some((ext) => path.endsWith(ext))
+const hasExtension = (path: string) => SearchExtension.some((ext) => path.endsWith(ext))
 /**
  * A file system provider that follows symbolic links.
  * @see https://github.com/likec4/likec4/pull/1213
@@ -34,7 +34,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
         .withFullPaths()
-        .filter(hasExtensionAndNotInsideNodeModules)
+        .filter(hasExtension)
         .crawl(folderPath.fsPath)
         .withPromise()
       for (const path of crawled) {

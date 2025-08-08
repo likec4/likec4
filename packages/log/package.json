@@ -2,7 +2,7 @@
   "name": "@likec4/log",
   "description": "Shared interface for logging",
   "license": "MIT",
-  "version": "1.35.0",
+  "version": "1.36.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -40,13 +40,13 @@
     "clean": "pnpm rimraf dist lib"
   },
   "dependencies": {
-    "@logtape/logtape": "^0.9.1"
+    "@logtape/logtape": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
-    "safe-stringify": "^1.2.0",
+    "safe-stringify": "catalog:utils",
     "std-env": "catalog:utils",
     "typescript": "catalog:",
     "unbuild": "catalog:",

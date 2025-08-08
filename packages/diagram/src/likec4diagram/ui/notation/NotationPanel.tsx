@@ -1,5 +1,5 @@
 import { type ComputedNode, type NodeNotation as ElementNotationData } from '@likec4/core'
-import { css, cx, cx as clsx } from '@likec4/styles/css'
+import { cx, cx as clsx } from '@likec4/styles/css'
 import {
   ActionIcon,
   Badge,
@@ -48,9 +48,6 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
       py={'sm'}
       className={cx(
         styles.elementNotation,
-        css({
-          likec4Palette: color,
-        }),
       )}
       data-likec4-color={color}
       onMouseEnter={() => {

@@ -33,9 +33,9 @@ export const ToggleReadonly = () => {
       className={cx(
         'group',
         hstack({
-          gap: '2',
-          paddingInline: '2xs',
-          paddingBlock: '2xs',
+          gap: '0.5',
+          paddingInline: 'xxs',
+          paddingBlock: 'xxs',
           rounded: 'sm',
           userSelect: 'none',
           cursor: 'pointer',

@@ -17,9 +17,9 @@ const button = css.raw({
   width: '100%',
   background: 'mantine.colors.body',
   rounded: 'sm',
-  padding: `12px 8px 12px 14px`,
+  padding: `[12px 8px 12px 14px]`,
   minHeight: '60px',
-  gap: 8,
+  gap: '2',
   // alignItems: 'flex-start',
   // transition: `all 50ms ${easings.inOut}`,
   border: `1px solid`,
@@ -139,7 +139,7 @@ const descriptionColor = css.raw({
 })
 
 const description = css.raw(descriptionColor, {
-  marginTop: '4px',
+  marginTop: '1',
   fontSize: '12px',
   lineHeight: '1.4',
 

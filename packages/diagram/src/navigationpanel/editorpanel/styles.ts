@@ -1,16 +1,16 @@
 import { css } from '@likec4/styles/css'
 
 export const navigationButtons = css({
-  gap: 'micro',
+  gap: 'xxs',
   _empty: {
     display: 'none',
   },
 })
 
 export const panel = css({
-  top: '1rem',
-  left: '1rem',
-  margin: 0,
+  top: 'md',
+  left: 'md',
+  margin: '0',
   pointerEvents: 'none',
   '& :where(button, .action-icon, [role=\'dialog\'])': {
     pointerEvents: 'all',
@@ -47,7 +47,7 @@ export const autolayoutButton = css({
   flex: '1 1 40%',
   textAlign: 'center',
   fontWeight: 500,
-  padding: '4px 6px',
+  padding: '[4px 6px]',
   fontSize: '11px',
   zIndex: 1,
 })

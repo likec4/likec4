@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 export const ErrorMessage = ({ children }: PropsWithChildren) => (
   <div
     style={{
-      margin: '1rem 0',
+      margin: '[1rem 0]',
     }}>
     <div
       style={{

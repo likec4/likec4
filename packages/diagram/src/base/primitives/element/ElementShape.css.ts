@@ -4,7 +4,7 @@ export const indicator = css({
   _smallZoom: {
     visibility: 'hidden',
   },
-  stroke: 'likec4.palette.loContrast',
+  stroke: 'var(--likec4-palette-loContrast)',
   fill: '[none]',
 
   strokeWidth: 8,
@@ -12,7 +12,7 @@ export const indicator = css({
   visibility: 'hidden',
   pointerEvents: 'none',
   _light: {
-    stroke: `[color-mix(in srgb, {colors.likec4.palette.fill} 50%,rgb(121, 121, 121))]`,
+    stroke: `[color-mix(in srgb, var(--likec4-palette-fill) 50%,rgb(121, 121, 121))]`,
   },
   _whenFocused: {
     visibility: 'visible',
@@ -27,29 +27,29 @@ export const indicator = css({
 })
 
 export const fillElementFill = css({
-  fill: 'likec4.palette.fill',
+  fill: 'var(--likec4-palette-fill)',
 })
 
 export const fillElementStroke = css({
-  fill: 'likec4.palette.stroke',
+  fill: 'var(--likec4-palette-stroke)',
 })
 
 export const fillMixStroke = css({
-  fill: '[color-mix(in srgb, {colors.likec4.palette.stroke} 90%, {colors.likec4.palette.fill})]',
+  fill: '[color-mix(in srgb, var(--likec4-palette-stroke) 90%, var(--likec4-palette-fill))]',
   '.shape-svg-multiple &': {
-    fill: 'likec4.palette.fill',
+    fill: 'var(--likec4-palette-fill)',
   },
 })
 
 const shapeBase = css.raw({
-  top: 0,
-  left: 0,
+  top: '0',
+  left: '0',
   position: 'absolute',
   width: '100%',
   height: '100%',
   pointerEvents: 'none',
-  fill: 'likec4.palette.fill',
-  stroke: 'likec4.palette.stroke',
+  fill: 'var(--likec4-palette-fill)',
+  stroke: 'var(--likec4-palette-stroke)',
   overflow: 'visible',
   // zIndex is removed to improve rendering performance
   // this forces to keep shape in the same layer as the node
@@ -82,7 +82,7 @@ export const shapeSvg = css(shapeBase, {
   transitionDelay: '0ms',
   filter: `
       drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))
-      drop-shadow(0 1px 1px color-mix(in srgb, {colors.likec4.palette.stroke} 40%, transparent))
+      drop-shadow(0 1px 1px color-mix(in srgb, var(--likec4-palette-stroke) 40%, transparent))
       drop-shadow(0 5px 3px rgba(0, 0, 0, 0.1))
     `,
   _whenHovered: {

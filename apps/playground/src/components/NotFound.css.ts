@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const content = css({
-  paddingTop: '120px',
+  paddingTop: '[120px]',
   position: 'relative',
   zIndex: '1',
   border: 'none',
@@ -18,8 +18,8 @@ export const inner = css({
 })
 
 export const root = css({
-  paddingTop: '80px',
-  paddingBottom: '80px',
+  paddingTop: '[80px]',
+  paddingBottom: '[80px]',
 })
 
 export const description = css({

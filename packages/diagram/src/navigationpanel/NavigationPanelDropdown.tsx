@@ -148,7 +148,7 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
           'calc(100cqh - 200px)',
         ],
       })}>
-      <VStack gap={1}>
+      <VStack gap="[1px]">
         {found.map(v => (
           <FoundedView
             key={v.id}
@@ -173,10 +173,10 @@ interface FoundedViewProps {
 }
 
 const foundedViewClass = hstack({
-  gap: '2xs',
+  gap: 'xxs',
   rounded: 'sm',
   px: 'xs',
-  py: '2xs',
+  py: 'xxs',
   _hover: {
     backgroundColor: {
       base: 'mantine.colors.gray[1]',
@@ -266,7 +266,7 @@ function FoundedView(
     </Highlight>
   ))
   breadcrumbs.push(
-    <HStack gap={4}>
+    <HStack gap="[4px]">
       {viewIcon}
       {viewLabel}
     </HStack>,
@@ -416,9 +416,9 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
   }
 
   return (
-    <Box mb={'4'}>
+    <Box mb={'1'}>
       <ColumnScrollArea>
-        <VStack gap={1}>
+        <VStack gap="[1px]">
           {data.items.map((item, i) => (
             <FolderColumnItem
               key={`${data.folderPath}/${item.type}/${i}`}

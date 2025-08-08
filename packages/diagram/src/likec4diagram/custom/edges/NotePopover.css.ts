@@ -3,8 +3,8 @@ import { css } from '@likec4/styles/css'
 
 export const edgeNoteCloseButton = css({
   position: 'absolute',
-  top: 1,
-  right: 1,
+  top: '[1px]',
+  right: '[1px]',
   zIndex: 9,
 })
 

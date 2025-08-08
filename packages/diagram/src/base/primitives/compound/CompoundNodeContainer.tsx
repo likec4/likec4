@@ -62,9 +62,6 @@ export function CompoundNodeContainer({
   return (
     <m.div
       className={cx(
-        css({
-          likec4Palette: `${data.color}.${depth}`,
-        }),
         classes.root,
         'likec4-compound-node',
         className,

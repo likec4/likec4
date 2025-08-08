@@ -15,61 +15,6 @@ import mergeErrorCause from 'merge-error-cause'
 import wrapErrorMessage from 'wrap-error-message'
 import { ident, parseStack } from './utils'
 
-// export function formatProperties(properties: Record<string, unknown>): {
-//   properties: Record<string, unknown>
-//   output?: string
-//   error?: never
-// } | {
-//   properties: Record<string, unknown>
-//   output: string
-//   error?: {
-//     message: string
-//     name: string
-//     stack?: string
-//   }
-// } {
-//   let error: {
-//     message: string
-//     name: string
-//     stack?: string
-//   } | undefined
-//   let totalProps = 0
-//   const formattedProperties = {} as Record<string, unknown>
-//   for (const [key, value] of Object.entries(properties)) {
-//     if (value instanceof Error) {
-//       const mergedErr = mergeErrorCause(value)
-//       const stack = mergedErr.stack ? parseStack(mergedErr.stack) : undefined
-//       const formattedError = {
-//         message: mergedErr.message,
-//         name: mergedErr.name,
-//         ...stack && { stack: stack.join('\n') },
-//       }
-//       error ??= formattedError
-//       formattedProperties[key] = formattedError
-//     } else {
-//       formattedProperties[key] = value
-//     }
-//     totalProps++
-//   }
-//   if (totalProps === 0) {
-//     return {
-//       properties: formattedProperties,
-//     }
-//   }
-//   if (error) {
-//     return {
-//       error: error,
-//       output: error.stack ? error.message + '\n' + ident(error.stack.slice(1)) : error.message,
-//       properties: formattedProperties,
-//     }
-//   }
-//   return {
-//     ...(error && { error: error }),
-//     output: safeStringify(formattedProperties, { indentation: '\t' }),
-//     properties: formattedProperties,
-//   }
-// }
-
 function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
     .values(record.properties)
@@ -113,23 +58,8 @@ export function appendErrorToMessage(values: FormattedValues, color?: boolean): 
   return values
 }
 
-// export function formatRecord(values: FormattedValues): FormattedValues {
-//   const props = formatProperties(values.record.properties)
-//   if (props.output) {
-//     props.output = ' \n' + ident(props.output)
-//     return {
-//       ...values,
-//       record: {
-//         ...values.record,
-//         properties: props.properties,
-//       },
-//       message: `${values.message}${props.output}`,
-//     }
-//   }
-//   return values
-// }
-
 const levelAbbreviations: Record<LogLevel, string> = {
+  'trace': 'TRACE',
   'debug': 'DEBUG',
   'info': 'INFO ',
   'warning': 'WARN ',

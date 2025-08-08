@@ -9,7 +9,7 @@ export const navigationLink = defineSlotRecipe({
     root: {
       rounded: 'sm',
       px: 'xs',
-      py: '2xs',
+      py: 'xxs',
       backgroundColor: {
         _hover: {
           '&:not([data-active])': {
@@ -20,13 +20,13 @@ export const navigationLink = defineSlotRecipe({
       },
     },
     body: {
-      gap: '2',
+      gap: '0.5',
       display: 'flex',
       flexDirection: 'column',
     },
     section: {
       '&:where([data-position="left"])': {
-        marginInlineEnd: '2xs',
+        marginInlineEnd: 'xxs',
         // alignSelf: 'flex-start',
       },
     },
@@ -65,5 +65,3 @@ export const navigationLink = defineSlotRecipe({
     conditions: ['*'],
   }],
 })
-
-export { elementNodeData } from './slotRecipes.elementNodeData'

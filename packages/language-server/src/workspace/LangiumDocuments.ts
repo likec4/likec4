@@ -19,7 +19,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
       if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri)) {
         return false
       }
-      doc.likec4ProjectId ??= projects.belongsTo(doc.uri)
+      doc.likec4ProjectId = projects.belongsTo(doc.uri)
       return true
     })
   }

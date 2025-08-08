@@ -356,6 +356,7 @@ export const globalStyles = {
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
   _stage: 'computed' as const,
+  project: { id: 'test-project', config: { name: 'test-project' } },
   specification: {
     elements: {
       actor: {},

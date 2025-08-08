@@ -32,8 +32,8 @@ export function CompoundDetailsButton({
       className={cx(
         css({
           position: 'absolute',
-          top: '[2px]',
-          right: '[2px]',
+          top: '0.5',
+          right: '0.5',
           _smallZoom: {
             display: 'none',
           },
