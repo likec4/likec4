@@ -1,5 +1,5 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
-import { BiMap, invariant, nonNullable } from '@likec4/core'
+import { BiMap, invariant, memoizeProp, nonNullable } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { type FileSystemNode, type LangiumDocument, URI, WorkspaceCache } from 'langium'
 import picomatch from 'picomatch/posix'
@@ -10,6 +10,7 @@ import {
   parseFilename,
   withoutProtocol,
   withProtocol,
+  withTrailingSlash,
 } from 'ufo'
 import { parseConfigJson, ProjectConfig, validateConfig } from '../config'
 import { logger as mainLogger } from '../logger'
@@ -235,7 +236,7 @@ export class ProjectsManager {
 
   protected findProjectForDocument(documentUri: string): Omit<Project, 'folder'> {
     return this.mappingsToProject.get(documentUri, () => {
-      const project = this._projects.find(({ folder }) => documentUri.startsWith(folder))
+      const project = this._projects.find(({ folder }) => documentUri.startsWith(withTrailingSlash(folder)))
       // If the document is not part of any project, assign it to the global project ID
       return project ?? this.defaultGlobalProject
     })
@@ -243,9 +244,7 @@ export class ProjectsManager {
 
   // The mapping between document URIs and their corresponding project ID
   // Lazy-created due to initialization order of the LanguageServer
-  private _mappingsToProject: WorkspaceCache<string, Omit<Project, 'folder'>> | undefined
   protected get mappingsToProject(): WorkspaceCache<string, Omit<Project, 'folder'>> {
-    this._mappingsToProject ??= new WorkspaceCache(this.services)
-    return this._mappingsToProject
+    return memoizeProp(this, '_mappingsToProject', () => new WorkspaceCache(this.services))
   }
 }
