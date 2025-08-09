@@ -201,4 +201,29 @@ describe.concurrent('ProjectsManager', () => {
       URI.parse('file:///test/workspace/node_modules/deep/doc.likec4'),
     )).toEqual(true)
   })
+
+  it('should correctly return project for documents', async ({ expect }) => {
+    const { projectsManager: pm } = await createMultiProjectTestServices({})
+
+    const projects = [
+      'project1',
+      'project1/sub1',
+      'qwe',
+      'qwe-qwe', // https://github.com/likec4/likec4/issues/2099
+    ]
+    for (const project of projects) {
+      await pm.registerProject({
+        config: { name: project },
+        folderUri: URI.parse(`file:///test/${project}`),
+      })
+    }
+
+    expect(pm.belongsTo('file:///test/outside/doc.likec4')).toEqual('default')
+    expect(pm.belongsTo('file:///test/project1/doc.likec4')).toEqual('project1')
+    expect(pm.belongsTo('file:///test/project1/sub1/doc.likec4')).toEqual('project1/sub1')
+    expect(pm.belongsTo('file:///test/project1/sub1/f1/doc.likec4')).toEqual('project1/sub1')
+    expect(pm.belongsTo('file:///test/project1/sub1-doc.likec4')).toEqual('project1')
+    expect(pm.belongsTo('file:///test/qwe/doc.likec4')).toEqual('qwe')
+    expect(pm.belongsTo('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe')
+  })
 })
