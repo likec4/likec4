@@ -6,10 +6,18 @@ export const markdownBlock = defineRecipe({
   description: 'Block with Markdown content',
   base: {
     '--text-fz': '1rem',
-    '--typography-spacing': 'calc(0.75 * var(--text-fz) * var(--mantine-scale, 1))',
     '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale, 1) / 1.125)',
     '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale, 1))',
+    '--typography-spacing': 'calc(0.75 * var(--text-fz-md))',
     '--text-fw-headings': '600',
+    '--code-background': {
+      _light: 'var(--mantine-color-gray-2)',
+      _dark: 'var(--mantine-color-dark-8)',
+    },
+    '--code-color': {
+      _light: 'var(--mantine-color-black)',
+      _dark: 'var(--mantine-color-white)',
+    },
 
     fontSize: 'var(--text-fz-md)',
     lineHeight: 'var(--mantine-line-height)',
@@ -32,31 +40,31 @@ export const markdownBlock = defineRecipe({
     },
 
     '& :is(h1)': {
-      fontSize: 'calc(1.476 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.476 * var(--text-fz-md))',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h2)': {
-      fontSize: 'calc(1.383 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.383 * var(--text-fz-md))',
       // lineHeight: 'var(--mantine-h2-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h3)': {
-      fontSize: 'calc(1.296 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.296 * var(--text-fz-md))',
       // lineHeight: 'var(--mantine-h3-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h4)': {
-      fontSize: 'calc(1.215 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.215 * var(--text-fz-md))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h5)': {
-      fontSize: 'calc(1.138 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.138 * var(--text-fz-md))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
     '& :is(h6)': {
-      fontSize: 'calc(1.067 * var(--text-fz) * var(--mantine-scale, 1))',
+      fontSize: 'calc(1.067 * var(--text-fz-md))',
       // lineHeight: 'var(--mantine-h4-line-height)',
       fontWeight: 'var(--text-fw-headings)',
     },
@@ -109,46 +117,37 @@ export const markdownBlock = defineRecipe({
       },
     },
     '& :where(pre)': {
-      padding: 'var(--mantine-spacing-xs)',
-      lineHeight: 'var(--mantine-line-height)',
+      px: '3',
+      py: '2',
+      lineHeight: 'var(--mantine-line-height-xs)',
       margin: '0',
       marginTop: 'var(--typography-spacing)',
       marginBottom: 'var(--typography-spacing)',
       overflowX: 'auto',
       fontFamily: 'var(--mantine-font-family-monospace)',
       fontSize: 'var(--text-fz-sm)',
-      borderRadius: 'var(--mantine-radius-xs)',
+      borderRadius: 'sm',
 
-      backgroundColor: {
-        _light: 'mantine.colors.gray[2]',
-        _dark: 'mantine.colors.dark[8]',
-      },
-
-      '& :where(code)': {
-        backgroundColor: 'transparent',
-        padding: '0',
-        borderRadius: '0',
-        color: 'inherit',
-        border: '0',
-      },
+      backgroundColor: 'var(--code-background)',
+      color: 'var(--code-color)',
     },
 
     '& :where(code)': {
       lineHeight: '1',
       padding: '1px 4px',
-      borderRadius: '2px',
+      borderRadius: 'xs',
       fontFamily: 'var(--mantine-font-family-monospace)',
       fontSize: 'var(--text-fz-sm)',
 
-      backgroundColor: {
-        _light: 'mantine.colors.gray[2]',
-        _dark: 'mantine.colors.dark[8]',
-      },
-
-      color: {
-        _light: 'mantine.colors.black',
-        _dark: 'mantine.colors.white',
-      },
+      backgroundColor: 'var(--code-background)',
+      color: 'var(--code-color)',
+    },
+    '& :where(pre code)': {
+      backgroundColor: 'transparent',
+      padding: '0',
+      borderRadius: '0',
+      color: 'inherit',
+      border: '0',
     },
 
     '& :where(ul, ol):not([data-type="taskList"])': {
@@ -211,13 +210,9 @@ export const markdownBlock = defineRecipe({
       margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
       padding: 'xs',
-
-      _light: {
-        backgroundColor: 'mantine.colors.gray[1]',
-      },
-
-      _dark: {
-        backgroundColor: 'mantine.colors.dark[5]',
+      backgroundColor: {
+        _light: 'var(--mantine-color-gray-1)',
+        _dark: 'var(--mantine-color-dark-5)',
       },
       '&:not(:first-child)': {
         marginTop: 'var(--typography-spacing)',
@@ -231,19 +226,12 @@ export const markdownBlock = defineRecipe({
      */
     uselikec4palette: {
       true: {
-        // '--typography-spacing': 'calc(0.25rem * var(--mantine-scale, 1))',
+        '--code-background': 'color-mix(in srgb , var(--likec4-palette-stroke) 70%, transparent)',
+        '--code-color': 'var(--likec4-palette-loContrast)',
+        '--typography-spacing': 'calc(0.5 * var(--text-fz-md))',
         '& :where(a)': {
           color: 'var(--likec4-palette-fill)/45',
           mixBlendMode: 'difference',
-        },
-        '& :where(code, pre)': {
-          borderColor: 'var(--likec4-palette-stroke)/85',
-          color: 'var(--likec4-palette-loContrast)',
-          backgroundColor: 'var(--likec4-palette-stroke)/70',
-          '& :where(code)': {
-            backgroundColor: 'transparent',
-            border: 'none',
-          },
         },
         '& :where(strong)': {
           color: `color-mix(in srgb , var(--likec4-palette-hiContrast) 50%,  var(--likec4-palette-loContrast))`,
