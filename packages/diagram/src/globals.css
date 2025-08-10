@@ -12,6 +12,22 @@
 .likec4-root .react-flow:is(.not-initialized) {
   opacity: 0;
 }
+
+.likec4-root .react-flow {
+  contain: paint;
+  --xy-background-color: var(--colors-likec4-background);
+  --xy-background-pattern-color: var(--colors-likec4-background-pattern, var(--colors-likec4-background));
+}
+
+.likec4-root .react-flow:is(.bg-transparent) {
+  background: transparent !important;
+  --xy-background-color: transparent !important;
+}
+
+.likec4-root .react-flow .react-flow__pane {
+  user-select: none;
+  --webkit-user-select: none;
+}
 :where(.likec4-root .mantine-ActionIcon-icon) .tabler-icon {
   width: 75%;
   height: 75%;
@@ -31,6 +47,14 @@
   transition-property: opacity, filter;
   transition-timing-function: cubic-bezier(0.50, 0, 0.2, 1);
   transition-duration: 600ms;
+}
+
+.likec4-root .react-flow :where(.react-flow__nodes, .react-flow__edges, .react-flow__edgelabel-renderer) {
+  display: contents;
+}
+
+.likec4-root .react-flow__node.draggable:has(.likec4-compound-node) {
+  cursor: default;
 }
 
 [data-mantine-color-scheme="dark"]

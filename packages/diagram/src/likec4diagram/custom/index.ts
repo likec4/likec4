@@ -1,3 +1,4 @@
+import type { CustomNodes } from '../../custom/customNodes'
 import type { Types } from '../types'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import {
@@ -11,10 +12,10 @@ import {
 export const BuiltinNodes = {
   element: ElementNode,
   deployment: DeploymentNode,
-  'compound-element': CompoundElementNode,
-  'compound-deployment': CompoundDeploymentNode,
-  'view-group': ViewGroupNode,
-} satisfies { [key in Types.Node['type']]: any }
+  compoundElement: CompoundElementNode,
+  compoundDeployment: CompoundDeploymentNode,
+  viewGroup: ViewGroupNode,
+} satisfies Required<CustomNodes>
 
 export const edgeTypes = {
   relationship: RelationshipEdge,

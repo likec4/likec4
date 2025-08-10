@@ -1,4 +1,4 @@
-import { css, sva } from '@likec4/styles/css'
+import { css } from '@likec4/styles/css'
 
 const labelBorderRadius = '4px'
 
@@ -39,14 +39,14 @@ export const edgeLabelContainer = css({
 
   borderRadius: labelBorderRadius,
 
-  transform: `${translate.ref}`,
-  transition: 'fast',
+  // transform: `${translate.ref}`,
+  // transition: 'fast',
 
-  '&:is([data-likec4-hovered=\'true\'])': {
-    transition: `all 190ms {easings.inOut}`,
-    transform: `var(--edge-translate, translate(0px, 0px)) scale(1.12)`,
-    transitionDelay: '100ms',
-  },
+  // '&:is([data-likec4-hovered=\'true\'])': {
+  //   transition: `all 190ms {easings.inOut}`,
+  //   transform: `var(--edge-translate, translate(0px, 0px)) scale(1.12)`,
+  //   transitionDelay: '100ms',
+  // },
 
   _noReduceGraphics: {
     mixBlendMode: {

@@ -23,7 +23,7 @@ export const conditions = {
     reduceGraphicsOnPan: [
       `${root}:is(`,
       '[data-likec4-reduced-graphics]',
-      '[data-likec4-diagram-panning]',
+      '[data-likec4-diagram-panning="true"]',
       ') &',
     ].join(''),
 
@@ -33,17 +33,17 @@ export const conditions = {
       ') &',
     ].join(''),
 
-    whenPanning: `:is(${root}[data-likec4-diagram-panning]) &`,
+    whenPanning: `${root}:is([data-likec4-diagram-panning="true"]) &`,
 
-    smallZoom: ':where([data-likec4-zoom-small]) &',
+    smallZoom: ':where([data-likec4-zoom-small="true"]) &',
 
     compoundTransparent: ':where([data-compound-transparent]) &',
 
     edgeActive: ':where([data-likec4-edge-active="true"]) &',
 
-    whenHovered: ':where([data-likec4-hovered="true"]) &',
+    whenHovered: ':where(.react-flow__node, .react-flow__edge):has([data-likec4-hovered="true"]) &',
     whenSelected: ':where(.react-flow__node.selected, .react-flow__edge.selected) &',
-    whenDimmed: ':where([data-likec4-dimmed]) &',
+    whenDimmed: ':where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) &',
     whenFocused: ':where(.react-flow__node, .react-flow__edge):is(:focus-visible, :focus, :focus-within) &',
     // likec4Color: ':where([data-likec4-color]) &',
   },

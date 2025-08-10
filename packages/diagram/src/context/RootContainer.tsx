@@ -21,11 +21,7 @@ export function RootContainer({
 
   useEffect(() => {
     return $isPanning.listen((isPanning) => {
-      if (isPanning) {
-        ref.current?.setAttribute('data-likec4-diagram-panning', 'true')
-      } else {
-        ref.current?.removeAttribute('data-likec4-diagram-panning')
-      }
+      ref.current?.setAttribute('data-likec4-diagram-panning', isPanning ? 'true' : 'false')
     })
   }, [$isPanning])
 

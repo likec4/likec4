@@ -20,6 +20,7 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
   } = props
 
   const { elementColor, onColorPreview, onChange } = useHandlers(modelFqn, props)
+  const opacity = style?.opacity ?? 100
   return (
     <Toolbar
       nodeProps={props}
@@ -29,12 +30,12 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
         elementColor={elementColor}
         onColorPreview={onColorPreview}
         isOpacityEditable
-        elementOpacity={style?.opacity}
+        elementOpacity={opacity}
         onChange={onChange}
         position="left-start"
       />
       <BorderStyleOption
-        elementBorderStyle={style?.border}
+        elementBorderStyle={style?.border ?? (opacity < 99 ? 'dashed' : 'none')}
         onChange={onChange}
       />
       {enableVscode && <GoToSourceButton elementId={modelFqn} />}

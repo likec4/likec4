@@ -1,4 +1,5 @@
 export { actionBtn } from './actionBtn'
+export { compoundNode } from './compoundNode'
 export { edgeActionBtn } from './edgeActionBtn'
 export { elementNodeIcon } from './elementNodeIcon'
 export { likec4tag } from './likec4tag'

@@ -6,6 +6,7 @@ import {
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
+import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
 import globalsCss from './globals.css?inline'
 import { useLikeC4Specification } from './likec4model'
@@ -88,20 +89,27 @@ function generateCustomColorStyles(customColors: CustomColorDefinitions) {
 export function LikeC4Styles() {
   const nonce = useMantineStyleNonce()?.()
 
-  const customColors = useLikeC4Specification().customColors
+  const { customColors } = useLikeC4Specification()
   const customColorsStyles = customColors ? generateCustomColorStyles(customColors) : ''
 
-  return (
-    <>
-      <style type="text/css" data-likec4-global dangerouslySetInnerHTML={{ __html: globalsCss }} nonce={nonce} />
-      <style type="text/css" data-likec4-colors dangerouslySetInnerHTML={{ __html: builtInColors }} nonce={nonce} />
-      {customColorsStyles && (
-        <style
-          type="text/css"
-          data-likec4-custom-colors
-          dangerouslySetInnerHTML={{ __html: customColorsStyles }}
-          nonce={nonce} />
-      )}
-    </>
-  )
+  return <MemoizedStyles nonce={nonce} customColorsStyles={customColorsStyles} builtInColors={builtInColors} />
 }
+
+/**
+ * @internal This gives a performance boost during development
+ */
+const MemoizedStyles = memo<{ nonce: string | undefined; customColorsStyles: string; builtInColors: string }>((
+  { nonce, customColorsStyles, builtInColors },
+) => (
+  <>
+    <style type="text/css" data-likec4-global dangerouslySetInnerHTML={{ __html: globalsCss }} nonce={nonce} />
+    <style type="text/css" data-likec4-colors dangerouslySetInnerHTML={{ __html: builtInColors }} nonce={nonce} />
+    {customColorsStyles && (
+      <style
+        type="text/css"
+        data-likec4-custom-colors
+        dangerouslySetInnerHTML={{ __html: customColorsStyles }}
+        nonce={nonce} />
+    )}
+  </>
+))

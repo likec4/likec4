@@ -129,8 +129,8 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^12.23.11
-      version: 12.23.11
+      specifier: ^12.23.12
+      version: 12.23.12
     nanostores:
       specifier: 1.0.1
       version: 1.0.1
@@ -277,11 +277,11 @@ catalogs:
       version: 5.20.1
   xyflow:
     '@xyflow/react':
-      specifier: 12.6.4
-      version: 12.6.4
+      specifier: 12.8.2
+      version: 12.8.2
     '@xyflow/system':
-      specifier: 0.0.61
-      version: 0.0.61
+      specifier: 0.0.66
+      version: 0.0.66
 
 overrides:
   esbuild: 0.25.5
@@ -543,10 +543,10 @@ importers:
         version: 5.0.5(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.1)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.4(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.2(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.61
+        version: 0.0.66
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -579,7 +579,7 @@ importers:
         version: 9.6.0
       motion:
         specifier: catalog:react
-        version: 12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nanoid:
         specifier: catalog:utils
         version: 5.1.5
@@ -817,10 +817,10 @@ importers:
         version: 5.0.5(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.1)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.4(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.2(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.61
+        version: 0.0.66
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -838,7 +838,7 @@ importers:
         version: 2.1.0
       motion:
         specifier: catalog:react
-        version: 12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nanostores:
         specifier: catalog:react
         version: 1.0.1
@@ -1308,10 +1308,10 @@ importers:
         version: 17.0.33
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.4(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.2(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.61
+        version: 0.0.66
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.5)
@@ -1374,7 +1374,7 @@ importers:
         version: 3.0.1
       motion:
         specifier: catalog:react
-        version: 12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nano-spawn:
         specifier: catalog:utils
         version: 1.0.2
@@ -1741,10 +1741,10 @@ importers:
         version: 4.6.0(vite@6.3.5(@types/node@20.19.2)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.6.4(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.2(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.61
+        version: 0.0.66
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -3978,14 +3978,14 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.6.4':
-    resolution: {integrity: sha512-/dOQ43Nu217cwHzy7f8kNUrFMeJJENzftVgT2VdFFHi6fHlG83pF+gLmvkRW9Be7alCsR6G+LFxxCdsQQbazHg==}
+  '@xyflow/react@12.8.2':
+    resolution: {integrity: sha512-VifLpxOy74ck283NQOtBn1e8igmB7xo7ADDKxyBHkKd8IKpyr16TgaYOhzqVwNMdB4NT+m++zfkic530L+gEXw==}
     peerDependencies:
       react: ^19.1.1
       react-dom: ^19.1.1
 
-  '@xyflow/system@0.0.61':
-    resolution: {integrity: sha512-TsZG/Ez8dzxX6/Ol44LvFqVZsYvyz6dpDlAQZZk6hTL7JLGO5vN3dboRJqMwU8/Qtr5IEv5YBzojjAwIqW1HCA==}
+  '@xyflow/system@0.0.66':
+    resolution: {integrity: sha512-TTxESDwPsATnuDMUeYYtKe4wt9v8bRO29dgYBhR8HyhSCzipnAdIL/1CDfFd+WqS1srVreo24u6zZeVIDk4r3Q==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -5248,8 +5248,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@12.23.11:
-    resolution: {integrity: sha512-VzNi+exyI3bn7Pzvz1Fjap1VO9gQu8mxrsSsNamMidsZ8AA8W2kQsR+YQOciEUbMtkKAWIbPHPttfn5e9jqqJQ==}
+  framer-motion@12.23.12:
+    resolution: {integrity: sha512-6e78rdVtnBvlEVgu6eFEAgG9v3wLnYEboM8I5O5EXvfKC8gxGQB8wXJdhkMy10iVcn05jl6CNw7/HTsTCfwcWg==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.1.1
@@ -6435,14 +6435,14 @@ packages:
     resolution: {integrity: sha512-ReG9u0b+LCG1YkO5yR+ETzSM34cw+P2qw5ecSeh8YA+gBIKniRHh13PZo9Uuka6MsvsDQYQMbj2PKVPjOGU7/Q==}
     engines: {node: '>=20.10.0', npm: '>=10.2.3'}
 
-  motion-dom@12.23.9:
-    resolution: {integrity: sha512-6Sv++iWS8XMFCgU1qwKj9l4xuC47Hp4+2jvPfyTXkqDg2tTzSgX6nWKD4kNFXk0k7llO59LZTPuJigza4A2K1A==}
+  motion-dom@12.23.12:
+    resolution: {integrity: sha512-RcR4fvMCTESQBD/uKQe49D5RUeDOokkGRmz4ceaJKDBgHYtZtntC/s2vLvY38gqGaytinij/yi3hMcWVcEF5Kw==}
 
   motion-utils@12.23.6:
     resolution: {integrity: sha512-eAWoPgr4eFEOFfg2WjIsMoqJTW6Z8MTUCgn/GZ3VRpClWBdnbjryiA3ZSNLyxCTmCQx4RmYX6jX1iWHbenUPNQ==}
 
-  motion@12.23.11:
-    resolution: {integrity: sha512-AHv/2SivIz9fjvND8wwN2LldDTuwkPyTSWecAY/xzB1/2eF7zxvh9JRkf8aF4eGoGsy1e2YKp+CQC5yxcssnEw==}
+  motion@12.23.12:
+    resolution: {integrity: sha512-8jCD8uW5GD1csOoqh1WhH1A6j5APHVE15nuBkFeRiMzYBdRwyAHmSP/oXSuW0WJPZRXTFdBoG4hY9TFWNhhwng==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^19.1.1
@@ -11928,9 +11928,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.6.4(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@xyflow/react@12.8.2(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@xyflow/system': 0.0.61
+      '@xyflow/system': 0.0.66
       classcat: 5.0.5
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
@@ -11939,13 +11939,15 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@xyflow/system@0.0.61':
+  '@xyflow/system@0.0.66':
     dependencies:
       '@types/d3-drag': 3.0.7
+      '@types/d3-interpolate': 3.0.4
       '@types/d3-selection': 3.0.11
       '@types/d3-transition': 3.0.9
       '@types/d3-zoom': 3.0.8
       d3-drag: 3.0.0
+      d3-interpolate: 3.0.1
       d3-selection: 3.0.0
       d3-zoom: 3.0.0
 
@@ -13481,9 +13483,9 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+  framer-motion@12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
-      motion-dom: 12.23.9
+      motion-dom: 12.23.12
       motion-utils: 12.23.6
       tslib: 2.8.1
     optionalDependencies:
@@ -15054,15 +15056,15 @@ snapshots:
       vscode: '@codingame/monaco-vscode-extension-api@16.1.1'
       vscode-languageclient: 9.0.1
 
-  motion-dom@12.23.9:
+  motion-dom@12.23.12:
     dependencies:
       motion-utils: 12.23.6
 
   motion-utils@12.23.6: {}
 
-  motion@12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+  motion@12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
-      framer-motion: 12.23.11(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      framer-motion: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.1.1

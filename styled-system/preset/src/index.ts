@@ -30,6 +30,14 @@ export const theme = {
     lg: '1024px',
   },
   keyframes: {
+    'indicatorOpacity': {
+      '0%': {
+        opacity: 0.9,
+      },
+      '100%': {
+        opacity: 0.6,
+      },
+    },
     'indicatorStrokeOpacity': {
       '0%': {
         strokeOpacity: 0.8,
@@ -54,6 +62,14 @@ export const theme = {
         animationIterationCount: 'infinite',
         animationDirection: 'alternate',
         animationName: 'indicatorStrokeOpacity',
+      },
+    },
+    'indicatorOpacity': {
+      value: {
+        animationDuration: '1s',
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+        animationName: 'indicatorOpacity',
       },
     },
     'xyedgeAnimated': {

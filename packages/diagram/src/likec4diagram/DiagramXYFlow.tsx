@@ -122,11 +122,9 @@ export function LikeC4DiagramXYFlow({
         return {
           element: renderNodes?.element ?? defaultNodeTypes.element,
           deployment: renderNodes?.deployment ?? defaultNodeTypes.deployment,
-          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes['compound-element'],
-          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes['compound-deployment'],
-          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes['view-group'],
-        } satisfies {
-          [key in Types.Node['type']]: any
+          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes.compoundElement,
+          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes.compoundDeployment,
+          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes.viewGroup,
         }
       },
       [renderNodes],
