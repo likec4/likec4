@@ -1,21 +1,20 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
 import type { Any } from '@likec4/core/types'
 import { DEV } from 'esm-env'
-import type { ReactNode } from 'react'
+import type { FunctionComponent, ReactNode } from 'react'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
 import type { Types } from '../likec4diagram/types'
 import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 
-function customDiagramNode<
-  P extends {
-    nodeProps: NodeProps<Types.NodeData>
-    nodeModel: NodeModel
-  },
->(
-  Node: (props: P) => ReactNode,
+type CustomDiagramNodeProps = {
+  nodeProps: NodeProps<Types.NodeData, string>
+  nodeModel: NodeModel
+}
+function customDiagramNode<P extends CustomDiagramNodeProps>(
+  Node: FunctionComponent<P>,
 ): (props: P['nodeProps']) => ReactNode {
-  return customNode((props) => {
+  return customNode((props: P['nodeProps']) => {
     const viewModel = useLikeC4ViewModel(props.data.viewId)
     if (!viewModel) {
       if (DEV) {
@@ -27,7 +26,7 @@ function customDiagramNode<
     const model = viewModel.node(props.id)
     // @ts-ignore
     return <Node nodeProps={props} nodeModel={model} />
-  }) as (props: P['nodeProps']) => ReactNode
+  })
 }
 
 export type CustomElementNodeProps<M extends Any = Any> = {
@@ -257,11 +256,9 @@ export type CustomViewGroupNodeProps<M extends Any = Any> = {
 export const viewGroupNode = customDiagramNode<CustomViewGroupNodeProps>
 
 export interface CustomNodes {
-  element?: undefined | ((props: NodeProps<Types.ElementNodeData, 'element'>) => ReactNode)
-  deployment?: undefined | ((props: NodeProps<Types.DeploymentElementNodeData, 'deployment'>) => ReactNode)
-  compoundElement?: undefined | ((props: NodeProps<Types.CompoundElementNodeData, 'compound-element'>) => ReactNode)
-  compoundDeployment?:
-    | undefined
-    | ((props: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>) => ReactNode)
-  viewGroup?: undefined | ((props: NodeProps<Types.ViewGroupNodeData, 'view-group'>) => ReactNode)
+  element?: FunctionComponent<NodeProps<Types.ElementNodeData, 'element'>>
+  deployment?: FunctionComponent<NodeProps<Types.DeploymentElementNodeData, 'deployment'>>
+  compoundElement?: FunctionComponent<NodeProps<Types.CompoundElementNodeData, 'compound-element'>>
+  compoundDeployment?: FunctionComponent<NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>>
+  viewGroup?: FunctionComponent<NodeProps<Types.ViewGroupNodeData, 'view-group'>>
 }

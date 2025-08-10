@@ -22,9 +22,11 @@ export const edgePathBg = css(_hideOnReducedGraphics, {
   fill: '[none]',
   strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
   strokeOpacity: 0.08,
-  transitionProperty: 'stroke-width, stroke-opacity',
-  transitionDuration: 'fast',
-  transitionTimingFunction: 'inOut',
+  _noReduceGraphics: {
+    transitionProperty: 'stroke-width, stroke-opacity',
+    transitionDuration: 'fast',
+    transitionTimingFunction: 'inOut',
+  },
   _whenHovered: {
     transitionTimingFunction: 'out',
     strokeWidth: 'calc(var(--xy-edge-stroke-width) + 4)',
@@ -51,16 +53,20 @@ export const cssEdgePath = css({
   _noReduceGraphics: {
     transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
   },
-  _whenHovered: {
-    animationStyle: 'xyedgeAnimated',
-    animationDelay: '450ms',
-  },
-  [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
-    animationStyle: 'xyedgeAnimated',
-    animationDelay: '0ms',
-  },
   [`:where([data-edge-dir='back']) &`]: {
     animationDirection: 'reverse',
+  },
+  _whenHovered: {
+    _noReduceGraphics: {
+      animationStyle: 'xyedgeAnimated',
+      animationDelay: '450ms',
+    },
+  },
+  [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
+    _noReduceGraphics: {
+      animationStyle: 'xyedgeAnimated',
+      animationDelay: '0ms',
+    },
   },
   _whenDimmed: {
     animationPlayState: 'paused',

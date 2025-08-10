@@ -1,4 +1,4 @@
-import { css, cva, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
@@ -44,29 +44,6 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
   >
 >
 
-const cssReactFlow = cva({
-  base: {
-    '& .react-flow__pane': {
-      WebkitUserSelect: 'none',
-    },
-    '& .react-flow__attribution': {
-      display: 'none',
-    },
-  },
-  variants: {
-    transparent: {
-      true: {
-        background: 'transparent !important',
-        ['--xy-background-color']: 'transparent !important',
-      },
-      false: {
-        ['--xy-background-color']: '{colors.likec4.background}',
-        ['--xy-background-pattern-color']: '{colors.likec4.background.pattern}',
-      },
-    },
-  },
-})
-
 export const BaseXYFlow = <
   NodeType extends Base.Node,
   EdgeType extends Base.Edge,
@@ -100,9 +77,7 @@ export const BaseXYFlow = <
       nodes={nodes}
       edges={edges}
       className={cx(
-        cssReactFlow({
-          transparent: background === 'transparent',
-        }),
+        background === 'transparent' && 'bg-transparent',
         className,
       )}
       {...isZoomTooSmall && {

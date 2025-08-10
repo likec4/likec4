@@ -6,7 +6,7 @@ import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
-import { edgeLabelContainer, translate as _translate } from './EdgeLabel.css'
+import { edgeLabelContainer } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -83,16 +83,17 @@ export function EdgeLabelContainer({
           'data-likec4-dimmed': isDimmed,
         }}
         style={{
-          top: toCssVarValue(labelY),
-          left: toCssVarValue(labelX),
-          ...(translate && {
-            [_translate.var]: translate,
-          }),
+          // top: toCssVarValue(labelY),
+          // left: toCssVarValue(labelX),
+          // ...(translate && {
+          //   [_translate.var]: translate,
+          // }),
           ...(labelBBox && {
             maxWidth: labelBBox.width + 18,
           }),
           zIndex,
           ...style,
+          transform: `translate(${toCssVarValue(labelX)}, ${toCssVarValue(labelY)}) ${translate || ''}`,
         }}
         {...rest}
       >

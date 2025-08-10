@@ -1,5 +1,4 @@
-import { css, cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
+import { cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
@@ -28,47 +27,36 @@ export function CompoundActionButton({
   const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
   const isHoverDebounced = debounced[0] && isHovered
   return (
-    <Box
-      className={cx(
-        css({
-          position: 'absolute',
-          top: '[5px]',
-          left: '[4px]',
-          _smallZoom: {
-            display: 'none',
-          },
-        }),
-        'compound-action',
-      )}>
-      <m.div
-        initial={false}
-        animate={{
-          scale: isHoverDebounced ? 1.2 : 1,
-          x: isHoverDebounced ? -1 : 0,
-          y: isHoverDebounced ? -1 : 0,
-        }}
-        whileHover={{
-          scale: 1.4,
-          x: -2,
-          y: -2,
-        }}
-        whileTap={{ scale: 1 }}
+    <m.div
+      initial={false}
+      animate={{
+        scale: isHoverDebounced ? 1.2 : 1,
+        x: isHoverDebounced ? -1 : 0,
+        y: isHoverDebounced ? -1 : 0,
+      }}
+      whileHover={{
+        scale: 1.4,
+        x: -3,
+        y: -1,
+      }}
+      className="likec4-compound-navigation compound-action"
+      whileTap={{ scale: 1 }}
+      onClick={stopPropagation}
+    >
+      <ActionIcon
+        className={cx(
+          'nodrag nopan',
+          compoundActionBtn({
+            delay: isHovered && !isHoverDebounced,
+          }),
+          actionBtn({ variant: 'transparent' }),
+        )}
+        // Otherwise node receives click event and is selected
+        onClick={onClick}
+        onDoubleClick={stopPropagation}
       >
-        <ActionIcon
-          className={cx(
-            'nodrag nopan',
-            compoundActionBtn({
-              delay: isHovered && !isHoverDebounced,
-            }),
-            actionBtn(),
-          )}
-          // Otherwise node receives click event and is selected
-          onClick={onClick}
-          onDoubleClick={stopPropagation}
-        >
-          {icon ?? <IconZoomScan stroke={2} />}
-        </ActionIcon>
-      </m.div>
-    </Box>
+        {icon ?? <IconZoomScan stroke={2} />}
+      </ActionIcon>
+    </m.div>
   )
 }

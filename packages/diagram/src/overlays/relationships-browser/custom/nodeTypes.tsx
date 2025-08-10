@@ -1,10 +1,11 @@
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
+import type { FC } from 'react'
 import type { NodeProps } from '../../../base'
 import {
+  CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
-  customNode,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
@@ -16,6 +17,12 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
 import { EmptyNode as EmptyNodeRender } from './EmptyNode'
+
+type NodeTypes = {
+  element: FC<NodeProps<RelationshipsBrowserTypes.ElementNodeData>>
+  compound: FC<NodeProps<RelationshipsBrowserTypes.CompoundNodeData>>
+  empty: FC<NodeProps<RelationshipsBrowserTypes.EmptyNodeData>>
+}
 
 const ElementDetailsButtonWithHandler = (
   props: NodeProps<RelationshipsBrowserTypes.ElementNodeData | RelationshipsBrowserTypes.CompoundNodeData>,
@@ -33,7 +40,7 @@ const ElementDetailsButtonWithHandler = (
   )
 }
 
-export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
+export const ElementNode: NodeTypes['element'] = (props) => {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
@@ -45,21 +52,28 @@ export const ElementNode = customNode<RelationshipsBrowserTypes.ElementNodeData>
       <ElementPorts {...props} />
     </ElementNodeContainer>
   )
-})
+}
 
-export const CompoundNode = customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
+export const CompoundNode: NodeTypes['compound'] = (props) => {
+  const diagram = useDiagram()
   return (
     <CompoundNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
-      <ElementDetailsButtonWithHandler {...props} />
       <CompoundTitle {...props} />
+      <CompoundDetailsButton
+        {...props}
+        onClick={e => {
+          e.stopPropagation()
+          diagram.openElementDetails(props.data.fqn)
+        }}
+      />
       <CompoundPorts {...props} />
     </CompoundNodeContainer>
   )
-})
+}
 
-export const EmptyNode = customNode<RelationshipsBrowserTypes.EmptyNodeData>((props) => {
+export const EmptyNode: NodeTypes['empty'] = (props) => {
   return <EmptyNodeRender {...props} />
-})
+}
 
 type ElementPortsProps = NodeProps<
   Pick<

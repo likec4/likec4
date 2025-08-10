@@ -8,25 +8,21 @@ import type { OptionalKeysOf, SetRequired, Simplify } from 'type-fest'
 import * as Base from './types.Base'
 
 /**
-
-To cooperate with `exactOptionalPropertyTypes` in `tsconfig.json`
-
-@example
-```
-interface User {
-	name: string;
-	surname?: string;
-	luckyNumber?: number;
-}
-
-type NonOptionalUser = NonOptional<User>
-
-// NonOptionalUser = {
-//   name: string
-//   surname: string | undefined
-//   luckyNumber: number | undefined
-// }
-```
+ * To cooperate with `exactOptionalPropertyTypes` in `tsconfig.json`
+ *
+ * @example
+ * interface User {
+ * 	name: string;
+ * 	surname?: string;
+ * 	luckyNumber?: number;
+ * }
+ *
+ * type NonOptionalUser = NonOptional<User>
+ * // NonOptionalUser = {
+ * //   name: string
+ * //   surname: string | undefined
+ * //   luckyNumber: number | undefined
+ * // }
  */
 export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = OptionalKeysOf<T>> = Simplify<
   & {
@@ -40,17 +36,17 @@ export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = Optio
 /**
  * ReactFlow Custom Node properties with BaseNodeData at least
  */
-export type NodeProps<T extends Record<string, unknown> = {}, NodeType extends string = string> = ReactFlowNodeProps<
-  RFNode<Base.NodeData & T, NodeType>
+export type NodeProps<T extends Record<string, unknown> = {}, NodeType extends string = string> = Simplify<
+  ReactFlowNodeProps<
+    RFNode<Base.NodeData & T, NodeType>
+  >
 >
 
 /**
  * ReactFlow Custom Edge properties with BaseEdgeData at least
  */
-export type EdgeProps<T extends Record<string, unknown> = {}> = SetRequired<
-  ReactFlowEdgeProps<
-    RFEdge<Base.EdgeData & T, any>
-  >,
+export type EdgeProps<T extends Record<string, unknown> = {}, EdgeType extends string = string> = SetRequired<
+  Simplify<ReactFlowEdgeProps<RFEdge<Base.EdgeData & T, EdgeType>>>,
   'data'
 >
 
