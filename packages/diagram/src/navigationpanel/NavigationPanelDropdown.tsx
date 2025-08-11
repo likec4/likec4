@@ -155,7 +155,6 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
             view={v}
             highlight={highlight}
             onClick={e => {
-              console.log('click')
               e.stopPropagation()
               actor.selectView(v.id)
             }}
