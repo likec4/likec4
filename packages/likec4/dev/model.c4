@@ -46,6 +46,10 @@ model {
           link https://react.dev 'docs'
           link https://github.com/likec4/likec4 'source'
           link /view/1231
+
+          description '''
+            [Apollo client](https://www.apollographql.com/docs/react/) fetches data from the backend
+          '''
         }
       }
       customer -> dashboard 'open in browser'

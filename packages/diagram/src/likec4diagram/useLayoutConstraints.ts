@@ -271,7 +271,6 @@ export function useLayoutConstraints(): LayoutConstraints {
       },
       onNodeDragStop: (_event) => {
         moved = Math.abs(_event.clientX - initial.x) > 4 || Math.abs(_event.clientY - initial.y) > 4
-        console.log('moved', moved)
         if (wasPending || moved) {
           diagram.scheduleSaveManualLayout()
         }

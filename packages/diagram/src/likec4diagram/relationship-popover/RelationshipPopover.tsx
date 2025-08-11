@@ -2,7 +2,7 @@ import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
 import { nameFromFqn } from '@likec4/core/utils'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
 import {
@@ -10,6 +10,8 @@ import {
   Button,
   Divider,
   Portal,
+  ScrollAreaAutosize,
+  Space,
   Text,
   Tooltip as MantineTooltip,
   TooltipGroup,
@@ -66,7 +68,7 @@ export const RelationshipPopover = memo(() => {
   const diagram = useDiagram()
   const { viewId, selected } = useDiagramContext(selectDiagramContext)
 
-  const openedEdgeId = useSelector(actorRef, s => s.hasTag('active') ? s.context.edgeId : null)
+  const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
 
   useUpdateEffect(() => {
     actorRef.send({ type: 'close' })
@@ -201,7 +203,7 @@ const RelationshipPopoverInternal = forwardRef<HTMLDivElement, RelationshipPopov
               padding: 16,
               apply({ availableHeight, availableWidth, elements }) {
                 Object.assign(elements.floating.style, {
-                  maxWidth: `${clamp(roundDpr(availableWidth), { min: 0, max: 500 })}px`,
+                  maxWidth: `${clamp(roundDpr(availableWidth), { min: 0, max: 400 })}px`,
                   maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
                 })
               },
@@ -255,55 +257,66 @@ const RelationshipPopoverInternal = forwardRef<HTMLDivElement, RelationshipPopov
 
     return (
       <Portal {...portalProps}>
-        <VStack
+        <ScrollAreaAutosize
           ref={ref}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          className="nowheel nopan"
-          css={{
-            layerStyle: 'likec4.dropdown',
-            gap: '3',
-            padding: '4',
-            paddingTop: '2.5',
-            pointerEvents: 'all',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: 'max-content',
-            overflowY: 'auto',
-            overscrollBehaviorX: 'none', // prevent mouse gestures navigation
-            cursor: 'default',
-          }}
+          type="auto"
+          overscrollBehavior="contain"
+          scrollbars={'y'}
+          scrollbarSize={6}
+          className={cx(
+            'nowheel nopan',
+            css({
+              layerStyle: 'likec4.dropdown',
+              p: '0',
+              pointerEvents: 'all',
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              width: 'max-content',
+              cursor: 'default',
+            }),
+          )}
         >
-          <Button
-            variant="default"
-            color="gray"
-            size="compact-xs"
-            style={{
-              alignSelf: 'flex-start',
-              fontWeight: 500,
-              ['--button-fz']: 'var(--font-sizes-xxs)',
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              diagram.openRelationshipDetails(diagramEdge.id)
+          <VStack
+            css={{
+              gap: '3',
+              padding: '4',
+              paddingTop: '2.5',
             }}
           >
-            browse relationships
-          </Button>
-          {direct.length > 0 && (
-            <>
-              <Divider label={<Label>direct relationships</Label>} labelPosition="left" />
-              {direct.map(renderRelationship)}
-            </>
-          )}
-          {nested.length > 0 && (
-            <>
-              <Divider label={<Label>resolved from nested</Label>} labelPosition="left" />
-              {nested.map(renderRelationship)}
-            </>
-          )}
-        </VStack>
+            <Button
+              variant="default"
+              color="gray"
+              size="compact-xs"
+              style={{
+                alignSelf: 'flex-start',
+                fontWeight: 500,
+                ['--button-fz']: 'var(--font-sizes-xxs)',
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                diagram.openRelationshipDetails(diagramEdge.id)
+              }}
+            >
+              browse relationships
+            </Button>
+            {direct.length > 0 && (
+              <>
+                <Divider label={<Label>direct relationships</Label>} labelPosition="left" />
+                {direct.map(renderRelationship)}
+              </>
+            )}
+            {nested.length > 0 && (
+              <>
+                {direct.length > 0 && <Space />}
+                <Divider label={<Label>resolved from nested</Label>} labelPosition="left" />
+                {nested.map(renderRelationship)}
+              </>
+            )}
+          </VStack>
+        </ScrollAreaAutosize>
       </Portal>
     )
   },
@@ -420,13 +433,28 @@ const Relationship = forwardRef<
       {r.description.nonEmpty && (
         <>
           <Label>description</Label>
-          <MarkdownBlock value={r.description} fontSize={'sm'} />
+          <Box
+            css={{
+              paddingLeft: '2.5',
+              py: '1.5',
+              borderLeft: '2px dotted',
+              borderLeftColor: {
+                base: 'mantine.colors.gray[3]',
+                _dark: 'mantine.colors.dark[4]',
+              },
+            }}
+          >
+            <MarkdownBlock value={r.description} fontSize={'sm'} />
+          </Box>
         </>
       )}
       {links.length > 0 && (
-        <HStack gap="1" flexWrap={'wrap'}>
-          {links.map((link) => <Link key={link.url} size="sm" value={link} />)}
-        </HStack>
+        <>
+          <Label>links</Label>
+          <HStack gap="1" flexWrap={'wrap'}>
+            {links.map((link) => <Link key={link.url} size="sm" value={link} />)}
+          </HStack>
+        </>
       )}
     </VStack>
   )
