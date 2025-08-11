@@ -6,7 +6,7 @@ export const cssHeader = css({
   _dark: {
     backgroundColor: `mantine.colors.dark[6]/60`,
   },
-  [`#likec4-root:has([data-likec4-diagram-panning]) &`]: {
+  [`#likec4-root:has([data-likec4-diagram-panning="true"]) &`]: {
     boxShadow: 'none',
     borderRadius: '0px',
     backgroundColor: `mantine.colors.body`,

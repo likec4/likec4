@@ -54,8 +54,7 @@ model {
           Stream of page hits from Dashboard app.
           Data is sent via GoogleTagManager
         '
-
-        -> sqs.hits 'send in batches'
+        -[push]-> sqs.hits 'send in batches'
       }
 
       cloud.ui.dashboard -> hits 'send page hits via GoogleTagManager'
@@ -86,7 +85,10 @@ views {
     include
       *,
       cloud,
-      cloud.* -> amazon
+      cloud.* ->
+
+    exclude
+      -> mysql
 
     style * {
       color muted

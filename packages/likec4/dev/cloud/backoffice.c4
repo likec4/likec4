@@ -13,6 +13,11 @@ model {
         and subscriptions
       ' {
         technology 'API'
+
+        description '''
+          Manage **subscriptions**, payments and tarrifs
+        '''
+
       }
 
     }

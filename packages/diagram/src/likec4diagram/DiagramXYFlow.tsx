@@ -185,16 +185,16 @@ export function LikeC4DiagramXYFlow({
             diagram.send({ type: 'xyflow.nodeMouseLeave', node })
           }
         })}
-        onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-          _event.stopPropagation()
+        onEdgeMouseEnter={useCallbackRef((event, edge) => {
+          event.stopPropagation()
           if (!edge.data.hovered) {
-            diagram.send({ type: 'xyflow.edgeMouseEnter', edge })
+            diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
           }
         })}
-        onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-          _event.stopPropagation()
+        onEdgeMouseLeave={useCallbackRef((event, edge) => {
+          event.stopPropagation()
           if (edge.data.hovered) {
-            diagram.send({ type: 'xyflow.edgeMouseLeave', edge })
+            diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
           }
         })}
         {...props.pannable && {

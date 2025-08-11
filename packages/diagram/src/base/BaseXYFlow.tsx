@@ -11,6 +11,7 @@ import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
 import type { ViewPadding } from '../LikeC4Diagram.props'
+import { roundDpr } from '../utils/roundDpr'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
@@ -126,8 +127,8 @@ export const BaseXYFlow = <
          * https://github.com/xyflow/xyflow/issues/3282
          * https://github.com/likec4/likec4/issues/734
          */
-        const roundedX = Math.round(x),
-          roundedY = Math.round(y)
+        const roundedX = roundDpr(x),
+          roundedY = roundDpr(y)
         if (x !== roundedX || y !== roundedY) {
           xystore.setState({ transform: [roundedX, roundedY, zoom] })
         }

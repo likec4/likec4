@@ -10,5 +10,6 @@ export {
   isSamePoint,
   nodeToRect,
   stopPropagation,
-  toDomPrecision,
 } from './xyflow'
+
+export { roundDpr } from './roundDpr'

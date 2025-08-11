@@ -9,7 +9,7 @@ model {
       '
       icon ../images/hits-anomalies.svg
 
-      -> amazon.sqs.hits 'pull and process hits data'
+      -[pull]-> amazon.sqs.hits 'pull and process hits data'
       -> cloud.backend.graphql 'read tenants'
     }
 

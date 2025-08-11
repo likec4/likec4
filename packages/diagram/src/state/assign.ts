@@ -277,23 +277,37 @@ export function navigateForward({ context }: ActionArg): Partial<DiagramContext>
 
 export function updateNodeData({ context, event }: ActionArg): Partial<DiagramContext> {
   assertEvent(event, 'update.nodeData')
-  const xynodes = context.xynodes.map((node): Types.Node =>
-    node.id !== event.nodeId ? node : (({
+  const xynodes = context.xynodes.map((node): Types.Node => {
+    if (node.id !== event.nodeId) {
+      return node
+    }
+    const data = mergeDeep(node.data as any, event.data as any)
+    if (eq(data, node.data)) {
+      return node
+    }
+    return {
       ...node,
-      data: mergeDeep(node.data as any, event.data as any),
-    }) as Types.Node)
-  )
+      data,
+    } as Types.Node
+  })
   return { xynodes }
 }
 
 export function updateEdgeData({ context, event }: ActionArg): Partial<DiagramContext> {
   assertEvent(event, 'update.edgeData')
-  const xyedges = context.xyedges.map((edge): Types.Edge =>
-    edge.id !== event.edgeId ? edge : (({
+  const xyedges = context.xyedges.map((edge): Types.Edge => {
+    if (edge.id !== event.edgeId) {
+      return edge
+    }
+    const data = mergeDeep(edge.data as any, event.data as any)
+    if (eq(data, edge.data)) {
+      return edge
+    }
+    return {
       ...edge,
-      data: mergeDeep(edge.data as any, event.data as any),
-    }) as Types.Edge)
-  )
+      data,
+    } as Types.Edge
+  })
   return { xyedges }
 }
 

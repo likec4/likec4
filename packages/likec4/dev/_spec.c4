@@ -67,6 +67,12 @@ specification {
       icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg
     }
   }
+
+  relationship push {
+    color amber
+
+  }
+
   relationship pull {
     line dotted
     tail onormal

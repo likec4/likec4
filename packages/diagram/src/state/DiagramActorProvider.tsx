@@ -105,6 +105,7 @@ export function DiagramActorProvider({
   })
 
   useEffect(() => {
+    console.log('update.view', view, xyedges, xynodes)
     actorRef.send({ type: 'update.view', view, xyedges, xynodes })
   }, [view, xyedges, xynodes])
 

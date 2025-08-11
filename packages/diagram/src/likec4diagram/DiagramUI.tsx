@@ -6,6 +6,7 @@ import { EnsureCurrentViewModel } from '../likec4model/LikeC4ModelContext'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
+import { RelationshipPopover } from './relationship-popover/RelationshipPopover'
 import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
 export const DiagramUI = memo(() => {
@@ -15,6 +16,7 @@ export const DiagramUI = memo(() => {
     enableNotations,
     enableDynamicViewWalkthrough,
     enableSearch,
+    enableRelationshipDetails,
   } = useEnabledFeatures()
   const overlaysActorRef = useOverlaysActorRef()
   const searchActorRef = useSearchActorRef()
@@ -37,6 +39,7 @@ export const DiagramUI = memo(() => {
         </>
       )}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
+      {enableRelationshipDetails && <RelationshipPopover />}
     </>
   )
 })

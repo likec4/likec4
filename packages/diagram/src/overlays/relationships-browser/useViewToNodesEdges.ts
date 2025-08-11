@@ -177,7 +177,6 @@ export function viewToNodesEdge(
       target: ns + target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
-      zIndex: ZIndexes.Edge,
       // selectable: selectable,
       // hidden: !visiblePredicate(edge),
       // deletable: false,

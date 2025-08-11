@@ -98,8 +98,7 @@ export const layerStyles = defineLayerStyles({
     dropdown: {
       description: 'LikeC4 dropdown layer',
       value: {
-        paddingInline: '2xs',
-        paddingBlock: '2xs',
+        padding: 'xxs',
         backgroundColor: 'likec4.dropdown.bg',
         border: '1px solid {colors.likec4.dropdown.border}',
         boxShadow: 'lg',

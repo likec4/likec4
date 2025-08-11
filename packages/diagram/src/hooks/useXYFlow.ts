@@ -13,8 +13,10 @@ import type { Types } from '../likec4diagram/types'
 export const useXYFlow = useReactFlow<Types.Node, Types.Edge>
 export type XYFlowInstance = ReactFlowInstance<Types.Node, Types.Edge>
 
+export type XYStoreState = ReactFlowState<Types.Node, Types.Edge>
+
 export function useXYStore<StateSlice = unknown>(
-  selector: (state: ReactFlowState<Types.Node, Types.Edge>) => StateSlice,
+  selector: (state: XYStoreState) => StateSlice,
   equalityFn?: (a: NoInfer<StateSlice>, b: NoInfer<StateSlice>) => boolean,
 ): StateSlice {
   return useStore(
