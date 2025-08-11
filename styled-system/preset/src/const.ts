@@ -45,6 +45,7 @@ const AllRadixColors = [
 ] as const
 export type RadixColor = (typeof AllRadixColors)[number]
 
+// TODO: keep this in sync with packages/diagram/src/context/TagStylesContext.tsx
 export const radixColors = [
   'yellow',
   'orange',
