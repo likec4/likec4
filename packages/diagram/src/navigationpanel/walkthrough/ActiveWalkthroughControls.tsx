@@ -1,3 +1,4 @@
+import { RichText } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Badge, Button, Portal } from '@mantine/core'
@@ -12,6 +13,7 @@ import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
 import { useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { NotePopover } from '../../likec4diagram/custom/edges/NotePopover'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 
@@ -89,6 +91,7 @@ export const ActiveWalkthroughControls = () => {
     hasPrevious,
     currentStep,
     totalSteps,
+    notes,
   } = useDiagramContext(s => {
     const currentStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
     return ({
@@ -97,24 +100,26 @@ export const ActiveWalkthroughControls = () => {
       hasPrevious: currentStepIndex > 0,
       currentStep: currentStepIndex + 1,
       totalSteps: s.xyedges.length,
+      notes: s.xyedges[currentStepIndex]?.data?.notes ?? RichText.EMPTY,
     })
   })
 
   return (
     <AnimatePresence propagate>
-      <TriggerWalkthroughButton
-        key="trigger-dynamic-walkthrough"
-        variant="light"
-        color="orange"
-        mr={'sm'}
-        onClick={e => {
-          e.stopPropagation()
-          diagram.stopWalkthrough()
-        }}
-        rightSection={<IconPlayerStopFilled size={10} />}
-      >
-        Stop
-      </TriggerWalkthroughButton>
+      <NotePopover notes={notes}>
+        <TriggerWalkthroughButton
+          variant="light"
+          color="orange"
+          mr={'sm'}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.stopWalkthrough()
+          }}
+          rightSection={<IconPlayerStopFilled size={10} />}
+        >
+          Stop
+        </TriggerWalkthroughButton>
+      </NotePopover>
 
       <PrevNextButton
         key="prev"
