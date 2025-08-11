@@ -1,8 +1,8 @@
 import { Box, Burger, Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
 import { loadPumlSources } from 'likec4:puml'
-import { projectId } from 'likec4:single-project'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/_single/view/$viewId/puml')({
   component: ViewAsPuml,
   staleTime: Infinity,
   loader: async ({ params }) => {
+    const projectId = projects[0].id
     const { viewId } = params
     try {
       const { pumlSource } = await loadPumlSources(projectId)

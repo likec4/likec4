@@ -1,7 +1,7 @@
 import { Box, Burger, Code, ScrollArea } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { loadDotSources } from 'likec4:dot'
-import { projectId } from 'likec4:single-project'
+import { projects } from 'likec4:projects'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
@@ -12,6 +12,7 @@ export const Route = createFileRoute('/_single/view/$viewId/dot')({
   component: ViewAsDot,
   staleTime: Infinity,
   loader: async ({ params }) => {
+    const projectId = projects[0].id
     const { viewId } = params
     try {
       const { dotSource, svgSource } = await loadDotSources(projectId)
