@@ -7,6 +7,7 @@ import { useLikeC4Specification } from '../likec4model/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
+// TODO: keep this in sync with styled-system/preset/src/const.ts
 const radixColors = [
   'yellow',
   'orange',
@@ -28,6 +29,7 @@ const radixColors = [
 
 const generateColorVars = (spec: TagSpecification) => {
   const color = spec.color
+  // Tag has a color defined in the specification
   if (isTagColorSpecified(spec)) {
     return `
       --colors-likec4-tag-bg: ${color};
