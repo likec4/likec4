@@ -2,7 +2,7 @@ import { Box, Burger, Button, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { loadD2Sources } from 'likec4:d2'
-import { projectId } from 'likec4:single-project'
+import { projects } from 'likec4:projects'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../../components/sidebar/state'
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/_single/view/$viewId/d2')({
   component: ViewAsD2,
   staleTime: Infinity,
   loader: async ({ params }) => {
+    const projectId = projects[0].id
     const { viewId } = params
     try {
       const { d2Source } = await loadD2Sources(projectId)
