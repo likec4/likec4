@@ -51,6 +51,8 @@ export const cssEdgePath = css({
   fill: '[none!]',
   strokeDashoffset: 10,
   _noReduceGraphics: {
+    animationStyle: 'xyedgeAnimated',
+    animationPlayState: 'paused',
     transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
   },
   [`:where([data-edge-dir='back']) &`]: {
@@ -58,13 +60,13 @@ export const cssEdgePath = css({
   },
   _whenHovered: {
     _noReduceGraphics: {
-      animationStyle: 'xyedgeAnimated',
+      animationPlayState: 'running',
       animationDelay: '450ms',
     },
   },
   [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
     _noReduceGraphics: {
-      animationStyle: 'xyedgeAnimated',
+      animationPlayState: 'running',
       animationDelay: '0ms',
     },
   },
@@ -76,6 +78,6 @@ export const cssEdgePath = css({
   },
   _whenPanning: {
     strokeDasharray: 'none !important',
-    animationName: 'none',
+    animationPlayState: 'paused',
   },
 })

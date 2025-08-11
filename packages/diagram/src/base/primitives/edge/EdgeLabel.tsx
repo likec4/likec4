@@ -3,7 +3,6 @@ import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { edgeLabel } from '@likec4/styles/recipes'
-import { Text } from '@mantine/core'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
@@ -45,7 +44,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   })
 
   return (
-    <Box ref={ref} className={cx(classes.root, className)} {...rest}>
+    <Box ref={ref} className={cx(classes.root, className)} data-edge-id={id} {...rest}>
       {stepNum !== null && (
         <Box className={classes.stepNumber}>
           {stepNum}

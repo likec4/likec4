@@ -23,7 +23,10 @@ export type DiagramActorSnapshot = SnapshotFrom<DiagramMachineLogic>
 
 export type DiagramActorEvent = EventFromLogic<DiagramMachineLogic>
 
-export type { Context as DiagramContext } from './diagram-machine'
+export type {
+  Context as DiagramContext,
+  EmittedEvents as DiagramEmittedEvents,
+} from './diagram-machine'
 
 export type SyncLayoutActorRef = Omit<ActorRefFromLogic<SyncLayoutActorLogic>, 'system'> & {
   system: System

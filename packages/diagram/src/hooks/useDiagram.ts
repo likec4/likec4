@@ -3,8 +3,6 @@ import {
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
-  type EdgeId,
-  type Fqn,
   type NodeId,
   type NodeNotation as ElementNotation,
   type scalar,
@@ -13,7 +11,7 @@ import {
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { type DependencyList, useCallback, useMemo } from 'react'
+import { type DependencyList, useCallback, useEffect, useMemo, useRef } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
@@ -24,8 +22,7 @@ import type {
   DiagramActorRef,
   DiagramActorSnapshot,
   DiagramContext,
-  SyncLayoutActorRef,
-  SyncLayoutActorSnapshot,
+  DiagramEmittedEvents,
 } from '../state/types'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { useDiagramActorRef } from './safeContext'
@@ -105,7 +102,12 @@ export interface DiagramApi {
   /**
    * @warning Do not use in render phase
    */
+  findEdge(xyedgeId: string): Types.Edge | null
+  /**
+   * @warning Do not use in render phase
+   */
   findDiagramEdge(xyedgeId: string): DiagramEdge | null
+
   startWalkthrough(): void
   walkthroughStep(direction?: 'next' | 'previous'): void
   stopWalkthrough(): void
@@ -208,6 +210,9 @@ export function useDiagram(): DiagramApi {
     findDiagramNode: (xynodeId: string): DiagramNode | null => {
       return findDiagramNode(actor.getSnapshot().context, xynodeId)
     },
+    findEdge: (xyedgeId: string): Types.Edge | null => {
+      return actor.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
+    },
     /**
      * @warning Do not use in render phase
      */
@@ -263,4 +268,33 @@ export function useDiagramContext<T = unknown>(
   const actorRef = useDiagramActorRef()
   const select = useCallback((s: DiagramActorSnapshot) => selector(s.context), deps ?? [])
   return useXstateSelector(actorRef, select, compare)
+}
+
+type PickEmittedEvent<T extends DiagramEmittedEvents['type']> = DiagramEmittedEvents & { type: T }
+
+/**
+ * Subscribe to diagram emitted events
+ * @example
+ * ```tsx
+ * useOnDiagramEvent('navigateTo', ({viewId}) => {
+ *   console.log('Navigating to view', viewId)
+ * })
+ * ```
+ */
+export function useOnDiagramEvent<T extends DiagramEmittedEvents['type']>(
+  event: T,
+  callback: (event: PickEmittedEvent<T>) => void,
+): void {
+  const actorRef = useDiagramActorRef()
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
+
+  useEffect(() => {
+    const subscription = actorRef.on(event, (event) => {
+      callbackRef.current(event as DiagramEmittedEvents & { type: T })
+    })
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [actorRef])
 }

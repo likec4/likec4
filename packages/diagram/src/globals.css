@@ -1,3 +1,7 @@
+.likec4-shadow-root dialog {
+  color: var(--mantine-color-text);
+}
+
 .likec4-root {
   overflow: hidden;
   position: relative;
@@ -33,17 +37,29 @@
   height: 75%;
 }
 
-.likec4-root :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed]) {
+.likec4-root :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) {
+  opacity: 0.25;
+}
+.likec4-root .likec4-edge-label-container:is([data-likec4-dimmed]) {
   opacity: 0.25;
 }
 
 .likec4-root:not([data-likec4-reduced-graphics])
-  :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed]) {
+  :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) {
+  filter: grayscale(85%) blur(3px);
+}
+.likec4-root:not([data-likec4-reduced-graphics]) .likec4-edge-label-container:is([data-likec4-dimmed]) {
   filter: grayscale(85%) blur(3px);
 }
 
 .likec4-root:not([data-likec4-reduced-graphics])
-  :where(.react-flow__node, .react-flow__edge, .likec4-edge-label-container):has([data-likec4-dimmed="true"]) {
+  :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed="true"]) {
+  transition-property: opacity, filter;
+  transition-timing-function: cubic-bezier(0.50, 0, 0.2, 1);
+  transition-duration: 600ms;
+}
+
+.likec4-root:not([data-likec4-reduced-graphics]) .likec4-edge-label-container:is([data-likec4-dimmed="true"]) {
   transition-property: opacity, filter;
   transition-timing-function: cubic-bezier(0.50, 0, 0.2, 1);
   transition-duration: 600ms;

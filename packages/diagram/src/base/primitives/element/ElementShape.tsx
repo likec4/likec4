@@ -1,14 +1,14 @@
 import { nonexhaustive } from '@likec4/core'
 import type { ElementShape, ElementStyle } from '@likec4/core/types'
 import { cx as clsx } from '@likec4/styles/css'
-import { toDomPrecision } from '../../../utils/xyflow'
+import { roundDpr } from '../../../utils'
 import * as css from './ElementShape.css'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.065) {
   const radius = Math.round(diameter / 2)
   // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
   const rx = radius
-  const ry = toDomPrecision(tilt * radius)
+  const ry = roundDpr(tilt * radius)
   const tiltAdjustedHeight = height - 2 * ry
 
   const path = `  M ${diameter},${ry}
@@ -31,7 +31,7 @@ function queueSVGPath(width: number, height: number, tilt = 0.185) {
   const diameter = height
   const radius = Math.round(diameter / 2)
   const ry = radius
-  const rx = toDomPrecision((diameter / 2) * tilt)
+  const rx = roundDpr((diameter / 2) * tilt)
   const tiltAdjustedWidth = width - 2 * rx
 
   const path = `

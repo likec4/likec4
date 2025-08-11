@@ -1,8 +1,9 @@
 export const ZIndexes = {
-  Compound: 0,
-  Edge: 2,
-  Element: 2,
-  Max: 8,
+  Compound: 1,
+  // XYFlow increments zIndexes of compounds
+  Edge: 20,
+  Element: 20,
+  Max: 30,
 } as const
 
 export const MinZoom = 0.05

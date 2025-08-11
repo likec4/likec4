@@ -19,16 +19,13 @@ import {
   EdgePath,
 } from '../../../base/primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
-import { useDiagram, useDiagramActorSnapshot } from '../../../hooks/useDiagram'
-import { useIsPanning } from '../../../hooks/useReducedGraphics'
+import { useDiagram } from '../../../hooks/useDiagram'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
-import type { DiagramActorSnapshot } from '../../../state/types'
+import { roundDpr } from '../../../utils/roundDpr'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
-import { NotePopover } from './NotePopover'
-import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 
 const curve = d3line<XYPosition>()
@@ -36,15 +33,15 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-const selectActiveStepId = (s: DiagramActorSnapshot) => s.context.activeWalkthrough?.stepId ?? null
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
-  const isPanning = useIsPanning()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
-  const activeWalkthroughStep = useDiagramActorSnapshot(selectActiveStepId)
-  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeatures()
+  const {
+    enableNavigateTo,
+    enableEdgeEditing,
+  } = useEnabledFeatures()
   const {
     id,
     source,
@@ -120,8 +117,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     if (!path) return
     const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
     const point = {
-      x: Math.round(dompoint.x),
-      y: Math.round(dompoint.y),
+      x: roundDpr(dompoint.x),
+      y: roundDpr(dompoint.y),
     }
     setLabelPos(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
@@ -166,13 +163,16 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       }
       if (!isSamePoint(pointer, clientPoint)) {
         setIsControlPointDragging(true)
-        hasMoved = true
+        if (!hasMoved) {
+          diagram.send({ type: 'xyflow.edgeEditingStarted', edge: props.data })
+          hasMoved = true
+        }
         pointer = clientPoint
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         const cp = controlPoints.slice()
         cp[index] = {
-          x: Math.round(x),
-          y: Math.round(y),
+          x: roundDpr(x),
+          y: roundDpr(y),
         }
         diagram.updateEdgeData(id as EdgeId, {
           controlPoints: cp,
@@ -193,6 +193,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       }
       setIsControlPointDragging(false)
     }
+
     const onClick = (e: MouseEvent) => {
       e.stopPropagation()
       e.preventDefault()
@@ -307,40 +308,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     zIndex = ZIndexes.Element + 1
   }
 
-  let edgeLabel = (
-    <EdgeLabel edgeProps={props}>
-      {!isControlPointDragging && navigateTo && (
-        <EdgeActionButton
-          {...props}
-          onClick={e => {
-            e.stopPropagation()
-            diagram.navigateTo(navigateTo)
-          }} />
-      )}
-    </EdgeLabel>
-  )
-
-  if (!isControlPointDragging && !isPanning) {
-    const notes = props.data.notes
-    if (notes && activeWalkthroughStep === props.id) {
-      edgeLabel = (
-        <NotePopover notes={notes.txt ?? notes.md}>
-          {edgeLabel}
-        </NotePopover>
-      )
-    } else if (enableRelationshipDetails) {
-      edgeLabel = (
-        <RelationshipsDropdownMenu
-          disabled={!!dimmed}
-          source={source}
-          target={target}
-          edgeId={edgeId}>
-          {edgeLabel}
-        </RelationshipsDropdownMenu>
-      )
-    }
-  }
-
   return (
     <>
       <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
@@ -351,16 +318,27 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           {...enableEdgeEditing && {
             onEdgePointerDown,
           }} />
-        <EdgeLabelContainer
-          edgeProps={props}
-          labelPosition={{
-            x: labelX,
-            y: labelY,
-            translate: isModified ? 'translate(-50%, 0)' : undefined,
-          }}
-        >
-          {edgeLabel}
-        </EdgeLabelContainer>
+        {!isControlPointDragging && (
+          <EdgeLabelContainer
+            edgeProps={props}
+            labelPosition={{
+              x: labelX,
+              y: labelY,
+              translate: isModified ? 'translate(-50%, 0)' : undefined,
+            }}
+          >
+            <EdgeLabel edgeProps={props}>
+              {navigateTo && (
+                <EdgeActionButton
+                  {...props}
+                  onClick={e => {
+                    e.stopPropagation()
+                    diagram.navigateTo(navigateTo)
+                  }} />
+              )}
+            </EdgeLabel>
+          </EdgeLabelContainer>
+        )}
       </EdgeContainer>
       {/* Render control points above edge label  */}
       {enableEdgeEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (

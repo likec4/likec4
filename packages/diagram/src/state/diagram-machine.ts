@@ -24,6 +24,7 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
+import type { MouseEvent } from 'react'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
@@ -149,8 +150,9 @@ export type Events =
   | { type: 'xyflow.resized' }
   | { type: 'xyflow.nodeMouseEnter'; node: Types.Node }
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
-  | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge }
-  | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge }
+  | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
+  | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
+  | { type: 'xyflow.edgeEditingStarted'; edge: Types.EdgeData }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
@@ -184,6 +186,12 @@ export type EmittedEvents =
   | { type: 'navigateTo'; viewId: ViewId }
   | { type: 'viewChange'; change: ViewChange }
   | { type: 'openSource'; params: OpenSourceParams }
+  | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
+  | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
+  | { type: 'edgeEditingStarted'; edge: Types.Edge }
+  | { type: 'walkthroughStarted'; edge: Types.Edge }
+  | { type: 'walkthroughStep'; edge: Types.Edge }
+  | { type: 'walkthroughStopped' }
 
 export type ActionArg = { context: Context; event: Events }
 
@@ -417,6 +425,10 @@ const _diagramMachine = setup({
         features: { ...event.features },
       }
     }),
+    'updateInputs': assign(({ event }) => {
+      assertEvent(event, 'update.inputs')
+      return { ...event.inputs }
+    }),
     'closeSearch': sendTo(
       ({ system }) => typedSystem(system).searchActorRef!,
       {
@@ -464,25 +476,41 @@ const _diagramMachine = setup({
         }),
       }
     }),
-    'onEdgeMouseEnter': assign(({ context }, params: { edge: Types.Edge }) => {
-      return {
+    'onEdgeMouseEnter': enqueueActions(({ enqueue, context, event }) => {
+      assertEvent(event, 'xyflow.edgeMouseEnter')
+      let edge = event.edge
+      enqueue.assign({
         xyedges: context.xyedges.map(e => {
-          if (e.id === params.edge.id) {
-            return Base.setHovered(e, true)
+          if (e.id === event.edge.id) {
+            edge = Base.setHovered(e, true)
+            return edge
           }
           return e
         }),
-      }
+      })
+      enqueue.emit({
+        type: 'edgeMouseEnter',
+        edge,
+        event: event.event,
+      })
     }),
-    'onEdgeMouseLeave': assign(({ context }, params: { edge: Types.Edge }) => {
-      return {
+    'onEdgeMouseLeave': enqueueActions(({ enqueue, context, event }) => {
+      assertEvent(event, 'xyflow.edgeMouseLeave')
+      let edge = event.edge
+      enqueue.assign({
         xyedges: context.xyedges.map(e => {
-          if (e.id === params.edge.id) {
-            return Base.setHovered(e, false)
+          if (e.id === event.edge.id) {
+            edge = Base.setHovered(e, false)
+            return edge
           }
           return e
         }),
-      }
+      })
+      enqueue.emit({
+        type: 'edgeMouseLeave',
+        edge,
+        event: event.event,
+      })
     }),
     'focus on nodes and edges': assign(focusNodesEdges),
     'notations.highlight': assign(({ context }, params: { notation: ElementNotation; kind?: string }) => {
@@ -524,6 +552,33 @@ const _diagramMachine = setup({
       })),
     })),
     'update active walkthrough': assign(updateActiveWalkthrough),
+    'emit: walkthroughStarted': emit(({ context }) => {
+      const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
+      invariant(edge, 'Invalid walkthrough state')
+      return {
+        type: 'walkthroughStarted',
+        edge,
+      }
+    }),
+    'emit: walkthroughStep': emit(({ context }) => {
+      const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
+      invariant(edge, 'Invalid walkthrough state')
+      return {
+        type: 'walkthroughStep',
+        edge,
+      }
+    }),
+    'emit: walkthroughStopped': emit(() => ({
+      type: 'walkthroughStopped',
+    })),
+    'emit: edgeEditingStarted': emit(({ context, event }) => {
+      assertEvent(event, 'xyflow.edgeEditingStarted')
+      const edge = nonNullable(context.xyedges.find(x => x.id === event.edge.id), `Edge ${event.edge.id} not found`)
+      return ({
+        type: 'edgeEditingStarted',
+        edge,
+      })
+    }),
   },
 }).createMachine({
   initial: 'initializing',
@@ -739,16 +794,10 @@ const _diagramMachine = setup({
           },
         },
         'xyflow.edgeMouseEnter': {
-          actions: {
-            type: 'onEdgeMouseEnter',
-            params: prop('event'),
-          },
+          actions: 'onEdgeMouseEnter',
         },
         'xyflow.edgeMouseLeave': {
-          actions: {
-            type: 'onEdgeMouseLeave',
-            params: prop('event'),
-          },
+          actions: 'onEdgeMouseLeave',
         },
         'notations.highlight': {
           actions: {
@@ -944,6 +993,7 @@ const _diagramMachine = setup({
             }),
             'update active walkthrough',
             'xyflow:fitFocusedBounds',
+            'emit: walkthroughStarted',
           ],
           on: {
             'key.esc': {
@@ -956,26 +1006,29 @@ const _diagramMachine = setup({
               actions: raise({ type: 'walkthrough.step', direction: 'next' }),
             },
             'walkthrough.step': {
-              actions: enqueueActions(({ enqueue, context, event }) => {
-                const { stepId } = context.activeWalkthrough!
-                const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
-                const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
-                  min: 0,
-                  max: context.xyedges.length - 1,
-                })
-                if (nextStepIndex === stepIndex) {
-                  return
-                }
-                const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
-                enqueue.assign({
-                  activeWalkthrough: {
-                    stepId: nextStepId,
-                    parallelPrefix: getParallelStepsPrefix(nextStepId),
-                  },
-                })
-                enqueue('update active walkthrough')
-                enqueue('xyflow:fitFocusedBounds')
-              }),
+              actions: [
+                assign(({ context, event }) => {
+                  const { stepId } = context.activeWalkthrough!
+                  const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
+                  const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
+                    min: 0,
+                    max: context.xyedges.length - 1,
+                  })
+                  if (nextStepIndex === stepIndex) {
+                    return {}
+                  }
+                  const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
+                  return {
+                    activeWalkthrough: {
+                      stepId: nextStepId,
+                      parallelPrefix: getParallelStepsPrefix(nextStepId),
+                    },
+                  }
+                }),
+                'update active walkthrough',
+                'xyflow:fitFocusedBounds',
+                'emit: walkthroughStep',
+              ],
             },
             'xyflow.edgeClick': {
               actions: [
@@ -992,6 +1045,7 @@ const _diagramMachine = setup({
                 }),
                 'update active walkthrough',
                 'xyflow:fitFocusedBounds',
+                'emit: walkthroughStep',
               ],
             },
             'notations.unhighlight': {
@@ -1025,6 +1079,7 @@ const _diagramMachine = setup({
               activeWalkthrough: null,
               viewportBeforeFocus: null,
             })
+            enqueue('emit: walkthroughStopped')
           }),
         },
       },
@@ -1089,6 +1144,9 @@ const _diagramMachine = setup({
         viewport: (({ event }) => event.viewport),
       }),
     },
+    'xyflow.edgeEditingStarted': {
+      actions: 'emit: edgeEditingStarted',
+    },
     'fitDiagram': {
       guard: 'enabled: FitView',
       actions: {
@@ -1151,7 +1209,7 @@ const _diagramMachine = setup({
       ],
     },
     'update.inputs': {
-      actions: assign(({ event }) => ({ ...event.inputs })),
+      actions: 'updateInputs',
     },
     'update.features': {
       actions: [

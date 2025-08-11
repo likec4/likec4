@@ -97,19 +97,7 @@ export function EdgeLabelContainer({
         }}
         {...rest}
       >
-        <div
-          style={{
-            display: 'contents',
-          }}
-          {
-            // Work around to keep same global selector data-likec4-dimmed
-            ...isDimmed !== false && {
-              'data-likec4-dimmed': isDimmed,
-            }
-          }
-        >
-          {children}
-        </div>
+        {children}
       </div>
     </EdgeLabelRenderer>
   )
