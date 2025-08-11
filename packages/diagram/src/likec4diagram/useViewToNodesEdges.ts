@@ -252,7 +252,7 @@ function viewToNodesEdge(opts: {
         id: edge.id,
         label: edge.label,
         technology: edge.technology,
-        notes: edge.notes,
+        notes: RichText.from(edge.notes),
         navigateTo: edge.navigateTo,
         controlPoints: edge.controlPoints ?? null,
         labelBBox: edge.labelBBox ?? null,
