@@ -1,3 +1,5 @@
+import type { RichTextOrEmpty } from '@likec4/core'
+import { css } from '@likec4/styles/css'
 import {
   Button,
   CloseButton,
@@ -12,12 +14,13 @@ import {
 import { useDebouncedEffect } from '@react-hookz/web'
 import { type PropsWithChildren, useState } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
+import { MarkdownBlock } from '../../../custom'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
 import * as edgesCss from './NotePopover.css'
 
-export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) => {
+export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: RichTextOrEmpty }>) => {
   const {
     isActive,
     isParallel,
@@ -38,7 +41,7 @@ export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: stri
     () => {
       setIsOpened(true)
     },
-    [],
+    [notes],
     300,
   )
 
@@ -46,6 +49,7 @@ export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: stri
     <Popover
       shadow="xs"
       offset={16}
+      position="bottom-start"
       opened={isOpened}
       closeOnClickOutside={false}
       {...portalProps}>
@@ -60,7 +64,21 @@ export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: stri
         onDoubleClick={stopPropagation}
       >
         <ScrollAreaAutosize miw={180} maw={450} mah={350} type="scroll" mx={'auto'} mt={2}>
-          <Text component="div" className={edgesCss.edgeNoteText} p={4}>{notes}</Text>
+          {notes.isEmpty && (
+            <Text component="div" fw={500} size="xs" c="dimmed" my="md" style={{ userSelect: 'none' }}>
+              No description
+            </Text>
+          )}
+          {notes.nonEmpty && (
+            <MarkdownBlock
+              value={notes}
+              fontSize="sm"
+              emptyText="No description"
+              className={css({
+                userSelect: 'all',
+              })}
+            />
+          )}
         </ScrollAreaAutosize>
         <CloseButton
           size={'xs'}
