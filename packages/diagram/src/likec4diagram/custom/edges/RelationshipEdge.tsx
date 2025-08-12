@@ -318,27 +318,25 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           {...enableEdgeEditing && {
             onEdgePointerDown,
           }} />
-        {!isControlPointDragging && (
-          <EdgeLabelContainer
-            edgeProps={props}
-            labelPosition={{
-              x: labelX,
-              y: labelY,
-              translate: isModified ? 'translate(-50%, 0)' : undefined,
-            }}
-          >
-            <EdgeLabel edgeProps={props}>
-              {navigateTo && (
-                <EdgeActionButton
-                  {...props}
-                  onClick={e => {
-                    e.stopPropagation()
-                    diagram.navigateTo(navigateTo)
-                  }} />
-              )}
-            </EdgeLabel>
-          </EdgeLabelContainer>
-        )}
+        <EdgeLabelContainer
+          edgeProps={props}
+          labelPosition={{
+            x: labelX,
+            y: labelY,
+            translate: isModified ? 'translate(-50%, 0)' : undefined,
+          }}
+        >
+          <EdgeLabel edgeProps={props}>
+            {navigateTo && (
+              <EdgeActionButton
+                {...props}
+                onClick={e => {
+                  e.stopPropagation()
+                  diagram.navigateTo(navigateTo)
+                }} />
+            )}
+          </EdgeLabel>
+        </EdgeLabelContainer>
       </EdgeContainer>
       {/* Render control points above edge label  */}
       {enableEdgeEditing && controlPoints.length > 0 && (selected || hovered || isControlPointDragging) && (

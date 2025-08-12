@@ -1,6 +1,6 @@
 import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '@floating-ui/dom'
 import type { LikeC4Model } from '@likec4/core/model'
-import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
 import { nameFromFqn } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
@@ -18,6 +18,7 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import { useActorRef, useSelector } from '@xstate/react'
+import { shallowEqual } from 'fast-equals'
 import {
   type MouseEvent,
   type MouseEventHandler,
@@ -32,13 +33,12 @@ import {
 import { clamp, filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../components/Link'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
-import { IfEnabled, useEnabledFeatures } from '../../context/DiagramFeatures'
+import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { MarkdownBlock } from '../../custom'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import { type XYStoreState, useXYStore } from '../../hooks/useXYFlow'
-import type { LikeC4DiagramEventHandlers } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import type { DiagramContext } from '../../state/types'
 import { findDiagramEdge, findDiagramNode } from '../../state/utils'
@@ -127,16 +127,17 @@ export const RelationshipPopover = memo(() => {
         targetNode,
       })
     },
-    undefined,
+    shallowEqual,
     [openedEdgeId],
   )
 
-  if (!diagramEdge || diagramEdge.relations.length === 0 || !sourceNode || !targetNode) {
+  if (!diagramEdge || !sourceNode || !targetNode) {
     return null
   }
 
   return (
     <RelationshipPopoverInternal
+      viewId={viewId}
       diagramEdge={diagramEdge}
       sourceNode={sourceNode}
       targetNode={targetNode}
@@ -146,207 +147,246 @@ export const RelationshipPopover = memo(() => {
 })
 
 const getEdgeLabelElement = (edgeId: string, container: HTMLDivElement | undefined) => {
-  return container?.querySelector<HTMLDivElement>(`.likec4-edge-label__root[data-edge-id="${edgeId}"]`) ?? null
+  return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ?? null
 }
 
 const selectTransform = (s: XYStoreState) =>
   roundDpr(s.transform[0]) + ' ' + roundDpr(s.transform[1]) + ' ' + s.transform[2].toFixed(3)
 
 type RelationshipPopoverInternalProps = {
+  viewId: ViewId
   diagramEdge: DiagramEdge
   sourceNode: DiagramNode
   targetNode: DiagramNode
   onMouseEnter: MouseEventHandler<HTMLDivElement>
   onMouseLeave: MouseEventHandler<HTMLDivElement>
 }
-const RelationshipPopoverInternal = forwardRef<HTMLDivElement, RelationshipPopoverInternalProps>(
-  ({ diagramEdge, sourceNode, targetNode, onMouseEnter, onMouseLeave }, _ref) => {
-    const ref = useRef<HTMLDivElement>(null)
-    const { enableNavigateTo } = useEnabledFeatures()
-    const { onOpenSource } = useDiagramEventHandlers()
+const RelationshipPopoverInternal = ({
+  viewId,
+  diagramEdge,
+  sourceNode,
+  targetNode,
+  onMouseEnter,
+  onMouseLeave,
+}: RelationshipPopoverInternalProps) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
+  const { onOpenSource } = useDiagramEventHandlers()
 
-    const { portalProps } = useMantinePortalProps()
+  const { portalProps } = useMantinePortalProps()
 
-    const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>(null)
-    const viewport = useXYStore(selectTransform)
+  const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>(null)
+  const viewport = useXYStore(selectTransform)
 
-    useEffect(() => {
-      setReferenceEl(getEdgeLabelElement(diagramEdge.id, portalProps?.target))
-    }, [diagramEdge, viewport])
+  useEffect(() => {
+    setReferenceEl(getEdgeLabelElement(diagramEdge.id, portalProps?.target))
+  }, [diagramEdge, viewport])
 
-    useEffect(() => {
-      const reference = referenceEl
-      const popper = ref.current
-      if (!reference || !popper) {
-        return
-      }
+  useEffect(() => {
+    const reference = referenceEl
+    const popper = ref.current
+    if (!reference || !popper) {
+      return
+    }
+    let wasCanceled = false
 
-      const update = () => {
-        computePosition(reference, popper, {
-          placement: 'bottom',
-          middleware: [
-            offset(4),
-            autoPlacement({
-              padding: 16,
-              allowedPlacements: [
-                'bottom-start',
-                'bottom-end',
-                'top-start',
-                'top-end',
-                'right-start',
-                'right-end',
-                'left-start',
-                'left-end',
-              ],
-            }),
-            size({
-              padding: 16,
-              apply({ availableHeight, availableWidth, elements }) {
-                Object.assign(elements.floating.style, {
-                  maxWidth: `${clamp(roundDpr(availableWidth), { min: 0, max: 400 })}px`,
-                  maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
-                })
-              },
-            }),
-            hide({
-              padding: 16,
-            }),
-          ],
-        }).then(({ x, y, middlewareData }) => {
-          popper.style.transform = `translate(${roundDpr(x)}px, ${roundDpr(y)}px)`
-          popper.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible'
-        })
-      }
-      return autoUpdate(reference, popper, update)
-    }, [referenceEl])
-
-    const likec4model = useLikeC4Model()
-    const diagram = useDiagram()
-
-    const [direct, nested] = pipe(
-      diagramEdge.relations,
-      map(id => {
-        try {
-          return likec4model.findRelationship(id)
-        } catch (e) {
-          // View was cached, but likec4model based on new data
-          console.error(
-            `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
-            e,
-          )
-          return null
+    const update = () => {
+      computePosition(reference, popper, {
+        placement: 'bottom',
+        middleware: [
+          offset(2),
+          autoPlacement({
+            padding: 16,
+            allowedPlacements: [
+              'bottom-start',
+              'bottom-end',
+              'top-start',
+              'top-end',
+              'right-start',
+              'right-end',
+              'left-start',
+              'left-end',
+            ],
+          }),
+          size({
+            padding: 16,
+            apply({ availableHeight, availableWidth, elements }) {
+              if (wasCanceled) {
+                return
+              }
+              Object.assign(elements.floating.style, {
+                maxWidth: `${clamp(roundDpr(availableWidth), { min: 150, max: 400 })}px`,
+                maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
+              })
+            },
+          }),
+          hide({
+            padding: 16,
+          }),
+        ],
+      }).then(({ x, y, middlewareData }) => {
+        if (wasCanceled) {
+          return
         }
-      }),
-      filter(isTruthy),
-      partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
-    )
+        popper.style.transform = `translate(${roundDpr(x)}px, ${roundDpr(y)}px)`
+        popper.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible'
+      })
+    }
+    const cleanup = autoUpdate(reference, popper, update)
+    return () => {
+      wasCanceled = true
+      cleanup()
+    }
+  }, [referenceEl])
 
-    const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
-      <Fragment key={relationship.id}>
-        {index > 0 && <Divider />}
-        <Relationship
-          relationship={relationship}
-          sourceNode={sourceNode}
-          targetNode={targetNode}
-          edge={diagramEdge}
-          enableNavigateTo={enableNavigateTo}
-          onOpenSource={onOpenSource}
-        />
-      </Fragment>
-    )
+  const likec4model = useLikeC4Model()
+  const diagram = useDiagram()
 
-    return (
-      <Portal {...portalProps}>
-        <ScrollAreaAutosize
-          ref={ref}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          type="auto"
-          overscrollBehavior="contain"
-          scrollbars={'y'}
-          scrollbarSize={6}
-          className={cx(
-            'nowheel nopan',
-            css({
-              layerStyle: 'likec4.dropdown',
-              p: '0',
-              pointerEvents: 'all',
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: 'max-content',
-              cursor: 'default',
-            }),
-          )}
+  const [direct, nested] = pipe(
+    diagramEdge.relations,
+    map(id => {
+      try {
+        return likec4model.relationship(id)
+      } catch (e) {
+        // View was cached, but likec4model based on new data
+        console.error(
+          `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
+          e,
+        )
+        return null
+      }
+    }),
+    filter(isTruthy),
+    partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
+  )
+
+  if (direct.length === 0 && nested.length === 0) {
+    console.error('No relationships found  diagram edge', {
+      diagramEdge,
+      sourceNode,
+      targetNode,
+    })
+    return null
+  }
+
+  const navigateTo = enableNavigateTo
+    ? (viewId: ViewId) => {
+      diagram.navigateTo(viewId)
+    }
+    : undefined
+
+  const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
+    <Fragment key={relationship.id}>
+      {index > 0 && <Divider />}
+      <Relationship
+        viewId={viewId}
+        relationship={relationship}
+        sourceNode={sourceNode}
+        targetNode={targetNode}
+        edge={diagramEdge}
+        onNavigateTo={navigateTo}
+        {...(onOpenSource && enableVscode && {
+          onOpenSource: () => onOpenSource({ relation: relationship.id }),
+        })}
+      />
+    </Fragment>
+  )
+
+  return (
+    <Portal {...portalProps}>
+      <ScrollAreaAutosize
+        ref={ref}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        type="auto"
+        scrollbars={'y'}
+        scrollbarSize={6}
+        styles={{
+          viewport: {
+            overscrollBehavior: 'contain',
+            minWidth: 150,
+          },
+        }}
+        className={cx(
+          'nowheel nopan nodrag',
+          css({
+            layerStyle: 'likec4.dropdown',
+            p: '0',
+            pointerEvents: 'all',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: 'max-content',
+            cursor: 'default',
+          }),
+        )}
+      >
+        <VStack
+          css={{
+            gap: '3.5',
+            padding: '4',
+            paddingTop: '2.5',
+          }}
         >
-          <VStack
-            css={{
-              gap: '3',
-              padding: '4',
-              paddingTop: '2.5',
+          <Button
+            variant="default"
+            color="gray"
+            size="compact-xs"
+            style={{
+              alignSelf: 'flex-start',
+              fontWeight: 500,
+              ['--button-fz']: 'var(--font-sizes-xxs)',
+            }}
+            onClick={(e) => {
+              e.stopPropagation()
+              diagram.openRelationshipDetails(diagramEdge.id)
             }}
           >
-            <Button
-              variant="default"
-              color="gray"
-              size="compact-xs"
-              style={{
-                alignSelf: 'flex-start',
-                fontWeight: 500,
-                ['--button-fz']: 'var(--font-sizes-xxs)',
-              }}
-              onClick={(e) => {
-                e.stopPropagation()
-                diagram.openRelationshipDetails(diagramEdge.id)
-              }}
-            >
-              browse relationships
-            </Button>
-            {direct.length > 0 && (
-              <>
-                <Divider label={<Label>direct relationships</Label>} labelPosition="left" />
-                {direct.map(renderRelationship)}
-              </>
-            )}
-            {nested.length > 0 && (
-              <>
-                {direct.length > 0 && <Space />}
-                <Divider label={<Label>resolved from nested</Label>} labelPosition="left" />
-                {nested.map(renderRelationship)}
-              </>
-            )}
-          </VStack>
-        </ScrollAreaAutosize>
-      </Portal>
-    )
-  },
-)
+            browse relationships
+          </Button>
+          {direct.length > 0 && (
+            <>
+              <Divider label={<Label>direct relationships</Label>} labelPosition="left" />
+              {direct.map(renderRelationship)}
+            </>
+          )}
+          {nested.length > 0 && (
+            <>
+              {direct.length > 0 && <Space />}
+              <Divider label={<Label>resolved from nested</Label>} labelPosition="left" />
+              {nested.map(renderRelationship)}
+            </>
+          )}
+        </VStack>
+      </ScrollAreaAutosize>
+    </Portal>
+  )
+}
 
 const Relationship = forwardRef<
   HTMLDivElement,
   {
+    // current view id
+    viewId: ViewId
     relationship: LikeC4Model.AnyRelation
     edge: DiagramEdge
     sourceNode: DiagramNode
     targetNode: DiagramNode
-    enableNavigateTo: boolean
-    onOpenSource: LikeC4DiagramEventHandlers['onOpenSource']
+    onOpenSource?: () => void
+    onNavigateTo?: ((next: ViewId) => void) | undefined
   }
 >(({
+  viewId,
   relationship: r,
   edge,
   sourceNode,
   targetNode,
-  enableNavigateTo,
+  onNavigateTo,
   onOpenSource,
-  ...props
 }, ref) => {
-  const diagram = useDiagram()
-  const viewId = diagram.currentView.id
-
   const sourceId = getShortId(r, r.source.id, sourceNode)
   const targetId = getShortId(r, r.target.id, targetNode)
-  const navigateTo = enableNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
+  const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
   return (
@@ -375,59 +415,55 @@ const Relationship = forwardRef<
         <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
           {targetId}
         </Text>
-        {(navigateTo || !!onOpenSource) && (
-          <TooltipGroup openDelay={100}>
-            {navigateTo && (
-              <Tooltip label={'Open dynamic view'}>
-                <ActionIcon
-                  className={cx('nodrag nopan')}
-                  size={'sm'}
-                  radius="sm"
-                  variant="default"
-                  onClick={event => {
-                    event.stopPropagation()
-                    diagram.navigateTo(navigateTo)
-                  }}
-                  style={{
-                    alignSelf: 'flex-end',
-                  }}
-                  role="button"
-                >
-                  <IconZoomScan size="80%" stroke={2} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-            <IfEnabled feature="Vscode">
-              <Tooltip label={'Open source'}>
-                <ActionIcon
-                  className={cx('nodrag nopan')}
-                  size={'sm'}
-                  radius="sm"
-                  variant="default"
-                  onClick={event => {
-                    event.stopPropagation()
-                    diagram.openSource({ relation: r.id })
-                  }}
-                  role="button"
-                >
-                  <IconFileSymlink size="80%" stroke={2} />
-                </ActionIcon>
-              </Tooltip>
-            </IfEnabled>
-          </TooltipGroup>
-        )}
+        <TooltipGroup openDelay={100}>
+          {navigateTo && (
+            <Tooltip label={'Open dynamic view'}>
+              <ActionIcon
+                size={'sm'}
+                radius="sm"
+                variant="default"
+                onClick={event => {
+                  event.stopPropagation()
+                  onNavigateTo?.(navigateTo)
+                }}
+                style={{
+                  alignSelf: 'flex-end',
+                }}
+                role="button"
+              >
+                <IconZoomScan size="80%" stroke={2} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+          {onOpenSource && (
+            <Tooltip label={'Open source'}>
+              <ActionIcon
+                size={'sm'}
+                radius="sm"
+                variant="default"
+                onClick={event => {
+                  event.stopPropagation()
+                  onOpenSource()
+                }}
+                role="button"
+              >
+                <IconFileSymlink size="80%" stroke={2} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </TooltipGroup>
       </HStack>
       <Box className={styles.title}>{r.title || 'untitled'}</Box>
       {r.kind && (
         <HStack gap="2">
           <Label>kind</Label>
-          <Text size="xs">{r.kind}</Text>
+          <Text size="xs" className={css({ userSelect: 'all' })}>{r.kind}</Text>
         </HStack>
       )}
       {r.technology && (
         <HStack gap="2">
           <Label>technology</Label>
-          <Text size="xs">{r.technology}</Text>
+          <Text size="xs" className={css({ userSelect: 'all' })}>{r.technology}</Text>
         </HStack>
       )}
       {r.description.nonEmpty && (

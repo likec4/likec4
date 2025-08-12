@@ -20,4 +20,5 @@ export const title = css({
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: 'sm',
   lineHeight: 'sm',
+  userSelect: 'all',
 })

@@ -66,6 +66,10 @@ export const BaseXYFlow = <
   zoomOnDoubleClick = false,
   onViewportResize,
   onMoveEnd,
+  onNodeMouseEnter,
+  onNodeMouseLeave,
+  onEdgeMouseEnter,
+  onEdgeMouseLeave,
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
@@ -103,6 +107,7 @@ export const BaseXYFlow = <
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
       noPanClassName="nopan"
+      noWheelClassName="nowheel"
       panOnScroll={pannable}
       panOnDrag={pannable}
       {...(!pannable && {
@@ -135,6 +140,10 @@ export const BaseXYFlow = <
         onMoveEnd?.(event, { x: roundedX, y: roundedY, zoom })
       })}
       onNodeMouseEnter={useCallbackRef((_event, node) => {
+        if (onNodeMouseEnter) {
+          onNodeMouseEnter(_event, node)
+          return
+        }
         if (!node.data.hovered) {
           onNodesChange([{
             id: node.id,
@@ -144,6 +153,10 @@ export const BaseXYFlow = <
         }
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
+        if (onNodeMouseLeave) {
+          onNodeMouseLeave(_event, node)
+          return
+        }
         if (node.data.hovered) {
           onNodesChange([{
             id: node.id,
@@ -153,6 +166,10 @@ export const BaseXYFlow = <
         }
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+        if (onEdgeMouseEnter) {
+          onEdgeMouseEnter(_event, edge)
+          return
+        }
         if (!edge.data.hovered) {
           onEdgesChange([{
             id: edge.id,
@@ -162,6 +179,10 @@ export const BaseXYFlow = <
         }
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+        if (onEdgeMouseLeave) {
+          onEdgeMouseLeave(_event, edge)
+          return
+        }
         if (edge.data.hovered) {
           onEdgesChange([{
             id: edge.id,

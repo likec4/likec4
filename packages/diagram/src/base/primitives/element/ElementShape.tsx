@@ -1,8 +1,8 @@
 import { nonexhaustive } from '@likec4/core'
 import type { ElementShape, ElementStyle } from '@likec4/core/types'
-import { cx as clsx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
+import { elementShapeRecipe } from '@likec4/styles/recipes'
 import { roundDpr } from '../../../utils'
-import * as css from './ElementShape.css'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.065) {
   const radius = Math.round(diameter / 2)
@@ -62,7 +62,7 @@ type ElementShapeProps = {
   h: number
 }
 
-function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
+function ShapeSvg({ shape, w, h }: ElementShapeProps) {
   switch (shape) {
     case 'mobile': {
       return (
@@ -71,10 +71,10 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
             width={w}
             height={h}
             rx={6}
-            className={css.fillMixStroke}
+            data-likec4-fill="mix-stroke"
             strokeWidth={0}
           />
-          <g className={css.fillElementFill} strokeWidth={0}>
+          <g data-likec4-fill="fill" strokeWidth={0}>
             <circle cx={17} cy={h / 2} r={12} />
             <rect x={33} y={12} width={w - 44} height={h - 24} rx={5} />
           </g>
@@ -88,10 +88,10 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
             width={w}
             height={h}
             rx={6}
-            className={css.fillMixStroke}
+            data-likec4-fill="mix-stroke"
             strokeWidth={0}
           />
-          <g className={css.fillElementFill} strokeWidth={0}>
+          <g data-likec4-fill="fill" strokeWidth={0}>
             <circle cx={16} cy={17} r={7} />
             <circle cx={36} cy={17} r={7} />
             <circle cx={56} cy={17} r={7} />
@@ -115,7 +115,7 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
             width={PersonIcon.width}
             height={PersonIcon.height}
             viewBox={`0 0 ${PersonIcon.width} ${PersonIcon.height}`}
-            className={css.fillMixStroke}
+            data-likec4-fill="mix-stroke"
           >
             <path
               strokeWidth={0}
@@ -129,7 +129,7 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} className={css.fillMixStroke} strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} data-likec4-fill="mix-stroke" strokeWidth={2} />
         </>
       )
     }
@@ -139,7 +139,7 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} className={css.fillMixStroke} strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} data-likec4-fill="mix-stroke" strokeWidth={2} />
         </>
       )
     }
@@ -156,6 +156,19 @@ function ElementShapeSvg({ shape, w, h }: ElementShapeProps) {
       return nonexhaustive(shape)
     }
   }
+}
+
+function ShapeHtml({ multiple, withOutLine }: { multiple: boolean; withOutLine: boolean }) {
+  return (
+    <Box
+      className={elementShapeRecipe({
+        shapetype: 'html',
+      })}
+    >
+      {multiple && <div className={'likec4-shape-multiple'} />}
+      {withOutLine && <div className={'likec4-shape-outline'} />}
+    </Box>
+  )
 }
 
 type Data = {
@@ -183,16 +196,25 @@ export function ElementShape(
   let w = !!width && width > 10 ? width : data.width
   let h = !!height && height > 10 ? height : data.height
   const isMultiple = data.style?.multiple ?? false
+
+  if (data.shape === 'rectangle') {
+    return <ShapeHtml multiple={isMultiple} withOutLine={withSelectedIndicator} />
+  }
+
+  const className = elementShapeRecipe({
+    shapetype: 'svg',
+  })
+
   return (
     <>
       {isMultiple && (
-        <svg className={clsx(css.shapeSvgMultiple)} viewBox={`0 0 ${w} ${h}`}>
-          <ElementShapeSvg shape={data.shape} w={w} h={h} />
+        <svg className={className} data-likec4-shape-multiple="true" viewBox={`0 0 ${w} ${h}`}>
+          <ShapeSvg shape={data.shape} w={w} h={h} />
         </svg>
       )}
-      <svg className={css.shapeSvg} viewBox={`0 0 ${w} ${h}`}>
+      <svg className={className} viewBox={`0 0 ${w} ${h}`}>
         {withSelectedIndicator && <SelectedIndicator shape={data.shape} w={w} h={h} />}
-        <ElementShapeSvg shape={data.shape} w={w} h={h} />
+        <ShapeSvg shape={data.shape} w={w} h={h} />
       </svg>
     </>
   )
@@ -224,5 +246,5 @@ export function SelectedIndicator({ shape, w, h }: ElementShapeProps) {
       break
     }
   }
-  return <g className={css.indicator}>{svg}</g>
+  return <g className={'likec4-shape-outline'}>{svg}</g>
 }

@@ -18,7 +18,6 @@ export type RelationshipPopoverActorEvent =
   // - From dropdown
   | { type: 'dropdown.mouseEnter' }
   | { type: 'dropdown.mouseLeave' }
-  | { type: 'dropdown.dismiss' }
 
 export interface RelationshipPopoverActorContext {
   edgeId: EdgeId | null
@@ -26,6 +25,13 @@ export interface RelationshipPopoverActorContext {
    * True if the edge was selected
    */
   edgeSelected: boolean
+
+  /**
+   * The timeout for opening the popover
+   * If it was closed recently (<1.5s), it will be 300ms
+   * Otherwise, it will be 800ms
+   */
+  openTimeout: number
 }
 
 const _actorLogic = setup({
@@ -35,13 +41,9 @@ const _actorLogic = setup({
     tags: 'opened',
   },
   delays: {
-    'open timeout': ({ context }) => {
-      if (context.edgeSelected) {
-        return 500
-      }
-      return 800
-    },
-    'close timeout': 500,
+    'open timeout': ({ context }) => context.openTimeout,
+    'close timeout': 600,
+    'long idle': 1500,
   },
   actions: {
     'update edgeId': assign(({ context, event }) => {
@@ -51,6 +53,12 @@ const _actorLogic = setup({
         edgeSelected: context.edgeSelected || event.type === 'xyedge.select',
       }
     }),
+    'increase open timeout': assign(() => ({
+      openTimeout: 800,
+    })),
+    'decrease open timeout': assign(() => ({
+      openTimeout: 300,
+    })),
     'reset edgeId': assign({
       edgeId: null,
       edgeSelected: false,
@@ -65,12 +73,16 @@ const _actorLogic = setup({
   context: () => ({
     edgeId: null,
     edgeSelected: false,
+    openTimeout: 800,
   }),
   initial: 'idle',
   on: {
     'close': {
       target: '#idle',
-      actions: 'reset edgeId',
+      actions: [
+        'reset edgeId',
+        'increase open timeout',
+      ],
     },
   },
   states: {
@@ -86,6 +98,11 @@ const _actorLogic = setup({
           actions: 'update edgeId',
         },
       },
+      after: {
+        'long idle': {
+          actions: 'increase open timeout',
+        },
+      },
     },
     opening: {
       on: {
@@ -99,6 +116,7 @@ const _actorLogic = setup({
       },
       after: {
         'open timeout': {
+          actions: 'decrease open timeout',
           target: 'active',
         },
       },
@@ -110,7 +128,7 @@ const _actorLogic = setup({
       on: {
         'xyedge.unselect': {
           target: 'idle',
-          actions: 'reset edgeId',
+          actions: 'increase open timeout',
         },
         'xyedge.select': {
           actions: 'update edgeId',

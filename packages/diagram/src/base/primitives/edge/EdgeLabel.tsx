@@ -1,9 +1,11 @@
 import { extractStep, isStepEdgeId } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { type BoxProps, Box } from '@likec4/styles/jsx'
+import { Box } from '@likec4/styles/jsx'
 import { edgeLabel } from '@likec4/styles/recipes'
-import { type PropsWithChildren, forwardRef } from 'react'
+import type { HTMLMotionProps } from 'motion/react'
+import * as m from 'motion/react-m'
+import { forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
@@ -16,11 +18,12 @@ type Data = UndefinedOnPartialDeep<
   >
 >
 
-type EdgeLabelProps = PropsWithChildren<
-  BoxProps & {
+type EdgeLabelProps =
+  & HTMLMotionProps<'div'>
+  & {
+    children?: React.ReactNode
     edgeProps: EdgeProps<Data>
   }
->
 
 export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   {
@@ -29,7 +32,10 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       data: {
         label,
         technology,
+        hovered: isHovered = false,
       },
+      selected = false,
+      selectable = false,
     },
     className,
     style,
@@ -41,10 +47,20 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
   const classes = edgeLabel({
     isStepEdge: stepNum !== null,
+    cursor: selectable || stepNum !== null ? 'pointer' : 'default',
   })
 
   return (
-    <Box ref={ref} className={cx(classes.root, className)} data-edge-id={id} {...rest}>
+    <m.div
+      ref={ref}
+      className={cx(classes.root, 'likec4-edge-label', className)}
+      data-edge-id={id}
+      animate={{
+        originY: 0.25,
+        scale: isHovered && !selected ? 1.08 : 1,
+      }}
+      {...rest}
+    >
       {stepNum !== null && (
         <Box className={classes.stepNumber}>
           {stepNum}
@@ -69,7 +85,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         )}
         {children}
       </Box>
-    </Box>
+    </m.div>
   )
 })
 EdgeLabel.displayName = 'EdgeLabel'

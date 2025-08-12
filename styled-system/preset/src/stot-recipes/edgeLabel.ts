@@ -17,6 +17,9 @@ export const edgeLabel = defineSlotRecipe({
       maxWidth: '100%',
       gap: '0.5',
       color: 'var(--xy-edge-label-color)',
+      background: 'var(--xy-edge-label-background-color)',
+      border: '0px solid transparent',
+      borderRadius: '4px',
     },
     stepNumber: {
       alignSelf: 'stretch',
@@ -57,6 +60,18 @@ export const edgeLabel = defineSlotRecipe({
     },
   },
   variants: {
+    cursor: {
+      pointer: {
+        root: {
+          cursor: 'pointer',
+        },
+      },
+      default: {
+        root: {
+          cursor: 'default',
+        },
+      },
+    },
     isStepEdge: {
       false: {},
       true: {
@@ -83,6 +98,7 @@ export const edgeLabel = defineSlotRecipe({
   },
   defaultVariants: {
     isStepEdge: false,
+    cursor: 'default',
   },
   staticCss: [{
     conditions: ['*'],
