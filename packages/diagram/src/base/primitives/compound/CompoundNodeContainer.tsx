@@ -4,7 +4,6 @@ import { compoundNode } from '@likec4/styles/recipes'
 import { type HTMLMotionProps, m } from 'motion/react'
 import { type PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
-import { useIsReducedGraphics } from '../../../hooks/useReducedGraphics'
 import type { NodeProps } from '../../types'
 // import * as styles from './CompoundNodeContainer.css'
 
@@ -34,13 +33,14 @@ export function CompoundNodeContainer({
   style,
   ...rest
 }: CompoundNodeContainerProps) {
-  const isReducedGraphics = useIsReducedGraphics()
-
   let opacity = clamp(data.style.opacity ?? 100, {
     min: 0,
     max: 100,
   })
-  const borderOpacity = 50 + opacity * 0.5
+  const borderOpacity = clamp(50 + opacity * 0.5, {
+    min: 50,
+    max: 100,
+  })
   const isTransparent = opacity < 99
 
   const compoundClass = compoundNode({
@@ -48,10 +48,6 @@ export function CompoundNodeContainer({
     inverseColor: opacity < 65,
     borderStyle: data.style.border ?? (isTransparent ? 'dashed' : 'none'),
   })
-
-  if (isTransparent && isHovered && !isReducedGraphics) {
-    opacity = Math.min(opacity + 7, 100)
-  }
 
   const depth = clamp(data.depth ?? 1, {
     min: 1,
@@ -73,17 +69,12 @@ export function CompoundNodeContainer({
       }}
       {...isTransparent && {
         'data-compound-transparent': true,
-        animate: {
-          ['--_compound-transparency']: `${opacity}%`,
-          transition: {
-            delay: isHovered ? 0.17 : 0,
-          },
-        },
       }}
       style={{
         ...style,
         // @ts-expect-error
         ['--_border-transparency']: `${borderOpacity}%`,
+        ['--_compound-transparency']: `${opacity}%`,
       }}
       {...rest}
     >
