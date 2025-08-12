@@ -47,11 +47,14 @@ export type BuildModelData = {
  * This function builds a model from all documents, merging the specifications
  * and globals, and applying the extends to the elements.
  */
-export function buildModelData(project: {
-  id: c4.ProjectId
-  folder: URI
-  config: Readonly<ProjectConfig>
-}, docs: ParsedLikeC4LangiumDocument[]): BuildModelData {
+export function buildModelData(
+  project: {
+    id: c4.ProjectId
+    folderUri: URI
+    config: Readonly<ProjectConfig>
+  },
+  docs: ParsedLikeC4LangiumDocument[],
+): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 
   const customColors: c4.CustomColorDefinitions = mapValues(
@@ -237,16 +240,14 @@ export function buildModelData(project: {
     resolveRulesExtendedViews,
   )
 
-  const projectInfo = {
-    id: project.id,
-    name: project.config.name,
-    ...(project.config.title && { title: project.config.title }),
-  }
   return {
     data: {
       [c4._stage]: 'parsed',
       projectId: project.id,
-      project: projectInfo,
+      project: {
+        id: project.id,
+        title: project.config.title ?? project.config.name,
+      },
       specification: {
         tags: c4Specification.tags,
         elements: c4Specification.specs.elements,

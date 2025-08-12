@@ -31,4 +31,14 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
     return groupBy(this.allExcludingBuiltin.toArray(), prop('likec4ProjectId'))
   }
+
+  resetProjectIds(): void {
+    const projects = this.services.workspace.ProjectsManager
+    this.all.forEach(doc => {
+      if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri)) {
+        return
+      }
+      doc.likec4ProjectId = projects.belongsTo(doc.uri)
+    })
+  }
 }

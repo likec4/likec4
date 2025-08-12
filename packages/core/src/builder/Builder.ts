@@ -408,7 +408,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     build: (project?: LikeC4Project) => ({
       [_stage]: 'parsed',
       projectId: project?.id ?? 'from-builder',
-      project: project ?? { id: 'from-builder' },
+      project: {
+        id: 'from-builder',
+        ...project,
+      },
       specification: toLikeC4Specification(),
       elements: fromEntries(
         structuredClone(
