@@ -3,6 +3,7 @@ import { DocumentState, EmptyFileSystem, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
 import { entries } from 'remeda'
 import stripIndent from 'strip-indent'
+import type { LiteralUnion } from 'type-fest'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
@@ -206,7 +207,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     }
   }
 
-  async function buildLikeC4Model(projectId: keyof Projects) {
+  async function buildLikeC4Model(projectId: LiteralUnion<keyof Projects, string>) {
     if (services.shared.workspace.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
@@ -215,15 +216,18 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     return likec4model
   }
 
-  async function buildModel(projectId: keyof Projects) {
+  async function buildModel(projectId: LiteralUnion<keyof Projects, string>) {
     const model = await buildLikeC4Model(projectId)
-    return model.$model as ComputedLikeC4ModelData
+    return model.$data as ComputedLikeC4ModelData
   }
 
   return {
     services,
     projects,
     projectsManager: services.shared.workspace.ProjectsManager,
+    addDocument: async (uri: string | URI, input: string) => {
+      return await addDocument(input, uri.toString())
+    },
     /**
      * Add document outside of projects
      */

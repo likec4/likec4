@@ -1,3 +1,5 @@
 {
   name: 'issue-1624',
+  title: 'Issue 1624',
+  description: 'Demo project for issue #1624',
 }
