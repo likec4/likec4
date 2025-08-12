@@ -28,9 +28,9 @@ export {
 
 export const projectReactModule = {
   ...generateMatches('react'),
-  async load({ projectId, logger }) {
-    logger.info(k.dim(`generating likec4:react/${projectId}`))
-    return projectCode(projectId)
+  async load({ project, logger }) {
+    logger.info(k.dim(`generating likec4:react/${project.id}`))
+    return projectCode(project.id)
   },
 } satisfies ProjectVirtualModule
 

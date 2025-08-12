@@ -1,10 +1,14 @@
-import { type DiagramView, type NonEmptyArray, type ProjectId, nonexhaustive } from '@likec4/core'
+import {
+  type DiagramView,
+  type NonEmptyArray,
+  type ProjectId,
+  nonexhaustive,
+} from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { URI } from 'langium'
 import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import { type Range, DiagnosticSeverity } from 'vscode-languageserver-types'
-import type { ProjectConfig } from './config'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4Services } from './module'
@@ -20,23 +24,50 @@ export interface LikeC4LanguageServices {
   readonly workspaceUri: URI
   readonly projectsManager: ProjectsManager
 
+  /**
+   * Returns all projects with relevant documents
+   */
   projects(): NonEmptyArray<{
     id: ProjectId
     folder: URI
-    config: ProjectConfig
+    title: string
     documents: NonEmptyArray<URI> | null
   }>
-  diagrams(): Promise<DiagramView[]>
+
+  /**
+   * Returns project by ID
+   */
+  project(projectId: ProjectId): {
+    id: ProjectId
+    folder: URI
+    title: string
+  }
+
+  /**
+   * Returns diagrams (i.e. views with layout computed) for the specified project
+   * If no project is specified, returns diagrams for default project
+   */
+  diagrams(project?: ProjectId | undefined): Promise<DiagramView[]>
+
   computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed>
+
   layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted>
+
   getErrors(): Array<{
     message: string
     line: number
     range: Range
     sourceFsPath: string
   }>
+
+  /**
+   * Notifies the language server about changes in the workspace
+   */
   notifyUpdate(update: { changed?: string; removed?: string }): Promise<boolean>
 
+  /**
+   * Returns the location of the specified element, relation, view or deployment element
+   */
   locate(params: Locate.Params): Locate.Res
 }
 
@@ -62,7 +93,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   projects(): NonEmptyArray<{
     id: ProjectId
     folder: URI
-    config: ProjectConfig
+    title: string
     documents: NonEmptyArray<URI> | null
   }> {
     const projectsManager = this.services.shared.workspace.ProjectsManager
@@ -75,7 +106,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         return {
           id,
           folder,
-          config,
+          title: config.title ?? config.name,
           documents: map(docs, prop('uri')),
         }
       }),
@@ -87,9 +118,23 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     return [{
       id: ProjectsManager.DefaultProjectId,
       folder,
-      config,
+      title: config.title ?? config.name,
       documents: null,
     }]
+  }
+
+  project(projectId: ProjectId): {
+    id: ProjectId
+    folder: URI
+    title: string
+  } {
+    const projectsManager = this.services.shared.workspace.ProjectsManager
+    const { folder, config } = projectsManager.getProject(projectId)
+    return {
+      id: projectId,
+      folder,
+      title: config.title ?? config.name,
+    }
   }
 
   /**
