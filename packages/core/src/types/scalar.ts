@@ -3,6 +3,9 @@ import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
 
 export type ProjectId<T = string> = Tagged<T, 'ProjectID'>
+export function ProjectId(name: string): ProjectId {
+  return name as unknown as ProjectId
+}
 
 export type MarkdownOrString = { txt: string; md?: never } | { md: string; txt?: never }
 

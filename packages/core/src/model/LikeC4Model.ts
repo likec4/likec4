@@ -12,12 +12,12 @@ import type {
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
-  scalar,
   Specification,
   WhereOperator,
 } from '../types'
 import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/_aux'
+import * as scalar from '../types/scalar'
 import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap } from '../utils/mnemonist'
@@ -294,10 +294,18 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     return this.$data[_stage] as aux.Stage<A>
   }
 
+  /**
+   * Returns the Project ID associated with the model.
+   * If the project ID is not defined in the model, it returns "default".
+   */
   get projectId(): aux.ProjectId<A> {
-    return this.$data.projectId ?? 'unknown' as any
+    return this.$data.projectId ?? 'default' as any
   }
 
+  /**
+   * Returns the project associated with the model.
+   * If the project is not defined in the model, it returns a default project with the ID "default".
+   */
   get project(): LikeC4Project {
     return this.$data.project ?? memoizeProp(this, Symbol.for('project'), () => ({
       id: this.projectId as unknown as scalar.ProjectId,
