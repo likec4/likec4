@@ -7,13 +7,13 @@ import {
   type GetDocumentTags,
   type LayoutView,
   type Locate,
+  type ReloadProjects,
   type ValidateLayout,
   FetchComputedModel,
   FetchTelemetryMetrics,
 } from '@likec4/language-server/protocol'
 import { createSingletonComposable, nextTick, triggerRef, useDisposable } from 'reactive-vscode'
-import { NotificationType, NotificationType1, RequestType, RequestType0 } from 'vscode-jsonrpc'
-import type { BaseLanguageClient } from 'vscode-languageclient'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
 import { computedModels } from './state'
 
@@ -27,6 +27,7 @@ const onRequestOpenView = new NotificationType<DidRequestOpenViewNotification.Pa
 const fetchViewsFromAllProjects: FetchViewsFromAllProjects.Req = new RequestType0('likec4/fetchViewsFromAllProjects')
 const fetchComputedModel: FetchComputedModel.Req = new RequestType('likec4/fetchComputedModel')
 const buildDocuments: BuildDocuments.Req = new RequestType('likec4/build')
+const reloadProjects: ReloadProjects.Req = new RequestType0('likec4/reload-projects')
 const locate: Locate.Req = new RequestType('likec4/locate')
 const changeView: ChangeView.Req = new RequestType('likec4/change-view')
 const layoutView: LayoutView.Req = new RequestType('likec4/layout-view')
@@ -42,6 +43,7 @@ const lsp = {
   // computeView,
   fetchComputedModel,
   buildDocuments,
+  reloadProjects,
   locate,
   changeView,
   layoutView,
@@ -114,6 +116,10 @@ export const useRpc = createSingletonComposable(() => {
     return tags
   }
 
+  async function reloadProjects() {
+    await client.sendRequest(lsp.reloadProjects)
+  }
+
   return {
     client,
     onDidChangeModel,
@@ -127,6 +133,7 @@ export const useRpc = createSingletonComposable(() => {
     changeView,
     fetchViewsFromAllProjects,
     getDocumentTags,
+    reloadProjects,
   }
 })
 

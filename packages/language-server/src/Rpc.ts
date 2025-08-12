@@ -26,6 +26,7 @@ import {
   GetDocumentTags,
   LayoutView,
   Locate,
+  ReloadProjects,
   ValidateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
@@ -119,8 +120,23 @@ export class Rpc extends ADisposable {
         logger.debug`received request ${'FetchProjects'}`
         const docsByProject = LangiumDocuments.groupedByProject()
         return {
-          projects: mapValues(docsByProject, docs => map(docs, d => d.uri.toString())),
+          projects: mapValues(docsByProject, (docs, projectId) => {
+            const {
+              folderUri,
+              config,
+            } = projects.getProject(projectId as ProjectId)
+            return {
+              folder: folderUri.toString(),
+              config,
+              docs: map(docs, d => d.uri.toString()),
+            }
+          }),
         }
+      }),
+      connection.onRequest(ReloadProjects.req, async (_cancelToken) => {
+        logger.debug`received request ${'ReloadProjects'}`
+        await projects.reloadProjects(_cancelToken)
+        return
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`

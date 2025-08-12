@@ -6,10 +6,11 @@ import {
 } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
-import { URI } from 'langium'
+import { type LangiumDocument, URI } from 'langium'
 import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import { type Range, DiagnosticSeverity } from 'vscode-languageserver-types'
-import { logger as mainLogger } from './logger'
+import { isLikeC4LangiumDocument } from './ast'
+import { logger as mainLogger, logWarnError } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
@@ -69,6 +70,11 @@ export interface LikeC4LanguageServices {
    * Returns the location of the specified element, relation, view or deployment element
    */
   locate(params: Locate.Params): Locate.Res
+
+  /**
+   * Checks if the specified document should be excluded from processing.
+   */
+  isExcluded(doc: LangiumDocument): boolean
 }
 
 /**
@@ -102,10 +108,10 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       entries(),
       map(([projectId, docs]) => {
         const id = projectId as ProjectId
-        const { folder, config } = projectsManager.getProject(id)
+        const { folderUri, config } = projectsManager.getProject(id)
         return {
           id,
-          folder,
+          folder: folderUri,
           title: config.title ?? config.name,
           documents: map(docs, prop('uri')),
         }
@@ -114,10 +120,10 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (hasAtLeast(projectsWithDocs, 1)) {
       return projectsWithDocs
     }
-    const { folder, config } = projectsManager.getProject(ProjectsManager.DefaultProjectId)
+    const { folderUri, config } = projectsManager.getProject(ProjectsManager.DefaultProjectId)
     return [{
       id: ProjectsManager.DefaultProjectId,
-      folder,
+      folder: folderUri,
       title: config.title ?? config.name,
       documents: null,
     }]
@@ -129,10 +135,10 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     title: string
   } {
     const projectsManager = this.services.shared.workspace.ProjectsManager
-    const { folder, config } = projectsManager.getProject(projectId)
+    const { folderUri, config } = projectsManager.getProject(projectId)
     return {
       id: projectId,
-      folder,
+      folder: folderUri,
       title: config.title ?? config.name,
     }
   }
@@ -233,6 +239,18 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         )
       default:
         nonexhaustive(params)
+    }
+  }
+
+  /**
+   * Checks if the specified document should be excluded from processing.
+   */
+  isExcluded(doc: LangiumDocument): boolean {
+    try {
+      return !isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.checkIfExcluded(doc)
+    } catch (e) {
+      logWarnError(e)
+      return false
     }
   }
 }

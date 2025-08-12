@@ -42,6 +42,8 @@ import {
   checkRelationExprWith,
 } from './view-predicates'
 
+export { LikeC4DocumentValidator } from './DocumentValidator'
+
 type Guard<N extends AstNode> = (n: AstNode) => n is N
 type Guarded<G> = G extends Guard<infer N> ? N : never
 

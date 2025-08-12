@@ -74,6 +74,8 @@ export class ProjectsManager {
    */
   private _projects = [] as Array<ProjectData>
 
+  private excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
+
   private defaultGlobalProject = {
     id: ProjectsManager.DefaultProjectId,
     config: {
@@ -156,10 +158,18 @@ export class ProjectsManager {
     return this._projects.length > 1
   }
 
-  checkIfExcluded(documentUri: URI): boolean {
-    let docUriAsString = documentUri.toString()
-    const project = this.findProjectForDocument(docUriAsString)
-    return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
+  checkIfExcluded(document: LangiumDocument | URI | string): boolean {
+    if (typeof document === 'string' || URI.isUri(document)) {
+      let docUriAsString = typeof document === 'string' ? document : document.toString()
+      const project = this.findProjectForDocument(docUriAsString)
+      return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
+    }
+    let isExcluded = this.excludedDocuments.get(document)
+    if (isExcluded === undefined) {
+      isExcluded = this.checkIfExcluded(document.uri)
+      this.excludedDocuments.set(document, isExcluded)
+    }
+    return isExcluded
   }
 
   /**
@@ -325,10 +335,10 @@ export class ProjectsManager {
         }
       }
       this.resetProjectIds()
-      logger.info('reloading documents')
-      const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
-      await this.services.workspace.DocumentBuilder.update(docs, [], cancelToken)
     })
+    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
+    logger.info('invalidate and rebuild documents {docs}', { docs: docs.length })
+    await this.services.workspace.DocumentBuilder.update(docs, [])
   }
 
   protected uniqueProjectId(name: string): ProjectId {
@@ -342,6 +352,7 @@ export class ProjectsManager {
 
   protected resetProjectIds(): void {
     this.mappingsToProject.clear()
+    this.excludedDocuments = new WeakMap()
     this.services.workspace.LangiumDocuments.resetProjectIds()
   }
 

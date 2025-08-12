@@ -6,12 +6,15 @@ import {
   executeCommand,
   nextTick,
   onDeactivate,
+  ref,
   shallowRef,
   toValue,
   tryOnScopeDispose,
   useActiveTextEditor,
   useCommand,
   useDisposable,
+  useEvent,
+  useFsWatcher,
   useVisibleTextEditors,
   watch,
 } from 'reactive-vscode'
@@ -279,6 +282,30 @@ function activateLc() {
     layoutDiagnosticsCollection.clear()
     layoutDiagnosticsCollection.set(diagnostic)
   })
+
+  useCommand(commands.reloadProjects, async () => {
+    sendTelemetryAboutCommand(commands.reloadProjects)
+    try {
+      await rpc.reloadProjects()
+    } catch (e) {
+      logWarn(e)
+    }
+  })
+
+  const patterns = ref(['**/.likec4rc', '**/likec4.config.json'])
+  const fsWatcher = useFsWatcher(patterns)
+  useEvent(fsWatcher.onDidChange, [(uri) => {
+    logger.debug(`Config file changed: ${uri}`)
+    rpc.reloadProjects()
+  }])
+  useEvent(fsWatcher.onDidCreate, [(uri) => {
+    logger.debug(`Config file created: ${uri}`)
+    rpc.reloadProjects()
+  }])
+  useEvent(fsWatcher.onDidDelete, [(uri) => {
+    logger.debug(`Config file deleted: ${uri}`)
+    rpc.reloadProjects()
+  }])
 }
 
 function convertSeverity(severity: lcDiagnosticSeverity): vscode.DiagnosticSeverity {

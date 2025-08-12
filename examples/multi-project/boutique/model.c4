@@ -29,6 +29,7 @@ model {
       | check 1    | ✅  |
       | check 2    | ⛔️  |
       | check 3    | ✅  |
+
     '''
 
     email = service 'Email Service' {
@@ -46,6 +47,7 @@ model {
       icon tech:nodejs
       description '''
         **Retrieves** user cart, **prepares** order and **orchestrates** payments, shipping and the email notifications.
+
       '''
       link https://github.com/likec4/template 'Repository'
       metadata {
@@ -67,7 +69,9 @@ model {
       #teamA
       icon tech:nodejs
       description '''
-        Stores the items in the user\'s shopping cart in [Redis](https://redis.io/) and retrieves it.
+        __Stores__ the items in the user\'s
+        shopping cart in [Redis](https://redis.io/) and retrieves it.
+
       '''
 
       api = component 'Cart API' {

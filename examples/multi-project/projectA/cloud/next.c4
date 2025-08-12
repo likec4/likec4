@@ -59,6 +59,11 @@ model {
 
     backend -> aurora.tblUsers 'reads/writes' {
       navigateTo cloud-to-amazon
+      description '''
+        # Reads/writes users table.
+        [deprecated, moving to Aurora]
+
+      '''
     }
     backend -> cloud.legacy.backend.services 'calls legacy'
 

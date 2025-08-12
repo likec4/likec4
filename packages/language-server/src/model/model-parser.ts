@@ -47,6 +47,9 @@ export class LikeC4ModelParser {
       DocumentState.Linked,
       doc => {
         try {
+          if (services.shared.workspace.ProjectsManager.checkIfExcluded(doc)) {
+            return
+          }
           if (!isLikeC4Builtin(doc.uri)) {
             this.cachedParsers.set(doc, this.createParser(doc))
           }
