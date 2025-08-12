@@ -146,10 +146,11 @@ export function LikeC4VitePlugin({
       for (const module of projectVirtuals) {
         const projectId = module.matches(id)
         if (projectId) {
+          const project = likec4.project(projectId)
           return await module.load({
             logger,
             likec4,
-            projectId: projectId as ProjectId,
+            project,
             assetsDir,
             useOverviewGraph,
           })
@@ -157,17 +158,13 @@ export function LikeC4VitePlugin({
       }
       for (const module of virtuals) {
         if (module.virtualId === id) {
-          const projects = (await likec4.projects()).map(p => ({
-            id: p.id,
-            title: p.config.title ?? p.id,
-            folder: p.folder,
-          }))
+          const projects = likec4.projects()
           invariant(isNonEmptyArray(projects))
 
           return await module.load({
             logger,
             likec4,
-            projects: projects,
+            projects,
             assetsDir,
             useOverviewGraph,
           })

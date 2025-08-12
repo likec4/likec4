@@ -1,4 +1,4 @@
-import type { NonEmptyArray, ProjectId } from '@likec4/core'
+import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { URI } from 'langium'
 import k from 'tinyrainbow'
@@ -13,11 +13,11 @@ export interface VirtualModule {
   load(opts: {
     logger: ViteLogger
     likec4: LikeC4LanguageServices
-    projects: NonEmptyArray<{
-      id: ProjectId
-      title: string
-      folder: URI
-    }>
+    projects: NonEmptyArray<
+      LikeC4Project & {
+        folder: URI
+      }
+    >
     assetsDir: string
     useOverviewGraph?: boolean
   }): Promise<string>
@@ -32,7 +32,9 @@ export interface ProjectVirtualModule {
   load(opts: {
     logger: ViteLogger
     likec4: LikeC4LanguageServices
-    projectId: ProjectId
+    project: LikeC4Project & {
+      folder: URI
+    }
     assetsDir: string
     useOverviewGraph?: boolean
   }): Promise<string>
@@ -66,14 +68,18 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
       logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
         const pkg = joinURL(`likec4:${moduleId}`, id)
-        return `    case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
+        return `    case ${JSON.stringify(id)}: return async () => await import(${JSON.stringify(pkg)});`
       })
       return `
-export async function ${fnName}(projectId) {
+function ${fnName}Fn(projectId) {
   switch (projectId) {
     ${cases.join('\n')}
     default: throw new Error('Unknown projectId: ' + projectId)
   }
+}      
+export async function ${fnName}(projectId) {
+  const fn = ${fnName}Fn(projectId)
+  return await fn()
 }
     `
     },

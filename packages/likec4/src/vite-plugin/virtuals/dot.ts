@@ -83,9 +83,9 @@ function code(
 
 export const projectDotSourcesModule = {
   ...generateMatches('dot'),
-  async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating likec4:dot/${projectId}`))
-    const views = await likec4.views.viewsAsGraphvizOut(projectId)
+  async load({ likec4, project, logger }) {
+    logger.info(k.dim(`generating likec4:dot/${project.id}`))
+    const views = await likec4.views.viewsAsGraphvizOut(project.id)
     const sources = mapToObj(views, ({ id, svg, dot }) => [id, { dot, svg }])
     return code(sources)
   },

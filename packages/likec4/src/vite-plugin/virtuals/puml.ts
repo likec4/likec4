@@ -48,9 +48,9 @@ function code(model: LikeC4Model.Computed) {
 
 export const projectPumlModule = {
   ...generateMatches('puml'),
-  async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating likec4:puml/${projectId}`))
-    const model = await likec4.computedModel(projectId)
+  async load({ likec4, project, logger }) {
+    logger.info(k.dim(`generating likec4:puml/${project.id}`))
+    const model = await likec4.computedModel(project.id)
     return code(model)
   },
 } satisfies ProjectVirtualModule

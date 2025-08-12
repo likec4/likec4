@@ -48,9 +48,9 @@ function code(model: LikeC4Model.Computed) {
 
 export const projectD2Module = {
   ...generateMatches('d2'),
-  async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating likec4:d2/${projectId}`))
-    const model = await likec4.computedModel(projectId)
+  async load({ likec4, project, logger }) {
+    logger.info(k.dim(`generating likec4:d2/${project.id}`))
+    const model = await likec4.computedModel(project.id)
     return code(model)
   },
 } satisfies ProjectVirtualModule

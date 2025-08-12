@@ -58,9 +58,9 @@ export function IconRenderer({ node }) {
 
 export const projectIconsModule = {
   ...generateMatches('icons'),
-  async load({ likec4, projectId, logger }) {
-    logger.info(k.dim(`generating likec4:icons/${projectId}`))
-    const views = await likec4.views.computedViews(projectId)
+  async load({ likec4, project, logger }) {
+    logger.info(k.dim(`generating likec4:icons/${project.id}`))
+    const views = await likec4.views.computedViews(project.id)
     return code(views)
   },
 } satisfies ProjectVirtualModule
