@@ -12,7 +12,8 @@ import type {
   ViewId,
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver'
-import type { DiagnosticSeverity, DocumentUri, Location, Position, Range } from 'vscode-languageserver-types'
+import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
+import type { ProjectConfig } from './config'
 
 export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
@@ -146,14 +147,30 @@ export namespace ValidateLayout {
 }
 
 /**
- * Request to build documents.
+ * Request to reload projects.
+ */
+export namespace ReloadProjects {
+  export type Params = never
+
+  export type Res = void
+
+  export const req = new RequestType0<Res, void>('likec4/reload-projects')
+  export type Req = typeof req
+}
+
+/**
+ * Fetch all non-empty projects.
  */
 export namespace FetchProjects {
   export type Params = never
 
   export type Res = {
     projects: {
-      [projectId: ProjectId]: NonEmptyArray<DocumentUri>
+      [projectId: ProjectId]: {
+        folder: URI
+        config: ProjectConfig
+        docs: NonEmptyArray<DocumentUri>
+      }
     }
   }
 

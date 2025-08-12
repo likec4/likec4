@@ -204,6 +204,10 @@
           "when": "likec4.activated"
         },
         {
+          "command": "likec4.reload-projects",
+          "when": "likec4.activated"
+        },
+        {
           "command": "likec4.validate-layout",
           "when": "webviewId == \"likec4-preview\""
         }
@@ -218,6 +222,11 @@
       {
         "command": "likec4.restart",
         "title": "%ext.cmd.restart%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.reload-projects",
+        "title": "%ext.cmd.reload-projects%",
         "category": "%ext.title%"
       },
       {

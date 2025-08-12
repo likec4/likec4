@@ -4,6 +4,7 @@ import { IconRenderer } from '@likec4/icons/all'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
+import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
 import {
   changeViewId,
@@ -140,6 +141,12 @@ function Initialized() {
             setLastClickedNode()
             event.stopPropagation()
             event.preventDefault()
+          }}
+          onEdgeClick={(edge) => {
+            const relationId = only(edge.relations)
+            if (relationId) {
+              extensionApi.locate({ relation: relationId })
+            }
           }}
           onEdgeContextMenu={(edge, event) => {
             setLastClickedNode()

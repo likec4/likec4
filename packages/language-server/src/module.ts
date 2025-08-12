@@ -56,7 +56,7 @@ import {
   NodeKindProvider,
   WorkspaceSymbolProvider,
 } from './shared'
-import { registerValidationChecks } from './validation'
+import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
 import { type LikeC4Views, DefaultLikeC4Views } from './views'
 import {
   AstNodeDescriptionProvider,
@@ -108,6 +108,9 @@ export interface LikeC4AddedServices {
     DocumentationProvider: LikeC4DocumentationProvider
   }
   ValidatedWorkspaceCache: WorkspaceCache<string, any>
+  validation: {
+    DocumentValidator: LikeC4DocumentValidator
+  }
   Rpc: Rpc
   mcp: {
     Server: LikeC4MCPServer
@@ -154,6 +157,9 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
   documentation: {
     DocumentationProvider: bind(LikeC4DocumentationProvider),
+  },
+  validation: {
+    DocumentValidator: bind(LikeC4DocumentValidator),
   },
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),

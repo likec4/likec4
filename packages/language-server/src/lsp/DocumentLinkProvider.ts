@@ -17,7 +17,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     _params: DocumentLinkParams,
     cancelToken?: CancellationToken,
   ): Promise<DocumentLink[]> {
-    if (!isLikeC4LangiumDocument(doc)) {
+    if (!isLikeC4LangiumDocument(doc) || this.services.likec4.LanguageServices.isExcluded(doc)) {
       return []
     }
     return AstUtils.streamAllContents(doc.parseResult.value)
@@ -48,7 +48,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (isRelative(link)) {
       return joinRelativeURL(doc.uri.toString(), '../', link)
     }
-    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folder
+    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri
     return joinRelativeURL(base.toString(), link)
   }
 
@@ -57,7 +57,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return withoutLeadingSlash(link)
     }
     if (isRelative(link)) {
-      const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folder.toString()
+      const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
       const docURL = new URL(doc.uri.toString())
       const linkURL = new URL(link, docURL).toString()
       return withoutLeadingSlash(
