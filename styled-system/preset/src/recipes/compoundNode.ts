@@ -61,7 +61,7 @@ export const compoundNode = defineRecipe({
         _light: 'color-mix(in srgb, var(--likec4-palette-stroke) 70%, var(--likec4-palette-hiContrast))',
         _dark: 'color-mix(in srgb, var(--likec4-palette-stroke) 40%, var(--likec4-palette-loContrast))',
       },
-      [borderWidth.var]: '4px',
+      [borderWidth.var]: '3px',
       [borderRadius.var]: '{radii.md}',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
@@ -104,10 +104,7 @@ export const compoundNode = defineRecipe({
         },
       },
       [`&:has(.likec4-compound-navigation) .likec4-compound-title-container`]: {
-        paddingLeft: '[22px]',
-      },
-      [`&:is([data-likec4-hovered="true"]) .action-btn`]: {
-        opacity: 0.75,
+        paddingLeft: '[24px]',
       },
     },
     titleContainer: {
@@ -115,8 +112,8 @@ export const compoundNode = defineRecipe({
       display: 'flex',
       alignItems: 'center',
       gap: '1.5', // 6px
-      left: '[14px]',
-      top: '1',
+      left: '2.5',
+      top: '0.5',
       right: '[30px]',
       width: 'auto',
       minHeight: '30px',
@@ -131,7 +128,7 @@ export const compoundNode = defineRecipe({
       fontWeight: 600,
       fontSize: '15px',
       textTransform: 'uppercase',
-      letterSpacing: '0.2px',
+      letterSpacing: '0.25px',
       lineHeight: '1',
       color: compoundColor.ref,
     },
@@ -170,6 +167,7 @@ export const compoundNode = defineRecipe({
       '--actionbtn-color-hovered-btn': `color-mix(in srgb, ${compoundColor.ref} 80%, #fff)`,
       opacity: {
         base: 0.6,
+        _whenHovered: 0.75,
         _hover: 1,
       },
       _noReduceGraphics: {
@@ -178,8 +176,8 @@ export const compoundNode = defineRecipe({
     },
     navigationBtn: {
       position: 'absolute',
-      top: '[5px]',
-      left: '1',
+      top: '0.5',
+      left: '0.5',
       _smallZoom: {
         display: 'none',
       },
@@ -198,7 +196,7 @@ export const compoundNode = defineRecipe({
       false: parts({
         root: {
           boxShadow: {
-            _noReduceGraphics: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
+            _noReduceGraphics: '0 4px 10px 0.5px rgb(0 0 0/10%) , 0 2px 2px -1px rgb(0 0 0/40%)',
             _whenSelected: 'none',
             _whenPanning: 'none !important',
           },
