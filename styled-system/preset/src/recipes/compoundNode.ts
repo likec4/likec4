@@ -58,11 +58,11 @@ export const compoundNode = defineRecipe({
       borderRadius: borderRadius.ref,
       boxSizing: 'border-box',
       ['--likec4-palette-outline']: {
-        _light: 'color-mix(in srgb, var(--likec4-palette-stroke) 70%, var(--likec4-palette-hiContrast))',
-        _dark: 'color-mix(in srgb, var(--likec4-palette-stroke) 40%, var(--likec4-palette-loContrast))',
+        _light: 'color-mix(in srgb, var(--likec4-palette-stroke) 80%, var(--likec4-palette-hiContrast))',
+        _dark: 'color-mix(in srgb, var(--likec4-palette-stroke) 60%, var(--likec4-palette-hiContrast))',
       },
       [borderWidth.var]: '3px',
-      [borderRadius.var]: '{radii.md}',
+      [borderRadius.var]: '6px',
       [compoundTransparency.var]: '100%',
       [borderTransparency.var]: '100%',
       [indicatorSpacing.var]: `calc(${borderWidth.ref} + 2px)`,
@@ -77,30 +77,21 @@ export const compoundNode = defineRecipe({
         width: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
         height: `[calc(100% + 2 * ${indicatorSpacing.ref})]`,
         borderStyle: 'solid',
-        borderWidth: borderWidth.ref,
-        borderRadius: `calc(${borderRadius.ref} + 2px)`,
+        borderWidth: `calc(${borderWidth.ref} + 1px)`,
+        borderRadius: `calc(${borderRadius.ref} + 4px)`,
         borderColor: 'var(--likec4-palette-outline)',
         pointerEvents: 'none',
-        display: 'none',
-      },
-      _whenFocused: {
-        _after: {
-          display: 'block',
-          animationStyle: 'indicatorOpacity',
+        display: {
+          base: 'none',
+          _whenFocused: 'block',
+          _whenSelected: 'block',
         },
-      },
-      _whenSelected: {
-        _after: {
-          display: 'block',
-          animationStyle: 'indicatorOpacity',
-        },
-        [`& .action-btn`]: {
-          opacity: 0.75,
-        },
-      },
-      _whenPanning: {
-        _after: {
-          animationPlayState: 'paused',
+        animationStyle: 'indicatorOpacity',
+        animationPlayState: {
+          base: 'paused',
+          _whenFocused: 'running',
+          _whenSelected: 'running',
+          _whenPanning: 'paused',
         },
       },
       [`&:has(.likec4-compound-navigation) .likec4-compound-title-container`]: {
@@ -168,6 +159,7 @@ export const compoundNode = defineRecipe({
       opacity: {
         base: 0.6,
         _whenHovered: 0.75,
+        _whenSelected: 0.75,
         _hover: 1,
       },
       _noReduceGraphics: {
@@ -176,7 +168,7 @@ export const compoundNode = defineRecipe({
     },
     navigationBtn: {
       position: 'absolute',
-      top: '0.5',
+      top: '1',
       left: '0.5',
       _smallZoom: {
         display: 'none',
@@ -258,10 +250,6 @@ export const compoundNode = defineRecipe({
           borderColor: 'transparent!',
           backgroundClip: 'border-box!',
           [indicatorSpacing.var]: `calc(${borderWidth.ref} * 2)`,
-          _after: {
-            borderWidth: `calc(${borderWidth.ref} + 1px)`,
-            borderRadius: `calc(${borderRadius.ref} + 2px)`,
-          },
         },
       }),
     },
