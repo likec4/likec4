@@ -887,7 +887,7 @@ const _diagramMachine = setup({
               }),
               target: 'focused',
             },
-            'xyflow.edgeClick': [{
+            'xyflow.edgeClick': {
               guard: and([
                 'is dynamic view',
                 'click: selected edge',
@@ -896,17 +896,7 @@ const _diagramMachine = setup({
                 type: 'walkthrough.start',
                 stepId: event.edge.id as StepEdgeId,
               })),
-            }, {
-              guard: and([
-                'enabled: RelationshipDetails',
-                'click: selected edge',
-              ]) as any,
-              actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
-                type: 'open.relationshipDetails',
-                viewId: context.view.id,
-                edgeId: event.edge.id as EdgeId,
-              })),
-            }],
+            },
           },
         },
         focused: {

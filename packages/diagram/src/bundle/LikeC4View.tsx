@@ -140,7 +140,10 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
             controls={controls}
             nodesDraggable={false}
             reduceGraphics={reduceGraphics}
-            className={cx(isBrowserEnabled && cssInteractive)}
+            className={cx(
+              'likec4-static-view',
+              isBrowserEnabled && cssInteractive,
+            )}
             // We may have multiple embedded views on the same page
             // so we don't want enable search and hotkeys
             enableSearch={false}

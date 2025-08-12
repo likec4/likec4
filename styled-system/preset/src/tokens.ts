@@ -167,22 +167,19 @@ export const tokens = defineTokens({
   shadows: {
     none: { value: 'none' },
     xs: {
-      value: '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)',
+      value: '0 1px 3px rgb(0 0 0/5%), 0 1px 2px rgb(0 0 0/10%)',
     },
     sm: {
-      value: '0 1px 3px rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 10px 15px -5px, rgba(0, 0, 0, 0.04) 0 7px 7px -5px',
+      value: '0 1px 3px rgb(0 0 0/5%), 0 10px 15px -5px rgb(0 0 0/5%), 0 7px 7px -5px rgb(0 0 0/4%)',
     },
     md: {
-      value:
-        '0 1px 3px rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 20px 25px -5px, rgba(0, 0, 0, 0.04) 0 10px 10px -5px',
+      value: '0 1px 3px rgb(0 0 0/5%), 0 20px 25px -5px rgb(0 0 0/5%), 0 10px 10px -5px rgb(0 0 0/4%)',
     },
     lg: {
-      value:
-        '0 1px 3px rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 28px 23px -7px, rgba(0, 0, 0, 0.04) 0 12px 12px -7px',
+      value: '0 1px 3px rgb(0 0 0/5%), 0 28px 23px -7px rgb(0 0 0/5%), 0 12px 12px -7px rgb(0 0 0/4%)',
     },
     xl: {
-      value:
-        '0 1px 3px rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 36px 28px -7px, rgba(0, 0, 0, 0.04) 0 17px 17px -7px',
+      value: '0 1px 3px rgb(0 0 0/5%), 0 36px 28px -7px rgb(0 0 0/5%), 0 17px 17px -7px rgb(0 0 0/4%)',
     },
   },
 })

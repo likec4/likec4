@@ -1,12 +1,11 @@
 import type { DiagramEdge } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import { type HTMLAttributes } from 'react'
 import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
-import { edgeLabelContainer } from './EdgeLabel.css'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -70,7 +69,12 @@ export function EdgeLabelContainer({
       <div
         key={id}
         className={cx(
-          edgeLabelContainer,
+          css({
+            display: {
+              _reduceGraphicsOnPan: 'none',
+              _smallZoom: 'none',
+            },
+          }),
           'nodrag nopan',
           'likec4-edge-label-container',
           className,

@@ -55,22 +55,6 @@ export class LikeC4View extends HTMLElement {
     this.hostCss = undefined
   }
 
-  // protected get view(): DiagramView {
-  //   const viewId = this.getAttribute('view-id') ?? 'index'
-  //   let view = LikeC4Views[viewId as LikeC4ViewId]
-  //   if (view) {
-  //     return view
-  //   }
-
-  //   console.error(`Invalid view id: ${viewId},\nAvailable: ${Object.keys(LikeC4Views).join(', ')}`)
-  //   view = LikeC4Views['index' as LikeC4ViewId] ?? Object.values(LikeC4Views)[0]
-  //   invariant(view, `Empty LikeC4Views`)
-  //   console.warn(`LikeC4: Falling back to view: ${view.id}`)
-  //   const fallbackViewId = view.id
-  //   setTimeout(() => this.setAttribute('view-id', fallbackViewId), 50)
-  //   return view
-  // }
-
   protected render() {
     const viewId = this.getAttribute('view-id') ?? 'index'
     const browserAttr = this.getAttribute('browser') ?? 'true'
@@ -86,12 +70,6 @@ export class LikeC4View extends HTMLElement {
       <ReactLikeC4View viewId={viewId} browser={browser} />,
     )
   }
-
-  // openBrowser(viewId?: ViewId) {
-  //   const fs = document.createElement(ComponentName.Browser)
-  //   fs.setAttribute('view-id', viewId ?? this.view.id)
-  //   document.body.appendChild(fs)
-  // }
 
   attributeChangedCallback(_name: string) {
     if (this.root) {

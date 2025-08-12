@@ -19,7 +19,7 @@ export type ElementTagProps = {
 } & Omit<BoxProps, 'children'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
-  ({ tag, cursor = 'default', className, ...props }, ref) => {
+  ({ tag, cursor, className, style, ...props }, ref) => {
     const spec = useTagSpecification(tag)
     return (
       <Box
@@ -32,7 +32,10 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
           className,
         )}
         {...props}
-        style={{ cursor }}
+        style={{
+          cursor,
+          ...style,
+        }}
       >
         <span>#</span>
         <span>{tag}</span>
@@ -129,7 +132,7 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
             data-likec4-tag={tag}
             className={css({
               layerStyle: 'likec4.tag',
-              flex: 1,
+              flex: '1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -162,9 +165,9 @@ export const ElementTags = memo(({ id, data: { tags, width, hovered = false } }:
             <ElementTag
               key={tag}
               tag={tag}
+              cursor="pointer"
               className={css({
                 userSelect: 'none',
-                cursor: 'pointer',
                 ...(zoomIsLargeEnough && {
                   fontSize: 'lg',
                   borderRadius: '[4px]',

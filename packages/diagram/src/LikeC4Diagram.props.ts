@@ -28,19 +28,19 @@ type ElementIconRendererProps = {
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
-export type OnNavigateTo<A extends Any> = (
+export type OnNavigateTo<A extends Any = Any> = (
   to: aux.ViewId<A>,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
   element?: DiagramNodeWithNavigate<A>,
 ) => void
 
-export type OnNodeClick<A extends Any> = (
+export type OnNodeClick<A extends Any = Any> = (
   node: DiagramNode<A>,
   event: ReactMouseEvent,
 ) => void
 
-export type OnEdgeClick<A extends Any> = (
+export type OnEdgeClick<A extends Any = Any> = (
   edge: DiagramEdge<A>,
   event: ReactMouseEvent,
 ) => void
@@ -106,7 +106,7 @@ export type ViewPadding = PaddingWithUnit | {
   y?: PaddingWithUnit
 }
 
-export interface LikeC4DiagramProperties<A extends aux.Any> {
+export interface LikeC4DiagramProperties<A extends Any = Any> {
   view: LayoutedView<A>
 
   className?: string | undefined
