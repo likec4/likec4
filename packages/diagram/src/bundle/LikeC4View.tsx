@@ -1,4 +1,4 @@
-import type { Any, aux, DiagramView } from '@likec4/core/types'
+import type { Any, aux, DiagramView, UnknownLayouted } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
@@ -15,7 +15,7 @@ import { ShadowRoot } from './ShadowRoot'
 import { cssInteractive, useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export function LikeC4View<A extends aux.Any = aux.UnknownLayouted>({
+export function LikeC4View<A extends Any = UnknownLayouted>({
   viewId,
   ...props
 }: LikeC4ViewProps<A>) {
@@ -44,10 +44,10 @@ const DEFAULT_BROWSER_PADDING: ViewPadding = {
   right: '16px',
 }
 
-type LikeC4ViewInnerProps<A extends aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
+type LikeC4ViewInnerProps<A extends Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
   view: DiagramView<A>
 }
-const LikeC4ViewInner = memo<LikeC4ViewInnerProps<aux.Any>>(({
+const LikeC4ViewInner = memo<LikeC4ViewInnerProps<Any>>(({
   view,
   className,
   pannable = false,

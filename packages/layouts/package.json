@@ -62,7 +62,7 @@
     "graphology": "^0.25.4",
     "graphology-types": "^0.24.8",
     "indent-string": "^5.0.0",
-    "khroma": "^2.1.0",
+    "khroma": "catalog:utils",
     "nano-spawn": "catalog:utils",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",

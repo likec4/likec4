@@ -93,7 +93,7 @@
     "d3-shape": "^3.2.0",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "khroma": "2.1.0",
+    "khroma": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",

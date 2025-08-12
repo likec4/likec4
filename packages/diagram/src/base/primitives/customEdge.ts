@@ -27,7 +27,7 @@ export const edgePropsEqual = <P extends Record<string, unknown> = Base.EdgeData
   && eq(prev.data, next.data)
 )
 
-export function customEdge<P extends Record<string, unknown> = Base.NodeData>(
+export function customEdge<P extends Record<string, unknown> = Base.EdgeData>(
   Edge: FunctionComponent<EdgeProps<P>>,
 ): FunctionComponent<EdgeProps<P>> {
   return memo(Edge, edgePropsEqual)

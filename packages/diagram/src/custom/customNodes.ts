@@ -1,7 +1,7 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
 import type { Any } from '@likec4/core/types'
-import { DEV } from 'esm-env'
-import type { FunctionComponent, ReactNode } from 'react'
+import type { FunctionComponent } from 'react'
+import { jsx } from 'react/jsx-runtime'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
 import type { Types } from '../likec4diagram/types'
@@ -11,28 +11,33 @@ type CustomDiagramNodeProps = {
   nodeProps: NodeProps<Types.NodeData, string>
   nodeModel: NodeModel
 }
-function customDiagramNode<P extends CustomDiagramNodeProps>(
+type CustomNodeComponent<P extends CustomDiagramNodeProps> = (
+  impl: FunctionComponent<P>,
+) => FunctionComponent<P['nodeProps']>
+
+function customDiagramNode<const P extends CustomDiagramNodeProps>(
   Node: FunctionComponent<P>,
-): (props: P['nodeProps']) => ReactNode {
-  return customNode((props: P['nodeProps']) => {
-    const viewModel = useLikeC4ViewModel(props.data.viewId)
+): FunctionComponent<P['nodeProps']> {
+  return customNode((props: NodeProps<Types.NodeData, string>) => {
+    // @ts-ignore because dts-bundler fails to infer types
+    const viewId = props.data.viewId
+    const viewModel = useLikeC4ViewModel(viewId)
     if (!viewModel) {
-      if (DEV) {
-        throw new Error(`View "${props.data.viewId}" not found, requested by customNode "${props.id}"`)
-      }
-      console.error(`View "${props.data.viewId}" not found in likec4model`, { props })
+      console.error(`View "${viewId}" not found, requested by customNode "${props.data.id}"`, { props })
       return null
     }
-    const model = viewModel.node(props.id)
-    // @ts-ignore
-    return <Node nodeProps={props} nodeModel={model} />
-  })
+    const model = viewModel.findNode(props.data.id)
+    if (!model) {
+      console.error(
+        `Node "${props.id}" not found in view "${viewId}", requested by customNode "${props.data.id}"`,
+        { props },
+      )
+      return null
+    }
+    return jsx(Node, { nodeProps: props, nodeModel: model })
+  }) as any
 }
 
-export type CustomElementNodeProps<M extends Any = Any> = {
-  nodeProps: NodeProps<Types.ElementNodeData, 'element'>
-  nodeModel: NodeModel.WithElement<M>
-}
 /**
  * Node that will be used to render the element from the model.
  * It is a leaf node, i.e. it does not have children.
@@ -86,12 +91,12 @@ export type CustomElementNodeProps<M extends Any = Any> = {
  * ))
  * ```
  */
-export const elementNode = customDiagramNode<CustomElementNodeProps>
-
-export type CustomDeploymentNodeProps<M extends Any = Any> = {
-  nodeProps: NodeProps<Types.DeploymentElementNodeData, 'deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M>
+export const elementNode: CustomNodeComponent<CustomElementNodeProps> = customDiagramNode as any
+export type CustomElementNodeProps = {
+  nodeProps: NodeProps<Types.ElementNodeData, 'element'>
+  nodeModel: NodeModel.WithElement<Any>
 }
+
 /**
  * Node that will be used to render the element from deployment model.
  * It is a leaf node, i.e. it does not have children.
@@ -140,12 +145,12 @@ export type CustomDeploymentNodeProps<M extends Any = Any> = {
  * ))
  * ```
  */
-export const deploymentNode = customDiagramNode<CustomDeploymentNodeProps>
-
-export type CustomCompoundElementNodeProps<M extends Any = Any> = {
-  nodeProps: NodeProps<Types.CompoundElementNodeData, 'compound-element'>
-  nodeModel: NodeModel.WithElement<M>
+export const deploymentNode: CustomNodeComponent<CustomDeploymentNodeProps> = customDiagramNode as any
+export type CustomDeploymentNodeProps = {
+  nodeProps: NodeProps<Types.DeploymentElementNodeData, 'deployment'>
+  nodeModel: NodeModel.WithDeploymentElement<Any>
 }
+
 /**
  * Node that will be used to render the compound element from the model.
  * It is a container node, i.e. it has children.
@@ -184,12 +189,12 @@ export type CustomCompoundElementNodeProps<M extends Any = Any> = {
  * ))
  * ```
  */
-export const compoundElementNode = customDiagramNode<CustomCompoundElementNodeProps>
-
-export type CustomCompoundDeploymentNodeProps<M extends Any = Any> = {
-  nodeProps: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>
-  nodeModel: NodeModel.WithDeploymentElement<M>
+export const compoundElementNode: CustomNodeComponent<CustomCompoundElementNodeProps> = customDiagramNode as any
+export type CustomCompoundElementNodeProps = {
+  nodeProps: NodeProps<Types.CompoundElementNodeData, 'compound-element'>
+  nodeModel: NodeModel.WithElement<Any>
 }
+
 /**
  * Node that will be used to render the compound from the deployment model.
  * It is a container node, i.e. it has children.
@@ -222,12 +227,12 @@ export type CustomCompoundDeploymentNodeProps<M extends Any = Any> = {
  *   </CompoundNodeContainer>
  * ```
  */
-export const compoundDeploymentNode = customDiagramNode<CustomCompoundDeploymentNodeProps>
-
-export type CustomViewGroupNodeProps<M extends Any = Any> = {
-  nodeProps: NodeProps<Types.ViewGroupNodeData, 'view-group'>
-  nodeModel: NodeModel.IsGroup<M>
+export const compoundDeploymentNode: CustomNodeComponent<CustomCompoundDeploymentNodeProps> = customDiagramNode as any
+export type CustomCompoundDeploymentNodeProps = {
+  nodeProps: NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>
+  nodeModel: NodeModel.WithDeploymentElement<Any>
 }
+
 /**
  * Node that will be used to render the view group from the model.
  *
@@ -253,7 +258,11 @@ export type CustomViewGroupNodeProps<M extends Any = Any> = {
  *   </CompoundNodeContainer>
  * ```
  */
-export const viewGroupNode = customDiagramNode<CustomViewGroupNodeProps>
+export const viewGroupNode: CustomNodeComponent<CustomViewGroupNodeProps> = customDiagramNode as any
+export type CustomViewGroupNodeProps = {
+  nodeProps: NodeProps<Types.ViewGroupNodeData, 'view-group'>
+  nodeModel: NodeModel.IsGroup<Any>
+}
 
 export interface CustomNodes {
   element?: FunctionComponent<NodeProps<Types.ElementNodeData, 'element'>>
