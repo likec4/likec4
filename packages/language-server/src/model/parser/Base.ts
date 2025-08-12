@@ -107,7 +107,7 @@ export class BaseParser {
 
   get project(): {
     id: c4.ProjectId
-    folder: URI
+    folderUri: URI
     config: Readonly<ProjectConfig>
   } {
     return this.services.shared.workspace.ProjectsManager.getProject(this.doc)
@@ -236,7 +236,7 @@ export class BaseParser {
         return joinRelativeURL(this.doc.uri.toString(), '../', value) as c4.IconUrl
       }
       case value && hasLeadingSlash(value): {
-        return joinURL(this.project.folder.toString(), value) as c4.IconUrl
+        return joinURL(this.project.folderUri.toString(), value) as c4.IconUrl
       }
       default: {
         return undefined

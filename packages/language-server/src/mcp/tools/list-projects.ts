@@ -17,7 +17,7 @@ Returns array of projects with:
   outputSchema: {
     projects: z.array(z.object({
       name: z.string(),
-      title: z.string().optional(),
+      title: z.string(),
       folder: z.string(),
       sources: z.array(z.string()),
     })),
@@ -27,7 +27,7 @@ Returns array of projects with:
   return {
     projects: projects.map(p => ({
       name: p.id,
-      title: p.config?.title,
+      title: p.title,
       folder: p.folder.toString(),
       sources: p.documents?.map(d => d.toString()) ?? [],
     })),

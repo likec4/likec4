@@ -31,7 +31,7 @@ Searches for LikeC4 project by name in workspace and returns its summary:
     project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),
   },
   outputSchema: {
-    title: z.string().optional(),
+    title: z.string(),
     folder: z.string(),
     sources: z.array(z.string()),
     specification: z.object({
@@ -54,7 +54,7 @@ Searches for LikeC4 project by name in workspace and returns its summary:
   invariant(project, `Project "${projectId}" not found`)
   const model = await languageServices.computedModel(project.id)
   return {
-    title: project.config?.title,
+    title: project.title,
     folder: project.folder.toString(),
     sources: project.documents?.map(d => d.toString()) ?? [],
     specification: {
