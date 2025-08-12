@@ -1,7 +1,6 @@
 import { IconRendererProvider, LikeC4ProjectsProvider } from '@likec4/diagram'
 import { Box, Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
-import { ProjectIcons } from 'likec4:icons'
 import { loadModel } from 'likec4:model'
 import { projects } from 'likec4:projects'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -15,7 +14,10 @@ export const Route = createFileRoute('/project/$projectId')({
     if (!projects.some(project => project.id === params.projectId)) {
       throw notFound()
     }
-    const { $likec4data, $likec4model } = await loadModel(params.projectId)
+    const [{ $likec4data, $likec4model }, ProjectIcons] = await Promise.all([
+      loadModel(params.projectId),
+      import('likec4:icons').then((module) => module.ProjectIcons),
+    ])
     return {
       $likec4data,
       $likec4model,

@@ -40,6 +40,12 @@ export {
   useLikeC4Specification,
   useLikeC4ViewModel,
 } from '../likec4model/useLikeC4Model'
+export {
+  useHasProjects,
+  useLikeC4ProjectId,
+  useLikeC4Projects,
+  useLikeC4ProjectsContext,
+} from '../likec4model/useLikeC4Project'
 
 export { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 export { useSetState } from '../hooks/useSetState'

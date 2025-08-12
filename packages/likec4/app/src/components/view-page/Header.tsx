@@ -1,3 +1,4 @@
+import { useLikeC4Projects } from '@likec4/diagram'
 import {
   Button,
   Divider,
@@ -19,7 +20,6 @@ import {
   useParams,
   useParentMatches,
 } from '@tanstack/react-router'
-import { projects } from 'likec4:projects'
 import { memo } from 'react'
 import { useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
@@ -28,6 +28,7 @@ import { SelectProject } from './SelectProject'
 import { ShareModal } from './ShareModal'
 
 export const Header = memo(() => {
+  const projects = useLikeC4Projects()
   const isReactDiagramRoute = useMatches({
     select(matches) {
       return matches.some(({ routeId }) =>

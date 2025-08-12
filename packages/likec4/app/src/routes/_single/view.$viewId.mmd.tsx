@@ -2,7 +2,6 @@ import { Box, Burger, Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { loadMmdSources } from 'likec4:mmd'
-import { projects } from 'likec4:projects'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../../components/CopyToClipboard'
@@ -13,8 +12,8 @@ import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.
 export const Route = createFileRoute('/_single/view/$viewId/mmd')({
   component: ViewAsMmd,
   staleTime: Infinity,
-  loader: async ({ params }) => {
-    const projectId = projects[0].id
+  loader: async ({ params, context }) => {
+    const projectId = context.projectId
     const { viewId } = params
     try {
       const { mmdSource } = await loadMmdSources(projectId)

@@ -1,8 +1,8 @@
-import type { DiagramView } from '@likec4/core'
+import type { DiagramView } from '@likec4/core/types'
+import { useLikeC4Projects } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
 import { shallowEqual } from 'fast-equals'
-import { projects } from 'likec4:projects'
 import { useEffect, useState } from 'react'
 import { values } from 'remeda'
 import { useLikeC4ModelDataAtom } from './context/LikeC4ModelContext'
@@ -50,7 +50,7 @@ export function useCurrentDiagram(): DiagramView | null {
   const viewId = useCurrentViewId()
   const $likec4data = useLikeC4ModelDataAtom()
 
-  const [view, setView] = useState<DiagramView | null>($likec4data.value?.views[viewId] ?? null)
+  const [view, setView] = useState<DiagramView | null>(() => $likec4data.get().views[viewId] ?? null)
 
   useEffect(() => {
     return $likec4data.subscribe((next) => {
@@ -62,9 +62,10 @@ export function useCurrentDiagram(): DiagramView | null {
 }
 
 export function useCurrentProject() {
+  const projects = useLikeC4Projects()
   const projectId = useParams({
     select: (params) => params.projectId,
     strict: false,
   })
-  return (projects.find(p => p.id === projectId) ?? projects[0])
+  return (projects.find(p => p.id === projectId) ?? projects[0]!)
 }

@@ -1,10 +1,11 @@
+import { useLikeC4Projects } from '@likec4/diagram'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
-import { projects } from 'likec4:projects'
 import { useCurrentProject } from '../../hooks'
 
 export function SelectProject() {
+  const projects = useLikeC4Projects()
   const project = useCurrentProject()
 
   if (projects.length < 2) return null
