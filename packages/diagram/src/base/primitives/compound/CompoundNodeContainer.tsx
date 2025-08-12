@@ -37,15 +37,17 @@ export function CompoundNodeContainer({
     min: 0,
     max: 100,
   })
-  const borderOpacity = clamp(50 + opacity * 0.5, {
-    min: 50,
-    max: 100,
-  })
   const isTransparent = opacity < 99
+
+  const MIN_OPACITY = 65
+  const borderOpacity = MIN_OPACITY + clamp((100 - MIN_OPACITY) * (opacity / 100), {
+    min: 0,
+    max: 100 - MIN_OPACITY,
+  })
 
   const compoundClass = compoundNode({
     isTransparent,
-    inverseColor: opacity < 65,
+    inverseColor: opacity < 60,
     borderStyle: data.style.border ?? (isTransparent ? 'dashed' : 'none'),
   })
 
@@ -66,9 +68,6 @@ export function CompoundNodeContainer({
       data-compound-depth={depth}
       {...isDimmed !== false && {
         'data-likec4-dimmed': isDimmed,
-      }}
-      {...isTransparent && {
-        'data-compound-transparent': true,
       }}
       style={{
         ...style,
