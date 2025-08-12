@@ -1,6 +1,6 @@
 export * from './_common'
 
-export type * as aux from './_aux'
+export * as aux from './_aux'
 
 export type {
   Any,
@@ -37,6 +37,6 @@ export * from './view-parsed.deployment'
 export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
-export type * as scalar from './scalar'
+export * as scalar from './scalar'
 
 export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'

@@ -21,6 +21,7 @@ export {
   useDiagram,
   useDiagramActorRef,
   useDiagramContext,
+  useOnDiagramEvent,
 } from '../hooks/useDiagram'
 export {
   useXYFlow,

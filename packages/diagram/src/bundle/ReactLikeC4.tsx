@@ -1,4 +1,4 @@
-import type { Any, aux, DiagramView } from '@likec4/core/types'
+import type { Any, aux, DiagramView, UnknownLayouted } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'
@@ -8,7 +8,7 @@ import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export type ReactLikeC4Props<A extends aux.Any> = Omit<LikeC4DiagramProps<A>, 'view'> & {
+export type ReactLikeC4Props<A extends Any> = Omit<LikeC4DiagramProps<A>, 'view'> & {
   viewId: aux.ViewId<A>
 
   /**
@@ -41,7 +41,7 @@ export type ReactLikeC4Props<A extends aux.Any> = Omit<LikeC4DiagramProps<A>, 'v
   styleNonce?: string | (() => string) | undefined
 }
 
-export function ReactLikeC4<A extends aux.Any = aux.UnknownLayouted>({
+export function ReactLikeC4<A extends Any = UnknownLayouted>({
   viewId,
   ...props
 }: ReactLikeC4Props<A>) {

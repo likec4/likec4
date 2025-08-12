@@ -51,7 +51,7 @@
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",
     "@pandacss/dev": "catalog:css",
-    "khroma": "^2.1.0",
+    "khroma": "catalog:utils",
     "json5": "catalog:utils",
     "remeda": "catalog:utils",
     "typescript": "catalog:",

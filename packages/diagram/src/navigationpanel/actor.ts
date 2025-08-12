@@ -1,4 +1,4 @@
-import { ViewId } from '@likec4/core/types'
+import type { ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import {
   type ActorLogicFrom,
@@ -143,7 +143,7 @@ const _actorLogic = setup({
       assertEvent(event, 'select.view')
       return {
         type: 'navigateTo' as const,
-        viewId: ViewId(event.viewId),
+        viewId: event.viewId,
       }
     }),
   },
