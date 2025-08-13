@@ -125,10 +125,10 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     "@xstate/react": ^5.0.5
-    xstate: ^5.20.1
+    xstate: ^5.20.2
   xyflow:
-    "@xyflow/react": 12.8.2
-    "@xyflow/system": 0.0.66
+    "@xyflow/react": 12.8.3
+    "@xyflow/system": 0.0.67
 
 onlyBuiltDependencies:
   - dprint
