@@ -53,7 +53,7 @@ export function activateMessenger(
       return result
     } catch (err) {
       logger.warn(`request {req} failed after ${t0.pretty}`, { req: 'fetchComputedModel', err })
-      return { model: null }
+      throw err // propagate to client
     }
   }))
 
@@ -121,6 +121,7 @@ export function activateMessenger(
       await vscode.workspace.save(location.uri)
     } catch (error) {
       logger.error(`[Messenger] onChange error`, { error })
+      throw error // propagate to client
     }
   }))
 }

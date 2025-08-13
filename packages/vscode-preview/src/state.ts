@@ -166,11 +166,17 @@ function updateLikeC4ModelSource(next: ComputedLikeC4ModelData) {
 }
 
 async function fetchComputedModel() {
-  const { model } = await ExtensionApi.fetchComputedModel()
-  if (model) {
-    updateLikeC4ModelSource(model)
+  try {
+    const { model } = await ExtensionApi.fetchComputedModel()
+    if (model) {
+      updateLikeC4ModelSource(model)
+    }
+    return model
+  } catch (e: any) {
+    console.error(`[Messenger] onChange error`, { error: e })
+    $modelerror.set(e.message)
+    return null
   }
-  return model
 }
 messenger.onNotification(BroadcastModelUpdate, () => {
   fetchComputedModel()
@@ -233,9 +239,9 @@ onMount($viewstate, () => {
             },
           }))
           $modelerror.set(null)
-        } catch (e) {
+        } catch (e: any) {
           console.error('Error creating LikeC4Model', e)
-          $modelerror.set(e instanceof Error ? e.message : '' + e)
+          $modelerror.set(e.message)
         }
       }
     }),
@@ -273,11 +279,11 @@ async function fetchDiagramView(viewId: ViewId) {
       view: currentView && isDeepEqual(view, currentView) ? currentView : view,
       error: null,
     })
-  } catch (e) {
+  } catch (e: any) {
     $likeC4Diagrams.setKey(viewId, {
       state: 'error',
       view: $likeC4Diagrams.get()[viewId]?.view ?? null,
-      error: e instanceof Error ? e.message : '' + e,
+      error: e.message,
     })
   }
 }
