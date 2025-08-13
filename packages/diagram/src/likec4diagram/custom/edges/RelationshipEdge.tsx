@@ -19,15 +19,13 @@ import {
   EdgePath,
 } from '../../../base/primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
-import { useDiagram, useDiagramActorSnapshot } from '../../../hooks/useDiagram'
+import { useDiagram } from '../../../hooks/useDiagram'
 import { useIsPanning } from '../../../hooks/useReducedGraphics'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
-import type { DiagramActorSnapshot } from '../../../state/types'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
-import { NotePopover } from './NotePopover'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 
@@ -36,14 +34,12 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-const selectActiveStepId = (s: DiagramActorSnapshot) => s.context.activeWalkthrough?.stepId ?? null
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
   const isPanning = useIsPanning()
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
-  const activeWalkthroughStep = useDiagramActorSnapshot(selectActiveStepId)
   const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeatures()
   const {
     id,
@@ -321,14 +317,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   )
 
   if (!isControlPointDragging && !isPanning) {
-    const notes = props.data.notes
-    if (notes && activeWalkthroughStep === props.id) {
-      edgeLabel = (
-        <NotePopover notes={notes.txt ?? notes.md}>
-          {edgeLabel}
-        </NotePopover>
-      )
-    } else if (enableRelationshipDetails) {
+    if (enableRelationshipDetails) {
       edgeLabel = (
         <RelationshipsDropdownMenu
           disabled={!!dimmed}
