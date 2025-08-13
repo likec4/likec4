@@ -60,6 +60,25 @@ export function generateMatches(moduleId: string) {
   }
 }
 
+// Escape potentially dangerous characters for safe code generation
+const charMap: Record<string, string> = {
+  '<': '\\u003C',
+  '>': '\\u003E',
+  '/': '\\u002F',
+  '\\': '\\\\',
+  '\b': '\\b',
+  '\f': '\\f',
+  '\n': '\\n',
+  '\r': '\\r',
+  '\t': '\\t',
+  '\0': '\\0',
+  '\u2028': '\\u2028',
+  '\u2029': '\\u2029'
+}
+function escapeUnsafeChars(str: string): string {
+  return str.replace(/[<>\b\f\n\r\t\0\u2028\u2029]/g, x => charMap[x]!)
+}
+
 export function generateCombinedProjects(moduleId: string, fnName: string): VirtualModule {
   return {
     id: `likec4:${moduleId}`,
@@ -68,7 +87,7 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
       logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
         const pkg = joinURL(`likec4:${moduleId}`, id)
-        return `    case ${JSON.stringify(id)}: return async () => await import(${JSON.stringify(pkg)});`
+        return `    case ${JSON.stringify(id)}: return async () => await import(${escapeUnsafeChars(JSON.stringify(pkg))});`
       })
       return `
 function ${fnName}Fn(projectId) {
