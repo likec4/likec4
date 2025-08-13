@@ -61,7 +61,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
   "imports": {},
   "project": {
     "id": "default",
-    "name": "default",
+    "title": "default",
   },
   "projectId": "default",
   "relations": {
@@ -234,7 +234,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   "imports": {},
   "project": {
     "id": "default",
-    "name": "default",
+    "title": "default",
   },
   "projectId": "default",
   "relations": {
@@ -577,7 +577,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
   "imports": {},
   "project": {
     "id": "default",
-    "name": "default",
+    "title": "default",
   },
   "projectId": "default",
   "relations": {
@@ -724,7 +724,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
   "imports": {},
   "project": {
     "id": "default",
-    "name": "default",
+    "title": "default",
   },
   "projectId": "default",
   "relations": {
@@ -864,7 +864,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
   "imports": {},
   "project": {
     "id": "default",
-    "name": "default",
+    "title": "default",
   },
   "projectId": "default",
   "relations": {
