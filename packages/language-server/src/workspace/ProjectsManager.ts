@@ -1,9 +1,16 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
-import { BiMap, invariant, memoizeProp, nonNullable } from '@likec4/core'
+import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
-import type { Cancellation } from 'langium'
-import { type FileSystemNode, type LangiumDocument, interruptAndCheck, URI, WorkspaceCache } from 'langium'
+import {
+  type Cancellation,
+  type FileSystemNode,
+  type LangiumDocument,
+  interruptAndCheck,
+  URI,
+  WorkspaceCache,
+} from 'langium'
+import PQueue from 'p-queue'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, isTruthy, map, pickBy, pipe, prop, sortBy } from 'remeda'
 import type { Tagged } from 'type-fest'
@@ -84,6 +91,11 @@ export class ProjectsManager {
     },
     exclude: picomatch('**/node_modules/**', { dot: true }),
   }
+
+  private reloadProjectsLimiter = new PQueue({
+    concurrency: 1,
+    timeout: 20_000,
+  })
 
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
@@ -301,11 +313,24 @@ export class ProjectsManager {
   async reloadProjects(token?: Cancellation.CancellationToken): Promise<void> {
     const folders = this.services.workspace.WorkspaceManager.workspaceFolders
     if (!folders) {
-      logger.info('No workspace folders found')
+      logger.warn('No workspace folders found')
       return
     }
-    const mutex = this.services.workspace.WorkspaceLock
-    await mutex.write(async (cancelToken) => {
+    if (this.reloadProjectsLimiter.size + this.reloadProjectsLimiter.pending > 0) {
+      logger.debug`reload projects is already queued`
+      return
+    }
+    // this task debounces reload projects
+    this.reloadProjectsLimiter.add(async () => {
+      await delay(100)
+    })
+
+    // this task does the actual reload
+    this.reloadProjectsLimiter.add(async () => {
+      if (token) {
+        await interruptAndCheck(token)
+      }
+      logger.debug`reload projects`
       const configFiles = [] as FileSystemNode[]
       for (const folder of folders) {
         try {
@@ -314,9 +339,6 @@ export class ProjectsManager {
             if (this.isConfigFile(file)) {
               configFiles.push(file)
             }
-          }
-          if (token) {
-            await interruptAndCheck(token)
           }
         } catch (error) {
           logger.error('Failed to load config file', { error })
@@ -335,10 +357,11 @@ export class ProjectsManager {
         }
       }
       this.resetProjectIds()
+
+      const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
+      logger.info('invalidate and rebuild documents {docs}', { docs: docs.length })
+      await this.services.workspace.DocumentBuilder.update(docs, [])
     })
-    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
-    logger.info('invalidate and rebuild documents {docs}', { docs: docs.length })
-    await this.services.workspace.DocumentBuilder.update(docs, [])
   }
 
   protected uniqueProjectId(name: string): ProjectId {

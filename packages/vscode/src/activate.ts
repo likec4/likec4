@@ -6,14 +6,13 @@ import {
   executeCommand,
   nextTick,
   onDeactivate,
-  ref,
   shallowRef,
+  toRef,
   toValue,
   tryOnScopeDispose,
   useActiveTextEditor,
   useCommand,
   useDisposable,
-  useEvent,
   useFsWatcher,
   useVisibleTextEditors,
   watch,
@@ -292,20 +291,19 @@ function activateLc() {
     }
   })
 
-  const patterns = ref(['**/.likec4rc', '**/likec4.config.json'])
-  const fsWatcher = useFsWatcher(patterns)
-  useEvent(fsWatcher.onDidChange, [(uri) => {
+  const fsWatcher = useFsWatcher(toRef('**/{.likec4rc,.likec4.config.json,likec4.config.json}'))
+  fsWatcher.onDidChange((uri) => {
     logger.debug(`Config file changed: ${uri}`)
     rpc.reloadProjects()
-  }])
-  useEvent(fsWatcher.onDidCreate, [(uri) => {
+  })
+  fsWatcher.onDidCreate((uri) => {
     logger.debug(`Config file created: ${uri}`)
     rpc.reloadProjects()
-  }])
-  useEvent(fsWatcher.onDidDelete, [(uri) => {
+  })
+  fsWatcher.onDidDelete((uri) => {
     logger.debug(`Config file deleted: ${uri}`)
     rpc.reloadProjects()
-  }])
+  })
 }
 
 function convertSeverity(severity: lcDiagnosticSeverity): vscode.DiagnosticSeverity {
