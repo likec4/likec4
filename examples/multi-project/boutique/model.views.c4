@@ -19,7 +19,9 @@ views {
     description '''
       **E-commerce app** for browsing items, add them to the cart,
       and purchasing them.
-    '''
+  '''
+
+
     include
       *,
       customer with {
@@ -42,7 +44,8 @@ views {
     title 'Frontend'
     description '''
       Interactions of **Frontend**
-    '''
+  '''
+
     include
       *,
       boutique
@@ -61,7 +64,7 @@ views {
     description '''
       Retrieves **user cart**, prepares **order** and
       orchestrates **payments**, **shipping** and the **email notification**.
-    '''
+'''
     link https://github.com/likec4/template 'Repository'
     include
       *,
