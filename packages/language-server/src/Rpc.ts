@@ -133,9 +133,9 @@ export class Rpc extends ADisposable {
           }),
         }
       }),
-      connection.onRequest(ReloadProjects.req, async (_cancelToken) => {
+      connection.onRequest(ReloadProjects.req, async (cancelToken) => {
         logger.debug`received request ${'ReloadProjects'}`
-        await projects.reloadProjects(_cancelToken)
+        await projects.reloadProjects(cancelToken)
         return
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
