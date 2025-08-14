@@ -6,10 +6,12 @@ import { ExtensionApi } from './vscode'
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 200,
+      gcTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 500,
       retry: 2,
-      retryDelay: 200,
+      retryDelay: 300,
       networkMode: 'always',
+      experimental_prefetchInRender: true,
       structuralSharing(oldData, newData) {
         return isDeepEqual(oldData, newData) ? oldData : newData
       },

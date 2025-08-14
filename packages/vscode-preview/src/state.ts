@@ -6,7 +6,7 @@ import {
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { atom, batched } from 'nanostores'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { isDeepEqual } from 'remeda'
 import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
 import { queries, queryClient } from './queries'
@@ -108,7 +108,7 @@ const projectAndView = batched([$projectId, $viewId], (projectId, viewId) => ({ 
 
 export function useComputedModel() {
   const { projectId } = useStore(projectAndView)
-  const { data: model, error, isFetching } = useQuery({
+  const { data: model, error } = useQuery({
     ...queries.fetchComputedModel(projectId),
   })
 
@@ -119,16 +119,20 @@ export function useComputedModel() {
     saveVscodeState({ projectId: model.project.id, model })
   }, [model])
 
-  const likec4Model = useRef<LikeC4Model | null>(null)
-  if (model) {
-    likec4Model.current = LikeC4Model.create(model)
+  const likec4model = useMemo(() => {
+    return model ? LikeC4Model.create(model) : null
+  }, [model])
+
+  const likec4modelref = useRef(likec4model)
+  // Always keep last known model in ref
+  if (likec4model) {
+    likec4modelref.current = likec4model
   }
 
   return {
     model,
     error,
-    likec4Model: likec4Model.current,
-    isFetching,
+    likec4Model: likec4modelref.current,
   }
 }
 
@@ -137,14 +141,14 @@ export function useDiagramView() {
   const {
     data: view,
     error,
-    isFetching,
   } = useQuery({
     ...queries.fetchDiagramView(projectId, viewId),
   })
 
-  const prevView = useRef(view)
+  const viewRef = useRef(view)
+  // Always keep last known view in ref
   if (view) {
-    prevView.current = view
+    viewRef.current = view
   }
 
   useEffect(() => {
@@ -155,8 +159,7 @@ export function useDiagramView() {
   }, [view])
 
   return {
-    view: view ?? prevView.current,
+    view: viewRef.current,
     error,
-    isFetching,
   }
 }

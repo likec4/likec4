@@ -36,9 +36,9 @@ export const likec4ParsingScreen = css({
 
 export const stateAlert = css({
   position: 'fixed',
-  top: '[0.75rem]',
-  left: '[0.5rem]',
-  width: 'calc(100vw - 2rem)',
+  top: '2',
+  left: '2',
   minHeight: '200px',
   userSelect: 'none',
+  zIndex: 100,
 })

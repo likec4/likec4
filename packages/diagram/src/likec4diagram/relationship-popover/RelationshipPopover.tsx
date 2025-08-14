@@ -312,7 +312,7 @@ const RelationshipPopoverInternal = ({
           },
         }}
         className={cx(
-          'nowheel nopan nodrag',
+          'react-flow__panel nowheel nopan nodrag',
           css({
             layerStyle: 'likec4.dropdown',
             p: '0',

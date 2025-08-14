@@ -246,6 +246,7 @@ function writeHTMLToDiagramPreview(
   }
   panel.webview.options = {
     enableScripts: true,
+    enableCommandUris: true,
   }
   const nonce = getNonce()
 

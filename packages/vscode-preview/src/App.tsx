@@ -1,13 +1,10 @@
 import type { scalar } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { IconRenderer } from '@likec4/icons/all'
-import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { IconX } from '@tabler/icons-react'
-import { useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { Button } from '@mantine/core'
 import { only } from 'remeda'
-import { likec4Container, likec4ParsingScreen, stateAlert } from './App.css'
-import { QueryErrorBoundary } from './QueryErrorBoundary'
+import { likec4Container, likec4ParsingScreen } from './App.css'
+import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
 import {
   setLastClickedNode,
   useComputedModel,
@@ -16,45 +13,17 @@ import {
 } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 
-const ErrorMessage = ({ error }: { error: string | null }) => {
-  const { reset } = useQueryErrorResetBoundary()
-  return (
-    <Box className={stateAlert}>
-      <Notification
-        icon={<IconX style={{ width: 20, height: 20 }} />}
-        styles={{
-          icon: {
-            alignSelf: 'flex-start',
-          },
-        }}
-        color={'red'}
-        title={'Oops, something went wrong'}
-        withCloseButton={false}>
-        <Text
-          style={{
-            whiteSpace: 'preserve-breaks',
-          }}>
-          {error ?? 'Unknown error'}
-        </Text>
-        <Group gap={'xs'} mt="sm">
-          <Button color="gray" variant="light" onClick={() => reset()}>Refresh</Button>
-          <Button color="gray" variant="subtle" onClick={extensionApi.closeMe}>Close</Button>
-        </Group>
-      </Notification>
-    </Box>
-  )
-}
-
-export default function App() {
+export function App() {
   const { error, likec4Model } = useComputedModel()
 
   if (!likec4Model) {
+    if (error) {
+      return <ErrorMessage error={error} />
+    }
     return (
       <>
-        {error && <ErrorMessage error={error.message} />}
         <section>
           <p>Parsing your model...</p>
-          <Loader />
           <p>
             <Button color="gray" onClick={extensionApi.closeMe}>
               Close
@@ -67,7 +36,7 @@ export default function App() {
 
   return (
     <LikeC4ModelProvider likec4model={likec4Model}>
-      {error && <ErrorMessage error={error.message} />}
+      {error && <ErrorMessage error={error} />}
       <QueryErrorBoundary>
         <Initialized />
       </QueryErrorBoundary>
@@ -84,27 +53,26 @@ function Initialized() {
   const {
     view,
     error,
-    isFetching,
   } = useDiagramView()
-
-  // Debounce loading state to prevent flickering
-  const [isLoading] = useDebouncedValue(isFetching, 250)
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {error && <ErrorMessage error={error.message} />}
-        <Loader />
+        {error && <ErrorMessage error={error} />}
+        <section>
+          <p>Parsing your model...</p>
+          <p>
+            <Button color="gray" onClick={extensionApi.closeMe}>
+              Close
+            </Button>
+          </p>
+        </section>
       </div>
     )
   }
   return (
     <>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
           fitViewPadding={{
@@ -163,7 +131,7 @@ function Initialized() {
           }}
         />
       </div>
-      {error && <ErrorMessage error={error.message} />}
+      {error && <ErrorMessage error={error} />}
     </>
   )
 }
