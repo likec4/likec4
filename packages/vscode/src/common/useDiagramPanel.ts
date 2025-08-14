@@ -72,6 +72,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
     const participant = participantId.value = messenger.registerWebviewPanel(_panel, {
       broadcastMethods: [BroadcastModelUpdate.method],
     })
+
     watch([panelState.viewId, panelState.projectId], ([viewId, projectId]) => {
       if (!viewId) {
         logger.warn('Invalid state: viewId is empty in ensurePanel scope')
@@ -87,6 +88,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
         viewId,
       })
     })
+
     if (panelExists) {
       nextTick(() => {
         logger.debug`panel exists, sending OpenView notification`
@@ -97,6 +99,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
         })
       })
     }
+
     tryOnScopeDispose(() => {
       panelVisible.value = false
       participantId.value = null
@@ -182,7 +185,6 @@ export const useDiagramPanel = createSingletonComposable(() => {
         _panel.dispose()
         return
       }
-      logger.debug('deserialized state: {state}', { state: parsedState.output })
       close()
       panel.value = _panel
       panelState.viewId.value = parsedState.output.viewId as ViewId

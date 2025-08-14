@@ -2,9 +2,8 @@ import type { DiagramView, ViewId, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
@@ -130,25 +129,7 @@ function CurrentViewModelProvider({
   viewId: ViewId
 }>) {
   const likec4model = useLikeC4Model()
-  const [viewmodel, setViewmodel] = useState(() => likec4model.findView(viewId))
-
-  useEffect(() => {
-    setViewmodel(current => {
-      const nextviewmodel = likec4model.findView(viewId)
-      if (!nextviewmodel) {
-        console.error(`View "${viewId}" not found in likec4model, current viewmodel: ${current?.id}`, {
-          currentViewModel: current,
-          likec4model,
-        })
-        return current
-      }
-      if (DEV && !nextviewmodel.isDiagram()) {
-        console.warn(`View "${viewId}" is not diagram.\nMake sure you have LikeC4ModelProvider with layouted model.`)
-      }
-      return nextviewmodel
-    })
-  }, [likec4model, viewId])
-
+  const viewmodel = likec4model.findView(viewId)
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>
       {children}

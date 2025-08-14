@@ -1,5 +1,11 @@
-import { type DiagramView, type ProjectId, type ViewChange, type ViewId } from '@likec4/core'
-import { HOST_EXTENSION } from 'vscode-messenger-common'
+import {
+  type ComputedLikeC4ModelData,
+  type DiagramView,
+  type ProjectId,
+  type ViewChange,
+  type ViewId,
+} from '@likec4/core/types'
+import { CancellationTokenImpl, HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
 import { type LocateParams, FetchComputedModel, FetchDiagramView, WebviewMsgs } from '../protocol'
 
@@ -7,8 +13,10 @@ export type VscodeState = {
   viewId: ViewId
   projectId: ProjectId
   view: DiagramView | null
+  model: ComputedLikeC4ModelData | null
   nodesDraggable: boolean
   edgesEditable: boolean
+  updatedAt: number
 }
 const vscode = acquireVsCodeApi<VscodeState>()
 
@@ -29,10 +37,18 @@ export const ExtensionApi = {
     messenger.sendNotification(WebviewMsgs.OnChange, HOST_EXTENSION, { viewId, change })
   },
 
-  fetchComputedModel: () => messenger.sendRequest(FetchComputedModel, HOST_EXTENSION),
+  fetchComputedModel: async (signal: AbortSignal) => {
+    const cancellationToken = new CancellationTokenImpl()
+    signal.onabort = () => cancellationToken.cancel()
+    return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, undefined, cancellationToken)
+  },
 
   // Layoted vuew
-  fetchDiagramView: (viewId: ViewId) => messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId),
+  fetchDiagramView: async (viewId: ViewId, signal: AbortSignal) => {
+    const cancellationToken = new CancellationTokenImpl()
+    signal.onabort = () => cancellationToken.cancel()
+    return await messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId, cancellationToken)
+  },
 }
 
 export function getVscodeState(): VscodeState {
@@ -41,8 +57,10 @@ export function getVscodeState(): VscodeState {
     viewId: state?.viewId ?? __VIEW_ID as ViewId,
     projectId: state?.projectId ?? __PROJECT_ID as ProjectId,
     view: state?.view ?? null,
+    model: state?.model ?? null,
     nodesDraggable: state?.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
     edgesEditable: state?.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true,
+    updatedAt: state?.updatedAt ?? 0,
   }
 }
 
@@ -50,5 +68,6 @@ export const saveVscodeState = (state: Partial<VscodeState>) => {
   vscode.setState({
     ...getVscodeState(),
     ...state,
+    updatedAt: Date.now(),
   })
 }

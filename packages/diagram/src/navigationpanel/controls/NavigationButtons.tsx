@@ -17,11 +17,7 @@ export const NavigationButtons = () => {
     <m.div
       layout="position"
       className={hstack({
-        gap: '[1px]',
-        display: {
-          base: 'none',
-          '@likec4-root/sm': 'flex',
-        },
+        gap: '0.5',
       })}>
       <PanelActionIcon
         disabled={!hasStepBack}

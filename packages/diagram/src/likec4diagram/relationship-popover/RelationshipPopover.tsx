@@ -86,6 +86,10 @@ export const RelationshipPopover = memo(() => {
     actorRef.send({ type: 'close' })
   })
 
+  useOnDiagramEvent('walkthroughStarted', () => {
+    actorRef.send({ type: 'close' })
+  })
+
   useUpdateEffect(() => {
     if (selected) {
       actorRef.send({ type: 'xyedge.select', edgeId: selected })

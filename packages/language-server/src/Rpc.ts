@@ -56,14 +56,14 @@ export class Rpc extends ADisposable {
     const notifyModelParsed = funnel(
       () => {
         logger.debug`sendNotification ${'onDidChangeModel'}`
-        connection.sendNotification(DidChangeModelNotification.type, '').catch(e => {
-          logger.warn(`[ServerRpc] error sending onDidChangeModel: ${e}`)
-          return Promise.resolve()
+        connection.sendNotification(DidChangeModelNotification.type, '').catch(error => {
+          logger.warn(`[ServerRpc] error sending onDidChangeModel:`, { error })
+          return
         })
       },
       {
         triggerAt: 'end',
-        minQuietPeriodMs: 100,
+        minQuietPeriodMs: 150,
         maxBurstDurationMs: 500,
         minGapMs: 300,
       },
