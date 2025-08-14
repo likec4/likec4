@@ -87,11 +87,6 @@ export function EdgeLabelContainer({
           'data-likec4-dimmed': isDimmed,
         }}
         style={{
-          // top: toCssVarValue(labelY),
-          // left: toCssVarValue(labelX),
-          // ...(translate && {
-          //   [_translate.var]: translate,
-          // }),
           ...(labelBBox && {
             maxWidth: labelBBox.width + 18,
           }),
