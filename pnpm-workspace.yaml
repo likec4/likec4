@@ -72,7 +72,7 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
     "@tanstack/react-query": ^5.85.0
   utils:
-    "@hpcc-js/wasm-graphviz": 1.10.0
+    "@hpcc-js/wasm-graphviz": 1.11.0
     "@logtape/logtape": ^0.12.2
     "@types/chroma-js": ^3.1.1
     "@types/natural-compare-lite": ^1.4.2
