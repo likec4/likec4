@@ -52,7 +52,7 @@ catalogs:
     "@mantine/notifications": 8.2.2
     "@mantine/vanilla-extract": 8.2.2
   mcp:
-    "@modelcontextprotocol/sdk": ^1.13.2
+    "@modelcontextprotocol/sdk": ^1.17.2
   react:
     "@floating-ui/dom": ^1.7.3
     "@nanostores/react": 1.0.0
