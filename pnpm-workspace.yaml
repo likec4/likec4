@@ -20,8 +20,8 @@ catalogs:
     "@astrojs/check": ^0.9.4
     "@astrojs/react": 4.3.0
     "@astrojs/starlight": 0.34.4
-    "@expressive-code/plugin-collapsible-sections": ^0.41.2
-    "@expressive-code/plugin-line-numbers": ^0.41.2
+    "@expressive-code/plugin-collapsible-sections": ^0.41.3
+    "@expressive-code/plugin-line-numbers": ^0.41.3
     astro: 5.12.8
     astro-og-canvas: ^0.7.0
     shiki: ^3.6.0
