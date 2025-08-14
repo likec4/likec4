@@ -181,7 +181,7 @@
     "fast-equals": "catalog:utils",
     "fdir": "catalog:utils",
     "get-port": "^7.1.0",
-    "html-to-image": "^1.11.13",
+    "html-to-image": "1.11.11",
     "is-inside-container": "^1.0.0",
     "json5": "catalog:utils",
     "ky": "^1.8.1",
