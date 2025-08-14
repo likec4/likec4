@@ -1,7 +1,7 @@
+import { useLikeC4Projects } from '@likec4/diagram'
 import { Button, Container, Stack, Text } from '@mantine/core'
 import { useDocumentTitle } from '@mantine/hooks'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { projects } from 'likec4:projects'
 import { pageTitle } from '../const'
 
 export const Route = createFileRoute('/projects')({
@@ -9,6 +9,7 @@ export const Route = createFileRoute('/projects')({
 })
 
 function RouteComponent() {
+  const projects = useLikeC4Projects()
   useDocumentTitle(`Projects - ${pageTitle}`)
   return (
     <Container size={'xs'} py={'lg'}>

@@ -17,7 +17,7 @@ export type { CustomNodes, WhereOperator }
 
 export type DiagramNodeWithNavigate<A extends Any> = SetRequired<DiagramNode<A>, 'navigateTo'>
 
-type ElementIconRendererProps = {
+export type ElementIconRendererProps = {
   node: {
     id: string
     title: string

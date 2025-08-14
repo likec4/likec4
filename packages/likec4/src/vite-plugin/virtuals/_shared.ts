@@ -73,7 +73,7 @@ const charMap: Record<string, string> = {
   '\t': '\\t',
   '\0': '\\0',
   '\u2028': '\\u2028',
-  '\u2029': '\\u2029'
+  '\u2029': '\\u2029',
 }
 function escapeUnsafeChars(str: string): string {
   return str.replace(/[<>\b\f\n\r\t\0\u2028\u2029\\]/g, x => charMap[x]!)
@@ -86,19 +86,39 @@ export function generateCombinedProjects(moduleId: string, fnName: string): Virt
     async load({ likec4, logger, projects, assetsDir }) {
       logger.info(k.dim(`generating likec4:${moduleId}`))
       const cases = projects.map(({ id }) => {
-        const pkg = joinURL(`likec4:${moduleId}`, id)
-        return `    case ${JSON.stringify(id)}: return async () => await import(${escapeUnsafeChars(JSON.stringify(pkg))});`
+        const pkg = escapeUnsafeChars(
+          JSON.stringify(
+            joinURL(`likec4:${moduleId}`, id),
+          ),
+        )
+        return `  ${JSON.stringify(id)}: () => import(${pkg})`
+        // return `  ${JSON.stringify(id)}: () => ${pkg}`
       })
       return `
-function ${fnName}Fn(projectId) {
-  switch (projectId) {
-    ${cases.join('\n')}
-    default: throw new Error('Unknown projectId: ' + projectId)
-  }
+export let ${fnName}Fn = {
+${cases.join(',\n')}
 }      
+
 export async function ${fnName}(projectId) {
-  const fn = ${fnName}Fn(projectId)
+  const fn = ${fnName}Fn[projectId]
+  if (!fn) {
+    throw new Error('Unknown projectId: ' + projectId)
+  }
   return await fn()
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept(md => {
+    if (!import.meta.hot.data.$update) {
+      import.meta.hot.data.$update = ${fnName}Fn
+    }
+    const update = md.${fnName}Fn
+    if (update) {
+      Object.assign(import.meta.hot.data.$update, update)
+    } else {
+      import.meta.hot.invalidate()
+    }
+  })
 }
     `
     },

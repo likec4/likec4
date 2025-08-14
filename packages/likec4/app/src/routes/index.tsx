@@ -1,22 +1,20 @@
-import { createFileRoute, Navigate, redirect } from '@tanstack/react-router'
-import { isSingleProject } from 'likec4:projects'
+import { useLikeC4Projects } from '@likec4/diagram'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: () => {
-    if (!isSingleProject) {
-      throw redirect({
-        to: '/projects/',
-        replace: true,
-      })
+  component: () => {
+    const projects = useLikeC4Projects()
+    if (projects.length > 1) {
+      return <Navigate to="/projects/" replace />
     }
+    return (
+      <Navigate
+        to="/single-index/"
+        mask={{
+          to: '/',
+          unmaskOnReload: true,
+        }}
+      />
+    )
   },
-  component: () => (
-    <Navigate
-      to="/single-index/"
-      mask={{
-        to: '/',
-        unmaskOnReload: true,
-      }}
-    />
-  ),
 })

@@ -205,13 +205,22 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (!changed && !removed) {
       return false
     }
+    const _changed = changed ? URI.file(changed) : undefined
+    const _removed = removed ? URI.file(removed) : undefined
+
+    const pm = this.services.shared.workspace.ProjectsManager
+    if ((_changed && pm.isConfigFile(_changed)) || (_removed && pm.isConfigFile(_removed))) {
+      await pm.reloadProjects()
+      return true
+    }
+
     const mutex = this.services.shared.workspace.WorkspaceLock
     try {
       let completed = false
       await mutex.write(async token => {
         await this.services.shared.workspace.DocumentBuilder.update(
-          changed ? [URI.file(changed)] : [],
-          removed ? [URI.file(removed)] : [],
+          _changed ? [_changed] : [],
+          _removed ? [_removed] : [],
           token,
         )
         // we come here if only the update was successful, did not throw and not cancelled

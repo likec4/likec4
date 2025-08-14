@@ -1,27 +1,32 @@
-import { IconRendererProvider, LikeC4ProjectsProvider } from '@likec4/diagram'
+import type { ProjectId } from '@likec4/core/types'
 import { Box, Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
-import { loadModel } from 'likec4:model'
-import { projects } from 'likec4:projects'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
+import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
 import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import * as css from '../_single/view.css'
 
 export const Route = createFileRoute('/project/$projectId')({
   staleTime: Infinity,
-  loader: async ({ params }) => {
-    if (!projects.some(project => project.id === params.projectId)) {
-      throw notFound()
-    }
-    const [{ $likec4data, $likec4model }, ProjectIcons] = await Promise.all([
-      loadModel(params.projectId),
-      import('likec4:icons').then((module) => module.ProjectIcons),
-    ])
+  beforeLoad: ({ params }) => {
     return {
-      $likec4data,
-      $likec4model,
-      IconRenderer: ProjectIcons(params.projectId),
+      projectId: params.projectId as ProjectId,
+    }
+  },
+  loader: async ({ context }) => {
+    const { loadModel } = await import('likec4:model')
+    const projectId = context.projectId
+    try {
+      const { $likec4data, $likec4model } = await loadModel(projectId)
+      return {
+        $likec4data,
+        $likec4model,
+        projectId,
+      }
+    } catch (err) {
+      console.error(err)
+      throw notFound()
     }
   },
   component: RouteComponent,
@@ -39,26 +44,16 @@ export const Route = createFileRoute('/project/$projectId')({
 
 function RouteComponent() {
   const navigate = Route.useNavigate()
-  const { $likec4data, $likec4model, IconRenderer } = Route.useLoaderData()
+  const { $likec4data, $likec4model, projectId } = Route.useLoaderData()
 
   return (
     <Box className={css.cssViewOutlet}>
       <ErrorBoundary FallbackComponent={Fallback}>
-        <LikeC4ProjectsProvider
-          projects={projects}
-          onProjectChange={projectId =>
-            navigate({
-              to: `./`,
-              params: {
-                projectId,
-              },
-            })}>
+        <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4data={$likec4data} likec4model={$likec4model}>
-            <IconRendererProvider value={IconRenderer}>
-              <Outlet />
-            </IconRendererProvider>
+            <Outlet />
           </LikeC4ModelContext>
-        </LikeC4ProjectsProvider>
+        </LikeC4IconRendererContext>
       </ErrorBoundary>
     </Box>
   )

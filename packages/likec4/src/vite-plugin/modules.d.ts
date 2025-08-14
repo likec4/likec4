@@ -1,5 +1,6 @@
 declare module 'likec4:projects' {
   import type { LikeC4Project } from 'likec4/model'
+  export type { LikeC4Project }
   export const isSingleProject: boolean
   export const projects: readonly [LikeC4Project, ...LikeC4Project[]]
 }
@@ -16,7 +17,7 @@ declare module 'likec4:icons' {
   }
 
   export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
-  export const ProjectIcons: (projectId: string) => ElementIconRenderer
+  export const ProjectIcons: (props: ElementIconRendererProps & { projectId: string }) => ReactNode
 }
 
 declare module 'likec4:model' {

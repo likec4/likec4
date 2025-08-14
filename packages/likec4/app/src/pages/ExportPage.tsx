@@ -100,7 +100,7 @@ export function ExportPage() {
         viewport,
       })
     },
-    [],
+    [diagram],
     500,
   )
 

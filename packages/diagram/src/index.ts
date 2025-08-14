@@ -29,6 +29,7 @@ export type {
   CustomNodes,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
+  ElementIconRendererProps,
   LikeC4ColorScheme,
   LikeC4DiagramEventHandlers,
   LikeC4DiagramProperties,

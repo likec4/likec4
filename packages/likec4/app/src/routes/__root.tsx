@@ -1,6 +1,8 @@
+import type { ProjectId } from '@likec4/core/types'
 import { useMantineColorScheme } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
 
 const asTheme = (v: unknown): 'light' | 'dark' | 'auto' => {
   if (typeof v !== 'string') {
@@ -28,7 +30,14 @@ export type SearchParams = {
   padding?: number
 }
 
-export const Route = createRootRouteWithContext<{}>()({
+type Context = {
+  /**
+   * Default project
+   */
+  projectId: ProjectId
+}
+
+export const Route = createRootRouteWithContext<Context>()({
   component: RootComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     // validate and parse the search params into a typed state
@@ -49,10 +58,10 @@ export const Route = createRootRouteWithContext<{}>()({
 
 function RootComponent() {
   return (
-    <>
+    <LikeC4ProjectsContext>
       <Outlet />
       <ThemeSync />
-    </>
+    </LikeC4ProjectsContext>
   )
 }
 

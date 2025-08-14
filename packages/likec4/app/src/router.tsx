@@ -1,9 +1,11 @@
+import type { ProjectId } from '@likec4/core/types'
 import {
   createBrowserHistory,
   createHashHistory,
   createRouter as createTanstackRouter,
   RouterProvider,
 } from '@tanstack/react-router'
+import { projects } from 'likec4:projects'
 import { useMemo } from 'react'
 import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
@@ -13,16 +15,11 @@ import { routeTree } from './routeTree.gen'
 type RouteTree = typeof routeTree
 
 function createRouter() {
-  // const singleProjectIndex = createRouteMask({
-  //   routeTree,
-  //   unmaskOnReload: true,
-  //   from: '/single-index',
-  //   to: '/',
-  // })
-
   return createTanstackRouter<RouteTree, 'always', true>({
     routeTree,
-    context: {},
+    context: {
+      projectId: projects.length > 0 ? projects[0].id : 'default' as ProjectId,
+    },
     basepath,
     trailingSlash: 'always',
     defaultViewTransition: true,

@@ -189,12 +189,12 @@ export class ProjectsManager {
    *
    * @param entry The file system entry to check
    */
-  isConfigFile(entry: FileSystemNode): boolean {
-    const filename = parseFilename(entry.uri.toString(), { strict: false })?.toLowerCase()
+  isConfigFile(entry: URI): boolean {
+    const filename = parseFilename(entry.toString(), { strict: false })?.toLowerCase()
     const isConfigFile = !!filename && ProjectsManager.ConfigFileNames.includes(filename)
     if (isConfigFile) {
-      if (this.defaultGlobalProject.exclude(entry.uri.path)) {
-        logger.debug`exclude config file ${entry.uri.path}`
+      if (this.defaultGlobalProject.exclude(entry.path)) {
+        logger.debug`exclude config file ${entry.path}`
         return false
       }
     }
@@ -210,7 +210,7 @@ export class ProjectsManager {
     if (entry.isDirectory) {
       return undefined
     }
-    if (this.isConfigFile(entry)) {
+    if (this.isConfigFile(entry.uri)) {
       try {
         return await this.registerProject(entry.uri)
       } catch (error) {
@@ -336,7 +336,7 @@ export class ProjectsManager {
         try {
           const files = await this.services.workspace.FileSystemProvider.readDirectory(URI.parse(folder.uri))
           for (const file of files) {
-            if (this.isConfigFile(file)) {
+            if (file.isFile && this.isConfigFile(file.uri)) {
               configFiles.push(file)
             }
           }

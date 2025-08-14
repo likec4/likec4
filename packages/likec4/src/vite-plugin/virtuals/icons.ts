@@ -46,12 +46,12 @@ ${imports.join('\n')}
 const Icons = {
 ${cases.join(',\n')}
 }
-export function IconRenderer({ node }) {
-  const IconComponent = Icons[node.icon ?? '']
+export function IconRenderer(props) {
+  const IconComponent = Icons[props.node.icon ?? '']
   if (!IconComponent) {
     return null
   }
-  return jsx(IconComponent, {node})
+  return jsx(IconComponent, props)
 }
 `
 }
@@ -86,14 +86,20 @@ export const iconsModule = {
     })
 
     return `
+import { jsx } from 'react/jsx-runtime'    
 ${imports.join('\n')}
 
-export function ProjectIcons(projectId) {
+function getProjectIcons(projectId) {
   switch (projectId) {
 ${cases.join('\n')}
     default:
       throw new Error('Unknown projectId: ' + projectId)
   }
+}
+
+export function ProjectIcons({ projectId, ...props }) {
+  const IconComponent = getProjectIcons(projectId)
+  return jsx(IconComponent, props)
 }
 `
   },

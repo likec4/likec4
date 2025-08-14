@@ -81,7 +81,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     entry: FileSystemNode,
     selector: FileSelector,
   ): boolean {
-    if (this.services.workspace.ProjectsManager.isConfigFile(entry)) {
+    if (this.services.workspace.ProjectsManager.isConfigFile(entry.uri)) {
       return false
     }
     if (entry.isFile) {

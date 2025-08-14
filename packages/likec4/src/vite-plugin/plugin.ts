@@ -1,6 +1,7 @@
-import { type ProjectId, invariant, isNonEmptyArray } from '@likec4/core'
+import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { relative } from 'node:path'
+import { isDeepEqual } from 'remeda'
 import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
 import { LikeC4 } from '../LikeC4'
@@ -86,7 +87,11 @@ const virtuals = [
 
 const isTarget = (path: string) => {
   const p = path.toLowerCase()
-  return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
+  return p.endsWith('.c4')
+    || p.endsWith('.likec4')
+    || p.endsWith('.like-c4')
+    || p.endsWith('.likec4rc')
+    || p.endsWith('likec4.config.json')
 }
 
 export function LikeC4VitePlugin({
@@ -174,7 +179,9 @@ export function LikeC4VitePlugin({
     },
 
     configureServer(server) {
-      const patterns = likec4.projects().map(({ folder }) => folder.fsPath)
+      let _projects = likec4.projects()
+
+      const patterns = _projects.map(({ folder }) => folder.fsPath)
       for (const pattern of patterns) {
         logger.info(`${k.dim('watch')} ${pattern}`)
       }
@@ -208,7 +215,21 @@ export function LikeC4VitePlugin({
           })
           return
         }
-        for (const project of likec4.projects()) {
+        const _updated = likec4.projects()
+        if (!isDeepEqual(_updated, _projects)) {
+          _projects = _updated
+          const md = server.moduleGraph.getModuleById(projectsModule.virtualId)
+          if (md && md.importers.size > 0) {
+            logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
+            try {
+              await server.reloadModule(md)
+            } catch (err) {
+              logger.error(err)
+            }
+          }
+        }
+
+        for (const project of _projects) {
           for (const projectModule of hmrProjectVirtuals) {
             const md = server.moduleGraph.getModuleById(projectModule.virtualId(project.id))
             if (md && md.importers.size > 0) {

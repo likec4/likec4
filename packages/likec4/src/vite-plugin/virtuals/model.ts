@@ -1,7 +1,6 @@
 import JSON5 from 'json5'
-import { joinURL } from 'ufo'
 import { LikeC4Model } from '../../model'
-import { type ProjectVirtualModule, type VirtualModule, generateMatches, k } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects, generateMatches, k } from './_shared'
 
 const projectModelCode = (model: LikeC4Model.Layouted) => `
 import { createHooksForModel, atom } from 'likec4/vite-plugin/internal'
@@ -14,14 +13,14 @@ export const {
   useLikeC4Model,
   useLikeC4Views,
   useLikeC4View
-}= /* @__PURE__ */ createHooksForModel($likec4data)
+} = createHooksForModel($likec4data)
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
     if (!import.meta.hot.data.$update) {
       import.meta.hot.data.$update = updateModel
     }
-    const update = md.$likec4data?.value
+    const update = md.$likec4data?.get()
     if (update) {
       import.meta.hot.data.$update(update)
     } else {
@@ -40,22 +39,4 @@ export const projectModelModule = {
   },
 } satisfies ProjectVirtualModule
 
-export const modelModule = {
-  id: 'likec4:model',
-  virtualId: 'likec4:plugin/model.js',
-  async load({ likec4, logger, projects, assetsDir }) {
-    logger.info(k.dim('generating likec4:model'))
-    const cases = projects.map(({ id }) => {
-      const pkg = joinURL('likec4:model', id)
-      return ` case ${JSON.stringify(id)}: return await import(${JSON.stringify(pkg)})`
-    })
-    return `
-    export async function loadModel(projectId) {
-      switch (projectId) {
-        ${cases.join('\n')}
-        default: throw new Error('Unknown projectId: ' + projectId)
-      }
-    }
-    `
-  },
-} satisfies VirtualModule
+export const modelModule = generateCombinedProjects('model', 'loadModel')
