@@ -1,3 +1,28 @@
+# [1.37.0](https://github.com/likec4/likec4/compare/v1.36.1...v1.37.0) (2025-08-14)
+
+
+### Bug Fixes
+
+* HMR in the likec4 app ([1a66f47](https://github.com/likec4/likec4/commit/1a66f477e12b39e9844592e00ba9c37d21e1caba))
+* HMR in the likec4 app ([993a691](https://github.com/likec4/likec4/commit/993a6915893c585cea2b58e9ec8b55f197f4c35d))
+* improve code block styling within markdown ([b234cd5](https://github.com/likec4/likec4/commit/b234cd5cc1ea0147c6d4ef8886d9b404cb0c43eb))
+* improve error handling and loading states in VSCode preview ([0df069d](https://github.com/likec4/likec4/commit/0df069d8336e1ba17948b9a4f4d5b32828562dba))
+* name conflict in multiple projects ([c53f127](https://github.com/likec4/likec4/commit/c53f127b1fe6af81658c2eb8dc6b8e41f6162465)), closes [#2099](https://github.com/likec4/likec4/issues/2099)
+* parse view title as single line ([35eeba4](https://github.com/likec4/likec4/commit/35eeba4b36621c971ade6ea4f9c81d55db0258b5)), closes [#2148](https://github.com/likec4/likec4/issues/2148)
+* problems when exporting to PNG ([64199cf](https://github.com/likec4/likec4/commit/64199cfacdc81be029a32406bcb37f0fdc533869)), closes [#1211](https://github.com/likec4/likec4/issues/1211)
+* **react:** Multi-line Description Rendering with Additional Whitespace is Broken ([e3e4f31](https://github.com/likec4/likec4/commit/e3e4f3110d5c11674c9b80d3ff085386cc175621)), closes [#2055](https://github.com/likec4/likec4/issues/2055)
+* support markdown in overrides`with` ([acef3c0](https://github.com/likec4/likec4/commit/acef3c04ee58a319afaa1542e27d169cb52aeca8))
+
+
+### Features
+
+* add project reloading and improve multi-project support ([c6768c2](https://github.com/likec4/likec4/commit/c6768c2afc038fcde47830e14569b45ff413a0e6))
+* add reload projects command and improve project management ([7f1f66b](https://github.com/likec4/likec4/commit/7f1f66b401848499d9c7bfb311adc72087eb34ac))
+* do not parse or validate excluded files ([6a600d2](https://github.com/likec4/likec4/commit/6a600d271e396c3de69cbf1d184b8bf2d8526c5f))
+* Relationship popover ([48ad2c7](https://github.com/likec4/likec4/commit/48ad2c74190fdaafee5699288679d38c4619031a))
+
+
+
 ## [1.36.1](https://github.com/likec4/likec4/compare/v1.36.0...v1.36.1) (2025-08-08)
 
 ### Bug Fixes
