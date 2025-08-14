@@ -1,4 +1,4 @@
-import { type URI } from 'langium'
+import type { URI } from 'vscode-uri'
 import { LibIcons } from './generated-lib/icons'
 
 export const Scheme = 'likec4builtin'

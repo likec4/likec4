@@ -82,17 +82,19 @@ configs.push({
   entryPoints: [
     'src/node/extension.ts',
   ],
+  format: 'cjs',
   target: 'node20',
   platform: 'node',
-  conditions: ['sources', 'node'],
+  conditions: ['sources', 'node', 'import'],
 }, {
   ...base,
   entryPoints: [
     'src/node/language-server.ts',
   ],
+  format: 'cjs',
   target: 'node20',
   platform: 'node',
-  conditions: ['sources', 'node'],
+  conditions: ['sources', 'node', 'import'],
 })
 
 // ----------- Browser
@@ -106,7 +108,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'worker', 'browser'],
+  conditions: ['sources', 'worker', 'browser', 'import'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -116,7 +118,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: ['sources', 'worker', 'browser'],
+  conditions: ['sources', 'worker', 'browser', 'import'],
 })
 
 let hasErrors = false

@@ -11,7 +11,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
 import type { ProjectConfig } from './config'
 
