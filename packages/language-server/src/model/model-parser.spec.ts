@@ -3,8 +3,8 @@ import {
   isViewRulePredicate,
   ModelRelationExpr,
 } from '@likec4/core'
+import { indexBy } from 'remeda'
 import { describe, it } from 'vitest'
-import { custom } from 'zod'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
@@ -311,6 +311,55 @@ describe.concurrent('LikeC4ModelParser', () => {
           'title': 'c2',
         },
       ])
+    })
+
+    it('transforms multi-line view title to single line', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document, errors } = await validate(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component c1
+        }
+        deployment {
+          node n1
+        }
+        views {
+          view v1 {
+            title 'Line 1
+            Line 2'
+            include *
+          }
+
+          dynamic view v2 {
+            title '
+              Line 1
+              Line 2
+            '
+          }
+
+          deployment view v3 {
+            title '''
+              **Line 1**
+              Line 2
+             '''
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      const doc = services.likec4.ModelParser.parse(document)
+      const views = indexBy(doc.c4Views, ({ id }) => id as 'v1' | 'v2' | 'v3')
+
+      expect(views.v1).toBeDefined()
+      expect(views.v1!.title).toBe('Line 1     Line 2')
+
+      expect(views.v2).toBeDefined()
+      expect(views.v2!.title, 'remove indents').toEqual('Line 1 Line 2')
+      expect(views.v3).toBeDefined()
+      expect(views.v3).toBeDefined()
+      expect(views.v3!.title, ` markdown to single line`).toEqual('**Line 1** Line 2')
     })
   })
 
