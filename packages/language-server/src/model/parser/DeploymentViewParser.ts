@@ -5,7 +5,7 @@ import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout,
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
-import { removeIndent } from './Base'
+import { removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
 import type { WithExpressionV2 } from './FqnRefParser'
 
@@ -53,7 +53,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         [c4._type]: 'deployment',
         id: id as c4.ViewId,
         astPath,
-        title,
+        title: toSingleLine(title) ?? null,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,

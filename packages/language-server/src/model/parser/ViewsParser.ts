@@ -38,7 +38,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         })
 
         // Common folder for all views in the block
-        const folder = viewBlock.folder && !isEmpty(viewBlock.folder.trim()) ? viewBlock.folder : null
+        const folder = viewBlock.folder && !isEmpty(viewBlock.folder.trim()) ? toSingleLine(viewBlock.folder) : null
 
         for (const view of viewBlock.views) {
           try {
@@ -116,7 +116,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         [c4._type]: 'element',
         id: id as c4.ViewId,
         astPath,
-        title,
+        title: toSingleLine(title) ?? null,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,
@@ -290,7 +290,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         [c4._type]: 'dynamic',
         id: id as c4.ViewId,
         astPath,
-        title,
+        title: toSingleLine(title) ?? null,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,
