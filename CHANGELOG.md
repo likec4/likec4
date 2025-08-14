@@ -1,26 +1,27 @@
 # [1.37.0](https://github.com/likec4/likec4/compare/v1.36.1...v1.37.0) (2025-08-14)
 
+### 🚀 Features
 
-### Bug Fixes
+* **Relationship details:**  
+  On-hover panel now shows richer data and supports Markdown in descriptions:
+  
+  <img  alt="SCR-20250811-qzpg" src="https://github.com/user-attachments/assets/5615f377-bb32-4b95-9c14-ddda78aa38e1" />
 
-* HMR in the likec4 app ([1a66f47](https://github.com/likec4/likec4/commit/1a66f477e12b39e9844592e00ba9c37d21e1caba))
-* HMR in the likec4 app ([993a691](https://github.com/likec4/likec4/commit/993a6915893c585cea2b58e9ec8b55f197f4c35d))
-* improve code block styling within markdown ([b234cd5](https://github.com/likec4/likec4/commit/b234cd5cc1ea0147c6d4ef8886d9b404cb0c43eb))
-* improve error handling and loading states in VSCode preview ([0df069d](https://github.com/likec4/likec4/commit/0df069d8336e1ba17948b9a4f4d5b32828562dba))
-* name conflict in multiple projects ([c53f127](https://github.com/likec4/likec4/commit/c53f127b1fe6af81658c2eb8dc6b8e41f6162465)), closes [#2099](https://github.com/likec4/likec4/issues/2099)
-* parse view title as single line ([35eeba4](https://github.com/likec4/likec4/commit/35eeba4b36621c971ade6ea4f9c81d55db0258b5)), closes [#2148](https://github.com/likec4/likec4/issues/2148)
-* problems when exporting to PNG ([64199cf](https://github.com/likec4/likec4/commit/64199cfacdc81be029a32406bcb37f0fdc533869)), closes [#1211](https://github.com/likec4/likec4/issues/1211)
-* **react:** Multi-line Description Rendering with Additional Whitespace is Broken ([e3e4f31](https://github.com/likec4/likec4/commit/e3e4f3110d5c11674c9b80d3ff085386cc175621)), closes [#2055](https://github.com/likec4/likec4/issues/2055)
-* support markdown in overrides`with` ([acef3c0](https://github.com/likec4/likec4/commit/acef3c04ee58a319afaa1542e27d169cb52aeca8))
+* **Enhanced multi-project support :**  
+  The VSCode extension now automatically watches and reloads project configurations.  
+  Added a new `LikeC4: Reload projects` command for manual refresh.
 
+### 🐞 Bug Fixes
 
-### Features
-
-* add project reloading and improve multi-project support ([c6768c2](https://github.com/likec4/likec4/commit/c6768c2afc038fcde47830e14569b45ff413a0e6))
-* add reload projects command and improve project management ([7f1f66b](https://github.com/likec4/likec4/commit/7f1f66b401848499d9c7bfb311adc72087eb34ac))
-* do not parse or validate excluded files ([6a600d2](https://github.com/likec4/likec4/commit/6a600d271e396c3de69cbf1d184b8bf2d8526c5f))
-* Relationship popover ([48ad2c7](https://github.com/likec4/likec4/commit/48ad2c74190fdaafee5699288679d38c4619031a))
-
+* Improved hot-reload ([1a66f47](https://github.com/likec4/likec4/commit/1a66f477e12b39e9844592e00ba9c37d21e1caba), [993a691](https://github.com/likec4/likec4/commit/993a6915893c585cea2b58e9ec8b55f197f4c35d))
+* Fixed code block styling within Markdown ([b234cd5](https://github.com/likec4/likec4/commit/b234cd5cc1ea0147c6d4ef8886d9b404cb0c43eb))
+* Better error handling and loading states in VSCode preview ([0df069d](https://github.com/likec4/likec4/commit/0df069d8336e1ba17948b9a4f4d5b32828562dba))
+* Resolved name conflicts in multi-project setups ([c53f127](https://github.com/likec4/likec4/commit/c53f127b1fe6af81658c2eb8dc6b8e41f6162465)), closes [#2099](https://github.com/likec4/likec4/issues/2099)
+* View titles are now parsed as single lines ([35eeba4](https://github.com/likec4/likec4/commit/35eeba4b36621c971ade6ea4f9c81d55db0258b5)), closes [#2148](https://github.com/likec4/likec4/issues/2148)
+* Fixed PNG export issues ([64199cf](https://github.com/likec4/likec4/commit/64199cfacdc81be029a32406bcb37f0fdc533869)), closes [#1211](https://github.com/likec4/likec4/issues/1211)
+* Corrected multi-line description rendering with extra whitespace ([e3e4f31](https://github.com/likec4/likec4/commit/e3e4f3110d5c11674c9b80d3ff085386cc175621)), closes [#2055](https://github.com/likec4/likec4/issues/2055)
+* Added Markdown support in `with` overrides block ([acef3c0](https://github.com/likec4/likec4/commit/acef3c04ee58a319afaa1542e27d169cb52aeca8))
+* Excluded files are now skipped from parsing and validation ([6a600d2](https://github.com/likec4/likec4/commit/6a600d271e396c3de69cbf1d184b8bf2d8526c5f))
 
 
 ## [1.36.1](https://github.com/likec4/likec4/compare/v1.36.0...v1.36.1) (2025-08-08)
