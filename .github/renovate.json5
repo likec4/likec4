@@ -80,6 +80,7 @@
     {
       enabled: false,
       matchPackageNames: [
+        'html-to-image',
         '/^monaco/',
         '/^@monaco/',
         '/^@codingame/',
