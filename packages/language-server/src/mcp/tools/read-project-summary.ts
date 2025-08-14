@@ -12,20 +12,53 @@ export const readProjectSummary = likec4Tool({
     readOnlyHint: true,
   },
   description: `
-Searches for LikeC4 project by name in workspace and returns its summary:
-- project human readable title
-- project folder
-- array of the source filenames
-- specification:
-  - all element kinds
-  - all relationship kinds
-  - all deployment kinds
-  - all tags (used and unused)
-  - used metadata keys
-- array of the views, where each view:
-  - name
-  - type ("element", "deployment", "dynamic")
-  - title
+Request:
+- project: string (optional) — project id. Defaults to "default" if omitted.
+
+Response (JSON object):
+- title: string — human-readable project title
+- folder: string — absolute path to the project root
+- sources: string[] — absolute file paths of model documents
+- specification: object
+  - elementKinds: string[] — all element kinds
+  - relationshipKinds: string[] — all relationship kinds
+  - deploymentKinds: string[] — all deployment kinds
+  - tags: string[] — all tags (used and unused)
+  - metadataKeys: string[] — used metadata keys
+- views: View[] — list of views defined in the model
+
+View (object) fields:
+- name: string — view identifier
+- title: string|null — view title if provided, otherwise null
+- type: "element" | "deployment" | "dynamic"
+- sourceLocation: object|null|undefined — source location when available
+
+Notes:
+- Read-only, idempotent, no side effects.
+- Safe to call repeatedly.
+
+Example response:
+{
+  "title": "Cloud Boutique",
+  "folder": "/abs/path/to/workspace/examples/cloud-system",
+  "sources": [
+    "/abs/path/to/workspace/examples/cloud-system/model.c4"
+  ],
+  "specification": {
+    "elementKinds": ["system", "container", "component"],
+    "relationshipKinds": ["uses", "depends-on"],
+    "deploymentKinds": ["node", "cluster"],
+    "tags": ["public", "internal"],
+    "metadataKeys": ["owner", "tier"]
+  },
+  "views": [
+    {
+      "name": "system-overview",
+      "title": "System Overview",
+      "type": "element"
+    }
+  ]
+}
   `,
   inputSchema: {
     project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),

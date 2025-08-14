@@ -23,7 +23,7 @@ export class LikeC4MCPServerFactory {
       instructions: `Provides access to LikeC4 model.
 Available tools:
 - list-projects: List all available LikeC4 projects in the workspace
-- read-project-summary: to understand project specifications (what element kinds, tags, metadata keys are available) and available project views
+- read-project-summary: to understand project specifications (what element kinds, tags, metadata keys are available), also includes list of all project views
 - read-project-elements: list all elements in the project
 - search-element: Search for LikeC4 element by partial match of id, title, kind, shape or tags
 - read-element: all information about the element (includes source location)
