@@ -1,7 +1,7 @@
 # `@likec4/core`
 
 <a href="https://www.npmjs.com/package/%40likec4%2Fcore" target="_blank">![NPM Version](https://img.shields.io/npm/v/%40likec4%2Fcore)</a>
-<a href="https://www.npmjs.com/package/%40likec4%2Fcore" target="_blank">![NPM Downloads](https://img.shields.io/npm/dw/%40likec4%2Fcore)</a>
+<a href="https://www.npmjs.com/package/%40likec4%2Fcore" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/%40likec4%2Fcore)</a>
 
 A core package for LikeC4, containing types, api, utilities and guards.
 
@@ -157,8 +157,8 @@ Generic guards are also available in `@likec4/core/model`:
 
 ```ts
 import {
-  isElementModel,
   isDeployedInstanceModel,
+  isElementModel,
   isLikeC4ViewModel,
   // ... other guards
 } from '@likec4/core/model'
