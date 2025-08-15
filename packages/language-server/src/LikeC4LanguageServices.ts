@@ -32,16 +32,18 @@ export interface LikeC4LanguageServices {
     id: ProjectId
     folder: URI
     title: string
-    documents: NonEmptyArray<URI> | null
+    documents: ReadonlyArray<URI>
   }>
 
   /**
    * Returns project by ID
+   * If no project ID is specified, returns default project
    */
-  project(projectId: ProjectId): {
+  project(projectId?: ProjectId): {
     id: ProjectId
     folder: URI
     title: string
+    documents: ReadonlyArray<URI>
   }
 
   /**
@@ -100,7 +102,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     id: ProjectId
     folder: URI
     title: string
-    documents: NonEmptyArray<URI> | null
+    documents: ReadonlyArray<URI>
   }> {
     const projectsManager = this.services.shared.workspace.ProjectsManager
     const projectsWithDocs = pipe(
@@ -121,25 +123,36 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       return projectsWithDocs
     }
     const { folderUri, config } = projectsManager.getProject(ProjectsManager.DefaultProjectId)
+    const documents = map(
+      this.services.shared.workspace.LangiumDocuments.projectDocuments(ProjectsManager.DefaultProjectId).toArray(),
+      prop('uri'),
+    )
     return [{
       id: ProjectsManager.DefaultProjectId,
       folder: folderUri,
       title: config.title ?? config.name,
-      documents: null,
+      documents,
     }]
   }
 
-  project(projectId: ProjectId): {
+  project(projectId?: ProjectId): {
     id: ProjectId
     folder: URI
     title: string
+    documents: ReadonlyArray<URI>
   } {
+    projectId = this.projectsManager.ensureProjectId(projectId)
     const projectsManager = this.services.shared.workspace.ProjectsManager
     const { folderUri, config } = projectsManager.getProject(projectId)
+    const documents = map(
+      this.services.shared.workspace.LangiumDocuments.projectDocuments(projectId).toArray(),
+      prop('uri'),
+    )
     return {
       id: projectId,
       folder: folderUri,
       title: config.title ?? config.name,
+      documents,
     }
   }
 

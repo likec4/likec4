@@ -1,31 +1,55 @@
-import { invariant } from '@likec4/core'
 import z from 'zod'
-import { ProjectsManager } from '../../workspace'
 import { likec4Tool } from '../utils'
+import { locationSchema, mkLocate, projectIdSchema } from './_common'
 
 export const openView = likec4Tool({
   name: 'open-view',
   description: `
-Opens the panel with the LikeC4 view in the editor.
-Only one view can be opened at a time.
-`.trimStart(),
+Open a LikeC4 view in the editor's preview panel.
+
+Request:
+- viewId: string — view id (name)
+- project: string (optional) — project id. Defaults to "default" if omitted.
+
+Response (JSON object):
+- location: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location of the view if available
+
+Notes:
+- Read-only and idempotent with respect to the project model. Triggers a UI action in the editor.
+- Only one preview panel can be open at a time.
+
+Example response:
+{
+  "location": {
+    "path": "/abs/path/project/model.c4",
+    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 30, "character": 0 } }
+  }
+}
+`,
   annotations: {
     readOnlyHint: true,
+    idempotentHint: true,
+    title: 'Open view in preview panel',
   },
   inputSchema: {
     viewId: z.string().describe('View id (name)'),
-    project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),
+    project: projectIdSchema,
+  },
+  outputSchema: {
+    location: locationSchema,
   },
 }, async (languageServices, args) => {
-  const projectId = args.project ?? ProjectsManager.DefaultProjectId
-  const project = languageServices.projects().find(p => p.id === projectId)
-  invariant(project, `Project "${projectId}" not found`)
-  const model = await languageServices.computedModel(project.id)
+  const projectId = languageServices.projectsManager.ensureProjectId(args.project)
+  const model = await languageServices.computedModel(projectId)
   const view = model.findView(args.viewId)
 
   if (!view) {
-    throw new Error(`View with ID '${args.viewId}' not found in project ${project.id}`)
+    throw new Error(`View with ID '${args.viewId}' not found in project ${projectId}`)
   }
-  await languageServices.views.openView(view.id, project.id)
-  return `Command was sent to the editor to open the view "${view.id}"` as any
+  await languageServices.views.openView(view.id, projectId)
+
+  const locate = mkLocate(languageServices, projectId)
+  return {
+    location: locate({ view: view.id }),
+  }
 })

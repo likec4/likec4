@@ -1,6 +1,6 @@
 import {
   type LikeC4Services,
-  createCustomLanguageServices,
+  createLanguageServices as createCustomLanguageServices,
   LikeC4FileSystem,
 } from '@likec4/language-server'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
@@ -41,6 +41,12 @@ export type CreateLanguageServiceOptions = {
    * @default true
    */
   useFileSystem?: boolean
+
+  /**
+   * Whether to watch for changes in the workspace.
+   * @default true if useFileSystem is true, false otherwise
+   */
+  watch?: boolean
   /**
    * Logger to use for the language service.
    * @default 'default'
@@ -89,5 +95,10 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     },
   } satisfies Module<CliServices, DeepPartial<CliServices>>
 
-  return createCustomLanguageServices(options.useFileSystem ? LikeC4FileSystem : {}, CliModule, module).likec4
+  const { likec4 } = createCustomLanguageServices(
+    options.useFileSystem ? LikeC4FileSystem(options.watch) : {},
+    CliModule,
+    module,
+  )
+  return likec4
 }

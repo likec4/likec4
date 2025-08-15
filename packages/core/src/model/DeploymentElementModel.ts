@@ -21,7 +21,7 @@ import {
   RichText,
 } from '../types'
 import * as aux from '../types/_aux'
-import { commonAncestor, hierarchyLevel, memoizeProp, nonNullable } from '../utils'
+import { commonAncestor, hierarchyLevel, memoizeProp, nameFromFqn, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
@@ -53,6 +53,10 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
       size: DefaultShapeSize,
       ...this.$node.style,
     }
+  }
+
+  get name(): string {
+    return nameFromFqn(this.id)
   }
 
   get shape(): C4ElementShape {

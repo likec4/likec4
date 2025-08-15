@@ -33,10 +33,7 @@
   },
   "wireit": {
     "build": {
-      "command": "unbuild",
-      "files": [
-        "src/**/*"
-      ]
+      "command": "unbuild"
     },
     "inspector": {
       "dependencies": [
@@ -44,7 +41,8 @@
       ],
       "command": "pnpx @modelcontextprotocol/inspector node dist/index.mjs",
       "env": {
-        "LIKEC4_WORKSPACE": "../../examples/"
+        "DANGEROUSLY_OMIT_AUTH": "true",
+        "LIKEC4_WORKSPACE": "../../examples"
       },
       "service": {
         "readyWhen": {
@@ -54,12 +52,13 @@
     }
   },
   "dependencies": {
-    "likec4": "workspace:*"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "catalog:mcp",
+    "@likec4/log": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/language-server": "workspace:*",
     "@types/node": "catalog:",
     "remeda": "catalog:utils",
     "tsx": "catalog:",
@@ -67,6 +66,7 @@
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "vitest": "catalog:vitest",
+    "vscode-uri": "catalog:vscode",
     "zod": "catalog:utils",
     "wireit": "catalog:"
   }

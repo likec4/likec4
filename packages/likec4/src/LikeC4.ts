@@ -1,6 +1,5 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices, LikeC4Views } from '@likec4/language-server'
-import { loggable } from '@likec4/log'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -54,6 +53,7 @@ export class LikeC4 {
     const langium = createLanguageServices(
       defu(opts, {
         useFileSystem: false,
+        watch: false,
         logger: false as const,
         graphviz: 'wasm' as const,
       }),
@@ -63,15 +63,18 @@ export class LikeC4 {
       scheme: 'virtual',
       path: '/workspace',
     })
+
     await langium.cli.Workspace.initWorkspace({
       uri: workspaceUri.toString(),
       name: 'virtual',
     })
 
     const uri = UriUtils.joinPath(workspaceUri, 'source.likec4')
-    langium.shared.workspace.LangiumDocuments.createDocument(uri, likec4SourceCode)
+    const doc = langium.shared.workspace.LangiumDocuments.createDocument(uri, likec4SourceCode)
 
-    await langium.cli.Workspace.init()
+    await langium.shared.workspace.DocumentBuilder.build([doc], {
+      validation: true,
+    })
 
     const likec4 = new LikeC4(workspaceUri.path, langium, opts?.printErrors ?? true)
 
@@ -92,7 +95,7 @@ export class LikeC4 {
    * Initializes a LikeC4 instance from the specified workspace path.
    * By default in current folder
    */
-  static async fromWorkspace(path = '', opts?: LikeC4Options): Promise<LikeC4> {
+  static async fromWorkspace(path = '.', opts?: LikeC4Options): Promise<LikeC4> {
     const workspace = resolve(path)
     if (!existsSync(workspace)) {
       throw new Error(`Workspace not found: ${workspace}`)
@@ -102,6 +105,7 @@ export class LikeC4 {
       const langium = createLanguageServices(
         defu(opts, {
           useFileSystem: true,
+          watch: true,
           logger: 'default' as const,
           graphviz: 'wasm' as const,
         }),
@@ -111,8 +115,6 @@ export class LikeC4 {
         uri: pathToFileURL(workspace).toString(),
         name: basename(workspace),
       })
-
-      await langium.cli.Workspace.init()
 
       likec4 = new LikeC4(workspace, langium, opts?.printErrors ?? true)
       LikeC4.likec4Instances.set(workspace, likec4)
@@ -267,29 +269,6 @@ ${k.red('Please specify a project folder')}
       }
     }
     return hasErrors
-  }
-
-  /**
-   * TODO Replace with watcher
-   */
-  async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }): Promise<boolean> {
-    const mutex = this.langium.shared.workspace.WorkspaceLock
-    try {
-      let completed = false
-      await mutex.write(async token => {
-        await this.langium.shared.workspace.DocumentBuilder.update(
-          changed ? [URI.file(changed)] : [],
-          removed ? [URI.file(removed)] : [],
-          token,
-        )
-        // we come here if only the update was successful, did not throw and not cancelled
-        completed = !token.isCancellationRequested
-      })
-      return completed
-    } catch (e) {
-      this.logger.error(loggable(e))
-      return false
-    }
   }
 
   /**

@@ -1,10 +1,7 @@
-import { invariant } from '@likec4/core'
 import type { NodeModel } from '@likec4/core/model'
 import z from 'zod'
-import { safeCall } from '../../utils'
-import { ProjectsManager } from '../../workspace'
 import { likec4Tool } from '../utils'
-import { locationSchema } from './_common'
+import { locationSchema, mkLocate, projectIdSchema } from './_common'
 
 const modelRef = (node: NodeModel) => {
   if (node.hasElement()) {
@@ -16,155 +13,199 @@ const modelRef = (node: NodeModel) => {
   return null
 }
 
+const nodeSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('element'),
+    id: z.string().describe('Node ID'),
+    elementId: z.string().describe('Element ID (FQN)'),
+    kind: z.string().describe('Element kind'),
+    title: z.string().describe('Node title'),
+    description: z.string().nullable(),
+    technology: z.string().nullable(),
+    children: z.array(z.string()).describe('Children nodes, array of node IDs'),
+    shape: z.string().describe('Rendered shape'),
+    color: z.string().describe('Rendered color'),
+    tags: z.array(z.string()),
+  }),
+  z.object({
+    type: z.literal('deployment-node'),
+    id: z.string().describe('Node ID'),
+    deploymentId: z.string().describe('Deployment entity ID (FQN)'),
+    kind: z.string().describe('Deployment kind'),
+    title: z.string().describe('Node title'),
+    description: z.string().nullable(),
+    technology: z.string().nullable(),
+    children: z.array(z.string()).describe('Children nodes, array of node IDs'),
+    shape: z.string().describe('Rendered shape'),
+    color: z.string().describe('Rendered color'),
+    tags: z.array(z.string()),
+  }),
+  z.object({
+    type: z.literal('deployed-instance'),
+    id: z.string().describe('Node ID'),
+    deploymentId: z.string().describe('Deployment entity ID (FQN)'),
+    title: z.string().describe('Node title'),
+    description: z.string().nullable(),
+    technology: z.string().nullable(),
+    referencedElement: z.object({
+      id: z.string().describe('Element ID (FQN)'),
+      kind: z.string().describe('Element kind'),
+      title: z.string().describe('Element title'),
+    }),
+    shape: z.string().describe('Rendered shape'),
+    color: z.string().describe('Rendered color'),
+    tags: z.array(z.string()),
+  }),
+])
+
 export const readView = likec4Tool({
   name: 'read-view',
   description: `
-Returns information about LikeC4 view, includes:
-- id (view name)
-- type (element, deployment, dynamic)
-- title, description, tags
-- project name this view belongs to
-- array of elements included in this view
-- array of relationships in this view (source, target, title, description, technology, tags)
-- viewOf (element id this view is the default view of)
-- source location (if running in the editor)
-`.trimStart(),
+Read detailed information about a LikeC4 view.
+
+Request:
+- viewId: string — view id (name)
+- project: string (optional) — project id. Defaults to "default" if omitted.
+
+Response (JSON object):
+- id: string — view id
+- type: "element" | "deployment" | "dynamic" — view type
+- title: string — view title (falls back to id if not set)
+- description: string|null — optional description
+- tags: string[] — view tags
+- project: string — project id this view belongs to
+- nodes: Node[] — nodes included in the view
+- edges: Edge[] — relationships between nodes
+- sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location if available
+
+Node (discriminated union by "type"):
+- type = "element": { id: string, elementId: string, kind: string, title: string, description: string|null, technology: string|null, children: string[], shape: string, color: string, tags: string[] }
+- type = "deployment-node": { id: string, deploymentId: string, kind: string, title: string, description: string|null, technology: string|null, children: string[], shape: string, color: string, tags: string[] }
+- type = "deployed-instance": { id: string, deploymentId: string, title: string, description: string|null, technology: string|null, referencedElement: { id: string, kind: string, title: string }, shape: string, color: string, tags: string[] }
+
+Edge object:
+- { source: string, target: string, label: string|null, description: string|null, technology: string|null, tags: string[] }
+
+Notes:
+- Read-only, idempotent, no side effects.
+
+Example response:
+{
+  "id": "system-overview",
+  "type": "element",
+  "title": "System Overview",
+  "description": null,
+  "tags": [],
+  "project": "default",
+  "nodes": [
+    { "type": "logical", "id": "n1", "elementId": "shop.frontend", "kind": "container", "title": "Frontend", "description": null, "technology": "React", "children": [], "shape": "rounded-rectangle", "color": "#2F80ED", "tags": [] }
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2", "label": "calls", "description": null, "technology": "HTTPS", "tags": [] }
+  ],
+  "sourceLocation": {
+    "path": "/abs/path/project/model.c4",
+    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 30, "character": 0 } }
+  }
+}
+`,
   annotations: {
     readOnlyHint: true,
+    idempotentHint: true,
+    title: 'Read view',
   },
   inputSchema: {
     viewId: z.string().describe('View id (name)'),
-    project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),
+    project: projectIdSchema,
   },
   outputSchema: {
     id: z.string(),
-    type: z.enum(['element', 'deployment', 'dynamic']),
-    title: z.string().nullish(),
-    description: z.string().nullish(),
+    type: z.enum(['element', 'deployment', 'dynamic']).describe('View type'),
+    title: z.string(),
+    description: z.string().nullable(),
     tags: z.array(z.string()),
     project: z.string(),
-    elements: z.array(
-      z.discriminatedUnion('type', [
-        z.object({
-          type: z.literal('logical'),
-          id: z.string().describe('Element ID (FQN)'),
-          kind: z.string().describe('Element kind'),
-          title: z.string().describe('Element title'),
-          description: z.string().nullish(),
-          technology: z.string().nullish(),
-          children: z.array(z.string()),
-          shape: z.string().describe('Element shape'),
-          tags: z.array(z.string()),
-        }),
-        z.object({
-          type: z.literal('deployment-node'),
-          id: z.string().describe('Deployment ID (FQN)'),
-          kind: z.string().describe('Deployment kind'),
-          title: z.string().describe('Deployment title'),
-          description: z.string().nullish(),
-          technology: z.string().nullish(),
-          children: z.array(z.string()),
-          shape: z.string().describe('Deployment shape'),
-          tags: z.array(z.string()),
-        }),
-        z.object({
-          type: z.literal('deployed-instance'),
-          id: z.string().describe('Deployment ID (FQN)'),
-          title: z.string().describe('Deployment title'),
-          description: z.string().nullish(),
-          technology: z.string().nullish(),
-          logicalElementId: z.string().describe('Logical element ID (FQN)'),
-          shape: z.string().describe('Deployment shape'),
-          tags: z.array(z.string()),
-        }),
-      ]),
-    ).describe('Elements in this view'),
-    relationships: z.array(
+    nodes: z.array(nodeSchema),
+    edges: z.array(
       z.object({
-        source: z.string().describe('Source element ID'),
-        target: z.string().describe('Target element ID'),
-        title: z.string().nullish(),
-        description: z.string().nullish(),
-        technology: z.string().nullish(),
+        source: z.string().describe('Source node'),
+        target: z.string().describe('Target node'),
+        label: z.string().nullable(),
+        description: z.string().nullable(),
+        technology: z.string().nullable(),
         tags: z.array(z.string()),
       }),
-    ).describe('Relationships in this view'),
-    defaultViewOf: z.string().optional().describe('Element ID (FQN) this view is the default view of'),
-    sourceLocation: locationSchema.nullish(),
+    ).describe('Edge represents relationship between nodes'),
+    sourceLocation: locationSchema,
   },
 }, async (languageServices, args) => {
-  const projectId = args.project ?? ProjectsManager.DefaultProjectId
-  const project = languageServices.projects().find(p => p.id === projectId)
-  invariant(project, `Project "${projectId}" not found`)
-  const model = await languageServices.computedModel(project.id)
+  const projectId = languageServices.projectsManager.ensureProjectId(args.project)
+  const project = languageServices.project(projectId)
+  const model = await languageServices.computedModel(projectId)
   const view = model.findView(args.viewId)
 
   if (!view) {
     throw new Error(`View with ID '${args.viewId}' not found in project ${project.id}`)
   }
+  const locate = mkLocate(languageServices, project.id)
+
   return {
     id: view.id,
     type: view.$view._type,
-    title: view.title,
+    title: view.title ?? view.id,
     description: view.description.text,
     tags: [...view.tags],
     project: project.id,
-    elements: [...view.nodes()].flatMap(node => {
+    nodes: [...view.nodes()].flatMap((node): z.infer<typeof nodeSchema> | [] => {
+      const base = {
+        id: node.id,
+        title: node.title,
+        description: node.description.text,
+        technology: node.technology,
+        shape: node.shape,
+        color: node.color,
+        tags: [...node.tags],
+      }
       if (node.hasDeployedInstance()) {
         return {
+          ...base,
           type: 'deployed-instance',
-          id: node.deployment.id,
-          title: node.title,
-          logicalElementId: node.deployment.element.id,
-          description: node.description.text,
-          technology: node.technology,
-          shape: node.shape,
-          tags: [...node.tags],
+          deploymentId: node.deployment.id,
+          referencedElement: {
+            id: node.deployment.element.id,
+            kind: node.deployment.element.kind,
+            title: node.deployment.element.title,
+          },
         }
       }
       if (node.hasDeployment()) {
         return {
+          ...base,
           type: 'deployment-node',
-          id: node.deployment.id,
-          title: node.title,
           kind: node.deployment.kind,
-          description: node.description.text,
-          technology: node.technology,
-          shape: node.shape,
-          tags: [...node.tags],
-          children: [...node.children()].flatMap(c => modelRef(c) ?? []),
+          deploymentId: node.deployment.id,
+          children: [...node.children()].map(c => c.id),
         }
       }
       if (node.hasElement()) {
         return {
-          type: 'logical',
-          id: node.element.id,
-          title: node.title,
+          ...base,
+          type: 'element',
+          elementId: node.element.id,
           kind: node.element.kind,
-          description: node.description.text,
-          technology: node.technology,
-          shape: node.shape,
-          tags: [...node.tags],
           children: [...node.children()].flatMap(c => modelRef(c) ?? []),
         }
       }
       return []
     }),
-    viewOf: view.viewOf?.id,
-    relationships: [...view.edges()].flatMap(r => {
-      const source = modelRef(r.source)
-      const target = modelRef(r.target)
-      return source && target
-        ? [{
-          source,
-          target,
-          title: r.label,
-          description: r.description.text,
-          technology: r.technology,
-          tags: [...r.tags],
-        }]
-        : []
-    }),
-    sourceLocation: safeCall(() => languageServices.locate({ view: view.id, projectId })),
+    edges: [...view.edges()].map(r => ({
+      source: r.source.id,
+      target: r.target.id,
+      label: r.label,
+      description: r.description.text,
+      technology: r.technology,
+      tags: [...r.tags],
+    })),
+    sourceLocation: locate({ view: view.id }),
   }
 })

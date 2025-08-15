@@ -123,7 +123,7 @@
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
     "@types/node": "catalog:",
-    "defu": "^6.1.4",
+    "defu": "catalog:utils",
     "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",

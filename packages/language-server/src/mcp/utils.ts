@@ -40,10 +40,13 @@ export function likec4Tool<
   },
   cb: Cb,
 ): (languageServices: LikeC4LanguageServices) => [string, { inputSchema?: InputArgs }, ToolCallback<InputArgs>] {
-  const { name, ...rest } = config
+  const { name, description, ...rest } = config
   return (languageServices: LikeC4LanguageServices) => [
     name,
-    rest,
+    {
+      description: description?.trim() ?? '',
+      ...rest,
+    },
     mkcallTool(name, languageServices, cb),
   ]
 }
@@ -59,7 +62,7 @@ function mkcallTool<
 ): ToolCallback<InputArgs> {
   const tool = cb.bind(null, languageServices)
   return (async function callTool(args: any, extra: any): Promise<CallToolResult> {
-    logger.debug('Calling tool {name}', { name, args })
+    logger.debug('Calling tool {name}, args: {args}', { name, args })
     try {
       const result = await tool.call(null, args, extra)
       if (typeof result === 'string') {
@@ -82,7 +85,7 @@ function mkcallTool<
       return {
         content: [{
           type: 'text',
-          text: loggable(err),
+          text: err instanceof Error ? err.message : loggable(err),
         }],
         isError: true,
       }

@@ -181,20 +181,17 @@ export function LikeC4VitePlugin({
     configureServer(server) {
       let _projects = likec4.projects()
 
-      const patterns = _projects.map(({ folder }) => folder.fsPath)
-      for (const pattern of patterns) {
-        logger.info(`${k.dim('watch')} ${pattern}`)
-      }
-      const notifyUpdate = (updated: 'changed' | 'removed') => (path: string) => {
-        if (isTarget(path)) {
-          likec4.notifyUpdate({ [updated]: path })
+      const reloadModule = async (id: string) => {
+        const md = server.moduleGraph.getModuleById(id)
+        if (md && md.importers.size > 0) {
+          logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
+          try {
+            await server.reloadModule(md)
+          } catch (err) {
+            logger.error(err)
+          }
         }
       }
-      server.watcher
-        .add(patterns)
-        .on('add', notifyUpdate('changed'))
-        .on('change', notifyUpdate('changed'))
-        .on('unlink', notifyUpdate('removed'))
 
       likec4.builder.onModelParsed(async () => {
         const [error] = likec4.getErrors()
@@ -218,28 +215,13 @@ export function LikeC4VitePlugin({
         const _updated = likec4.projects()
         if (!isDeepEqual(_updated, _projects)) {
           _projects = _updated
-          const md = server.moduleGraph.getModuleById(projectsModule.virtualId)
-          if (md && md.importers.size > 0) {
-            logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
-            try {
-              await server.reloadModule(md)
-            } catch (err) {
-              logger.error(err)
-            }
-          }
+          await reloadModule(projectsModule.virtualId)
+          await reloadModule(modelModule.virtualId)
         }
 
         for (const project of _projects) {
           for (const projectModule of hmrProjectVirtuals) {
-            const md = server.moduleGraph.getModuleById(projectModule.virtualId(project.id))
-            if (md && md.importers.size > 0) {
-              logger.info(`${k.green('reload')} ${k.dim(md.id ?? md.url)}`)
-              try {
-                await server.reloadModule(md)
-              } catch (err) {
-                logger.error(err)
-              }
-            }
+            await reloadModule(projectModule.virtualId(project.id))
           }
         }
       })

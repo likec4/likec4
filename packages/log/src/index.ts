@@ -20,6 +20,7 @@ export {
   // formatRecord,
   getAnsiColorFormatter,
   getConsoleSink,
+  getConsoleStderrSink,
   getMessageOnlyFormatter,
   getTextFormatter,
 } from './formatters'
@@ -52,24 +53,24 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
 let configureWasCalled = false
 
 export function configureLogger<TSinkId extends string, TFilterId extends string>(
-  config?: Config<TSinkId, TFilterId>,
+  config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {
     configureWasCalled = true
     const sinks = config?.sinks ?? {}
     configureLogtape<any, any>({
+      reset: true,
       ...config,
       sinks: {
+        console: getConsoleSink(),
         ...sinks,
-        // @ts-expect-error console is not a valid sink id
-        console: sinks['console'] ?? getConsoleSink(),
       },
       loggers: [
-        { category: ['logtape', 'meta'], sinks: ['console' as any], lowestLevel: 'warning' },
+        { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'warning' },
         ...(config?.loggers ?? [
           {
             category: 'likec4',
-            sinks: ['console' as any],
+            sinks: ['console'],
             lowestLevel: 'debug',
           },
         ]),
