@@ -12,7 +12,7 @@ catalog:
   typescript: 5.9.2
   unbuild: 3.5.0
   wireit: 0.14.12
-  wrangler: 4.22.0
+  wrangler: 4.28.1
   zx: 8.5.5
 
 catalogs:
