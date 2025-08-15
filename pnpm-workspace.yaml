@@ -97,7 +97,7 @@ catalogs:
     picomatch: ^4.0.3
     remeda: ^2.23.1
     safe-stringify: ^1.2.0
-    sharp: 0.34.2
+    sharp: 0.34.3
     std-env: ^3.9.0
     strip-indent: ^4.0.0
     type-fest: ^4.41.0
