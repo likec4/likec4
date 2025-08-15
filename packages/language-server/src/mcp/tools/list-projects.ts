@@ -16,7 +16,7 @@ Project (object) fields:
 - id: string — stable project identifier
 - title: string — human-readable project title
 - folder: string — absolute path to the project root
-- sources: string[] — absolute file paths of model documents
+- sources: string[] — absolute file paths of related documents
 
 Notes:
 - Read-only, idempotent, no side effects.
@@ -39,6 +39,8 @@ Example response:
 `,
   annotations: {
     readOnlyHint: true,
+    idempotentHint: true,
+    title: 'List projects',
   },
   outputSchema: {
     projects: z.array(z.object({
@@ -49,13 +51,13 @@ Example response:
     })),
   },
 }, async (languageServices) => {
-  const projects = await languageServices.projects()
+  const projects = languageServices.projects()
   return {
     projects: projects.map(p => ({
       id: p.id,
       title: p.title,
       folder: p.folder.fsPath,
-      sources: p.documents?.map(d => d.fsPath) ?? [],
+      sources: p.documents.map(d => d.fsPath),
     })),
   }
 })

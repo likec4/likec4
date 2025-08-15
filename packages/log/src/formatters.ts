@@ -129,3 +129,20 @@ export function getConsoleSink(options?: ConsoleSinkOptions): Sink {
     ...options,
   })
 }
+
+/**
+ * Creates a console sink that writes to stderr.
+ * (MCP protocol requires stderr to be used for logging)
+ */
+export function getConsoleStderrSink(options?: ConsoleSinkOptions): Sink {
+  const formatter = options?.formatter ?? getTextFormatter()
+  return (record: LogRecord) => {
+    const args = formatter(record)
+    if (typeof args === 'string') {
+      const msg = args.replace(/\r?\n$/, '')
+      console.error(msg)
+    } else {
+      console.error(...args)
+    }
+  }
+}

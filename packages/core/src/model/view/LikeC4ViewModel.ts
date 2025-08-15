@@ -113,10 +113,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
-   * Returns title if defined, otherwise returns its {@link id}
+   * Returns title if defined, otherwise returns title of the element it is based on, otherwise returns its {@link id}
    */
   get titleOrId(): string {
-    return this.title ?? this.id
+    return this.title ?? this.viewOf?.title ?? this.id
   }
 
   /**

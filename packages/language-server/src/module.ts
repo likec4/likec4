@@ -2,7 +2,6 @@ import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import {
   type Module,
   DocumentState,
-  EmptyFileSystem,
   inject,
   WorkspaceCache,
 } from 'langium'
@@ -16,6 +15,12 @@ import {
   createDefaultSharedModule,
 } from 'langium/lsp'
 import { LikeC4DocumentationProvider } from './documentation'
+import {
+  type FileSystemModuleContext,
+  type FileSystemProvider,
+  type FileSystemWatcher,
+  NoopFileSystem,
+} from './filesystem'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
   LikeC4GeneratedModule,
@@ -33,9 +38,10 @@ import {
 } from './lsp'
 import {
   type LikeC4MCPServer,
-  type LikeC4MCPServerFactory,
+  type LikeC4MCPServerModuleContext,
+  NoMCPServer,
 } from './mcp/interfaces'
-import { NoopLikeC4MCPServer, NoopLikeC4MCPServerFactory } from './mcp/NoopLikeC4MCPServer'
+import { LikeC4MCPServerFactory } from './mcp/MCPServerFactory'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -69,6 +75,11 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
 
+export type LanguageServicesContext =
+  & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
+  & FileSystemModuleContext
+  & LikeC4MCPServerModuleContext
+
 interface LikeC4AddedSharedServices {
   lsp: {
     NodeKindProvider: NodeKindProvider
@@ -79,15 +90,17 @@ interface LikeC4AddedSharedServices {
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
+    FileSystemProvider: FileSystemProvider
+    FileSystemWatcher: FileSystemWatcher
   }
 }
 
 export type LikeC4SharedServices = LangiumSharedServices & LikeC4AddedSharedServices
 
-const LikeC4SharedModule: Module<
+const createLikeC4SharedModule = (context: LanguageServicesContext): Module<
   LikeC4SharedServices,
   PartialLangiumSharedServices & LikeC4AddedSharedServices
-> = {
+> => ({
   lsp: {
     NodeKindProvider: services => new NodeKindProvider(services),
     WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
@@ -97,8 +110,10 @@ const LikeC4SharedModule: Module<
     LangiumDocuments: services => new LangiumDocuments(services),
     ProjectsManager: services => new ProjectsManager(services),
     WorkspaceManager: services => new LikeC4WorkspaceManager(services),
+    FileSystemProvider: services => context.fileSystemProvider(services),
+    FileSystemWatcher: services => context.fileSystemWatcher(services),
   },
-}
+})
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -154,7 +169,9 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
   return (services: LikeC4Services) => new Type(services)
 }
 
-export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
+export const createLikeC4Module = (
+  context: LikeC4MCPServerModuleContext,
+): Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> => ({
   documentation: {
     DocumentationProvider: bind(LikeC4DocumentationProvider),
   },
@@ -164,8 +181,8 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   mcp: {
-    Server: bind(NoopLikeC4MCPServer),
-    ServerFactory: bind(NoopLikeC4MCPServerFactory),
+    Server: (services: LikeC4Services) => context.mcpServer(services),
+    ServerFactory: bind(LikeC4MCPServerFactory),
   },
   likec4: {
     LanguageServices: bind(DefaultLikeC4LanguageServices),
@@ -204,12 +221,10 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   parser: {
     ValueConverter: bind(LikeC4ValueConverter),
   },
-}
+})
 
-export type LanguageServicesContext = Partial<DefaultSharedModuleContext>
-
-export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & LikeC4Services>(
-  context: LanguageServicesContext,
+export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & LikeC4Services>(
+  context: Partial<LanguageServicesContext>,
   module?: Module<I, I1>,
   module2?: Module<I, I2>,
   module3?: Module<I, I3>,
@@ -218,7 +233,10 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
   const modules = [
     createDefaultModule({ shared }),
     LikeC4GeneratedModule,
-    LikeC4Module,
+    createLikeC4Module({
+      ...NoMCPServer,
+      ...context,
+    }),
     module,
     module2,
     module3,
@@ -239,44 +257,17 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
   return { shared, likec4 }
 }
 
-export function createSharedServices(context: LanguageServicesContext = {}): LikeC4SharedServices {
-  const moduleContext: DefaultSharedModuleContext = {
-    ...EmptyFileSystem,
+export function createSharedServices(context: Partial<LanguageServicesContext> = {}): LikeC4SharedServices {
+  const moduleContext = {
+    ...NoMCPServer,
+    ...NoopFileSystem,
     ...context,
   }
-  // if (context.connection) {
-  //   logToLspConnection(context.connection)
-  // }
-
   return inject(
     createDefaultSharedModule(moduleContext),
     LikeC4GeneratedSharedModule,
-    LikeC4SharedModule,
+    createLikeC4SharedModule(moduleContext),
   )
-}
-
-export function createLanguageServices(context: LanguageServicesContext = {}): {
-  shared: LikeC4SharedServices
-  likec4: LikeC4Services
-} {
-  const shared = createSharedServices(context)
-  const likec4 = inject(
-    createDefaultModule({ shared }),
-    LikeC4GeneratedModule,
-    LikeC4Module,
-  )
-  shared.ServiceRegistry.register(likec4)
-  registerValidationChecks(likec4)
-
-  if (!context.connection) {
-    // We don't run inside a language server
-    // Therefore, initialize the configuration provider instantly
-    shared.workspace.ConfigurationProvider.initialized({})
-  } else {
-    likec4.Rpc.init()
-  }
-
-  return { shared, likec4 }
 }
 
 // Copied from langium/src/dependency-injection.ts as it is not exported

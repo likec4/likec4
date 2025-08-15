@@ -1,18 +1,56 @@
 import { hasAtLeast, invariant } from '@likec4/core'
-import type { FileSelector, FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
+import type { BuildOptions, FileSelector, FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
+import type { FileSystemProvider, FileSystemWatcher } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { logError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
-  private documentFactory: LangiumDocumentFactory
+  protected readonly documentFactory: LangiumDocumentFactory
+  protected override readonly fileSystemProvider: FileSystemProvider
+  protected readonly fileSystemWatcher: FileSystemWatcher
+
+  override initialBuildOptions: BuildOptions = {
+    eagerLinking: true,
+    validation: true,
+  }
 
   constructor(private services: LikeC4SharedServices) {
     super(services)
     this.documentFactory = services.workspace.LangiumDocumentFactory
+    this.fileSystemProvider = services.workspace.FileSystemProvider
+    this.fileSystemWatcher = services.workspace.FileSystemWatcher
+  }
+
+  /**
+   * First load all project config files, then load all documents in the workspace.
+   */
+  protected override async performStartup(folders: WorkspaceFolder[]): Promise<LangiumDocument[]> {
+    this.folders ??= folders
+    const configFiles = [] as FileSystemNode[]
+    for (const folder of folders) {
+      try {
+        const uri = URI.parse(folder.uri)
+        const found = await this.fileSystemProvider.scanProjectFiles(uri)
+        configFiles.push(...found)
+        this.fileSystemWatcher.watch(uri.fsPath)
+      } catch (error) {
+        logError(error)
+      }
+    }
+    // Project config files
+    const projects = this.services.workspace.ProjectsManager
+    for (const entry of configFiles) {
+      try {
+        await projects.loadConfigFile(entry)
+      } catch (error) {
+        logError(error)
+      }
+    }
+    return await super.performStartup(folders)
   }
 
   /**
@@ -24,54 +62,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     folders: WorkspaceFolder[],
     collector: (document: LangiumDocument) => void,
   ): Promise<void> {
-    const projects = this.services.workspace.ProjectsManager
-    for (const folder of folders) {
-      try {
-        const content = await this.fileSystemProvider.readDirectory(URI.parse(folder.uri))
-        // First load project config files
-        for (const entry of content) {
-          try {
-            await projects.loadConfigFile(entry)
-          } catch (error) {
-            logError(error)
-          }
-        }
-      } catch (error) {
-        logError(error)
-      }
-    }
-
     collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
     await super.loadAdditionalDocuments(folders, collector)
   }
-
-  // /**
-  //  * We override the default implementation to process project config files during the traversal.
-  //  * This is necessary to ensure that the project config files are loaded and processed correctly.
-  //  */
-  // protected override async traverseFolder(
-  //   workspaceFolder: WorkspaceFolder,
-  //   folderPath: URI,
-  //   fileExtensions: string[],
-  //   collector: (document: LangiumDocument) => void,
-  // ): Promise<void> {
-
-  //   // Then load other files
-  //   for (const entry of nonConfigFiles) {
-  //     try {
-  //       if (this.includeEntry(workspaceFolder, entry, fileExtensions)) {
-  //         if (entry.isDirectory) {
-  //           await this.traverseFolder(workspaceFolder, entry.uri, fileExtensions, collector)
-  //         } else if (entry.isFile) {
-  //           const document = await this.langiumDocuments.getOrCreateDocument(entry.uri)
-  //           collector(document)
-  //         }
-  //       }
-  //     } catch (error) {
-  //       logError(error)
-  //     }
-  //   }
-  // }
 
   /**
    * Determine whether the given folder entry shall be included while indexing the workspace.

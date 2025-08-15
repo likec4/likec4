@@ -79,6 +79,9 @@ catalogs:
       specifier: 1.7.1
       version: 1.7.1
   hono:
+    '@hono/node-server':
+      specifier: ^1.14.4
+      version: 1.18.2
     hono:
       specifier: ^4.9.0
       version: 4.9.1
@@ -172,12 +175,18 @@ catalogs:
     '@valibot/to-json-schema':
       specifier: ^1.3.0
       version: 1.3.0
+    chokidar:
+      specifier: ^4.0.3
+      version: 4.0.3
     chroma-js:
       specifier: ^3.1.2
       version: 3.1.2
     consola:
       specifier: ^3.4.2
       version: 3.4.2
+    defu:
+      specifier: ^6.1.4
+      version: 6.1.4
     esm-env:
       specifier: ^1.2.2
       version: 1.2.2
@@ -756,7 +765,7 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
       defu:
-        specifier: ^6.1.4
+        specifier: catalog:utils
         version: 6.1.4
       fdir:
         specifier: catalog:utils
@@ -995,6 +1004,9 @@ importers:
         specifier: catalog:utils
         version: 1.11.0
     devDependencies:
+      '@hono/node-server':
+        specifier: catalog:hono
+        version: 1.18.2(hono@4.9.1)
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1022,9 +1034,6 @@ importers:
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.1
-      '@types/express':
-        specifier: ^5.0.3
-        version: 5.0.3
       '@types/natural-compare-lite':
         specifier: catalog:utils
         version: 1.4.2
@@ -1034,24 +1043,36 @@ importers:
       '@types/picomatch':
         specifier: catalog:utils
         version: 4.0.2
+      '@types/vscode':
+        specifier: catalog:vscode
+        version: 1.100.0
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      chokidar:
+        specifier: catalog:utils
+        version: 4.0.3
       chroma-js:
         specifier: catalog:utils
         version: 3.1.2
+      defu:
+        specifier: catalog:utils
+        version: 6.1.4
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
       fdir:
         specifier: catalog:utils
         version: 6.4.6(picomatch@4.0.3)
+      fetch-to-node:
+        specifier: ^2.1.0
+        version: 2.1.0
+      hono:
+        specifier: catalog:hono
+        version: 4.9.1
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1525,14 +1546,16 @@ importers:
         version: 3.0.1
 
   packages/mcp:
-    dependencies:
-      likec4:
-        specifier: workspace:*
-        version: link:../likec4
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/language-server':
+        specifier: workspace:*
+        version: link:../language-server
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1560,6 +1583,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.2)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.5))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
+      vscode-uri:
+        specifier: 3.1.0
+        version: 3.1.0
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
@@ -2876,6 +2902,12 @@ packages:
   '@fontsource/ibm-plex-sans@5.2.6':
     resolution: {integrity: sha512-yclktpagJncROwdWHHEfPsrIfoo3uiIeDFchvmjNmTW/YMBfLYWJnUv19EAqPNhGizdtmcH9FjzOR2094Z2uPg==}
 
+  '@hono/node-server@1.18.2':
+    resolution: {integrity: sha512-icgNvC0vRYivzyuSSaUv9ttcwtN8fDyd1k3AOIBDJgYd84tXRZSS6na8X54CY/oYoFTNhEmZraW/Rb9XYwX4KA==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: ^4
+
   '@hono/oauth-providers@0.8.2':
     resolution: {integrity: sha512-xQa9bt6Z/xAMvT+MTHHhXX28nyzqSDZl8LzszM071dIzoEcBx/NwZLnZjPm+7ZiRZb/2E9tiP5GMbBimtYrEHg==}
     engines: {node: '>=18.4.0'}
@@ -3757,17 +3789,11 @@ packages:
   '@types/bezier-js@4.1.3':
     resolution: {integrity: sha512-FNVVCu5mx/rJCWBxLTcL7oOajmGtWtBTDjq6DSUWUI12GeePivrZZXz+UgE0D6VYsLEjvExRO03z4hVtu3pTEQ==}
 
-  '@types/body-parser@1.19.5':
-    resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
-
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
 
   '@types/chroma-js@3.1.1':
     resolution: {integrity: sha512-SFCr4edNkZ1bGaLzGz7rgR1bRzVX4MmMxwsIa3/Bh6ose8v+hRpneoizHv0KChdjxaXyjRtaMq7sCuZSzPomQA==}
-
-  '@types/connect@3.4.38':
-    resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
   '@types/d3-color@3.1.3':
     resolution: {integrity: sha512-iO90scth9WAbmgv7ogoq57O9YpKmFBbmoEoCHDB2xMBY0+/KVrqAaCDyCE16dUspeOvIxFFRI+0sEtqDqy2b4A==}
@@ -3805,12 +3831,6 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/express-serve-static-core@5.0.6':
-    resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
-
-  '@types/express@5.0.3':
-    resolution: {integrity: sha512-wGA0NX93b19/dZC1J18tKWVIYWyyF2ZjT9vin/NRu0qzzvfVzWjs04iq2rQ3H65vCTQYlRqs3YHfY7zjdV+9Kw==}
-
   '@types/extend@3.0.4':
     resolution: {integrity: sha512-ArMouDUTJEz1SQRpFsT2rIw7DeqICFv5aaVzLSIYMYQSLcwcGOfT3VyglQs/p7K3F7fT4zxr0NWxYZIdifD6dA==}
 
@@ -3823,9 +3843,6 @@ packages:
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
-  '@types/http-errors@2.0.4':
-    resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
-
   '@types/js-yaml@4.0.9':
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
@@ -3834,9 +3851,6 @@ packages:
 
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
-
-  '@types/mime@1.3.5':
-    resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
@@ -3874,12 +3888,6 @@ packages:
   '@types/picomatch@4.0.2':
     resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
-  '@types/qs@6.9.18':
-    resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
-
-  '@types/range-parser@1.2.7':
-    resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
-
   '@types/react-dom@19.1.7':
     resolution: {integrity: sha512-i5ZzwYpqjmrKenzkoLM2Ibzt6mAsM7pxB6BCIouEVVmgiqaMj1TjaK7hnA36hbW5aZv20kx7Lw6hWzPWg0Rurw==}
     peerDependencies:
@@ -3896,12 +3904,6 @@ packages:
 
   '@types/semver@7.7.0':
     resolution: {integrity: sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==}
-
-  '@types/send@0.17.4':
-    resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
-
-  '@types/serve-static@1.15.7':
-    resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -5256,6 +5258,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fetch-to-node@2.1.0:
+    resolution: {integrity: sha512-Wq05j6LE1GrWpT2t1YbCkyFY6xKRJq3hx/oRJdWEJpZlik3g25MmdJS6RFm49iiMJw6zpZuBOrgihOgy2jGyAA==}
 
   fflate@0.8.2:
     resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
@@ -10572,6 +10577,10 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.6': {}
 
+  '@hono/node-server@1.18.2(hono@4.9.1)':
+    dependencies:
+      hono: 4.9.1
+
   '@hono/oauth-providers@0.8.2(hono@4.9.1)':
     dependencies:
       hono: 4.9.1
@@ -11672,20 +11681,11 @@ snapshots:
 
   '@types/bezier-js@4.1.3': {}
 
-  '@types/body-parser@1.19.5':
-    dependencies:
-      '@types/connect': 3.4.38
-      '@types/node': 22.15.31
-
   '@types/chai@5.2.2':
     dependencies:
       '@types/deep-eql': 4.0.2
 
   '@types/chroma-js@3.1.1': {}
-
-  '@types/connect@3.4.38':
-    dependencies:
-      '@types/node': 22.15.31
 
   '@types/d3-color@3.1.3': {}
 
@@ -11726,19 +11726,6 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/express-serve-static-core@5.0.6':
-    dependencies:
-      '@types/node': 22.15.31
-      '@types/qs': 6.9.18
-      '@types/range-parser': 1.2.7
-      '@types/send': 0.17.4
-
-  '@types/express@5.0.3':
-    dependencies:
-      '@types/body-parser': 1.19.5
-      '@types/express-serve-static-core': 5.0.6
-      '@types/serve-static': 1.15.7
-
   '@types/extend@3.0.4': {}
 
   '@types/fontkit@2.0.8':
@@ -11754,8 +11741,6 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/http-errors@2.0.4': {}
-
   '@types/js-yaml@4.0.9': {}
 
   '@types/mdast@4.0.4':
@@ -11763,8 +11748,6 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/mdx@2.0.13': {}
-
-  '@types/mime@1.3.5': {}
 
   '@types/minimatch@5.1.2': {}
 
@@ -11796,10 +11779,6 @@ snapshots:
 
   '@types/picomatch@4.0.2': {}
 
-  '@types/qs@6.9.18': {}
-
-  '@types/range-parser@1.2.7': {}
-
   '@types/react-dom@19.1.7(@types/react@19.1.10)':
     dependencies:
       '@types/react': 19.1.10
@@ -11815,17 +11794,6 @@ snapshots:
       '@types/node': 22.15.31
 
   '@types/semver@7.7.0': {}
-
-  '@types/send@0.17.4':
-    dependencies:
-      '@types/mime': 1.3.5
-      '@types/node': 22.15.31
-
-  '@types/serve-static@1.15.7':
-    dependencies:
-      '@types/http-errors': 2.0.4
-      '@types/node': 22.15.31
-      '@types/send': 0.17.4
 
   '@types/unist@2.0.11': {}
 
@@ -13545,6 +13513,8 @@ snapshots:
   fdir@6.4.6(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  fetch-to-node@2.1.0: {}
 
   fflate@0.8.2: {}
 

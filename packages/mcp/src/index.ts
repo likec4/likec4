@@ -1,40 +1,40 @@
 #!/usr/bin/env node
 
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { LikeC4 } from 'likec4'
+import { createLanguageServices, LikeC4FileSystem, WithMCPServer } from '@likec4/language-server'
+import {
+  configureLogger,
+  getConsoleStderrSink,
+  logger,
+} from '@likec4/log'
 import { resolve } from 'node:path'
+import { URI } from 'vscode-uri'
 
-const LIKEC4_WORKSPACE = resolve(process.env['LIKEC4_WORKSPACE'] || '.')
+const LIKEC4_WORKSPACE = URI.file(resolve(process.env['LIKEC4_WORKSPACE'] || '.')).toString()
+
+configureLogger({
+  sinks: {
+    // Name it as console to override internal logger
+    console: getConsoleStderrSink(),
+  },
+})
 
 async function main() {
-  console.error(`Loading LikeC4 from workspace ${LIKEC4_WORKSPACE}`)
-  const likec4 = await LikeC4.fromWorkspace(LIKEC4_WORKSPACE, {
-    logger: false,
+  logger.info`Loading LikeC4 from workspace: ${LIKEC4_WORKSPACE}`
+
+  const langium = await createLanguageServices({
+    ...LikeC4FileSystem(true),
+    ...WithMCPServer('stdio'),
   })
 
-  const mcp = likec4.langium.mcp.ServerFactory.create({
-    capabilities: {
-      tools: {},
-      logging: {},
-    },
-  })
-  mcp.server.oninitialized = () => {
-    mcp.server.sendLoggingMessage({
-      level: 'info',
-      data: {
-        message: 'Server initialized',
-        workspace: likec4.workspace,
-      },
-    })
-  }
+  await langium.shared.workspace.WorkspaceManager.initializeWorkspace([{
+    uri: LIKEC4_WORKSPACE,
+    name: 'workspace',
+  }])
 
-  const transport = new StdioServerTransport()
-  console.error('Connecting server to transport...')
-  await mcp.connect(transport)
-  console.error('LikeC4 MCP Server running on stdio')
+  await langium.likec4.mcp.Server.start()
 }
 
 main().catch(err => {
-  console.error(err)
+  logger.error(err)
   process.exit(1)
 })

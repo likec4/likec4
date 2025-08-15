@@ -1,3 +1,5 @@
 import { startLanguageServer } from '@likec4/language-server'
 
-startLanguageServer()
+startLanguageServer({
+  enableWatcher: false,
+})

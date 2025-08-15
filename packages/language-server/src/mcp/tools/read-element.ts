@@ -1,93 +1,157 @@
 import { invariant } from '@likec4/core'
 import z from 'zod'
-import { safeCall } from '../../utils'
-import { ProjectsManager } from '../../workspace'
 import { likec4Tool } from '../utils'
-import { locationSchema } from './_common'
+import { includedInViews, includedInViewsSchema, locationSchema, mkLocate, projectIdSchema } from './_common'
 
 export const readElement = likec4Tool({
   name: 'read-element',
   description: `
-Returns information about LikeC4 element, includes:
-- id (FQN)
-- parent id (FQN of the parent element, if this element is a nested)
-- kind (element kind)
-- title, description, technology
-- array of assigned tags
-- project name this element belongs to
-- metadata (key-value pairs)
-- shape
-- children (array of ids of the direct children elements)
-- name of the default view of this element if any
-- array of views that include this element
-- element relationships:
-  - incoming and outgoing
-  - direct and indirect (relationships with the nested elements)
-  (relationships include title, kind, description, technology, tags)
-- array of Deployment FQNs that represent deployed instances of this element
-- source location (where the element is defined, if running in the editor)
-`.trimStart(),
+Read detailed information about a LikeC4 element.
+
+Request:
+- id: string — element id (FQN)
+- project: string (optional) — project id. Defaults to "default" if omitted.
+
+Response (JSON object):
+- id: string — element id (FQN)
+- name: string — element name
+- kind: string — element kind
+- title: string — human-readable title
+- description: string|null — optional description
+- technology: string|null — optional technology
+- tags: string[] — assigned tags
+- project: string — project id this element belongs to
+- metadata: Record<string, string> — element metadata
+- shape: string — rendered shape
+- color: string — rendered color
+- children: string[] — ids (FQNs) of direct child elements
+- defaultView: string|null — default view name if set
+- includedInViews: View[] — views that include this element
+- relationships: object — relationships of this element (direct and indirect)
+  - incoming: Array<{ source: { id: string, title: string, kind: string }, kind: string|null, target: string, title: string|null, description: string|null, technology: string|null, tags: string[] }>
+  - outgoing: Array<{ source: string, target: { id: string, title: string, kind: string }, kind: string|null, title: string|null, description: string|null, technology: string|null, tags: string[] }>
+- deployedInstances: string[] — deployed instance ids (Deployment FQNs)
+- sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location if available
+
+View (object) fields:
+- id: string — view identifier
+- title: string — view title
+- type: "element" | "deployment" | "dynamic"
+
+Notes:
+- Read-only, idempotent, no side effects.
+- Safe to call repeatedly.
+
+Example response:
+{
+  "id": "shop.frontend",
+  "name": "frontend",
+  "kind": "container",
+  "title": "Frontend",
+  "description": "User-facing web app",
+  "technology": "React",
+  "tags": ["public"],
+  "project": "default",
+  "metadata": { "owner": "web" },
+  "shape": "rounded-rectangle",
+  "color": "#2F80ED",
+  "children": ["shop.frontend.auth"],
+  "defaultView": "frontend-overview",
+  "includedInViews": [
+    {
+      "id": "frontend-overview",
+      "title": "Frontend Overview",
+      "type": "element"
+    }
+  ],
+  "relationships": {
+    "incoming": [
+      {
+        "source": { "id": "shop.api", "title": "API", "kind": "container" },
+        "kind": "uses",
+        "target": "shop.frontend",
+        "title": "Calls",
+        "description": null,
+        "technology": "HTTPS",
+        "tags": []
+      }
+    ],
+    "outgoing": []
+  },
+  "deployedInstances": ["k8s.cluster.frontend"],
+  "sourceLocation": {
+    "path": "/abs/path/project/model.c4",
+    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 25, "character": 0 } }
+  }
+}
+`,
   annotations: {
     readOnlyHint: true,
+    idempotentHint: true,
+    title: 'Read element',
   },
   inputSchema: {
     id: z.string().describe('Element id (FQN)'),
-    project: z.string().optional().describe('Project name (optional, will use "default" if not specified)'),
+    project: projectIdSchema,
   },
   outputSchema: {
     id: z.string().describe('Element id (FQN)'),
     kind: z.string().describe('Element kind'),
     name: z.string().describe('Element name'),
     title: z.string(),
-    description: z.string().nullish(),
-    technology: z.string().nullish(),
+    description: z.string().nullable(),
+    technology: z.string().nullable(),
     tags: z.array(z.string()),
     project: z.string(),
     metadata: z.record(z.string()),
     shape: z.string(),
+    color: z.string(),
     children: z.array(z.string()).describe('Children of this element (Array of FQNs)'),
-    defaultView: z.string().nullish().describe('Name of the default view of this element'),
-    includedInViews: z.array(z.string()).describe('Views that include this element (Array of view names)'),
+    defaultView: z.string().nullable().describe('Name of the default view of this element'),
+    includedInViews: includedInViewsSchema.describe('Views that include this element'),
     relationships: z.object({
       incoming: z.array(z.object({
         source: z.object({
           id: z.string(),
           title: z.string(),
           kind: z.string(),
-        }),
-        kind: z.string().nullish().describe('Relationship kind'),
+        }).describe('Source element of this relationship'),
+        kind: z.string().nullable().describe('Relationship kind'),
         target: z.string().describe(
           'Target element id (FQN), either this element or nested element, if relationship is indirect',
         ),
-        title: z.string().nullish().describe('Relationship title'),
-        description: z.string().nullish().describe('Relationship description'),
-        technology: z.string().nullish().describe('Relationship technology'),
+        title: z.string().nullable().describe('Relationship title'),
+        description: z.string().nullable().describe('Relationship description'),
+        technology: z.string().nullable().describe('Relationship technology'),
         tags: z.array(z.string()).describe('Relationship tags'),
-      })),
+      })).describe('Incoming relationships of this element (direct and indirect, incoming to nested elements)'),
       outgoing: z.array(z.object({
-        source: z.string().describe('Source element id (FQN), either this element or nested element'),
+        source: z.string().describe(
+          'Source element id (FQN), either this element or nested element, if relationship is indirect',
+        ),
         target: z.object({
           id: z.string(),
           title: z.string(),
           kind: z.string(),
-        }),
-        kind: z.string().nullish().describe('Relationship kind'),
-        title: z.string().nullish().describe('Relationship title'),
-        description: z.string().nullish().describe('Relationship description'),
-        technology: z.string().nullish().describe('Relationship technology'),
+        }).describe('Target element of this relationship'),
+        kind: z.string().nullable().describe('Relationship kind'),
+        title: z.string().nullable().describe('Relationship title'),
+        description: z.string().nullable().describe('Relationship description'),
+        technology: z.string().nullable().describe('Relationship technology'),
         tags: z.array(z.string()).describe('Relationship tags'),
-      })),
-    }).describe('Relationships of this element (including indirect, incoming/outgoing to/from nested elements)'),
+      })).describe('Outgoing relationships of this element (direct and indirect, outgoing from nested elements)'),
+    }).describe('Relationships of this element'),
     deployedInstances: z.array(z.string()).describe('Deployed instances of this element (Array of Deployment FQNs)'),
-    sourceLocation: locationSchema.nullish(),
+    sourceLocation: locationSchema,
   },
 }, async (languageServices, args) => {
-  const projectId = args.project ?? ProjectsManager.DefaultProjectId
-  const project = languageServices.projects().find(p => p.id === projectId)
-  invariant(project, `Project "${projectId}" not found`)
-  const model = await languageServices.computedModel(project.id)
+  const projectId = languageServices.projectsManager.ensureProjectId(args.project)
+  const model = await languageServices.computedModel(projectId)
   const element = model.findElement(args.id)
   invariant(element, `Element "${args.id}" not found in project "${projectId}"`)
+
+  const locate = mkLocate(languageServices, projectId)
+
   return {
     id: element.id,
     name: element.name,
@@ -96,12 +160,13 @@ Returns information about LikeC4 element, includes:
     description: element.description.text,
     technology: element.technology,
     tags: [...element.tags],
-    project: project.id,
+    project: projectId,
     metadata: element.getMetadata(),
     shape: element.shape,
+    color: element.color,
     children: [...element.children()].map(c => c.id),
-    defaultView: element.defaultView?.id,
-    includedInViews: [...element.views()].map(v => v.id),
+    defaultView: element.defaultView?.id || null,
+    includedInViews: includedInViews(element.views()),
     relationships: {
       incoming: [...element.incoming()].map(r => ({
         source: {
@@ -131,6 +196,6 @@ Returns information about LikeC4 element, includes:
       })),
     },
     deployedInstances: [...element.deployments()].map(i => i.id),
-    sourceLocation: safeCall(() => languageServices.locate({ element: element.id, projectId })),
+    sourceLocation: locate({ element: element.id }),
   }
 })

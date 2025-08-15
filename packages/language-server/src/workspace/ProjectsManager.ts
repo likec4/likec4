@@ -154,7 +154,7 @@ export class ProjectsManager {
 
   ensureProjectId(projectId?: ProjectId | undefined): ProjectId {
     if (projectId === ProjectsManager.DefaultProjectId) {
-      return projectId
+      return this.defaultProjectId ?? ProjectsManager.DefaultProjectId
     }
     if (projectId) {
       invariant(this.projectIdToFolder.has(projectId), `Project ID ${projectId} is not registered`)
@@ -251,6 +251,9 @@ export class ProjectsManager {
     let id: ProjectId
 
     if (!project) {
+      if (this.projectIdToFolder.has(config.name as ProjectId)) {
+        logger.warn`Project "${config.name}" already exists, generating unique ID`
+      }
       id = this.uniqueProjectId(config.name)
       project = {
         id,
@@ -334,7 +337,7 @@ export class ProjectsManager {
       const configFiles = [] as FileSystemNode[]
       for (const folder of folders) {
         try {
-          const files = await this.services.workspace.FileSystemProvider.readDirectory(URI.parse(folder.uri))
+          const files = await this.services.workspace.FileSystemProvider.scanProjectFiles(URI.parse(folder.uri))
           for (const file of files) {
             if (file.isFile && this.isConfigFile(file.uri)) {
               configFiles.push(file)

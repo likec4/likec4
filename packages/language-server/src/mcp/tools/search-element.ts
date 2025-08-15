@@ -1,25 +1,32 @@
 import { ifilter } from '@likec4/core/utils'
 import z from 'zod'
-import { likec4Tool } from '../utils'
+import { likec4Tool, logger } from '../utils'
+import { includedInViews, includedInViewsSchema } from './_common'
 
 const searchResultSchema = z.array(
   z.discriminatedUnion('type', [
     z.object({
-      type: z.literal('logical'),
+      type: z.literal('element'),
+      project: z.string().describe('Project ID'),
       id: z.string().describe('Element ID (FQN)'),
+      name: z.string().describe('Element name'),
       kind: z.string(),
       title: z.string(),
+      technology: z.string().nullable(),
       shape: z.string(),
-      project: z.string().describe('Project name'),
+      includedInViews: includedInViewsSchema,
       tags: z.array(z.string()),
     }),
     z.object({
       type: z.literal('deployment-node'),
+      project: z.string().describe('Project ID'),
       id: z.string().describe('Deployment ID (FQN)'),
+      name: z.string().describe('Deployment name'),
       kind: z.string(),
       title: z.string(),
+      technology: z.string().nullable(),
       shape: z.string(),
-      project: z.string().describe('Project name'),
+      includedInViews: includedInViewsSchema,
       tags: z.array(z.string()),
     }),
   ]),
@@ -29,31 +36,68 @@ export const searchElement = likec4Tool({
   name: 'search-element',
   annotations: {
     readOnlyHint: true,
+    idempotentHint: true,
+    title: 'Search elements',
   },
   description: `
-Search for LikeC4 elements and deployment nodes by partial match of:
-- id (FQN)
-- title
-- kind (if search string starts with "kind:")
-- shape (if search string starts with "shape:")
-- any assigned tags (if search string starts with "#")
+Search LikeC4 elements and deployment nodes across all projects.
 
-Returns array of found elements with:
-- type (logical or deployment-node)
-- id (FQN)
-- kind
-- title
-- shape
-- project name this element belongs to
-- assigned tags
+Query syntax (case-insensitive):
+- Free text: matches id (FQN) or title
+- kind:<value>: filters by kind
+- shape:<value>: filters by shape
+- #<value>: matches assigned tags
 
-Can be used for further requests (like read-element or read-project-summary)
-`.trimStart(),
+Request:
+- search: string — at least 2 characters
+
+Response (JSON object):
+- found: Result[] - returns top 20 results
+- total: number - total number of results
+
+Result (discriminated union by "type"):
+- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[] }
+- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[] }
+
+View (object) fields:
+- id: string — view identifier
+- title: string — view title
+- type: "element" | "deployment" | "dynamic"
+
+Notes:
+- Read-only, idempotent.
+- Use results as input to other tools (e.g., read-element, read-view).
+
+Example response:
+{
+  "found": [
+    {
+      "type": "logical",
+      "project": "default",
+      "id": "shop.frontend",
+      "name": "frontend",
+      "kind": "container",
+      "title": "Frontend",
+      "technology": "React",
+      "shape": "rectangle",      
+      "includedInViews": [
+        {
+          "id": "system-overview",
+          "title": "System Overview",
+          "type": "element"
+        }
+      ],
+      "tags": ["public"]
+    }
+  ]
+}
+`,
   inputSchema: {
     search: z.string().min(2, 'Search must be at least 2 characters long'),
   },
   outputSchema: {
     found: searchResultSchema,
+    total: z.number(),
   },
 }, async (languageServices, args) => {
   const projects = languageServices.projects()
@@ -84,15 +128,18 @@ Can be used for further requests (like read-element or read-project-summary)
       const model = await languageServices.computedModel(project.id)
 
       // filter elements
-      for (const el of ifilter(model.elements(), predicate)) {
+      for (const el of ifilter(model.elements(), e => !e.imported && predicate(e))) {
         found.push({
-          type: 'logical',
+          type: 'element',
+          project: project.id,
           id: el.id,
+          name: el.name,
           kind: el.kind,
           title: el.title,
+          technology: el.technology,
           shape: el.shape,
-          project: project.id,
           tags: [...el.tags],
+          includedInViews: includedInViews(el.views()),
         })
       }
 
@@ -100,20 +147,24 @@ Can be used for further requests (like read-element or read-project-summary)
       for (const el of ifilter(model.deployment.nodes(), predicate)) {
         found.push({
           type: 'deployment-node',
+          project: project.id,
           id: el.id,
+          name: el.name,
           kind: el.kind,
           title: el.title,
+          technology: el.technology,
           shape: el.shape,
-          project: project.id,
           tags: [...el.tags],
+          includedInViews: includedInViews(el.views()),
         })
       }
     } catch (error) {
-      console.error(`Error searching in project ${project.id}:`, error)
+      logger.error(`Error searching in project ${project.id}:`, { error })
     }
   }
 
   return {
-    found,
+    found: found.slice(0, 20),
+    total: found.length,
   }
 })
