@@ -21,6 +21,7 @@ export async function handler({
 }: HandlerParams): Promise<number> {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
+    watch: false,
   })
   const viewsLogger = createLikeC4Logger('c4:views')
   let valid = true

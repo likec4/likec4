@@ -45,6 +45,12 @@ export type LikeC4Options = {
    * @default false
    */
   mcp?: false | 'stdio' | { port: number }
+
+  /**
+   * Whether to watch for changes in the workspace.
+   * @default false
+   */
+  watch?: boolean
 }
 
 const validationErrorsToError = (likec4: LikeC4) =>
@@ -112,7 +118,7 @@ export class LikeC4 {
       const langium = createLanguageServices(
         defu(opts, {
           useFileSystem: true,
-          watch: true,
+          watch: false,
           logger: 'default' as const,
           graphviz: 'wasm' as const,
           mcp: false as const,

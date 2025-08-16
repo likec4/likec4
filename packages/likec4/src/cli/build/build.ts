@@ -63,6 +63,7 @@ export async function buildHandler({
   const languageServices = await LikeC4.fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     logger: 'vite',
+    watch: false,
   })
 
   const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')

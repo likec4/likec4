@@ -23,6 +23,7 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
   })
   languageServices.ensureSingleProject()
 

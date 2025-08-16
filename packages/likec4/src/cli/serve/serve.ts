@@ -59,6 +59,7 @@ export async function handler({
   const languageServices = await LikeC4.fromWorkspace(path, {
     // logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: true,
   })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')

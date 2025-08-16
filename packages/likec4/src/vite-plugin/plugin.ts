@@ -85,15 +85,6 @@ const virtuals = [
   iconsModule,
 ]
 
-const isTarget = (path: string) => {
-  const p = path.toLowerCase()
-  return p.endsWith('.c4')
-    || p.endsWith('.likec4')
-    || p.endsWith('.like-c4')
-    || p.endsWith('.likec4rc')
-    || p.endsWith('likec4.config.json')
-}
-
 export function LikeC4VitePlugin({
   useOverviewGraph = false,
   ...opts
@@ -126,6 +117,7 @@ export function LikeC4VitePlugin({
           graphviz: opts.graphviz ?? 'wasm',
           printErrors: opts.printErrors ?? true,
           throwIfInvalid: opts.throwIfInvalid ?? false,
+          watch: true,
         })
         likec4 = instance.languageServices
       }

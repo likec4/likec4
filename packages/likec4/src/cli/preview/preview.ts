@@ -33,6 +33,7 @@ export async function handler({
 }: HandlerParams) {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
+    watch: false,
   })
 
   const server = await vitePreview({
