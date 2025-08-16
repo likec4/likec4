@@ -1,3 +1,18 @@
+# [1.38.0](https://github.com/likec4/likec4/compare/v1.37.0...v1.38.0) (2025-08-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency astro to v5.12.8 [security] ([#2133](https://github.com/likec4/likec4/issues/2133)) ([97c7538](https://github.com/likec4/likec4/commit/97c75385b985fc7f2e7f981905567a36762c245f))
+
+
+### Features
+
+* **cli:** add `likec4 mcp` command ([82ceead](https://github.com/likec4/likec4/commit/82ceeadddd62e49bf409c6cf9f2aa150a660706e))
+* improve MCP ([2a8f6f4](https://github.com/likec4/likec4/commit/2a8f6f4ebf2cb4db0128346989c700e55ce0f02d))
+
+
+
 # [1.37.0](https://github.com/likec4/likec4/compare/v1.36.1...v1.37.0) (2025-08-14)
 
 ### 🚀 Features
