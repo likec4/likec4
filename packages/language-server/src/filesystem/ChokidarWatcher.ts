@@ -41,7 +41,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
   private createWatcher(folder: string): FSWatcher {
     let watcher = chokidar.watch(folder, {
-      ignored: (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
+      ignored: (path, stats) => path.includes('node_modules') || (!!stats && stats.isFile() && !isAnyLikeC4File(path)),
       ignoreInitial: true,
     })
 

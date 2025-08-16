@@ -3,7 +3,7 @@ import type { BuildOptions, FileSelector, FileSystemNode, LangiumDocument, Langi
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import type { FileSystemProvider, FileSystemWatcher } from '../filesystem'
+import type { FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { logError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -11,7 +11,6 @@ import type { LikeC4SharedServices } from '../module'
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected readonly documentFactory: LangiumDocumentFactory
   protected override readonly fileSystemProvider: FileSystemProvider
-  protected readonly fileSystemWatcher: FileSystemWatcher
 
   override initialBuildOptions: BuildOptions = {
     eagerLinking: true,
@@ -22,7 +21,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     super(services)
     this.documentFactory = services.workspace.LangiumDocumentFactory
     this.fileSystemProvider = services.workspace.FileSystemProvider
-    this.fileSystemWatcher = services.workspace.FileSystemWatcher
   }
 
   /**
@@ -36,7 +34,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         const uri = URI.parse(folder.uri)
         const found = await this.fileSystemProvider.scanProjectFiles(uri)
         configFiles.push(...found)
-        this.fileSystemWatcher.watch(uri.fsPath)
+        this.services.workspace.FileSystemWatcher.watch(uri.fsPath)
       } catch (error) {
         logError(error)
       }

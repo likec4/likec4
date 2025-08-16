@@ -15,17 +15,20 @@ This enables you to query your model in natural language:
 
 > _"Lookup LikeC4 model and list all incoming relationships of the backend api"_
 
-> _"What elements from the inside of the 'Backend' have relations with the legacy database"_
+> _"What nested elements of the 'Backend' have relations with the legacy api"_
 
-> _"List all elements tagged 'legacy' from team1 project"_
+> _"List all elements tagged legacy from team1 project"_
 
 > _"What technologies are used for ui (consider all elements with browser shape)"_
 
+> _"Export to CSV all relationships between Backend and Amazon SQS"_
+
 ## Usage
 
-Two options are available:
-- Use extension's built-in MCP Server (recommended)
+Three options are available:
+- Use extension's built-in MCP Server
 - Use `@likec4/mcp` package
+- Use `likec4 mcp` CLI
 
 ### Using extension
 
@@ -42,7 +45,7 @@ To configure MCP Server:
       "servers": {
         "likec4": {
           "type": "sse",
-          "url": "http://localhost:33335/sse"
+          "url": "http://localhost:33335/mcp"
         }
       }
     }
@@ -56,7 +59,7 @@ To configure MCP Server:
     {
       "mcpServers": {
         "likec4": {
-          "url": "http://localhost:33335/sse"
+          "url": "http://localhost:33335/mcp"
         }
       }
     }
@@ -70,7 +73,7 @@ To configure MCP Server:
     {
       "mcpServers": {
         "likec4": {
-          "serverUrl": "http://localhost:33335/sse"      
+          "serverUrl": "http://localhost:33335/mcp"      
         }
       }
     }
@@ -80,9 +83,11 @@ To configure MCP Server:
 
 You can change port in the settings.
 
-:::note
-MCP Server is unavailable if extension is not active.  
-Extension activates when you open LikeC4 source file.
+:::caution
+The MCP server is only available when the extension is active.
+The extension activates automatically once you open any LikeC4 source file.
+
+If it doesn’t show up, try refreshing the list of available MCP servers in your editor
 :::
 
 ### Using package
@@ -105,9 +110,29 @@ Example configuration:
   }
 }
 ```
-<Aside type="caution" title="Limitation">
-Current implementation of `@likec4/mcp` parses LikeC4 model during initialization, keeps snapshot in the memory and does not watch for changes.  
-You need to restart the server to pick up changes.
 
-Extension's built-in MCP Server does not have this limitation, it always provides the current state.
-</Aside>
+This package starts MCP server using [`stdio`](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio) transport.
+
+If `LIKEC4_WORKSPACE` environment variable is not set, the current directory will be used as workspace.
+
+### Using CLI
+
+If you have installed [`likec4`](/tooling/cli) CLI, you can start MCP server with `stdio` transpor:
+
+```sh
+likec4 mcp
+# or
+likec4 mcp --stdio
+```
+
+Start MCP server with `http` transport on port `33335` (default) at `./src` folder:
+
+```sh
+likec4 mcp --http ./src
+```
+
+Start MCP server with `http` transport on port `1234`:
+
+```sh
+likec4 mcp -p 1234
+```

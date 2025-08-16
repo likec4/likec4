@@ -68,9 +68,10 @@ views {
     group 'External' {
       color green
       opacity 100%
-      include customer with {
-        color green
-      }
+      include
+        customer with {
+          color green
+        }
     }
 
 
@@ -92,8 +93,8 @@ views {
     style supportUser {
       color indigo
     }
-  	autoLayout BottomTop
-	}
+    autoLayout BottomTop
+  }
 
   dynamic view dynamic-view-1 {
     title 'Dynamic View Example'

@@ -28,6 +28,10 @@ export default defineBuildConfig({
   entries: [mkdist, bundled],
   clean: true,
   stub: false,
+  alias: {
+    'raw-body': './src/empty.ts',
+    'content-type': './src/empty.ts',
+  },
   rollup: {
     esbuild: {
       minify: true,

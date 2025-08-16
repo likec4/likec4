@@ -2,6 +2,7 @@ import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
 import { defu } from 'defu'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
+import { NoopFileSystem } from './filesystem'
 import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
 import { getTelemetrySink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
@@ -17,7 +18,7 @@ export { isLikeC4Builtin } from './likec4lib'
 export { createLanguageServices } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
-export { LikeC4FileSystem, WithMCPServer }
+export { LikeC4FileSystem, NoopFileSystem, WithMCPServer }
 
 type StartLanguageServerOptions = {
   /**

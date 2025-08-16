@@ -1,4 +1,3 @@
-import { LikeC4Model } from '@likec4/core/model'
 import { URI } from 'langium'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
@@ -67,7 +66,18 @@ describe.concurrent('LikeC4ModelBuilder -- projects', () => {
       title: 'Test Project',
     })
 
+    // test-project is the only project, so it should be the default
     const defaultModel = await buildLikeC4Model('default')
-    expect(defaultModel).toStrictEqual(LikeC4Model.EMPTY)
+    expect(defaultModel.$data.elements).toMatchObject({
+      c1: {
+        id: 'c1',
+        kind: 'component',
+      },
+    })
+    expect(defaultModel.projectId).toBe('test-project')
+    expect(defaultModel.project).toEqual({
+      id: 'test-project',
+      title: 'Test Project',
+    })
   })
 })

@@ -39,6 +39,12 @@ export type LikeC4Options = {
    * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
+
+  /**
+   * Whether to start MCP server
+   * @default false
+   */
+  mcp?: false | 'stdio' | { port: number }
 }
 
 const validationErrorsToError = (likec4: LikeC4) =>
@@ -56,6 +62,7 @@ export class LikeC4 {
         watch: false,
         logger: false as const,
         graphviz: 'wasm' as const,
+        mcp: false as const,
       }),
     )
 
@@ -64,13 +71,13 @@ export class LikeC4 {
       path: '/workspace',
     })
 
+    const uri = UriUtils.joinPath(workspaceUri, 'source.likec4')
+    const doc = langium.shared.workspace.LangiumDocuments.createDocument(uri, likec4SourceCode)
+
     await langium.cli.Workspace.initWorkspace({
       uri: workspaceUri.toString(),
       name: 'virtual',
     })
-
-    const uri = UriUtils.joinPath(workspaceUri, 'source.likec4')
-    const doc = langium.shared.workspace.LangiumDocuments.createDocument(uri, likec4SourceCode)
 
     await langium.shared.workspace.DocumentBuilder.build([doc], {
       validation: true,
@@ -108,6 +115,7 @@ export class LikeC4 {
           watch: true,
           logger: 'default' as const,
           graphviz: 'wasm' as const,
+          mcp: false as const,
         }),
       )
 

@@ -1,5 +1,5 @@
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
-import { DocumentState, EmptyFileSystem, TextDocument, UriUtils } from 'langium'
+import { DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
 import { entries } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -7,10 +7,11 @@ import type { LiteralUnion } from 'type-fest'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
+import { NoopFileSystem } from '../filesystem'
 import { createLanguageServices } from '../module'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
-  const services = createLanguageServices(EmptyFileSystem).likec4
+  const services = createLanguageServices(NoopFileSystem).likec4
   const metaData = services.LanguageMetaData
   const langiumDocuments = services.shared.workspace.LangiumDocuments
   const documentBuilder = services.shared.workspace.DocumentBuilder
