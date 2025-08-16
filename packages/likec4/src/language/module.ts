@@ -2,9 +2,12 @@ import {
   type LikeC4Services,
   createLanguageServices as createCustomLanguageServices,
   LikeC4FileSystem,
+  NoopFileSystem,
+  WithMCPServer,
 } from '@likec4/language-server'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
+import { configureLogger, getConsoleStderrSink } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
 import k from 'tinyrainbow'
@@ -57,6 +60,12 @@ export type CreateLanguageServiceOptions = {
    * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
+
+  /**
+   * Whether to start MCP server
+   * @default false
+   */
+  mcp?: false | 'stdio' | { port: number }
 }
 
 export function createLanguageServices(opts?: CreateLanguageServiceOptions): CliServices {
@@ -64,8 +73,20 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     useFileSystem: true,
     logger: 'default' as const,
     graphviz: 'wasm',
+    mcp: false as const,
   })
   let logger: Logger
+
+  if (options.mcp === 'stdio') {
+    configureLogger({
+      reset: true,
+      sinks: {
+        // Name it as console to override internal logger
+        console: getConsoleStderrSink(),
+      },
+    })
+    options.logger = 'default'
+  }
 
   switch (options.logger) {
     case false:
@@ -96,9 +117,20 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
   } satisfies Module<CliServices, DeepPartial<CliServices>>
 
   const { likec4 } = createCustomLanguageServices(
-    options.useFileSystem ? LikeC4FileSystem(options.watch) : {},
+    {
+      ...options.useFileSystem ? LikeC4FileSystem(options.watch) : NoopFileSystem,
+      ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : 'sse') : {},
+    },
     CliModule,
     module,
   )
+
+  if (typeof options.mcp === 'object' && options.mcp.port) {
+    likec4.mcp.Server.start(options.mcp.port)
+  }
+  if (options.mcp === 'stdio') {
+    likec4.mcp.Server.start()
+  }
+
   return likec4
 }

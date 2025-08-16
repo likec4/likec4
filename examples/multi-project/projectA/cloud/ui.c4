@@ -5,6 +5,7 @@ model {
     dashboard = app {
       title 'Customer Dashboard'
       description 'Nextjs application, hosted on Vercel'
+      technology 'Next.js (Vercel)'
       style {
         shape browser
       }
@@ -21,6 +22,7 @@ model {
         Native iOS Application
         written in Swift
       '
+      technology 'swift'
       link /view/mobile 'view'
 
       .requests cloud.graphql.myAccount 'fetches via GraphQL'
@@ -30,7 +32,8 @@ model {
 
     supportPanel = app {
       title 'Support Panel'
-      description 'Retoool Application'
+      description 'Retool Application'
+      technology 'Retool'
       icon tech:astro
       -> cloud.next.graphql 'updates data in case of a support request'
       -> amazon.aurora.tblUsers 'reads users from the database' {

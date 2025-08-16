@@ -4,16 +4,17 @@ import { configureLogger, getConsoleSink } from '@likec4/log'
 import { DEV } from 'esm-env'
 import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
-import { clamp } from 'remeda'
+import { clamp, pipe } from 'remeda'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { version } from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
-import { checkAvailableUpdate, notifyAvailableUpdate } from './check-update'
+import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
+import mcpCmd from './mcp'
 import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
@@ -36,22 +37,27 @@ async function main() {
     notifyAvailableUpdate()
   }
 
-  return await yargs(hideBin(argv))
+  const y = pipe(
+    yargs(hideBin(argv)),
+    serveCmd,
+    buildCmd,
+    codegenCmd,
+    exportCmd,
+    previewCmd,
+    validateCmd,
+    mcpCmd,
+    checkUpdateCmd,
+  )
+
+  await y
     .scriptName('likec4')
     .usage(`Usage: $0 <command>`)
-    .command(serveCmd)
-    .command(buildCmd)
-    .command(codegenCmd)
-    .command(exportCmd)
-    .command(previewCmd)
-    .command(validateCmd)
-    .command({
-      command: 'check-update',
-      describe: 'Check for updates',
-      handler: async () => {
-        await checkAvailableUpdate()
-      },
-    })
+    .version(version)
+    .alias('v', 'version')
+    .alias('h', 'help')
+    .demandCommand(1, 'Please run with valid command')
+    .strict()
+    .recommendCommands()
     .help('help')
     .version(version)
     .alias('v', 'version')

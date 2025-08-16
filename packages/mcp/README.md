@@ -21,6 +21,10 @@
 }
 ```
 
+This package starts MCP server using [`stdio`](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio) transport.
+
+If `LIKEC4_WORKSPACE` environment variable is not set, the current directory will be used as workspace.
+
 ## Getting help
 
 We are always happy to help you get started:

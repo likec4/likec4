@@ -127,6 +127,30 @@ likec4 codegen plantuml
 
 [📖 Read documentation](https://likec4.dev/tooling/cli/) for other CLI usage
 
+### MCP Server
+
+Start MCP server with `stdio` transpor:
+
+```sh
+likec4 mcp
+# or
+likec4 mcp --stdio
+```
+
+Start MCP server with `http` transport on port 33335:
+
+```sh
+likec4 mcp --http
+```
+
+Start MCP server with `http` transport on port 1234:
+
+```sh
+likec4 mcp -p 1234
+```
+
+[📖 Read documentation](https://likec4.dev/tooling/mcp/) for MCP usage
+
 ## Vite Plugin
 
 LikeC4 Vite Plugin allows you to embed views from your LikeC4 model into your Vite-based application.\
