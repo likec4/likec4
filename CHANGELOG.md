@@ -1,3 +1,31 @@
+# [1.38.0](https://github.com/likec4/likec4/compare/v1.37.0...v1.38.0) (2025-08-16)
+
+### 🚀 Features
+
+* **Enhanced MCP:**
+  - Switched to **Streamable Transport** (update path from `/sse` → `/mcp`):
+    
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "url": "http://localhost:33335/mcp"
+        }
+      }
+    }   
+    ```
+  - Added detailed instructions and tool descriptions 
+  - New tool: **`find-relationships`** — discover relationships between elements.  
+    > Example: _“Export to CSV all relationships between Backend and 'Amazon SQS'”_  
+  - Added filesystem watcher, that keeps the model always in sync
+
+* **New CLI command:**  
+  Introduced `likec4 mcp` for starting the server manually:  
+   ```sh
+  likec4 mcp --port 1234 ./src
+   ```
+  
+
 # [1.37.0](https://github.com/likec4/likec4/compare/v1.36.1...v1.37.0) (2025-08-14)
 
 ### 🚀 Features
