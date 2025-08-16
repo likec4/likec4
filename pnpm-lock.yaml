@@ -476,8 +476,8 @@ importers:
         specifier: 16.1.1
         version: 16.1.1
       '@hono/oauth-providers':
-        specifier: ^0.8.2
-        version: 0.8.2(hono@4.9.1)
+        specifier: ^0.8.4
+        version: 0.8.4(hono@4.9.1)
       '@hono/valibot-validator':
         specifier: ^0.5.2
         version: 0.5.2(hono@4.9.1)(valibot@1.1.0(typescript@5.9.2))
@@ -2908,11 +2908,11 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/oauth-providers@0.8.2':
-    resolution: {integrity: sha512-xQa9bt6Z/xAMvT+MTHHhXX28nyzqSDZl8LzszM071dIzoEcBx/NwZLnZjPm+7ZiRZb/2E9tiP5GMbBimtYrEHg==}
+  '@hono/oauth-providers@0.8.4':
+    resolution: {integrity: sha512-kMwb/2N5S8WvVbZPbP0MMq1mgUObrvZGqe5xm6UPxlzV3tBp90znD9yx7ujUZVtXRrSvAzT6EAjIacKhc8SL7A==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
-      hono: '>=3.*'
+      hono: '>=3.0.0'
 
   '@hono/valibot-validator@0.5.2':
     resolution: {integrity: sha512-WbTr8PCFNAME0ale62rmmq+E8bGp5a7VPiVNmNT+Ue12GJE3Ax+CWBGtHhR0TzAEiloPvJND3IbjHIgtNtsqhw==}
@@ -10581,7 +10581,7 @@ snapshots:
     dependencies:
       hono: 4.9.1
 
-  '@hono/oauth-providers@0.8.2(hono@4.9.1)':
+  '@hono/oauth-providers@0.8.4(hono@4.9.1)':
     dependencies:
       hono: 4.9.1
 
