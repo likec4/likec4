@@ -51,11 +51,8 @@ Method also accepts options:
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | return rejected promise if model is invalid  (default `false`) |
 | `logger`         | Whenever to use `default` (console), `vite` logger  or your custom implementation <br/> Disable with `false`  |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
-
-<Aside type='caution' title="In progress" >
-  Watch mode is not implemented yet  
-  It is possible to notify about changes in the workspace via `likec4.notifyUpdate()` method.
-</Aside>
+| `watch`          | Whether to watch for changes in the workspace. (default `false`)  |
+| `mcp`            | Whether to start MCP server.<br/> - `false` - do not start MCP server (default) <br/> - `"stdio"` - use stdio transport,<br/> -  `{"port": number}` - use http transport on specified port |
 
 ### From source
 
@@ -80,6 +77,23 @@ const likec4 = await LikeC4.fromSource(`
   }
 `)
 ```
+
+### Dispose
+
+If you initialized LikeC4 with watch mode or enabled MCP server, you should dispose it:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace', {
+  watch: true,
+  mcp: { port: 33335 },
+})
+
+// Cleanup resources
+await likec4.dispose()
+```
+
 
 ## API
 
@@ -228,13 +242,41 @@ interface LikeC4Model {
 
 Check sources for methods - [LikeC4Model](https://github.com/likec4/likec4/blob/main/packages/core/src/model/LikeC4Model.ts)
 
+### LikeC4DeploymentModel
+
+API provides methods to query and traverse deployment model.
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+const model = likec4.computedModel()
+
+// Get deployment model
+const deployment = model.deployment
+
+// Get elements of some kind
+for (const instance of deployment.instancesOf('cloud.backend.api')) {
+  // ...
+}
+```
+
 ### LikeC4ViewModel
 
 View model API provides methods to query and traverse elements and relationships that are included in the view.
 
-### LikeC4DeploymentModel
+```ts
+import { LikeC4 } from "likec4"
 
-API provides methods to query and traverse deployment model.
+const likec4 = await LikeC4.fromSource(`....`)
+const model = likec4.computedModel()
+
+for (const view of model.views()) {
+  if (view.isDynamicView()) {
+    // ...
+  }
+}
+```
 
 
 ## Model Builder

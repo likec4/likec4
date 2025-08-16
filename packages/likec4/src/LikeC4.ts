@@ -295,7 +295,9 @@ ${k.red('Please specify a project folder')}
     }
   }
 
-  dispose(): void {
+  async dispose(): Promise<void> {
+    await this.langium.shared.workspace.FileSystemWatcher.dispose()
+    await this.langium.mcp.Server.stop()
     for (const [path, likec4] of LikeC4.likec4Instances) {
       if (likec4 === this) {
         LikeC4.likec4Instances.delete(path)
