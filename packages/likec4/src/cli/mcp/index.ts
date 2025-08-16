@@ -51,6 +51,7 @@ ${k.green('$0 mcp -p 1234')}
 async function startHttpMcp(path: string, port = 33335) {
   await LikeC4.fromWorkspace(path, {
     mcp: { port },
+    watch: true,
   })
   boxen(
     [

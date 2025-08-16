@@ -122,6 +122,7 @@ export async function pngHandler({
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
   })
 
   output ??= languageServices.workspace

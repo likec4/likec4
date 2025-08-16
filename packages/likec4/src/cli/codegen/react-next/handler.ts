@@ -20,7 +20,8 @@ export async function reactNexthandler({ path, useDotBin, outdir }: HandlerParam
   const timer = startTimer()
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
   })
 
   logger.info(`${k.dim('format')} ${k.green('react-next')}`)

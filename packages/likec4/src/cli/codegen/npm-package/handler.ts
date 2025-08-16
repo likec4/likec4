@@ -59,6 +59,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
+    watch: false,
   })
 
   const diagrams = [...await languageServices.diagrams()]
