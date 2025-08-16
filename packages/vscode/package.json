@@ -123,7 +123,7 @@
         "likec4.mcp.enabled": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Enable MCP Server  \nAdd MCP Server to your `#mcp#` configuration: \n```jsonc\n{\n  servers: {\n    likec4: {\n      type: 'sse',\n      url: 'http://localhost:33335/sse'\n    }\n  }\n}\n```"
+          "markdownDescription": "Enable MCP Server  \nAdd MCP Server to your `#mcp#` configuration: \n```jsonc\n{\n  servers: {\n    likec4: {\n      type: 'sse',\n      url: 'http://localhost:33335/mcp'\n    }\n  }\n}\n```"
         },
         "likec4.mcp.port": {
           "description": "Port to use for MCP Server",

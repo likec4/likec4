@@ -24,7 +24,7 @@ export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   }
 
   get port() {
-    return 0
+    return NaN
   }
 
   async dispose() {
