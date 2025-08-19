@@ -20,6 +20,7 @@ import { NavigationPanelActorContextProvider } from './hooks'
 import { NavigationPanelControls } from './NavigationPanelControls'
 import { NavigationPanelDropdown } from './NavigationPanelDropdown'
 import { ActiveWalkthroughControls } from './walkthrough'
+import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
 export const NavigationPanel = memo(() => {
   const diagramActor = useDiagramActorRef()
@@ -77,6 +78,7 @@ export const NavigationPanel = memo(() => {
         <NavigationPanelActorContextProvider value={actorRef}>
           <NavigationPanelImpl actor={actorRef} />
           <EditorPanel />
+          <WalkthroughPanel />
         </NavigationPanelActorContextProvider>
       </VStack>
     </Portal>

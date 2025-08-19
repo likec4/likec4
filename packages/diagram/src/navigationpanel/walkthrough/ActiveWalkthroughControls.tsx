@@ -15,7 +15,6 @@ import { useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
-import { WalkthroughPanel } from './WalkthroughPanel'
 
 const TriggerWalkthroughButton = Button.withProps({
   // Button is polymorphic, but we dont want it to inherit the motion props
@@ -106,20 +105,18 @@ export const ActiveWalkthroughControls = () => {
 
   return (
     <AnimatePresence propagate>
-      <WalkthroughPanel notes={notes}>
-        <TriggerWalkthroughButton
-          variant="light"
-          color="orange"
-          mr={'sm'}
-          onClick={e => {
-            e.stopPropagation()
-            diagram.stopWalkthrough()
-          }}
-          rightSection={<IconPlayerStopFilled size={10} />}
-        >
-          Stop
-        </TriggerWalkthroughButton>
-      </WalkthroughPanel>
+      <TriggerWalkthroughButton
+        variant="light"
+        color="orange"
+        mr={'sm'}
+        onClick={e => {
+          e.stopPropagation()
+          diagram.stopWalkthrough()
+        }}
+        rightSection={<IconPlayerStopFilled size={10} />}
+      >
+        Stop
+      </TriggerWalkthroughButton>
 
       <PrevNextButton
         key="prev"
