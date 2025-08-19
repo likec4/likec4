@@ -14,13 +14,13 @@ import {
 import { useDebouncedEffect } from '@react-hookz/web'
 import { type PropsWithChildren, useState } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
-import { MarkdownBlock } from '../../../custom'
-import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
-import { stopPropagation } from '../../../utils'
-import * as edgesCss from './NotePopover.css'
+import { MarkdownBlock } from '../../custom'
+import { useMantinePortalProps } from '../../hooks'
+import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { stopPropagation } from '../../utils'
+import * as edgesCss from './WalkthroughPanel.css'
 
-export const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: RichTextOrEmpty }>) => {
+export const WalkthroughPanel = ({ notes, children }: PropsWithChildren<{ notes: RichTextOrEmpty }>) => {
   const {
     isActive,
     isParallel,
