@@ -13,9 +13,9 @@ import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
 import { useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
-import { NotePopover } from '../../likec4diagram/custom/edges/NotePopover'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
+import { WalkthroughPanel } from './WalkthroughPanel'
 
 const TriggerWalkthroughButton = Button.withProps({
   // Button is polymorphic, but we dont want it to inherit the motion props
@@ -106,7 +106,7 @@ export const ActiveWalkthroughControls = () => {
 
   return (
     <AnimatePresence propagate>
-      <NotePopover notes={notes}>
+      <WalkthroughPanel notes={notes}>
         <TriggerWalkthroughButton
           variant="light"
           color="orange"
@@ -119,7 +119,7 @@ export const ActiveWalkthroughControls = () => {
         >
           Stop
         </TriggerWalkthroughButton>
-      </NotePopover>
+      </WalkthroughPanel>
 
       <PrevNextButton
         key="prev"
