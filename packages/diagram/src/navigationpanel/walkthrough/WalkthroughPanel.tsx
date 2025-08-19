@@ -1,75 +1,86 @@
-import type { RichTextOrEmpty } from '@likec4/core'
-import { css } from '@likec4/styles/css'
+import { RichText } from '@likec4/core'
+import { css, cx } from '@likec4/styles/css'
+import { styled } from '@likec4/styles/jsx'
+import { vstack } from '@likec4/styles/patterns'
 import {
-  Button,
-  CloseButton,
-  Group,
-  Popover,
-  PopoverDropdown,
-  PopoverTarget,
   ScrollAreaAutosize,
-  Stack,
-  Text,
 } from '@mantine/core'
-import { useDebouncedEffect } from '@react-hookz/web'
-import { type PropsWithChildren, useState } from 'react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { isNonNull, isTruthy } from 'remeda'
 import { MarkdownBlock } from '../../custom'
-import { useMantinePortalProps } from '../../hooks'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { useDiagramContext } from '../../hooks/useDiagram'
 import { stopPropagation } from '../../utils'
-import * as edgesCss from './WalkthroughPanel.css'
 
-export const WalkthroughPanel = ({ notes, children }: PropsWithChildren<{ notes: RichTextOrEmpty }>) => {
+const SectionHeader = styled('div', {
+  base: {
+    fontSize: 'xs',
+    color: 'mantine.colors.dimmed',
+    fontWeight: 500,
+    userSelect: 'none',
+    mb: 'xxs',
+  },
+})
+
+export const WalkthroughPanel = () => {
   const {
-    isActive,
-    isParallel,
-    hasNext,
-    hasPrevious,
-  } = useDiagramContext(s => ({
-    isActive: isNonNull(s.activeWalkthrough),
-    isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
-    hasNext: s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) < s.xyedges.length - 1,
-    hasPrevious: s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) > 0,
-  }))
-
-  const diagram = useDiagram()
-  const [isOpened, setIsOpened] = useState(false)
-  const portalProps = useMantinePortalProps()
-
-  useDebouncedEffect(
-    () => {
-      setIsOpened(true)
-    },
-    [notes],
-    300,
-  )
+    notes,
+  } = useDiagramContext(s => {
+    const activeStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
+    return {
+      isActive: isNonNull(s.activeWalkthrough),
+      isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
+      hasNext: activeStepIndex < s.xyedges.length - 1,
+      hasPrevious: activeStepIndex > 0,
+      notes: s.xyedges[activeStepIndex]?.data?.notes ?? RichText.EMPTY,
+    }
+  })
+  if (!notes || notes.isEmpty) {
+    return null
+  }
 
   return (
-    <Popover
-      shadow="xs"
-      offset={16}
-      position="bottom-start"
-      opened={isOpened}
-      closeOnClickOutside={false}
-      {...portalProps}>
-      <PopoverTarget>
-        {children}
-      </PopoverTarget>
-      <PopoverDropdown
-        component={Stack}
-        p={'xs'}
+    <AnimatePresence>
+      <m.div
         onPointerDownCapture={stopPropagation}
         onClick={stopPropagation}
         onDoubleClick={stopPropagation}
       >
-        <ScrollAreaAutosize miw={180} maw={450} mah={350} type="scroll" mx={'auto'} mt={2}>
-          {notes.isEmpty && (
-            <Text component="div" fw={500} size="xs" c="dimmed" my="md" style={{ userSelect: 'none' }}>
-              No description
-            </Text>
+        <ScrollAreaAutosize
+          className={cx(
+            'nowheel nopan nodrag',
+            vstack({
+              margin: 'xs',
+              layerStyle: 'likec4.dropdown',
+              position: 'absolute',
+              gap: 'md',
+              padding: 'md',
+              pointerEvents: 'all',
+              maxWidth: 'calc(100cqw - 32px)',
+              minWidth: 'calc(100cqw - 50px)',
+              maxHeight: 'calc(100cqh - 100px)',
+              width: 'max-content',
+              cursor: 'default',
+              overflow: 'auto',
+              overscrollBehavior: 'contain',
+              '@/sm': {
+                minWidth: 400,
+                maxWidth: 550,
+              },
+              '@/lg': {
+                maxWidth: 700,
+              },
+            }),
           )}
-          {notes.nonEmpty && (
+          miw={180}
+          maw={450}
+          mah={350}
+          type="scroll"
+          mx={'auto'}
+          mt={2}
+        >
+          <section>
+            <SectionHeader>Notes</SectionHeader>
             <MarkdownBlock
               value={notes}
               fontSize="sm"
@@ -78,36 +89,9 @@ export const WalkthroughPanel = ({ notes, children }: PropsWithChildren<{ notes:
                 userSelect: 'all',
               })}
             />
-          )}
+          </section>
         </ScrollAreaAutosize>
-        <CloseButton
-          size={'xs'}
-          className={edgesCss.edgeNoteCloseButton}
-          onClick={() => setIsOpened(false)}
-        />
-        {(hasPrevious || hasNext) && (
-          <Group gap={0} justify={hasPrevious ? 'flex-start' : 'flex-end'}>
-            {hasPrevious && (
-              <Button
-                variant="subtle"
-                radius={'xs'}
-                size="compact-xs"
-                onClick={() => diagram.walkthroughStep('previous')}>
-                back
-              </Button>
-            )}
-            {hasNext && (
-              <Button
-                variant="subtle"
-                radius={'xs'}
-                size="compact-xs"
-                onClick={() => diagram.walkthroughStep('next')}>
-                next
-              </Button>
-            )}
-          </Group>
-        )}
-      </PopoverDropdown>
-    </Popover>
+      </m.div>
+    </AnimatePresence>
   )
 }
