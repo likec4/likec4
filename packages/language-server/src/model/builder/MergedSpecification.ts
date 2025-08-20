@@ -44,7 +44,7 @@ export class MergedSpecification {
 
   public readonly imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>> = new MultiMap(Set)
 
-  constructor(docs: ParsedLikeC4LangiumDocument[]) {
+  constructor(docs: ReadonlyArray<ParsedLikeC4LangiumDocument>) {
     const tags = {} as ParsedAstSpecification['tags']
     for (const doc of docs) {
       const {

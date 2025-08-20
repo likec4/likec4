@@ -1,7 +1,10 @@
+import { UriUtils } from 'langium'
+import path from 'path'
+import { map, mapToObj, pipe } from 'remeda'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
-describe('LikeC4', () => {
+describe.concurrent('LikeC4', () => {
   it('should parse source and build computed model', async ({ expect }) => {
     const likec4 = await LikeC4.fromSource(`
       specification {
@@ -145,5 +148,84 @@ describe('LikeC4', () => {
     await expect(promise).rejects.toThrow(
       /source.likec4:5 Could not resolve reference to ElementKind named 'user'/,
     )
+  })
+
+  it('should parse workspace with multiple projects', async ({ expect }) => {
+    const workspace = path.resolve(__dirname, '../../../examples')
+
+    const likec4 = await LikeC4.fromWorkspace(workspace, {
+      watch: false,
+      throwIfInvalid: true,
+    })
+    expect(likec4.hasErrors()).toBe(false)
+
+    const projects = pipe(
+      likec4.languageServices.projects(),
+      mapToObj(p => [p.id, {
+        folder: UriUtils.basename(p.folder),
+        documents: map(p.documents, d => UriUtils.relative(p.folder, d)),
+      }]),
+    )
+    expect(projects).toMatchInlineSnapshot(`
+      {
+        "boutique": {
+          "documents": [
+            "_spec.c4",
+            "deployment/deployment.c4",
+            "deployment/deployment.development.c4",
+            "deployment/deployment.production.c4",
+            "model.c4",
+            "model.views.c4",
+            "use-cases/usecase.order-fullfillment.c4",
+            "use-cases/usecase.place-order.c4",
+          ],
+          "folder": "boutique",
+        },
+        "cloud-system": {
+          "documents": [
+            "_spec.c4",
+            "cloud/legacy.c4",
+            "cloud/next.c4",
+            "cloud/ui.c4",
+            "deployment.acc.c4",
+            "deployment.c4",
+            "externals.c4",
+            "model.c4",
+            "views.c4",
+          ],
+          "folder": "cloud-system",
+        },
+        "diagrams-dev": {
+          "documents": [
+            "_spec.c4",
+            "amazon.c4",
+            "model.c4",
+            "relationships/colors.c4",
+            "theme/colors.c4",
+          ],
+          "folder": "likec4",
+        },
+        "issue-1624": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "issue-1624",
+        },
+        "projectA": {
+          "documents": [
+            "_spec.c4",
+            "cloud/legacy.c4",
+            "cloud/next.c4",
+            "cloud/ui.c4",
+            "deployment.acc.c4",
+            "deployment.c4",
+            "externals.c4",
+            "model.c4",
+            "views.c4",
+          ],
+          "folder": "projectA",
+        },
+      }
+    `)
   })
 })
