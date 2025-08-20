@@ -1,3 +1,12 @@
+## [1.38.1](https://github.com/likec4/likec4/compare/v1.38.0...v1.38.1) (2025-08-20)
+
+
+### Bug Fixes
+
+* **vscode:** multi-projects on windows ([#2167](https://github.com/likec4/likec4/issues/2167)) ([4f3caf6](https://github.com/likec4/likec4/commit/4f3caf6025aa5d55fd15bab875f26d1ef346b7c3))
+
+
+
 # [1.38.0](https://github.com/likec4/likec4/compare/v1.37.0...v1.38.0) (2025-08-16)
 
 ### 🚀 Features
