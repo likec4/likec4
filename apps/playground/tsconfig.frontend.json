@@ -40,7 +40,7 @@
       "path": "../../packages/core/tsconfig.json"
     },
     {
-      "path": "../../packages/diagram/tsconfig.json"
+      "path": "../../packages/diagram/tsconfig.src.json"
     },
     {
       "path": "../../packages/language-server/tsconfig.json"

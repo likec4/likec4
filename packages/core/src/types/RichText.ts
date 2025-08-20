@@ -1,5 +1,5 @@
-import type { MarkdownOrString } from '../types'
 import { markdownToHtml, markdownToText, memoizeProp, nonexhaustive } from '../utils'
+import type { MarkdownOrString } from './scalar'
 
 const richtxt = Symbol.for('richtxt')
 const symb_text = Symbol.for('text')

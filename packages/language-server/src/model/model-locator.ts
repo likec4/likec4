@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
-import { ifilter, invariant, splitGlobalFqn, toArray } from '@likec4/core'
+import { splitGlobalFqn } from '@likec4/core'
+import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import type { Cancellation, CstNode, LangiumDocuments } from 'langium'
 import { AstUtils, DocumentState, GrammarUtils } from 'langium'

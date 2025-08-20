@@ -110,6 +110,8 @@
     "type-fest": "catalog:utils",
     "unified": "11.0.5",
     "chroma-js": "catalog:utils",
+    "remeda": "catalog:utils",
+    "defu": "catalog:utils",
     "@mantine/colors-generator": "catalog:mantine"
   },
   "devDependencies": {
@@ -123,8 +125,6 @@
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
     "@types/node": "catalog:",
-    "defu": "catalog:utils",
-    "fdir": "catalog:utils",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
@@ -132,7 +132,7 @@
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
-    "remeda": "catalog:utils",
+    "fdir": "catalog:utils",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",

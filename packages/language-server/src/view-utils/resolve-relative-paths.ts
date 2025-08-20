@@ -1,5 +1,5 @@
 import type { LikeC4View } from '@likec4/core'
-import { compareNatural, invariant } from '@likec4/core'
+import { compareNatural, invariant } from '@likec4/core/utils'
 import { filter, hasAtLeast, isTruthy, map, pipe, unique } from 'remeda'
 import { parsePath } from 'ufo'
 

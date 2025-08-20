@@ -23,8 +23,8 @@ export default defineConfig({
   jsxFramework: 'react',
   include: [
     './src/**/*.{js,jsx,ts,tsx}',
-    // TODO: will be replaced with ship info
-    '../diagram/src/**/*.{js,jsx,ts,tsx}',
+    // Include likec4 diagram source code to get the styles
+    'node_modules/@likec4/diagram/panda.buildinfo.json',
   ],
 })
 ```

@@ -1,6 +1,7 @@
-import { type NodeId, hasAtLeast } from '@likec4/core'
+import type { NodeId } from '@likec4/core'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
+import { hasAtLeast } from 'remeda'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'

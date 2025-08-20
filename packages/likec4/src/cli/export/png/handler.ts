@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type DiagramView, type NonEmptyArray, hasAtLeast } from '@likec4/core'
+import type { DiagramView, NonEmptyArray } from '@likec4/core'
 import { hrtime } from 'node:process'
 import picomatch from 'picomatch'
 import { chromium } from 'playwright'
+import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
 import type { ViteDevServer } from 'vite'

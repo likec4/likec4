@@ -10,9 +10,9 @@ catalog:
   tsx: 4.20.3
   turbo: 2.5.6
   typescript: 5.9.2
-  unbuild: 3.5.0
+  unbuild: 3.6.1
   wireit: 0.14.12
-  wrangler: 4.28.1
+  wrangler: 4.31.0
   zx: 8.5.5
 
 catalogs:
@@ -30,9 +30,9 @@ catalogs:
     starlight-links-validator: ^0.16.0
     starlight-package-managers: ^0.11.0
   css:
-    "@pandacss/dev": ^1.0.1
-    "@pandacss/preset-panda": ^1.0.1
-    postcss: 8.5.5
+    "@pandacss/dev": ^1.1.0
+    "@pandacss/preset-panda": ^1.1.0
+    postcss: 8.5.6
   esbuild:
     esbuild: 0.25.5
     esbuild-node-externals: 1.18.0

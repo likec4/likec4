@@ -1,10 +1,6 @@
-import { hasAtLeast, invariant, type NonEmptyArray, type Point } from '@likec4/core'
-import { Box, Paper } from '@mantine/core'
-import { BaseEdge, type EdgeProps, Handle, NodeToolbar, Position } from '@xyflow/react'
-import clsx from 'clsx'
-import { memo } from 'react'
-import * as css from './Edges.css'
-import type { FileXYNode, FolderXYNode, OverviewXYEdge, ViewXYNode } from './types'
+import { type NonEmptyArray, type Point } from '@likec4/core'
+import { type EdgeProps, BaseEdge } from '@xyflow/react'
+import type { OverviewXYEdge } from './types'
 
 function edgePath(points: NonEmptyArray<Point>) {
   // let [start, ...points] = points

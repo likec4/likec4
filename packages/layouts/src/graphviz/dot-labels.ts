@@ -8,9 +8,9 @@ import {
   DefaultRelationshipColor,
   defaultTheme,
   defaultTheme as Theme,
-  nonexhaustive,
   RichText,
 } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core/utils'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'

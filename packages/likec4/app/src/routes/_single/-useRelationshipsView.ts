@@ -3,8 +3,16 @@ import { computeRelationshipsView } from '@likec4/core/compute-view/relationship
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { DefaultMap, invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
 import type { ElementModel, RelationshipModel } from '@likec4/core/model'
+import {
+  DefaultMap,
+  invariant,
+  isAncestor,
+  isDescendantOf,
+  nonNullable,
+  sortParentsFirst,
+  toArray,
+} from '@likec4/core/utils'
 import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 
 /**

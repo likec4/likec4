@@ -1,4 +1,5 @@
-import { type ComputedNode, invariant, nonexhaustive, type Point, type RelationshipArrowType } from '@likec4/core'
+import type { ComputedNode, Point, RelationshipArrowType } from '@likec4/core'
+import { invariant } from '@likec4/core/utils'
 import { scale, toHex, transparentize } from 'khroma'
 import type { ArrowType, Color } from 'ts-graphviz'
 
@@ -42,8 +43,8 @@ export function compoundColor(color: string, depth: number): Color {
   return toHex(
     scale(color, {
       l: -35 - 5 * depth,
-      s: -15 - 5 * depth
-    })
+      s: -15 - 5 * depth,
+    }),
   ) as Color
 }
 export function compoundLabelColor(color: string): `#${string}` {

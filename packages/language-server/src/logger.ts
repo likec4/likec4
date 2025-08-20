@@ -1,4 +1,4 @@
-import { nonexhaustive } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core/utils'
 import {
   type Logger,
   type Sink,

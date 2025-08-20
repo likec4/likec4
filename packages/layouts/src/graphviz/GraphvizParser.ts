@@ -7,7 +7,7 @@ import type {
   EdgeId,
   Point,
 } from '@likec4/core'
-import { invariant } from '@likec4/core'
+import { invariant } from '@likec4/core/utils'
 import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'

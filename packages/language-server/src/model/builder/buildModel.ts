@@ -1,14 +1,18 @@
-import * as c4 from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import {
   type MultiMap,
   type ViewId,
   computeColorValues,
   isDeploymentNode,
   isGlobalFqn,
-  parentFqn,
-  sortByFqnHierarchically,
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
+import { _stage, _type, FqnRef } from '@likec4/core/types'
+import {
+  compareNatural,
+  parentFqn,
+  sortByFqnHierarchically,
+} from '@likec4/core/utils'
 import type { LangiumDocument, URI } from 'langium'
 import {
   filter,
@@ -100,10 +104,10 @@ export function buildModelData(
   const relations = pipe(
     docs,
     flatMap(d => map(d.c4Relations, c4Specification.toModelRelation)),
-    filter((rel): rel is c4.ModelRelation => {
+    filter((rel): rel is c4.Relationship => {
       if (!rel) return false
-      const source = c4.FqnRef.flatten(rel.source),
-        target = c4.FqnRef.flatten(rel.target)
+      const source = FqnRef.flatten(rel.source),
+        target = FqnRef.flatten(rel.target)
 
       if (
         (isNullish(elements[source]) && !isGlobalFqn(source)) ||
@@ -187,7 +191,7 @@ export function buildModelData(
         ...model
       } = parsedAstView
 
-      if (parsedAstView[c4._type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
+      if (parsedAstView[_type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null
       }
 
@@ -197,7 +201,7 @@ export function buildModelData(
 
       return {
         ...model,
-        [c4._stage]: 'parsed',
+        [_stage]: 'parsed',
         docUri,
         description,
         title,
@@ -215,8 +219,8 @@ export function buildModelData(
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
-      [c4._stage]: 'parsed',
-      [c4._type]: 'element',
+      [_stage]: 'parsed',
+      [_type]: 'element',
       id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
@@ -242,7 +246,7 @@ export function buildModelData(
 
   return {
     data: {
-      [c4._stage]: 'parsed',
+      [_stage]: 'parsed',
       projectId: project.id,
       project: {
         id: project.id,
@@ -257,7 +261,7 @@ export function buildModelData(
           style,
         })),
         deployments: c4Specification.specs.deployments,
-        ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(c4.compareNatural) }),
+        ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(compareNatural) }),
         customColors,
       },
       elements,

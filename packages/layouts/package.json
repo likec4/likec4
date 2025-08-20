@@ -9,7 +9,8 @@
   "files": [
     "dist",
     "src",
-    "!**/__fixtures__/",
+    "!**/__fixtures__/*",
+    "!**/__snapshots__/*",
     "!**/*.spec.*",
     "!**/*.snap",
     "!**/*.map"

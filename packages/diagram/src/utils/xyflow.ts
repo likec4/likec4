@@ -1,9 +1,9 @@
 import type { DiagramEdge, NonEmptyArray, Point } from '@likec4/core'
-import { hasAtLeast, invariant } from '@likec4/core'
+import { invariant } from '@likec4/core/utils'
 import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
-import { isArray } from 'remeda'
+import { hasAtLeast, isArray } from 'remeda'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))

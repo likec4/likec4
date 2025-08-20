@@ -1,3 +1,4 @@
+import type * as c4 from '@likec4/core/types'
 import type {
   DeploymentElement,
   DeploymentRelationship,
@@ -14,10 +15,12 @@ import type {
   Tag,
   TagSpecification,
 } from '@likec4/core/types'
+import { compareNatural, nonNullable } from '@likec4/core/utils'
 import { addDays, addMonths, getUnixTime, startOfMinute } from 'date-fns'
 import { HTTPException } from 'hono/http-exception'
 import type { LayoutedLikeC4ModelData as LayoutedLikeC4ModelDataLegacy } from 'likec4-core-legacy/types'
 import { nanoid } from 'nanoid'
+import { first, map, mapValues, pipe, prop, pullObject, sort, values } from 'remeda'
 import * as v from 'valibot'
 import { readUserSession } from './auth'
 import {
@@ -95,10 +98,6 @@ function isDataLegacy(
 ): model is LayoutedLikeC4ModelDataLegacy {
   return '__' in model && model.__ === 'layouted'
 }
-
-import { compareNatural, nonNullable } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
-import { first, map, mapValues, pipe, prop, pullObject, sort, values } from 'remeda'
 
 /**
  * Colors are taken from the styles presets of the LikeC4

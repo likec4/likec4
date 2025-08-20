@@ -34,7 +34,6 @@ export {
 export { getOrCreate } from './getOrCreate'
 
 export {
-  hasAtLeast,
   isNonEmptyArray,
   isString,
 } from './guards'
