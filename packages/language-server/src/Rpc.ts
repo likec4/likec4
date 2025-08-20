@@ -76,8 +76,10 @@ export class Rpc extends ADisposable {
       connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'} for project ${projectId}`
         if (cleanCaches) {
-          const docs = projectId ? LangiumDocuments.projectDocuments(projectId as ProjectId) : LangiumDocuments.all
-          const uris = docs.map(d => d.uri).toArray()
+          const docs = projectId
+            ? LangiumDocuments.projectDocuments(projectId as ProjectId)
+            : LangiumDocuments.allExcludingBuiltin
+          const uris = docs.toArray().map(d => d.uri)
           await DocumentBuilder.update(uris, [], cancelToken)
         }
         const likec4model = await modelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)

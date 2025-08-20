@@ -31,6 +31,7 @@ export function compareNatural(a: string | undefined, b: string | undefined): -1
  */
 export function compareNaturalHierarchically(
   separator = '.',
+  deepestFirst = false,
 ): (a: string | undefined, b: string | undefined) => number {
   return (a, b) => {
     if (a === b) return 0
@@ -52,7 +53,8 @@ export function compareNaturalHierarchically(
       }
     }
 
-    // If all common segments are equal, shorter paths come first
-    return aParts.length - bParts.length
+    // If all common segments are equal, shorter paths come first (if deepestFirst is false)
+    const diff = aParts.length - bParts.length
+    return deepestFirst ? -1 * diff : diff
   }
 }

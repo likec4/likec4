@@ -53,7 +53,7 @@ export function buildModelData(
     folderUri: URI
     config: Readonly<ProjectConfig>
   },
-  docs: ParsedLikeC4LangiumDocument[],
+  docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
   const c4Specification = new MergedSpecification(docs)
 

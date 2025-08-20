@@ -65,6 +65,7 @@ export interface LikeC4LanguageServices {
 
   /**
    * Notifies the language server about changes in the workspace
+   * @deprecated use watcher instead
    */
   notifyUpdate(update: { changed?: string; removed?: string }): Promise<boolean>
 

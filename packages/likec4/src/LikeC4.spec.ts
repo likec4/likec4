@@ -1,4 +1,6 @@
+import { UriUtils } from 'langium'
 import path from 'path'
+import { map, mapToObj, pipe } from 'remeda'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
@@ -157,37 +159,73 @@ describe.concurrent('LikeC4', () => {
     })
     expect(likec4.hasErrors()).toBe(false)
 
-    const projects = likec4.languageServices.projects().map(p => ({
-      id: p.id,
-      folder: p.folder.toString(),
-    }))
+    const projects = pipe(
+      likec4.languageServices.projects(),
+      mapToObj(p => [p.id, {
+        folder: UriUtils.basename(p.folder),
+        documents: map(p.documents, d => UriUtils.relative(p.folder, d)),
+      }]),
+    )
     expect(projects).toMatchInlineSnapshot(`
-      [
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/failed/",
-          "id": "failed",
+      {
+        "boutique": {
+          "documents": [
+            "_spec.c4",
+            "deployment/deployment.c4",
+            "deployment/deployment.development.c4",
+            "deployment/deployment.production.c4",
+            "model.c4",
+            "model.views.c4",
+            "use-cases/usecase.order-fullfillment.c4",
+            "use-cases/usecase.place-order.c4",
+          ],
+          "folder": "boutique",
         },
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/cloud-system/",
-          "id": "cloud-system",
+        "cloud-system": {
+          "documents": [
+            "_spec.c4",
+            "cloud/legacy.c4",
+            "cloud/next.c4",
+            "cloud/ui.c4",
+            "deployment.acc.c4",
+            "deployment.c4",
+            "externals.c4",
+            "model.c4",
+            "views.c4",
+          ],
+          "folder": "cloud-system",
         },
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/issue-1624/",
-          "id": "issue-1624",
+        "diagrams-dev": {
+          "documents": [
+            "_spec.c4",
+            "amazon.c4",
+            "model.c4",
+            "relationships/colors.c4",
+            "theme/colors.c4",
+          ],
+          "folder": "likec4",
         },
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/multi-project/boutique/",
-          "id": "boutique",
+        "issue-1624": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "issue-1624",
         },
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/diagrams-dev/likec4/",
-          "id": "diagrams-dev",
+        "projectA": {
+          "documents": [
+            "_spec.c4",
+            "cloud/legacy.c4",
+            "cloud/next.c4",
+            "cloud/ui.c4",
+            "deployment.acc.c4",
+            "deployment.c4",
+            "externals.c4",
+            "model.c4",
+            "views.c4",
+          ],
+          "folder": "projectA",
         },
-        {
-          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/multi-project/projectA/",
-          "id": "projectA",
-        },
-      ]
+      }
     `)
   })
 })

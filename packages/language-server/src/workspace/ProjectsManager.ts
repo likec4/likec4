@@ -10,18 +10,14 @@ import {
   URI,
   WorkspaceCache,
 } from 'langium'
-import { UriUtils } from 'langium'
 import PQueue from 'p-queue'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, isTruthy, map, pickBy, pipe, prop, sortBy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
-  hasProtocol,
   joinRelativeURL,
-  normalizeURL,
   parseFilename,
   withoutProtocol,
-  withProtocol,
   withTrailingSlash,
 } from 'ufo'
 import { parseConfigJson, ProjectConfig, validateConfig } from '../config'
@@ -30,19 +26,25 @@ import type { LikeC4SharedServices } from '../module'
 
 const logger = mainLogger.getChild('ProjectsManager')
 
+function normalizeUri(uri: LangiumDocument | string | URI): string {
+  if (URI.isUri(uri)) {
+    return uri.toString()
+  } else if (typeof uri === 'string') {
+    // TODO: handle non-file URIs, i.e. vscode-remote://
+    return uri.startsWith('file://') ? uri : URI.file(uri).toString()
+  } else {
+    return uri.uri.toString()
+  }
+}
+
 /**
  * A tagged string that represents a project folder URI
  * Always has trailing slash.
  */
 export type ProjectFolder = Tagged<string, 'ProjectFolder'>
 export function ProjectFolder(folder: URI | string): ProjectFolder {
-  if (!URI.isUri(folder)) {
-    //   folder = folder.toString()
-    // } else {
-    // folder = folder.startsWith('file://') ? folder : URI.file(folder).toString()
-    folder = URI.file(folder).toString()
-  }
-  return withTrailingSlash(UriUtils.normalize(folder)) as ProjectFolder
+  folder = normalizeUri(folder)
+  return withTrailingSlash(folder) as ProjectFolder
 }
 
 interface ProjectData {
@@ -175,7 +177,7 @@ export class ProjectsManager {
 
   checkIfExcluded(document: LangiumDocument | URI | string): boolean {
     if (typeof document === 'string' || URI.isUri(document)) {
-      let docUriAsString = typeof document === 'string' ? document : document.toString()
+      let docUriAsString = normalizeUri(document)
       const project = this.findProjectForDocument(docUriAsString)
       return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
     }
@@ -305,14 +307,7 @@ export class ProjectsManager {
   }
 
   belongsTo(document: LangiumDocument | URI | string): ProjectId {
-    let documentUri: string
-    if (typeof document === 'string') {
-      documentUri = hasProtocol(document) ? document : withProtocol(document, 'file://')
-    } else if (URI.isUri(document)) {
-      documentUri = document.toString()
-    } else {
-      documentUri = document.uri.toString()
-    }
+    const documentUri = normalizeUri(document)
     return this.findProjectForDocument(documentUri).id
   }
 

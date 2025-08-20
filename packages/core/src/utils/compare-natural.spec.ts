@@ -182,4 +182,57 @@ describe('compareNaturalHierarchically', () => {
       'a',
     ])
   })
+
+  it('should sort deeper paths first when deepestFirst=true', () => {
+    const sortDeepFirst = (array: Array<string | undefined>, separator = '.') =>
+      remedaSort(array, compareNaturalHierarchically(separator, true))
+
+    expect(
+      sortDeepFirst([
+        'a',
+        'a.b',
+        'a.b.c',
+        'a.a',
+      ]),
+    ).toEqual([
+      'a.a',
+      'a.b.c',
+      'a.b',
+      'a',
+    ])
+
+    // Ensure deeper comes first within same prefix and preserves natural order for differing segments
+    expect(
+      sortDeepFirst([
+        'x.2',
+        'x.10',
+        'x',
+        'x.1',
+      ]),
+    ).toEqual([
+      'x.1',
+      'x.2',
+      'x.10',
+      'x',
+    ])
+  })
+
+  it('should sort deeper paths first with a custom separator', () => {
+    const sortDeepFirst = (array: Array<string | undefined>, separator = '/') =>
+      remedaSort(array, compareNaturalHierarchically(separator, true))
+
+    expect(
+      sortDeepFirst([
+        'a/b/c',
+        'a',
+        'a/b',
+        'a/a',
+      ]),
+    ).toEqual([
+      'a/a',
+      'a/b/c',
+      'a/b',
+      'a',
+    ])
+  })
 })
