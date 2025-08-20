@@ -1,7 +1,8 @@
+import path from 'path'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
-describe('LikeC4', () => {
+describe.concurrent('LikeC4', () => {
   it('should parse source and build computed model', async ({ expect }) => {
     const likec4 = await LikeC4.fromSource(`
       specification {
@@ -145,5 +146,48 @@ describe('LikeC4', () => {
     await expect(promise).rejects.toThrow(
       /source.likec4:5 Could not resolve reference to ElementKind named 'user'/,
     )
+  })
+
+  it('should parse workspace with multiple projects', async ({ expect }) => {
+    const workspace = path.resolve(__dirname, '../../../examples')
+
+    const likec4 = await LikeC4.fromWorkspace(workspace, {
+      watch: false,
+      throwIfInvalid: true,
+    })
+    expect(likec4.hasErrors()).toBe(false)
+
+    const projects = likec4.languageServices.projects().map(p => ({
+      id: p.id,
+      folder: p.folder.toString(),
+    }))
+    expect(projects).toMatchInlineSnapshot(`
+      [
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/failed/",
+          "id": "failed",
+        },
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/cloud-system/",
+          "id": "cloud-system",
+        },
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/issue-1624/",
+          "id": "issue-1624",
+        },
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/multi-project/boutique/",
+          "id": "boutique",
+        },
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/diagrams-dev/likec4/",
+          "id": "diagrams-dev",
+        },
+        {
+          "folder": "file:///Users/davydkov/Projects/like-c4/likec4/examples/multi-project/projectA/",
+          "id": "projectA",
+        },
+      ]
+    `)
   })
 })

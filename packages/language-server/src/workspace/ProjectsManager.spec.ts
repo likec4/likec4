@@ -304,6 +304,38 @@ describe.concurrent('ProjectsManager', () => {
     })
   })
 
+  it('should handle folder URIs with special characters', async ({ expect }) => {
+    const { projectsManager } = await createMultiProjectTestServices({})
+
+    const folderUri1 = 'c:\\my\\files'
+    const folderUri2 = 'c:\\my\\files-ext'
+    const folderUri3 = '/coding/c#/project1'
+
+    await projectsManager.registerProject({
+      config: { name: 'test1' },
+      folderUri: folderUri1,
+    })
+    await projectsManager.registerProject({
+      config: { name: 'test2' },
+      folderUri: folderUri2,
+    })
+    await projectsManager.registerProject({
+      config: { name: 'test3' },
+      folderUri: folderUri3,
+    })
+
+    expect.soft(projectsManager.all).to.include.members(['test1', 'test2', 'test3'])
+    expect.soft(projectsManager.getProject('test1' as ProjectId).folderUri.toString()).toBe(
+      'file://c:/my/files/',
+    )
+    expect.soft(projectsManager.getProject('test2' as ProjectId).folderUri.toString()).toBe(
+      'file://c:/my/files-ext/',
+    )
+    expect(projectsManager.getProject('test3' as ProjectId).folderUri.toString()).toBe(
+      'file:///coding/c#/project1/',
+    )
+  })
+
   it('should exclude node_modules', async ({ expect }) => {
     const { projectsManager } = await createMultiProjectTestServices({})
 

@@ -10,6 +10,7 @@ import {
   URI,
   WorkspaceCache,
 } from 'langium'
+import { UriUtils } from 'langium'
 import PQueue from 'p-queue'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, isTruthy, map, pickBy, pipe, prop, sortBy } from 'remeda'
@@ -30,16 +31,18 @@ import type { LikeC4SharedServices } from '../module'
 const logger = mainLogger.getChild('ProjectsManager')
 
 /**
- * A tagged string that represents a project folder.
+ * A tagged string that represents a project folder URI
  * Always has trailing slash.
  */
 export type ProjectFolder = Tagged<string, 'ProjectFolder'>
 export function ProjectFolder(folder: URI | string): ProjectFolder {
-  if (URI.isUri(folder)) {
-    folder = folder.toString()
+  if (!URI.isUri(folder)) {
+    //   folder = folder.toString()
+    // } else {
+    // folder = folder.startsWith('file://') ? folder : URI.file(folder).toString()
+    folder = URI.file(folder).toString()
   }
-  folder = hasProtocol(folder) ? folder : withProtocol(folder, 'file://')
-  return withTrailingSlash(normalizeURL(folder)) as ProjectFolder
+  return withTrailingSlash(UriUtils.normalize(folder)) as ProjectFolder
 }
 
 interface ProjectData {
