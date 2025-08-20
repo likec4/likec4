@@ -84,7 +84,7 @@
   "sideEffects": false,
   "type": "module",
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.7.5",
+    "@cloudflare/vite-plugin": "1.11.6",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",
@@ -122,11 +122,11 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
-    "@xstate/react": "^5.0.5",
+    "@xstate/react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "clsx": "catalog:react",
-    "date-fns": "^4.1.0",
+    "date-fns": "catalog:utils",
     "fast-equals": "catalog:utils",
     "hono": "catalog:hono",
     "hono-sessions": "catalog:hono",
@@ -164,7 +164,7 @@
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
     "wrangler": "catalog:",
-    "xstate": "^5.20.0",
+    "xstate": "catalog:xstate",
     "import-meta-resolve": "^4.1.0"
   }
 }

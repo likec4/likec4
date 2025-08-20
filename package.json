@@ -67,6 +67,7 @@
       "type-fest": "catalog:utils",
       "turbo": "catalog:",
       "sharp": "catalog:utils",
+      "caniuse-lite": "catalog:utils",
       "mnemonist": "0.40.3"
     },
     "patchedDependencies": {
