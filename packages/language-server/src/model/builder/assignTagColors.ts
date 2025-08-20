@@ -1,5 +1,5 @@
-import { compareNatural, nonNullable } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
+import { compareNatural, nonNullable } from '@likec4/core/utils'
 import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
 import type { ParsedAstSpecification } from '../../ast'
 

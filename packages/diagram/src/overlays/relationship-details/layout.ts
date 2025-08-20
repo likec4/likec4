@@ -16,13 +16,13 @@ import type {
 } from '@likec4/core/types'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import { RichText } from '@likec4/core'
+import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
   ifind,
   invariant,
-  RichText,
-} from '@likec4/core'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+} from '@likec4/core/utils'
 import {
   filter,
   find,

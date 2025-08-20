@@ -20,15 +20,15 @@ import type {
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import { RichText } from '@likec4/core/types'
 import {
   DefaultMap,
   ifind,
   invariant,
   nonNullable,
-  RichText,
   toArray,
-} from '@likec4/core'
-import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+} from '@likec4/core/utils'
 import {
   concat,
   filter,

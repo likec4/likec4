@@ -1,8 +1,8 @@
+import { type AnyLikeC4Model } from '@likec4/core/model'
 import {
   compareNatural,
   sortNaturalByFqn,
-} from '@likec4/core'
-import { type AnyLikeC4Model } from '@likec4/core/model'
+} from '@likec4/core/utils'
 import { keys, map, pipe, values } from 'remeda'
 
 function toUnion(elements: string[]) {

@@ -1,23 +1,14 @@
-import {
-  type EdgeId,
-  type Fqn,
-  type NonEmptyReadonlyArray,
-  type RelationId,
-  hasAtLeast,
-  invariant,
-  isAncestor,
-  sortParentsFirst,
-} from '@likec4/core'
+import type { EdgeId, NonEmptyReadonlyArray } from '@likec4/core'
 import { treeFromElements } from '@likec4/core/compute-view/relationships'
 import {
   type AnyAux,
-  type DeploymentRelationModel,
   type ElementModel,
-  type LikeC4Model,
   type LikeC4ViewModel,
   type RelationshipModel,
   modelConnection,
 } from '@likec4/core/model'
+import { invariant, isAncestor, sortParentsFirst } from '@likec4/core/utils'
+import { hasAtLeast } from 'remeda'
 
 export interface RelationshipDetailsViewData {
   sources: ReadonlySet<ElementModel>

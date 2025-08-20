@@ -7,8 +7,8 @@ import {
   isDeploymentView,
   isDynamicView,
   isElementView,
-  nonexhaustive,
 } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'

@@ -1,6 +1,6 @@
-import { compareNatural } from '@likec4/core'
-import { type LikeC4Model } from '@likec4/core/model'
-import { type Fqn, type ViewId } from '@likec4/core/types'
+import type { LikeC4Model } from '@likec4/core/model'
+import type { Fqn, ViewId } from '@likec4/core/types'
+import { compareNatural } from '@likec4/core/utils'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 

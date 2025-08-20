@@ -1,6 +1,7 @@
-import { hasAtLeast, invariant } from '@likec4/core'
+import { invariant } from '@likec4/core'
 import type { BuildOptions, FileSelector, FileSystemNode, LangiumDocument, LangiumDocumentFactory } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
+import { hasAtLeast } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileSystemProvider } from '../filesystem'

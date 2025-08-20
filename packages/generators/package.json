@@ -8,7 +8,11 @@
   "description": "Converts LikeC4 Model to other formats, like Mermaid, PlantUML, SVG, etc. Also generates typings for Model API and React",
   "files": [
     "dist",
-    "src"
+    "src",
+    "!**/*.spec.ts",
+    "!**/__mocks__/*",
+    "!**/__snapshots__/*",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
-import { invariant } from '@likec4/core'
 import type { AnyLikeC4Model } from '@likec4/core/model'
+import { invariant } from '@likec4/core/utils'
 import { generateAux } from '../model/generate-aux'
 
 export function generateReactTypes(model: AnyLikeC4Model) {

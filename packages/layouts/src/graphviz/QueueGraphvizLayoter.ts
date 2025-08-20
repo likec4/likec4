@@ -1,7 +1,5 @@
-import {
-  type AnyAux,
-  promiseNextTick,
-} from '@likec4/core'
+import type { AnyAux } from '@likec4/core'
+import { promiseNextTick } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import PQueue from 'p-queue'
 import { type GraphvizPort, type LayoutResult, type LayoutTaskParams, GraphvizLayouter } from './GraphvizLayoter'

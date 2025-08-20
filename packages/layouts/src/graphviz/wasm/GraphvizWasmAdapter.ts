@@ -1,5 +1,5 @@
 import { Graphviz } from '@hpcc-js/wasm-graphviz'
-import { delay } from '@likec4/core'
+import { delay } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import pLimit from 'p-limit'
 import type { GraphvizPort } from '../GraphvizLayoter'

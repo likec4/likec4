@@ -1,4 +1,4 @@
-import { memoizeProp } from '@likec4/core'
+import { memoizeProp } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import spawn, { SubprocessError } from 'nano-spawn'
 import os from 'node:os'

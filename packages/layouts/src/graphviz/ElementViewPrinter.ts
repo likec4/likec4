@@ -1,5 +1,6 @@
 import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn, HexColor } from '@likec4/core'
-import { DefaultArrowType, nonNullable } from '@likec4/core'
+import { DefaultArrowType } from '@likec4/core'
+import { nonNullable } from '@likec4/core/utils'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'

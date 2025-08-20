@@ -1,36 +1,38 @@
 import {
-  compareFqnHierarchically,
+  DefaultPaddingSize,
   DefaultRelationshipColor,
+  DefaultShapeSize,
+  DefaultTextSize,
   defaultTheme,
   defaultTheme as Theme,
   DefaultThemeColor,
+  isThemeColor,
+} from '@likec4/core'
+import type {
+  AnyAux,
+  AnyFqn,
+  Color,
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  DeploymentFqn,
+  EdgeId,
+  ElementThemeColorValues,
+  Fqn,
+  HexColor,
+  NodeId,
+  RelationshipLineType,
+  RelationshipThemeColorValues,
+  Specification as LikeC4Specification,
+  XYPoint,
+} from '@likec4/core/types'
+import {
+  compareFqnHierarchically,
   hierarchyDistance,
   invariant,
-  isThemeColor,
   nameFromFqn,
   nonNullable,
-} from '@likec4/core'
-import {
-  type AnyAux,
-  type AnyFqn,
-  type Color,
-  type ComputedEdge,
-  type ComputedNode,
-  type ComputedView,
-  type DeploymentFqn,
-  type EdgeId,
-  type ElementThemeColorValues,
-  type Fqn,
-  type HexColor,
-  type NodeId,
-  type RelationshipLineType,
-  type RelationshipThemeColorValues,
-  type Specification as LikeC4Specification,
-  type XYPoint,
-  DefaultPaddingSize,
-  DefaultShapeSize,
-  DefaultTextSize,
-} from '@likec4/core/types'
+} from '@likec4/core/utils'
 import { createLogger } from '@likec4/log'
 import Graph from 'graphology'
 

@@ -1,4 +1,5 @@
-import { type BBox, type Fqn, type ViewId, delay, invariant, nonNullable } from '@likec4/core'
+import type { BBox, Fqn, ViewId } from '@likec4/core'
+import { delay, invariant, nonNullable } from '@likec4/core/utils'
 import {
   type EdgeChange,
   type NodeChange,

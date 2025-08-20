@@ -1,5 +1,5 @@
 import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
-import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core'
+import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import {

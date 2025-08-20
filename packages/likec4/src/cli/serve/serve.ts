@@ -1,4 +1,4 @@
-import { delay } from '@likec4/core'
+import { delay } from '@likec4/core/utils'
 import { DEV } from 'esm-env'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
