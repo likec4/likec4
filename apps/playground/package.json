@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.38.0",
+  "version": "1.38.1",
   "private": true,
   "scripts": {
     "generate": "wireit",
