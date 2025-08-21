@@ -150,16 +150,14 @@ export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = Optio
  * ReactFlow Custom Node properties with BaseNodeData at least
  */
 export type NodeProps<T extends Record<string, unknown> = {}, NodeType extends string = string> = Simplify<
-  ReactFlowNodeProps<
-    RFNode<Base.NodeData & T, NodeType>
-  >
+  ReactFlowNodeProps<Base.NodeData & T, NodeType>
 >
 
 /**
  * ReactFlow Custom Edge properties with BaseEdgeData at least
  */
 export type EdgeProps<T extends Record<string, unknown> = {}, EdgeType extends string = string> = SetRequired<
-  Simplify<ReactFlowEdgeProps<RFEdge<Base.EdgeData & T, EdgeType>>>,
+  Simplify<ReactFlowEdgeProps<Base.EdgeData & T, EdgeType>>,
   'data'
 >
 
