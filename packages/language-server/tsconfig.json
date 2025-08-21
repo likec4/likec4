@@ -18,7 +18,8 @@
   },
   "include": [
     "src",
-    "build.config.ts"
+    "build.config.ts",
+    "package.json"
   ],
   "references": [
     {
