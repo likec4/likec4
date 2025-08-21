@@ -1,4 +1,5 @@
-import type { Any, aux, DiagramView, UnknownLayouted } from '@likec4/core/types'
+import type * as t from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'
@@ -8,8 +9,8 @@ import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export type ReactLikeC4Props<A extends Any> = Omit<LikeC4DiagramProps<A>, 'view'> & {
-  viewId: aux.ViewId<A>
+export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> = Omit<LikeC4DiagramProps<A>, 'view'> & {
+  viewId: t.aux.ViewId<A>
 
   /**
    * Keep aspect ratio of the diagram
@@ -41,7 +42,7 @@ export type ReactLikeC4Props<A extends Any> = Omit<LikeC4DiagramProps<A>, 'view'
   styleNonce?: string | (() => string) | undefined
 }
 
-export function ReactLikeC4<A extends Any = UnknownLayouted>({
+export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   viewId,
   ...props
 }: ReactLikeC4Props<A>) {
@@ -63,10 +64,10 @@ export function ReactLikeC4<A extends Any = UnknownLayouted>({
   return <ReactLikeC4Inner view={view.$view} {...props} />
 }
 
-type ReactLikeC4InnerProps<A extends Any> = Omit<ReactLikeC4Props<A>, 'viewId'> & {
+type ReactLikeC4InnerProps<A extends t.aux.Any> = Omit<ReactLikeC4Props<A>, 'viewId'> & {
   view: DiagramView<A>
 }
-function ReactLikeC4Inner<A extends Any>({
+function ReactLikeC4Inner<A extends t.aux.Any>({
   className,
   view,
   colorScheme: explicitColorScheme,

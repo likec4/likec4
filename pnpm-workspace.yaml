@@ -10,7 +10,7 @@ catalog:
   tsx: 4.20.3
   turbo: 2.5.6
   typescript: 5.9.2
-  unbuild: 3.6.1
+  unbuild: 3.5.0
   wireit: 0.14.12
   wrangler: 4.31.0
   zx: 8.5.5

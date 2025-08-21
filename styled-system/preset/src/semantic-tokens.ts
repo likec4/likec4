@@ -3,14 +3,6 @@ import { type Config, defineSemanticTokens } from '@pandacss/dev'
 type ExtendableTheme = NonNullable<Config['theme']>
 
 export const semanticTokens = defineSemanticTokens({
-  fontSizes: {
-    likec4: {
-      textSize: {
-        description: 'LikeC4 text size',
-        value: '{fontSizes.likec4.md}',
-      },
-    },
-  },
   colors: {
     likec4: {
       background: {

@@ -1,5 +1,4 @@
 import type * as aux from './_aux'
-import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import type { PredicateSelector } from './expression'
 import { FqnRef } from './fqnRef'
@@ -13,6 +12,9 @@ import type {
   RelationshipLineType,
   ShapeSize,
 } from './styles'
+
+// Alias for bundle exports
+type AnyAux = aux.Any
 
 export namespace ModelFqnExpr {
   export type Wildcard = {

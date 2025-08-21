@@ -22,7 +22,7 @@
   "scripts": {
     "typecheck": "tsc --build --verbose",
     "build": "unbuild",
-    "generate": "panda codegen && panda cssgen",
+    "generate": "panda codegen",
     "emit-pkg": "panda emit-pkg --base dist",
     "clean": "pnpm rimraf dist lib",
     "pack": "pnpm pack",
@@ -60,20 +60,15 @@
     "./preset": {
       "sources": "./preset.ts",
       "default": {
-        "types": "./preset.d.mts",
-        "import": "./preset.mjs",
-        "default": "./preset.mjs"
+        "types": "./dist/preset.d.mts",
+        "import": "./dist/preset.mjs",
+        "default": "./dist/preset.mjs"
       }
     },
     "./dev": "./dev.ts"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@pandacss/dev": "catalog:css"
-  },
-  "peerDependenciesMeta": {
-    "@pandacss/dev": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -85,7 +80,6 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@pandacss/dev": "catalog:css",
     "postcss": "catalog:css",
     "nano-spawn": "catalog:utils",
     "unbuild": "catalog:",

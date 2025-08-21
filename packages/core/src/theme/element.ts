@@ -21,7 +21,7 @@ const slate = {
   loContrast: '#cbd5e1',
 } satisfies ElementThemeColorValues
 
-export const ElementColors = {
+export const ElementColors: ElementThemeColors = {
   primary: blue,
   blue,
   secondary: sky,
@@ -58,4 +58,4 @@ export const ElementColors = {
     hiContrast: '#eef2ff',
     loContrast: '#c7d2fe',
   },
-} as const satisfies ElementThemeColors
+}

@@ -52,7 +52,7 @@ interface ProjectData {
   config: ProjectConfig
   folder: ProjectFolder // URI.toString()
   folderUri: URI
-  exclude?: picomatch.Matcher
+  exclude?: (path: string) => boolean
 }
 
 export interface Project {

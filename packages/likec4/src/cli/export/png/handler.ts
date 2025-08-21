@@ -2,7 +2,6 @@
 import type { DiagramView, NonEmptyArray } from '@likec4/core'
 import { hrtime } from 'node:process'
 import picomatch from 'picomatch'
-import { chromium } from 'playwright'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
@@ -68,7 +67,7 @@ export async function exportViewsToPNG(
 ) {
   logger.info(`${k.dim('output')} ${output}`)
   logger.info(`${k.dim('base url')} ${serverUrl}\n`)
-
+  const { chromium } = await import('playwright')
   const chromePath = chromium.executablePath()
   logger.info(k.cyan('Start chromium') + ' ' + k.dim(chromePath))
   const browser = await chromium.launch({

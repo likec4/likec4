@@ -51,7 +51,9 @@
       }
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@hpcc-js/wasm-graphviz": "catalog:utils"
+  },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@likec4/log": "workspace:*",

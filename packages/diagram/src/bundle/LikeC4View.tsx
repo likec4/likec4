@@ -1,4 +1,4 @@
-import type { Any, aux, DiagramView, UnknownLayouted } from '@likec4/core/types'
+import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
@@ -15,7 +15,7 @@ import { ShadowRoot } from './ShadowRoot'
 import { cssInteractive, useColorScheme, useShadowRootStyle } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
-export function LikeC4View<A extends Any = UnknownLayouted>({
+export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   viewId,
   ...props
 }: LikeC4ViewProps<A>) {
@@ -44,10 +44,10 @@ const DEFAULT_BROWSER_PADDING: ViewPadding = {
   right: '16px',
 }
 
-type LikeC4ViewInnerProps<A extends Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
-  view: DiagramView<A>
+type LikeC4ViewInnerProps<A extends t.aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
+  view: t.DiagramView<A>
 }
-const LikeC4ViewInner = memo<LikeC4ViewInnerProps<Any>>(({
+const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
   view,
   className,
   pannable = false,
@@ -81,7 +81,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<Any>>(({
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
 
-  const [browserViewId, onNavigateTo] = useState(null as aux.ViewId<Any> | null)
+  const [browserViewId, onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
 
   const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
 

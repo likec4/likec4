@@ -1,11 +1,13 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
-import type { Any } from '@likec4/core/types'
+import type { aux } from '@likec4/core/types'
 import type { FunctionComponent } from 'react'
 import { jsx } from 'react/jsx-runtime'
 import { customNode } from '../base/primitives'
 import type { NodeProps } from '../base/types'
 import type { Types } from '../likec4diagram/types'
 import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
+
+type Any = aux.Any
 
 type CustomDiagramNodeProps = {
   nodeProps: NodeProps<Types.NodeData, string>

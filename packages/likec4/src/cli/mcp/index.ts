@@ -2,7 +2,7 @@ import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { LikeC4 } from '../../LikeC4'
 import { boxen } from '../../logger'
-import { path } from '../options'
+import { path, useDotBin } from '../options'
 
 const mcpCmd = <T>(yargs: Argv<T>) => {
   return yargs
@@ -30,6 +30,7 @@ const mcpCmd = <T>(yargs: Argv<T>) => {
             description: 'enables http transport and sets the port',
             conflicts: 'stdio',
           })
+          .option('use-dot', useDotBin)
           .epilog(`${k.bold('Examples:')}
 ${k.green('$0 mcp')}
   ${k.gray('Start MCP with default stdio transport')}
@@ -40,18 +41,19 @@ ${k.green('$0 mcp -p 1234')}
 `),
       handler: async args => {
         if (args.http || args.port) {
-          await startHttpMcp(args.path, args.port)
+          await startHttpMcp(args.path, args.useDot, args.port)
         } else {
-          await startStdioMcp(args.path)
+          await startStdioMcp(args.path, args.useDot)
         }
       },
     })
 }
 
-async function startHttpMcp(path: string, port = 33335) {
+async function startHttpMcp(path: string, useDotBin: boolean, port = 33335) {
   await LikeC4.fromWorkspace(path, {
     mcp: { port },
     watch: true,
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
   boxen(
     [
@@ -72,9 +74,11 @@ ${k.underline('https://likec4.dev/tooling/mcp/#using-extension')}
   )
 }
 
-async function startStdioMcp(path: string) {
+async function startStdioMcp(path: string, useDotBin: boolean) {
   await LikeC4.fromWorkspace(path, {
     mcp: 'stdio',
+    watch: true,
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 }
 

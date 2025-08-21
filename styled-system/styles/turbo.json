@@ -9,7 +9,9 @@
         "@likec4/style-preset#build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "!dist/preset.mjs",
+        "!dist/preset.d.mts"
       ]
     },
     "typecheck": {
@@ -27,8 +29,8 @@
         "generate"
       ],
       "outputs": [
-        "preset.d.mts",
-        "preset.mjs"
+        "dist/preset.d.mts",
+        "dist/preset.mjs"
       ]
     }
   }

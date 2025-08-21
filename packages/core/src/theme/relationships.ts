@@ -23,7 +23,7 @@ const sky = {
   labelColor: '#38bdf8', // 400
 } satisfies RelationshipThemeColorValues
 
-export const RelationshipColors = {
+export const RelationshipColors: RelationshipThemeColors = {
   amber: {
     lineColor: '#b45309',
     labelBgColor: '#78350f',
@@ -51,4 +51,4 @@ export const RelationshipColors = {
   secondary: sky,
   sky,
   slate,
-} satisfies RelationshipThemeColors
+}

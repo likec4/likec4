@@ -1,4 +1,5 @@
-import type { Any, aux, WhereOperator } from '@likec4/core/types'
+import type * as t from '@likec4/core/types'
+import type { WhereOperator } from '@likec4/core/types'
 import type { CSSProperties } from 'react'
 import type {
   CustomNodes,
@@ -8,11 +9,11 @@ import type {
   ViewPadding,
 } from '../LikeC4Diagram.props'
 
-export interface LikeC4ViewProps<A extends Any> {
+export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
    * View to display.
    */
-  viewId: aux.ViewId<A>
+  viewId: t.aux.ViewId<A>
 
   /**
    * Enable/disable panning

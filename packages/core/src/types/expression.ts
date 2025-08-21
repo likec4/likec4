@@ -1,5 +1,4 @@
 import type * as aux from './_aux'
-import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import { FqnRef } from './fqnRef'
 import type { WhereOperator } from './operators'
@@ -12,6 +11,9 @@ import type {
   RelationshipLineType,
   ShapeSize,
 } from './styles'
+
+// Alias for bundle exports
+type AnyAux = aux.Any
 
 export type PredicateSelector =
   | 'children' // ele.*

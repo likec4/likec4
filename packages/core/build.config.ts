@@ -14,16 +14,20 @@ export default defineBuildConfig({
     'src/types/index.ts',
     'src/types/_aux.ts',
     'src/types/scalar.ts',
+    'src/types/expression-model.ts',
+    'src/types/expression.ts',
+    'src/types/fqnRef.ts',
     'src/utils/iterable/index.ts',
     'src/utils/index.ts',
   ],
   clean: true,
   stub: false,
   declaration: 'node16',
+  alias: {
+    'object-hash': 'object-hash/dist/object_hash.js',
+  },
   rollup: {
+    emitCJS: false,
     inlineDependencies: true,
-    resolve: {
-      browser: true,
-    },
   },
 })

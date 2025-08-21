@@ -133,6 +133,7 @@ const tokens = {
 } satisfies ExtendableTheme['tokens']
 
 const globalVars = {
+  '--likec4-text-size': rem(defaultTheme.textSizes.md),
   '--likec4-palette-fill': defaultTheme.elements.primary.fill,
   '--likec4-palette-stroke': defaultTheme.elements.primary.stroke,
   '--likec4-palette-hiContrast': defaultTheme.elements.primary.hiContrast,
