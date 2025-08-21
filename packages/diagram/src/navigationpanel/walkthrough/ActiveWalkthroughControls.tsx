@@ -1,3 +1,4 @@
+import { RichText } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Badge, Button, Portal } from '@mantine/core'
@@ -89,6 +90,7 @@ export const ActiveWalkthroughControls = () => {
     hasPrevious,
     currentStep,
     totalSteps,
+    notes,
   } = useDiagramContext(s => {
     const currentStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
     return ({
@@ -97,13 +99,13 @@ export const ActiveWalkthroughControls = () => {
       hasPrevious: currentStepIndex > 0,
       currentStep: currentStepIndex + 1,
       totalSteps: s.xyedges.length,
+      notes: s.xyedges[currentStepIndex]?.data?.notes ?? RichText.EMPTY,
     })
   })
 
   return (
     <AnimatePresence propagate>
       <TriggerWalkthroughButton
-        key="trigger-dynamic-walkthrough"
         variant="light"
         color="orange"
         mr={'sm'}

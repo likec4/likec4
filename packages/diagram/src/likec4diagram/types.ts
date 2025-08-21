@@ -141,10 +141,10 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
-        | 'notes'
       >
     >
     & {
+      notes: RichTextOrEmpty
       labelXY: XYPosition | null
       controlPoints: XYPosition[] | undefined | null
     }
