@@ -7,11 +7,8 @@ type ExtendableGlobalVars = NonNullable<Config['globalVars']>
 export const globalVars: ExtendableGlobalVars = {
   extend: {
     ...paletteGlobalVars,
+    '--mantine-scale': '1',
     '--likec4-palette-outline': 'var(--likec4-palette-loContrast)',
-    '--likec4-text-size': {
-      syntax: '<length> | <percentage>',
-      inherits: false,
-    },
     '--likec4-spacing': {
       syntax: '<length> | <percentage>',
       inherits: false,

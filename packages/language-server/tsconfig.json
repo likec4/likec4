@@ -8,17 +8,24 @@
       "WebWorker"
     ],
     "target": "ES2022",
-    "rootDir": "src",
+    "rootDirs": [
+      "src",
+      "."
+    ],
     "types": [
       "node"
     ]
   },
   "include": [
-    "src"
+    "src",
+    "build.config.ts"
   ],
   "references": [
     {
       "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../layouts/tsconfig.json"
     }
   ]
 }

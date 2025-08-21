@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { type BuildEntry, defineBuildConfig } from 'unbuild'
 
 const mkdist: BuildEntry = {
@@ -9,7 +10,6 @@ const mkdist: BuildEntry = {
   declaration: true,
   globOptions: {
     ignore: [
-      '**/bundled.ts',
       '**/*.langium',
       '**/__test*/**',
       '**/*.spec.ts',
@@ -29,8 +29,8 @@ export default defineBuildConfig({
   clean: true,
   stub: false,
   alias: {
-    'raw-body': './src/empty.ts',
-    'content-type': './src/empty.ts',
+    'raw-body': resolve('./src/empty.ts'),
+    'content-type': resolve('./src/empty.ts'),
   },
   rollup: {
     esbuild: {
@@ -40,7 +40,7 @@ export default defineBuildConfig({
     },
     inlineDependencies: true,
     resolve: {
-      exportConditions: ['sources'],
+      exportConditions: ['node', 'sources'],
     },
   },
 })

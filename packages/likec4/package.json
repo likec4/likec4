@@ -133,7 +133,8 @@
     "playwright": "catalog:",
     "rollup": "catalog:vite",
     "type-fest": "catalog:utils",
-    "vite": "catalog:vite"
+    "vite": "catalog:vite",
+    "yargs": "17.7.2"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
@@ -222,7 +223,6 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
-    "wireit": "catalog:",
-    "yargs": "17.7.2"
+    "wireit": "catalog:"
   }
 }

@@ -27,6 +27,12 @@
     },
     {
       "path": "../language-server/tsconfig.json"
+    },
+    {
+      "path": "../generators/tsconfig.json"
+    },
+    {
+      "path": "../layouts/tsconfig.json"
     }
   ]
 }

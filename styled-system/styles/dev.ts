@@ -1,19 +1,14 @@
+import likec4preset from '@likec4/style-preset'
 import {
   pluginRemoveNegativeSpacing,
   pluginStrictTokensScope,
 } from '@pandabox/panda-plugins'
 import { type Config, defineConfig as pandaDefineConfig } from '@pandacss/dev'
-import likec4preset from './preset'
 
-export function defineConfig(config: Config) {
+export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plugins'>) {
   return pandaDefineConfig({
     // Whether to use css reset
-    importMap: {
-      css: '@likec4/styles/css',
-      recipes: '@likec4/styles/recipes',
-      patterns: '@likec4/styles/patterns',
-      jsx: '@likec4/styles/jsx',
-    },
+    importMap: '@likec4/styles',
     presets: [
       likec4preset,
     ],

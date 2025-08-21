@@ -1,17 +1,17 @@
-import type {
-  Any,
-  aux,
-  DiagramEdge,
-  DiagramNode,
-  LayoutedView,
-  ViewChange,
-  WhereOperator,
-} from '@likec4/core/types'
+import type * as t from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, LayoutedView, ViewChange, WhereOperator } from '@likec4/core/types'
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 import type { CustomNodes } from './custom/customNodes'
+
+type Any = t.aux.Any
+type ViewId<A> = t.aux.ViewId<A>
+type Fqn<A> = t.aux.Fqn<A>
+type RelationId = t.aux.RelationId
+type DeploymentFqn<A> = t.aux.DeploymentFqn<A>
+type StrictViewId<A> = t.aux.StrictViewId<A>
 
 export type { CustomNodes, WhereOperator }
 
@@ -29,7 +29,7 @@ export type ElementIconRendererProps = {
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
 export type OnNavigateTo<A extends Any = Any> = (
-  to: aux.ViewId<A>,
+  to: ViewId<A>,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
   element?: DiagramNodeWithNavigate<A>,
@@ -303,23 +303,23 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
-export type OpenSourceParams<A extends aux.Any = aux.Any> =
+export type OpenSourceParams<A extends Any = Any> =
   | {
-    element: aux.Fqn<A>
+    element: Fqn<A>
     property?: string
   }
   | {
-    relation: aux.RelationId
+    relation: RelationId
   }
   | {
-    deployment: aux.DeploymentFqn<A>
+    deployment: DeploymentFqn<A>
     property?: string
   }
   | {
-    view: aux.StrictViewId<A>
+    view: StrictViewId<A>
   }
 
-export interface LikeC4DiagramEventHandlers<A extends aux.Any = aux.Any> {
+export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined

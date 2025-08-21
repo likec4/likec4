@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
@@ -5,8 +6,8 @@ export default defineBuildConfig({
   stub: false,
   declaration: false,
   alias: {
-    'raw-body': './src/empty.ts',
-    'content-type': './src/empty.ts',
+    'raw-body': resolve('./src/empty.ts'),
+    'content-type': resolve('./src/empty.ts'),
   },
   rollup: {
     esbuild: {

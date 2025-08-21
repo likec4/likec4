@@ -9,11 +9,11 @@ export function useSetState<T extends object>(initialState: T | (() => T)) {
       _setState((current) => {
         const next = {
           ...current,
-          ...typeof statePartial === 'function' ? statePartial(current) : statePartial
+          ...typeof statePartial === 'function' ? statePartial(current) : statePartial,
         }
         return shallowEqual(current, next) ? current : next
       }),
-    []
+    [],
   )
   return [state, setState] as const
 }

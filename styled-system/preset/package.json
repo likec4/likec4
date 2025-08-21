@@ -39,12 +39,10 @@
   "peerDependencies": {
     "@pandacss/dev": "catalog:css"
   },
-  "dependencies": {
-    "@radix-ui/colors": "^3.0.0"
-  },
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@radix-ui/colors": "^3.0.0",
     "pandacss-preset-radix-colors": "^0.2.0",
     "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",

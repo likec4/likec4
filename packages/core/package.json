@@ -27,7 +27,8 @@
     "src",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
-    "!**/__tests__/*",
+    "!**/__test__/*",
+    "!**/__snapshots__/*",
     "!**/*.map"
   ],
   "type": "module",
