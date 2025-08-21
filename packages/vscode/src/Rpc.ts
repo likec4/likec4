@@ -7,6 +7,7 @@ import {
   type GetDocumentTags,
   type LayoutView,
   type Locate,
+  type RegisterProject,
   type ReloadProjects,
   type ValidateLayout,
   FetchComputedModel,
@@ -28,6 +29,7 @@ const fetchViewsFromAllProjects: FetchViewsFromAllProjects.Req = new RequestType
 const fetchComputedModel: FetchComputedModel.Req = new RequestType('likec4/fetchComputedModel')
 const buildDocuments: BuildDocuments.Req = new RequestType('likec4/build')
 const reloadProjects: ReloadProjects.Req = new RequestType0('likec4/reload-projects')
+const registerProject: RegisterProject.Req = new RequestType('likec4/register-project')
 const locate: Locate.Req = new RequestType('likec4/locate')
 const changeView: ChangeView.Req = new RequestType('likec4/change-view')
 const layoutView: LayoutView.Req = new RequestType('likec4/layout-view')
@@ -44,6 +46,7 @@ const lsp = {
   fetchComputedModel,
   buildDocuments,
   reloadProjects,
+  registerProject,
   locate,
   changeView,
   layoutView,
@@ -120,6 +123,11 @@ export const useRpc = createSingletonComposable(() => {
     await client.sendRequest(lsp.reloadProjects)
   }
 
+  async function registerProject(params: RegisterProject.Params) {
+    const { id } = await client.sendRequest(lsp.registerProject, params)
+    return id
+  }
+
   return {
     client,
     onDidChangeModel,
@@ -134,6 +142,7 @@ export const useRpc = createSingletonComposable(() => {
     fetchViewsFromAllProjects,
     getDocumentTags,
     reloadProjects,
+    registerProject,
   }
 })
 

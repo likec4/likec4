@@ -306,6 +306,7 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-messenger": "^0.5.1",
     "vscode-messenger-common": "^0.5.1",
+    "ufo": "catalog:utils",
     "playwright": "catalog:",
     "vscode-uri": "catalog:vscode"
   }

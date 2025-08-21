@@ -26,6 +26,7 @@ import {
   GetDocumentTags,
   LayoutView,
   Locate,
+  RegisterProject,
   ReloadProjects,
   ValidateLayout,
 } from './protocol'
@@ -139,6 +140,11 @@ export class Rpc extends ADisposable {
         logger.debug`received request ${'ReloadProjects'}`
         await projects.reloadProjects(cancelToken)
         return
+      }),
+      connection.onRequest(RegisterProject.req, async (params) => {
+        logger.debug`received request ${'RegisterProject'}`
+        const project = await projects.registerProject(params)
+        return { id: project.id }
       }),
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`

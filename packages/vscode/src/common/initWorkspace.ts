@@ -1,6 +1,7 @@
 import { delay } from '@likec4/core/utils'
+import { parseConfigJson } from '@likec4/language-server/config'
+import { joinRelativeURL } from 'ufo'
 import * as vscode from 'vscode'
-import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
 import { logger, logWarn } from '../logger'
 import { type Rpc, useRpc } from '../Rpc'
@@ -10,7 +11,7 @@ import { type Rpc, useRpc } from '../Rpc'
 export async function initWorkspace() {
   try {
     const rpc = useRpc()
-    const docs = await findSources(rpc.client)
+    const docs = await findSources(rpc)
     if (docs.length <= 0) {
       logger.warn('[InitWorkspace] with pattern {globPattern} no docs found', { globPattern })
     } else {
@@ -31,7 +32,7 @@ export async function initWorkspace() {
 export async function rebuildWorkspace(rpc: Rpc) {
   try {
     logger.info(`Rebuilding...`)
-    const docs = await findSources(rpc.client)
+    const docs = await findSources(rpc)
     if (docs.length <= 0) {
       logger.warn('[rebuildWorkspace] with pattern {globPattern} no docs found', { globPattern })
     } else {
@@ -47,13 +48,31 @@ export async function rebuildWorkspace(rpc: Rpc) {
   }
 }
 
-async function findSources(client: LanguageClient) {
+async function findSources(rpc: Rpc) {
   const isweb = isWebUi() || isVirtual()
+  const client = rpc.client
   const c2pConverter = client.code2ProtocolConverter
   // const uris = await (isweb ? recursiveSearchSources : findFiles)()
-  const uris = await recursiveSearchSources()
+  const { sources, projects } = await recursiveSearchSources()
+  if (projects.length === 0) {
+    logger.info('[findSources] no projects found')
+  }
+  for (const uri of projects) {
+    try {
+      const cfgUri = c2pConverter.asUri(uri)
+      logger.info`register project ${cfgUri}`
+      const bytes = await vscode.workspace.fs.readFile(uri)
+      const decoder = new TextDecoder()
+      const config = parseConfigJson(decoder.decode(bytes))
+      const folderUri = joinRelativeURL(cfgUri, '..')
+      await rpc.registerProject({ folderUri, config })
+    } catch (e) {
+      logWarn(e)
+    }
+  }
+
   const docs = [] as string[]
-  for (const uri of uris) {
+  for (const uri of sources) {
     try {
       // Langium started with EmptyFileSystem
       // so we need to open all files to make them available
@@ -71,6 +90,11 @@ async function findFiles() {
   return await vscode.workspace.findFiles(globPattern)
 }
 
+const isLikeC4Project = (path: string) => {
+  const p = path.toLowerCase()
+  return p.endsWith('.likec4rc') || p.endsWith('likec4.config.json')
+}
+
 export const isLikeC4Source = (path: string) => {
   const p = path.toLowerCase()
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
@@ -78,15 +102,20 @@ export const isLikeC4Source = (path: string) => {
 
 async function recursiveSearchSources() {
   logger.info(`recursiveSearchSources`)
-  const uris = [] as vscode.Uri[]
+  const projects = [] as vscode.Uri[]
+  const sources = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   let folder
   while (folder = folders.pop()) {
     try {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)
-        if (type === vscode.FileType.File && isLikeC4Source(name)) {
-          uris.push(path)
+        if (type === vscode.FileType.File) {
+          if (isLikeC4Project(name)) {
+            projects.push(path)
+          } else if (isLikeC4Source(name)) {
+            sources.push(path)
+          }
         }
         if (type === vscode.FileType.Directory) {
           folders.push(path)
@@ -96,5 +125,5 @@ async function recursiveSearchSources() {
       logWarn(e)
     }
   }
-  return uris
+  return { projects, sources }
 }

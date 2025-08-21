@@ -26,7 +26,7 @@
         "--skip-release-notes",
         "--skip-welcome",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/multi-project",
+        "${workspaceFolder}/examples",
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"
@@ -61,7 +61,7 @@
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/examples/diagrams-dev/likec4",
+        "${workspaceFolder}/examples",
       ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [
