@@ -94,7 +94,7 @@
     "@codingame/monaco-vscode-theme-defaults-default-extension": "16.1.1",
     "@codingame/monaco-vscode-theme-service-override": "16.1.1",
     "@codingame/monaco-vscode-views-service-override": "16.1.1",
-    "@hono/oauth-providers": "^0.8.2",
+    "@hono/oauth-providers": "^0.8.5",
     "@hono/valibot-validator": "^0.5.2",
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
