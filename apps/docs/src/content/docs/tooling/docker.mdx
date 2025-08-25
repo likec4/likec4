@@ -61,6 +61,8 @@ docker run --rm \
   -t \
   -p 5173:5173 \
   -p 24678:24678 \
+  -e CHOKIDAR_USEPOLLING=1 \
+  -e CHOKIDAR_INTERVAL=200 \
   likec4/likec4 \
   start
 ```
@@ -69,6 +71,31 @@ docker run --rm \
 By default LikeC4 Docker sets `--use-dot` flag and uses local Graphviz binaries instead of bundled WASM (as it has [memory issues](https://github.com/likec4/likec4/issues?q=Memory%20type:Bug)).
 
 You can override it with `--no-use-dot` flag.
+:::
+
+:::caution[Running the Local Web Server on Windows]
+When using Windows with the Docker-based preview, updates to the diagrams/ file system are not reflected in the running container when files are hosted within a Windows-based file system (i.e. on a drive such as `C:\`).
+
+This is a [known issue](https://github.com/microsoft/WSL/issues/4739) with file system notifications for Linux applications using WSL.
+
+**Workaround**:
+
+Enable polling for file changes by adding the following environment variables to the `docker run` command:
+
+```diff lang="sh" copy title="Start local web server with WSL workaround"
+docker run --rm \
+  -v $PWD:/data \
+  --init \
+  -t \
+  -p 5173:5173 \
+  -p 24678:24678 \
++  -e CHOKIDAR_USEPOLLING=1 \   # Enable polling support
++  -e CHOKIDAR_INTERVAL=200 \   # Adjust timing to your needs
+  likec4/likec4 \
+  start
+```
+
+**Note**: If your diagrams are hosted within a WSL-based filesystem (e.g. /home/user/...), then file system notifications should work as expected.
 :::
 
 ### Build static website
