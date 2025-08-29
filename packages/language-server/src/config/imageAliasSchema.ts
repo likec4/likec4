@@ -25,7 +25,7 @@ export const ImageAliasesSchema = v.pipe(
   ),
 )
 
-// This just allows use to have a typed validate function.
+// This just allows us to have a typed validate function.
 type ImageAliasConfig = v.InferOutput<typeof ImageAliasesSchema>
 
 export function validateImageAliases(imageAliases?: ImageAliasConfig) {
