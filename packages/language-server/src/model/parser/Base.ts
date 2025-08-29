@@ -28,6 +28,7 @@ import {
   toColor,
 } from '../../ast'
 import type { ProjectConfig } from '../../config'
+import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
@@ -227,10 +228,14 @@ export class BaseParser {
       }
       case value && hasProtocol(value): {
         if (value.startsWith('file:')) {
+          logger.warn(`Icon property '${value}' used the 'file' protocol which is not supported`)
           return undefined
         }
 
         return value as c4.IconUrl
+      }
+      case value && value.startsWith('@'): {
+        return this.parseImageAlias(value) as c4.IconUrl
       }
       case value && isRelative(value): {
         return joinRelativeURL(this.doc.uri.toString(), '../', value) as c4.IconUrl
@@ -239,9 +244,39 @@ export class BaseParser {
         return joinURL(this.project.folderUri.toString(), value) as c4.IconUrl
       }
       default: {
+        logger.warn(`Icon property '${value}' is not a valid URL, library icon, image alias or 'none'`)
         return undefined
       }
     }
+  }
+
+  parseImageAlias(value: string): string | undefined {
+    // Extract the alias name (e.g., '@infra' from '@infra/backend.svg')
+    const slashIndex = value.indexOf('/')
+    const aliasName = slashIndex > 0 ? value.substring(0, slashIndex) : value
+    const remainingPath = slashIndex > 0 ? value.substring(slashIndex + 1) : ''
+
+    // Get imageAliases from project config, or use default '@' -> './images' mapping
+    const imageAliases = this.project.config.imageAliases || {}
+    if (!imageAliases['@']) {
+      // Always have the default available, regardless of user config.
+      // They can always override it if they want.
+      imageAliases['@'] = './images'
+    }
+
+    // Look up the alias path
+    const aliasPath = imageAliases[aliasName]
+    if (!aliasPath) {
+      // What should we do if the alias is not found?
+      logger.warn(`Image alias "${aliasName}" not found in project configuration`)
+      return undefined
+    }
+
+    // Combine the alias path with the remaining path
+    const fullPath = remainingPath ? joinURL(aliasPath, remainingPath) : aliasPath
+
+    // Make it relative to the **project root**, not the current document.
+    return joinURL(this.project.folderUri.toString(), fullPath)
   }
 
   parseColorLiteral(astNode: ast.ColorLiteral): c4.ColorLiteral | undefined {

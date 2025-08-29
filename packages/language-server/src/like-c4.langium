@@ -827,7 +827,7 @@ IconId returns string:
   LIB_ICON;
 
 Uri returns string:
-  URI_WITH_SCHEMA | URI_RELATIVE;
+  URI_WITH_SCHEMA | URI_RELATIVE | URI_ALIAS;
 
 MarkdownOrString:
   markdown=MarkdownString | text=String;
@@ -876,6 +876,7 @@ terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
+terminal URI_ALIAS: /@[a-zA-Z0-9_-]*\/[^\s]+/;
 
 terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;
 terminal DotWildcard: /\b\.\*{1,2}/;
