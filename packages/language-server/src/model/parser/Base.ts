@@ -257,12 +257,10 @@ export class BaseParser {
     const remainingPath = slashIndex > 0 ? value.substring(slashIndex + 1) : ''
 
     // Get imageAliases from project config, or use default '@' -> './images' mapping
-    const imageAliases = this.project.config.imageAliases || {}
-    if (!imageAliases['@']) {
-      // Always have the default available, regardless of user config.
-      // They can always override it if they want.
-      imageAliases['@'] = './images'
-    }
+    const userImageAliases = this.project.config.imageAliases || {}
+    // Always have the default available, regardless of user config.
+    // They can always override it if they want.
+    const imageAliases = { '@': './images', ...userImageAliases }
 
     // Look up the alias path
     const aliasPath = imageAliases[aliasName]
