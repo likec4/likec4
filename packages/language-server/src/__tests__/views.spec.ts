@@ -233,6 +233,19 @@ describe.concurrent('views', () => {
       }
     }`
 
+  test('ViewStyleRules - with @ addressing icon').valid`${model}
+    views {
+      view {
+        include *
+        style backend, infra {
+          icon @/icons/typescript.svg
+        }
+        style frontend {
+          icon @assets/frontend.svg
+        }
+      }
+    }`
+
   test('trailing comma in predicates').valid`${model}
     views {
       view {

@@ -1,6 +1,7 @@
 model {
 
   customer = actor 'Cloud System Customer' {
+    icon @root/test-tube.svg
     description '
       The regular customer of the system
     '
@@ -8,7 +9,7 @@ model {
 
   cloud = system 'Cloud System' {
     description '
-      Our SaaS platfrom that allows
+      Our SaaS platform that allows
       customers to interact with
       the latest technologies
     '
@@ -18,6 +19,11 @@ model {
         All the frontend applications
         of Cloud System
       '
+
+      style {
+        icon @nested/test-tube-chemistry.svg
+      }
+
       metadata {
         version '2.1.1'
       }

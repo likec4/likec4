@@ -39,15 +39,22 @@ await cp(
   { recursive: true },
 )
 
+const projectConfigJSONSchema = JSON.stringify(
+  toJsonSchema(ProjectConfig, {
+    ignoreActions: ['excludes'],
+  }),
+  null,
+  2,
+)
+
 await writeFile(
   './data/config.schema.json',
-  JSON.stringify(
-    toJsonSchema(ProjectConfig, {
-      ignoreActions: ['excludes'],
-    }),
-    null,
-    2,
-  ),
+  projectConfigJSONSchema,
+)
+
+await writeFile(
+  '../../schemas/likec4-config.schema.json',
+  projectConfigJSONSchema,
 )
 
 consola.start('Build vscode extension')

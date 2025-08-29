@@ -1,5 +1,6 @@
 import JSON5 from 'json5'
 import * as v from 'valibot'
+import { ImageAliasesSchema, validateImageAliases } from './imageAliasSchema'
 
 export const ProjectConfig = v.object({
   name: v.pipe(
@@ -22,15 +23,20 @@ export const ProjectConfig = v.object({
     v.pipe(
       v.string(),
       v.nonEmpty('Contact person cannot be empty if specified'),
-      v.description('A person who has been involved in creating or maintaining this project'),
+      v.description(
+        'A person who has been involved in creating or maintaining this project',
+      ),
     ),
   ),
   exclude: v.optional(
     v.pipe(
       v.array(v.string()),
-      v.description('List of file patterns to exclude from the project, default is ["**/node_modules/**"]'),
+      v.description(
+        'List of file patterns to exclude from the project, default is ["**/node_modules/**"]',
+      ),
     ),
   ),
+  imageAliases: v.optional(ImageAliasesSchema),
 })
 
 export type ProjectConfig = v.InferOutput<typeof ProjectConfig>
@@ -40,5 +46,12 @@ export function parseConfigJson(config: string): ProjectConfig {
 }
 
 export function validateConfig(config: unknown): ProjectConfig {
-  return v.parse(ProjectConfig, config)
+  const parsed = v.parse(ProjectConfig, config)
+
+  // Applies additional validation to the `imageAliases` field,
+  // as volibot doesn't support exporting the full schema types
+  // to a JSON Schema file.
+  validateImageAliases(parsed.imageAliases)
+
+  return parsed
 }

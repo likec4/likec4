@@ -132,7 +132,7 @@ console.info('aws-icons - OK')
 
 if (!existsSync('.tmp/azure.zip')) {
   console.info('Fetching azure-icons...')
-  await $`curl -o .tmp/azure.zip https://arch-center.azureedge.net/icons/Azure_Public_Service_Icons_V19.zip`
+  await $`curl -o .tmp/azure.zip https://arch-center.azureedge.net/icons/Azure_Public_Service_Icons_V22.zip`
 }
 await rm('.tmp/azure', { force: true, recursive: true })
 await $`unzip .tmp/azure.zip  -d .tmp/azure`
@@ -140,7 +140,9 @@ await mkdir('.tmp/src/azure', { recursive: true })
 
 const azureSvgs = new fdir().glob('**/*.svg').withFullPaths().crawl('.tmp/azure').sync()
 for (const svg of azureSvgs) {
-  let name = path.basename(svg).replace(/^\d+-icon-service-/, '')
+  // The \s* is due to some filenames having a space included after the digits.
+  // e.g. in v22 /new-icons/030777508 -icon-service-Service-Group-Relationships.svg
+  let name = path.basename(svg).replace(/^\d+\s*-icon-service-/, '')
   name = path.resolve('.tmp/src/azure', name)
   await $`mv ${path.resolve(svg)} ${name}`
 }

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Project name, must be unique in the workspace"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A human readable title for the project"
+    },
+    "contactPerson": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A person who has been involved in creating or maintaining this project"
+    },
+    "exclude": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]"
+    },
+    "imageAliases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$",
+        "minLength": 1
+      },
+      "description": "Map of image alias prefixes to relative paths (keys must match /^@[A-Za-z0-9_-]*$/; values must be relative paths without protocol or leading slash)."
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

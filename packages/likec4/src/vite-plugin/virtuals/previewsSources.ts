@@ -1,5 +1,3 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import type { ComputedView } from '../../model'
 
 export function diagramPreviewsSources(views: ComputedView[], assetsDir: string) {
@@ -7,10 +5,6 @@ export function diagramPreviewsSources(views: ComputedView[], assetsDir: string)
     imports,
     cases,
   } = views.reduce((acc, { id }, i) => {
-    const filePath = resolve(assetsDir, `${id}.png`)
-    if (!existsSync(filePath)) {
-      return acc
-    }
     const Component = 'Png' + i.toString().padStart(2, '0')
 
     acc.imports.push(`import ${Component} from 'likec4/previews/${id}.png'`)

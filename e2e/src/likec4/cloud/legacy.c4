@@ -4,6 +4,7 @@ model {
 
     backend = app 'Legacy Backend' {
       description 'The legacy version of backend'
+      icon @/cloud-legacy.svg
 
       services = component 'Legacy Backend Services' {
         #deprecated

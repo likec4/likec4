@@ -139,6 +139,20 @@ describe.concurrent('specification', () => {
         }
       }`
 
+    test('kind with @ addressing icon').valid`
+      specification {
+        element frontend {
+          style {
+            icon @/images/frontend.svg
+          }
+        }
+        element backend {
+          style {
+            icon @assets/backend.svg
+          }
+        }
+      }`
+
     test('kind the same name as color').valid`
       specification {
         element green {
@@ -531,6 +545,20 @@ describe.concurrent('specification', () => {
         deploymentNode frontend {
           style {
             icon none
+          }
+        }
+      }`
+
+    test('deployment kind with @ addressing icon').valid`
+      specification {
+        deploymentNode frontend {
+          style {
+            icon @/infrastructure/frontend.svg
+          }
+        }
+        deploymentNode backend {
+          style {
+            icon @infra/backend.svg
           }
         }
       }`

@@ -423,3 +423,427 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   },
 }
 `;
+
+exports[`Builder (style1) should build nested elements and relTo 1`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "s1": {
+      "color": "green",
+      "id": "s1",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {
+        "opacity": 10,
+        "size": "lg",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "s1",
+    },
+    "s1.c1": {
+      "color": "primary",
+      "id": "s1.c1",
+      "kind": "component",
+      "links": null,
+      "shape": "browser",
+      "style": {
+        "textSize": "sm",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "c1",
+    },
+    "s2": {
+      "color": "green",
+      "id": "s2",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {
+        "opacity": 10,
+        "size": "lg",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "s2",
+    },
+    "s2.c1": {
+      "color": "primary",
+      "id": "s2.c1",
+      "kind": "component",
+      "links": null,
+      "shape": "browser",
+      "style": {
+        "textSize": "sm",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "Component s2.1",
+    },
+    "s2.c1.c2": {
+      "color": "primary",
+      "id": "s2.c1.c2",
+      "kind": "component",
+      "links": null,
+      "shape": "browser",
+      "style": {
+        "textSize": "sm",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "Component s2.1.2",
+    },
+    "s2.c1.c2.c3": {
+      "color": "primary",
+      "id": "s2.c1.c2.c3",
+      "kind": "component",
+      "links": null,
+      "shape": "browser",
+      "style": {
+        "textSize": "sm",
+      },
+      "tags": [],
+      "technology": null,
+      "title": "c3",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {
+    "rel1": {
+      "id": "rel1",
+      "source": {
+        "model": "s2.c1.c2.c3",
+      },
+      "target": {
+        "model": "s1.c1",
+      },
+      "title": "relation from s2.1.2.3 to s1.1",
+    },
+    "rel2": {
+      "id": "rel2",
+      "source": {
+        "model": "s2.c1",
+      },
+      "target": {
+        "model": "s1.c1",
+      },
+      "title": "relation from s2.1 to s1.1",
+    },
+    "rel3": {
+      "id": "rel3",
+      "source": {
+        "model": "s1.c1",
+      },
+      "target": {
+        "model": "s2.c1.c2",
+      },
+      "title": "relation from s1.1 to s2.1.2",
+    },
+  },
+  "specification": {
+    "customColors": {},
+    "deployments": {},
+    "elements": {
+      "component": {
+        "style": {
+          "shape": "browser",
+          "textSize": "sm",
+        },
+      },
+      "system": {
+        "style": {
+          "color": "green",
+          "opacity": 10,
+          "size": "lg",
+        },
+      },
+    },
+    "relationships": {},
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+    },
+  },
+  "views": {},
+}
+`;
+
+exports[`Builder (style1) should build view  1`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "c1": {
+      "color": "primary",
+      "id": "c1",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c1",
+    },
+    "c2": {
+      "color": "primary",
+      "id": "c2",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c2",
+    },
+    "c3": {
+      "color": "primary",
+      "id": "c3",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c3",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {},
+  "specification": {
+    "customColors": {},
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": {},
+  },
+  "views": {
+    "1": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "1",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "View 1",
+    },
+    "2": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "2",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+        {
+          "include": [
+            {
+              "ref": {
+                "model": "c2",
+              },
+              "selector": "children",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "view 2",
+    },
+    "3": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "3",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "ref": {
+                "model": "c3",
+              },
+              "selector": "expanded",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "",
+    },
+  },
+}
+`;
+
+exports[`Builder (style1) should build viewOf  1`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "c1": {
+      "color": "primary",
+      "id": "c1",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c1",
+    },
+    "c2": {
+      "color": "primary",
+      "id": "c2",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c2",
+    },
+    "c2.c3": {
+      "color": "primary",
+      "id": "c2.c3",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c3",
+    },
+    "c2.c3.c4": {
+      "color": "primary",
+      "id": "c2.c3.c4",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": [],
+      "technology": null,
+      "title": "c4",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {},
+  "specification": {
+    "customColors": {},
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": {},
+  },
+  "views": {
+    "1": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "1",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+        {
+          "include": [
+            {
+              "inout": {
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
+              },
+            },
+          ],
+        },
+        {
+          "exclude": [
+            {
+              "source": {
+                "ref": {
+                  "model": "c1",
+                },
+                "selector": "expanded",
+              },
+              "target": {
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
+              },
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "View 1",
+      "viewOf": "c1",
+    },
+  },
+}
+`;

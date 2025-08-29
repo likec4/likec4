@@ -504,7 +504,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   })
 
   it('builds model with relative links inside virtual workspace', async ({ expect }) => {
-    const { addDocument, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    const { addDocument, validateAll, buildModel } = createTestServices({ workspace: 'vscode-vfs://host/virtual' })
     // vscode-vfs://host/virtual/src/index.c4
     await addDocument(
       `
@@ -585,7 +585,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   })
 
   it('build model and views have correct relative paths', async ({ expect }) => {
-    const { addDocument, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    const { addDocument, validateAll, buildModel } = createTestServices({ workspace: 'vscode-vfs://host/virtual' })
     // vscode-vfs://host/virtual/src/index.c4
     await addDocument(
       `

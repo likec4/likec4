@@ -11,7 +11,7 @@ describe.concurrent('DocumentLinkProvider', () => {
     let documentLinkProvider: LikeC4DocumentLinkProvider
 
     beforeAll(async () => {
-      const test = createTestServices('vscode-vfs://host/virtual')
+      const test = createTestServices({ workspace: 'vscode-vfs://host/virtual' })
       services = test.services
       documentLinkProvider = services.lsp.DocumentLinkProvider
       doc = await test.parse(
