@@ -5,7 +5,7 @@ const IMAGE_ALIAS_KEY_REGEX = /^@[A-Za-z0-9_-]*$/
 // Relative path (no leading slash, drive letter, or protocol)
 const IMAGE_ALIAS_VALUE_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
 
-// Image
+// Schema for an image alias value: must be a non-empty string representing a relative path (no leading slash, drive letter, or protocol).
 const ImageAliasValue = v.pipe(
   v.string(),
   v.regex(
