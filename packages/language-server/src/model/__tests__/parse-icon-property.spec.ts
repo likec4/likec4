@@ -174,7 +174,7 @@ describe('parseIconProperty', () => {
     // account for the extra folder.
     expect(model.element('comp1').icon).toBe('file:///testing/nested/image-alias/workspace/src/images/logo.svg')
     expect(model.element('comp2').icon).toBe(
-      'file:///testing/nested/image-alias/assets/images/icons/custom.svg',
+      'file:///testing/nested/image-alias/workspace/src/../../assets/images/icons/custom.svg',
     )
   })
 
@@ -237,9 +237,11 @@ describe('parseIconProperty', () => {
     // createTestService puts all virtual files in a /src folder
     // inside the provided workspace, so the expectations
     // account for the extra folder.
-    expect(model.element('comp1').icon).toBe('file:///testing/nested/image-alias/workspace/asset-images/logo.svg')
+    expect(model.element('comp1').icon).toBe(
+      'file:///testing/nested/image-alias/workspace/src/../asset-images/logo.svg',
+    )
     expect(model.element('comp2').icon).toBe(
-      'file:///testing/nested/image-alias/assets/images/icons/custom.svg',
+      'file:///testing/nested/image-alias/workspace/src/../../assets/images/icons/custom.svg',
     )
   })
 
@@ -334,9 +336,8 @@ describe('parseIconProperty', () => {
     expect(model.element('rel_path').icon).toBe('file:///test/workspace/src/assets/icon.svg')
     expect(model.element('abs_path').icon).toBe('file:///test/workspace/global/icon.gif')
     expect(model.element('none_val').icon).toBe('none')
-    // Remember that files are placed in a virtual 'src' folder in tests, and we
-    // haven't set any image aliases, so it used the default './images/' alias.
-    expect(model.element('alias_icon').icon).toBe('file:///test/workspace/src/images/logo.svg')
+    // We haven't set any image aliases, so it used the default './images/' alias.
+    expect(model.element('alias_icon').icon).toBe('file:///test/workspace/images/logo.svg')
     expect(model.element('style_icon').icon).toBe('https://example.com/styled.svg')
   })
 
