@@ -33,8 +33,7 @@
     "test:watch": "vitest --no-isolate",
     "pretest:e2e": "NODE_ENV=production turbo run pack --filter=\"@likec4/core\" --filter=\"likec4\"",
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
-    "vitest:ui": "vitest --ui --no-isolate",
-    "generate:config-schema": "pnpm run --dir ./packages/language-server generate:config-schema"
+    "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
     "@vitest/ui": "catalog:vitest",
