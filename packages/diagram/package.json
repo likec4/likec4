@@ -74,7 +74,7 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
-    "clean": "pnpm rimraf dist lib bundle *.tgz",
+    "clean": "pnpm rimraf --glob dist lib bundle *.tgz",
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {

@@ -332,6 +332,24 @@ describe.concurrent('model', () => {
       }
     }`
 
+  test('element with @ addressing icon').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        icon @/images/icon.svg
+      }
+      component system2 {
+        style {
+          icon @more/images/icon.svg
+        }
+      }
+      component system3 {
+        icon: @assets/icons/test.svg
+      }
+    }`
+
   test('element with metada').valid`
     specification {
       element component

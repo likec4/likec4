@@ -7,10 +7,17 @@ import type { LiteralUnion } from 'type-fest'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
+import type { ProjectConfig } from '../config'
 import { NoopFileSystem } from '../filesystem'
 import { createLanguageServices } from '../module'
 
-export function createTestServices(workspace = 'file:///test/workspace') {
+export function createTestServices(options?: {
+  workspace?: string
+  projectConfig?: Partial<ProjectConfig>
+}) {
+  const workspace = options?.workspace ?? 'file:///test/workspace'
+  const projectConfig = options?.projectConfig
+
   const services = createLanguageServices(NoopFileSystem).likec4
   const metaData = services.LanguageMetaData
   const langiumDocuments = services.shared.workspace.LangiumDocuments
@@ -19,7 +26,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const workspaceUri = URI.parse(workspace)
   const formatter = services.lsp.Formatter
   const workspaceFolder = {
-    name: 'test',
+    name: projectConfig?.name || 'test-project',
     uri: workspaceUri.toString(),
   }
   let isInitialized = false
@@ -39,6 +46,21 @@ export function createTestServices(workspace = 'file:///test/workspace') {
         workspaceFolders: [workspaceFolder],
       })
       await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+
+      // Register project with config if provided...
+      if (projectConfig) {
+        const projectFolderUri = Utils.resolvePath(workspaceUri, 'src')
+        services.shared.workspace.ProjectsManager.registerProject({
+          config: {
+            name: projectConfig?.name || 'test-project',
+            title: projectConfig?.title || 'Test Project',
+            contactPerson: projectConfig?.contactPerson || 'Unknown',
+            imageAliases: projectConfig?.imageAliases || {},
+            exclude: projectConfig?.exclude || ['node_modules'],
+          },
+          folderUri: projectFolderUri,
+        })
+      }
     })
   }
 
@@ -96,12 +118,6 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     )
 
     return TextDocument.applyEdits(document.textDocument, edits ?? [])
-  }
-
-  type ValidateAllResult = {
-    diagnostics: Diagnostic[]
-    errors: string[]
-    warnings: string[]
   }
 
   const validateAll = async () => {
@@ -181,7 +197,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     services,
     addDocument,
     validateAll,
-  } = createTestServices(workspace)
+  } = createTestServices({ workspace })
 
   const projects = {} as {
     readonly [K in keyof Projects]: {
