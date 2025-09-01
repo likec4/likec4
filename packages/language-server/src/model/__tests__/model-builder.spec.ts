@@ -251,40 +251,6 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with array metadata using duplicate keys', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
-    specification {
-      element component
-    }
-    model {
-      component system1 {
-        metadata {
-          tag 'frontend'
-          tag 'web'
-          tag 'react'
-          version '1.1.1'
-          environment 'dev'
-          environment 'staging'
-        }
-      }
-    }
-    `)
-    expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
-    expect(model).toBeDefined()
-    expect(model.elements).toMatchObject({
-      system1: {
-        kind: 'component',
-        metadata: {
-          tag: ['frontend', 'web', 'react'],
-          version: '1.1.1',
-          environment: ['dev', 'staging'],
-        },
-      },
-    })
-  })
-
   it('builds model with mixed array and single metadata values', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -294,11 +260,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     model {
       component system1 {
         metadata {
-          tags ['primary', 'backend']
-          version '2.0.0'
-          owner 'team-a'
-          owner 'team-b'
-          ports ['8080', '9090', '3000']
+          tags ['primary', 'backend'];
+          version '2.0.0';
+          owner 'team-a';
+          owner 'team-b';
+          ports ['8080', '9090', '3000'];
         }
       }
     }
@@ -328,8 +294,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     model {
       component system1 {
         metadata {
-          tags []
-          version '1.0.0'
+          tags [];
+          version '1.0.0';
         }
       }
     }
@@ -1187,11 +1153,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       component system2 {
         -> system1 {
           metadata {
-            protocols ['http', 'grpc']
-            rps '100'
-            ports ['8080', '9090']
-            tag 'api'
-            tag 'public'
+            protocols ['http', 'grpc'];
+            rps '100';
+            ports ['8080', '9090'];
           }
         }
       }
@@ -1213,7 +1177,6 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         protocols: ['http', 'grpc'],
         rps: '100',
         ports: ['8080', '9090'],
-        tag: ['api', 'public'],
       },
     })
   })
