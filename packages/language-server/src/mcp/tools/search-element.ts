@@ -15,7 +15,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.string()),
+      metadata: z.record(z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
     z.object({
@@ -28,7 +28,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.string()),
+      metadata: z.record(z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
   ]),
