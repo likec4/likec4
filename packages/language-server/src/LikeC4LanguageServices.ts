@@ -1,3 +1,4 @@
+import type { LikeC4ProjectConfig } from '@likec4/config'
 import {
   type DiagramView,
   type NonEmptyArray,
@@ -17,7 +18,7 @@ import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/likec4-views'
 import { ProjectsManager } from './workspace'
 
-const logger = mainLogger.getChild('LikeC4LanguageServices')
+const logger = mainLogger.getChild('LanguageServices')
 
 export interface LikeC4LanguageServices {
   readonly views: LikeC4Views
@@ -33,6 +34,7 @@ export interface LikeC4LanguageServices {
     folder: URI
     title: string
     documents: ReadonlyArray<URI>
+    config: Readonly<LikeC4ProjectConfig>
   }>
 
   /**
@@ -44,6 +46,7 @@ export interface LikeC4LanguageServices {
     folder: URI
     title: string
     documents: ReadonlyArray<URI>
+    config: Readonly<LikeC4ProjectConfig>
   }
 
   /**
@@ -78,6 +81,8 @@ export interface LikeC4LanguageServices {
    * Checks if the specified document should be excluded from processing.
    */
   isExcluded(doc: LangiumDocument): boolean
+
+  dispose(): Promise<void>
 }
 
 /**
@@ -104,6 +109,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     folder: URI
     title: string
     documents: ReadonlyArray<URI>
+    config: LikeC4ProjectConfig
   }> {
     const projectsManager = this.services.shared.workspace.ProjectsManager
     const projectsWithDocs = pipe(
@@ -117,9 +123,19 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
           folder: folderUri,
           title: config.title ?? config.name,
           documents: map(docs, prop('uri')),
+          config,
         }
       }),
     )
+    // if there are multiple projects and default project is set, ensure it is first
+    if (hasAtLeast(projectsWithDocs, 2) && projectsManager.defaultProjectId) {
+      const idx = projectsWithDocs.findIndex(p => p.id === projectsManager.defaultProjectId)
+      if (idx > 0) {
+        const [defaultProject] = projectsWithDocs.splice(idx, 1)
+        return [defaultProject!, ...projectsWithDocs]
+      }
+      return projectsWithDocs
+    }
     if (hasAtLeast(projectsWithDocs, 1)) {
       return projectsWithDocs
     }
@@ -133,6 +149,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       folder: folderUri,
       title: config.title ?? config.name,
       documents,
+      config,
     }]
   }
 
@@ -141,6 +158,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     folder: URI
     title: string
     documents: ReadonlyArray<URI>
+    config: LikeC4ProjectConfig
   } {
     projectId = this.projectsManager.ensureProjectId(projectId)
     const projectsManager = this.services.shared.workspace.ProjectsManager
@@ -154,6 +172,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       folder: folderUri,
       title: config.title ?? config.name,
       documents,
+      config,
     }
   }
 
@@ -275,5 +294,16 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       logWarnError(e)
       return false
     }
+  }
+
+  async dispose(): Promise<void> {
+    logger.debug('disposing LikeC4LanguageServices')
+    await this.services.shared.workspace.FileSystemWatcher.dispose()
+    if (this.services.mcp.Server.isStarted) {
+      await this.services.mcp.Server.stop()
+    }
+    this.services.Rpc.dispose()
+    this.services.likec4.ModelBuilder.dispose()
+    logger.debug('LikeC4LanguageServices disposed')
   }
 }

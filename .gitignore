@@ -18,6 +18,7 @@ apps/*/styled-system-studio
 
 examples/*/.vscode
 examples/failed
+examples/multi-project/dyn-config/views
 packages/*/contrib
 packages/*/dist
 packages/*/bundle

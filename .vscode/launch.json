@@ -29,7 +29,7 @@
         "${workspaceFolder}/examples",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*.js"
+        "${workspaceFolder}/packages/*/dist/**/*.js"
       ],
       "resolveSourceMapLocations": [
         "${workspaceFolder}/packages/**",

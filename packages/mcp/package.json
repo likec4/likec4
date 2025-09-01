@@ -52,7 +52,8 @@
     }
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils"
+    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "esbuild": "catalog:esbuild"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "catalog:mcp",

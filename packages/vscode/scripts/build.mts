@@ -1,5 +1,4 @@
-import { ProjectConfig } from '@likec4/language-server/config'
-import { toJsonSchema } from '@valibot/to-json-schema'
+import schema from '@likec4/config/schema.json' assert { type: 'json' }
 import { consola } from 'consola'
 import { type BuildOptions, analyzeMetafileSync, build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
@@ -39,22 +38,13 @@ await cp(
   { recursive: true },
 )
 
-const projectConfigJSONSchema = JSON.stringify(
-  toJsonSchema(ProjectConfig, {
-    ignoreActions: ['excludes'],
-  }),
-  null,
-  2,
-)
-
 await writeFile(
   './data/config.schema.json',
-  projectConfigJSONSchema,
-)
-
-await writeFile(
-  '../../schemas/likec4-config.schema.json',
-  projectConfigJSONSchema,
+  JSON.stringify(
+    schema,
+    null,
+    2,
+  ),
 )
 
 consola.start('Build vscode extension')
@@ -67,7 +57,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: ['vscode'],
+  external: ['vscode', 'esbuild'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -92,7 +82,7 @@ configs.push({
   format: 'cjs',
   target: 'node20',
   platform: 'node',
-  conditions: ['sources', 'node', 'import'],
+  conditions: ['node', 'sources', 'import'],
 }, {
   ...base,
   entryPoints: [
@@ -101,7 +91,7 @@ configs.push({
   format: 'cjs',
   target: 'node20',
   platform: 'node',
-  conditions: ['sources', 'node', 'import'],
+  conditions: ['node', 'sources', 'import'],
 })
 
 // ----------- Browser

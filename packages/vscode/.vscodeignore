@@ -2,7 +2,6 @@
 
 !dist/**/*.html
 !dist/**/*.js
-!dist/**/*.js.map
 !dist/**/*.css
 !data/
 !package.json

@@ -1,6 +1,6 @@
 export { ElementModel } from './ElementModel'
 export { type AnyLikeC4Model, LikeC4Model } from './LikeC4Model'
-export { RelationshipModel } from './RelationModel'
+export { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
 
 export {
   Connection,

@@ -12,6 +12,7 @@ const cli: BuildConfig = {
   entries: [
     'src/index.ts',
     'src/cli/index.ts',
+    'src/config/index.ts',
     'src/model/index.ts',
     'src/model/builder.ts',
     'src/vite-plugin/index.ts',

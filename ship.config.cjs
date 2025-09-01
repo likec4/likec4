@@ -8,6 +8,7 @@ module.exports = {
       'styled-system/*',
     ],
     packagesToPublish: [
+      'packages/config',
       'packages/core',
       'packages/log',
       'packages/icons',

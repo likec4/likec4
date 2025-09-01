@@ -1,0 +1,84 @@
+{
+  "name": "@likec4/config",
+  "version": "1.38.1",
+  "license": "MIT",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "description": "A configuration package for LikeC4.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/config"
+  },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "scripts": {
+    "generate": "tsx scripts/generate.mts",
+    "typecheck": "tsc -b --verbose",
+    "build": "unbuild",
+    "lint:package": "pnpx publint ./package.tgz",
+    "clean": "pnpm rimraf dist lib",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-config-$npm_package_version.tgz package.tgz || true"
+  },
+  "files": [
+    "dist",
+    "src",
+    "schema.json",
+    "!**/*.spec.ts",
+    "!**/*.test-d.ts",
+    "!**/__*/*",
+    "!**/*.map"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "node": {
+        "sources": "./src/node/index.ts",
+        "default": {
+          "types": "./dist/node/index.d.ts",
+          "default": "./dist/node/index.mjs"
+        }
+      },
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./node": {
+      "sources": "./src/node/index.ts",
+      "default": {
+        "types": "./dist/node/index.d.ts",
+        "default": "./dist/node/index.mjs"
+      }
+    },
+    "./src": "./src/index.ts",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./schema.json": "./schema.json"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "bundle-n-require": "catalog:utils",
+    "defu": "catalog:utils",
+    "json5": "catalog:utils",
+    "remeda": "catalog:utils",
+    "type-fest": "catalog:utils",
+    "vscode-uri": "catalog:vscode",
+    "zod": "catalog:zod4"
+  },
+  "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
+    "vitest": "catalog:vitest"
+  }
+}

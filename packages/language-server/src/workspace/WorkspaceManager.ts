@@ -6,7 +6,7 @@ import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
-import { logError } from '../logger'
+import { logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
@@ -37,7 +37,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         configFiles.push(...found)
         this.services.workspace.FileSystemWatcher.watch(uri.fsPath)
       } catch (error) {
-        logError(error)
+        logWarnError(error)
       }
     }
     // Project config files
@@ -46,7 +46,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       try {
         await projects.loadConfigFile(entry)
       } catch (error) {
-        logError(error)
+        logWarnError(error)
       }
     }
     return await super.performStartup(folders)

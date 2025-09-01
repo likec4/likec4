@@ -7,6 +7,9 @@
       "path": "./apps/playground/"
     },
     {
+      "path": "./packages/config/",
+    },
+    {
       "path": "./packages/core/",
     },
     {

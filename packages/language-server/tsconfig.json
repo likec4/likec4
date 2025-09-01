@@ -26,6 +26,9 @@
       "path": "../core/tsconfig.json"
     },
     {
+      "path": "../config/tsconfig.json"
+    },
+    {
       "path": "../layouts/tsconfig.json"
     }
   ]

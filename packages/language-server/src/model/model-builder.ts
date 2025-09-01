@@ -45,7 +45,7 @@ const builderLogger = mainLogger.getChild('model-builder')
 
 type ModelParsedListener = (docs: URI[]) => void
 
-export interface LikeC4ModelBuilder {
+export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,

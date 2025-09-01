@@ -18,6 +18,7 @@ export { isLikeC4Builtin } from './likec4lib'
 export { createLanguageServices } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
+export type { ProjectsManager } from './workspace'
 export { LikeC4FileSystem, NoopFileSystem, WithMCPServer }
 
 type StartLanguageServerOptions = {

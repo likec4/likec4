@@ -56,7 +56,7 @@ describe.concurrent('ProjectsManager', () => {
         name: 'test-project',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const project = await projectsManager.loadConfigFile({
         isFile: true,
@@ -72,7 +72,7 @@ describe.concurrent('ProjectsManager', () => {
     it('should not load config file from node_modules', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockRejectedValueOnce(new Error('should not be called'))
+      vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'))
 
       const project = await projectsManager.loadConfigFile({
         isFile: true,
@@ -111,7 +111,7 @@ describe.concurrent('ProjectsManager', () => {
         name: 'test-project',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await projectsManager.registerProject(configFileUri)
@@ -205,11 +205,24 @@ describe.concurrent('ProjectsManager', () => {
         name: '',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[ValiError: Project name cannot be empty]`,
+        `
+        [ZodError: [
+          {
+            "origin": "string",
+            "code": "too_small",
+            "minimum": 1,
+            "inclusive": true,
+            "path": [
+              "name"
+            ],
+            "message": "Project name cannot be empty"
+          }
+        ]]
+      `,
       )
     })
 
@@ -220,15 +233,35 @@ describe.concurrent('ProjectsManager', () => {
         name: 'default',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[ValiError: Project name cannot be "default"]`,
+        `
+        [ZodError: [
+          {
+            "code": "custom",
+            "path": [
+              "name"
+            ],
+            "message": "Project name cannot be \\"default\\""
+          }
+        ]]
+      `,
       )
       await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
         .toThrowErrorMatchingInlineSnapshot(
-          `[ValiError: Project name cannot be "default"]`,
+          `
+        [ZodError: [
+          {
+            "code": "custom",
+            "path": [
+              "name"
+            ],
+            "message": "Project name cannot be \\"default\\""
+          }
+        ]]
+      `,
         )
     })
 
@@ -239,15 +272,35 @@ describe.concurrent('ProjectsManager', () => {
         name: 'one.two',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'readFile').mockResolvedValue(JSON.stringify(config))
+      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[ValiError: Project name cannot contain ".", try to use A-z, 0-9, _ and -]`,
+        `
+        [ZodError: [
+          {
+            "code": "custom",
+            "path": [
+              "name"
+            ],
+            "message": "Project name cannot contain \\".\\", \\"@\\" or \\"#\\", try to use A-z, 0-9, _ and -"
+          }
+        ]]
+      `,
       )
       await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
         .toThrowErrorMatchingInlineSnapshot(
-          `[ValiError: Project name cannot contain ".", try to use A-z, 0-9, _ and -]`,
+          `
+        [ZodError: [
+          {
+            "code": "custom",
+            "path": [
+              "name"
+            ],
+            "message": "Project name cannot contain \\".\\", \\"@\\" or \\"#\\", try to use A-z, 0-9, _ and -"
+          }
+        ]]
+      `,
         )
     })
 
@@ -342,6 +395,116 @@ describe.concurrent('ProjectsManager', () => {
     expect(pm.belongsTo('file:///test/project1/sub1-doc.likec4')).toEqual('project1')
     expect(pm.belongsTo('file:///test/qwe/doc.likec4')).toEqual('qwe')
     expect(pm.belongsTo('file:///test/qwe-qwe/doc.likec4')).toEqual('qwe-qwe')
+  })
+
+  describe('#defaultProjectId', () => {
+    it('should return "default" when there are no projects', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+      expect(projectsManager.defaultProjectId).toBe('default')
+      expect(projectsManager.all).toEqual(['default'])
+    })
+
+    it('should return the only project id when exactly one project exists', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'p1' },
+        folderUri: URI.parse('file:///test/workspace/src/p1'),
+      })
+
+      expect(projectsManager.defaultProjectId).toBe('p1')
+      expect(projectsManager.all).toEqual(['p1', 'default'])
+    })
+
+    it('should be undefined when multiple projects exist and no explicit default is set', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'p1' },
+        folderUri: URI.parse('file:///test/workspace/src/p1'),
+      })
+      await projectsManager.registerProject({
+        config: { name: 'p2' },
+        folderUri: URI.parse('file:///test/workspace/src/p2'),
+      })
+
+      expect(projectsManager.defaultProjectId).toBeUndefined()
+      // "all" should include both projects and the global default
+      expect(projectsManager.all).toEqual(['p1', 'p2', 'default'])
+    })
+
+    it('should allow setting explicit default project among multiple and make it first in all()', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'p1' },
+        folderUri: URI.parse('file:///test/workspace/src/p1'),
+      })
+      await projectsManager.registerProject({
+        config: { name: 'p2' },
+        folderUri: URI.parse('file:///test/workspace/src/p2'),
+      })
+
+      projectsManager.defaultProjectId = 'p2' as ProjectId
+
+      expect(projectsManager.defaultProjectId).toBe('p2')
+      expect(projectsManager.all).toEqual(['p2', 'p1', 'default'])
+    })
+
+    it('should reset explicit default when set to undefined or "default"', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'p1' },
+        folderUri: URI.parse('file:///test/workspace/src/p1'),
+      })
+      await projectsManager.registerProject({
+        config: { name: 'p2' },
+        folderUri: URI.parse('file:///test/workspace/src/p2'),
+      })
+
+      projectsManager.defaultProjectId = 'p1' as ProjectId
+      expect(projectsManager.defaultProjectId).toBe('p1')
+
+      // Reset via undefined
+      projectsManager.defaultProjectId = undefined
+      expect(projectsManager.defaultProjectId).toBeUndefined()
+
+      // Set again and reset via "default"
+      projectsManager.defaultProjectId = 'p2' as ProjectId
+      expect(projectsManager.defaultProjectId).toBe('p2')
+      projectsManager.defaultProjectId = 'default' as ProjectId
+      expect(projectsManager.defaultProjectId).toBeUndefined()
+    })
+
+    it('setting explicit default to non-existing project should throw', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'p1' },
+        folderUri: URI.parse('file:///test/workspace/src/p1'),
+      })
+
+      expect(() => {
+        projectsManager.defaultProjectId = 'unknown' as ProjectId
+      }).toThrowError(/Project "unknown" not found/)
+    })
+
+    it('resetting explicit default in single-project workspace should fall back to that project', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: { name: 'solo' },
+        folderUri: URI.parse('file:///test/workspace/src/solo'),
+      })
+
+      // Explicitly set and then reset
+      projectsManager.defaultProjectId = 'solo' as ProjectId
+      expect(projectsManager.defaultProjectId).toBe('solo')
+      projectsManager.defaultProjectId = undefined
+      // With one project, getter returns that id
+      expect(projectsManager.defaultProjectId).toBe('solo')
+    })
   })
 
   describe.runIf(process.platform === 'win32')('On Windows', () => {

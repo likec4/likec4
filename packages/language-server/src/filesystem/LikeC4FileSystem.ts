@@ -1,10 +1,10 @@
+import { type LikeC4ProjectConfig, isLikeC4Config, loadConfig } from '@likec4/config/node'
 import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logError } from '../logger'
-import { ProjectsManager } from '../workspace/ProjectsManager'
 import { chokidarFileSystemWatcher } from './ChokidarWatcher'
 import { noopFileSystemWatcher } from './FileSystemWatcher'
 import type { FileSystemModuleContext, FileSystemProvider } from './index'
@@ -16,11 +16,9 @@ export const LikeC4FileSystem = (
   ...ehableWatcher ? chokidarFileSystemWatcher : noopFileSystemWatcher,
 })
 
-export const isLikeC4ProjectFile = (path: string) => ProjectsManager.ConfigFileNames.some((ext) => path.endsWith(ext))
+const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
 
-export const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
-
-export const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4ProjectFile(path)
+export const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4Config(path)
 
 /**
  * A file system provider that follows symbolic links.
@@ -62,7 +60,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
         .withFullPaths()
-        .filter(isLikeC4ProjectFile)
+        .filter(isLikeC4Config)
         .crawl(folderUri.fsPath)
         .withPromise()
       for (const path of crawled) {
@@ -76,5 +74,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       logError(error)
     }
     return entries
+  }
+
+  async loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
+    return await loadConfig(filepath)
   }
 }

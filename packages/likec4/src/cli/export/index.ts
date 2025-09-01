@@ -49,7 +49,7 @@ const exportCmd = (yargs: yargs.Argv) => {
                   timeout: {
                     type: 'number',
                     alias: 't',
-                    desc: 'timeout for playwright',
+                    desc: 'timeout for playwright (in seconds)',
                     default: 10,
                   },
                   'max-attempts': {

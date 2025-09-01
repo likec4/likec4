@@ -7,8 +7,10 @@ import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
+import { ensureProject } from '../../utils'
 
 type HandlerParams = {
+  project: string | undefined
   /**
    * The directory where c4 files are located.
    */
@@ -17,19 +19,23 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
-export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) {
+export async function modelHandler({ path, useDotBin, outfile, project }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
-  languageServices.ensureSingleProject()
+  const { projectId, projectFolder } = ensureProject(languageServices, project)
+
+  if (project) {
+    logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+  }
 
   logger.info(`${k.dim('format')} ${k.green('model')}`)
 
-  const model = await languageServices.layoutedModel()
+  const model = await languageServices.layoutedModel(projectId)
 
   for (const view of model.views()) {
     if (view.$view.hasLayoutDrift) {
@@ -39,7 +45,12 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
     }
   }
 
-  let outfilepath = resolve(languageServices.workspace, 'likec4-model.ts')
+  let outfilepath = resolve(
+    languageServices.projectsManager.hasMultipleProjects()
+      ? projectFolder
+      : languageServices.workspace,
+    'likec4-model.ts',
+  )
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
     if (existsSync(outfile)) {
@@ -67,20 +78,20 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
     encoding: 'utf-8',
   })
 
+  timer.stopAndLog()
+
   boxen(
     stripIndent(`
-    ${k.dim('Source with LikeC4Model generated:')}
+    ${k.dim('Source generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
       ${k.underline('https://likec4.dev/tooling/code-generation/model/')}
   `).trim(),
     {
-      padding: 2,
+      padding: 1,
       borderColor: 'green',
       borderStyle: 'round',
     },
   )
-
-  timer.stopAndLog()
 }

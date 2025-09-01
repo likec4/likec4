@@ -24,7 +24,7 @@ export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipM
  * A relationship between two elements (in logical or deployment model)
  * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
-export interface AnyRelationshipModel<A extends AnyAux> extends WithTags<A>, WithMetadata<A> {
+export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTags<A>, WithMetadata<A> {
   readonly id: scalar.RelationId
   readonly expression: string
   readonly title: string | null

@@ -1,3 +1,4 @@
+import { isLikeC4Config } from '@likec4/config/node'
 import { loggable } from '@likec4/log'
 import type { FSWatcher } from 'chokidar'
 import chokidar from 'chokidar'
@@ -5,7 +6,7 @@ import { URI } from 'langium'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './FileSystemWatcher'
-import { isAnyLikeC4File, isLikeC4ProjectFile } from './LikeC4FileSystem'
+import { isAnyLikeC4File } from './LikeC4FileSystem'
 
 const logger = mainLogger.getChild('chokidar')
 
@@ -41,13 +42,16 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
   private createWatcher(folder: string): FSWatcher {
     let watcher = chokidar.watch(folder, {
-      ignored: (path, stats) => path.includes('node_modules') || (!!stats && stats.isFile() && !isAnyLikeC4File(path)),
+      ignored: (path, stats) => {
+        return path.includes('node_modules') ||
+          (!!stats && stats.isFile() && !isAnyLikeC4File(path))
+      },
       ignoreInitial: true,
     })
 
     const onAddOrChange = async (path: string) => {
       try {
-        if (isLikeC4ProjectFile(path)) {
+        if (isLikeC4Config(path)) {
           logger.debug(`project file changed: ${path}`)
           await this.services.workspace.ProjectsManager.reloadProjects()
         } else {
@@ -61,7 +65,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
     const onRemove = async (path: string) => {
       try {
-        if (isLikeC4ProjectFile(path)) {
+        if (isLikeC4Config(path)) {
           logger.debug(`project file removed: ${path}`)
           await this.services.workspace.ProjectsManager.reloadProjects()
         } else {

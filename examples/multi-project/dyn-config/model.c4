@@ -1,0 +1,110 @@
+model {
+
+  customer = actor 'Cloud System Customer' {
+    description '
+      The regular customer of the system
+    '
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = container 'Frontends' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      style {
+        shape browser
+      }
+      metadata {
+        version '2.1.1'
+      }
+
+      -> next
+      -> legacy
+    }
+
+    legacy = container 'Cloud Legacy' {
+      description '
+        The legacy version of our SaaS
+        MVP as was presented to the first customers
+      '
+      link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
+    }
+
+    next = container 'Cloud Next' {
+      description 'Cloud Next is the next version of our cloud systems'
+    }
+
+    next -> legacy
+
+    supportUser = actor 'Support User' {
+      description '
+        A emploere from the support team
+        Has limited access to the system
+      '
+      -> customer 'helps with questions' {
+        metadata {
+          rps '1000'
+        }
+      }
+      -> ui 'opens in browser'
+      -> next 'uses'
+      -> legacy 'uses'
+    }
+  }
+  customer .uses cloud 'uses and pays'
+  customer .uses ui 'opens in browser'
+
+
+}
+
+views {
+
+  /**
+   * @likec4-generated(v1)
+   * iKRoYXNo2Sg0YTI5NDM0N2E2NzU1ZDQ5NDNlNDVjYWY0NjVhYmMwMDYyYTU0YjVlqmF1dG9MYXlvdXSDqWRpcmVjdGlvbqJMUqdub2RlU2VwTqdyYW5rU2VwXKF4CKF5CKV3aWR0aM0HYKZoZWlnaHTNA8Klbm9kZXOIpEBncjGCoWKUCAjNB2DNAoehY8OkQGdyMoKhYpTNAlDNAsHNAYDNAQmhY8OlY2xvdWSCoWKUKD3NByDNAjKhY8OoY3VzdG9tZXKCoWKUzQJwzQL2zQFAzLShY8KxY2xvdWQuc3VwcG9ydFVzZXKCoWKUUMydzQFAzLShY8KoY2xvdWQudWmCoWKUzQJwzQGTzQFAzLShY8KqY2xvdWQubmV4dIKhYpTNBDDM5c0BQcy0oWPCrGNsb3VkLmxlZ2FjeYKhYpTNBc/M5c0BUcy0oWPCpWVkZ2VziKcxY20yYWRmgaFwl5LNA7DNAfKSzQQszQHyks0E3c0B6ZLN
+   * BXLNAcCSzQWRzQG3ks0Fsc0Bq5LNBdDNAZ2nMTFvY25mNYGhcJSSzQOwzQGvks0D1s0BoJLNA//NAZCSzQQmzQGBpzF1aWJlNG+CoWyEoXjLQH+4AAAAAAChec0BcKV3aWR0aG+maGVpZ2h0EqFwlJLNAZDNAT+SzQHUzQFeks0CIs0BgpLNAmfNAaGmeHN1bGVngaFwlJLNBXHNAT+SzQWNzQE/ks0Fqc0BP5LNBcTNAT+nMWM5aGJ0dIKhbISheMtAjaQAAAAAAKF5y0Bi0AAAAAAApXdpZHRoIqZoZWlnaHQSoXCXks0BkMzUks0CcMyoks0EFm2SzQVyzL6SzQWTzMaSzQW1zNKSzQXUzOGnMWJsYzl3eoKhbISheM0C26F5zQEbpXdpZHRoIqZoZWlnaHQSoXCUks0BkM0BA5LNAkXNARCSzQNszQElks0EJs0BM6cxZTFnZjczgqFshKF4y0B/iAAAAAAAoXnLQIEEAAAAAACl
+   * d2lkdGjMgqZoZWlnaHQSoXCXks0BQM0BUZLNAYfNAaGSzQHyzQIaks0CUM0CgpLNAnDNAqaSzQKUzQLMks0CtM0C7qcxcjJzcG54gqFshKF4zQMQoXnLQIUcAAAAAACld2lkdGhvpmhlaWdodBKhcJSSzQMQzQL2ks0DEM0CxJLNAxDNAoWSzQMQzQJR
+   */
+  view index {
+    title "Landscape"
+    group 'SAAS' {
+      color primary
+      opacity 20%
+      include cloud.*
+    }
+    group 'External' {
+      color green
+      opacity 100%
+      include
+        customer with {
+          color green
+        }
+    }
+    autoLayout LeftRight 92 78
+  }
+
+  view customer of customer {
+    include customer
+
+    group {
+      include
+        *,
+        customer -> cloud.ui with {
+          color red
+        },
+        supportUser
+    }
+
+    style supportUser {
+      color indigo
+    }
+    autoLayout BottomTop
+  }
+}

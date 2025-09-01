@@ -1,10 +1,9 @@
 import { resolve } from 'path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
-import { outdir, path, useDotBin, webcomponentPrefix } from '../options'
+import { outdir, path, project, useDotBin, webcomponentPrefix } from '../options'
+import { customHandler } from './custom'
 import { legacyHandler } from './handler'
-// import { handler as npmHandler } from './npm-package/handler'
-// import { reactNexthandler } from './react-next'
 import { modelHandler } from './model'
 import { reactHandler } from './react'
 import { webcomponentHandler } from './webcomponent/handler'
@@ -12,50 +11,21 @@ import { webcomponentHandler } from './webcomponent/handler'
 const codegenCmd = (yargs: yargs.Argv) => {
   return yargs
     .command({
-      command: 'codegen <command> [path]',
-      aliases: ['generate', 'gen'],
+      command: 'generate <command> [path]',
+      aliases: ['codegen', 'gen'],
       describe: 'Generate various artifacts from LikeC4 sources',
       builder: yargs =>
-        // .example(
-        //   `${k.green('$0 codegen ts -o views.ts .')}`,
-        //   k.gray('Same as codegen views-data')
-        // )
         yargs
-          // .usage(`${k.bold('Usage:')} $0 codegen <output> [path]`)
           .positional('path', path)
           // ----------------------
-          // npm package command
-          // .command(
-          //   ['package [path]', 'pkg', 'npm'],
-          //   '!!experimental!! generate npm package',
-          //   yargs =>
-          //     yargs
-          //       // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
-          //       .options({
-          //         useDotBin,
-          //         outdir,
-          //         pkgName: {
-          //           type: 'string',
-          //           desc: 'package name',
-          //           normalize: true
-          //         }
-          //       }),
-          //   async args => {
-          //     await npmHandler({
-          //       useDotBin: args.useDotBin,
-          //       path: args.path,
-          //       pkgName: args.pkgName,
-          //       pkgOutDir: args.outdir
-          //     })
-          //   }
-          // )
-          // ----------------------
-          // react-next command
+          // react command
           .command(
             'react [path]',
             'generate react component to render likec4 view',
             yargs =>
               yargs
+                .positional('path', path)
+                .option('project', project)
                 .option('outfile', {
                   alias: 'o',
                   type: 'string',
@@ -66,6 +36,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 .option('use-dot', useDotBin),
             async args => {
               await reactHandler({
+                project: args.project,
                 useDotBin: args.useDotBin,
                 path: args.path,
                 outfile: args.outfile,
@@ -80,6 +51,8 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate js with webcomponents',
             builder: yargs =>
               yargs
+                .positional('path', path)
+                .option('project', project)
                 .option('outfile', {
                   alias: 'o',
                   type: 'string',
@@ -91,6 +64,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 .option('use-dot', useDotBin),
             handler: async args => {
               await webcomponentHandler({
+                project: args.project,
                 useDotBin: args.useDotBin,
                 path: args.path,
                 outfile: args.outfile,
@@ -106,6 +80,8 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate LikeC4Model (.ts)',
             builder: yargs =>
               yargs
+                .positional('path', path)
+                .option('project', project)
                 .option('outfile', {
                   alias: 'o',
                   type: 'string',
@@ -119,6 +95,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 path: args.path,
                 useDotBin: args.useDotBin,
                 outfile: args.outfile,
+                project: args.project,
               })
             },
           })
@@ -127,10 +104,11 @@ const codegenCmd = (yargs: yargs.Argv) => {
           .command({
             command: 'views-data [path]',
             aliases: ['views'],
-            describe: 'generate likec4 views data (.ts)',
-            deprecated: 'use codegen model',
+            describe: '{deprecated} use codegen model',
+            deprecated: true,
             builder: yargs =>
               yargs
+                .positional('path', path)
                 .option('outfile', {
                   alias: 'o',
                   type: 'string',
@@ -155,6 +133,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate graphviz files (.dot)',
             builder: yargs =>
               yargs
+                .positional('path', path)
                 .option('outdir', outdir)
                 .option('use-dot', useDotBin),
             handler: async args => {
@@ -173,6 +152,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate D2 files (.d2)',
             builder: yargs =>
               yargs
+                .positional('path', path)
                 .option('outdir', outdir)
                 .option('use-dot', useDotBin),
             handler: async args => {
@@ -192,6 +172,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate Mermaid files (.mmd)',
             builder: yargs =>
               yargs
+                .positional('path', path)
                 .option('outdir', outdir)
                 .option('use-dot', useDotBin),
             handler: async args => {
@@ -211,6 +192,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate PlantUML files (.puml)',
             builder: yargs =>
               yargs
+                .positional('path', path)
                 .option('outdir', outdir)
                 .option('use-dot', useDotBin),
             handler: async args => {
@@ -221,7 +203,25 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 outdir: args.outdir,
               })
             },
-          }).epilog(`${k.bold('Examples:')}
+          })
+          .command({
+            command: '<custom> [path]',
+            describe: 'run custom generator from likec4 config',
+            builder: yargs =>
+              yargs
+                .positional('path', path)
+                .option('project', project)
+                .option('use-dot', useDotBin),
+            handler: async (args) => {
+              await customHandler({
+                name: 'custom',
+                path: args.path,
+                project: args.project,
+                useDotBin: args.useDotBin,
+              })
+            },
+          })
+          .epilog(`${k.bold('Examples:')}
   likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen model -o likec4-model.ts
   likec4 gen ts --outfile likec4-model.ts
@@ -230,7 +230,14 @@ const codegenCmd = (yargs: yargs.Argv) => {
   likec4 gen plantuml --outdir assets/
   likec4 gen dot -o out .
 `),
-      handler: () => void 0,
+      handler: async (args: any) => {
+        await customHandler({
+          name: args.command,
+          path: args.path,
+          project: args.project,
+          useDotBin: args.useDotBin,
+        })
+      },
     })
 }
 

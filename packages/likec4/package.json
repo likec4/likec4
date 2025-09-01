@@ -35,6 +35,14 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./config": {
+      "sources": "./src/config/index.ts",
+      "default": {
+        "types": "./dist/config/index.d.mts",
+        "import": "./dist/config/index.mjs",
+        "default": "./dist/config/index.mjs"
+      }
+    },
     "./model/builder": {
       "sources": "./src/model/builder.ts",
       "default": {
@@ -130,6 +138,7 @@
     "@likec4/core": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "boxen": "^8.0.1",
+    "esbuild": "catalog:esbuild",
     "playwright": "catalog:",
     "rollup": "catalog:vite",
     "type-fest": "catalog:utils",
@@ -140,6 +149,14 @@
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.5",
     "@fontsource/ibm-plex-sans": "^5.2.6",
@@ -148,6 +165,7 @@
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",

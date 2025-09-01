@@ -10,6 +10,7 @@ export default defineProject({
       '@likec4/log': resolve(__dirname, '../log/src'),
       '@likec4/layouts': resolve(__dirname, '../layouts/src'),
       '@likec4/generators': resolve(__dirname, '../generators/src'),
+      '@likec4/config': resolve(__dirname, '../config/src'),
     },
   },
   test: {

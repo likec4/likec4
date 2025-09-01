@@ -1,6 +1,5 @@
 import { viteReactConfig } from '@/vite/config-react'
 import { generateReactTypes } from '@likec4/generators'
-import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -11,8 +10,10 @@ import { build } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { ensureReact } from '../../ensure-react'
+import { ensureProject } from '../../utils'
 
 type HandlerParams = {
+  project: string | undefined
   /**
    * The directory where c4 files are located.
    */
@@ -21,20 +22,22 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
-export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
+export async function reactHandler({ path, useDotBin, outfile, project }: HandlerParams) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
-  languageServices.ensureSingleProject()
-
+  const { projectId, projectFolder } = ensureProject(languageServices, project)
+  if (project) {
+    logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+  }
   logger.info(`${k.dim('format')} ${k.green('react')}`)
 
-  const diagrams = await languageServices.diagrams()
+  const diagrams = await languageServices.diagrams(projectId)
   if (diagrams.length === 0) {
     process.exitCode = 1
     throw new Error('no views found')
@@ -48,7 +51,12 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     }
   })
 
-  let outfilepath = resolve(languageServices.workspace, 'likec4-views.js')
+  let outfilepath = resolve(
+    languageServices.projectsManager.hasMultipleProjects()
+      ? projectFolder
+      : languageServices.workspace,
+    'likec4-views.js',
+  )
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
     if (existsSync(outfile)) {
@@ -82,27 +90,26 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     logLevel: 'warn',
   })
 
-  const model = await languageServices.layoutedModel()
+  const model = await languageServices.layoutedModel(projectId)
 
-  await writeFile(
-    resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
-    generateReactTypes(model),
-  )
+  const dts = resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts'))
+  await writeFile(dts, generateReactTypes(model))
+
+  timer.stopAndLog()
 
   boxen(
     stripIndent(`
-    ${k.dim('Source generated:')}
+    ${k.dim('Sources generated:')}
       ${relative(cwd(), outfilepath)}
+      ${relative(cwd(), dts)}
 
     ${k.dim('How to use:')}
       ${k.underline('https://likec4.dev/tooling/code-generation/react/')}
   `),
     {
-      padding: 2,
+      padding: 1,
       borderColor: 'green',
       borderStyle: 'round',
     },
   )
-
-  timer.stopAndLog()
 }

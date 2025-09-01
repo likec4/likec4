@@ -267,9 +267,13 @@
       "default": "./src/node/useLanguageClient.ts"
     }
   },
+  "dependencies": {
+    "esbuild": "catalog:esbuild"
+  },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
@@ -279,7 +283,6 @@
     "@types/node": "catalog:",
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
-    "@valibot/to-json-schema": "catalog:utils",
     "@vscode/extension-telemetry": "^1.0.0",
     "consola": "catalog:utils",
     "esbuild": "catalog:esbuild",

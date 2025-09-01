@@ -1,10 +1,10 @@
 import type { ProjectId } from '@likec4/core'
-import { DefaultWeakMap, MultiMap } from '@likec4/core/utils'
+import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type LangiumDocument, type Stream, DocumentState } from 'langium'
 import { pipe } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
+import { type LikeC4DocumentProps, type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -88,12 +88,22 @@ export class LikeC4ModelParser {
 
   forDocument(doc: LangiumDocument): DocumentParser {
     if (doc.state < DocumentState.Linked) {
-      logger.warn(`Document ${doc.uri.toString()} is not linked`)
+      logger.warn(`Document {doc} is not linked`, { doc: doc.uri.toString() })
     }
     return this.cachedParsers.get(doc)
   }
 
   private createParser(doc: LangiumDocument): DocumentParser {
+    invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
+    if (doc.likec4ProjectId) {
+      logger.debug(`create parser: project {projectId}, document {doc}`, {
+        projectId: doc.likec4ProjectId,
+        doc: doc.uri.toString(),
+      })
+    } else {
+      logger.warn(`create parser for document without project {doc}`, { doc: doc.uri.toString() })
+    }
+
     const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {
       c4Specification: {
         tags: {},
@@ -126,7 +136,7 @@ export class LikeC4ModelParser {
       parser.parseDeployment()
       parser.parseViews()
     } catch (e) {
-      logger.error(`Error parsing document ${doc.uri.toString()}`, { cause: e })
+      logger.error(`Error parsing document {doc}`, { doc: doc.uri.toString(), error: e })
     }
     return parser
   }

@@ -42,14 +42,6 @@
         "default": "./dist/browser.js"
       }
     },
-    "./config": {
-      "sources": "./src/config/index.ts",
-      "default": {
-        "types": "./dist/config/index.d.ts",
-        "import": "./dist/config/index.js",
-        "default": "./dist/config/index.js"
-      }
-    },
     "./likec4lib": {
       "sources": "./src/likec4lib.ts",
       "default": {
@@ -107,11 +99,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:utils"
+    "@hpcc-js/wasm-graphviz": "catalog:utils",
+    "esbuild": "catalog:esbuild"
   },
   "devDependencies": {
     "@hono/node-server": "catalog:hono",
     "@likec4/core": "workspace:*",
+    "@likec4/config": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",

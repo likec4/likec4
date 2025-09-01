@@ -50,7 +50,7 @@ export default defineConfig({
   ],
   // Run your local dev server before starting the tests.
   webServer: {
-    command: './node_modules/.bin/likec4 start',
+    command: './node_modules/.bin/likec4 start --verbose',
     port: 5173,
     stdout: 'pipe',
     env: {

@@ -1,5 +1,6 @@
 import useDocumentSelector from '#useDocumentSelector'
 import useLanguageClient from '#useLanguageClient'
+import { ConfigFilenames } from '@likec4/config'
 import type { ProjectId, ViewId } from '@likec4/core'
 import type { Locate } from '@likec4/language-server/protocol'
 import {
@@ -40,7 +41,6 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   useBuiltinFileSystem()
   useExtensionLogger()
   logger.info(`activateExtension: ${extensionKind}`)
-  const activeTextEditor = useActiveTextEditor()
   const visibleTextEditors = useVisibleTextEditors()
   const telemetry = useTelemetry()
 
@@ -66,8 +66,8 @@ export function activateExtension(extensionKind: 'node' | 'web') {
     }
   })
 
-  const { stop } = watch(activeTextEditor, () => {
-    const textEditor = visibleTextEditors.value.find(editor => editor.document.languageId === languageId)
+  const { stop } = watch(visibleTextEditors, (editors) => {
+    const textEditor = editors.find(editor => editor.document.languageId === languageId)
     if (!textEditor) return
     if (!activated) {
       logger.info(`activate language client because of opened document\n${textEditor.document.uri.toString()}`)
@@ -291,7 +291,7 @@ function activateLc() {
     }
   })
 
-  const fsWatcher = useFsWatcher(toRef('**/{.likec4rc,.likec4.config.json,likec4.config.json}'))
+  const fsWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
   fsWatcher.onDidChange((uri) => {
     logger.debug(`Config file changed: ${uri}`)
     rpc.reloadProjects()

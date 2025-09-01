@@ -47,6 +47,14 @@ async function main() {
     validateCmd,
     mcpCmd,
     checkUpdateCmd,
+    yargs =>
+      yargs.command({
+        command: 'completion',
+        describe: 'Generate completion script',
+        handler: () => {
+          yargs.showCompletionScript()
+        },
+      }),
   )
 
   await y
@@ -55,17 +63,16 @@ async function main() {
     .version(version)
     .alias('v', 'version')
     .alias('h', 'help')
-    .demandCommand(1, 'Please run with valid command')
-    .strict()
-    .recommendCommands()
     .help('help')
-    .version(version)
-    .alias('v', 'version')
-    .alias('h', 'help')
+    .option('verbose', {
+      type: 'boolean',
+      default: false,
+      describe: 'verbose logging',
+      global: true,
+    })
     .demandCommand(1, 'Please run with valid command')
-    .strict()
     .recommendCommands()
-    .showHelpOnFail(true, 'Something is wrong, run with --help')
+    .showHelpOnFail(true)
     .updateStrings({
       'Options:': k.bold('Options:'),
       'Positionals:': k.bold('Arguments:'),
@@ -73,6 +80,22 @@ async function main() {
       'Examples:': k.bold('Examples:'),
     })
     .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
+    .middleware((args) => {
+      if (args.verbose) {
+        configureLogger({
+          sinks: {
+            console: getConsoleSink(),
+          },
+          loggers: [
+            {
+              category: 'likec4',
+              sinks: ['console'],
+              lowestLevel: 'debug',
+            },
+          ],
+        })
+      }
+    })
     .parseAsync()
 }
 

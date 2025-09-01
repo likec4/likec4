@@ -1,5 +1,5 @@
+import { isLikeC4Config, validateProjectConfig } from '@likec4/config'
 import { delay } from '@likec4/core/utils'
-import { parseConfigJson } from '@likec4/language-server/config'
 import { joinRelativeURL } from 'ufo'
 import * as vscode from 'vscode'
 import { globPattern, isVirtual, isWebUi } from '../const'
@@ -63,7 +63,7 @@ async function findSources(rpc: Rpc) {
       logger.info`register project ${cfgUri}`
       const bytes = await vscode.workspace.fs.readFile(uri)
       const decoder = new TextDecoder()
-      const config = parseConfigJson(decoder.decode(bytes))
+      const config = validateProjectConfig(decoder.decode(bytes))
       const folderUri = joinRelativeURL(cfgUri, '..')
       await rpc.registerProject({ folderUri, config })
     } catch (e) {
@@ -90,12 +90,7 @@ async function findFiles() {
   return await vscode.workspace.findFiles(globPattern)
 }
 
-const isLikeC4Project = (path: string) => {
-  const p = path.toLowerCase()
-  return p.endsWith('.likec4rc') || p.endsWith('likec4.config.json')
-}
-
-export const isLikeC4Source = (path: string) => {
+export function isLikeC4Source(path: string) {
   const p = path.toLowerCase()
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }
@@ -111,7 +106,7 @@ async function recursiveSearchSources() {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)
         if (type === vscode.FileType.File) {
-          if (isLikeC4Project(name)) {
+          if (isLikeC4Config(name)) {
             projects.push(path)
           } else if (isLikeC4Source(name)) {
             sources.push(path)

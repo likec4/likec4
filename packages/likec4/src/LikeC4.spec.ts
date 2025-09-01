@@ -205,6 +205,13 @@ describe.concurrent('LikeC4', () => {
           ],
           "folder": "likec4",
         },
+        "dyn-config": {
+          "documents": [
+            "_spec.c4",
+            "model.c4",
+          ],
+          "folder": "dyn-config",
+        },
         "issue-1624": {
           "documents": [
             "model.c4",

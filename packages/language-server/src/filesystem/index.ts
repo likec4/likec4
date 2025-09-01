@@ -1,3 +1,4 @@
+import { type LikeC4ProjectConfig } from '@likec4/config'
 import type {
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,
@@ -14,6 +15,12 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
    * @returns The list of file system entries that are contained within the specified directory.
    */
   scanProjectFiles(folderUri: URI): Promise<FileSystemNode[]>
+
+  /**
+   * Loads the project config from the given file.
+   * @returns The project config.
+   */
+  loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig>
 }
 
 export interface FileSystemModuleContext extends FileSystemWatcherModuleContext {
@@ -31,6 +38,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
 
   readDirectory(): Promise<FileSystemNode[]> {
     return Promise.resolve([])
+  }
+
+  loadProjectConfig(): Promise<LikeC4ProjectConfig> {
+    throw new Error('No file system is available.')
   }
 }
 

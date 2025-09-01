@@ -60,7 +60,7 @@ export async function buildHandler({
 
   const logger = createLikeC4Logger('c4:build')
 
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm',
     logger: 'vite',
     watch: false,

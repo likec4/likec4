@@ -12,8 +12,10 @@ import { LikeC4 } from '../../../LikeC4'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { mkTempPublicDir } from '../../../vite/utils'
 import { ensureReact } from '../../ensure-react'
+import { ensureProject } from '../../utils'
 
 type HandlerParams = {
+  project: string | undefined
   /**
    * The directory where c4 files are located.
    */
@@ -24,6 +26,7 @@ type HandlerParams = {
 }
 
 export async function webcomponentHandler({
+  project,
   path,
   useDotBin,
   webcomponentPrefix = 'likec4',
@@ -32,16 +35,18 @@ export async function webcomponentHandler({
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
-  languageServices.ensureSingleProject()
-
+  const { projectId, projectFolder } = ensureProject(languageServices, project)
+  if (project) {
+    logger.info(`${k.dim('project')} ${k.green(projectId)}`)
+  }
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 
-  const diagrams = await languageServices.diagrams()
+  const diagrams = await languageServices.diagrams(projectId)
   if (!hasAtLeast(diagrams, 1)) {
     logger.warn('no views found')
     process.exitCode = 1
@@ -54,7 +59,12 @@ export async function webcomponentHandler({
     }
   })
 
-  let outfilepath = resolve(languageServices.workspace, 'likec4-views.js')
+  let outfilepath = resolve(
+    languageServices.projectsManager.hasMultipleProjects()
+      ? projectFolder
+      : languageServices.workspace,
+    'likec4-views.js',
+  )
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
     if (existsSync(outfile)) {
@@ -103,6 +113,8 @@ export async function webcomponentHandler({
   consola.debug(`${k.dim('remove temp public')}`)
   await rm(publicDir, { recursive: true, force: true })
 
+  timer.stopAndLog()
+
   boxen(
     stripIndent(`
     ${k.dim('Webcomponents generated to:')}
@@ -112,6 +124,4 @@ export async function webcomponentHandler({
      ${k.blue('https://likec4.dev/tooling/code-generation/webcomponent/')}
   `),
   )
-
-  timer.stopAndLog()
 }

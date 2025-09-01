@@ -75,3 +75,9 @@ export const listen = {
     : 'ip address of the network interface to listen on',
   default: isInsideContainer() ? '0.0.0.0' : 'localhost',
 } as const satisfies Options
+
+export const project = {
+  alias: 'p',
+  type: 'string',
+  desc: 'LikeC4 project, name eg. "my-project" or path to the project folder',
+} as const satisfies Options

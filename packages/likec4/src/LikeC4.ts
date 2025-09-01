@@ -1,5 +1,5 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
-import type { LikeC4LanguageServices, LikeC4Views } from '@likec4/language-server'
+import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -159,6 +159,10 @@ export class LikeC4 {
     return this.langium.likec4.LanguageServices
   }
 
+  get projectsManager(): ProjectsManager {
+    return this.langium.shared.workspace.ProjectsManager
+  }
+
   get viewsService(): LikeC4Views {
     return this.langium.likec4.Views
   }
@@ -296,12 +300,15 @@ ${k.red('Please specify a project folder')}
   }
 
   async dispose(): Promise<void> {
-    await this.langium.shared.workspace.FileSystemWatcher.dispose()
-    await this.langium.mcp.Server.stop()
+    await this.langium.likec4.LanguageServices.dispose()
     for (const [path, likec4] of LikeC4.likec4Instances) {
       if (likec4 === this) {
         LikeC4.likec4Instances.delete(path)
       }
     }
+  }
+
+  async [Symbol.asyncDispose]() {
+    await this.dispose()
   }
 }

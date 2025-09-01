@@ -1,4 +1,5 @@
-import type { NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
+import { type LikeC4ProjectConfig, isLikeC4Config, validateProjectConfig } from '@likec4/config'
+import type { NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
 import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
@@ -20,7 +21,6 @@ import {
   withoutProtocol,
   withTrailingSlash,
 } from 'ufo'
-import { parseConfigJson, ProjectConfig, validateConfig } from '../config'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
@@ -49,7 +49,7 @@ export function ProjectFolder(folder: URI | string): ProjectFolder {
 
 interface ProjectData {
   id: ProjectId
-  config: ProjectConfig
+  config: LikeC4ProjectConfig
   folder: ProjectFolder // URI.toString()
   folderUri: URI
   exclude?: (path: string) => boolean
@@ -58,7 +58,7 @@ interface ProjectData {
 export interface Project {
   id: ProjectId
   folderUri: URI
-  config: ProjectConfig
+  config: LikeC4ProjectConfig
 }
 
 export class ProjectsManager {
@@ -68,11 +68,20 @@ export class ProjectsManager {
    */
   static readonly DefaultProjectId = 'default' as ProjectId
 
-  static readonly ConfigFileNames = [
-    '.likec4rc',
-    '.likec4.config.json',
-    'likec4.config.json',
-  ]
+  private static DefaultProject = {
+    id: ProjectsManager.DefaultProjectId,
+    config: {
+      name: ProjectsManager.DefaultProjectId,
+      exclude: ['**/node_modules/**'],
+    },
+    exclude: picomatch('**/node_modules/**', { dot: true }),
+  }
+
+  /**
+   * Configured default project ID.
+   * (it is used in CLI and Vite plugin)
+   */
+  #defaultProjectId: ProjectId | undefined = undefined
 
   /**
    * The mapping between project config files and project IDs.
@@ -88,13 +97,11 @@ export class ProjectsManager {
 
   private excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
 
-  private defaultGlobalProject = {
-    id: ProjectsManager.DefaultProjectId,
-    config: {
-      name: ProjectsManager.DefaultProjectId,
-      exclude: ['**/node_modules/**'],
-    },
-    exclude: picomatch('**/node_modules/**', { dot: true }),
+  private get defaultGlobalProject() {
+    // if (this.#defaultProjectId) {
+    //   return this.getProject(this.#defaultProjectId)
+    // }
+    return ProjectsManager.DefaultProject
   }
 
   private reloadProjectsLimiter = new PQueue({
@@ -108,23 +115,50 @@ export class ProjectsManager {
 
   /**
    * Returns:
+   *  - configured default project ID if set
    *  - the default project ID if there are no projects.
    *  - the ID of the only project
    *  - undefined if there are multiple projects.
    */
   get defaultProjectId(): ProjectId | undefined {
+    if (this.#defaultProjectId) {
+      return this.#defaultProjectId
+    }
     if (this._projects.length > 1) {
       return undefined
     }
     return this._projects[0]?.id ?? ProjectsManager.DefaultProjectId
   }
 
+  set defaultProjectId(id: ProjectId | undefined) {
+    if (id === this.#defaultProjectId) {
+      return
+    }
+    if (!id || id === ProjectsManager.DefaultProjectId) {
+      logger.debug`reset default project ID`
+      this.#defaultProjectId = undefined
+      return
+    }
+    invariant(this._projects.find(p => p.id === id), `Project "${id}" not found`)
+    logger.debug`set default project ID to ${id}`
+    this.#defaultProjectId = id
+  }
+
   get all(): NonEmptyReadonlyArray<ProjectId> {
     if (hasAtLeast(this._projects, 1)) {
-      return [
+      const ids: NonEmptyArray<ProjectId> = [
         ...map(this._projects, prop('id')),
         ProjectsManager.DefaultProjectId,
       ]
+      // if default project is set, ensure it is first
+      if (this.#defaultProjectId) {
+        const idx = ids.findIndex(p => p === this.#defaultProjectId)
+        if (idx > 0) {
+          const [defaultProject] = ids.splice(idx, 1)
+          return [defaultProject!, ...ids]
+        }
+      }
+      return ids
     }
     return [ProjectsManager.DefaultProjectId]
   }
@@ -157,6 +191,11 @@ export class ProjectsManager {
     }
   }
 
+  /**
+   * Validates and ensures the project ID.
+   * If no project ID is specified, returns default project ID
+   * If there are multiple projects and default project is not set, throws an error
+   */
   ensureProjectId(projectId?: ProjectId | undefined): ProjectId {
     if (projectId === ProjectsManager.DefaultProjectId) {
       return this.defaultProjectId ?? ProjectsManager.DefaultProjectId
@@ -175,6 +214,9 @@ export class ProjectsManager {
     return this._projects.length > 1
   }
 
+  /**
+   * Checks if the specified document should be excluded from processing.
+   */
   checkIfExcluded(document: LangiumDocument | URI | string): boolean {
     if (typeof document === 'string' || URI.isUri(document)) {
       let docUriAsString = normalizeUri(document)
@@ -196,7 +238,7 @@ export class ProjectsManager {
    */
   isConfigFile(entry: URI): boolean {
     const filename = parseFilename(entry.toString(), { strict: false })?.toLowerCase()
-    const isConfigFile = !!filename && ProjectsManager.ConfigFileNames.includes(filename)
+    const isConfigFile = !!filename && isLikeC4Config(filename)
     if (isConfigFile) {
       if (this.defaultGlobalProject.exclude(entry.path)) {
         logger.debug`exclude config file ${entry.path}`
@@ -222,25 +264,26 @@ export class ProjectsManager {
         this.services.lsp.Connection?.window.showErrorMessage(
           `LikeC4: Failed to register project at ${entry.uri.toString()}\n\n${loggable(error)}`,
         )
-        logger.error('Failed to register project at {uri}', { uri: entry.uri.toString(), error })
+        logger.warn('Failed to register project at {uri}', { uri: entry.uri.toString(), error })
         return undefined
       }
     }
     return undefined
   }
 
-  async registerProject(configFile: URI): Promise<ProjectData>
-  async registerProject(opts: { config: ProjectConfig; folderUri: URI | string }): Promise<ProjectData>
-  async registerProject(opts: URI | { config: ProjectConfig; folderUri: URI | string }): Promise<ProjectData> {
+  /**
+   * Registers (or reloads) likec4 project by config file or config object.
+   * If there is some project registered at same folder, it will be reloaded.
+   */
+  async registerProject(opts: URI | { config: LikeC4ProjectConfig; folderUri: URI | string }): Promise<ProjectData> {
     if (URI.isUri(opts)) {
-      const configFile = opts as URI
-      const cfg = await this.services.workspace.FileSystemProvider.readFile(configFile)
-      const config = parseConfigJson(cfg)
+      const configFile = opts
+      const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
       const path = joinRelativeURL(configFile.path, '..')
       const folderUri = configFile.with({ path })
       return await this.registerProject({ config, folderUri })
     }
-    const config = pickBy(validateConfig(opts.config), isTruthy)
+    const config = pickBy(validateProjectConfig(opts.config), isTruthy)
     const { folderUri } = opts
     const folder = ProjectFolder(folderUri)
 
@@ -342,7 +385,7 @@ export class ProjectsManager {
             }
           }
         } catch (error) {
-          logger.error('Failed to load config file', { error })
+          logger.error('Failed to scanProjectFiles, {folder}', { folder: folder.uri, error })
         }
       }
       if (configFiles.length === 0 && this._projects.length !== 0) {
@@ -352,16 +395,13 @@ export class ProjectsManager {
       this.projectIdToFolder.clear()
       for (const entry of configFiles) {
         try {
-          await this.registerProject(entry.uri)
+          await this.loadConfigFile(entry)
         } catch (error) {
-          logger.error('Failed to load config file', { error })
+          logger.error('Failed to load config file {uri}', { uri: entry.uri.toString(), error })
         }
       }
       this.resetProjectIds()
-
-      const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
-      logger.info('invalidate and rebuild documents {docs}', { docs: docs.length })
-      await this.services.workspace.DocumentBuilder.update(docs, [])
+      await this.rebuidDocuments()
     })
   }
 
@@ -375,9 +415,18 @@ export class ProjectsManager {
   }
 
   protected resetProjectIds(): void {
+    if (this.#defaultProjectId && !this.projectIdToFolder.has(this.#defaultProjectId)) {
+      this.#defaultProjectId = undefined
+    }
     this.mappingsToProject.clear()
     this.excludedDocuments = new WeakMap()
     this.services.workspace.LangiumDocuments.resetProjectIds()
+  }
+
+  protected async rebuidDocuments(): Promise<void> {
+    const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
+    logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
+    await this.services.workspace.DocumentBuilder.update(docs, [])
   }
 
   protected findProjectForDocument(documentUri: string) {

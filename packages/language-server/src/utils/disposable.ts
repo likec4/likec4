@@ -1,4 +1,4 @@
-import { Disposable } from 'langium'
+import type { Disposable } from 'langium'
 import { logError } from '../logger'
 
 export abstract class ADisposable implements Disposable {

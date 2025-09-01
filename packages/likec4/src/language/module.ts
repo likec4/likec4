@@ -47,7 +47,7 @@ export type CreateLanguageServiceOptions = {
 
   /**
    * Whether to watch for changes in the workspace.
-   * @default true if useFileSystem is true, false otherwise
+   * @default false
    */
   watch?: boolean
   /**
@@ -71,6 +71,7 @@ export type CreateLanguageServiceOptions = {
 export function createLanguageServices(opts?: CreateLanguageServiceOptions): CliServices {
   const options = defu(opts, {
     useFileSystem: true,
+    watch: false,
     logger: 'default' as const,
     graphviz: 'wasm',
     mcp: false as const,

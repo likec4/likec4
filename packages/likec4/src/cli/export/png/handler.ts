@@ -119,7 +119,7 @@ export async function pngHandler({
   const logger = createLikeC4Logger('export')
   const startTakeScreenshot = hrtime()
 
-  const languageServices = await LikeC4.fromWorkspace(path, {
+  await using languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
