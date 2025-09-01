@@ -250,6 +250,24 @@ model {
 
 Only string values are allowed, but you can use JSON or YAML format for complex data.
 
+### Array Values
+
+You can also use arrays for metadata values using array literal syntax:
+
+```likec4 copy
+model {
+  app = application 'App' {
+    metadata {
+      tags ['frontend', 'react', 'typescript']
+      environments ['dev', 'staging', 'prod']
+      version '2.1.0'
+    }
+  }
+}
+```
+
+Mixed single and array values are supported in the same metadata block:
+
 ## Structure
 
 Any element is a container and can contain other elements.  
