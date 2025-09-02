@@ -99,8 +99,8 @@ export interface ParsedAstElement {
 export interface ParsedAstExtend {
   id: c4.Fqn
   astPath: string
-  tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<c4.Link> | null
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<c4.Link>
   metadata?: { [key: string]: string | string[] }
 }
 
