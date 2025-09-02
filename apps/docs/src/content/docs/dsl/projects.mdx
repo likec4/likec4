@@ -85,3 +85,101 @@ At the moment, the following limitations apply:
 - Referenced projects must be loaded in the same workspace
 - Only top-level **model** elements can be imported
 </Aside>
+
+## Image Aliases
+
+When using local images in your LikeC4 model, you can create aliases for the folder your immages are in to make them more readable and the files more transportable.
+
+Use the `likec4.config.json` to add an `imageAliases` field:
+
+```json
+{
+  "name": "project-name",
+  "imageAliases": {
+    "@": "./images",
+    "@root": "../../some-more-images"
+  }
+}
+```
+
+You can then use the alias in your model:
+
+```likec4
+// ./amazon.c4
+model {
+  serviceA = service {
+    icon: @/service-a.png
+  }
+
+  serviceB = service {
+    icon: @root/service-b.png
+  }
+}
+
+// ./externals/externals.c4
+model {
+  serviceC = service {
+    icon: @/service-c.png
+  }
+}
+```
+
+<FileTree>
+- some-more-images
+  - service-b.png
+  - ...
+- docs
+  - project
+    - images
+      - service-a.png
+      - service-c.png
+      - ...
+    - externals
+      - externals.c4
+    - likec4.config.json
+    - amazon.c4
+    - ...
+</FileTree>
+
+:::note
+In the example above the `externals.c4` is a nested file, but the aliasing works based on the workspace root.
+:::
+
+### Naming Rules
+
+When using image aliases, keep the following rules in mind:
+
+- Aliases must start with `@` and can include letters, numbers, and underscores.
+- The alias must be unique within the project.
+- The alias can point to a relative or absolute path.
+
+### Defaults
+
+```json
+{
+  "imageAliases": {
+    "@": "./images",
+  }
+}
+```
+
+When no LikeC4 configuration file is found, or when no `imageAliases` field is found, LikeC4 uses the following defaults:
+
+```json
+{
+  "imageAliases": {
+    "@": "./images",
+  }
+}
+```
+
+This is true even if you specify other aliases. Simply override the `@` to change the default location.
+
+```json
+{
+  "imageAliases": {
+    "@": "./my-images",
+  }
+}
+```
+

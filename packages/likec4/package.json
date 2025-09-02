@@ -101,7 +101,7 @@
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
+    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/*.mjs react/*.d.mts icons",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
     "dev:docs:bigbank": "pnpm cli:serve ../../apps/docs/src/components/bigbank",
