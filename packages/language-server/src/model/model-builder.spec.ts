@@ -229,11 +229,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     model {
       component system1 {
         metadata {
-          tags ['primary', 'backend'];
-          version '2.0.0';
-          owner 'team-a';
-          owner 'team-b';
-          ports ['8080', '9090', '3000'];
+          tags ['primary', 'backend']
+          version '2.0.0'
+          owner 'team-a'
+          owner 'team-b'
+          ports ['8080', '9090', '3000']
         }
       }
     }
@@ -254,7 +254,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with empty array metadata', async ({ expect }) => {
+  it('builds model with mixed array and single of same name and merges metadata values', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -263,8 +263,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     model {
       component system1 {
         metadata {
-          tags [];
-          version '1.0.0';
+          tags ['primary', 'backend']
+          version '2.0.0'
+          owner ['team-a', 'team-b']
+          owner 'team-c'
+          ports ['8080', '9090', '3000']
         }
       }
     }
@@ -276,13 +279,13 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       system1: {
         kind: 'component',
         metadata: {
-          version: '1.0.0',
-          // Note: empty arrays should not appear in the result
+          tags: ['primary', 'backend'],
+          version: '2.0.0',
+          owner: ['team-a', 'team-b', 'team-c'],
+          ports: ['8080', '9090', '3000'],
         },
       },
     })
-    // Empty arrays should not create metadata entries
-    expect(model.elements['system1']?.metadata).not.toHaveProperty('tags')
   })
 
   it('builds model with icon', async ({ expect }) => {
@@ -1113,9 +1116,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       component system2 {
         -> system1 {
           metadata {
-            protocols ['http', 'grpc'];
-            rps '100';
-            ports ['8080', '9090'];
+            protocols ['http', 'grpc']
+            rps '100'
+            ports ['8080', '9090']
           }
         }
       }

@@ -53,9 +53,9 @@ export type BuilderProjectSpecification = {
 
 export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends true ? never :
   IsLiteral<MetadataKey> extends true ? {
-      [key in MetadataKey]?: string
+      [key in MetadataKey]?: string | NonEmptyArray<string>
     } :
-  Record<string, string>
+  Record<string, string | NonEmptyArray<string>>
 
 export type NewElementProps<Tag, Metadata> = {
   title?: string
