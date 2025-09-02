@@ -109,7 +109,7 @@ catalogs:
     type-fest: ^4.41.0
     ufo: 1.6.1
     valibot: ^1.1.0
-    zod: 3.25.67
+    zod: 3.25.76
   vite:
     "@vitejs/plugin-react": ^4.6.0
     rollup: ^4.44.0
