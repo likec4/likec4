@@ -12,7 +12,7 @@ export class MergedExtends {
   private mergedData = new Map<string, {
     links: c4.Link[]
     tags: c4.Tag[]
-    metadata: Record<string, string>
+    metadata: Record<string, string | string[]>
   }>()
 
   merge(parsedExtends: ParsedAstExtend[]): void {
@@ -47,7 +47,7 @@ export class MergedExtends {
       id: string
       tags?: readonly string[] | null
       links?: readonly c4.Link[] | null
-      metadata?: Record<string, string>
+      metadata?: Record<string, string | string[]>
     },
   >(el: E): E {
     const extendData = this.mergedData.get(el.id)

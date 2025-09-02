@@ -93,7 +93,7 @@ export interface ParsedAstElement {
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<c4.Link>
   style: ParsedElementStyle
-  metadata?: { [key: string]: string }
+  metadata?: { [key: string]: string | string[] }
 }
 
 export interface ParsedAstExtend {
@@ -101,7 +101,7 @@ export interface ParsedAstExtend {
   astPath: string
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<c4.Link>
-  metadata?: { [key: string]: string }
+  metadata?: { [key: string]: string | string[] }
 }
 
 export interface ParsedAstRelation {
@@ -120,7 +120,7 @@ export interface ParsedAstRelation {
   tail?: c4.RelationshipArrowType
   links?: c4.NonEmptyArray<c4.Link>
   navigateTo?: c4.ViewId
-  metadata?: { [key: string]: string }
+  metadata?: { [key: string]: string | string[] }
 }
 
 // Alias for easier refactoring

@@ -103,7 +103,7 @@ Example response:
     technology: z.string().nullable(),
     tags: z.array(z.string()),
     project: z.string(),
-    metadata: z.record(z.string()),
+    metadata: z.record(z.union([z.string(), z.array(z.string())])),
     shape: z.string(),
     color: z.string(),
     children: z.array(z.string()).describe('Children of this element (Array of FQNs)'),
