@@ -254,8 +254,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     zod:
-      specifier: 3.25.67
-      version: 3.25.67
+      specifier: 3.25.76
+      version: 3.25.76
   vite:
     '@vitejs/plugin-react':
       specifier: ^4.6.0
@@ -1157,7 +1157,7 @@ importers:
         version: 5.0.0
       zod:
         specifier: catalog:utils
-        version: 3.25.67
+        version: 3.25.76
 
   packages/layouts:
     dependencies:
@@ -1599,7 +1599,7 @@ importers:
         version: 0.14.12
       zod:
         specifier: catalog:utils
-        version: 3.25.67
+        version: 3.25.76
 
   packages/tsconfig: {}
 
@@ -8906,8 +8906,8 @@ packages:
   zod@3.22.3:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
 
-  zod@3.25.67:
-    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -9082,7 +9082,7 @@ snapshots:
     dependencies:
       sitemap: 8.0.0
       stream-replace-string: 2.0.0
-      zod: 3.25.67
+      zod: 3.25.76
 
   '@astrojs/starlight@0.34.4(astro@5.12.9(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.7.0))':
     dependencies:
@@ -10818,8 +10818,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.24.5(zod@3.25.67)
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.5(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -11486,7 +11486,7 @@ snapshots:
       '@tanstack/virtual-file-routes': 1.114.12
       prettier: 3.5.2
       tsx: 4.20.3
-      zod: 3.25.67
+      zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.114.27(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
@@ -11508,7 +11508,7 @@ snapshots:
       babel-dead-code-elimination: 1.0.9
       chokidar: 3.6.0
       unplugin: 2.2.0
-      zod: 3.25.67
+      zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.114.27(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       vite: 6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
@@ -12178,9 +12178,9 @@ snapshots:
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.1
-      zod: 3.25.67
-      zod-to-json-schema: 3.24.5(zod@3.25.67)
-      zod-to-ts: 1.2.0(typescript@5.9.2)(zod@3.25.67)
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.5(zod@3.25.76)
+      zod-to-ts: 1.2.0(typescript@5.9.2)(zod@3.25.76)
     optionalDependencies:
       sharp: 0.34.3
     transitivePeerDependencies:
@@ -17740,18 +17740,18 @@ snapshots:
       cookie: 1.0.2
       youch-core: 0.3.3
 
-  zod-to-json-schema@3.24.5(zod@3.25.67):
+  zod-to-json-schema@3.24.5(zod@3.25.76):
     dependencies:
-      zod: 3.25.67
+      zod: 3.25.76
 
-  zod-to-ts@1.2.0(typescript@5.9.2)(zod@3.25.67):
+  zod-to-ts@1.2.0(typescript@5.9.2)(zod@3.25.76):
     dependencies:
       typescript: 5.9.2
-      zod: 3.25.67
+      zod: 3.25.76
 
   zod@3.22.3: {}
 
-  zod@3.25.67: {}
+  zod@3.25.76: {}
 
   zustand@4.5.7(@types/react@19.1.10)(react@19.1.1):
     dependencies:
