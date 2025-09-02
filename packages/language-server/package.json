@@ -20,7 +20,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=20.19.3"
+    "node": ">=20.19.4"
   },
   "engineStrict": true,
   "type": "module",
