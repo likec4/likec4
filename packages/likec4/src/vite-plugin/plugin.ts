@@ -48,6 +48,12 @@ export type LikeC4VitePluginOptions = {
   languageServices?: LikeC4LanguageServices
 
   /**
+   * Whether to watch for changes in the workspace.
+   * @default true if vite mode is 'development', false otherwise
+   */
+  watch?: boolean
+
+  /**
    * @deprecated
    */
   useOverviewGraph?: boolean
@@ -57,6 +63,7 @@ export type LikeC4VitePluginOptions = {
   printErrors?: never
   throwIfInvalid?: never
   graphviz?: never
+  watch?: never
   useOverviewGraph?: boolean
 }
 
@@ -94,6 +101,8 @@ export function LikeC4VitePlugin({
   let likec4: LikeC4LanguageServices
   let assetsDir: string
 
+  let shouldDisposeOnStop = opts.watch ?? false
+
   return {
     name: 'vite-plugin-likec4',
 
@@ -112,12 +121,13 @@ export function LikeC4VitePlugin({
       if (opts.languageServices) {
         likec4 = opts.languageServices
       } else {
+        const watch = shouldDisposeOnStop = opts.watch ?? config.mode === 'development'
         const instance = await LikeC4.fromWorkspace(opts.workspace ?? config.root, {
           logger,
           graphviz: opts.graphviz ?? 'wasm',
           printErrors: opts.printErrors ?? true,
           throwIfInvalid: opts.throwIfInvalid ?? false,
-          watch: true,
+          watch,
         })
         likec4 = instance.languageServices
       }
@@ -217,6 +227,12 @@ export function LikeC4VitePlugin({
           }
         }
       })
+    },
+
+    async buildEnd() {
+      if (shouldDisposeOnStop) {
+        await likec4.dispose()
+      }
     },
   } satisfies PluginOption
 }
