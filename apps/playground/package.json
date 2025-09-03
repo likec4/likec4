@@ -140,7 +140,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-resizable-panels": "^3.0.3",
+    "react-resizable-panels": "^3.0.5",
     "remeda": "catalog:utils",
     "std-env": "catalog:utils",
     "strip-indent": "catalog:utils",
