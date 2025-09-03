@@ -32,18 +32,19 @@ jobs:
   release:
     name: 📦 release
     uses: ./.github/workflows/release.yaml
-    if: "contains(github.event.head_commit.message, 'chore: release')"
+    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'chore: release')"
     needs: checks
     secrets: inherit
 
   vscode:
     name: 📦 vscode
     uses: ./.github/workflows/vscode.yaml
-    if: "contains(github.event.head_commit.message, 'chore: release')"
+    if: "github.repository_owner == 'likec4' && contains(github.event.head_commit.message, 'chore: release')"
     needs: checks
     secrets: inherit
 
   deploy-playground:
+    if: ${{ github.repository_owner == 'likec4' }}
     needs: checks
     name: deploy
     uses: ./.github/workflows/playground.yaml
@@ -52,6 +53,7 @@ jobs:
       environment: "${{ contains(github.event.head_commit.message, 'chore: release') && 'production' || 'preview' }}"
 
   deploy-docs:
+    if: ${{ github.repository_owner == 'likec4' }}
     needs: checks
     name: deploy
     uses: ./.github/workflows/docs.yaml
