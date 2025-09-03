@@ -246,14 +246,29 @@ export const markdownBlock = defineRecipe({
       },
       false: {},
     },
+    /**
+     * Markdown block can receive either markdown or plain text.
+     */
+    value: {
+      // default
+      markdown: {},
+      // when block receives a plain text
+      plaintext: {
+        '& :where(p)': {
+          whiteSpace: 'preserve-breaks',
+        },
+      },
+    },
   },
 
   defaultVariants: {
     uselikec4palette: false,
+    value: 'markdown',
   },
 
   staticCss: [{
     uselikec4palette: ['*'],
+    value: ['plaintext'],
     conditions: ['*'],
   }],
 })

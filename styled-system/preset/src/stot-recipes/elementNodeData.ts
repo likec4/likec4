@@ -23,10 +23,6 @@ const description: SystemStyleObject = {
     display: 'none',
   },
 
-  '&:not(.likec4-markdown-block)': {
-    whiteSpace: 'preserve-breaks',
-  },
-
   '& a': {
     pointerEvents: 'all',
   },
