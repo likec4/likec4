@@ -145,7 +145,6 @@
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "unbuild": "catalog:",
-    "valibot": "catalog:utils",
     "vitest": "catalog:vitest",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
