@@ -2,7 +2,7 @@ import { configureLogger, getConsoleStderrSink } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
-import { getLspConnectionSink } from './logger'
+import { getLspConnectionSink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/configurable-layouter'
@@ -28,6 +28,15 @@ export function startLanguageServer(): {
       },
     ],
   })
+
+  process.on('uncaughtException', (err) => {
+    logger.error('uncaughtException', { err })
+  })
+
+  process.on('unhandledRejection', (err) => {
+    logger.error('unhandledRejection', { err })
+  })
+
   // Inject the shared services and language-specific services
   const services = createLanguageServices(
     {

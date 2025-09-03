@@ -39,9 +39,9 @@ catalogs:
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    "@hono/node-server": ^1.14.4
-    hono: ^4.9.0
-    hono-sessions: ^0.7.3
+    "@hono/node-server": ^1.19.1
+    hono: ^4.9.6
+    hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2

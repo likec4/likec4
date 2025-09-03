@@ -96,7 +96,7 @@ export class LikeC4ModelParser {
   private createParser(doc: LangiumDocument): DocumentParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     if (doc.likec4ProjectId) {
-      logger.debug(`create parser: project {projectId}, document {doc}`, {
+      logger.debug(`create parser {projectId} document {doc}`, {
         projectId: doc.likec4ProjectId,
         doc: doc.uri.toString(),
       })
