@@ -1060,6 +1060,9 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.11.0
+      bundle-n-require:
+        specifier: catalog:utils
+        version: 1.1.2
       esbuild:
         specifier: 0.25.5
         version: 0.25.5
@@ -1616,6 +1619,9 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.11.0
+      bundle-n-require:
+        specifier: catalog:utils
+        version: 1.1.2
       esbuild:
         specifier: 0.25.5
         version: 0.25.5
