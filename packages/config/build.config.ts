@@ -6,6 +6,12 @@ export default defineBuildConfig({
     input: 'src/',
     ext: 'mjs',
     outDir: 'dist',
+    globOptions: {
+      ignore: [
+        '**/__*/**',
+        '**/*.spec.ts',
+      ],
+    },
   }],
   clean: true,
   stub: false,

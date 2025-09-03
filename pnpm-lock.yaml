@@ -69,8 +69,8 @@ catalogs:
       specifier: 0.14.12
       version: 0.14.12
     wrangler:
-      specifier: 4.31.0
-      version: 4.31.0
+      specifier: 4.33.2
+      version: 4.33.2
   esbuild:
     esbuild-node-externals:
       specifier: 1.18.0
@@ -310,10 +310,10 @@ catalogs:
 
 overrides:
   esbuild: 0.25.5
-  react: ^19.1.1
-  react-dom: ^19.1.1
-  '@types/react': 19.1.10
-  '@types/react-dom': 19.1.7
+  react: 19.1.1
+  react-dom: 19.1.1
+  '@types/react': 19.1.12
+  '@types/react-dom': 19.1.9
   vscode-jsonrpc: 8.2.1
   vscode-languageclient: 9.0.1
   vscode-languageserver: 9.0.1
@@ -324,7 +324,7 @@ overrides:
   type-fest: ^4.41.0
   turbo: 2.5.6
   sharp: 0.34.3
-  caniuse-lite: ^1.0.30001735
+  caniuse-lite: ^1.0.30001739
   mnemonist: 0.40.3
 
 patchedDependencies:
@@ -383,7 +383,7 @@ importers:
         version: 0.9.4(prettier@3.5.2)(typescript@5.9.2)
       '@astrojs/react':
         specifier: catalog:astro
-        version: 4.3.0(@types/node@22.15.31)(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
+        version: 4.3.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
       '@astrojs/starlight':
         specifier: catalog:astro
         version: 0.34.4(astro@5.12.9(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.7.0))
@@ -397,11 +397,11 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       astro:
         specifier: catalog:astro
         version: 5.12.9(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.7.0)
@@ -415,10 +415,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/likec4
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       sharp:
         specifier: 0.34.3
@@ -449,13 +449,13 @@ importers:
         version: 6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
       wrangler:
         specifier: 'catalog:'
-        version: 4.31.0
+        version: 4.33.2
 
   apps/playground:
     dependencies:
       '@cloudflare/vite-plugin':
         specifier: 1.11.6
-        version: 1.11.6(rollup@4.44.0)(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))(workerd@1.20250816.0)(wrangler@4.31.0)
+        version: 1.11.6(rollup@4.44.0)(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))(workerd@1.20250829.0)(wrangler@4.33.2)
       '@codingame/monaco-vscode-editor-api':
         specifier: 16.1.1
         version: 16.1.1
@@ -515,16 +515,16 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.2.4(react@19.1.1)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
@@ -556,20 +556,20 @@ importers:
         specifier: 'catalog:'
         version: 20.19.11
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.6.0(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 5.0.5(@types/react@19.1.10)(react@19.1.1)(xstate@5.20.2)
+        version: 5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.67
@@ -616,10 +616,10 @@ importers:
         specifier: catalog:css
         version: 8.5.6
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       react-error-boundary:
         specifier: catalog:react
@@ -695,7 +695,7 @@ importers:
         version: 0.14.12
       wrangler:
         specifier: 'catalog:'
-        version: 4.31.0
+        version: 4.33.2
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
@@ -883,7 +883,7 @@ importers:
         version: link:../../styled-system/styles
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.2.4(react@19.1.1)
@@ -895,10 +895,10 @@ importers:
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 5.0.5(@types/react@19.1.10)(react@19.1.1)(xstate@5.20.2)
+        version: 5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.67
@@ -961,11 +961,11 @@ importers:
         specifier: 'catalog:'
         version: 20.19.11
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.6.0(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))
@@ -973,10 +973,10 @@ importers:
         specifier: catalog:css
         version: 8.5.6
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       typescript:
         specifier: 'catalog:'
@@ -1028,11 +1028,11 @@ importers:
   packages/icons:
     devDependencies:
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       esbuild:
         specifier: 0.25.5
         version: 0.25.5
@@ -1046,10 +1046,10 @@ importers:
         specifier: catalog:utils
         version: 4.0.3
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       typescript:
         specifier: 'catalog:'
@@ -1374,7 +1374,7 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.2.4(react@19.1.1)
@@ -1406,11 +1406,11 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.0
@@ -1419,7 +1419,7 @@ importers:
         version: 17.0.33
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.67
@@ -1511,10 +1511,10 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       react-error-boundary:
         specifier: catalog:react
@@ -1829,7 +1829,7 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
         version: 8.2.4(react@19.1.1)
@@ -1855,11 +1855,11 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       '@types/vscode':
         specifier: catalog:vscode
         version: 1.100.0
@@ -1871,7 +1871,7 @@ importers:
         version: 4.6.0(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.67
@@ -1888,10 +1888,10 @@ importers:
         specifier: catalog:css
         version: 8.5.6
       react:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       react-error-boundary:
         specifier: catalog:react
@@ -1928,10 +1928,10 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        version: 8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.1.0(typescript@5.9.2)
@@ -1939,11 +1939,11 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1991,11 +1991,11 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
+        specifier: 19.1.12
+        version: 19.1.12
       '@types/react-dom':
-        specifier: 19.1.7
-        version: 19.1.7(@types/react@19.1.10)
+        specifier: 19.1.9
+        version: 19.1.9(@types/react@19.1.12)
       nano-spawn:
         specifier: catalog:utils
         version: 1.0.2
@@ -2066,10 +2066,10 @@ packages:
     resolution: {integrity: sha512-N02aj52Iezn69qHyx5+XvPqgsPMEnel9mI5JMbGiRMTzzLMuNaxRVoQTaq2024Dpr7BLsxCjqMkNvelqMDhaHA==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0}
     peerDependencies:
-      '@types/react': 19.1.10
-      '@types/react-dom': 19.1.7
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      '@types/react': 19.1.12
+      '@types/react-dom': 19.1.9
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@astrojs/sitemap@3.3.1':
     resolution: {integrity: sha512-GRnDUCTviBSNfXJ0Jmur+1/C+z3g36jy79VyYggfe1uNyEYSTcmAfTTCmbytrRvJRNyJJnSfB/77Gnm9PiXRRg==}
@@ -2222,6 +2222,15 @@ packages:
       workerd:
         optional: true
 
+  '@cloudflare/unenv-preset@2.7.1':
+    resolution: {integrity: sha512-b0YHedns1FHEdalv9evlydfc/hLPs+LqCbPatmiJ99ScI5QTK0NXqqBhgvQ9qch73tsYfOpdpwtBl1GOcb1C9A==}
+    peerDependencies:
+      unenv: 2.0.0-rc.19
+      workerd: ^1.20250828.1
+    peerDependenciesMeta:
+      workerd:
+        optional: true
+
   '@cloudflare/vite-plugin@1.11.6':
     resolution: {integrity: sha512-+xvFYZoxqlIUfXALk+T+jUtvXAylGicpYjrGVS2Z8cSEM5mLl+R5CbLG9kmWDLP2AoVAH5yJalpk7SQ3larLqg==}
     peerDependencies:
@@ -2234,8 +2243,20 @@ packages:
     cpu: [x64]
     os: [darwin]
 
+  '@cloudflare/workerd-darwin-64@1.20250829.0':
+    resolution: {integrity: sha512-IkB5gaLz3gzBg9hIsC/bVvOMDaRiWA5anaPK0ERDXXXJnMiBkLnA009O5Mp0x7j0fpxbw05xaiYXcFdGPdUt3A==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [darwin]
+
   '@cloudflare/workerd-darwin-arm64@1.20250816.0':
     resolution: {integrity: sha512-WyKPMQhbU+TTf4uDz3SA7ZObspg7WzyJMv/7J4grSddpdx2A4Y4SfPu3wsZleAOIMOAEVi0A1sYDhdltKM7Mxg==}
+    engines: {node: '>=16'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@cloudflare/workerd-darwin-arm64@1.20250829.0':
+    resolution: {integrity: sha512-gFYC+w0jznCweKmrv63inEYduGj6crOskgZrn5zHI8S7c3ynC1LSW6LR8E9A2mSOwuDWKM1hHypwctwGUKlikg==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
@@ -2246,14 +2267,32 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@cloudflare/workerd-linux-64@1.20250829.0':
+    resolution: {integrity: sha512-JS699jk+Bn7j4QF7tdF+Sqhy4EUHM2NGVLF/vOIbpPWQnBVvP6Z+vmxi5MuVUwpAH48kpqbtMx380InNvT5f1Q==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [linux]
+
   '@cloudflare/workerd-linux-arm64@1.20250816.0':
     resolution: {integrity: sha512-FR+/yhaWs7FhfC3GKsM3+usQVrGEweJ9qyh7p+R6HNwnobgKr/h5ATWvJ4obGJF6ZHHodgSe+gOSYR7fkJ1xAQ==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
 
+  '@cloudflare/workerd-linux-arm64@1.20250829.0':
+    resolution: {integrity: sha512-9Ic/VwcrCEQiIzynmpFQnS8N3uXm8evxUxFe37r6OC8/MGcXZTcp0/lmEk+cjjz+2aw5CfPMP82IdQyRKVZ+Og==}
+    engines: {node: '>=16'}
+    cpu: [arm64]
+    os: [linux]
+
   '@cloudflare/workerd-windows-64@1.20250816.0':
     resolution: {integrity: sha512-0lqClj2UMhFa8tCBiiX7Zhd5Bjp0V+X8oNBG6V6WsR9p9/HlIHAGgwRAM7aYkyG+8KC8xlbC89O2AXUXLpHx0g==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [win32]
+
+  '@cloudflare/workerd-windows-64@1.20250829.0':
+    resolution: {integrity: sha512-6uETqeeMciRSA00GRGzH1nnz0egDP2bqMOJtTBWlLzFs88GbLe2RXECJxo4E3eVr8yvAMyqwd0WUR4dDBjO7Rg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -2930,14 +2969,14 @@ packages:
   '@floating-ui/react-dom@2.1.2':
     resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@floating-ui/react@0.26.28':
     resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
@@ -3136,34 +3175,34 @@ packages:
     resolution: {integrity: sha512-bZBxt6CFNLleARe5Ni2oYOcuRdi8ZEaxoZBmdc3sQu24tiX61xTKtjOfHaPffNMpqNQoIbgOi955rk3t1KSLig==}
     peerDependencies:
       '@mantine/hooks': 8.2.4
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@mantine/hooks@8.2.4':
     resolution: {integrity: sha512-ZXQ0uk6UtJa6Gl+ZWMBh4wC7UqCAoWWvau1TOoe05sBrkyGcXSVrTfoCVzjEQaB/h8VEOUWLGtJokkiMQKcMzA==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   '@mantine/modals@8.2.4':
     resolution: {integrity: sha512-3o1ZnzrU+Rnp6HkJPHbVllVc9HmTVn4s8UyjGunc9IqnId7wU8GDULpWXNXrBgbvWuJzwIOfGYgw5GCefKUHIA==}
     peerDependencies:
       '@mantine/core': 8.2.4
       '@mantine/hooks': 8.2.4
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@mantine/notifications@8.2.4':
     resolution: {integrity: sha512-CPyYM1Y9oXxlJl5zTJN0mgJGZh8ZrhdIsA4ZktnpmJMKvGHWQdmtzTcPDu4gwzDNdANsN0f9DtMSp68kNiD1xA==}
     peerDependencies:
       '@mantine/core': 8.2.4
       '@mantine/hooks': 8.2.4
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@mantine/store@8.2.4':
     resolution: {integrity: sha512-NYbhSy6UkVXsCDDHau+ZmGuuLgQ1laNINhKRHYabRvH5aSuU9drbgIlraNgzoF/+LeoTSQ8LylsdWNQRq0hqqA==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   '@mantine/vanilla-extract@8.2.4':
     resolution: {integrity: sha512-ggLmbK9QoK47/t0snh1o9w2TuPmOLx1x/CmuuSj77t0MWaGae46moxXhWO16Q3q/5QC5pgyLJlWAM5C4uoXDlw==}
@@ -3234,7 +3273,7 @@ packages:
     engines: {node: ^20.0.0 || >=22.0.0}
     peerDependencies:
       nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
-      react: ^19.1.1
+      react: 19.1.1
 
   '@nevware21/ts-async@0.5.4':
     resolution: {integrity: sha512-IBTyj29GwGlxfzXw2NPnzty+w0Adx61Eze1/lknH/XIVdxtF9UnOpk76tnrHXWa6j84a1RR9hsOcHQPFv9qJjA==}
@@ -3446,8 +3485,8 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       js-cookie: ^3.0.5
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
     peerDependenciesMeta:
       js-cookie:
         optional: true
@@ -3716,7 +3755,7 @@ packages:
   '@tabler/icons-react@3.34.1':
     resolution: {integrity: sha512-Ld6g0NqOO05kyyHsfU8h787PdHBm7cFmOycQSIrGp45XcXYDuOK2Bs0VC4T2FWSKZ6bx5g04imfzazf/nqtk1A==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   '@tabler/icons@3.34.1':
     resolution: {integrity: sha512-9gTnUvd7Fd/DmQgr3MKY+oJLa1RfNsQo8c/ir3TJAWghOuZXodbtbVp0QBY2DxWuuvrSZFys0HEbv1CoiI5y6A==}
@@ -3731,20 +3770,20 @@ packages:
   '@tanstack/react-query@5.85.0':
     resolution: {integrity: sha512-t1HMfToVMGfwEJRya6GG7gbK0luZJd+9IySFNePL1BforU1F3LqQ3tBC2Rpvr88bOrlU6PXyMLgJD0Yzn4ztUw==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   '@tanstack/react-router@1.114.27':
     resolution: {integrity: sha512-xfM+FMXpebZQ5//NQEgj5y5SKQqTQEr2/LvePU9IiksxUBCgfjbuOXW5vgDHJ3xXJm3pivYqRx29cHqhueClow==}
     engines: {node: '>=12'}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@tanstack/react-store@0.7.0':
     resolution: {integrity: sha512-S/Rq17HaGOk+tQHV/yrePMnG1xbsKZIl/VsNWnNXt4XW+tTY8dTlvpJH2ZQ3GRALsusG5K6Q3unAGJ2pd9W/Ng==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@tanstack/router-cli@1.114.17':
     resolution: {integrity: sha512-9cUxEoeDi6bZaweLFVzPac/3KRobar3P2Gi1SaDWDcr2YiAuv384CoWQkWUoCUwWmNml7gn46Gtln8iehpQKkQ==}
@@ -3934,13 +3973,13 @@ packages:
   '@types/picomatch@4.0.2':
     resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
-  '@types/react-dom@19.1.7':
-    resolution: {integrity: sha512-i5ZzwYpqjmrKenzkoLM2Ibzt6mAsM7pxB6BCIouEVVmgiqaMj1TjaK7hnA36hbW5aZv20kx7Lw6hWzPWg0Rurw==}
+  '@types/react-dom@19.1.9':
+    resolution: {integrity: sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ==}
     peerDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  '@types/react@19.1.10':
-    resolution: {integrity: sha512-EhBeSYX0Y6ye8pNebpKrwFJq7BoQ8J5SO6NlvNwwHjSj6adXJViPQrKlsyPw7hLBLvckEMO1yxeGdR82YBBlDg==}
+  '@types/react@19.1.12':
+    resolution: {integrity: sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -4102,7 +4141,7 @@ packages:
   '@xstate/react@5.0.5':
     resolution: {integrity: sha512-MfF/cPHa3lNKJmGFpUycMbNP25qBXyZXrxc8VYNroAu0Nnk0DV5WzAkTcQXma0xEC4dSwsoA+YQuKbZATtqvgg==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
       xstate: ^5.19.4
     peerDependenciesMeta:
       xstate:
@@ -4111,8 +4150,8 @@ packages:
   '@xyflow/react@12.8.3':
     resolution: {integrity: sha512-8sdRZPMCzfhauF96krlUMPCKmi9cX64HsYG8qoVAAvTKDAqxXg7RSp/IhoXlzbI/lsRD1vAxeDBxvI/XqACa6g==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   '@xyflow/system@0.0.67':
     resolution: {integrity: sha512-hYsmbj+8JDei0jmupBmxNLaeJEcf9kKmMl6IziGe02i0TOCsHwjIdP+qz+f4rI1/FR2CQiCZJrw4dkHOLC6tEQ==}
@@ -4472,8 +4511,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001735:
-    resolution: {integrity: sha512-EV/laoX7Wq2J9TQlyIXRxTJqIw4sxfXS4OYgudGxBYRuTv0q7AM6yMEpU/Vo1I94thg9U6EZ2NfZx9GJq83u7w==}
+  caniuse-lite@1.0.30001739:
+    resolution: {integrity: sha512-y+j60d6ulelrNSwpPyrHdl+9mJnQzHBr08xm48Qno0nSk4h3Qojh+ziv2qE6rXf4k3tadF4o1J/1tAbVm1NtnA==}
 
   canvaskit-wasm@0.39.1:
     resolution: {integrity: sha512-Gy3lCmhUdKq+8bvDrs9t8+qf7RvcjuQn+we7vTVVyqgOVO1UVfHpsnBxkTZw+R4ApEJ3D5fKySl9TU11hmjl/A==}
@@ -5379,8 +5418,8 @@ packages:
     resolution: {integrity: sha512-6e78rdVtnBvlEVgu6eFEAgG9v3wLnYEboM8I5O5EXvfKC8gxGQB8wXJdhkMy10iVcn05jl6CNw7/HTsTCfwcWg==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
     peerDependenciesMeta:
       '@emotion/is-prop-valid':
         optional: true
@@ -6478,6 +6517,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  miniflare@4.20250829.0:
+    resolution: {integrity: sha512-V1DLPnOXjm0DtfU9K0ftrxF+G7LkQ3nDKtXGdU8+Vf+dOqdGM+3ZHZOcDC5XPOsDnI280HBd5xcos/ghtGB7cg==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
 
@@ -6569,8 +6613,8 @@ packages:
     resolution: {integrity: sha512-8jCD8uW5GD1csOoqh1WhH1A6j5APHVE15nuBkFeRiMzYBdRwyAHmSP/oXSuW0WJPZRXTFdBoG4hY9TFWNhhwng==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
     peerDependenciesMeta:
       '@emotion/is-prop-valid':
         optional: true
@@ -7348,12 +7392,12 @@ packages:
   react-dom@19.1.1:
     resolution: {integrity: sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   react-error-boundary@6.0.0:
     resolution: {integrity: sha512-gdlJjD7NWr0IfkPlaREN2d9uUZUlksrfOx7SX62VRerwXbMY6ftGCIZua1VG1aXFNOimhISsTq+Owp725b9SiA==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -7361,8 +7405,8 @@ packages:
   react-number-format@5.4.4:
     resolution: {integrity: sha512-wOmoNZoOpvMminhifQYiYSTCLUDOiUbBunrMrMjA+dV52sY+vck1S4UhR6PkgnoCquvvMSeJjErXZ4qSaWCliA==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   react-refresh@0.17.0:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
@@ -7372,8 +7416,8 @@ packages:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.10
-      react: ^19.1.1
+      '@types/react': 19.1.12
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -7382,8 +7426,8 @@ packages:
     resolution: {integrity: sha512-sGsQtcjMqdQyijAHytfGEELB8FufGbfXIsvUTe+NLx1GDRJCXtCFLBLUI1eyZCKXXvbEU2C6gai0PZKoIE9Vbg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.10
-      react: ^19.1.1
+      '@types/react': 19.1.12
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -7391,22 +7435,22 @@ packages:
   react-resizable-panels@3.0.3:
     resolution: {integrity: sha512-7HA8THVBHTzhDK4ON0tvlGXyMAJN1zBeRpuyyremSikgYh2ku6ltD7tsGQOcXx4NKPrZtYCm/5CBr+dkruTGQw==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   react-shadow@20.6.0:
     resolution: {integrity: sha512-kY+w4OMNZ8Nj9YI9eiTgvvJ/wYO7XyX1D/LYhvwQZv5vw69iCiDtGB0BX/2U8gLUuZAMN+x/7rHJKqHh8wXFHQ==}
     peerDependencies:
       prop-types: ^15.0.0
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.10
-      react: ^19.1.1
+      '@types/react': 19.1.12
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -7415,13 +7459,13 @@ packages:
     resolution: {integrity: sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==}
     engines: {node: '>=10'}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
     peerDependencies:
-      react: ^19.1.1
-      react-dom: ^19.1.1
+      react: 19.1.1
+      react-dom: 19.1.1
 
   react@19.1.1:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
@@ -8428,8 +8472,8 @@ packages:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.10
-      react: ^19.1.1
+      '@types/react': 19.1.12
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8438,7 +8482,7 @@ packages:
     resolution: {integrity: sha512-djviaxuOOh7wkj0paeO1Q/4wMZ8Zrnag5H6yBvzN7AKKe8beOaED9SF5/ByLqsku8NP4zQqsvM2u3ew/tJK8/w==}
     peerDependencies:
       '@types/react': '*'
-      react: ^19.1.1
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8447,7 +8491,7 @@ packages:
     resolution: {integrity: sha512-tpZZ+EX0gaghDAiFR37hj5MgY6ZN55kLiPkJsKxBMZ6GZdOSPJXiOzPM984oPYZ5AnehYx5WQp1+ME8I/P/pRA==}
     peerDependencies:
       '@types/react': '*'
-      react: ^19.1.1
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8456,7 +8500,7 @@ packages:
     resolution: {integrity: sha512-mhg3xdm9NaM8q+gLT8KryJPnRFOz1/5XPBhmDEVZK1webPzDjrPk7f/mbpeLqTgB9msytYWANxgALOCJKnLvcQ==}
     peerDependencies:
       '@types/react': '*'
-      react: ^19.1.1
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8465,8 +8509,8 @@ packages:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.10
-      react: ^19.1.1
+      '@types/react': 19.1.12
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8474,7 +8518,7 @@ packages:
   use-sync-external-store@1.5.0:
     resolution: {integrity: sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==}
     peerDependencies:
-      react: ^19.1.1
+      react: 19.1.1
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -8841,12 +8885,17 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.31.0:
-    resolution: {integrity: sha512-blb8NfA4BGscvSzvLm2mEQRuUTmaMCiglkqHiR3EIque78UXG39xxVtFXlKhK32qaVvGI7ejdM//HC9plVPO3w==}
+  workerd@1.20250829.0:
+    resolution: {integrity: sha512-8qoE56hf9QHS2llMM1tybjhvFEX5vnNUa1PpuyxeNC9F0dn9/qb9eDqN/z3sBPgpYK8vfQU9J8KOxczA+qo/cQ==}
+    engines: {node: '>=16'}
+    hasBin: true
+
+  wrangler@4.33.2:
+    resolution: {integrity: sha512-4cQU62098a5mj7YsECkksypMNoO9B8D6CVzP/SDEqP73ti9exBxI3OlkB+8rMawF1OyYNAihaSAzIPZ52OiK0g==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^4.20250816.0
+      '@cloudflare/workers-types': ^4.20250829.0
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -8989,9 +9038,9 @@ packages:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
       immer: '>=9.0.6'
-      react: ^19.1.1
+      react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -9135,10 +9184,10 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react@4.3.0(@types/node@22.15.31)(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)':
+  '@astrojs/react@4.3.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)':
     dependencies:
-      '@types/react': 19.1.10
-      '@types/react-dom': 19.1.7(@types/react@19.1.10)
+      '@types/react': 19.1.12
+      '@types/react-dom': 19.1.9(@types/react@19.1.12)
       '@vitejs/plugin-react': 4.6.0(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
@@ -9379,15 +9428,21 @@ snapshots:
     dependencies:
       mime: 3.0.0
 
-  '@cloudflare/unenv-preset@2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250816.0)':
+  '@cloudflare/unenv-preset@2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250829.0)':
     dependencies:
       unenv: 2.0.0-rc.19
     optionalDependencies:
-      workerd: 1.20250816.0
+      workerd: 1.20250829.0
 
-  '@cloudflare/vite-plugin@1.11.6(rollup@4.44.0)(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))(workerd@1.20250816.0)(wrangler@4.31.0)':
+  '@cloudflare/unenv-preset@2.7.1(unenv@2.0.0-rc.19)(workerd@1.20250829.0)':
     dependencies:
-      '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250816.0)
+      unenv: 2.0.0-rc.19
+    optionalDependencies:
+      workerd: 1.20250829.0
+
+  '@cloudflare/vite-plugin@1.11.6(rollup@4.44.0)(vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0))(workerd@1.20250829.0)(wrangler@4.33.2)':
+    dependencies:
+      '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250829.0)
       '@mjackson/node-fetch-server': 0.6.1
       '@rollup/plugin-replace': 6.0.2(rollup@4.44.0)
       get-port: 7.1.0
@@ -9396,7 +9451,7 @@ snapshots:
       tinyglobby: 0.2.14
       unenv: 2.0.0-rc.19
       vite: 6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.3)(yaml@2.7.0)
-      wrangler: 4.31.0
+      wrangler: 4.33.2
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -9407,16 +9462,31 @@ snapshots:
   '@cloudflare/workerd-darwin-64@1.20250816.0':
     optional: true
 
+  '@cloudflare/workerd-darwin-64@1.20250829.0':
+    optional: true
+
   '@cloudflare/workerd-darwin-arm64@1.20250816.0':
+    optional: true
+
+  '@cloudflare/workerd-darwin-arm64@1.20250829.0':
     optional: true
 
   '@cloudflare/workerd-linux-64@1.20250816.0':
     optional: true
 
+  '@cloudflare/workerd-linux-64@1.20250829.0':
+    optional: true
+
   '@cloudflare/workerd-linux-arm64@1.20250816.0':
     optional: true
 
+  '@cloudflare/workerd-linux-arm64@1.20250829.0':
+    optional: true
+
   '@cloudflare/workerd-windows-64@1.20250816.0':
+    optional: true
+
+  '@cloudflare/workerd-windows-64@1.20250829.0':
     optional: true
 
   '@codingame/monaco-vscode-039b5553-0838-562a-97c2-30d6e54a7b42-common@16.1.1': {}
@@ -10712,7 +10782,7 @@ snapshots:
     dependencies:
       chroma-js: 3.1.2
 
-  '@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@floating-ui/react': 0.26.28(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks': 8.2.4(react@19.1.1)
@@ -10720,8 +10790,8 @@ snapshots:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       react-number-format: 5.4.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react-remove-scroll: 2.7.0(@types/react@19.1.10)(react@19.1.1)
-      react-textarea-autosize: 8.5.9(@types/react@19.1.10)(react@19.1.1)
+      react-remove-scroll: 2.7.0(@types/react@19.1.12)(react@19.1.1)
+      react-textarea-autosize: 8.5.9(@types/react@19.1.12)(react@19.1.1)
       type-fest: 4.41.0
     transitivePeerDependencies:
       - '@types/react'
@@ -10730,16 +10800,16 @@ snapshots:
     dependencies:
       react: 19.1.1
 
-  '@mantine/modals@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/modals@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks': 8.2.4(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  '@mantine/notifications@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/notifications@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.4(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks': 8.2.4(react@19.1.1)
       '@mantine/store': 8.2.4(react@19.1.1)
       react: 19.1.1
@@ -10750,9 +10820,9 @@ snapshots:
     dependencies:
       react: 19.1.1
 
-  '@mantine/vanilla-extract@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
+  '@mantine/vanilla-extract@8.2.4(@mantine/core@8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
     dependencies:
-      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/core': 8.2.4(@mantine/hooks@8.2.4(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   '@mdx-js/mdx@3.1.0(acorn@8.15.0)':
     dependencies:
@@ -11765,11 +11835,11 @@ snapshots:
 
   '@types/picomatch@4.0.2': {}
 
-  '@types/react-dom@19.1.7(@types/react@19.1.10)':
+  '@types/react-dom@19.1.9(@types/react@19.1.12)':
     dependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  '@types/react@19.1.10':
+  '@types/react@19.1.12':
     dependencies:
       csstype: 3.1.3
 
@@ -12017,23 +12087,23 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@5.0.5(@types/react@19.1.10)(react@19.1.1)(xstate@5.20.2)':
+  '@xstate/react@5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)':
     dependencies:
       react: 19.1.1
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.10)(react@19.1.1)
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.12)(react@19.1.1)
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
       xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@xyflow/react@12.8.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@xyflow/system': 0.0.67
       classcat: 5.0.5
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
-      zustand: 4.5.7(@types/react@19.1.10)(react@19.1.1)
+      zustand: 4.5.7(@types/react@19.1.12)(react@19.1.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -12304,7 +12374,7 @@ snapshots:
   autoprefixer@10.4.21(postcss@8.5.6):
     dependencies:
       browserslist: 4.24.4
-      caniuse-lite: 1.0.30001735
+      caniuse-lite: 1.0.30001739
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.1.1
@@ -12467,14 +12537,14 @@ snapshots:
 
   browserslist@4.23.3:
     dependencies:
-      caniuse-lite: 1.0.30001735
+      caniuse-lite: 1.0.30001739
       electron-to-chromium: 1.5.109
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.23.3)
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001735
+      caniuse-lite: 1.0.30001739
       electron-to-chromium: 1.5.109
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
@@ -12539,11 +12609,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.24.4
-      caniuse-lite: 1.0.30001735
+      caniuse-lite: 1.0.30001739
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001735: {}
+  caniuse-lite@1.0.30001739: {}
 
   canvaskit-wasm@0.39.1:
     dependencies:
@@ -15031,6 +15101,24 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  miniflare@4.20250829.0:
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      acorn: 8.14.0
+      acorn-walk: 8.3.2
+      exit-hook: 2.2.1
+      glob-to-regexp: 0.4.1
+      sharp: 0.34.3
+      stoppable: 1.1.0
+      undici: 7.13.0
+      workerd: 1.20250829.0
+      ws: 8.18.0
+      youch: 4.1.0-beta.10
+      zod: 3.22.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   minimalistic-assert@1.0.1: {}
 
   minimalistic-crypto-utils@1.0.1: {}
@@ -15933,24 +16021,24 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-remove-scroll-bar@2.3.8(@types/react@19.1.10)(react@19.1.1):
+  react-remove-scroll-bar@2.3.8(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      react-style-singleton: 2.2.3(@types/react@19.1.10)(react@19.1.1)
+      react-style-singleton: 2.2.3(@types/react@19.1.12)(react@19.1.1)
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  react-remove-scroll@2.7.0(@types/react@19.1.10)(react@19.1.1):
+  react-remove-scroll@2.7.0(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      react-remove-scroll-bar: 2.3.8(@types/react@19.1.10)(react@19.1.1)
-      react-style-singleton: 2.2.3(@types/react@19.1.10)(react@19.1.1)
+      react-remove-scroll-bar: 2.3.8(@types/react@19.1.12)(react@19.1.1)
+      react-style-singleton: 2.2.3(@types/react@19.1.12)(react@19.1.1)
       tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.1.10)(react@19.1.1)
-      use-sidecar: 1.1.3(@types/react@19.1.10)(react@19.1.1)
+      use-callback-ref: 1.3.3(@types/react@19.1.12)(react@19.1.1)
+      use-sidecar: 1.1.3(@types/react@19.1.12)(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
   react-resizable-panels@3.0.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
@@ -15964,20 +16052,20 @@ snapshots:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  react-style-singleton@2.2.3(@types/react@19.1.10)(react@19.1.1):
+  react-style-singleton@2.2.3(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       get-nonce: 1.0.1
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  react-textarea-autosize@8.5.9(@types/react@19.1.10)(react@19.1.1):
+  react-textarea-autosize@8.5.9(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.27.6
       react: 19.1.1
-      use-composed-ref: 1.4.0(@types/react@19.1.10)(react@19.1.1)
-      use-latest: 1.3.0(@types/react@19.1.10)(react@19.1.1)
+      use-composed-ref: 1.4.0(@types/react@19.1.12)(react@19.1.1)
+      use-latest: 1.3.0(@types/react@19.1.12)(react@19.1.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -17178,39 +17266,39 @@ snapshots:
       punycode: 1.4.1
       qs: 6.14.0
 
-  use-callback-ref@1.3.3(@types/react@19.1.10)(react@19.1.1):
+  use-callback-ref@1.3.3(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  use-composed-ref@1.4.0(@types/react@19.1.10)(react@19.1.1):
+  use-composed-ref@1.4.0(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  use-isomorphic-layout-effect@1.2.1(@types/react@19.1.10)(react@19.1.1):
+  use-isomorphic-layout-effect@1.2.1(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  use-latest@1.3.0(@types/react@19.1.10)(react@19.1.1):
+  use-latest@1.3.0(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.10)(react@19.1.1)
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.12)(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
-  use-sidecar@1.1.3(@types/react@19.1.10)(react@19.1.1):
+  use-sidecar@1.1.3(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       detect-node-es: 1.1.0
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
 
   use-sync-external-store@1.5.0(react@19.1.1):
     dependencies:
@@ -17693,16 +17781,24 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250816.0
       '@cloudflare/workerd-windows-64': 1.20250816.0
 
-  wrangler@4.31.0:
+  workerd@1.20250829.0:
+    optionalDependencies:
+      '@cloudflare/workerd-darwin-64': 1.20250829.0
+      '@cloudflare/workerd-darwin-arm64': 1.20250829.0
+      '@cloudflare/workerd-linux-64': 1.20250829.0
+      '@cloudflare/workerd-linux-arm64': 1.20250829.0
+      '@cloudflare/workerd-windows-64': 1.20250829.0
+
+  wrangler@4.33.2:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
-      '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250816.0)
+      '@cloudflare/unenv-preset': 2.7.1(unenv@2.0.0-rc.19)(workerd@1.20250829.0)
       blake3-wasm: 2.1.5
       esbuild: 0.25.5
-      miniflare: 4.20250816.0
+      miniflare: 4.20250829.0
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.19
-      workerd: 1.20250816.0
+      workerd: 1.20250829.0
     optionalDependencies:
       fsevents: 2.3.3
     transitivePeerDependencies:
@@ -17831,11 +17927,11 @@ snapshots:
 
   zod@4.0.17: {}
 
-  zustand@4.5.7(@types/react@19.1.10)(react@19.1.1):
+  zustand@4.5.7(@types/react@19.1.12)(react@19.1.1):
     dependencies:
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.10
+      '@types/react': 19.1.12
       react: 19.1.1
 
   zwitch@2.0.4: {}
