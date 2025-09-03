@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises'
 import type { URI } from 'vscode-uri'
 import { defineConfig } from '../define-config'
 import { isLikeC4JsonConfig, isLikeC4NonJsonConfig } from '../filenames'
+import { logger } from '../logger'
 import { type LikeC4ProjectConfig, validateProjectConfig } from '../schema'
 
 /**
@@ -10,7 +11,7 @@ import { type LikeC4ProjectConfig, validateProjectConfig } from '../schema'
  * If filepath is a non-JSON file, it will be bundled and required
  */
 export async function loadConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
-  console.debug(`Loading config file: ${filepath.fsPath}`)
+  logger.debug`Loading config file: ${filepath.fsPath}`
   if (isLikeC4JsonConfig(filepath.fsPath)) {
     const content = await fs.readFile(filepath.fsPath, 'utf-8')
     return validateProjectConfig(content)
