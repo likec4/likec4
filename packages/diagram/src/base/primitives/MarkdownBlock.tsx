@@ -62,6 +62,7 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
       className={cx(
         markdownBlock({
           uselikec4palette,
+          value: value.isMarkdown ? 'markdown' : 'plaintext',
         }),
         className,
       )}

@@ -5,12 +5,10 @@ import { vstack } from '@likec4/styles/patterns'
 import {
   ScrollAreaAutosize,
 } from '@mantine/core'
-import { AnimatePresence } from 'motion/react'
-import * as m from 'motion/react-m'
 import { isNonNull, isTruthy } from 'remeda'
 import { MarkdownBlock } from '../../custom'
 import { useDiagramContext } from '../../hooks/useDiagram'
-import { stopPropagation } from '../../utils'
+import type { DiagramContext } from '../../state/types'
 
 const SectionHeader = styled('div', {
   base: {
@@ -22,76 +20,69 @@ const SectionHeader = styled('div', {
   },
 })
 
+function selectWalkthroughNotes(s: DiagramContext) {
+  const isActive = isNonNull(s.activeWalkthrough)
+  const activeStepIndex = isActive ? s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) : -1
+  return {
+    isActive,
+    isParallel: isActive && isTruthy(s.activeWalkthrough?.parallelPrefix),
+    hasNext: isActive && activeStepIndex < s.xyedges.length - 1,
+    hasPrevious: isActive && activeStepIndex > 0,
+    notes: isActive ? s.xyedges[activeStepIndex]?.data?.notes ?? RichText.EMPTY : null,
+  }
+}
+
 export const WalkthroughPanel = () => {
-  const {
-    notes,
-  } = useDiagramContext(s => {
-    const activeStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
-    return {
-      isActive: isNonNull(s.activeWalkthrough),
-      isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
-      hasNext: activeStepIndex < s.xyedges.length - 1,
-      hasPrevious: activeStepIndex > 0,
-      notes: s.xyedges[activeStepIndex]?.data?.notes ?? RichText.EMPTY,
-    }
-  })
+  const { notes } = useDiagramContext(selectWalkthroughNotes)
+
   if (!notes || notes.isEmpty) {
     return null
   }
 
   return (
-    <AnimatePresence>
-      <m.div
-        onPointerDownCapture={stopPropagation}
-        onClick={stopPropagation}
-        onDoubleClick={stopPropagation}
+    <styled.div position={'relative'}>
+      <ScrollAreaAutosize
+        className={cx(
+          'nowheel nopan nodrag',
+          vstack({
+            position: 'absolute',
+            layerStyle: 'likec4.dropdown',
+            gap: 'sm',
+            padding: 'md',
+            paddingTop: 'xxs',
+            pointerEvents: 'all',
+            maxWidth: 'calc(100cqw - 32px)',
+            minWidth: 'calc(100cqw - 50px)',
+            maxHeight: 'calc(100cqh - 100px)',
+            width: 'max-content',
+            cursor: 'default',
+            overflow: 'auto',
+            overscrollBehavior: 'contain',
+            '@/sm': {
+              minWidth: 400,
+              maxWidth: 550,
+            },
+            '@/lg': {
+              maxWidth: 700,
+            },
+          }),
+        )}
+        // miw={180}
+        // maw={450}
+        // mah={350}
+        type="scroll"
+        // mt={2}
       >
-        <ScrollAreaAutosize
-          className={cx(
-            'nowheel nopan nodrag',
-            vstack({
-              margin: 'xs',
-              layerStyle: 'likec4.dropdown',
-              position: 'absolute',
-              gap: 'md',
-              padding: 'md',
-              pointerEvents: 'all',
-              maxWidth: 'calc(100cqw - 32px)',
-              minWidth: 'calc(100cqw - 50px)',
-              maxHeight: 'calc(100cqh - 100px)',
-              width: 'max-content',
-              cursor: 'default',
-              overflow: 'auto',
-              overscrollBehavior: 'contain',
-              '@/sm': {
-                minWidth: 400,
-                maxWidth: 550,
-              },
-              '@/lg': {
-                maxWidth: 700,
-              },
-            }),
-          )}
-          miw={180}
-          maw={450}
-          mah={350}
-          type="scroll"
-          mx={'auto'}
-          mt={2}
-        >
-          <section>
-            <SectionHeader>Notes</SectionHeader>
-            <MarkdownBlock
-              value={notes}
-              fontSize="sm"
-              emptyText="No description"
-              className={css({
-                userSelect: 'all',
-              })}
-            />
-          </section>
-        </ScrollAreaAutosize>
-      </m.div>
-    </AnimatePresence>
+        <SectionHeader>Notes</SectionHeader>
+        <MarkdownBlock
+          value={notes}
+          fontSize="sm"
+          emptyText="No description"
+          className={css({
+            userSelect: 'all',
+          })}
+        />
+      </ScrollAreaAutosize>
+    </styled.div>
   )
 }
