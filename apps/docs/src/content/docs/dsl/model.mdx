@@ -295,6 +295,146 @@ model {
 }
 ```
 
+Here are more examples showing various mixed metadata patterns:
+
+```likec4 copy
+model {
+  // E-commerce application with mixed metadata types
+  frontend = application 'Frontend App' {
+    metadata {
+      framework 'React'
+      version '18.2.0'
+      features ['shopping-cart', 'user-auth', 'payment', 'search']
+      deployment_targets ['staging', 'production']
+      team_lead 'Alice Johnson'
+      developers ['Bob Smith', 'Carol Davis', 'David Wilson']
+      release_cycle 'weekly'
+      supported_browsers ['Chrome', 'Firefox', 'Safari', 'Edge']
+      accessibility_level 'WCAG 2.1 AA'
+      has_mobile_app true
+    }
+  }
+
+  // Database service with operational metadata
+  database = service 'PostgreSQL Cluster' {
+    metadata {
+      engine 'PostgreSQL'
+      version '15.3'
+      instances ['primary', 'replica-1', 'replica-2']
+      backup_schedule 'daily'
+      backup_retention_days '30'
+      monitoring_endpoints ['metrics', 'logs', 'traces']
+      alert_channels ['slack', 'email', 'pagerduty']
+      maintenance_window 'Sunday 2-4 AM UTC'
+      data_classification 'sensitive'
+      encryption_at_rest true
+    }
+  }
+
+  // Microservice with complex deployment metadata
+  payment = service 'Payment Service' {
+    metadata {
+      language 'Go'
+      version '2.1.4'
+      port '8080'
+      health_check_path '/health'
+      dependencies ['database', 'redis', 'external-payment-api']
+      environments ['dev', 'test', 'stage', 'prod']
+      scaling_policy 'auto'
+      min_replicas '2'
+      max_replicas '10'
+      circuit_breaker_enabled true
+      rate_limits ['1000/minute', '100/second']
+      compliance_standards ['PCI-DSS', 'SOC2']
+    }
+  }
+}
+```
+
+```likec4 copy
+model {
+  api = service 'API Gateway' {
+    metadata {
+      version '3.2.1'
+      maintainer 'Platform Team'
+      tags ['backend', 'gateway', 'microservice']
+      regions ['us-east-1', 'eu-west-1']
+      critical true
+    }
+  }
+}
+```
+
+Here are more examples showing various mixed metadata patterns:
+
+```likec4 copy
+model {
+  // E-commerce application with mixed metadata types
+  frontend = application 'Frontend App' {
+    metadata {
+      framework 'React'
+      version '18.2.0'
+      features ['shopping-cart', 'user-auth', 'payment', 'search']
+      deployment_targets ['staging', 'production']
+      team_lead 'Alice Johnson'
+      developers ['Bob Smith', 'Carol Davis', 'David Wilson']
+      release_cycle 'weekly'
+      supported_browsers ['Chrome', 'Firefox', 'Safari', 'Edge']
+      accessibility_level 'WCAG 2.1 AA'
+      has_mobile_app true
+    }
+  }
+
+  // Database service with operational metadata
+  database = service 'PostgreSQL Cluster' {
+    metadata {
+      engine 'PostgreSQL'
+      version '15.3'
+      instances ['primary', 'replica-1', 'replica-2']
+      backup_schedule 'daily'
+      backup_retention_days '30'
+      monitoring_endpoints ['metrics', 'logs', 'traces']
+      alert_channels ['slack', 'email', 'pagerduty']
+      maintenance_window 'Sunday 2-4 AM UTC'
+      data_classification 'sensitive'
+      encryption_at_rest true
+    }
+  }
+
+  // Microservice with complex deployment metadata
+  payment = service 'Payment Service' {
+    metadata {
+      language 'Go'
+      version '2.1.4'
+      port '8080'
+      health_check_path '/health'
+      dependencies ['database', 'redis', 'external-payment-api']
+      environments ['dev', 'test', 'stage', 'prod']
+      scaling_policy 'auto'
+      min_replicas '2'
+      max_replicas '10'
+      circuit_breaker_enabled true
+      rate_limits ['1000/minute', '100/second']
+      compliance_standards ['PCI-DSS', 'SOC2']
+    }
+  }
+}
+```
+
+```likec4 copy
+model {
+  api = service 'API Gateway' {
+    metadata {
+      version '3.2.1'
+      maintainer 'Platform Team'
+      tags ['backend', 'gateway', 'microservice']
+      regions ['us-east-1', 'eu-west-1']
+      critical true
+    }
+  }
+}
+```
+
 ```likec4 copy
 model {
   api = service 'API Gateway' {
