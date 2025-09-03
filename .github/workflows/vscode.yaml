@@ -2,7 +2,8 @@ name: vscode
 
 on:
   workflow_call:
-  workflow_dispatch:
+  # workflow_dispatch:
+
 permissions:
   actions: write
   contents: read
@@ -38,20 +39,20 @@ jobs:
       - name: 📦 upload vsix
         uses: actions/upload-artifact@v4
         with:
-          name: vscode-extension-vsix
+          name: likec4-vscode-extension.vsix
           if-no-files-found: error
           path: packages/vscode/likec4.vsix
 
-      # - name: publish vsce
-      #   run: |
-      #     pnpx vsce publish --skip-duplicate
-      #   working-directory: packages/vscode
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: 🚀 publish vsce
+        run: |
+          pnpx @vscode/vsce publish --skip-duplicate --packagePath likec4.vsix
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
-      # - name: publish open vsx
-      #   run: |
-      #     npx ovsx publish --skip-duplicate likec4.vsix
-      #   working-directory: packages/vscode
-      #   env:
-      #     OVSX_PAT: ${{ secrets.VSX_PAT }}
+      - name: 🚀 publish open vsx
+        run: |
+          npx ovsx publish --skip-duplicate likec4.vsix
+        working-directory: packages/vscode
+        env:
+          OVSX_PAT: ${{ secrets.VSX_PAT }}

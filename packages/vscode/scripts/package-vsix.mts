@@ -1,7 +1,6 @@
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { isCI } from 'std-env'
 import { $, cd } from 'zx'
 
 $.verbose = true
@@ -45,11 +44,11 @@ const cwd = process.cwd()
 await cd(outdir)
 await writeFile('package.json', JSON.stringify(packageJson, null, 2))
 await $`npm install`
-await $`npx vsce package --out likec4.vsix`
+await $`npx @vscode/vsce package --out likec4.vsix`
 
 const outvsix = join(cwd, 'likec4.vsix')
 await cp('likec4.vsix', outvsix)
 
-console.log(`${isCI ? '::info::' : ' '}📦 VSIX file created: ${outvsix}`)
+console.log(` 📦 VSIX file created: ${outvsix}`)
 
 await rm(outdir, { recursive: true }).catch(() => {})
