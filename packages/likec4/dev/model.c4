@@ -25,6 +25,23 @@ model {
           multiline
           value
         '
+        attr3 'value 3.1'
+        attr3 ['value 3.2', 'value 3.3']
+        attr3 'value 3.4'
+
+        attr4 'demo'
+        attr4 ['
+        multiline test
+        ']
+
+        attr4 'another value'
+
+        attr4 ['
+        another
+         ↗️ multiline
+            ↘️ test
+        ', 'a list example?']
+
       }
       style {
         shape browser
