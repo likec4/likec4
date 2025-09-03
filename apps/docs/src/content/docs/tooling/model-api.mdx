@@ -156,6 +156,30 @@ model
 
 const diagram = await likec4.layoutedModel().view('index')
 
+// Working with metadata (including array values)
+const element = model.element('cloud.backend.api')
+
+// Get all metadata
+const allMetadata = element.getMetadata()
+console.log(allMetadata)
+// Output: { version: '3.2.1', tags: ['backend', 'gateway'], regions: ['us-east-1', 'eu-west-1'] }
+
+// Get specific metadata field (could be string or string[])
+const tags = element.getMetadata('tags')
+if (Array.isArray(tags)) {
+  console.log(`Element has ${tags.length} tags: ${tags.join(', ')}`)
+} else if (tags) {
+  console.log(`Element has single tag: ${tags}`)
+}
+
+// Filter elements by array metadata values
+const elementsWithBackendTag = model.elements().filter(el => {
+  const tags = el.getMetadata('tags')
+  return Array.isArray(tags) 
+    ? tags.includes('backend')
+    : tags === 'backend'
+})
+
 ```  
 
 ### LikeC4Model
@@ -241,6 +265,122 @@ interface LikeC4Model {
 ```
 
 Check sources for methods - [LikeC4Model](https://github.com/likec4/likec4/blob/main/packages/core/src/model/LikeC4Model.ts)
+
+### Working with Element Metadata
+
+Elements can have metadata with both single string values and string arrays. The API provides convenient methods to access and work with this metadata:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element service
+    element application
+  }
+  model {
+    api = service 'API Gateway' {
+      metadata {
+        version '3.2.1'
+        maintainer 'Platform Team'
+        tags ['backend', 'gateway', 'microservice']
+        regions ['us-east-1', 'eu-west-1']
+        critical true
+      }
+    }
+    
+    frontend = application 'Frontend' {
+      metadata {
+        framework 'React'
+        features ['auth', 'dashboard', 'reports']
+        team_members ['alice', 'bob', 'carol']
+        release_branch 'main'
+      }
+    }
+  }
+`)
+
+const model = likec4.computedModel()
+
+// Get element and access metadata
+const api = model.element('api')
+
+// Check if element has any metadata
+if (api.hasMetadata()) {
+  console.log('API has metadata')
+  
+  // Get all metadata as an object
+  const metadata = api.getMetadata()
+  console.log('All metadata:', metadata)
+  
+  // Get specific metadata fields
+  const version = api.getMetadata('version')        // string: '3.2.1'
+  const tags = api.getMetadata('tags')              // string[]: ['backend', 'gateway', 'microservice']
+  const regions = api.getMetadata('regions')        // string[]: ['us-east-1', 'eu-west-1']
+  
+  // Handle array metadata values
+  if (Array.isArray(tags)) {
+    console.log(`API has ${tags.length} tags:`)
+    tags.forEach(tag => console.log(`  - ${tag}`))
+    
+    // Check if specific value exists in array
+    if (tags.includes('backend')) {
+      console.log('API is tagged as backend service')
+    }
+  }
+  
+  // Handle mixed metadata types
+  const handleMetadataValue = (key: string, value: string | string[] | undefined) => {
+    if (Array.isArray(value)) {
+      return `${key}: [${value.join(', ')}]`
+    } else if (value) {
+      return `${key}: ${value}`
+    }
+    return `${key}: undefined`
+  }
+  
+  console.log(handleMetadataValue('version', version))
+  console.log(handleMetadataValue('tags', tags))
+  console.log(handleMetadataValue('regions', regions))
+}
+
+// Advanced filtering using metadata
+const backendServices = model.elements()
+  .filter(element => {
+    const tags = element.getMetadata('tags')
+    return Array.isArray(tags) ? tags.includes('backend') : tags === 'backend'
+  })
+
+const multiRegionServices = model.elements()
+  .filter(element => {
+    const regions = element.getMetadata('regions')
+    return Array.isArray(regions) && regions.length > 1
+  })
+
+// Group elements by metadata values
+const elementsByFramework = new Map<string, typeof model.elements>()
+for (const element of model.elements()) {
+  const framework = element.getMetadata('framework')
+  if (typeof framework === 'string') {
+    if (!elementsByFramework.has(framework)) {
+      elementsByFramework.set(framework, [])
+    }
+    elementsByFramework.get(framework)!.push(element)
+  }
+}
+
+// Collect all unique tags from all elements
+const allTags = new Set<string>()
+for (const element of model.elements()) {
+  const tags = element.getMetadata('tags')
+  if (Array.isArray(tags)) {
+    tags.forEach(tag => allTags.add(tag))
+  } else if (typeof tags === 'string') {
+    allTags.add(tags)
+  }
+}
+console.log('All unique tags:', Array.from(allTags).sort())
+```
 
 ### LikeC4DeploymentModel
 
