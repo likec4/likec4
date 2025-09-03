@@ -54,6 +54,10 @@ Method also accepts options:
 | `watch`          | Whether to watch for changes in the workspace. (default `false`)  |
 | `mcp`            | Whether to start MCP server.<br/> - `false` - do not start MCP server (default) <br/> - `"stdio"` - use stdio transport,<br/> -  `{"port": number}` - use http transport on specified port |
 
+:::tip
+Take a look at [Validate your model](/guides/validate-your-model) for examples of how to enforce custom rules on your model with the LikeC4 AP
+:::
+
 ### From source
 
 Parse from the string:
@@ -80,7 +84,7 @@ const likec4 = await LikeC4.fromSource(`
 
 ### Dispose
 
-If you initialized LikeC4 with watch mode or enabled MCP server, you should dispose it:
+If you initialized LikeC4 with `watch` mode or enabled MCP server, you should dispose it:
 
 ```ts
 import { LikeC4 } from 'likec4'
@@ -94,6 +98,21 @@ const likec4 = await LikeC4.fromWorkspace('/path/to/workspace', {
 await likec4.dispose()
 ```
 
+LikeC4 is automatically disposed with `await using` declaration:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+async function() {
+  await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace', {
+    watch: true,
+    mcp: { port: 33335 },
+  })
+
+  // ...
+  // likec4 is disposed automatically
+}
+```
 
 ## API
 

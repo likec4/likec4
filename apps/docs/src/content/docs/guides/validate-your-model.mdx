@@ -1,0 +1,149 @@
+---
+title: Enforce and validate your model
+description: How to enforce custom rules on your LikeC4 model or validate its consistency
+sidebar: 
+  label: Validate your model
+  order: 1
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+Sometimes you may want to enforce custom rules on your model or validate its consistency.  
+Here's a simple recipe for how to do that.
+
+## Test your model
+
+In this example we'll use [Vitest](https://vitest.dev) together with the [LikeC4 API](/tooling/model-api/).  
+The LikeC4 API gives you methods to query and traverse the model - perfect for writing tests that enforce your rules.
+
+<PackageManagers
+  pkg="likec4 vitest"
+  pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+  frame="none"
+/>
+
+### Example
+
+Suppose we want to enforce that every element of kind `app` has a `technology` specified.
+
+```ts
+// test/metadata.spec.ts
+import { LikeC4 } from './LikeC4'
+import { test } from 'vitest'
+
+// Initialize and compute LikeC4 Model
+const likec4 = await LikeC4.fromWorkspace('..')
+const model = likec4.computedModel()
+
+// With `test.for` we generate tests for each element of kind `app`
+// This improves the output, showing each test failure separately
+test.for(
+  model
+    // Select elements of kind `app`
+    .elementsWhere({ kind: 'app' })
+    // Map to array of [id, element] tuples, we need it for test names
+    .map(e => [e.id, e] as const)
+    .toArray(),
+)('app "%s" has technology', ([, e], { expect }) => {
+  expect(e.technology).toBeTruthy()
+})
+
+// Or we can use `expect.soft` to accumulate all errors
+test('elements of kind `app` have technology', ({ expect }) => {
+  expect.hasAssertions()
+  for (const app of model.elements()) {
+    if (app.kind !== 'app') continue // Skip non-app elements
+    expect.soft(app.technology, `app ${app.id} has no technology`).toBeTruthy()
+  }
+})
+```
+
+:::note
+Calls to `LikeC4.fromWorkspace('..')` are memoized (by absolute path).  
+You can call it multiple times without performance impact - for example in `beforeEach`.
+
+You can also use Vitest's [`provide`](https://vitest.dev/advanced/api/vitest.html#provide) function to reuse the same workspace path.
+:::
+
+
+## Pre-generate model
+
+We can optimize our tests by pre-generating the model in [global setup](https://vitest.dev/config/#globalsetup):
+
+```ts
+// global-setup.ts
+import { spawn } from 'node:child_process'
+
+export default async function() {
+  await spawn('likec4', [
+    'gen',
+    'model',
+    '--output',
+    './test/likec4-model.ts',
+    './src'
+  ])
+
+  return async () => {
+  }
+}
+```
+
+The generated model is fully typed, giving us type checking and autocompletion in tests:
+
+```ts
+// test/metadata.spec.ts
+import { likec4model } from './likec4-model'
+import { test } from 'vitest'
+
+test('Relationships should have metadata', ({ expect }) => {
+  expect.hasAssertions()
+  for (const r of likec4model.relationships()) {
+    expect.soft(
+      r.getMetadata('key'), // here we get type checking 
+      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
+    ).toBeDefined()
+  }
+})
+```
+
+We can go further and use [test context](https://vitest.dev/api/#test-context) to improve our experience:
+
+```ts
+// test/likec4test.ts
+import { likec4model } from './likec4-model'
+import { test } from 'vitest'
+
+interface LikeC4TestFixtures {
+  likec4: typeof likec4model
+}
+
+// This wil be our test function with the model in the context
+export const likec4test = test.extend<LikeC4TestFixtures>({
+  likec4: async ({}, use) => {
+    await use(likec4model)
+  },
+})
+```
+
+Now refactor tests to use it:
+
+```ts
+// test/metadata.spec.ts
+import { likec4test } from './likec4test'
+
+likec4test('Relationships should have metadata', ({ expect, likec4 }) => {
+  expect.hasAssertions()
+  for (const r of likec4.relationships()) {
+    expect.soft(
+      r.getMetadata('key'), // here we get type checking 
+      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
+    ).toBeDefined()
+  }
+})
+```
+
+## Conclusion
+
+This approach makes it easy to enforce custom constraints and validate your model directly in tests.  
+Running these checks in your CI pipeline is fast, type-safe, and provides immediate feedback when the model breaks your rules.
