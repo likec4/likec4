@@ -1308,6 +1308,9 @@ importers:
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
+      bundle-n-require:
+        specifier: catalog:utils
+        version: 1.1.2
       esbuild:
         specifier: 0.25.5
         version: 0.25.5
