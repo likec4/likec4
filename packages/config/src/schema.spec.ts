@@ -1,10 +1,9 @@
-import * as v from 'valibot'
-import { describe, expect, it } from 'vitest'
-import { ImageAliasesSchema, validateImageAliases } from '../config/imageAliasSchema'
-import { parseConfigJson, ProjectConfig, validateConfig } from '../config/schema'
+import { describe, it } from 'vitest'
+import { validateProjectConfig as validateConfig } from './schema'
+import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 
 describe('ProjectConfig schema', () => {
-  describe('validateConfig', () => {
+  describe('validateProjectConfig', () => {
     describe('name field', () => {
       it('should accept valid project names', ({ expect }) => {
         const validConfigs = [
@@ -26,24 +25,24 @@ describe('ProjectConfig schema', () => {
       })
 
       it('should reject name "default"', ({ expect }) => {
-        expect(() => validateConfig({ name: 'default' })).toThrow('Project name cannot be "default"')
+        expect(() => validateConfig({ name: 'default' })).toThrow(/Project name cannot be \"default\"/)
       })
 
       it('should reject names containing dots', ({ expect }) => {
         expect(() => validateConfig({ name: 'my.project' })).toThrow(
-          'Project name cannot contain ".", try to use A-z, 0-9, _ and -',
+          /Project name cannot contain "\.", "@" or "#", try to use A-z, 0-9, _ and -/,
         )
       })
 
       it('should reject names containing @ symbol', ({ expect }) => {
         expect(() => validateConfig({ name: 'my@project' })).toThrow(
-          'Project name cannot contain "@", try to use A-z, 0-9, _ and -',
+          /Project name cannot contain "\.", "@" or "#", try to use A-z, 0-9, _ and -/,
         )
       })
 
       it('should reject names containing # symbol', ({ expect }) => {
         expect(() => validateConfig({ name: 'my#project' })).toThrow(
-          'Project name cannot contain "#", try to use A-z, 0-9, _ and -',
+          /Project name cannot contain "\.", "@" or "#", try to use A-z, 0-9, _ and -/,
         )
       })
 
@@ -180,9 +179,7 @@ describe('ProjectConfig schema', () => {
         }
       })
     })
-  })
 
-  describe('parseConfigJson', () => {
     it('should parse valid JSON5 config', ({ expect }) => {
       const json5Config = `{
         name: "test-project",
@@ -193,7 +190,7 @@ describe('ProjectConfig schema', () => {
         }
       }`
 
-      const result = parseConfigJson(json5Config)
+      const result = validateConfig(json5Config)
       expect(result.name).toBe('test-project')
       expect(result.title).toBe('Test Project')
       expect(result.imageAliases).toEqual({ '@icons': './images' })
@@ -201,12 +198,12 @@ describe('ProjectConfig schema', () => {
 
     it('should throw on invalid JSON5', ({ expect }) => {
       const invalidJson = '{ name: "test", invalid syntax }'
-      expect(() => parseConfigJson(invalidJson)).toThrow()
+      expect(() => validateConfig(invalidJson)).toThrow()
     })
 
     it('should throw on valid JSON5 but invalid schema', ({ expect }) => {
       const invalidConfig = '{ name: "default" }' // 'default' is not allowed
-      expect(() => parseConfigJson(invalidConfig)).toThrow('Project name cannot be "default"')
+      expect(() => validateConfig(invalidConfig)).toThrow('Project name cannot be "default"')
     })
   })
 
@@ -222,14 +219,14 @@ describe('ProjectConfig schema', () => {
           '@test-alias': 'some/path',
         }
 
-        expect(() => v.parse(ImageAliasesSchema, validAliases)).not.toThrow()
-        const result = v.parse(ImageAliasesSchema, validAliases)
+        expect(() => ImageAliasesSchema.parse(validAliases)).not.toThrow()
+        const result = ImageAliasesSchema.parse(validAliases)
         expect(result).toEqual(validAliases)
       })
 
       it('should reject empty values', ({ expect }) => {
         const aliasesWithEmptyValue = { '@icons': '' }
-        expect(() => v.parse(ImageAliasesSchema, aliasesWithEmptyValue)).toThrow(
+        expect(() => ImageAliasesSchema.parse(aliasesWithEmptyValue)).toThrow(
           'Image alias value cannot be empty',
         )
       })
@@ -242,7 +239,10 @@ describe('ProjectConfig schema', () => {
         ]
 
         for (const aliases of absolutePaths) {
-          expect(() => v.parse(ImageAliasesSchema, aliases), `Should reject ${Object.values(aliases)[0]}`).toThrow(
+          expect(
+            () => ImageAliasesSchema.parse(aliases),
+            `Should reject ${Object.values(aliases)[0]}`,
+          ).toThrow(
             'Image alias value must be a relative path (no leading slash or protocol)',
           )
         }
@@ -257,7 +257,7 @@ describe('ProjectConfig schema', () => {
         ]
 
         for (const aliases of urlPaths) {
-          expect(() => v.parse(ImageAliasesSchema, aliases), `Should reject ${Object.values(aliases)[0]}`).toThrow(
+          expect(() => ImageAliasesSchema.parse(aliases), `Should reject ${Object.values(aliases)[0]}`).toThrow(
             'Image alias value must be a relative path (no leading slash or protocol)',
           )
         }
@@ -274,8 +274,8 @@ describe('ProjectConfig schema', () => {
         ]
 
         for (const aliases of relativePaths) {
-          expect(() => v.parse(ImageAliasesSchema, aliases), `Should accept ${Object.values(aliases)[0]}`).not.toThrow()
-          const result = v.parse(ImageAliasesSchema, aliases)
+          expect(() => ImageAliasesSchema.parse(aliases), `Should accept ${Object.values(aliases)[0]}`).not.toThrow()
+          const result = ImageAliasesSchema.parse(aliases)
           expect(result).toEqual(aliases)
         }
       })

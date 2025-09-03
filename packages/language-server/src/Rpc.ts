@@ -2,6 +2,7 @@ import { filter, flatMap, funnel, indexBy, keys, map, mapValues, pipe, sort } fr
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
+import { serializableLikeC4ProjectConfig } from '@likec4/config'
 import {
   type ComputedLikeC4ModelData,
   type DiagramView,
@@ -130,7 +131,7 @@ export class Rpc extends ADisposable {
             } = projects.getProject(projectId as ProjectId)
             return {
               folder: folderUri.toString(),
-              config,
+              config: serializableLikeC4ProjectConfig(config),
               docs: map(docs, d => d.uri.toString()),
             }
           }),

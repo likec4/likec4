@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { type MarkdownOrString, GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
-import type { AstNode, URI } from 'langium'
+import type { AstNode } from 'langium'
 import {
   filter,
   flatMap,
@@ -27,12 +27,12 @@ import {
   parseMarkdownAsString,
   toColor,
 } from '../../ast'
-import type { ProjectConfig } from '../../config'
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
+import type { Project } from '../../workspace/ProjectsManager'
 
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
@@ -106,11 +106,7 @@ export class BaseParser {
     this.isValid = checksFromDiagnostics(doc).isValid
   }
 
-  get project(): {
-    id: c4.ProjectId
-    folderUri: URI
-    config: Readonly<ProjectConfig>
-  } {
+  get project(): Project {
     return this.services.shared.workspace.ProjectsManager.getProject(this.doc)
   }
 

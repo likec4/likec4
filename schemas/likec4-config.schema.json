@@ -1,37 +1,41 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "LikeC4 project configuration",
   "type": "object",
   "properties": {
     "name": {
+      "description": "Project name, must be unique in the workspace",
       "type": "string",
-      "minLength": 1,
-      "description": "Project name, must be unique in the workspace"
+      "minLength": 1
     },
     "title": {
+      "description": "A human readable title for the project",
       "type": "string",
-      "minLength": 1,
-      "description": "A human readable title for the project"
+      "minLength": 1
     },
     "contactPerson": {
+      "description": "A person who has been involved in creating or maintaining this project",
       "type": "string",
-      "minLength": 1,
-      "description": "A person who has been involved in creating or maintaining this project"
+      "minLength": 1
+    },
+    "imageAliases": {
+      "description": "Map of image alias prefixes to relative paths (keys must match /^@\\w+$/; values must be relative paths without protocol or leading slash).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
+      }
     },
     "exclude": {
+      "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]",
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]"
-    },
-    "imageAliases": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string",
-        "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$",
-        "minLength": 1
-      },
-      "description": "Map of image alias prefixes to relative paths (keys must match /^@[A-Za-z0-9_-]*$/; values must be relative paths without protocol or leading slash)."
+      }
     }
   },
   "required": [

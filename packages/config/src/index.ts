@@ -6,7 +6,7 @@ export type {
   LikeC4ProjectJsonConfig,
 } from './schema'
 
-export { validateProjectConfig } from './schema'
+export { serializableLikeC4ProjectConfig, validateProjectConfig } from './schema'
 
 export {
   ConfigFilenames,

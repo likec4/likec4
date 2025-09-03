@@ -1,4 +1,4 @@
-import * as v from 'valibot'
+import * as z from 'zod'
 
 // Key must be prefixed with "@" and contain only allowed characters
 const IMAGE_ALIAS_KEY_REGEX = /^@[A-Za-z0-9_-]*$/
@@ -6,29 +6,26 @@ const IMAGE_ALIAS_KEY_REGEX = /^@[A-Za-z0-9_-]*$/
 const IMAGE_ALIAS_VALUE_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
 
 // Schema for an image alias value: must be a non-empty string representing a relative path (no leading slash, drive letter, or protocol).
-const ImageAliasValue = v.pipe(
-  v.string(),
-  v.regex(
+const ImageAliasValue = z
+  .string()
+  .nonempty('Image alias value cannot be empty')
+  .regex(
     IMAGE_ALIAS_VALUE_REGEX,
     'Image alias value must be a relative path (no leading slash or protocol)',
-  ),
-  v.nonEmpty('Image alias value cannot be empty'),
-)
+  )
 
-export const ImageAliasesSchema = v.pipe(
-  v.record(
-    v.string(), // PLAIN key schema - valibot JSON schema export-safe.
-    ImageAliasValue,
-  ),
-  v.description(
-    'Map of image alias prefixes to relative paths (keys must match /^@[A-Za-z0-9_-]*$/; values must be relative paths without protocol or leading slash).',
-  ),
-)
+export const ImageAliasesSchema = z.record(
+  z.string(), // PLAIN key schema - valibot JSON schema export-safe.
+  ImageAliasValue,
+).meta({
+  description:
+    'Map of image alias prefixes to relative paths (keys must match /^@\\w+$/; values must be relative paths without protocol or leading slash).',
+})
 
 // This just allows us to have a typed validate function.
-type ImageAliasConfig = v.InferOutput<typeof ImageAliasesSchema>
+type LikeC4ImageAliasConfig = z.infer<typeof ImageAliasesSchema>
 
-export function validateImageAliases(imageAliases?: ImageAliasConfig) {
+export function validateImageAliases(imageAliases?: LikeC4ImageAliasConfig) {
   const invalidKeys: string[] = []
   const invalidValues: string[] = []
 

@@ -1,3 +1,4 @@
+import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type {
   ComputedLikeC4ModelData,
   ComputedView,
@@ -13,7 +14,6 @@ import type {
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
-import type { ProjectConfig } from './config'
 
 export namespace DidChangeModelNotification {
   export const type = new NotificationType<string>('likec4/onDidChangeModel')
@@ -168,7 +168,7 @@ export namespace FetchProjects {
     projects: {
       [projectId: ProjectId]: {
         folder: URI
-        config: ProjectConfig
+        config: LikeC4ProjectJsonConfig
         docs: NonEmptyArray<DocumentUri>
       }
     }
@@ -184,7 +184,7 @@ export namespace FetchProjects {
 export namespace RegisterProject {
   export type Params = {
     folderUri: URI
-    config: ProjectConfig
+    config: LikeC4ProjectJsonConfig
   }
 
   export type Res = {

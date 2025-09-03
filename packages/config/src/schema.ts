@@ -14,6 +14,7 @@ import JSON5 from 'json5'
 import type Stream from 'node:stream'
 import type { URI } from 'vscode-uri'
 import * as z from 'zod'
+import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
@@ -36,6 +37,8 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .nonempty('Contact person cannot be empty if specified')
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
+  imageAliases: ImageAliasesSchema
+    .optional(),
   exclude: z.array(z.string())
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
@@ -199,7 +202,25 @@ export type LikeC4ProjectConfig = z.input<typeof LikeC4ProjectJsonConfigSchema> 
 export function validateProjectConfig<C extends string | Record<string, unknown>>(
   config: C,
 ): LikeC4ProjectConfig {
-  return LikeC4ProjectConfigSchema.parse(
+  const parsed = LikeC4ProjectConfigSchema.safeParse(
     typeof config === 'string' ? JSON5.parse(config) : config,
-  ) as unknown as LikeC4ProjectConfig
+  )
+  if (!parsed.success) {
+    throw new Error('Config validation failed:\n' + z.prettifyError(parsed.error))
+  }
+  // TODO: rewrite with zod refine
+  if (parsed.data.imageAliases) {
+    validateImageAliases(parsed.data.imageAliases)
+  }
+  return parsed.data as unknown as LikeC4ProjectConfig
+}
+
+/**
+ * Converts a LikeC4ProjectConfig object into a LikeC4ProjectJsonConfig object.
+ * Omit generators property (as it is not serializable)
+ */
+export function serializableLikeC4ProjectConfig(
+  { generators, ...config }: LikeC4ProjectConfig,
+): LikeC4ProjectJsonConfig {
+  return LikeC4ProjectJsonConfigSchema.parse(config) as unknown as LikeC4ProjectJsonConfig
 }

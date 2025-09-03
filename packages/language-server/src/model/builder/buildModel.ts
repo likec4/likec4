@@ -13,7 +13,7 @@ import {
   parentFqn,
   sortByFqnHierarchically,
 } from '@likec4/core/utils'
-import type { LangiumDocument, URI } from 'langium'
+import type { LangiumDocument } from 'langium'
 import {
   filter,
   flatMap,
@@ -33,9 +33,9 @@ import type {
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
-import type { ProjectConfig } from '../../config'
 import { logger } from '../../logger'
 import { resolveRelativePaths } from '../../view-utils'
+import type { Project } from '../../workspace/ProjectsManager'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
@@ -52,11 +52,7 @@ export type BuildModelData = {
  * and globals, and applying the extends to the elements.
  */
 export function buildModelData(
-  project: {
-    id: c4.ProjectId
-    folderUri: URI
-    config: Readonly<ProjectConfig>
-  },
+  project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
   const c4Specification = new MergedSpecification(docs)

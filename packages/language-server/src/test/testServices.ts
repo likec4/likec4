@@ -1,3 +1,4 @@
+import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
 import { DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
@@ -7,13 +8,12 @@ import type { LiteralUnion } from 'type-fest'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
-import type { ProjectConfig } from '../config'
 import { NoopFileSystem } from '../filesystem'
 import { createLanguageServices } from '../module'
 
 export function createTestServices(options?: {
   workspace?: string
-  projectConfig?: Partial<ProjectConfig>
+  projectConfig?: Partial<LikeC4ProjectJsonConfig>
 }) {
   const workspace = options?.workspace ?? 'file:///test/workspace'
   const projectConfig = options?.projectConfig
