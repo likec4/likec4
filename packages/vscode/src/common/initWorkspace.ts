@@ -60,7 +60,7 @@ async function findSources(rpc: Rpc) {
   for (const uri of projects) {
     try {
       const cfgUri = c2pConverter.asUri(uri)
-      logger.info`register project ${cfgUri}`
+      logger.info`read project config ${cfgUri}`
       const bytes = await vscode.workspace.fs.readFile(uri)
       const decoder = new TextDecoder()
       const config = validateProjectConfig(decoder.decode(bytes))
