@@ -23,6 +23,7 @@
       "args": [
         "--disable-updates",
         "--disable-workspace-trust",
+        "--disable-extensions",
         "--skip-release-notes",
         "--skip-welcome",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",

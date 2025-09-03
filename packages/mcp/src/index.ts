@@ -18,6 +18,14 @@ configureLogger({
   },
 })
 
+process.on('uncaughtException', (err) => {
+  logger.error('uncaughtException', { err })
+})
+
+process.on('unhandledRejection', (err) => {
+  logger.error('unhandledRejection', { err })
+})
+
 async function main() {
   logger.info`Loading LikeC4 from workspace: ${LIKEC4_WORKSPACE}`
 
