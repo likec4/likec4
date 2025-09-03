@@ -30,20 +30,10 @@ jobs:
         run: |
           pnpm turbo run build
 
-      - name: ⚙️ update package.json
-        working-directory: packages/vscode
-        run: |
-          pnpm tsx scripts/update-package-json.mts
-
-      - name: ⚙️ clean node_modules
-        working-directory: packages/vscode
-        run: |
-          rm -rf node_modules
-
       - name: 📦 package vsix
         working-directory: packages/vscode
         run: |
-          pnpx vsce package --out likec4.vsix
+          pnpm package-vsix
 
       - name: 📦 upload vsix
         uses: actions/upload-artifact@v4
