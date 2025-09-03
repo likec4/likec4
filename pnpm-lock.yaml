@@ -705,6 +705,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       bundle-n-require:
         specifier: catalog:utils
         version: 1.1.2
@@ -1676,6 +1679,9 @@ importers:
 
   packages/vscode:
     dependencies:
+      bundle-n-require:
+        specifier: catalog:utils
+        version: 1.1.2
       esbuild:
         specifier: 0.25.5
         version: 0.25.5
@@ -1719,9 +1725,6 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^1.0.0
         version: 1.0.0(tslib@2.8.1)
-      consola:
-        specifier: catalog:utils
-        version: 3.4.2
       esbuild-plugins-node-modules-polyfill:
         specifier: catalog:esbuild
         version: 1.7.1(esbuild@0.25.5)
@@ -1800,6 +1803,9 @@ importers:
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
+      zx:
+        specifier: lite
+        version: 8.8.1-lite
 
   packages/vscode-preview:
     devDependencies:
@@ -8996,6 +9002,10 @@ packages:
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
+
+  zx@8.8.1-lite:
+    resolution: {integrity: sha512-VZoD1Z60JSTW+dDPAF4WxP78whYYSo5G9gZIKHPisk9Jz05Gaa6GgqpgeR9YNquYP5Kw/IwrqTsAVE9f9Q4HRA==}
+    engines: {node: '>= 12.17.0'}
 
 snapshots:
 
@@ -17829,3 +17839,5 @@ snapshots:
       react: 19.1.1
 
   zwitch@2.0.4: {}
+
+  zx@8.8.1-lite: {}

@@ -23,10 +23,9 @@
     "email": "denis@davydkov.com"
   },
   "vsce": {
-    "dependencies": false
+    "dependencies": true
   },
   "scripts": {
-    "vscode:prepublish": "tsx --conditions=sources scripts/prepublish.mts",
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc -b --verbose",
@@ -268,6 +267,7 @@
     }
   },
   "dependencies": {
+    "bundle-n-require": "catalog:utils",
     "esbuild": "catalog:esbuild"
   },
   "devDependencies": {
@@ -284,8 +284,6 @@
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^1.0.0",
-    "consola": "catalog:utils",
-    "esbuild": "catalog:esbuild",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
@@ -311,6 +309,7 @@
     "vscode-messenger-common": "^0.5.1",
     "ufo": "catalog:utils",
     "playwright": "catalog:",
-    "vscode-uri": "catalog:vscode"
+    "vscode-uri": "catalog:vscode",
+    "zx": "lite"
   }
 }

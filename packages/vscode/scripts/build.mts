@@ -1,5 +1,4 @@
 import schema from '@likec4/config/schema.json' assert { type: 'json' }
-import { consola } from 'consola'
 import { type BuildOptions, analyzeMetafileSync, build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -10,14 +9,14 @@ import { resolve } from 'node:path'
 
 const isDev = !isProduction
 if (isDev) {
-  consola.warn('VSCODE DEVELOPMENT BUILD')
+  console.warn('VSCODE DEVELOPMENT BUILD')
 }
 
 function emptyDir(dir: string) {
   if (!existsSync(dir)) {
     return
   }
-  consola.info('Cleaning: %s', dir)
+  console.info('Cleaning: %s', dir)
   for (const file of readdirSync(dir)) {
     rmSync(resolve(dir, file), { recursive: true, force: true })
   }
@@ -25,10 +24,10 @@ function emptyDir(dir: string) {
 
 const vscodePreview = resolve('../vscode-preview/dist/')
 if (!existsSync(vscodePreview)) {
-  consola.error(`"${vscodePreview}" not found`)
+  console.error(`"${vscodePreview}" not found`)
   process.exit(1)
 }
-consola.info('Copy vscode preview')
+console.info('Copy vscode preview')
 
 emptyDir('dist')
 await mkdir('dist/preview', { recursive: true })
@@ -47,7 +46,7 @@ await writeFile(
   ),
 )
 
-consola.start('Build vscode extension')
+console.info('Build vscode extension...')
 
 const base = {
   metafile: isDev,
@@ -57,7 +56,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: ['vscode', 'esbuild'],
+  external: ['vscode', 'esbuild', 'bundle-n-require'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -81,6 +80,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node20',
+  external: ['vscode', 'esbuild', 'bundle-n-require'],
   platform: 'node',
   conditions: ['node', 'sources', 'import'],
 }, {
@@ -90,6 +90,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node20',
+  external: ['vscode', 'esbuild', 'bundle-n-require'],
   platform: 'node',
   conditions: ['node', 'sources', 'import'],
 })
@@ -128,19 +129,19 @@ bundles.forEach(({ errors, warnings, metafile }) => {
     if (out) {
       const metafilepath = resolve(out + '.metafile.json')
       writeFileSync(metafilepath, JSON.stringify(metafile))
-      consola.debug(metafilepath)
+      console.debug(metafilepath)
     }
   }
   if (errors.length) {
     hasErrors = true
-    consola.error(formatMessagesSync(errors, {
+    console.error(formatMessagesSync(errors, {
       kind: 'error',
       color: true,
       terminalWidth: process.stdout.columns,
     }))
   }
   if (warnings.length) {
-    consola.warn(formatMessagesSync(warnings, {
+    console.warn(formatMessagesSync(warnings, {
       kind: 'warning',
       color: true,
       terminalWidth: process.stdout.columns,
@@ -149,6 +150,6 @@ bundles.forEach(({ errors, warnings, metafile }) => {
 })
 
 if (hasErrors) {
-  consola.error('⛔️ Build failed')
+  console.error('⛔️ Build failed')
   process.exit(1)
 }

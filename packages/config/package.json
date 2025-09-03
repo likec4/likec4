@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "bundle-n-require": "catalog:utils",
     "defu": "catalog:utils",
     "json5": "catalog:utils",
