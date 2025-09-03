@@ -210,18 +210,9 @@ describe.concurrent('ProjectsManager', () => {
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [ZodError: [
-          {
-            "origin": "string",
-            "code": "too_small",
-            "minimum": 1,
-            "inclusive": true,
-            "path": [
-              "name"
-            ],
-            "message": "Project name cannot be empty"
-          }
-        ]]
+        [Error: Config validation failed:
+        ✖ Project name cannot be empty
+          → at name]
       `,
       )
     })
@@ -238,29 +229,17 @@ describe.concurrent('ProjectsManager', () => {
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [ZodError: [
-          {
-            "code": "custom",
-            "path": [
-              "name"
-            ],
-            "message": "Project name cannot be \\"default\\""
-          }
-        ]]
+        [Error: Config validation failed:
+        ✖ Project name cannot be "default"
+          → at name]
       `,
       )
       await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
         .toThrowErrorMatchingInlineSnapshot(
           `
-        [ZodError: [
-          {
-            "code": "custom",
-            "path": [
-              "name"
-            ],
-            "message": "Project name cannot be \\"default\\""
-          }
-        ]]
+        [Error: Config validation failed:
+        ✖ Project name cannot be "default"
+          → at name]
       `,
         )
     })
@@ -277,29 +256,17 @@ describe.concurrent('ProjectsManager', () => {
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerProject(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
         `
-        [ZodError: [
-          {
-            "code": "custom",
-            "path": [
-              "name"
-            ],
-            "message": "Project name cannot contain \\".\\", \\"@\\" or \\"#\\", try to use A-z, 0-9, _ and -"
-          }
-        ]]
+        [Error: Config validation failed:
+        ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
+          → at name]
       `,
       )
       await expect(projectsManager.registerProject({ config, folderUri: configFileUri })).rejects
         .toThrowErrorMatchingInlineSnapshot(
           `
-        [ZodError: [
-          {
-            "code": "custom",
-            "path": [
-              "name"
-            ],
-            "message": "Project name cannot contain \\".\\", \\"@\\" or \\"#\\", try to use A-z, 0-9, _ and -"
-          }
-        ]]
+        [Error: Config validation failed:
+        ✖ Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -
+          → at name]
       `,
         )
     })
