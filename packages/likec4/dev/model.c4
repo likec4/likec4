@@ -20,6 +20,10 @@ model {
       '
       link https://react.dev
       metadata {
+        attr9 'testing ordering'
+
+        attr900 'natural sort ordering'
+
         attr1 'value 1'
         attr2 '
           multiline
