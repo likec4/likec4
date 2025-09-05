@@ -20,9 +20,10 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
   // Store transports by session ID to send notifications
   private server: Server | undefined = undefined
 
-  private _port: number = 33335
-
-  constructor(private services: LikeC4Services) {
+  constructor(
+    private services: LikeC4Services,
+    private _port: number = 33335,
+  ) {
   }
 
   get mcp(): McpServer {
@@ -41,7 +42,7 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
     await this.stop()
   }
 
-  async start(port = 33335): Promise<void> {
+  async start(port = this._port): Promise<void> {
     try {
       if (this.server) {
         if (this.port === port) {
@@ -156,9 +157,10 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
       this.server = serve(
         {
           fetch: app.fetch,
+          hostname: '0.0.0.0',
           port: this._port,
         },
-        (info) => logger.info('MCP server listening on port {port}', { port: info.port }),
+        (info) => logger.info('MCP server ready at http://0.0.0.0:{port}/mcp', { port: info.port }),
       ) as Server
     } catch (err) {
       logger.warn('Failed to start MCP server', { err })

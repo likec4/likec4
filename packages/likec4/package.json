@@ -144,6 +144,7 @@
     "rollup": "catalog:vite",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite",
+    "std-env": "catalog:utils",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
@@ -225,7 +226,6 @@
     "react-shadow": "^20.6.0",
     "remeda": "catalog:utils",
     "semver": "^7.7.2",
-    "std-env": "catalog:utils",
     "strip-indent": "catalog:utils",
     "tinyrainbow": "^2.0.0",
     "tsx": "catalog:",

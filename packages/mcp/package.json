@@ -54,15 +54,17 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "bundle-n-require": "catalog:utils",
-    "esbuild": "catalog:esbuild"
+    "esbuild": "catalog:esbuild",
+    "std-env": "catalog:utils"
   },
   "devDependencies": {
-    "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@likec4/log": "workspace:*",
     "@likec4/core": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/language-server": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:mcp",
     "@types/node": "catalog:",
+    "citty": "catalog:utils",
     "remeda": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
@@ -70,7 +72,7 @@
     "unbuild": "catalog:",
     "vitest": "catalog:vitest",
     "vscode-uri": "catalog:vscode",
-    "zod": "catalog:utils",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zod": "catalog:utils"
   }
 }

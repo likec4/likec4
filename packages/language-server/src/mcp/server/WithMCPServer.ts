@@ -1,14 +1,14 @@
 import { loggable } from '@likec4/log'
 import { isError } from 'remeda'
-import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer, LikeC4MCPServerModuleContext } from '../interfaces'
+import { logger } from '../utils'
 import { StdioLikeC4MCPServer } from './StdioLikeC4MCPServer'
 import { StreamableLikeC4MCPServer } from './StreamableLikeC4MCPServer'
 
-const streamableLikeC4MCPServer = (services: LikeC4Services): LikeC4MCPServer => {
+const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335): LikeC4MCPServer => {
   logger.debug('Creating StreamableLikeC4MCPServer')
-  const server = new StreamableLikeC4MCPServer(services)
+  const server = new StreamableLikeC4MCPServer(services, defaultPort)
   const langId = services.LanguageMetaData.languageId
 
   const connection = services.shared.lsp.Connection
@@ -22,7 +22,7 @@ const streamableLikeC4MCPServer = (services: LikeC4Services): LikeC4MCPServer =>
 
     const {
       enabled = false,
-      port = 33335,
+      port = defaultPort,
     } = update.configuration.mcp as { enabled?: boolean; port?: number }
 
     if (!enabled) {
@@ -58,11 +58,12 @@ const stdioLikeC4MCPServer = (services: LikeC4Services): LikeC4MCPServer => {
   return new StdioLikeC4MCPServer(services)
 }
 
-export const WithMCPServer = (type: 'stdio' | 'sse' = 'sse'): LikeC4MCPServerModuleContext => ({
+export const WithMCPServer = (type: 'stdio' | 'sse' | { port: number } = 'sse'): LikeC4MCPServerModuleContext => ({
   mcpServer: (services: LikeC4Services): LikeC4MCPServer => {
     if (type === 'stdio') {
       return stdioLikeC4MCPServer(services)
     }
-    return streamableLikeC4MCPServer(services)
+    const port = typeof type === 'object' ? type.port : 33335
+    return streamableLikeC4MCPServer(services, port)
   },
 })

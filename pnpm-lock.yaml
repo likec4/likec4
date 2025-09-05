@@ -181,6 +181,9 @@ catalogs:
     chroma-js:
       specifier: ^3.1.2
       version: 3.1.2
+    citty:
+      specifier: ^0.1.6
+      version: 0.1.6
     consola:
       specifier: ^3.4.2
       version: 3.4.2
@@ -1326,6 +1329,9 @@ importers:
       rollup:
         specifier: catalog:vite
         version: 4.44.0
+      std-env:
+        specifier: catalog:utils
+        version: 3.9.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -1531,9 +1537,6 @@ importers:
       semver:
         specifier: ^7.7.2
         version: 7.7.2
-      std-env:
-        specifier: catalog:utils
-        version: 3.9.0
       strip-indent:
         specifier: catalog:utils
         version: 4.0.0
@@ -1628,6 +1631,9 @@ importers:
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
+      std-env:
+        specifier: catalog:utils
+        version: 3.9.0
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
@@ -1647,6 +1653,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.11
+      citty:
+        specifier: catalog:utils
+        version: 0.1.6
       remeda:
         specifier: catalog:utils
         version: 2.23.1

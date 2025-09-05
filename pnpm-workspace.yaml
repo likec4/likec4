@@ -1,4 +1,3 @@
-catalogMode: prefer
 packages:
   - apps/*
   - styled-system/*
@@ -15,6 +14,8 @@ catalog:
   wireit: 0.14.12
   wrangler: 4.33.2
   zx: 8.8.1
+
+catalogMode: prefer
 
 catalogs:
   astro:
@@ -83,6 +84,7 @@ catalogs:
     caniuse-lite: ^1.0.30001739
     chokidar: ^4.0.3
     chroma-js: ^3.1.2
+    citty: ^0.1.6
     consola: ^3.4.2
     date-fns: ^4.1.0
     defu: ^6.1.4

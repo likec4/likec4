@@ -29,7 +29,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     } else {
       this.watcher = this.createWatcher(folder)
     }
-    logger.debug(`watching folder: ${folder}`)
+    logger.debug`watching folder: ${folder}`
   }
 
   async dispose(): Promise<void> {
@@ -52,10 +52,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     const onAddOrChange = async (path: string) => {
       try {
         if (isLikeC4Config(path)) {
-          logger.debug(`project file changed: ${path}`)
+          logger.debug`project file changed: ${path}`
           await this.services.workspace.ProjectsManager.reloadProjects()
         } else {
-          logger.debug(`file changed: ${path}`)
+          logger.debug`file changed: ${path}`
           await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
         }
       } catch (error) {
@@ -66,10 +66,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     const onRemove = async (path: string) => {
       try {
         if (isLikeC4Config(path)) {
-          logger.debug(`project file removed: ${path}`)
+          logger.debug`project file removed: ${path}`
           await this.services.workspace.ProjectsManager.reloadProjects()
         } else {
-          logger.debug(`file removed: ${path}`)
+          logger.debug`file removed: ${path}`
           await this.services.workspace.DocumentBuilder.update([], [URI.file(path)])
         }
       } catch (error) {
