@@ -1,3 +1,66 @@
+# [1.39.0](https://github.com/likec4/likec4/compare/v1.38.1...v1.39.0) (2025-09-05)
+
+### Features
+
+* **Image alias support**
+  ```json
+  {
+    "name": "project-name",
+    "imageAliases": {
+      "@": "./images",
+      "@root": "../../some-more-images"
+    }
+  }
+  ```
+  In your DSL
+  ```zig
+  model {
+    serviceA = service {
+      icon: @/service-a.png
+    }
+  
+    serviceB = service {
+      icon: @root/service-b.png
+    }
+  }
+  ```
+  Thanks to @kieronlanning, [#2174](https://github.com/likec4/likec4/pull/2174), [c05d300](https://github.com/likec4/likec4/commit/c05d3001c2abaa880f4b43a09005327f23dfa1d4))
+  
+  [📖 Documentation](https://likec4.dev/dsl/config/#image-aliases)
+  
+* **Custom generators**  
+  Use TypeScript/JavaScript as project config
+  ```ts
+  // likec4.config.ts
+  import { defineConfig } from '@likec4/config'
+  
+  export default defineConfig({
+    name: 'my-project',
+    title: 'My Project',
+    generators: {
+      'hello': async ({ likec4model, ctx }) => {
+        // do something
+      },
+    },
+  })
+  ```
+  Use with CLI:
+  ```sh
+  likec4 gen hello
+  ```
+
+  [📖 Documentation](https://likec4.dev/dsl/config/programmatic/)
+  
+* **mcp:** use `@likec4/mcp` as CLI ([0ba9786](https://github.com/likec4/likec4/commit/0ba978662981728d84aa233c88e67fa5e8d6a9bd))
+* **mcp:** search for elements with metadata key ([0a0eed6f](https://github.com/likec4/likec4/commit/0a0eed6f0cb50a5c952dd37cbae4de2a5cadf33c))
+
+### Bug Fixes
+
+* **vite-plugin:** vite build hangs when using the LikeC4 vite plugin ([032f059](https://github.com/likec4/likec4/commit/032f059daca11c3bdf8ba03a6c27a953b3458aeb)), closes [#2170](https://github.com/likec4/likec4/issues/2170)
+* **react:** Dynamic View notes are no longer displaying, closes #2162, thanks @cry999
+
+
+
 ## [1.38.1](https://github.com/likec4/likec4/compare/v1.38.0...v1.38.1) (2025-08-20)
 
 ### Bug Fixes
