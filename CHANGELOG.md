@@ -1,3 +1,35 @@
+# [1.39.0](https://github.com/likec4/likec4/compare/v1.38.1...v1.39.0) (2025-09-05)
+
+
+### Bug Fixes
+
+* add error handling for uncaught exceptions and rejections across servers ([9653915](https://github.com/likec4/likec4/commit/9653915f11aecfc4d11087340db018cb5831a6d7))
+* add source alias resolution for vitest config to support package imports ([41733a3](https://github.com/likec4/likec4/commit/41733a38f592454cfe7825fc40bf93ca126e1eb1))
+* **deps:** update dependency @hono/oauth-providers to ^0.8.5 ([7af25f1](https://github.com/likec4/likec4/commit/7af25f1f82ac6b6f4786c264a02a5dbc4a74d7cb))
+* **deps:** update dependency @hono/valibot-validator to ^0.5.3 ([42042f2](https://github.com/likec4/likec4/commit/42042f22d77103cdf142d4dcadc9aec3d9781da9))
+* **deps:** update dependency react-resizable-panels to ^3.0.5 ([36f7bfa](https://github.com/likec4/likec4/commit/36f7bfaa3de54b4ed9303302ac81e1b99a29b334))
+* fixed the docs that used an invalid syntax ([320ee0e](https://github.com/likec4/likec4/commit/320ee0efd1576dec2488dce53ebb874c07bf74e1))
+* fixed TypeScript type errors following previous refactor ([fdbb4c4](https://github.com/likec4/likec4/commit/fdbb4c4ffbb5fae8b37ad7c863d8189d9ef8ba85))
+* more typescript errors ([f354aa4](https://github.com/likec4/likec4/commit/f354aa4145f03e9b361a37f0100f4b8c9a40f8e2))
+* somehow managed to add a 'g' to the e2e/package.json ([6576a85](https://github.com/likec4/likec4/commit/6576a85f35b45d1d4d3f90764e13b3b3a10cf6dc))
+* updated the tests based on the current file vs. workspace path ([691cdcd](https://github.com/likec4/likec4/commit/691cdcd8b44e48e7b3c03670ab99815914981ed2))
+* updating screenshots again ([1cd027f](https://github.com/likec4/likec4/commit/1cd027f2c89f8651acdea5300843d24ebb98103a))
+* **vite-plugin:** vite build hangs when using the LikeC4 vite plugin ([032f059](https://github.com/likec4/likec4/commit/032f059daca11c3bdf8ba03a6c27a953b3458aeb)), closes [#2170](https://github.com/likec4/likec4/issues/2170)
+
+
+### Features
+
+* add schema validation for image aliases and improve config serialization ([94a9918](https://github.com/likec4/likec4/commit/94a9918a30a9970613accd4e1f9ae128cf63f96c))
+* added image alias support ([c05d300](https://github.com/likec4/likec4/commit/c05d3001c2abaa880f4b43a09005327f23dfa1d4))
+* custom generators in project config ([695e2ed](https://github.com/likec4/likec4/commit/695e2edd05e83639ebf6b99801dc45672b8667c1))
+* enable markdown support for notes in dynamic view walkthrough ([f58a08c](https://github.com/likec4/likec4/commit/f58a08c7e7eee42001787a34e48167948a05ecf8))
+* **lsp:** project registration via LSP ([eac9c21](https://github.com/likec4/likec4/commit/eac9c21ca5cdb734192431b9d8eb3dab0bbc0b59))
+* **mcp:** use `@likec4/mcp` as CLI ([0ba9786](https://github.com/likec4/likec4/commit/0ba978662981728d84aa233c88e67fa5e8d6a9bd))
+* move and rename NotePopover to WaklthroughPanel ([8242d35](https://github.com/likec4/likec4/commit/8242d357149a81c82689865a7607eb0a63efa624))
+* move WalkthroughPanel to NavigationPanel. ([719f6e3](https://github.com/likec4/likec4/commit/719f6e3f20d9ee7d6a20a84eb46679bb0cba2524))
+
+
+
 ## [1.38.1](https://github.com/likec4/likec4/compare/v1.38.0...v1.38.1) (2025-08-20)
 
 ### Bug Fixes
