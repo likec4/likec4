@@ -1,8 +1,9 @@
 # [1.39.0](https://github.com/likec4/likec4/compare/v1.38.1...v1.39.0) (2025-09-05)
 
-### Features
+### 🚀 Features
 
-* **Image alias support**
+- **Image alias support**.
+  In your config
   ```json
   {
     "name": "project-name",
@@ -18,22 +19,22 @@
     serviceA = service {
       icon: @/service-a.png
     }
-  
+
     serviceB = service {
       icon: @root/service-b.png
     }
   }
   ```
-  Thanks to @kieronlanning, [#2174](https://github.com/likec4/likec4/pull/2174), [c05d300](https://github.com/likec4/likec4/commit/c05d3001c2abaa880f4b43a09005327f23dfa1d4))
-  
+  Thanks to @kieronlanning, [#2174](https://github.com/likec4/likec4/pull/2174), [c05d300](https://github.com/likec4/likec4/commit/c05d3001c2abaa880f4b43a09005327f23dfa1d4)
+
   [📖 Documentation](https://likec4.dev/dsl/config/#image-aliases)
-  
-* **Custom generators**  
+
+- **Custom generators**.
   Use TypeScript/JavaScript as project config
   ```ts
   // likec4.config.ts
   import { defineConfig } from '@likec4/config'
-  
+
   export default defineConfig({
     name: 'my-project',
     title: 'My Project',
@@ -50,31 +51,35 @@
   ```
 
   [📖 Documentation](https://likec4.dev/dsl/config/programmatic/)
-  
-* **mcp:** use `@likec4/mcp` as CLI ([0ba9786](https://github.com/likec4/likec4/commit/0ba978662981728d84aa233c88e67fa5e8d6a9bd))
-* **mcp:** search for elements with metadata key ([0a0eed6f](https://github.com/likec4/likec4/commit/0a0eed6f0cb50a5c952dd37cbae4de2a5cadf33c))
 
-### Bug Fixes
+- **mcp:** use `@likec4/mcp` as CLI ([docs](https://github.com/likec4/likec4/tree/v1.39.0/packages/mcp#usage-as-cli)) ([0ba9786](https://github.com/likec4/likec4/commit/0ba978662981728d84aa233c88e67fa5e8d6a9bd))
+- **mcp:** search for elements with metadata key ([0a0eed6f](https://github.com/likec4/likec4/commit/0a0eed6f0cb50a5c952dd37cbae4de2a5cadf33c))
+- **config:** published config schema
+  ```json
+  {
+    "$schema": "https://likec4.dev/schemas/config.json",
+    "name": "project-name"
+  }
+  ```
 
-* **vite-plugin:** vite build hangs when using the LikeC4 vite plugin ([032f059](https://github.com/likec4/likec4/commit/032f059daca11c3bdf8ba03a6c27a953b3458aeb)), closes [#2170](https://github.com/likec4/likec4/issues/2170)
-* **react:** Dynamic View notes are no longer displaying, closes #2162, thanks @cry999
+### 🐞 Bug Fixes
 
-
+- **vite-plugin:** vite build hangs when using the LikeC4 vite plugin ([032f059](https://github.com/likec4/likec4/commit/032f059daca11c3bdf8ba03a6c27a953b3458aeb)), closes [#2170](https://github.com/likec4/likec4/issues/2170)
+- **react:** Dynamic View notes are no longer displaying, closes [#2162](https://github.com/likec4/likec4/issues/2162), thanks @cry999
 
 ## [1.38.1](https://github.com/likec4/likec4/compare/v1.38.0...v1.38.1) (2025-08-20)
 
 ### Bug Fixes
 
-* **vscode:** multi-projects on Windows ([#2167](https://github.com/likec4/likec4/issues/2167)) ([4f3caf6](https://github.com/likec4/likec4/commit/4f3caf6025aa5d55fd15bab875f26d1ef346b7c3))
-
+- **vscode:** multi-projects on Windows ([#2167](https://github.com/likec4/likec4/issues/2167)) ([4f3caf6](https://github.com/likec4/likec4/commit/4f3caf6025aa5d55fd15bab875f26d1ef346b7c3))
 
 # [1.38.0](https://github.com/likec4/likec4/compare/v1.37.0...v1.38.0) (2025-08-16)
 
 ### 🚀 Features
 
-* **Enhanced MCP:**
+- **Enhanced MCP:**
   - Switched to **Streamable Transport** (update path from `/sse` → `/mcp`):
-    
+
     ```json
     {
       "mcpServers": {
@@ -82,82 +87,77 @@
           "url": "http://localhost:33335/mcp"
         }
       }
-    }   
+    }
     ```
-  - Added detailed instructions and tool descriptions 
-  - New tool: **`find-relationships`** — discover relationships between elements.  
-    > Example: _“Export to CSV all relationships between Backend and 'Amazon SQS'”_  
+  - Added detailed instructions and tool descriptions
+  - New tool: **`find-relationships`** — discover relationships between elements.
+    > Example: _“Export to CSV all relationships between Backend and 'Amazon SQS'”_
   - Added filesystem watcher, that keeps the model always in sync
 
-* **New CLI command:**  
-  Introduced `likec4 mcp` for starting the server manually:  
-   ```sh
+- **New CLI command:**\
+  Introduced `likec4 mcp` for starting the server manually:
+  ```sh
   likec4 mcp --port 1234 ./src
-   ```
-  
+  ```
 
 # [1.37.0](https://github.com/likec4/likec4/compare/v1.36.1...v1.37.0) (2025-08-14)
 
 ### 🚀 Features
 
-* **Relationship details:**  
+- **Relationship details:**\
   On-hover panel now shows richer data and supports Markdown in descriptions:
-  
+
   <img  alt="SCR-20250811-qzpg" src="https://github.com/user-attachments/assets/5615f377-bb32-4b95-9c14-ddda78aa38e1" />
 
-* **Enhanced multi-project support :**  
-  The VSCode extension now automatically watches and reloads project configurations.  
+- **Enhanced multi-project support :**\
+  The VSCode extension now automatically watches and reloads project configurations.\
   Added a new `LikeC4: Reload projects` command for manual refresh.
 
 ### 🐞 Bug Fixes
 
-* Improved hot-reload ([1a66f47](https://github.com/likec4/likec4/commit/1a66f477e12b39e9844592e00ba9c37d21e1caba), [993a691](https://github.com/likec4/likec4/commit/993a6915893c585cea2b58e9ec8b55f197f4c35d))
-* Fixed code block styling within Markdown ([b234cd5](https://github.com/likec4/likec4/commit/b234cd5cc1ea0147c6d4ef8886d9b404cb0c43eb))
-* Better error handling and loading states in VSCode preview ([0df069d](https://github.com/likec4/likec4/commit/0df069d8336e1ba17948b9a4f4d5b32828562dba))
-* Resolved name conflicts in multi-project setups ([c53f127](https://github.com/likec4/likec4/commit/c53f127b1fe6af81658c2eb8dc6b8e41f6162465)), closes [#2099](https://github.com/likec4/likec4/issues/2099)
-* View titles are now parsed as single lines ([35eeba4](https://github.com/likec4/likec4/commit/35eeba4b36621c971ade6ea4f9c81d55db0258b5)), closes [#2148](https://github.com/likec4/likec4/issues/2148)
-* Fixed PNG export issues ([64199cf](https://github.com/likec4/likec4/commit/64199cfacdc81be029a32406bcb37f0fdc533869)), closes [#1211](https://github.com/likec4/likec4/issues/1211)
-* Corrected multi-line description rendering with extra whitespace ([e3e4f31](https://github.com/likec4/likec4/commit/e3e4f3110d5c11674c9b80d3ff085386cc175621)), closes [#2055](https://github.com/likec4/likec4/issues/2055)
-* Added Markdown support in `with` overrides block ([acef3c0](https://github.com/likec4/likec4/commit/acef3c04ee58a319afaa1542e27d169cb52aeca8))
-* Excluded files are now skipped from parsing and validation ([6a600d2](https://github.com/likec4/likec4/commit/6a600d271e396c3de69cbf1d184b8bf2d8526c5f))
-
+- Improved hot-reload ([1a66f47](https://github.com/likec4/likec4/commit/1a66f477e12b39e9844592e00ba9c37d21e1caba), [993a691](https://github.com/likec4/likec4/commit/993a6915893c585cea2b58e9ec8b55f197f4c35d))
+- Fixed code block styling within Markdown ([b234cd5](https://github.com/likec4/likec4/commit/b234cd5cc1ea0147c6d4ef8886d9b404cb0c43eb))
+- Better error handling and loading states in VSCode preview ([0df069d](https://github.com/likec4/likec4/commit/0df069d8336e1ba17948b9a4f4d5b32828562dba))
+- Resolved name conflicts in multi-project setups ([c53f127](https://github.com/likec4/likec4/commit/c53f127b1fe6af81658c2eb8dc6b8e41f6162465)), closes [#2099](https://github.com/likec4/likec4/issues/2099)
+- View titles are now parsed as single lines ([35eeba4](https://github.com/likec4/likec4/commit/35eeba4b36621c971ade6ea4f9c81d55db0258b5)), closes [#2148](https://github.com/likec4/likec4/issues/2148)
+- Fixed PNG export issues ([64199cf](https://github.com/likec4/likec4/commit/64199cfacdc81be029a32406bcb37f0fdc533869)), closes [#1211](https://github.com/likec4/likec4/issues/1211)
+- Corrected multi-line description rendering with extra whitespace ([e3e4f31](https://github.com/likec4/likec4/commit/e3e4f3110d5c11674c9b80d3ff085386cc175621)), closes [#2055](https://github.com/likec4/likec4/issues/2055)
+- Added Markdown support in `with` overrides block ([acef3c0](https://github.com/likec4/likec4/commit/acef3c04ee58a319afaa1542e27d169cb52aeca8))
+- Excluded files are now skipped from parsing and validation ([6a600d2](https://github.com/likec4/likec4/commit/6a600d271e396c3de69cbf1d184b8bf2d8526c5f))
 
 ## [1.36.1](https://github.com/likec4/likec4/compare/v1.36.0...v1.36.1) (2025-08-08)
 
 ### Bug Fixes
 
-* **lsp:** handle case, when workspace not yet initialized  ([ac42915](https://github.com/likec4/likec4/commit/ac429154f17a7f1c4a120f057ca066472bef3e60))
-* **react:** adjust navigation panel styles and icon dimensions for better mobile support ([cf4785f](https://github.com/likec4/likec4/commit/cf4785fdf4bc65e686b86dc1b906ceff7eccf4d6))
-* **react:** `CurrentViewModel` maybe empty in dev mode ([256214e](https://github.com/likec4/likec4/commit/256214ef8c1e726e4c1d90ad5c50f67a3432f863))
-
+- **lsp:** handle case, when workspace not yet initialized ([ac42915](https://github.com/likec4/likec4/commit/ac429154f17a7f1c4a120f057ca066472bef3e60))
+- **react:** adjust navigation panel styles and icon dimensions for better mobile support ([cf4785f](https://github.com/likec4/likec4/commit/cf4785fdf4bc65e686b86dc1b906ceff7eccf4d6))
+- **react:** `CurrentViewModel` maybe empty in dev mode ([256214e](https://github.com/likec4/likec4/commit/256214ef8c1e726e4c1d90ad5c50f67a3432f863))
 
 # [1.36.0](https://github.com/likec4/likec4/compare/v1.35.0...v1.36.0) (2025-08-08)
 
 ### 🚀 Features
 
-* **dynamic-view:** support markdown in dynamic view notes (not rendered yet), thanks @cry999, [#2122](https://github.com/likec4/likec4/pull/2122) ([7017cf9](https://github.com/likec4/likec4/commit/7017cf94c224b5d187492f388de2be536e256ea9))
-* **api:** include project data into model and display title from likec4rc in UI, thanks @pavelpykhtin, [#2103](https://github.com/likec4/likec4/pull/2103), closes [#2097](https://github.com/likec4/likec4/pull/20-9) ([9f72907](https://github.com/likec4/likec4/commit/9f72907686594da7ef1a712539ca7a8b6c417198))
-* **react:** switch project from navigation panel ([e0feea0](https://github.com/likec4/likec4/commit/e0feea0dec6c49973468c41bd8af494651f7a54b))
-* **react:** dropdown with View details ([f010bed](https://github.com/likec4/likec4/commit/f010bed825ef7667a066cc95be0c87e737712bd8))
+- **dynamic-view:** support markdown in dynamic view notes (not rendered yet), thanks @cry999, [#2122](https://github.com/likec4/likec4/pull/2122) ([7017cf9](https://github.com/likec4/likec4/commit/7017cf94c224b5d187492f388de2be536e256ea9))
+- **api:** include project data into model and display title from likec4rc in UI, thanks @pavelpykhtin, [#2103](https://github.com/likec4/likec4/pull/2103), closes [#2097](https://github.com/likec4/likec4/pull/20-9) ([9f72907](https://github.com/likec4/likec4/commit/9f72907686594da7ef1a712539ca7a8b6c417198))
+- **react:** switch project from navigation panel ([e0feea0](https://github.com/likec4/likec4/commit/e0feea0dec6c49973468c41bd8af494651f7a54b))
+- **react:** dropdown with View details ([f010bed](https://github.com/likec4/likec4/commit/f010bed825ef7667a066cc95be0c87e737712bd8))
 
 ### Bug Fixes
 
-* **docker:** correct Playwright version, closes [#2132](https://github.com/likec4/likec4/issues/2132)
-* **vscode:** Client LikeC4 Language Server: connection to server is erroring ([#2131](https://github.com/likec4/likec4/issues/2131)) ([5f16746](https://github.com/likec4/likec4/commit/5f16746028b00b706d51e44b4deb0ba6deb43af0))
-* **vscode:** improve state management and error handling in preview panel ([846b9a4](https://github.com/likec4/likec4/commit/846b9a4918f9c7ab2be9aae54cf81954314ec03a))
-* **react:** correct scopes for embedded markdown ([0bb9e1a](https://github.com/likec4/likec4/commit/0bb9e1a1e3f17d80c039229f2c00d20f486e9dfd))
-* **react:** font family in webcomponents ([504c4a3](https://github.com/likec4/likec4/commit/504c4a3dc50394d63d7ca6902e26ca11c492c392))
-
-
+- **docker:** correct Playwright version, closes [#2132](https://github.com/likec4/likec4/issues/2132)
+- **vscode:** Client LikeC4 Language Server: connection to server is erroring ([#2131](https://github.com/likec4/likec4/issues/2131)) ([5f16746](https://github.com/likec4/likec4/commit/5f16746028b00b706d51e44b4deb0ba6deb43af0))
+- **vscode:** improve state management and error handling in preview panel ([846b9a4](https://github.com/likec4/likec4/commit/846b9a4918f9c7ab2be9aae54cf81954314ec03a))
+- **react:** correct scopes for embedded markdown ([0bb9e1a](https://github.com/likec4/likec4/commit/0bb9e1a1e3f17d80c039229f2c00d20f486e9dfd))
+- **react:** font family in webcomponents ([504c4a3](https://github.com/likec4/likec4/commit/504c4a3dc50394d63d7ca6902e26ca11c492c392))
 
 # [1.35.0](https://github.com/likec4/likec4/compare/v1.34.2...v1.35.0) (2025-08-02)
 
 ### 🚀 Features
 
-* **Organize Views**  
-  You can organize views into folders to keep the workspace clean and easy to navigate.  
+- **Organize Views**\
+  You can organize views into folders to keep the workspace clean and easy to navigate.\
   Use the `/` in the view titles:
-  
+
   ```zig
   views {
     deployment view {
@@ -173,7 +173,7 @@
 
   [📖 Documentation](https://likec4.dev/dsl/views/organize/)
 
-* **Extended specification**  
+- **Extended specification**\
   You may define `title`, `description` and `links` in specification, if it is common for all of the kind:
   ```zig
   specification {
@@ -184,67 +184,60 @@
   }
   ```
   thanks @CookiesEater, ([#2111](https://github.com/likec4/likec4/issues/2111))
-  
-* color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast, [#2100](https://github.com/likec4/likec4/issues/2100), thanks @Kiiv
-* **cli:** added `title` option to `serve` command [#2098](https://github.com/likec4/likec4/issues/2098), closes [#2096](https://github.com/likec4/likec4/issues/2096), thanks @pavelpykhtin
+
+- color of text in elements is now calculated with chroma-js and based on APCA algorithm to determine the best contrast, [#2100](https://github.com/likec4/likec4/issues/2100), thanks @Kiiv
+- **cli:** added `title` option to `serve` command [#2098](https://github.com/likec4/likec4/issues/2098), closes [#2096](https://github.com/likec4/likec4/issues/2096), thanks @pavelpykhtin
 
 ### Bug Fixes
 
-* **core:** do not create loop connections from descendant selectors, [#2118](https://github.com/likec4/likec4/issues/2118), closes [#2117](https://github.com/likec4/likec4/issues/2117), thanks @pavelpykhtin
-* improve stability of the manual layout on model/view changes, [#2086](https://github.com/likec4/likec4/issues/2086), thanks @pavelpykhtin
-
+- **core:** do not create loop connections from descendant selectors, [#2118](https://github.com/likec4/likec4/issues/2118), closes [#2117](https://github.com/likec4/likec4/issues/2117), thanks @pavelpykhtin
+- improve stability of the manual layout on model/view changes, [#2086](https://github.com/likec4/likec4/issues/2086), thanks @pavelpykhtin
 
 ## [1.34.2](https://github.com/likec4/likec4/compare/v1.34.1...v1.34.2) (2025-07-01)
 
-
 ### Bug Fixes
 
-* **cli:** can't generate single page html ([19bb4fb](https://github.com/likec4/likec4/commit/19bb4fbd93f40f58e185c3a41b54e6085de5a2ba)), closes [#2076](https://github.com/likec4/likec4/issues/2076)
-
-
+- **cli:** can't generate single page html ([19bb4fb](https://github.com/likec4/likec4/commit/19bb4fbd93f40f58e185c3a41b54e6085de5a2ba)), closes [#2076](https://github.com/likec4/likec4/issues/2076)
 
 ## [1.34.1](https://github.com/likec4/likec4/compare/v1.34.0...v1.34.1) (2025-07-01)
 
 ### Bug Fixes
-* **vscode:** request likec4/layout-view failed, closes [#2073](https://github.com/likec4/likec4/issues/2073)
-  
+
+- **vscode:** request likec4/layout-view failed, closes [#2073](https://github.com/likec4/likec4/issues/2073)
 
 # [1.34.0](https://github.com/likec4/likec4/compare/v1.33.0...v1.34.0) (2025-07-01)
 
 ### 🚀 Features
 
-* **Docker**
-  
+- **Docker**
+
   ```sh
   docker run -v $PWD:/data ghcr.io/likec4/likec4 build -o dist
   ```
-  
-  Long-baked [#1840](https://github.com/likec4/likec4/issues/1840), supports everything from CLI.  
+
+  Long-baked [#1840](https://github.com/likec4/likec4/issues/1840), supports everything from CLI.\
   [📖 Documentation](https://likec4.dev/tooling/docker/)
-  
+
 ### Improvements
 
-* **cli:** title option in cli, thanks @pavelpykhtin ([#2056](https://github.com/likec4/likec4/issues/2056)) ([f4cfbe1](https://github.com/likec4/likec4/commit/f4cfbe1771f2a01e0db008038bb17e7ec21d141c)), closes [#1942](https://github.com/likec4/likec4/issues/1942)
-* **dsl:** short syntax for constraints on kind, thanks @pavelpykhtin ([#2054](https://github.com/likec4/likec4/issues/2054)) ([0d16fe8](https://github.com/likec4/likec4/commit/0d16fe883bccabfb8ff2e07e64f33b0ff654442d)), closes [#1994](https://github.com/likec4/likec4/issues/1994)
-* **mcp:** improve MCP tools with structured outputs, aware of metadata, and can "open" the preview if needed ([cfe23f8](https://github.com/likec4/likec4/commit/cfe23f853405c5e4a25f2db2e91435640ba3d766))
-
+- **cli:** title option in cli, thanks @pavelpykhtin ([#2056](https://github.com/likec4/likec4/issues/2056)) ([f4cfbe1](https://github.com/likec4/likec4/commit/f4cfbe1771f2a01e0db008038bb17e7ec21d141c)), closes [#1942](https://github.com/likec4/likec4/issues/1942)
+- **dsl:** short syntax for constraints on kind, thanks @pavelpykhtin ([#2054](https://github.com/likec4/likec4/issues/2054)) ([0d16fe8](https://github.com/likec4/likec4/commit/0d16fe883bccabfb8ff2e07e64f33b0ff654442d)), closes [#1994](https://github.com/likec4/likec4/issues/1994)
+- **mcp:** improve MCP tools with structured outputs, aware of metadata, and can "open" the preview if needed ([cfe23f8](https://github.com/likec4/likec4/commit/cfe23f853405c5e4a25f2db2e91435640ba3d766))
 
 ### Bug Fixes
 
-* **dev-env:** aux.* files renamed to match windows constraints on reserved filenames, thanks @pavelpykhtin  ([92f6cff](https://github.com/likec4/likec4/commit/92f6cffbf185be310842aafba99ecc7657100180))
-* **dsl:** element identifier conflict with HEX ([#2050](https://github.com/likec4/likec4/issues/2050)) ([8059b10](https://github.com/likec4/likec4/commit/8059b1094e420e4bbf0b78190eade97553edc008)), closes [#2049](https://github.com/likec4/likec4/issues/2049)
-* **dsl:** spec parsing bug with boolean strings ([105ffc0](https://github.com/likec4/likec4/commit/105ffc06d4a7f131de8c3e94ffa2980239c62bce)), closes [#2057](https://github.com/likec4/likec4/issues/2057)
-* **formatter:** Fixed handling of internal quotes, thanks @pavelpykhtin  [#2005](https://github.com/likec4/likec4/issues/2005) ([3f8f8df](https://github.com/likec4/likec4/commit/3f8f8df35d03b7fe6db13f6798c05aa91345134b))
-
-
+- **dev-env:** aux.* files renamed to match windows constraints on reserved filenames, thanks @pavelpykhtin ([92f6cff](https://github.com/likec4/likec4/commit/92f6cffbf185be310842aafba99ecc7657100180))
+- **dsl:** element identifier conflict with HEX ([#2050](https://github.com/likec4/likec4/issues/2050)) ([8059b10](https://github.com/likec4/likec4/commit/8059b1094e420e4bbf0b78190eade97553edc008)), closes [#2049](https://github.com/likec4/likec4/issues/2049)
+- **dsl:** spec parsing bug with boolean strings ([105ffc0](https://github.com/likec4/likec4/commit/105ffc06d4a7f131de8c3e94ffa2980239c62bce)), closes [#2057](https://github.com/likec4/likec4/issues/2057)
+- **formatter:** Fixed handling of internal quotes, thanks @pavelpykhtin [#2005](https://github.com/likec4/likec4/issues/2005) ([3f8f8df](https://github.com/likec4/likec4/commit/3f8f8df35d03b7fe6db13f6798c05aa91345134b))
 
 # [1.33.0](https://github.com/likec4/likec4/compare/v1.32.2...v1.33.0) (2025-06-25)
 
 ### 🚀 Features
 
-* **Markdown**
-  
-  Strings with triple qoutes (`""" markdown """` or `''' markdown '''`) are now parsed as Markdown.  
+- **Markdown**
+
+  Strings with triple qoutes (`""" markdown """` or `''' markdown '''`) are now parsed as Markdown.\
   This is the first step in adopting Markdown support, and it’s currently limited to descriptions only:
 
   ```zig
@@ -252,18 +245,18 @@
     mobile = application {
       description '''
         ### Multi-platform application
-  
+
         [React Native](https://reactnative.dev)
       '''
     }
-  
+
     web = application {
       description """
         ### Web Application
-  
+
         > Provides services to customers through
         > the web interface.
-  
+
         | checks     |     |
         | :--------- | :-- |
         | check 1    | ✅  |
@@ -277,35 +270,32 @@
 
 ### Bug Fixes
 
-* **dsl:** resilient parser for specification tags ([ba9619b](https://github.com/likec4/likec4/commit/ba9619b9d1b5bd996c5fbe136890f9b1cbf579aa))
-* **api:** inherit deployed instances titles from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
-* **layout:** round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
-
+- **dsl:** resilient parser for specification tags ([ba9619b](https://github.com/likec4/likec4/commit/ba9619b9d1b5bd996c5fbe136890f9b1cbf579aa))
+- **api:** inherit deployed instances titles from model ([5cc6ac5](https://github.com/likec4/likec4/commit/5cc6ac5d7db1bdad1fc235100eef49c0841cb53d))
+- **layout:** round font size values to prevent decimal pixel sizes in graphviz labels ([199c024](https://github.com/likec4/likec4/commit/199c024dd83b70c8ba2d36071b0a32d58a52d3ab))
 
 ## [1.32.2](https://github.com/likec4/likec4/compare/v1.32.1...v1.32.2) (2025-06-16)
 
 ### Bug Fixes
 
-* memory leak on MCP server restarts ([0b01bb4](https://github.com/likec4/likec4/commit/0b01bb434944cc0a73c5ffd7c8f60f97544e67bc))
-* relationship descriptions not displayed in tooltip, closes [#1981](https://github.com/likec4/likec4/issues/1981)
+- memory leak on MCP server restarts ([0b01bb4](https://github.com/likec4/likec4/commit/0b01bb434944cc0a73c5ffd7c8f60f97544e67bc))
+- relationship descriptions not displayed in tooltip, closes [#1981](https://github.com/likec4/likec4/issues/1981)
 
 ### Improvements
 
-* show error message if  MCP server fails to start
-* validate project name ([#2008](https://github.com/likec4/likec4/issues/2008))
-* improve error logging in vscode extension (to help with [#1716](https://github.com/likec4/likec4/issues/1716))
+- show error message if MCP server fails to start
+- validate project name ([#2008](https://github.com/likec4/likec4/issues/2008))
+- improve error logging in vscode extension (to help with [#1716](https://github.com/likec4/likec4/issues/1716))
 
 ## [1.32.1](https://github.com/likec4/likec4/compare/v1.32.0...v1.32.1) (2025-06-12)
 
-
 ### Bug Fixes
 
-* impossible to open elements in navigation menu since 1.32.0, closes [#1996](https://github.com/likec4/likec4/issues/1996)
-
+- impossible to open elements in navigation menu since 1.32.0, closes [#1996](https://github.com/likec4/likec4/issues/1996)
 
 ### Improvements
 
-* **dsl:** support rgb and rgba colors
+- **dsl:** support rgb and rgba colors
   ```zig
   specification {
     tag deprecated {
@@ -313,8 +303,8 @@
     }
   }
   ```
-  
-* **dsl:** support escaped quotes in string literals
+
+- **dsl:** support escaped quotes in string literals
   ```zig
   specification {
     service cloud 'Cloud\'s Systems' 
@@ -322,13 +312,11 @@
   }
   ```
 
-
-
 # [1.32.0](https://github.com/likec4/likec4/compare/v1.31.0...v1.32.0) (2025-06-10)
 
 ### 🚀 Features
 
-* **Tag colors**  
+- **Tag colors**\
   Now it is possible to assign colors to tags:
   ```zig
   specification {
@@ -337,12 +325,12 @@
     }
   }
   ```
-  Tags are displayed by default (you can disable by `enableElementTags={false}` on React component):  
+  Tags are displayed by default (you can disable by `enableElementTags={false}` on React component):\
   <img width="297" alt="SCR-20250610-moth" src="https://github.com/user-attachments/assets/9cab8ac1-1ca5-4881-ab67-0cbf1af6fffc" />
 
   [📖 Documentation](https://likec4.dev/dsl/specification/#tag)
 
-* **Tags for kinds**  
+- **Tags for kinds**
 
   ```zig
   specification {
@@ -355,28 +343,28 @@
   }
   ```
 
-* **Export to PlantUML**
+- **Export to PlantUML**
   ```sh
   likec4 gen plantuml
   ```
-  thanks @pavelpykhtin, closes [#1953](https://github.com/likec4/likec4/issues/1953) 
+  thanks @pavelpykhtin, closes [#1953](https://github.com/likec4/likec4/issues/1953)
 
 ### Bug Fixes
 
-* **language-server:** resolving dependency issue, thanks @mattwahl ([#1989](https://github.com/likec4/likec4/issues/1989)) ([8804808](https://github.com/likec4/likec4/commit/8804808fd8d2cade94c138750494c88207c205ba))
-* **lsp:** Fixed lsp renaming for tags and relation kinds, thanks @pavelpykhtin [#1819](https://github.com/likec4/likec4/issues/1819) ([#1988](https://github.com/likec4/likec4/issues/1988)) ([7fa1e06](https://github.com/likec4/likec4/commit/7fa1e063fed7e71a5bd2c15c3a8a37fbc38c549a))
-* **vscode:** VS Code plugin shows `[object Object]` for instanceOf target in hover tooltip ([#1955](https://github.com/likec4/likec4/issues/1955)) ([0334a7d](https://github.com/likec4/likec4/commit/0334a7dcfca122c0806db7d4585e754f4f0a08d1)), closes [#1948](https://github.com/likec4/likec4/issues/1948)
+- **language-server:** resolving dependency issue, thanks @mattwahl ([#1989](https://github.com/likec4/likec4/issues/1989)) ([8804808](https://github.com/likec4/likec4/commit/8804808fd8d2cade94c138750494c88207c205ba))
+- **lsp:** Fixed lsp renaming for tags and relation kinds, thanks @pavelpykhtin [#1819](https://github.com/likec4/likec4/issues/1819) ([#1988](https://github.com/likec4/likec4/issues/1988)) ([7fa1e06](https://github.com/likec4/likec4/commit/7fa1e063fed7e71a5bd2c15c3a8a37fbc38c549a))
+- **vscode:** VS Code plugin shows `[object Object]` for instanceOf target in hover tooltip ([#1955](https://github.com/likec4/likec4/issues/1955)) ([0334a7d](https://github.com/likec4/likec4/commit/0334a7dcfca122c0806db7d4585e754f4f0a08d1)), closes [#1948](https://github.com/likec4/likec4/issues/1948)
 
 ### Improvements
 
-Refactored `@likec4/core`, providing type-safe models.  
+Refactored `@likec4/core`, providing type-safe models.\
 [📖 Documentation](https://github.com/likec4/likec4/blob/main/packages/core/README.md)
 
 # [1.31.0](https://github.com/likec4/likec4/compare/v1.30.0...v1.31.0) (2025-05-25)
 
 ### 🚀 Features
 
-* **Custom renderers**  
+- **Custom renderers**\
   More customization coming, you can control how elements are rendered, add your action buttons or extra details:
   ```tsx
   import { LikeC4Diagram } from '@likec4/diagram'
@@ -391,7 +379,7 @@ Refactored `@likec4/core`, providing type-safe models.
     IfNotReadOnly,
   } from '@likec4/diagram/custom'
   import { IconPlus } from '@tabler/icons-react'
-  
+
   const customNodes = {
     element: elementNode(({ nodeProps, nodeModel }) => (
       <ElementNodeContainer nodeProps={nodeProps}>
@@ -415,7 +403,7 @@ Refactored `@likec4/core`, providing type-safe models.
       </ElementNodeContainer>
     )),
   }
-  
+
   function App() {
     return (
       <LikeC4Diagram
@@ -426,17 +414,16 @@ Refactored `@likec4/core`, providing type-safe models.
   }
   ```
   [📖 Documentation](https://likec4.dev/tooling/react/)
-    
-* **Quotes Formatting**  
-  VSCode extension allows to configure preferred quote style.  
-  (thanks @pavelpykhtin, closes [#1772](https://github.com/likec4/likec4/issues/1772))
 
+- **Quotes Formatting**\
+  VSCode extension allows to configure preferred quote style.\
+  (thanks @pavelpykhtin, closes [#1772](https://github.com/likec4/likec4/issues/1772))
 
 # [1.30.0](https://github.com/likec4/likec4/compare/v1.29.1...v1.30.0) (2025-04-27)
 
 ### 🚀 Features
 
-* **Local icons**  
+- **Local icons**
   ```zig
   model {
     pg = service 'PostgreSQL' {
@@ -449,51 +436,48 @@ Refactored `@likec4/core`, providing type-safe models.
   ```
   Thanks, @kieronlanning, for the long-awaited feature, closes [#1439](https://github.com/likec4/likec4/issues/1439)
 
-
 ### Bug Fixes
 
-* **cli:** export png fails due to chromiumSandbox ([20d7a49](https://github.com/likec4/likec4/commit/20d7a499368947da5a536c44d47b3c521cbd63f5)), closes [#1885](https://github.com/likec4/likec4/issues/1885)
-* extra padding to fix PNG export cropping issue ([ac14d1b](https://github.com/likec4/likec4/commit/ac14d1bb6d1a3316c45905937ca117edcfbd4daa)), closes [#1857](https://github.com/likec4/likec4/issues/1857)
-
+- **cli:** export png fails due to chromiumSandbox ([20d7a49](https://github.com/likec4/likec4/commit/20d7a499368947da5a536c44d47b3c521cbd63f5)), closes [#1885](https://github.com/likec4/likec4/issues/1885)
+- extra padding to fix PNG export cropping issue ([ac14d1b](https://github.com/likec4/likec4/commit/ac14d1bb6d1a3316c45905937ca117edcfbd4daa)), closes [#1857](https://github.com/likec4/likec4/issues/1857)
 
 ## [1.29.1](https://github.com/likec4/likec4/compare/v1.29.0...v1.29.1) (2025-04-25)
 
 ### Improvements
-* dynamic document title, closes [#1875](https://github.com/likec4/likec4/issues/1875)
+
+- dynamic document title, closes [#1875](https://github.com/likec4/likec4/issues/1875)
 
 ### Bug Fixes
 
-* **dsl:** 'none' icon value does not have any effect ([ef6d33e](https://github.com/likec4/likec4/commit/ef6d33e65de3bdacb59563036432482190071804))
-* **cli:** build multi-projects ([3554f59](https://github.com/likec4/likec4/commit/3554f590fb5c7591d18f3987f18f73871032b19e))
-* **cli:** export multi-projects ([ccb2347](https://github.com/likec4/likec4/commit/ccb2347c17131cbbc1b34eb3889f716f2a404efd))
+- **dsl:** 'none' icon value does not have any effect ([ef6d33e](https://github.com/likec4/likec4/commit/ef6d33e65de3bdacb59563036432482190071804))
+- **cli:** build multi-projects ([3554f59](https://github.com/likec4/likec4/commit/3554f590fb5c7591d18f3987f18f73871032b19e))
+- **cli:** export multi-projects ([ccb2347](https://github.com/likec4/likec4/commit/ccb2347c17131cbbc1b34eb3889f716f2a404efd))
 
 # [1.29.0](https://github.com/likec4/likec4/compare/v1.28.1...v1.29.0) (2025-04-16)
 
 ### 🚀 Features
 
-* **MCP Server**  
+- **MCP Server**\
   [📖 Documentation](https://likec4.dev/tools/mcp/)
-  
-* Filter option to `export` command for selective view export by ID  
+
+- Filter option to `export` command for selective view export by ID
   ```sh
   likec4 export png --filter="team1*" --filter="index" .
   ```
 
 ### Bug Fixes
 
-* **diagram:** use Context.Provider instead of bare Context for react 18 compatibility, closes [#1858](https://github.com/likec4/likec4/issues/1858)
-* **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio`
-
+- **diagram:** use Context.Provider instead of bare Context for react 18 compatibility, closes [#1858](https://github.com/likec4/likec4/issues/1858)
+- **lsp:** dont log to stdout, as it breaks LSP usage with `--stdio`
 
 ## [1.28.1](https://github.com/likec4/likec4/compare/v1.28.0...v1.28.1) (2025-04-11)
 
 ### Bug Fixes
 
-* **export:** relationships not rendered correctly when exporting to PNG, closes [#1707](https://github.com/likec4/likec4/issues/1707)
-* **diagram:** strange glitches on mouse hover in search view, closes [#1798](https://github.com/likec4/likec4/issues/1798)
-* **vscode:** apply style changes in deployment views
-* **react:** mark `react` as peerDependency with relaxed semver range (compatible with react 18 and 19)
-
+- **export:** relationships not rendered correctly when exporting to PNG, closes [#1707](https://github.com/likec4/likec4/issues/1707)
+- **diagram:** strange glitches on mouse hover in search view, closes [#1798](https://github.com/likec4/likec4/issues/1798)
+- **vscode:** apply style changes in deployment views
+- **react:** mark `react` as peerDependency with relaxed semver range (compatible with react 18 and 19)
 
 # [1.28.0](https://github.com/likec4/likec4/compare/v1.27.3...v1.28.0) (2025-04-09)
 
@@ -501,12 +485,12 @@ This release improves multi-projects support
 
 ### 🚀 Features
 
-* **imports**  
+- **imports**\
   Reference elements from other projects
-  
+
   ```zig
   import { serviceA } from 'projectA'
-  
+
   model {
     serviceB = service {
       -> serviceA.api 'calls serviceA'
@@ -514,9 +498,9 @@ This release improves multi-projects support
   }
   ```
 
-* **excludes**  
+- **excludes**\
   Exclude files in the config file
-  
+
   ```json
   {
     "name": "project-name",
@@ -526,93 +510,78 @@ This release improves multi-projects support
   }
   ```
 
-[📖 Read the documentation](https://likec4.dev/dsl/projects/)  
-
+[📖 Read the documentation](https://likec4.dev/dsl/projects/)
 
 ## [1.27.3](https://github.com/likec4/likec4/compare/v1.27.2...v1.27.3) (2025-04-02)
 
-
 ### Bug Fixes
 
-* regression: buttons on elements do not work anymore when clicked, closes [#1797](https://github.com/likec4/likec4/issues/1797)
-
+- regression: buttons on elements do not work anymore when clicked, closes [#1797](https://github.com/likec4/likec4/issues/1797)
 
 ### Improvements
 
-* build embed url with respect to the current history mode, thanks @pavelpykhtin, closes [#1678](https://github.com/likec4/likec4/issues/1678) ([#1795](https://github.com/likec4/likec4/issues/1795))
-
-
+- build embed url with respect to the current history mode, thanks @pavelpykhtin, closes [#1678](https://github.com/likec4/likec4/issues/1678) ([#1795](https://github.com/likec4/likec4/issues/1795))
 
 ## [1.27.2](https://github.com/likec4/likec4/compare/v1.27.1...v1.27.2) (2025-04-01)
 
-
 ### Bug Fixes
 
-* hovering notation did not highlight elements anymore, closes [#1681](https://github.com/likec4/likec4/issues/1681)
-* color style definition not respected in 1.27.1, closes [#1785](https://github.com/likec4/likec4/issues/1785)
-
+- hovering notation did not highlight elements anymore, closes [#1681](https://github.com/likec4/likec4/issues/1681)
+- color style definition not respected in 1.27.1, closes [#1785](https://github.com/likec4/likec4/issues/1785)
 
 ### Improvements
 
-* Navigate to relationship details from RelationshipsBrowser
-
+- Navigate to relationship details from RelationshipsBrowser
 
 ## [1.27.1](https://github.com/likec4/likec4/compare/v1.27.0...v1.27.1) (2025-03-28)
 
 ### Bug Fixes
 
-* react component links error ([#1771](https://github.com/likec4/likec4/issues/1771)), closes [#1728](https://github.com/likec4/likec4/issues/1728)
-* relationships not rendered correctly when exporting to PNG ([477cf99](https://github.com/likec4/likec4/commit/477cf992783c99d906ed182d7a3f6a6e88b12907))
-* layout editor fails on edge changes ([949fd4c](https://github.com/likec4/likec4/commit/949fd4cd8904cf25f3e11e8cf49f2ef7ec9d151a))
-
+- react component links error ([#1771](https://github.com/likec4/likec4/issues/1771)), closes [#1728](https://github.com/likec4/likec4/issues/1728)
+- relationships not rendered correctly when exporting to PNG ([477cf99](https://github.com/likec4/likec4/commit/477cf992783c99d906ed182d7a3f6a6e88b12907))
+- layout editor fails on edge changes ([949fd4c](https://github.com/likec4/likec4/commit/949fd4cd8904cf25f3e11e8cf49f2ef7ec9d151a))
 
 # [1.27.0](https://github.com/likec4/likec4/compare/v1.26.2...v1.27.0) (2025-03-27)
 
 ### Features
 
-* Global/View scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732))
+- Global/View scopes in relationships browser ([#1769](https://github.com/likec4/likec4/issues/1769), closes [#1583](https://github.com/likec4/likec4/issues/1583) [#1732](https://github.com/likec4/likec4/issues/1732))
   ![image](https://github.com/user-attachments/assets/c5595c1f-8087-4375-a0b3-93f2a0a4c498)
 
-
-* multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749))
+- multi-projects in vite plugin ([#1749](https://github.com/likec4/likec4/issues/1749))
   ```jsx
   // where `project-a` and `project-b` are the names of your projects
   import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
   import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
-  
+
   const example = () => (
     <>
-      <ProjectA_LikeC4View viewId='index' />
-      <ProjectB_LikeC4View viewId='index' />
+      <ProjectA_LikeC4View viewId="index" />
+      <ProjectB_LikeC4View viewId="index" />
     </>
   )
   ```
 
-
-* Styled-system based on [pandacss](https://panda-css.com/) ([#1726](https://github.com/likec4/likec4/issues/1726))  
+- Styled-system based on [pandacss](https://panda-css.com/) ([#1726](https://github.com/likec4/likec4/issues/1726))\
   Step closer to Diagram customizations, documentation comes soon
-  
 
 ### Bug Fixes
 
-* typo and link, thanks @husa [#1765](https://github.com/likec4/likec4/issues/1765)
-
+- typo and link, thanks @husa [#1765](https://github.com/likec4/likec4/issues/1765)
 
 ## [1.26.2](https://github.com/likec4/likec4/compare/v1.26.1...v1.26.2) (2025-03-17)
 
 ### Bug Fixes
 
-* empty sidebar, closes [#1715](https://github.com/likec4/likec4/issues/1715)
-* extending a view does not inherit title or description, closes [#1719](https://github.com/likec4/likec4/issues/1719)
-* unexpected arrow style derived from model to dynamic view, closes [#1723](https://github.com/likec4/likec4/issues/1723)
-
+- empty sidebar, closes [#1715](https://github.com/likec4/likec4/issues/1715)
+- extending a view does not inherit title or description, closes [#1719](https://github.com/likec4/likec4/issues/1719)
+- unexpected arrow style derived from model to dynamic view, closes [#1723](https://github.com/likec4/likec4/issues/1723)
 
 ## [1.26.1](https://github.com/likec4/likec4/compare/v1.26.0...v1.26.1) (2025-03-11)
 
 ### Hot Fix
 
-* **app:** wrong `LikeC4ModelProvider` in generated app ([d09c709](https://github.com/likec4/likec4/commit/d09c7090f09f11adb03815dae3b138499847fb7b))
-
+- **app:** wrong `LikeC4ModelProvider` in generated app ([d09c709](https://github.com/likec4/likec4/commit/d09c7090f09f11adb03815dae3b138499847fb7b))
 
 # [1.26.0](https://github.com/likec4/likec4/compare/v1.25.1...v1.26.0) (2025-03-11)
 
@@ -620,15 +589,15 @@ This release marks a **huge first step** in simplifying LikeC4 integration with 
 
 ### 🚀 Features
 
-* **🔌 Vite Plugin**  
- 
-  The new Vite plugin allows you to **embed LikeC4 views** directly into your application or documentation website.  
+- **🔌 Vite Plugin**
+
+  The new Vite plugin allows you to **embed LikeC4 views** directly into your application or documentation website.\
   Configure:
-  
-  ```ts  
-  import { defineConfig } from 'vite'
+
+  ```ts
   import react from '@vitejs/plugin-react'
   import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+  import { defineConfig } from 'vite'
 
   export default defineConfig({
     plugins: [
@@ -640,94 +609,84 @@ This release marks a **huge first step** in simplifying LikeC4 integration with 
 
   Use:
   ```tsx
+  import { LikeC4View } from 'likec4:react'
   import { StrictMode } from 'react'
   import { createRoot } from 'react-dom/client'
-  import { LikeC4View } from 'likec4:react'
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <LikeC4View viewId='index' />
-    </StrictMode>
+      <LikeC4View viewId="index" />
+    </StrictMode>,
   )
   ```
 
   [📖 Read the documentation](https://likec4.dev/tooling/vite-plugin/)
 
-* **📂 Multi-Project Workspaces**  
-  
+- **📂 Multi-Project Workspaces**
+
   This release adds multi-project support in both the CLI and VS Code.
   Simply create a likec4.config.json file in a folder, and it will be recognized as a LikeC4 project.
-  
+
   [📖 Learn more](https://likec4.dev/dsl/projects/)
 
-* **llms.txt support**  
+- **llms.txt support**\
   Thanks to @simonwfarrow for suggesting this in [#1683](https://github.com/likec4/likec4/discussions/1683).
   likec4.dev now provides:
   - [llms.txt](https://likec4.dev/llms.txt)
-  - [llms-full.txt](https://likec4.dev/llms-full.txt) 
-  
-  [Read more about llms.txt](https://llmstxt.org/)
+  - [llms-full.txt](https://likec4.dev/llms-full.txt)
 
+  [Read more about llms.txt](https://llmstxt.org/)
 
 ## [1.25.1](https://github.com/likec4/likec4/compare/v1.25.0...v1.25.1) (2025-03-10)
 
 ### Improvements
 
-* **diagram:** reduce graphics on panning/zooming only ([fa184a6](https://github.com/likec4/likec4/commit/fa184a666a68f6adf7e3520bea4c0a8522e809d4))
-
+- **diagram:** reduce graphics on panning/zooming only ([fa184a6](https://github.com/likec4/likec4/commit/fa184a666a68f6adf7e3520bea4c0a8522e809d4))
 
 ### Bug Fixes
 
-* **lsp:** fixed typo in `likec4-language-server` bin entry
-
-
+- **lsp:** fixed typo in `likec4-language-server` bin entry
 
 # [1.25.0](https://github.com/likec4/likec4/compare/v1.24.1...v1.25.0) (2025-03-07)
 
 ### 🚀 Features
 
-* **Share**  
-  You can share your LikeC4 model and diagrams using Playground.  
+- **Share**\
+  You can share your LikeC4 model and diagrams using Playground.\
   This is the first step, and we need your feedback, ideas and [support](https://github.com/sponsors/likec4).
-  
-  Example:  
-  - https://playground.likec4.dev/share/fXFN2k0RiZ/  
-    pincode is `1111` 
-  
+
+  Example:
+  - https://playground.likec4.dev/share/fXFN2k0RiZ/\
+    pincode is `1111`
+
   ![image](https://github.com/user-attachments/assets/6b73633e-a744-49b8-9d1f-965790409b70)
 
-  
-
-* **Performance**  
-  In large diagrams, degradation comes from `dashed`-styled connections.  
-  This version introduces a temporary "tradeoff", auto-switching to solid lines in large pannable diagrams (controlled by `reduceGraphics` property, if you use React components).  
+- **Performance**\
+  In large diagrams, degradation comes from `dashed`-styled connections.\
+  This version introduces a temporary "tradeoff", auto-switching to solid lines in large pannable diagrams (controlled by `reduceGraphics` property, if you use React components).\
   We are looking for better solution.
 
-  
 ### Improvements
 
-* **playground:** xyflow catches and prevents keypress`Space`, that breaks monaco ([26223c3](https://github.com/likec4/likec4/commit/26223c37f8dd318130efe39f50ca736d695e0a0b))
-* **vscode:** refactor extension with `reactive-vscode` ([#1668](https://github.com/likec4/likec4/issues/1668)) ([0bb02e7](https://github.com/likec4/likec4/commit/0bb02e769c322f34d5460a94ac4880a662001dbf))
-
+- **playground:** xyflow catches and prevents keypress`Space`, that breaks monaco ([26223c3](https://github.com/likec4/likec4/commit/26223c37f8dd318130efe39f50ca736d695e0a0b))
+- **vscode:** refactor extension with `reactive-vscode` ([#1668](https://github.com/likec4/likec4/issues/1668)) ([0bb02e7](https://github.com/likec4/likec4/commit/0bb02e769c322f34d5460a94ac4880a662001dbf))
 
 ## [1.24.1](https://github.com/likec4/likec4/compare/v1.24.0...v1.24.1) (2025-02-27)
 
-
 ### Improvements
 
-* **cli:** added an alias for ignore-layout option, thanks @pavelpykhtin ([#1648](https://github.com/likec4/likec4/issues/1648))), closes [#1638](https://github.com/likec4/likec4/issues/1638) 
-* **cli:** temprorary enable access to any host (check [#1649](https://github.com/likec4/likec4/issues/1649) for details)
+- **cli:** added an alias for ignore-layout option, thanks @pavelpykhtin ([#1648](https://github.com/likec4/likec4/issues/1648))), closes [#1638](https://github.com/likec4/likec4/issues/1638)
+- **cli:** temprorary enable access to any host (check [#1649](https://github.com/likec4/likec4/issues/1649) for details)
 
 ### Bug Fixes
 
-* **diagram:** reduce visuals for large diagrams, closes [#1624](https://github.com/likec4/likec4/issues/1624) 
-
+- **diagram:** reduce visuals for large diagrams, closes [#1624](https://github.com/likec4/likec4/issues/1624)
 
 # [1.24.0](https://github.com/likec4/likec4/compare/v1.23.1...v1.24.0) (2025-02-25)
 
 ### 🚀 Features
 
-* **`extend` in deployment model**  
+- **`extend` in deployment model**\
   As in the logical model, you can extend deployment nodes:
 
   ```zig
@@ -735,180 +694,164 @@ This release marks a **huge first step** in simplifying LikeC4 integration with 
   deployment {
     environment prod
   }
-  
+
   // 'deployments/prod/zone-eu.c4'
   deployment {
     extend prod {
       zone eu
     }
   }
-  ``` 
+  ```
   [Documentation](https://likec4.dev/dsl/deployment/model/#extend-nodes), closes [#1609](https://github.com/likec4/likec4/issues/1609)
 
 ### Bug Fixes
 
-* **diagram:** useless search bar in embedded mode, closes [#1642](https://github.com/likec4/likec4/issues/1642)
-
+- **diagram:** useless search bar in embedded mode, closes [#1642](https://github.com/likec4/likec4/issues/1642)
 
 ## [1.23.1](https://github.com/likec4/likec4/compare/v1.23.0...v1.23.1) (2025-02-23)
 
 ### Bug Fixes
 
-* **lsp:** do not resolve real filename for symbolic links, thanks @davydkov ([#1635](https://github.com/likec4/likec4/issues/1635)) ([b8536a6](https://github.com/likec4/likec4/commit/b8536a693bd6cb91ad8380f3453a62293bc7019f)), closes [#1620](https://github.com/likec4/likec4/issues/1620)
-
+- **lsp:** do not resolve real filename for symbolic links, thanks @davydkov ([#1635](https://github.com/likec4/likec4/issues/1635)) ([b8536a6](https://github.com/likec4/likec4/commit/b8536a693bd6cb91ad8380f3453a62293bc7019f)), closes [#1620](https://github.com/likec4/likec4/issues/1620)
 
 # [1.23.0](https://github.com/likec4/likec4/compare/v1.22.1...v1.23.0) (2025-02-21)
 
 ### Features
 
-* added `details` button to the 'relationship browser' and 'relationship details' overlays, thanks @pavelpykhtin ([#1622](https://github.com/likec4/likec4/issues/1622)) ([ca78487](https://github.com/likec4/likec4/commit/ca784877c066af3355a063b6b9496a1a6c51fa44)), closes [#1452](https://github.com/likec4/likec4/issues/1452)
-* CLI and vscode validation command, thanks @pavelpykhtin ([#1613](https://github.com/likec4/likec4/issues/1613)) ([c4a9740](https://github.com/likec4/likec4/commit/c4a9740412883a21d77d1a59ff035c2114397972)), closes [#1464](https://github.com/likec4/likec4/issues/1464)
-* detail dialogs do not change current state ([#1633](https://github.com/likec4/likec4/issues/1633)) ([854fcaf](https://github.com/likec4/likec4/commit/854fcaf129ed33621211cc5f78367a7034ef2d06))
-
+- added `details` button to the 'relationship browser' and 'relationship details' overlays, thanks @pavelpykhtin ([#1622](https://github.com/likec4/likec4/issues/1622)) ([ca78487](https://github.com/likec4/likec4/commit/ca784877c066af3355a063b6b9496a1a6c51fa44)), closes [#1452](https://github.com/likec4/likec4/issues/1452)
+- CLI and vscode validation command, thanks @pavelpykhtin ([#1613](https://github.com/likec4/likec4/issues/1613)) ([c4a9740](https://github.com/likec4/likec4/commit/c4a9740412883a21d77d1a59ff035c2114397972)), closes [#1464](https://github.com/likec4/likec4/issues/1464)
+- detail dialogs do not change current state ([#1633](https://github.com/likec4/likec4/issues/1633)) ([854fcaf](https://github.com/likec4/likec4/commit/854fcaf129ed33621211cc5f78367a7034ef2d06))
 
 ### Bug Fixes
 
-* **diagram:** draggable nodes in locked mode ([5cd7422](https://github.com/likec4/likec4/commit/5cd7422282f0721d014a90a50378b86e5895224b))
-* **lsp:** path to bundled language-server ([134f100](https://github.com/likec4/likec4/commit/134f100913149a6aecbd170239cd175d1f33b4a1))
-* **diagram:** styles of compound node header in light theme, thanks @pavelpykhtin  ([#1623](https://github.com/likec4/likec4/issues/1623)) ([f4b157a](https://github.com/likec4/likec4/commit/f4b157a1787e2393ce037ac379edfa844fa2361b)), closes [#1590](https://github.com/likec4/likec4/issues/1590)
-* **diagram:** temporary disable `onlyRenderVisibleElements` ([7a8f492](https://github.com/likec4/likec4/commit/7a8f49286283df216f54da57579133c0da5b328b))
-
+- **diagram:** draggable nodes in locked mode ([5cd7422](https://github.com/likec4/likec4/commit/5cd7422282f0721d014a90a50378b86e5895224b))
+- **lsp:** path to bundled language-server ([134f100](https://github.com/likec4/likec4/commit/134f100913149a6aecbd170239cd175d1f33b4a1))
+- **diagram:** styles of compound node header in light theme, thanks @pavelpykhtin ([#1623](https://github.com/likec4/likec4/issues/1623)) ([f4b157a](https://github.com/likec4/likec4/commit/f4b157a1787e2393ce037ac379edfa844fa2361b)), closes [#1590](https://github.com/likec4/likec4/issues/1590)
+- **diagram:** temporary disable `onlyRenderVisibleElements` ([7a8f492](https://github.com/likec4/likec4/commit/7a8f49286283df216f54da57579133c0da5b328b))
 
 ## [1.22.1](https://github.com/likec4/likec4/compare/v1.22.0...v1.22.1) (2025-02-13)
 
 ### Improvement
 
-* **diagram:** manual layout is locked by default ([a847a28](https://github.com/likec4/likec4/commit/a847a2872602db9c3cefbf0f5435e012813d7e60)), closes [#1518](https://github.com/likec4/likec4/issues/1518)
+- **diagram:** manual layout is locked by default ([a847a28](https://github.com/likec4/likec4/commit/a847a2872602db9c3cefbf0f5435e012813d7e60)), closes [#1518](https://github.com/likec4/likec4/issues/1518)
 
 ### Bug Fixes
 
-* **cli:** failing check update command ([a6b9544](https://github.com/likec4/likec4/commit/a6b954484534f23b360212b033c21f278abdbc66))
-* **export:** manual layout causes the exported landscape view losing nodes and links, when exporting to .png ([5ebbc03](https://github.com/likec4/likec4/commit/5ebbc03da84c59d62c6ca7c3e7ba65abfbc3bdaf)), closes [#1594](https://github.com/likec4/likec4/issues/1594)
-
+- **cli:** failing check update command ([a6b9544](https://github.com/likec4/likec4/commit/a6b954484534f23b360212b033c21f278abdbc66))
+- **export:** manual layout causes the exported landscape view losing nodes and links, when exporting to .png ([5ebbc03](https://github.com/likec4/likec4/commit/5ebbc03da84c59d62c6ca7c3e7ba65abfbc3bdaf)), closes [#1594](https://github.com/likec4/likec4/issues/1594)
 
 # [1.22.0](https://github.com/likec4/likec4/compare/v1.21.1...v1.22.0) (2025-02-13)
 
 ### Features
 
-* **Revamped search**
+- **Revamped search**
 
   <img src="https://github.com/user-attachments/assets/8e6ec03b-7a0f-4089-bc99-1406160985d9" />
-  
+
   thanks @davydkov, closes [#1553](https://github.com/likec4/likec4/issues/1553)
 
-* **cli:** added an option to set the listen address of serve and preview commands, thanks @pavelpykhtin, ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
-* **cli:**  check for new releases and notify if update available ([#1574](https://github.com/likec4/likec4/issues/1574)) ([d57fc40](https://github.com/likec4/likec4/commit/d57fc4063ca151131a48dced630d7ed5d1b97201)), closes [#1573](https://github.com/likec4/likec4/issues/1573)
-
+- **cli:** added an option to set the listen address of serve and preview commands, thanks @pavelpykhtin, ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
+- **cli:** check for new releases and notify if update available ([#1574](https://github.com/likec4/likec4/issues/1574)) ([d57fc40](https://github.com/likec4/likec4/commit/d57fc4063ca151131a48dced630d7ed5d1b97201)), closes [#1573](https://github.com/likec4/likec4/issues/1573)
 
 ### Bug Fixes
 
-* Extended view not generated when using dot (closes [#1582](https://github.com/likec4/likec4/issues/1582))
-
-
+- Extended view not generated when using dot (closes [#1582](https://github.com/likec4/likec4/issues/1582))
 
 ## [1.21.1](https://github.com/likec4/likec4/compare/v1.21.0...v1.21.1) (2025-02-08)
 
 ### Bug Fixes
 
-* **cli**: broken "--use-dot" in 1.21.0 (closes [#1563](https://github.com/likec4/likec4/issues/1563))
-
+- **cli**: broken "--use-dot" in 1.21.0 (closes [#1563](https://github.com/likec4/likec4/issues/1563))
 
 # [1.21.0](https://github.com/likec4/likec4/compare/v1.20.3...v1.21.0) (2025-02-07)
 
 ### 🚀 Features
 
-* **Various sizes**  
+- **Various sizes**\
   Change size of the element with new properties: `size`, `padding` and `textSize`
-  
+
   <img width="806" alt="SCR-20250207-mchv-2" src="https://github.com/user-attachments/assets/bf534b85-7b89-490b-bce1-5982e0388377" />
 
   [Documentation](https://likec4.dev/dsl/styling/#size) (thanks @davydkov)
 
-* **where in deployment views**  
-  Support `where` in deployment views predicates.   
+- **where in deployment views**\
+  Support `where` in deployment views predicates.\
   thanks @pavelpykhtin, [#1442](https://github.com/likec4/likec4/issues/1442)
-  
-* **Extending element tags**   
+
+- **Extending element tags**\
   Extend element with additional tags, links and metadata:
   ```zig
   model {
     extend cloud {
       // Add tags
       #additional-tag, #another-tag
-  
+
       // Add metadata
       metadata {
         prop1 'value1'
       }
-  
+
       // Add links
       link ../src/index.ts#L1-L10
     }
   }
   ```
   thanks @davydkov, [#1557](https://github.com/likec4/likec4/issues/1557) closes [#666](https://github.com/likec4/likec4/issues/666)
-  
-* **lsp:** semantic tokens for global styles, predicates and groups (thanks @pavelpykhtin, closes [#1182](https://github.com/likec4/likec4/issues/1182))
 
+- **lsp:** semantic tokens for global styles, predicates and groups (thanks @pavelpykhtin, closes [#1182](https://github.com/likec4/likec4/issues/1182))
 
 ### Bug Fixes
 
-* **diagram:** compound nodes miss icons (thanks @pavelpykhtin, [#1550](https://github.com/likec4/likec4/issues/1550)) ([214c951](https://github.com/likec4/likec4/commit/214c95106e03d266d02c9b529fbf666f36969716)), closes [#1482](https://github.com/likec4/likec4/issues/1482)
-* **diagram:** nonresponsive UI after navigation in RelationshipBrowser (thanks @davydkov, [a4db769](https://github.com/likec4/likec4/commit/a4db76980020682d2c96d61dbef0a4a653e9b006))
-
+- **diagram:** compound nodes miss icons (thanks @pavelpykhtin, [#1550](https://github.com/likec4/likec4/issues/1550)) ([214c951](https://github.com/likec4/likec4/commit/214c95106e03d266d02c9b529fbf666f36969716)), closes [#1482](https://github.com/likec4/likec4/issues/1482)
+- **diagram:** nonresponsive UI after navigation in RelationshipBrowser (thanks @davydkov, [a4db769](https://github.com/likec4/likec4/commit/a4db76980020682d2c96d61dbef0a4a653e9b006))
 
 ## [1.20.3](https://github.com/likec4/likec4/compare/v1.20.2...v1.20.3) (2025-02-06)
 
 ### Improvements
 
-* **cli:** Add --output-single-file flag to build give self-contained HTML file (thanks @rnwood, [#1510](https://github.com/likec4/likec4/issues/1510))
-* **diagram:** Added go-to-source button to nodes inside relationship browser (thanks @pavelpykhtin, [#1485](https://github.com/likec4/likec4/issues/1485))
+- **cli:** Add --output-single-file flag to build give self-contained HTML file (thanks @rnwood, [#1510](https://github.com/likec4/likec4/issues/1510))
+- **diagram:** Added go-to-source button to nodes inside relationship browser (thanks @pavelpykhtin, [#1485](https://github.com/likec4/likec4/issues/1485))
 
 ### Bug Fixes
 
-* **diagram:**  boundaries of a parent node calculated incorrectly on manual layout (thanks @pavelpykhtin, closes [#1516](https://github.com/likec4/likec4/issues/1516))
-* **layout:** nesting of the groups on 3+ level (thanks @pavelpykhtin, closes [#1519](https://github.com/likec4/likec4/issues/1519))
-* **diagram:** `n.incoming().flatMap is not a function` in safari (thanks @davydkov, [afd6293](https://github.com/likec4/likec4/commit/afd6293e6cf4039b4fa238158e33764d6970e4da))
-* **layout:** dont use `pack` in graphviz (thanks @davydkov, [#1512](https://github.com/likec4/likec4/issues/1512))
+- **diagram:** boundaries of a parent node calculated incorrectly on manual layout (thanks @pavelpykhtin, closes [#1516](https://github.com/likec4/likec4/issues/1516))
+- **layout:** nesting of the groups on 3+ level (thanks @pavelpykhtin, closes [#1519](https://github.com/likec4/likec4/issues/1519))
+- **diagram:** `n.incoming().flatMap is not a function` in safari (thanks @davydkov, [afd6293](https://github.com/likec4/likec4/commit/afd6293e6cf4039b4fa238158e33764d6970e4da))
+- **layout:** dont use `pack` in graphviz (thanks @davydkov, [#1512](https://github.com/likec4/likec4/issues/1512))
 
 ### New Contributors
 
 @rnwood made their first contribution in [#1510](https://github.com/likec4/likec4/issues/1510)
 
-
 ## [1.20.2](https://github.com/likec4/likec4/compare/v1.20.1...v1.20.2) (2025-02-01)
 
 ### Improvements
 
-* `multiple` style option (thanks @davydkov, [#1478](https://github.com/likec4/likec4/issues/1478)) ([5beae43](https://github.com/likec4/likec4/commit/5beae43be4bdc2f4001bb2c18fe5e5f525c8cf4d))
+- `multiple` style option (thanks @davydkov, [#1478](https://github.com/likec4/likec4/issues/1478)) ([5beae43](https://github.com/likec4/likec4/commit/5beae43be4bdc2f4001bb2c18fe5e5f525c8cf4d))
 
   <img width="400" alt="SCR-20250201-ozip" src="https://github.com/user-attachments/assets/b103ae95-f5ac-4d91-8e58-c388e3426ba0" />
 
-* **lsp:** format deployment and global predicates syntax  (thanks @pavelpykhtin, [#1484](https://github.com/likec4/likec4/issues/1484)) ([0d0d5ba](https://github.com/likec4/likec4/commit/0d0d5badc91f6ab62512bdc0b052d8ef5dee0fbe))
-* **lsp:** `likec4-language-server` as standalone server ([#1501](https://github.com/likec4/likec4/issues/1501)) ([3f5d053](https://github.com/likec4/likec4/commit/3f5d0539a48131e9e7b9c36ea68b0b6105dfb482))
-* **diagram:** animations in RelationshipsBrowser
-* **diagrams:** hide buttons and edge labels if zoom too small ([e67e2fe](https://github.com/likec4/likec4/commit/e67e2fe8c8564074a367e3d47288f45c550d31c5))
-* **diagrams:** render only visible elements if total number of nodes is more than 75 ([4d6ac08](https://github.com/likec4/likec4/commit/4d6ac0862481126fd96fa587ca12cbbe45b20354))
-
+- **lsp:** format deployment and global predicates syntax (thanks @pavelpykhtin, [#1484](https://github.com/likec4/likec4/issues/1484)) ([0d0d5ba](https://github.com/likec4/likec4/commit/0d0d5badc91f6ab62512bdc0b052d8ef5dee0fbe))
+- **lsp:** `likec4-language-server` as standalone server ([#1501](https://github.com/likec4/likec4/issues/1501)) ([3f5d053](https://github.com/likec4/likec4/commit/3f5d0539a48131e9e7b9c36ea68b0b6105dfb482))
+- **diagram:** animations in RelationshipsBrowser
+- **diagrams:** hide buttons and edge labels if zoom too small ([e67e2fe](https://github.com/likec4/likec4/commit/e67e2fe8c8564074a367e3d47288f45c550d31c5))
+- **diagrams:** render only visible elements if total number of nodes is more than 75 ([4d6ac08](https://github.com/likec4/likec4/commit/4d6ac0862481126fd96fa587ca12cbbe45b20354))
 
 ### Bug Fixes
 
-* **playground:** mantine provider should stay in the root of the app ([19aeb57](https://github.com/likec4/likec4/commit/19aeb5740733e4dcb0232d945ce527021f89085d))
-
+- **playground:** mantine provider should stay in the root of the app ([19aeb57](https://github.com/likec4/likec4/commit/19aeb5740733e4dcb0232d945ce527021f89085d))
 
 ## [1.20.1](https://github.com/likec4/likec4/compare/v1.20.0...v1.20.1) (2025-01-27)
 
 ### Bug Fixes
 
-* **vscode:** broken layout in previews (thanks @pavelpykhtin, [#1472](https://github.com/likec4/likec4/issues/1472)) ([e50cf63](https://github.com/likec4/likec4/commit/e50cf63a69732a8e30796dd9830f3efc507e1543)), closes [#1471](https://github.com/likec4/likec4/issues/1471)
-
-
+- **vscode:** broken layout in previews (thanks @pavelpykhtin, [#1472](https://github.com/likec4/likec4/issues/1472)) ([e50cf63](https://github.com/likec4/likec4/commit/e50cf63a69732a8e30796dd9830f3efc507e1543)), closes [#1471](https://github.com/likec4/likec4/issues/1471)
 
 # [1.20.0](https://github.com/likec4/likec4/compare/v1.19.2...v1.20.0) (2025-01-27)
 
 ### 🚀 Features
 
-* **Filter relationships by tag or kind of its endpoints**
+- **Filter relationships by tag or kind of its endpoints**
 
   ```zig
   include
@@ -923,140 +866,129 @@ This release marks a **huge first step** in simplifying LikeC4 integration with 
 
   [Documentation](https://likec4.dev/dsl/views/#filter) (thanks @pavelpykhtin)
 
-* **Refreshed UI and more customization options for React components**
+- **Refreshed UI and more customization options for React components**
 
   ![image](https://github.com/user-attachments/assets/ca8bbb0f-aa14-4606-906f-4c26e6d82101)
-  
+
   More options available - [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts)
 
-> [!WARNING]  
+> [!WARNING]\
 > Diagrams migrated to React 19, you may get dependency resolution issues
-
 
 ### Bug Fixes
 
-* **diagram:** added key prop for action bar content (thanks @pavelpykhtin, [#1443](https://github.com/likec4/likec4/issues/1443)) ([3d9e7f8](https://github.com/likec4/likec4/commit/3d9e7f8e62439da015fc65549b8836940cdbb465)), closes [#1424](https://github.com/likec4/likec4/issues/1424)
-* **diagram:** adjusted label and endpoint position of relationships on manual layout (thanks @pavelpykhtin, [#1445](https://github.com/likec4/likec4/issues/1445)) ([629271e](https://github.com/likec4/likec4/commit/629271ee99b6a76aa4e1764b558632d802b9921c)), closes [#1322](https://github.com/likec4/likec4/issues/1322)
-* **diagram:**  for '<iterator object>.<array function> is not a function' (thanks @pavelpykhtin, [#1463](https://github.com/likec4/likec4/issues/1463)) ([e141586](https://github.com/likec4/likec4/commit/e14158681853aedb50b272c64532fe650f493500)), closes [#1425](https://github.com/likec4/likec4/issues/1425)
-* **diagram:**  hide element toolbar when more then one element selected (thanks @pavelpykhtin, [#1446](https://github.com/likec4/likec4/issues/1446)) ([56acca0](https://github.com/likec4/likec4/commit/56acca0478724d6becf4a66a3fe395142cb4e7be)), closes [#1422](https://github.com/likec4/likec4/issues/1422)
-* **diagram:**  incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
-* **diagram:**  overlay transparency in FF (thanks @pavelpykhtin, [#1462](https://github.com/likec4/likec4/issues/1462)) ([f59308f](https://github.com/likec4/likec4/commit/f59308f02ef7e0ba4684fd30e0655aff41e2dd5c)), closes [#1420](https://github.com/likec4/likec4/issues/1420)
-* **diagram:**  incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
-* **diagram:**  Icon does not render in 'Browse relationships' view (thanks @davydkov,  closes [#1219](https://github.com/likec4/likec4/issues/1219))
-
-
+- **diagram:** added key prop for action bar content (thanks @pavelpykhtin, [#1443](https://github.com/likec4/likec4/issues/1443)) ([3d9e7f8](https://github.com/likec4/likec4/commit/3d9e7f8e62439da015fc65549b8836940cdbb465)), closes [#1424](https://github.com/likec4/likec4/issues/1424)
+- **diagram:** adjusted label and endpoint position of relationships on manual layout (thanks @pavelpykhtin, [#1445](https://github.com/likec4/likec4/issues/1445)) ([629271e](https://github.com/likec4/likec4/commit/629271ee99b6a76aa4e1764b558632d802b9921c)), closes [#1322](https://github.com/likec4/likec4/issues/1322)
+- **diagram:** for '<iterator object>.<array function> is not a function' (thanks @pavelpykhtin, [#1463](https://github.com/likec4/likec4/issues/1463)) ([e141586](https://github.com/likec4/likec4/commit/e14158681853aedb50b272c64532fe650f493500)), closes [#1425](https://github.com/likec4/likec4/issues/1425)
+- **diagram:** hide element toolbar when more then one element selected (thanks @pavelpykhtin, [#1446](https://github.com/likec4/likec4/issues/1446)) ([56acca0](https://github.com/likec4/likec4/commit/56acca0478724d6becf4a66a3fe395142cb4e7be)), closes [#1422](https://github.com/likec4/likec4/issues/1422)
+- **diagram:** incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
+- **diagram:** overlay transparency in FF (thanks @pavelpykhtin, [#1462](https://github.com/likec4/likec4/issues/1462)) ([f59308f](https://github.com/likec4/likec4/commit/f59308f02ef7e0ba4684fd30e0655aff41e2dd5c)), closes [#1420](https://github.com/likec4/likec4/issues/1420)
+- **diagram:** incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
+- **diagram:** Icon does not render in 'Browse relationships' view (thanks @davydkov, closes [#1219](https://github.com/likec4/likec4/issues/1219))
 
 ## [1.19.2](https://github.com/likec4/likec4/compare/v1.19.1...v1.19.2) (2025-01-06)
 
 ### Bug Fixes
 
-* **vscode:** disable dynamic import in vscode extension (closes [#1415](https://github.com/likec4/likec4/issues/1415))
-
+- **vscode:** disable dynamic import in vscode extension (closes [#1415](https://github.com/likec4/likec4/issues/1415))
 
 ## [1.19.1](https://github.com/likec4/likec4/compare/v1.19.0...v1.19.1) (2025-01-03)
 
 ### Fixes
 
-* **likec4**: change `package.json` custom condition to `sources` (closes [#1405](https://github.com/likec4/likec4/issues/1405))
-* **vscode**: add error handling and logging in documentation provider
-* **vscode:** do not report handled errors to telemetry ([1b16c42](https://github.com/likec4/likec4/commit/1b16c42740f2b8aea7a1b1fa6f197d65008f3886))
-
+- **likec4**: change `package.json` custom condition to `sources` (closes [#1405](https://github.com/likec4/likec4/issues/1405))
+- **vscode**: add error handling and logging in documentation provider
+- **vscode:** do not report handled errors to telemetry ([1b16c42](https://github.com/likec4/likec4/commit/1b16c42740f2b8aea7a1b1fa6f197d65008f3886))
 
 # [1.19.0](https://github.com/likec4/likec4/compare/v1.18.0...v1.19.0) (2025-01-01)
 
-### 🎄 New Years improvements 🎄 
+### 🎄 New Years improvements 🎄
 
-This release introduces significant improvements in the computation of view predicates.  
+This release introduces significant improvements in the computation of view predicates.\
 These improvements may lead to changes in the final layout, as the order of included elements is now strictly adhered to.
 
-* **fix:** error generating png behind proxy [#1374](https://github.com/likec4/likec4/issues/1374)
-* **fix:** graphviz memory seg fault for deployment views ([c067973](https://github.com/likec4/likec4/commit/c067973b54b399e56174a40c57d8130d822e545c))
-* **fix:** node toolbar is not displayed in the editor ([dc9ebac](https://github.com/likec4/likec4/commit/dc9ebace92643b582b47de66deee4eead51d21ac))
-* **fix:** parent-relations can't contain comments (thanks @davydkov, closes [#911](https://github.com/likec4/likec4/issues/911))
-* **fix:** relation being yielded twice (thanks @pavelpykhtin, [#1364](https://github.com/likec4/likec4/issues/1364)) ([#1384](https://github.com/likec4/likec4/issues/1384)) ([bd0bc03](https://github.com/likec4/likec4/commit/bd0bc0303209ea069821d4a9debb193fd958b8aa))
-* **fix:** reset connection points on self-referencing relations (thanks @pavelpykhtin, [#1383](https://github.com/likec4/likec4/issues/1383)) ([c3c57ab](https://github.com/likec4/likec4/commit/c3c57abf1960395841433bb64943e2ef46114145))
-* **vscode:** extension breaks on bad symbolic links ([ce22e3e](https://github.com/likec4/likec4/commit/ce22e3ed62034c035dbf19f19a3fe0fe38cb5347)), closes [#1321](https://github.com/likec4/likec4/issues/1321)
-* **vscode:** invalid usage of performance marks [#1350](https://github.com/likec4/likec4/issues/1350) ([#1359](https://github.com/likec4/likec4/issues/1359)) ([826fb6f](https://github.com/likec4/likec4/commit/826fb6f1d64c342c46d51816a0c48be8caeaa093))
-* **vscode:** downgrade vscode and @types/vscode dependencies to version 1.84.0 for stackblitz compatibility ([e955761](https://github.com/likec4/likec4/commit/e955761a597651fc3533f629059f1450a9a51ac8))
-* **fix:** unresolved parent in model ([25a3774](https://github.com/likec4/likec4/commit/25a37749ffd59eed2610107e08682f1986797d51))
-  
+- **fix:** error generating png behind proxy [#1374](https://github.com/likec4/likec4/issues/1374)
+- **fix:** graphviz memory seg fault for deployment views ([c067973](https://github.com/likec4/likec4/commit/c067973b54b399e56174a40c57d8130d822e545c))
+- **fix:** node toolbar is not displayed in the editor ([dc9ebac](https://github.com/likec4/likec4/commit/dc9ebace92643b582b47de66deee4eead51d21ac))
+- **fix:** parent-relations can't contain comments (thanks @davydkov, closes [#911](https://github.com/likec4/likec4/issues/911))
+- **fix:** relation being yielded twice (thanks @pavelpykhtin, [#1364](https://github.com/likec4/likec4/issues/1364)) ([#1384](https://github.com/likec4/likec4/issues/1384)) ([bd0bc03](https://github.com/likec4/likec4/commit/bd0bc0303209ea069821d4a9debb193fd958b8aa))
+- **fix:** reset connection points on self-referencing relations (thanks @pavelpykhtin, [#1383](https://github.com/likec4/likec4/issues/1383)) ([c3c57ab](https://github.com/likec4/likec4/commit/c3c57abf1960395841433bb64943e2ef46114145))
+- **vscode:** extension breaks on bad symbolic links ([ce22e3e](https://github.com/likec4/likec4/commit/ce22e3ed62034c035dbf19f19a3fe0fe38cb5347)), closes [#1321](https://github.com/likec4/likec4/issues/1321)
+- **vscode:** invalid usage of performance marks [#1350](https://github.com/likec4/likec4/issues/1350) ([#1359](https://github.com/likec4/likec4/issues/1359)) ([826fb6f](https://github.com/likec4/likec4/commit/826fb6f1d64c342c46d51816a0c48be8caeaa093))
+- **vscode:** downgrade vscode and @types/vscode dependencies to version 1.84.0 for stackblitz compatibility ([e955761](https://github.com/likec4/likec4/commit/e955761a597651fc3533f629059f1450a9a51ac8))
+- **fix:** unresolved parent in model ([25a3774](https://github.com/likec4/likec4/commit/25a37749ffd59eed2610107e08682f1986797d51))
 
 # [1.18.0](https://github.com/likec4/likec4/compare/v1.17.1...v1.18.0) (2024-12-12)
 
 ### 🚀 Features
 
-* **Deployment Model**  
+- **Deployment Model**\
   One of the most highly requested additions to our project!
   This feature introduces a physical model with its own structure and elements, referencing the logical model while inheriting its relationships.
-  
+
   ![SCR-20241212-posb](https://github.com/user-attachments/assets/1db429ae-14c0-4f66-9fc1-294c7b6fc6c5)
 
-  The syntax and approach remain consistent with existing ones.  
-  This is just the first step, and we would love your feedback!  
+  The syntax and approach remain consistent with existing ones.\
+  This is just the first step, and we would love your feedback!\
   [Documentation](https://likec4.dev/dsl/deployment/model/) and [RFC](https://github.com/likec4/likec4/discussions/1269)
 
-* **Include all descendants**  
-  New predicate selector `.**` lets you include all descendants, making it especially useful for deployment views.  
-  Thanks to @Cyclonit for contributing! 🎉 [#1310](https://github.com/likec4/likec4/issues/1310), closes [#1259](https://github.com/likec4/likec4/issues/1259)  
+- **Include all descendants**\
+  New predicate selector `.**` lets you include all descendants, making it especially useful for deployment views.\
+  Thanks to @Cyclonit for contributing! 🎉 [#1310](https://github.com/likec4/likec4/issues/1310), closes [#1259](https://github.com/likec4/likec4/issues/1259)
 
-* **Typesafe LikeC4 model**  
+- **Typesafe LikeC4 model**\
   Generate TypeScript code from your model, complete with type definitions for elements and views. Enjoy code completion and type checks in every React hook or API call!
 
   ![SCR-20241212-posb](https://github.com/user-attachments/assets/c6c4196d-43ae-4194-b947-45e9685a0a71)
-  
+
   📖 Documentation is currently in progress. Stay tuned!
 
-* **UI improvements**
+- **UI improvements**
 
-  - Added descriptions and links to the relationship context menu.  
+  - Added descriptions and links to the relationship context menu.\
     Thanks to @pavelpykhtin! [#1307](https://github.com/likec4/likec4/issues/1307)
 
-  - Now supports carriage returns in titles.  
+  - Now supports carriage returns in titles.\
     Thanks, @davydkov! Closes [#1324](https://github.com/likec4/likec4/issues/1324)
-
-
-
 
 ## [1.17.1](https://github.com/likec4/likec4/compare/v1.17.0...v1.17.1) (2024-11-28)
 
 ### Improvements
 
-* **diagrams:** smart Layout commands (thanks @pavelpykhtin, [#1238](https://github.com/likec4/likec4/issues/1238))
-* **diagrams:** diagram search (thanks @pavelpykhtin, [#1244](https://github.com/likec4/likec4/issues/1244))
-* **diagrams:** highlight in Diagram Search (thanks @Cyclonit, [#1251](https://github.com/likec4/likec4/issues/1251))
-* **diagrams:** button to open relationships overlay (thanks @pavelpykhtin, [#1242](https://github.com/likec4/likec4/issues/1242))
-  
+- **diagrams:** smart Layout commands (thanks @pavelpykhtin, [#1238](https://github.com/likec4/likec4/issues/1238))
+- **diagrams:** diagram search (thanks @pavelpykhtin, [#1244](https://github.com/likec4/likec4/issues/1244))
+- **diagrams:** highlight in Diagram Search (thanks @Cyclonit, [#1251](https://github.com/likec4/likec4/issues/1251))
+- **diagrams:** button to open relationships overlay (thanks @pavelpykhtin, [#1242](https://github.com/likec4/likec4/issues/1242))
+
 ### Bug Fixes
 
-* **export:** enhance PNG export with viewport sizing and HTTPS error handling (thanks @davydkov)
-* **diagrams:** style properties being ignored for dynamic relationships (thanks @pavelpykhtin, [#1280](https://github.com/likec4/likec4/issues/1280))
-* **diagrams:** styles for webcomponent  (thanks @pavelpykhtin, [#1297](https://github.com/likec4/likec4/issues/1297))
-  
+- **export:** enhance PNG export with viewport sizing and HTTPS error handling (thanks @davydkov)
+- **diagrams:** style properties being ignored for dynamic relationships (thanks @pavelpykhtin, [#1280](https://github.com/likec4/likec4/issues/1280))
+- **diagrams:** styles for webcomponent (thanks @pavelpykhtin, [#1297](https://github.com/likec4/likec4/issues/1297))
 
 # [1.17.0](https://github.com/likec4/likec4/compare/v1.16.0...v1.17.0) (2024-11-15)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **Element details**  
-  Notation, full description, links, metatdata, tags, relationships (global/view scopes), other views...   
+- **Element details**\
+  Notation, full description, links, metatdata, tags, relationships (global/view scopes), other views...\
   Disabled by default in React components (to turn on use `enableElementDetails`)
 
   https://github.com/user-attachments/assets/52966fab-9662-4132-974b-2c68a6a879cd
-  
-* Render icon on containers  (thanks @davydkov, closes [#1195](https://github.com/likec4/likec4/issues/1195))
-* Disable icon with `none`  (thanks @davydkov, closes [#1026](https://github.com/likec4/likec4/issues/1026))
-* Traverse symlinks in the workspace (thanks @hubertmis, [#1213](https://github.com/likec4/likec4/issues/1213))
+
+- Render icon on containers (thanks @davydkov, closes [#1195](https://github.com/likec4/likec4/issues/1195))
+- Disable icon with `none` (thanks @davydkov, closes [#1026](https://github.com/likec4/likec4/issues/1026))
+- Traverse symlinks in the workspace (thanks @hubertmis, [#1213](https://github.com/likec4/likec4/issues/1213))
 
 ### Bug Fixes
 
-* **diagram:** do not render long description texts  (thanks @davydkov, closes [#1227](https://github.com/likec4/likec4/issues/1227))
-
+- **diagram:** do not render long description texts (thanks @davydkov, closes [#1227](https://github.com/likec4/likec4/issues/1227))
 
 # [1.16.0](https://github.com/likec4/likec4/compare/v1.15.1...v1.16.0) (2024-11-04)
 
-### 🚀 Features  
+### 🚀 Features
 
-* Global predicates (thanks @hubertmis, [#1173](https://github.com/likec4/likec4/issues/1173))
+- Global predicates (thanks @hubertmis, [#1173](https://github.com/likec4/likec4/issues/1173))
 
   ```zig
   global {
@@ -1081,23 +1013,21 @@ These improvements may lead to changes in the final layout, as the order of incl
 
 ### Bug Fixes
 
-* relation excluded but edge is not updated (thanks @pavelpykhtin, closes [#1193](https://github.com/likec4/likec4/issues/1193))
-
+- relation excluded but edge is not updated (thanks @pavelpykhtin, closes [#1193](https://github.com/likec4/likec4/issues/1193))
 
 ## [1.15.1](https://github.com/likec4/likec4/compare/v1.15.0...v1.15.1) (2024-10-30)
 
 ### Fixes and improvements
 
-* apply global styles in all building scenarios (thanks @hubertmis, closes [#1180](https://github.com/likec4/likec4/issues/1180))
-* `where` predicate on apply custom properties to relation (thanks @pavelpykhtin, closes [#1176](https://github.com/likec4/likec4/issues/1176))
-* formatter support for groups and global styles (thanks @pavelpykhtin, [#1177](https://github.com/likec4/likec4/issues/1177))
-
+- apply global styles in all building scenarios (thanks @hubertmis, closes [#1180](https://github.com/likec4/likec4/issues/1180))
+- `where` predicate on apply custom properties to relation (thanks @pavelpykhtin, closes [#1176](https://github.com/likec4/likec4/issues/1176))
+- formatter support for groups and global styles (thanks @pavelpykhtin, [#1177](https://github.com/likec4/likec4/issues/1177))
 
 # [1.15.0](https://github.com/likec4/likec4/compare/v1.14.0...v1.15.0) (2024-10-26)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **Style groups:**  
+- **Style groups:**\
   Global styles can be grouped and applied together:
   ```zig
   global {
@@ -1112,20 +1042,20 @@ These improvements may lead to changes in the final layout, as the order of incl
       }
     }
   }
-  
+
   views {
     view mobileApp of mobileApplication {
       include *
-  
+
       // Apply common styles
       global style common_styles
     }
   }
   ```
-  Also, global styles and groups can be referenced in  `views {}` blocks (local styles) and applied to all views in a block.  
+  Also, global styles and groups can be referenced in `views {}` blocks (local styles) and applied to all views in a block.\
   [Documentation](https://likec4.dev/dsl/views/#shared-style-groups) (thanks @hubertmis, [#1143](https://github.com/likec4/likec4/issues/1143), [#1161](https://github.com/likec4/likec4/issues/1161))
 
-* **Adhoc `group` elements**
+- **Adhoc `group` elements**
   ```zig
   view {
     group 'Third-parties' {
@@ -1147,23 +1077,22 @@ These improvements may lead to changes in the final layout, as the order of incl
 
 ### Fixes and improvements
 
-* **diagram**: bundled icons vary in color scheme (thanks @pavelpykhtin, [#1149](https://github.com/likec4/likec4/issues/1149), closes [#1097](https://github.com/likec4/likec4/issues/1097))
-* **diagram:** control points are not draggable under the edge label (thanks @pavelpykhtin, [#1104](https://github.com/likec4/likec4/issues/1104))
-* **lsp:** style for relationship predicates `where` together `with`, not work style on (thanks @pavelpykhtin, [#1147](https://github.com/likec4/likec4/issues/1147) closes [#1144](https://github.com/likec4/likec4/issues/1144))
-* **react:** react component filter stopped working (thanks @davydkov, closes [#1145](https://github.com/likec4/likec4/issues/1145)
-* **vscode:** enhance style completion snippets (thanks @davydkov)
-
+- **diagram**: bundled icons vary in color scheme (thanks @pavelpykhtin, [#1149](https://github.com/likec4/likec4/issues/1149), closes [#1097](https://github.com/likec4/likec4/issues/1097))
+- **diagram:** control points are not draggable under the edge label (thanks @pavelpykhtin, [#1104](https://github.com/likec4/likec4/issues/1104))
+- **lsp:** style for relationship predicates `where` together `with`, not work style on (thanks @pavelpykhtin, [#1147](https://github.com/likec4/likec4/issues/1147) closes [#1144](https://github.com/likec4/likec4/issues/1144))
+- **react:** react component filter stopped working (thanks @davydkov, closes [#1145](https://github.com/likec4/likec4/issues/1145)
+- **vscode:** enhance style completion snippets (thanks @davydkov)
 
 # [1.14.0](https://github.com/likec4/likec4/compare/v1.13.0...v1.14.0) (2024-10-20)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **View relationship decomposition**:  
+- **View relationship decomposition**:\
   Relationship `Cloud -> Amazon` from [examples](https://github.com/likec4/likec4/tree/main/examples/diagrams-dev/likec4):
-  
+
   ![SCR-20241020-dgyj](https://github.com/user-attachments/assets/3983d564-bc7a-4f98-9509-5788064ce7cb)
 
-* **Global styles:**  
+- **Global styles:**\
   Shared global styles
   ```zig
   global {
@@ -1172,7 +1101,7 @@ These improvements may lead to changes in the final layout, as the order of incl
       opacity 10%
     }
   }
-  
+
   views {
     view of app {  
       global style mute_all
@@ -1184,21 +1113,19 @@ These improvements may lead to changes in the final layout, as the order of incl
   ```
   [Documentation](https://likec4.dev/dsl/views/#shared-global-styles) (thanks @hubertmis, closes [#1058](https://github.com/likec4/likec4/issues/1058))
 
-* **Build with `--base './'`**:  
+- **Build with `--base './'`**:\
   Allows to build a relocatable website (thanks @rumpelrausch, closes [#1111](https://github.com/likec4/likec4/issues/1111))
 
 ### Bug Fixes
 
-* **diagram:** edges with no nearby nodes are not visible in the canvas (thanks @davydkov, closes [#1109](https://github.com/likec4/likec4/issues/1109))
-
-  
+- **diagram:** edges with no nearby nodes are not visible in the canvas (thanks @davydkov, closes [#1109](https://github.com/likec4/likec4/issues/1109))
 
 # [1.13.0](https://github.com/likec4/likec4/compare/v1.12.2...v1.13.0) (2024-10-18)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **Browse relationships**
-  
+- **Browse relationships**
+
   ![SCR-20241018-didx](https://github.com/user-attachments/assets/6565e3da-3f9e-4991-8d2c-e28b88c94375)
 
   Disabled by default in generated components, to enable:
@@ -1208,13 +1135,13 @@ These improvements may lead to changes in the final layout, as the order of incl
   <LikeC4View
     viewId="index"
     enableRelationshipsBrowser
-    />
+  />
   ```
   Share your feedback in our [Discussions](https://github.com/likec4/likec4/discussions)
 
-* **Local styles:**  
+- **Local styles:**\
   Shared styles in views block (thanks @hubertmis, [#1113](https://github.com/likec4/likec4/pull/1113))
-  
+
   ```zig
   views {
     // apply to all views in this views block
@@ -1234,52 +1161,48 @@ These improvements may lead to changes in the final layout, as the order of incl
   ```
   [Documentation](https://likec4.dev/dsl/views/#shared-local-styles)
 
-* **Alignment tools:**  
-  Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))
-  
+- **Alignment tools:**\
+  Implemented alignment tools for manual layouting (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))
+
   ![alignment-tools](https://github.com/user-attachments/assets/9d6e5b1b-e2af-4cce-bac5-b0a3a1dfc73b)
 
 ### Bug Fixes
 
-* **react:** `crow` arrow type (thanks @pavelpykhtin, [#1092](https://github.com/likec4/likec4/issues/1092))
-* **react:** `controls` property to show/hide top left panel ([b36880f](https://github.com/likec4/likec4/commit/b36880f7797e011eec54760a88e3190237140c45))
-* **react:** `styleNonce` property for ReactLikeC4 ([0c78314](https://github.com/likec4/likec4/commit/0c7831419034c8a9a47dc7ded597270987f81b06))
-* **react:** Text colors / backdrop not updated until page refresh when toggling between light and dark mode [#1098](https://github.com/likec4/likec4/issues/1098) ([6bb6cf3](https://github.com/likec4/likec4/commit/6bb6cf384efbacc0d98951a7e1f915147e7eb4a0))
-* **vscode:** autocompletion of "specification", "views" and "model" broken (closes [#1102](https://github.com/likec4/likec4/issues/1102))
-
+- **react:** `crow` arrow type (thanks @pavelpykhtin, [#1092](https://github.com/likec4/likec4/issues/1092))
+- **react:** `controls` property to show/hide top left panel ([b36880f](https://github.com/likec4/likec4/commit/b36880f7797e011eec54760a88e3190237140c45))
+- **react:** `styleNonce` property for ReactLikeC4 ([0c78314](https://github.com/likec4/likec4/commit/0c7831419034c8a9a47dc7ded597270987f81b06))
+- **react:** Text colors / backdrop not updated until page refresh when toggling between light and dark mode [#1098](https://github.com/likec4/likec4/issues/1098) ([6bb6cf3](https://github.com/likec4/likec4/commit/6bb6cf384efbacc0d98951a7e1f915147e7eb4a0))
+- **vscode:** autocompletion of "specification", "views" and "model" broken (closes [#1102](https://github.com/likec4/likec4/issues/1102))
 
 ## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
 
 ### Improvements
 
-* **vscode:** transparent layout spacing panel for a clearer preview of changes
+- **vscode:** transparent layout spacing panel for a clearer preview of changes
 
 ### Bug Fixes
 
-* unable to open diagram from Sidebar (thanks @davydkov, closes [#1091](https://github.com/likec4/likec4/issues/1091))
-
+- unable to open diagram from Sidebar (thanks @davydkov, closes [#1091](https://github.com/likec4/likec4/issues/1091))
 
 ## [1.12.1](https://github.com/likec4/likec4/compare/v1.12.0...v1.12.1) (2024-10-10)
 
 ### Improvements
 
-* **preview:** change grouping in sidebar
-* **react:** change layout spacings from the UI
-* **react:** toolbar to change styles (instead of panel)
+- **preview:** change grouping in sidebar
+- **react:** change layout spacings from the UI
+- **react:** toolbar to change styles (instead of panel)
 
 ### Bug Fixes
 
-* **vscode:** nonce parameter for marking dynamic styles inserted by components (thanks @pavelpykhtin, [#1065](https://github.com/likec4/likec4/issues/1065) ([89be0f1](https://github.com/likec4/likec4/commit/89be0f12e4c0b5bab0e56dc7bf624e928768d16a))
-* **react:** react component open full-screen mode (thanks @davydkov, [4cd1464](https://github.com/likec4/likec4/commit/4cd1464b7f861a9520f05fd8616cfd6aee141fa7)), closes [#1055](https://github.com/likec4/likec4/issues/1055)
-* **vscode:** space being added/removed before colon (thanks @pavelpykhtin, [#1074](https://github.com/likec4/likec4/issues/1074)) ([fd3624c](https://github.com/likec4/likec4/commit/fd3624c74be1ec71253c48f110934c7b236dc313))
-
-
+- **vscode:** nonce parameter for marking dynamic styles inserted by components (thanks @pavelpykhtin, [#1065](https://github.com/likec4/likec4/issues/1065) ([89be0f1](https://github.com/likec4/likec4/commit/89be0f12e4c0b5bab0e56dc7bf624e928768d16a))
+- **react:** react component open full-screen mode (thanks @davydkov, [4cd1464](https://github.com/likec4/likec4/commit/4cd1464b7f861a9520f05fd8616cfd6aee141fa7)), closes [#1055](https://github.com/likec4/likec4/issues/1055)
+- **vscode:** space being added/removed before colon (thanks @pavelpykhtin, [#1074](https://github.com/likec4/likec4/issues/1074)) ([fd3624c](https://github.com/likec4/likec4/commit/fd3624c74be1ec71253c48f110934c7b236dc313))
 
 # [1.12.0](https://github.com/likec4/likec4/compare/v1.11.0...v1.12.0) (2024-10-07)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **dsl:** params to adjust autolayout (thanks @pavelpykhtin, [#1053](https://github.com/likec4/likec4/issues/1053))
+- **dsl:** params to adjust autolayout (thanks @pavelpykhtin, [#1053](https://github.com/likec4/likec4/issues/1053))
 
   ```zig
   view {
@@ -1289,48 +1212,45 @@ These improvements may lead to changes in the final layout, as the order of incl
   ```
   [Documentation](https://likec4.dev/dsl/views/#auto-layout)
 
-* **dsl:** add Azure iconset (thanks @msisolak [#1040](https://github.com/likec4/likec4/pull/1040))
-* publish extension to Open VSX (thanks @davydkov, [#908](https://github.com/likec4/likec4/issues/908))
-
+- **dsl:** add Azure iconset (thanks @msisolak [#1040](https://github.com/likec4/likec4/pull/1040))
+- publish extension to Open VSX (thanks @davydkov, [#908](https://github.com/likec4/likec4/issues/908))
 
 ### Bug Fixes
 
-* **diagram:** unable to drag multiple nodes (thanks @pavelpykhtin, [#1043](https://github.com/likec4/likec4/issues/1043))
-* **diagram:** long node names overflow in node options panel (thanks @pavelpykhtin)
-* **diagram:** deleted control point being reverted on mouse up (thanks @pavelpykhtin, [#1044](https://github.com/likec4/likec4/pull/1044) )
-* **vscode**: extra space in dynamic step (thanks @pavelpykhtin, [#1056](https://github.com/likec4/likec4/issues/1056))
-* **app:** configure kroki url with `VITE_KROKI_D2_SVG_URL`  (thanks @davydkov, [#1060](https://github.com/likec4/likec4/issues/1060))
-* **deps:** upgrade playwright to 1.47.2 ([73758c6](https://github.com/likec4/likec4/commit/73758c69825642bc62eb15e33e428352f5116cee))
-* **vscode:** `--enable-source-maps` in node extension ([eef8153](https://github.com/likec4/likec4/commit/eef8153462007c8249e70dc289eef9993080a730))
-
-
+- **diagram:** unable to drag multiple nodes (thanks @pavelpykhtin, [#1043](https://github.com/likec4/likec4/issues/1043))
+- **diagram:** long node names overflow in node options panel (thanks @pavelpykhtin)
+- **diagram:** deleted control point being reverted on mouse up (thanks @pavelpykhtin, [#1044](https://github.com/likec4/likec4/pull/1044) )
+- **vscode**: extra space in dynamic step (thanks @pavelpykhtin, [#1056](https://github.com/likec4/likec4/issues/1056))
+- **app:** configure kroki url with `VITE_KROKI_D2_SVG_URL` (thanks @davydkov, [#1060](https://github.com/likec4/likec4/issues/1060))
+- **deps:** upgrade playwright to 1.47.2 ([73758c6](https://github.com/likec4/likec4/commit/73758c69825642bc62eb15e33e428352f5116cee))
+- **vscode:** `--enable-source-maps` in node extension ([eef8153](https://github.com/likec4/likec4/commit/eef8153462007c8249e70dc289eef9993080a730))
 
 # [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **Relationship details**
+- **Relationship details**
 
   On hover displays direct relationships and resolved from nested. If relationship has `navigateTo` - displays navigation link
-    
+
   <img width="681" alt="SCR-20240924-uhpz" src="https://github.com/user-attachments/assets/de90231d-2eaa-4b20-b508-f3f72e420d24">
 
   To disable - set `showRelationshipDetails={false}` in react component
 
-* **Improved layout editing**
+- **Improved layout editing**
 
-  Thanks to @pavelpykhtin, now it is possible add control points with right click, or reset all control points  
+  Thanks to @pavelpykhtin, now it is possible add control points with right click, or reset all control points\
   Example here [#1013](https://github.com/likec4/likec4/pull/1013)
 
-* **New API `LikeC4Model.Layouted`**
+- **New API `LikeC4Model.Layouted`**
 
   Difference between `LikeC4Model.Computed` and `LikeC4Model.Layouted` - is that second one also includes layout data (dimensions, positions), that is needed for rendering
 
   ```ts
   import { LikeC4 } from 'likec4'
-  
+
   const likec4 = await LikeC4.fromWorkspace()
-  
+
   // Sync and fast
   const model = likec4.computedModel()
   model
@@ -1345,28 +1265,26 @@ These improvements may lead to changes in the final layout, as the order of incl
 
   Generated React component also exports instance of `LikeC4Model.Layouted`, and hooks to use inside your app.
 
-
 ## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
 
 ### Bug Fixes
 
-* **dsl:** derived connection from multiple relationships with same endpoints always picks the last relationship ([12b1899](https://github.com/likec4/likec4/commit/12b1899a21e587f2d41ecec48fb535b8b45fcd69)), closes [#990](https://github.com/likec4/likec4/issues/990)
-* **vscode:** preview does not work in remote workspaces ([90e4725](https://github.com/likec4/likec4/commit/90e4725231ec011b88919d70e38311694f1581c1)), closes [#1004](https://github.com/likec4/likec4/issues/1004)
-* **react:** edge changes being reverted on mouse up  (thanks @pavelpykhtin, [#1008](https://github.com/likec4/likec4/issues/1008))
-* **vscode:** space being inserted into relation's source  (thanks @pavelpykhtin, [#1001](https://github.com/likec4/likec4/issues/1001))
-
+- **dsl:** derived connection from multiple relationships with same endpoints always picks the last relationship ([12b1899](https://github.com/likec4/likec4/commit/12b1899a21e587f2d41ecec48fb535b8b45fcd69)), closes [#990](https://github.com/likec4/likec4/issues/990)
+- **vscode:** preview does not work in remote workspaces ([90e4725](https://github.com/likec4/likec4/commit/90e4725231ec011b88919d70e38311694f1581c1)), closes [#1004](https://github.com/likec4/likec4/issues/1004)
+- **react:** edge changes being reverted on mouse up (thanks @pavelpykhtin, [#1008](https://github.com/likec4/likec4/issues/1008))
+- **vscode:** space being inserted into relation's source (thanks @pavelpykhtin, [#1001](https://github.com/likec4/likec4/issues/1001))
 
 # [1.10.0](https://github.com/likec4/likec4/compare/v1.9.0...v1.10.0) (2024-09-12)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **Parallel** steps and **notes** in dynamic views
-  
+- **Parallel** steps and **notes** in dynamic views
+
   <img width="661" alt="image" src="https://github.com/user-attachments/assets/8454d296-6ffe-4ea2-a9d8-0d72aff70105">
   [Playground example](https://playground.likec4.dev/w/dynamic/)
 
-* **Navigation** for relationships (zoom-in to dynamic views)
-  
+- **Navigation** for relationships (zoom-in to dynamic views)
+
   ```zig
   model {
     webApp -> backend.api {
@@ -1377,11 +1295,11 @@ These improvements may lead to changes in the final layout, as the order of incl
   ```
   [Documentation](https://likec4.dev/dsl/relationships/#navigate-to)
 
-* **Code Formatter** in VSCode Extension (thanks @pavelpykhtin, to [#979](https://github.com/likec4/likec4/issues/979))
+- **Code Formatter** in VSCode Extension (thanks @pavelpykhtin, to [#979](https://github.com/likec4/likec4/issues/979))
 
-* New component `ReactLikeC4`
+- New component `ReactLikeC4`
   Low-level component with more control and event listeners.
-  
+
   ```tsx
   const App = () => {
     return (
@@ -1400,30 +1318,25 @@ These improvements may lead to changes in the final layout, as the order of incl
   }
   ```
   [Documentation](https://likec4.dev/tooling/codegen/#reactlikec4)
-  
 
 ### Bug Fixes
 
-* relative links are translated into undeployable `file://` (@davydkov [#982](https://github.com/likec4/likec4/issues/982)) ([7b0ea80](https://github.com/likec4/likec4/commit/7b0ea800ad56307d85b2d5d36d177a19280e2e6c)), closes [#978](https://github.com/likec4/likec4/issues/978)
-
-
-
-
+- relative links are translated into undeployable `file://` (@davydkov [#982](https://github.com/likec4/likec4/issues/982)) ([7b0ea80](https://github.com/likec4/likec4/commit/7b0ea800ad56307d85b2d5d36d177a19280e2e6c)), closes [#978](https://github.com/likec4/likec4/issues/978)
 
 # [1.9.0](https://github.com/likec4/likec4/compare/v1.8.1...v1.9.0) (2024-09-07)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **LikeC4 Model API**
+- **LikeC4 Model API**
   Access and traverse your architecture model programmatically using the LikeC4 Model API.
   ```ts
-  import { LikeC4 } from "likec4"
+  import { LikeC4 } from 'likec4'
 
   const likec4 = await LikeC4.fromWorkspace(`....`)
-  
+
   // Validation errors
   console.log(likec4.getErrors())
-  
+
   // Traverse the model
   const model = likec4.model()
   model
@@ -1431,18 +1344,18 @@ These improvements may lead to changes in the final layout, as the order of incl
     .incoming() // relationships incoming to the element
     .filter(r => r.tags.includes('http')) // filter by tags
     .map(r => r.source) // get source elements
-  
+
   // Layouted views
   const diagrams = await likec4.diagrams()
   ```
 
   [Documentation](https://likec4.dev/tooling/model-api/)
-  
-* **Custom colors**
+
+- **Custom colors**
   ```zig
   specification {
     color custom #6BD731
-  
+
     element customer {
       notation "Person, Customer"
       style {
@@ -1453,21 +1366,20 @@ These improvements may lead to changes in the final layout, as the order of incl
   }
   ```
   Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#916](https://github.com/likec4/likec4/issues/916)
-  
+
 ### Bug Fixes
 
-* **vite-plugin:** fail-safe `virtual:likec4/overview-graph` ([ed85e5f](https://github.com/likec4/likec4/commit/ed85e5f495db7907854e9c7590535eefed234be0)), closes [#959](https://github.com/likec4/likec4/issues/959)
-
+- **vite-plugin:** fail-safe `virtual:likec4/overview-graph` ([ed85e5f](https://github.com/likec4/likec4/commit/ed85e5f495db7907854e9c7590535eefed234be0)), closes [#959](https://github.com/likec4/likec4/issues/959)
 
 ## [1.8.1](https://github.com/likec4/likec4/compare/v1.8.0...v1.8.1) (2024-08-30)
 
 ### Bug Fixes
 
-* **dsl:** warn message about ambiguous alternatives
+- **dsl:** warn message about ambiguous alternatives
 
 ### Improvements
 
-* **dsl:** allow `this` and `it` as target
+- **dsl:** allow `this` and `it` as target
   ```zig
   model {
     frontend = component  {
@@ -1476,16 +1388,15 @@ These improvements may lead to changes in the final layout, as the order of incl
   }
   ```
 
-
 # [1.8.0](https://github.com/likec4/likec4/compare/v1.7.4...v1.8.0) (2024-08-27)
 
-### 🚀 Features  
+### 🚀 Features
 
-* View notations
-  
+- View notations
+
   ```zig
   specification {
-  
+
     element customer {
       notation "Person, Customer"
       style {
@@ -1493,7 +1404,7 @@ These improvements may lead to changes in the final layout, as the order of incl
         color green
       }
     }
-  
+
     element staff {
       notation "Person, Staff"
       style {
@@ -1504,30 +1415,29 @@ These improvements may lead to changes in the final layout, as the order of incl
   ```
 
   [Documentation](https://likec4.dev/dsl/notations/)
-  
+
   <img width="436" alt="SCR-20240827-nhav" src="https://github.com/user-attachments/assets/bcc151e2-6c31-4b72-8651-a39ba79351d0">
 
-* `technology` for relationships  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#576](https://github.com/likec4/likec4/issues/576))
-* `title` for links  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#871](https://github.com/likec4/likec4/issues/871))
-* `metadata` in DSL (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin))
-* [experimental] overview all views with `use-overview` flag in cli
+- `technology` for relationships (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#576](https://github.com/likec4/likec4/issues/576))
+- `title` for links (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#871](https://github.com/likec4/likec4/issues/871))
+- `metadata` in DSL (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin))
+- [experimental] overview all views with `use-overview` flag in cli
 
 ## [1.7.4](https://github.com/likec4/likec4/compare/v1.7.3...v1.7.4) (2024-08-17)
 
 ### Bug Fixes
 
-* broken export to png
-* add downloadedRef to track if download has already occurred
-* compact diagram title panel and zoom out on double click
-
+- broken export to png
+- add downloadedRef to track if download has already occurred
+- compact diagram title panel and zoom out on double click
 
 ## [1.7.3](https://github.com/likec4/likec4/compare/v1.7.2...v1.7.3) (2024-08-16)
 
 ### Improvements
 
-* **dsl:** hiding relationship titles in views (closes [#910](https://github.com/likec4/likec4/issues/910))
-* **react:** `where` filter on react components (closes [#872](https://github.com/likec4/likec4/issues/872), [documentation](https://likec4.dev/tooling/codegen/#filter))
-  
+- **dsl:** hiding relationship titles in views (closes [#910](https://github.com/likec4/likec4/issues/910))
+- **react:** `where` filter on react components (closes [#872](https://github.com/likec4/likec4/issues/872), [documentation](https://likec4.dev/tooling/codegen/#filter))
+
   ```jsx
   // Display elements and relationships where:
   // - tag is not 'legacy'
@@ -1541,51 +1451,45 @@ These improvements may lead to changes in the final layout, as the order of incl
         {
           or: [
             { tag: { eq: 'v1' } },
-            { tag: { eq: 'v2' } }
-          ]
-        }
-      ]
-    }}/>
+            { tag: { eq: 'v2' } },
+          ],
+        },
+      ],
+    }} />
   ```
-* **react:** export to png in new tab ([198d79e](https://github.com/likec4/likec4/commit/198d79e19d99a8e68393dad76ee6f670e44e491e))
-* **cli:** export png to flat directory ([bcd23dd](https://github.com/likec4/likec4/commit/bcd23ddf46359a354d262c1adf47b60fd46bde61))
-* **cli:** warn layout drifts ([49c1100](https://github.com/likec4/likec4/commit/49c1100fa09d15a10913e76f41f8d83730515577))
-
-
+- **react:** export to png in new tab ([198d79e](https://github.com/likec4/likec4/commit/198d79e19d99a8e68393dad76ee6f670e44e491e))
+- **cli:** export png to flat directory ([bcd23dd](https://github.com/likec4/likec4/commit/bcd23ddf46359a354d262c1adf47b60fd46bde61))
+- **cli:** warn layout drifts ([49c1100](https://github.com/likec4/likec4/commit/49c1100fa09d15a10913e76f41f8d83730515577))
 
 ## [1.7.2](https://github.com/likec4/likec4/compare/v1.7.1...v1.7.2) (2024-08-10)
 
 ### Bug Fixes
 
-* **vscode:** regression with preview panel ([ba61a7b](https://github.com/likec4/likec4/commit/ba61a7b7064150d3bc3ed69444b201991a9bfa84))
-
-
+- **vscode:** regression with preview panel ([ba61a7b](https://github.com/likec4/likec4/commit/ba61a7b7064150d3bc3ed69444b201991a9bfa84))
 
 ## [1.7.1](https://github.com/likec4/likec4/compare/v1.7.0...v1.7.1) (2024-08-10)
 
 ### Bug Fixes
 
-* **cli:** regression on `build` command ([5ebb251](https://github.com/likec4/likec4/commit/5ebb251d76ff4a68c200d91f9bde4b2d8f11a6fa))
-
-
+- **cli:** regression on `build` command ([5ebb251](https://github.com/likec4/likec4/commit/5ebb251d76ff4a68c200d91f9bde4b2d8f11a6fa))
 
 # [1.7.0](https://github.com/likec4/likec4/compare/v1.6.1...v1.7.0) (2024-08-10)
 
-### 🚀 Features  
+### 🚀 Features
 
-* `where` in predicates
+- `where` in predicates
 
   ```zig
   // include only microservices from nested
   include cloud.*
     where kind is microservice
-  
+
   // only microservices and not deprecated
   include cloud.*
     where
        kind == microservice and // possible to use 'is' or '=='
        tag != #deprecated       // possible to use 'is not' or '!='
-  
+
   // Use logical operators
   include cloud.*
     where
@@ -1601,7 +1505,7 @@ These improvements may lead to changes in the final layout, as the order of incl
     // only relationships with tag #messaging
     cloud.* <-> amazon.*
       where tag is #messaging,
-  
+
     // only incoming http-requests
     -> backend
       where kind is http-request
@@ -1609,30 +1513,25 @@ These improvements may lead to changes in the final layout, as the order of incl
 
   [Documentation](https://likec4.dev/dsl/views/#filter)
 
-### Improvements  
+### Improvements
 
-* activate dynamic walkthrough on edge double click
-* improve manual layouts
-* add `description` and `technology` to relationship (not yet rendered)
-* allow wildcard predicate together with `with`
-
-
+- activate dynamic walkthrough on edge double click
+- improve manual layouts
+- add `description` and `technology` to relationship (not yet rendered)
+- allow wildcard predicate together with `with`
 
 ## [1.6.1](https://github.com/likec4/likec4/compare/v1.6.0...v1.6.1) (2024-07-24)
 
-
 ### Bug Fixes
 
-* **cli:** vite error on build with v1.6.0  ([#860](https://github.com/likec4/likec4/issues/860))
-* **deps:** update dependency playwright to v1.45.2 ([#783](https://github.com/likec4/likec4/issues/783)) ([73ddd69](https://github.com/likec4/likec4/commit/73ddd69d968a48d77688daaf81e975beba9642a3))
-
-
+- **cli:** vite error on build with v1.6.0 ([#860](https://github.com/likec4/likec4/issues/860))
+- **deps:** update dependency playwright to v1.45.2 ([#783](https://github.com/likec4/likec4/issues/783)) ([73ddd69](https://github.com/likec4/likec4/commit/73ddd69d968a48d77688daaf81e975beba9642a3))
 
 # [1.6.0](https://github.com/likec4/likec4/compare/v1.5.0...v1.6.0) (2024-07-20)
 
 ### Features
 
-* Bundled icons
+- Bundled icons
 
   ```zig
   model {
@@ -1647,19 +1546,18 @@ These improvements may lead to changes in the final layout, as the order of incl
     }
   }
   ```
-  
+
   <img width="733" alt="Screenshot 2024-07-20 at 14 29 03" src="https://github.com/user-attachments/assets/7314ee25-cbea-4b3e-9293-f0db891cd69b">
 
   Besides, icon can be just an element property, skipping `style` block
-  
-* Improved code completion in view predicates
+
+- Improved code completion in view predicates
 
 # [1.5.0](https://github.com/likec4/likec4/compare/v1.4.0...v1.5.0) (2024-07-12)
 
 ### Features
 
-* Customize relationships per view
-
+- Customize relationships per view
 
   ```zig
   include
@@ -1676,57 +1574,54 @@ These improvements may lead to changes in the final layout, as the order of incl
     }
   ```
 
-
 ### Bug Fixes and Improvements
 
-* **diagram:** increased labels font size for better readability ([f31dc2f](https://github.com/likec4/likec4/commit/f31dc2f562bf3d58fc3249df93885e1111777500))
-* **diagram:** add css autoprefixer and inject xystore to diagram store ([a15644b](https://github.com/likec4/likec4/commit/a15644b4967c52d27a358dc49125777fe8dd988a))
-* **diagram:** arrow types ([86eca4c](https://github.com/likec4/likec4/commit/86eca4cfb950e42324d629a485f558d78084c647)), closes [#755](https://github.com/likec4/likec4/issues/755)
-* **diagram:** compound node draggable by title ([9c3ff1f](https://github.com/likec4/likec4/commit/9c3ff1fe9ec3f42e82f43d585e9632c267607530))
-* **diagram:** edge rendering ([dbd5a65](https://github.com/likec4/likec4/commit/dbd5a657c502e816611cf73dbaf58bfb21faf209))
-* **diagram:** improve edge rendering and label bbox ([a8f8d17](https://github.com/likec4/likec4/commit/a8f8d17cbcea0efb6fbb0b137f1efd7d64bd55a3))
-* **edge:** remove control point on dbl click ([831077b](https://github.com/likec4/likec4/commit/831077bf2dee65c95d5600e01c9f9cd7c50d036e))
-* **layout:** single relashionships ([ebeaeef](https://github.com/likec4/likec4/commit/ebeaeeff4c129dcfa2791a662767916179e30db2))
-* **layout:** update layouts ([851ec59](https://github.com/likec4/likec4/commit/851ec59cbc5fe7b895470cd12133251a11897a22))
-* **layout:** wrap edge label ([0f007ff](https://github.com/likec4/likec4/commit/0f007ff5f80cbb584ef82644df25d2d1ed8f0d2f))
-* **lsp:** clear diagnostics for on rebuild ([46206df](https://github.com/likec4/likec4/commit/46206dfdb2a0f6210b458fbf030d543357059c8e))
-* **lsp:** customize `<->` relationships ([98c8b1f](https://github.com/likec4/likec4/commit/98c8b1f14e324eab804558807ea69734d31b8231))
-* **lsp:** semantic token for navigateTo ([09b1a11](https://github.com/likec4/likec4/commit/09b1a116620a7bc913382816982504fa05beafc7))
-* **vscode:** update documentSelector if workspaceFolders is empty ([9678ed2](https://github.com/likec4/likec4/commit/9678ed298bb48bf92cf7dea09d09c854c026824f))
-* **webcomponent:** improve dynamic view ([65c2961](https://github.com/likec4/likec4/commit/65c2961fd710a0ce60a41731fe808be0fdb0eabe))
-* **deps:** update [@xyflow](https://github.com/xyflow) ([#807](https://github.com/likec4/likec4/issues/807)) ([2408e16](https://github.com/likec4/likec4/commit/2408e160f69b0497b0eefbb5c122ab30ad364b36))
-* **deps:** update dependency @astrojs/starlight to ^0.24.5 ([#803](https://github.com/likec4/likec4/issues/803)) ([6cc824a](https://github.com/likec4/likec4/commit/6cc824a76b162df30bc4e63504c97ddb0af8c04d))
-* **deps:** update dependency astro to ^4.11.5 ([#818](https://github.com/likec4/likec4/issues/818)) ([9cc7f44](https://github.com/likec4/likec4/commit/9cc7f44ad8833defec3c764cae0fafe70e4be852))
-* **deps:** update dependency astro-og-canvas to ^0.5.3 ([#835](https://github.com/likec4/likec4/issues/835)) ([bea7ea7](https://github.com/likec4/likec4/commit/bea7ea7e20d4892031df7f42768fd18504423c1a))
-* **deps:** update dependency starlight-links-validator to ^0.9.1 ([eea921b](https://github.com/likec4/likec4/commit/eea921b0e8bdbe50a78176a7bf13f650dc9061a9))
-* **deps:** upgrade `monaco-vscode` ([36be81e](https://github.com/likec4/likec4/commit/36be81e2e981c288a31df0cdb915ce90496bd129))
-* **deps:** upgrade mantine to 7.11 ([23bde17](https://github.com/likec4/likec4/commit/23bde17b43094180b1eaf3466938d6b3c2886e3b))
-* **deps:** upgrade typescript to 5.5.2 ([dc996c8](https://github.com/likec4/likec4/commit/dc996c84ac61a58a4801c0ad130cd36e8a5c31c3))
-
+- **diagram:** increased labels font size for better readability ([f31dc2f](https://github.com/likec4/likec4/commit/f31dc2f562bf3d58fc3249df93885e1111777500))
+- **diagram:** add css autoprefixer and inject xystore to diagram store ([a15644b](https://github.com/likec4/likec4/commit/a15644b4967c52d27a358dc49125777fe8dd988a))
+- **diagram:** arrow types ([86eca4c](https://github.com/likec4/likec4/commit/86eca4cfb950e42324d629a485f558d78084c647)), closes [#755](https://github.com/likec4/likec4/issues/755)
+- **diagram:** compound node draggable by title ([9c3ff1f](https://github.com/likec4/likec4/commit/9c3ff1fe9ec3f42e82f43d585e9632c267607530))
+- **diagram:** edge rendering ([dbd5a65](https://github.com/likec4/likec4/commit/dbd5a657c502e816611cf73dbaf58bfb21faf209))
+- **diagram:** improve edge rendering and label bbox ([a8f8d17](https://github.com/likec4/likec4/commit/a8f8d17cbcea0efb6fbb0b137f1efd7d64bd55a3))
+- **edge:** remove control point on dbl click ([831077b](https://github.com/likec4/likec4/commit/831077bf2dee65c95d5600e01c9f9cd7c50d036e))
+- **layout:** single relashionships ([ebeaeef](https://github.com/likec4/likec4/commit/ebeaeeff4c129dcfa2791a662767916179e30db2))
+- **layout:** update layouts ([851ec59](https://github.com/likec4/likec4/commit/851ec59cbc5fe7b895470cd12133251a11897a22))
+- **layout:** wrap edge label ([0f007ff](https://github.com/likec4/likec4/commit/0f007ff5f80cbb584ef82644df25d2d1ed8f0d2f))
+- **lsp:** clear diagnostics for on rebuild ([46206df](https://github.com/likec4/likec4/commit/46206dfdb2a0f6210b458fbf030d543357059c8e))
+- **lsp:** customize `<->` relationships ([98c8b1f](https://github.com/likec4/likec4/commit/98c8b1f14e324eab804558807ea69734d31b8231))
+- **lsp:** semantic token for navigateTo ([09b1a11](https://github.com/likec4/likec4/commit/09b1a116620a7bc913382816982504fa05beafc7))
+- **vscode:** update documentSelector if workspaceFolders is empty ([9678ed2](https://github.com/likec4/likec4/commit/9678ed298bb48bf92cf7dea09d09c854c026824f))
+- **webcomponent:** improve dynamic view ([65c2961](https://github.com/likec4/likec4/commit/65c2961fd710a0ce60a41731fe808be0fdb0eabe))
+- **deps:** update [@xyflow](https://github.com/xyflow) ([#807](https://github.com/likec4/likec4/issues/807)) ([2408e16](https://github.com/likec4/likec4/commit/2408e160f69b0497b0eefbb5c122ab30ad364b36))
+- **deps:** update dependency @astrojs/starlight to ^0.24.5 ([#803](https://github.com/likec4/likec4/issues/803)) ([6cc824a](https://github.com/likec4/likec4/commit/6cc824a76b162df30bc4e63504c97ddb0af8c04d))
+- **deps:** update dependency astro to ^4.11.5 ([#818](https://github.com/likec4/likec4/issues/818)) ([9cc7f44](https://github.com/likec4/likec4/commit/9cc7f44ad8833defec3c764cae0fafe70e4be852))
+- **deps:** update dependency astro-og-canvas to ^0.5.3 ([#835](https://github.com/likec4/likec4/issues/835)) ([bea7ea7](https://github.com/likec4/likec4/commit/bea7ea7e20d4892031df7f42768fd18504423c1a))
+- **deps:** update dependency starlight-links-validator to ^0.9.1 ([eea921b](https://github.com/likec4/likec4/commit/eea921b0e8bdbe50a78176a7bf13f650dc9061a9))
+- **deps:** upgrade `monaco-vscode` ([36be81e](https://github.com/likec4/likec4/commit/36be81e2e981c288a31df0cdb915ce90496bd129))
+- **deps:** upgrade mantine to 7.11 ([23bde17](https://github.com/likec4/likec4/commit/23bde17b43094180b1eaf3466938d6b3c2886e3b))
+- **deps:** upgrade typescript to 5.5.2 ([dc996c8](https://github.com/likec4/likec4/commit/dc996c84ac61a58a4801c0ad130cd36e8a5c31c3))
 
 # [1.4.0](https://github.com/likec4/likec4/compare/v1.3.0...v1.4.0) (2024-06-28)
 
-### 🚀 Features  
+### 🚀 Features
 
-* **vscode:** disable experimental editor in vscode preferences ([effdef1](https://github.com/likec4/likec4/commit/effdef1402a7df94e659cf6623103a16ac4d04a9))
-* **cli:** use dev server when exporting to png (faster) ([9a19db3](https://github.com/likec4/likec4/commit/9a19db3dc686fa4cbf5511b4dcdb9b1d8fe2a796))
-* **diagram:** back/forward navigation buttons ([4d258ed](https://github.com/likec4/likec4/commit/4d258ed53a64e4d226b37c15897261bafa36df63))
-* **react:** use html dialog for browser ([0981df2](https://github.com/likec4/likec4/commit/0981df2fa93804107635d83a00d28fcf03b68f1c))
+- **vscode:** disable experimental editor in vscode preferences ([effdef1](https://github.com/likec4/likec4/commit/effdef1402a7df94e659cf6623103a16ac4d04a9))
+- **cli:** use dev server when exporting to png (faster) ([9a19db3](https://github.com/likec4/likec4/commit/9a19db3dc686fa4cbf5511b4dcdb9b1d8fe2a796))
+- **diagram:** back/forward navigation buttons ([4d258ed](https://github.com/likec4/likec4/commit/4d258ed53a64e4d226b37c15897261bafa36df63))
+- **react:** use html dialog for browser ([0981df2](https://github.com/likec4/likec4/commit/0981df2fa93804107635d83a00d28fcf03b68f1c))
 
 ### Bug Fixes
 
-* **deps:** upgrade playwright to 1.45.0 ([486140b](https://github.com/likec4/likec4/commit/486140b8370ce7ae0a019c463c4ed913b43674f2))
-* **deps:** upgrade vite to 5.3.2 ([cf8956f](https://github.com/likec4/likec4/commit/cf8956f3f5d68bfff667e906ff7ebbf7fea5cd28))
-* **diagram:** disable blur filter in safari ([dd14526](https://github.com/likec4/likec4/commit/dd14526ebdbb736c378cb0074edbda2358ab2d02))
-* **diagram:** improve rendering in safari ([d530d98](https://github.com/likec4/likec4/commit/d530d988ad987607edc5f5a8169280f2ad270c74))
-* **playground:** switch to vertical layout for better mobile experience ([99b6b60](https://github.com/likec4/likec4/commit/99b6b607564b88533b0002286e9c754362c78c59))
-
+- **deps:** upgrade playwright to 1.45.0 ([486140b](https://github.com/likec4/likec4/commit/486140b8370ce7ae0a019c463c4ed913b43674f2))
+- **deps:** upgrade vite to 5.3.2 ([cf8956f](https://github.com/likec4/likec4/commit/cf8956f3f5d68bfff667e906ff7ebbf7fea5cd28))
+- **diagram:** disable blur filter in safari ([dd14526](https://github.com/likec4/likec4/commit/dd14526ebdbb736c378cb0074edbda2358ab2d02))
+- **diagram:** improve rendering in safari ([d530d98](https://github.com/likec4/likec4/commit/d530d988ad987607edc5f5a8169280f2ad270c74))
+- **playground:** switch to vertical layout for better mobile experience ([99b6b60](https://github.com/likec4/likec4/commit/99b6b607564b88533b0002286e9c754362c78c59))
 
 # [1.3.0](https://github.com/likec4/likec4/compare/v1.2.2...v1.3.0) (2024-06-23)
 
-### 🚀 Features  
+### 🚀 Features
 
-- **View editor**  
+- **View editor**\
   Experimental layout editor (drag elements and relationships)
 
 * **dynamic-view:** hotkeys navigation ([8e36d7b](https://github.com/likec4/likec4/commit/8e36d7b91d4d50e47b05578ba3b4e14e59576bb6)), closes [#769](https://github.com/likec4/likec4/issues/769)
@@ -1735,132 +1630,123 @@ These improvements may lead to changes in the final layout, as the order of incl
 
 ### Bug Fixes
 
-* **deps:** upgrade langium to 3.1.0 ([a309316](https://github.com/likec4/likec4/commit/a309316834c5b5ede51e2812d2f1a0d88d4f471a))
-* **diagram:** rendering performance ([2eef48b](https://github.com/likec4/likec4/commit/2eef48bed6192e32f312a709bd591a3b179f2b39))
-* **diagram:** responsive dynamic view ([ad03301](https://github.com/likec4/likec4/commit/ad03301a2d0a10ae9742f00d451c0cf89b010e73))
-* **lsp:** 0% opacity in specification ([bbec0a8](https://github.com/likec4/likec4/commit/bbec0a84b1e8411c6ee4c9a8efb1f0d4fbf70920))
-
+- **deps:** upgrade langium to 3.1.0 ([a309316](https://github.com/likec4/likec4/commit/a309316834c5b5ede51e2812d2f1a0d88d4f471a))
+- **diagram:** rendering performance ([2eef48b](https://github.com/likec4/likec4/commit/2eef48bed6192e32f312a709bd591a3b179f2b39))
+- **diagram:** responsive dynamic view ([ad03301](https://github.com/likec4/likec4/commit/ad03301a2d0a10ae9742f00d451c0cf89b010e73))
+- **lsp:** 0% opacity in specification ([bbec0a8](https://github.com/likec4/likec4/commit/bbec0a84b1e8411c6ee4c9a8efb1f0d4fbf70920))
 
 ## [1.2.2](https://github.com/likec4/likec4/compare/v1.2.1...v1.2.2) (2024-06-14)
 
-1.2.1 did not fix [#765](https://github.com/likec4/likec4/issues/765) 
+1.2.1 did not fix [#765](https://github.com/likec4/likec4/issues/765)
 
 ## [1.2.1](https://github.com/likec4/likec4/compare/v1.2.0...v1.2.1) (2024-06-14)
 
-
 ### Bug Fixes
 
-* **cli:** compatibility with vite 5.3 (closes [#765](https://github.com/likec4/likec4/issues/765), thanks to [@simonwfarrow](https://github.com/simonwfarrow))
-* **deps:** playwright 1.44.1 ([3f277f7](https://github.com/likec4/likec4/commit/3f277f71cbd5cf4b3a31ea515c6f475bab20ab4d))
-
-
+- **cli:** compatibility with vite 5.3 (closes [#765](https://github.com/likec4/likec4/issues/765), thanks to [@simonwfarrow](https://github.com/simonwfarrow))
+- **deps:** playwright 1.44.1 ([3f277f7](https://github.com/likec4/likec4/commit/3f277f71cbd5cf4b3a31ea515c6f475bab20ab4d))
 
 # [1.2.0](https://github.com/likec4/likec4/compare/v1.1.1...v1.2.0) (2024-06-12)
 
-### 🚀 Features  
+### 🚀 Features
 
-**Dynamic Views [Experimental]**  
+**Dynamic Views [Experimental]**
 
-  Describe a particular use-case or scenario, with ad-hoc interactions (without polluting the model).
+Describe a particular use-case or scenario, with ad-hoc interactions (without polluting the model).
 
-  ```zig
-  dynamic view example {
-    title 'Dynamic View Example'
-    customer -> web 'opens in browser'
-    web -> api 'POST request'
-    web <- api 'returns JSON'
-  }
-  ```
+```zig
+dynamic view example {
+  title 'Dynamic View Example'
+  customer -> web 'opens in browser'
+  web -> api 'POST request'
+  web <- api 'returns JSON'
+}
+```
 
-  Check [example](https://docs.likec4.dev/dsl/dynamic-views/)
+Check [example](https://docs.likec4.dev/dsl/dynamic-views/)
 
 ### Bug Fixes
 
-* **diagram:** always zoom to 1.0 on container resize ([f5b898c](https://github.com/likec4/likec4/commit/f5b898c01f90212cb4e171530e8e6142cb27c076))
-* **diagram:** backdrop in safari ([94530ae](https://github.com/likec4/likec4/commit/94530ae4fe2da710337512c11a616698b06f2bdb))
-* **diagram:** focus in dynamic walkthrough ([b4c1752](https://github.com/likec4/likec4/commit/b4c1752aed96049b2605ffcabc8812762c363fa9))
-* **playground:** missing element type ([4aad466](https://github.com/likec4/likec4/commit/4aad4668885b0b6f88825a7fe58704b8dcf39401))
-* **playground:** unique extension for each playground ([8fcfed6](https://github.com/likec4/likec4/commit/8fcfed6d8e26d43d3da5306d0985501696d2c516))
-
+- **diagram:** always zoom to 1.0 on container resize ([f5b898c](https://github.com/likec4/likec4/commit/f5b898c01f90212cb4e171530e8e6142cb27c076))
+- **diagram:** backdrop in safari ([94530ae](https://github.com/likec4/likec4/commit/94530ae4fe2da710337512c11a616698b06f2bdb))
+- **diagram:** focus in dynamic walkthrough ([b4c1752](https://github.com/likec4/likec4/commit/b4c1752aed96049b2605ffcabc8812762c363fa9))
+- **playground:** missing element type ([4aad466](https://github.com/likec4/likec4/commit/4aad4668885b0b6f88825a7fe58704b8dcf39401))
+- **playground:** unique extension for each playground ([8fcfed6](https://github.com/likec4/likec4/commit/8fcfed6d8e26d43d3da5306d0985501696d2c516))
 
 ## [1.1.1](https://github.com/likec4/likec4/compare/v1.1.0...v1.1.1) (2024-05-26)
 
 ### Bug Fixes
-* **diagram:** viewport transform is not rounded to integers which results in blurry nodes on some resolution ([d268344](https://github.com/likec4/likec4/commit/d268344e40c9da45fc38fcbc00451ed69c089160)), closes [#734](https://github.com/likec4/likec4/issues/734)
+
+- **diagram:** viewport transform is not rounded to integers which results in blurry nodes on some resolution ([d268344](https://github.com/likec4/likec4/commit/d268344e40c9da45fc38fcbc00451ed69c089160)), closes [#734](https://github.com/likec4/likec4/issues/734)
 
 ### Improvements
 
-* change opacity and border style from ui ([f69dbb4](https://github.com/likec4/likec4/commit/f69dbb439a726fe691e98a65911730067fbb752c))
-* diagram title panel ([#741](https://github.com/likec4/likec4/issues/741)) ([1342be4](https://github.com/likec4/likec4/commit/1342be4aee07f3256a2cb2063a6df08f15d387a2))
+- change opacity and border style from ui ([f69dbb4](https://github.com/likec4/likec4/commit/f69dbb439a726fe691e98a65911730067fbb752c))
+- diagram title panel ([#741](https://github.com/likec4/likec4/issues/741)) ([1342be4](https://github.com/likec4/likec4/commit/1342be4aee07f3256a2cb2063a6df08f15d387a2))
 
 # [1.1.0](https://github.com/likec4/likec4/compare/v1.0.2...v1.1.0) (2024-05-24)
 
-
 ### Features
 
-* Change opacity and border for compounds background ([#723](https://github.com/likec4/likec4/issues/723))
+- Change opacity and border for compounds background ([#723](https://github.com/likec4/likec4/issues/723))
 
   ```zig
   view {
      include some._
-  
+
      style some {
        opacity 20%
        border dashed
      }
-  
+
   }
   ```
 
 ### Bug Fixes
 
-* **app:** color scheme inheritance ([70b5243](https://github.com/likec4/likec4/commit/70b52439b83ac2644b1393cf150411f4d5e3f38f))
-* **playground:** show locations ([6af55a6](https://github.com/likec4/likec4/commit/6af55a6c729fad157c13f26c948a2bf7a035e41f))
-
+- **app:** color scheme inheritance ([70b5243](https://github.com/likec4/likec4/commit/70b52439b83ac2644b1393cf150411f4d5e3f38f))
+- **playground:** show locations ([6af55a6](https://github.com/likec4/likec4/commit/6af55a6c729fad157c13f26c948a2bf7a035e41f))
 
 ## [1.0.2](https://github.com/likec4/likec4/compare/v1.0.1...v1.0.2) (2024-05-21)
 
 ### Bug Fixes
 
-* **vscode:** preview fails with command `likec4:open-preview` not found ([#724](https://github.com/likec4/likec4/issues/724), thanks [@4cio](https://github.com/4cio))
-* **deps:** update dependency playwright to v1.44.0 ([#713](https://github.com/likec4/likec4/issues/713)) ([dd62f8d](https://github.com/likec4/likec4/commit/dd62f8da8207fe8619ddcdaa4c13fe0dfca72c17))
-* **vscode:** bundling `@hpcc-js/wasm` is necessary for the extension to work properly ([6904afc](https://github.com/likec4/likec4/commit/6904afc4eb950b1255440e92b759d1d05351bd4d))
+- **vscode:** preview fails with command `likec4:open-preview` not found ([#724](https://github.com/likec4/likec4/issues/724), thanks [@4cio](https://github.com/4cio))
+- **deps:** update dependency playwright to v1.44.0 ([#713](https://github.com/likec4/likec4/issues/713)) ([dd62f8d](https://github.com/likec4/likec4/commit/dd62f8da8207fe8619ddcdaa4c13fe0dfca72c17))
+- **vscode:** bundling `@hpcc-js/wasm` is necessary for the extension to work properly ([6904afc](https://github.com/likec4/likec4/commit/6904afc4eb950b1255440e92b759d1d05351bd4d))
 
 ## [1.0.1](https://github.com/likec4/likec4/compare/v1.0.0...v1.0.1) (2024-05-18)
 
-
 ### Bug Fixes
 
-* **lsp:** correct selection range after changes ([42999ef](https://github.com/likec4/likec4/commit/42999efb804e1f70d8352b541c5264bfefc06f5b))
-* **vscode:** correct view column for preview ([6a33a48](https://github.com/likec4/likec4/commit/6a33a4834c47850644a41d304568c8007bc68d34))
+- **lsp:** correct selection range after changes ([42999ef](https://github.com/likec4/likec4/commit/42999efb804e1f70d8352b541c5264bfefc06f5b))
+- **vscode:** correct view column for preview ([6a33a48](https://github.com/likec4/likec4/commit/6a33a4834c47850644a41d304568c8007bc68d34))
 
 ### Minor
 
-* download view as png from app ([b316dfb](https://github.com/likec4/likec4/commit/b316dfb6e3f187f8b0211788b5ab4f08e50a0abf))
-
-
+- download view as png from app ([b316dfb](https://github.com/likec4/likec4/commit/b316dfb6e3f187f8b0211788b5ab4f08e50a0abf))
 
 # [1.0.0](https://github.com/likec4/likec4/compare/v1.0.0-rc.1...v1.0.0) (2024-05-17)
 
-### 🚀 Features  
+### 🚀 Features
 
-- **View Editor**  
-  VSCode Preview allows to change color, shape and switch auto-layout.  
+- **View Editor**\
+  VSCode Preview allows to change color, shape and switch auto-layout.\
   Changes are persistent and update sources.
-  
+
   Also available in preview (via CLI), but changes are not saved back.
 
 - **LikeC4 views as webcomponents**
   Generates JS with custom elements:
 
   ```html
-    <script src="https://published.website/likec4-views.js"></script>
-    <likec4-view view-id="index"></likec4-view>    
+  <script src="https://published.website/likec4-views.js"></script>
+  <likec4-view view-id="index"></likec4-view>
   ```
 
-  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent` 
+  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent`
 
-- **New predicate `include some._`**  
+- **New predicate `include some._`**\
   Expand and include nested elements only if they have in/out relationships (internals are not considered):
   ```zig
   view {
@@ -1879,8 +1765,8 @@ These improvements may lead to changes in the final layout, as the order of incl
     exclude some.* -> some.*
   }
   ```
-  
-- **New predicate `<->`**  
+
+- **New predicate `<->`**\
   Include relationships of both directions between elements:
   ```zig
   view {
@@ -1888,33 +1774,33 @@ These improvements may lead to changes in the final layout, as the order of incl
   }
   ```
 
-- **CLI**  
-  Builds and exports with pre-bundled CLI are 6-8x times faster  
-  Allow deep-linking in GitHub Pages, closes [#661](https://github.com/likec4/likec4/issues/661)  
-  Set color-scheme on export to png, closes [#685](https://github.com/likec4/likec4/issues/685)  
+- **CLI**\
+  Builds and exports with pre-bundled CLI are 6-8x times faster\
+  Allow deep-linking in GitHub Pages, closes [#661](https://github.com/likec4/likec4/issues/661)\
+  Set color-scheme on export to png, closes [#685](https://github.com/likec4/likec4/issues/685)
 
-- **New renderer**  
+- **New renderer**\
   Fast and responsive views on any device, based on [xyflow](https://www.xyflow.com/)
-  
-- **New sites**  
-  https://docs.likec4.dev/ - (migration in progress...)  
+
+- **New sites**\
+  https://docs.likec4.dev/ - (migration in progress...)\
   https://playground.likec4.dev/ - dedicated for playgrounds
 
 # [1.0.0-rc.1](https://github.com/likec4/likec4/compare/v1.0.0-next.14...v1.0.0-rc.1) (2024-05-06)
 
-### 🚀 Features  
+### 🚀 Features
 
-- **LikeC4 views as webcomponents**     
+- **LikeC4 views as webcomponents**\
   Generates JS with custom elements:
 
   ```html
-    <script src="https://published.website/likec4-views.js"></script>
-    <likec4-view view-id="index"></likec4-view>    
+  <script src="https://published.website/likec4-views.js"></script>
+  <likec4-view view-id="index"></likec4-view>
   ```
 
-  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent` 
+  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent`
 
-- **New predicate `include some._`**  
+- **New predicate `include some._`**\
   Expand and include nested elements only if they have in/out relationships (internals are not considered):
   ```zig
   view {
@@ -1933,8 +1819,8 @@ These improvements may lead to changes in the final layout, as the order of incl
     exclude some.* -> some.*
   }
   ```
-  
-- **New predicate `<->`**  
+
+- **New predicate `<->`**\
   Include relationships of both directions between elements:
   ```zig
   view {
@@ -1942,23 +1828,22 @@ These improvements may lead to changes in the final layout, as the order of incl
   }
   ```
 
-- **Pre-bundled CLI**  
-  Builds and exports are 6-8x times faster  
+- **Pre-bundled CLI**\
+  Builds and exports are 6-8x times faster
 
-- **New renderer**  
+- **New renderer**\
   Fast and responsive views on any device, based on [xyflow](https://www.xyflow.com/)
 
-- **Editor**  
-  VSCode Preview allows to change color, shape and switch auto-layout.  
+- **Editor**\
+  VSCode Preview allows to change color, shape and switch auto-layout.\
   Changes are persistent and update sources.
-  
+
   Also available in preview (via CLI), but changes are not saved back.
 
 ### In Progress
 
 - Editor: manual layout
 - New docs
-
 
 # [1.0.0-next.14](https://github.com/likec4/likec4/compare/v0.60.4...v1.0.0-next.14) (2024-04-30)
 
@@ -1970,7 +1855,7 @@ PRE-RELEASE
 
 ### Features
 
-* webcomponents ([df430f0](https://github.com/likec4/likec4/commit/df430f0971b4d3c59e00cd560275d1b8601e0bb9))
+- webcomponents ([df430f0](https://github.com/likec4/likec4/commit/df430f0971b4d3c59e00cd560275d1b8601e0bb9))
 
 # [1.0.0-next.10](https://github.com/likec4/likec4/compare/v1.0.0-next.2...v1.0.0-next.10) (2024-04-02)
 
