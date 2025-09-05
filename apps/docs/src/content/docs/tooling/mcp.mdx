@@ -27,8 +27,8 @@ This enables you to query your model in natural language:
 
 Three options are available:
 - Use extension's built-in MCP Server
-- Use `@likec4/mcp` package
 - Use `likec4 mcp` CLI
+- Use `@likec4/mcp` package
 
 ### Using extension
 
@@ -87,10 +87,32 @@ You can change port in the settings.
 The MCP server is only available when the extension is active.
 The extension activates automatically once you open any LikeC4 source file.
 
-If it doesn’t show up, try refreshing the list of available MCP servers in your editor
+If it doesn't show up, try refreshing the list of available MCP servers in your editor
 :::
 
-### Using package
+### Using CLI
+
+If you have installed [`likec4`](/tooling/cli) CLI, you can start MCP server with `stdio` transport:
+
+```sh
+likec4 mcp
+# or
+likec4 mcp --stdio
+```
+
+Start MCP server with `http` transport on port `33335` (default) at `./src` folder:
+
+```sh
+likec4 mcp --http ./src
+```
+
+Start MCP server with `http` transport on port `1234`:
+
+```sh
+likec4 mcp -p 1234
+```
+
+### Using `@likec4/mcp` package
 
 Example configuration:
 
@@ -115,24 +137,20 @@ This package starts MCP server using [`stdio`](https://modelcontextprotocol.io/s
 
 If `LIKEC4_WORKSPACE` environment variable is not set, the current directory will be used as workspace.
 
-### Using CLI
-
-If you have installed [`likec4`](/tooling/cli) CLI, you can start MCP server with `stdio` transpor:
-
-```sh
-likec4 mcp
-# or
-likec4 mcp --stdio
-```
-
-Start MCP server with `http` transport on port `33335` (default) at `./src` folder:
+:::tip
+You can also use `@likec4/mcp` package as CLI (this package is smaller than `likec4`):
 
 ```sh
-likec4 mcp --http ./src
+npm install -g @likec4/mcp
+
+# Start MCP server with streamable http transport
+likec4-mcp-server --http --port 1234 /path/to/workspace
+
+# See available options
+likec4-mcp-server -h
 ```
 
-Start MCP server with `http` transport on port `1234`:
+Disable watch mode with `--no-watch` to consume less resources, if you have static workspace.
+:::
 
-```sh
-likec4 mcp -p 1234
-```
+Check out [README](https://github.com/likec4/likec4/blob/main/packages/mcp/README.md) for more details.
