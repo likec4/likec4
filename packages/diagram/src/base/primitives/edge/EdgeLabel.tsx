@@ -56,8 +56,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       className={cx(classes.root, 'likec4-edge-label', className)}
       data-edge-id={id}
       animate={{
-        originY: 0.25,
-        scale: isHovered && !selected ? 1.08 : 1,
+        scale: isHovered && !selected ? 1.06 : 1,
       }}
       {...rest}
     >

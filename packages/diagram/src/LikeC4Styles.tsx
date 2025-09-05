@@ -17,7 +17,7 @@ const whenDark = scheme('dark')
 const whenLight = scheme('light')
 
 const MAX_DEPTH = 5
-const generateCompoundColors = (name: string, colors: ThemeColorValues, depth: number) => {
+const generateCompoundColors = (rootSelector: string, name: string, colors: ThemeColorValues, depth: number) => {
   const compoundDarkColor = (color: string) =>
     toHex(
       scale(color, {
@@ -32,7 +32,7 @@ const generateCompoundColors = (name: string, colors: ThemeColorValues, depth: n
         s: -3 - 6 * depth,
       }),
     )
-  const selector = `:where([data-likec4-color="${name}"][data-compound-depth="${depth}"])`
+  const selector = `:where(${rootSelector} [data-likec4-color="${name}"][data-compound-depth="${depth}"])`
 
   return `
 ${selector} {
@@ -46,8 +46,8 @@ ${whenDark} ${selector} {
   `.trim()
 }
 
-function toStyle(name: string, colors: ThemeColorValues): string {
-  const selector = `:where([data-likec4-color=${name}])`
+function toStyle(rootSelector: string, name: string, colors: ThemeColorValues): string {
+  const selector = `:where(${rootSelector} [data-likec4-color=${name}])`
   return [
     `
 ${selector} {
@@ -67,47 +67,75 @@ ${whenDark} ${selector} {
 }
 
   `.trim(),
-    ...range(1, MAX_DEPTH + 1).map((depth) => generateCompoundColors(name, colors, depth)),
+    ...range(1, MAX_DEPTH + 1).map((depth) => generateCompoundColors(rootSelector, name, colors, depth)),
   ].join('\n')
 }
 
-const builtInColors = ThemeColors.map((color) =>
-  toStyle(color, {
-    elements: defaultTheme.elements[color],
-    relationships: defaultTheme.relationships[color],
-  })
-).join('\n')
-
-function generateCustomColorStyles(customColors: CustomColorDefinitions) {
+function generateCustomColorStyles(customColors: CustomColorDefinitions, rootSelector: string) {
   return pipe(
     entries(customColors),
-    map(([name, color]) => toStyle(name, color)),
+    map(([name, color]) => toStyle(rootSelector, name, color)),
     join('\n'),
   )
 }
 
-export function LikeC4Styles() {
+function generateBuiltInColorStyles(rootSelector: string) {
+  return pipe(
+    ThemeColors,
+    map((color) =>
+      toStyle(rootSelector, color, {
+        elements: defaultTheme.elements[color],
+        relationships: defaultTheme.relationships[color],
+      })
+    ),
+    join('\n'),
+  )
+}
+
+export function LikeC4Styles({ id }: { id: string }) {
+  const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
 
   const { customColors } = useLikeC4Specification()
-  const customColorsStyles = customColors ? generateCustomColorStyles(customColors) : ''
+  const customColorsStyles = customColors ? generateCustomColorStyles(customColors, rootSelector) : ''
 
-  return <MemoizedStyles nonce={nonce} customColorsStyles={customColorsStyles} builtInColors={builtInColors} />
+  const builtInColors = generateBuiltInColorStyles(rootSelector)
+
+  return (
+    <MemoizedStyles
+      id={id}
+      nonce={nonce}
+      customColorsStyles={customColorsStyles}
+      builtInColors={builtInColors} />
+  )
 }
 
 /**
  * @internal This gives a performance boost during development
  */
-const MemoizedStyles = memo<{ nonce: string | undefined; customColorsStyles: string; builtInColors: string }>((
-  { nonce, customColorsStyles, builtInColors },
+const MemoizedStyles = memo<{
+  id: string
+  nonce: string | undefined
+  customColorsStyles: string
+  builtInColors: string
+}>((
+  { id, nonce, customColorsStyles, builtInColors },
 ) => (
   <>
-    <style type="text/css" data-likec4-global dangerouslySetInnerHTML={{ __html: globalsCss }} nonce={nonce} />
-    <style type="text/css" data-likec4-colors dangerouslySetInnerHTML={{ __html: builtInColors }} nonce={nonce} />
+    <style
+      type="text/css"
+      data-likec4-global={id}
+      dangerouslySetInnerHTML={{ __html: globalsCss.replaceAll('.likec4-root', `#${id}.likec4-root`) }}
+      nonce={nonce} />
+    <style
+      type="text/css"
+      data-likec4-colors={id}
+      dangerouslySetInnerHTML={{ __html: builtInColors }}
+      nonce={nonce} />
     {customColorsStyles && (
       <style
         type="text/css"
-        data-likec4-custom-colors
+        data-likec4-custom-colors={id}
         dangerouslySetInnerHTML={{ __html: customColorsStyles }}
         nonce={nonce} />
     )}

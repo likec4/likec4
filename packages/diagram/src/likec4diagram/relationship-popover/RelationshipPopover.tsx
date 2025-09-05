@@ -11,7 +11,6 @@ import {
   Divider,
   Portal,
   ScrollAreaAutosize,
-  Space,
   Text,
   Tooltip as MantineTooltip,
   TooltipGroup,
@@ -37,8 +36,6 @@ import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { MarkdownBlock } from '../../custom'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { useUpdateEffect } from '../../hooks/useUpdateEffect'
-import { type XYStoreState, useXYStore } from '../../hooks/useXYFlow'
 import { useLikeC4Model } from '../../likec4model'
 import type { DiagramContext } from '../../state/types'
 import { findDiagramEdge, findDiagramNode } from '../../state/utils'
@@ -70,9 +67,9 @@ export const RelationshipPopover = memo(() => {
 
   const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
 
-  useUpdateEffect(() => {
+  useOnDiagramEvent('viewChange', () => {
     actorRef.send({ type: 'close' })
-  }, [viewId])
+  })
 
   useOnDiagramEvent('edgeMouseEnter', ({ edge }) => {
     actorRef.send({ type: 'xyedge.mouseEnter', edgeId: edge.data.id })
@@ -90,7 +87,7 @@ export const RelationshipPopover = memo(() => {
     actorRef.send({ type: 'close' })
   })
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (selected) {
       actorRef.send({ type: 'xyedge.select', edgeId: selected })
     } else {
@@ -154,9 +151,6 @@ const getEdgeLabelElement = (edgeId: string, container: HTMLDivElement | undefin
   return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ?? null
 }
 
-const selectTransform = (s: XYStoreState) =>
-  roundDpr(s.transform[0]) + ' ' + roundDpr(s.transform[1]) + ' ' + s.transform[2].toFixed(3)
-
 type RelationshipPopoverInternalProps = {
   viewId: ViewId
   diagramEdge: DiagramEdge
@@ -165,6 +159,7 @@ type RelationshipPopoverInternalProps = {
   onMouseEnter: MouseEventHandler<HTMLDivElement>
   onMouseLeave: MouseEventHandler<HTMLDivElement>
 }
+const POPOVER_PADDING = 8
 const RelationshipPopoverInternal = ({
   viewId,
   diagramEdge,
@@ -180,11 +175,10 @@ const RelationshipPopoverInternal = ({
   const { portalProps } = useMantinePortalProps()
 
   const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>(null)
-  const viewport = useXYStore(selectTransform)
 
   useEffect(() => {
     setReferenceEl(getEdgeLabelElement(diagramEdge.id, portalProps?.target))
-  }, [diagramEdge, viewport])
+  }, [diagramEdge])
 
   useEffect(() => {
     const reference = referenceEl
@@ -196,11 +190,11 @@ const RelationshipPopoverInternal = ({
 
     const update = () => {
       computePosition(reference, popper, {
-        placement: 'bottom',
+        placement: 'bottom-start',
         middleware: [
           offset(2),
           autoPlacement({
-            padding: 16,
+            padding: POPOVER_PADDING,
             allowedPlacements: [
               'bottom-start',
               'bottom-end',
@@ -213,19 +207,19 @@ const RelationshipPopoverInternal = ({
             ],
           }),
           size({
-            padding: 16,
+            padding: POPOVER_PADDING,
             apply({ availableHeight, availableWidth, elements }) {
               if (wasCanceled) {
                 return
               }
               Object.assign(elements.floating.style, {
-                maxWidth: `${clamp(roundDpr(availableWidth), { min: 150, max: 400 })}px`,
+                maxWidth: `${clamp(roundDpr(availableWidth), { min: 200, max: 400 })}px`,
                 maxHeight: `${clamp(roundDpr(availableHeight), { min: 0, max: 500 })}px`,
               })
             },
           }),
           hide({
-            padding: 16,
+            padding: POPOVER_PADDING * 2,
           }),
         ],
       }).then(({ x, y, middlewareData }) => {
@@ -236,7 +230,10 @@ const RelationshipPopoverInternal = ({
         popper.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible'
       })
     }
-    const cleanup = autoUpdate(reference, popper, update)
+    const cleanup = autoUpdate(reference, popper, update, {
+      ancestorResize: false,
+      animationFrame: true,
+    })
     return () => {
       wasCanceled = true
       cleanup()
@@ -308,7 +305,7 @@ const RelationshipPopoverInternal = ({
         styles={{
           viewport: {
             overscrollBehavior: 'contain',
-            minWidth: 150,
+            minWidth: 180,
           },
         }}
         className={cx(
@@ -327,9 +324,9 @@ const RelationshipPopoverInternal = ({
       >
         <VStack
           css={{
-            gap: '3.5',
+            gap: '3',
             padding: '4',
-            paddingTop: '2.5',
+            paddingTop: '2',
           }}
         >
           <Button
@@ -350,14 +347,19 @@ const RelationshipPopoverInternal = ({
           </Button>
           {direct.length > 0 && (
             <>
-              <Divider label={<Label>direct relationships</Label>} labelPosition="left" />
+              <Label>DIRECT RELATIONSHIPS</Label>
               {direct.map(renderRelationship)}
             </>
           )}
           {nested.length > 0 && (
             <>
-              {direct.length > 0 && <Space />}
-              <Divider label={<Label>resolved from nested</Label>} labelPosition="left" />
+              <Label
+                css={{
+                  mt: direct.length > 0 ? '2' : '0',
+                }}
+              >
+                RESOLVED FROM NESTED
+              </Label>
               {nested.map(renderRelationship)}
             </>
           )}
@@ -388,8 +390,8 @@ const Relationship = forwardRef<
   onNavigateTo,
   onOpenSource,
 }, ref) => {
-  const sourceId = getShortId(r, r.source.id, sourceNode)
-  const targetId = getShortId(r, r.target.id, targetNode)
+  const sourceId = getEndpointId(r, 'source', sourceNode)
+  const targetId = getEndpointId(r, 'target', targetNode)
   const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
@@ -399,8 +401,8 @@ const Relationship = forwardRef<
       className={bleed({
         block: '2',
         inline: '2',
-        paddingBlock: '2',
-        paddingInline: '2',
+        paddingY: '2.5',
+        paddingX: '2',
         gap: '1',
         rounded: 'sm',
         backgroundColor: {
@@ -412,14 +414,18 @@ const Relationship = forwardRef<
       })}
     >
       <HStack gap={'0.5'}>
-        <Text component="div" data-likec4-color={sourceNode.color} className={styles.endpoint}>
-          {sourceId}
-        </Text>
-        <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
-        <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
-          {targetId}
-        </Text>
-        <TooltipGroup openDelay={100}>
+        <TooltipGroup openDelay={200}>
+          <Tooltip label={sourceId.full} offset={2} position="top-start">
+            <Text component="div" data-likec4-color={sourceNode.color} className={styles.endpoint}>
+              {sourceId.short}
+            </Text>
+          </Tooltip>
+          <IconArrowRight stroke={2.5} size={'11px'} opacity={0.65} />
+          <Tooltip label={targetId.full} offset={2} position="top-start">
+            <Text component="div" data-likec4-color={targetNode.color} className={styles.endpoint}>
+              {targetId.short}
+            </Text>
+          </Tooltip>
           {navigateTo && (
             <Tooltip label={'Open dynamic view'}>
               <ActionIcon
@@ -500,13 +506,13 @@ const Relationship = forwardRef<
   )
 })
 
-const Label = styled('span', {
+const Label = styled('div', {
   base: {
-    display: 'inline-block',
+    display: 'block',
     fontSize: 'xxs',
     fontWeight: 500,
     userSelect: 'none',
-    lineHeight: '[1.11]',
+    lineHeight: 'sm',
     color: 'mantine.colors.dimmed',
   },
 })
@@ -520,9 +526,9 @@ const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
 })
 
-function getShortId(
+function getEndpointId(
   r: LikeC4Model.AnyRelation,
-  actualEndpointId: string,
+  endpoint: 'source' | 'target',
   diagramNode: DiagramNode,
 ) {
   const diagramNodeId = r.isDeploymentRelation()
@@ -531,5 +537,7 @@ function getShortId(
     // Relation defined in model. Get id of the model element
     : diagramNode.modelRef || ''
 
-  return nameFromFqn(diagramNodeId) + actualEndpointId.slice(diagramNodeId.length)
+  const full = r[endpoint].id
+  const short = nameFromFqn(diagramNodeId) + full.slice(diagramNodeId.length)
+  return { full, short }
 }

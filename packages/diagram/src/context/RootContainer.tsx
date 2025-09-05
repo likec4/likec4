@@ -1,6 +1,5 @@
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import { useId } from '@mantine/hooks'
 import { type PropsWithChildren, createContext, createRef, useContext, useEffect, useRef } from 'react'
 import { usePanningAtom } from './ReduceGraphics'
 import { TagStylesProvider } from './TagStylesContext'
@@ -8,14 +7,15 @@ import { TagStylesProvider } from './TagStylesContext'
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
 export function RootContainer({
+  id,
   className,
   reduceGraphics = false,
   children,
 }: PropsWithChildren<{
+  id: string
   className?: string | undefined
   reduceGraphics?: boolean
 }>) {
-  const id = useId()
   const ref = useRef<HTMLDivElement>(null)
   const $isPanning = usePanningAtom()
 

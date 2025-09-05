@@ -5,13 +5,16 @@ export const endpoint = css({
   fontSize: 'xxs',
   fontWeight: 500,
   whiteSpace: 'nowrap',
-  padding: '[2px 4px]',
+  paddingX: '1',
+  paddingY: '0.5',
   borderRadius: '[2px]',
-  background: `var(--likec4-palette-fill)/30`,
-  lineHeight: '[1.11]',
-  mixBlendMode: 'hard-light',
+  background: {
+    _light: 'var(--likec4-palette-fill)/90',
+    _dark: 'var(--likec4-palette-fill)/60',
+  },
+  lineHeight: '1',
   color: {
-    _light: `[color-mix(in srgb, var(--likec4-palette-stroke), {colors.likec4.mixColor} 60%)]`,
+    _light: 'var(--likec4-palette-hiContrast)',
     _dark: 'var(--likec4-palette-loContrast)',
   },
 })
