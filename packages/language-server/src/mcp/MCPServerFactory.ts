@@ -33,8 +33,8 @@ Conventions:
 Available tools:
 - list-projects — List all LikeC4 projects in the workspace.
 - read-project-summary — Project specification (element kinds, deployment node kinds, tags, metadata keys), all elements, deployment nodes and views. Input: { project? }.
-- search-element — Search elements and deployment nodes across all projects by id/title/kind/shape/tags. Input: { search }.
-- read-element — Full element details including relationships, includedInViews, deployedInstances, and sourceLocation. Input: { id, project? }.
+- search-element — Search elements and deployment nodes across all projects by id/title/kind/shape/tags/metadata. Input: { search }.
+- read-element — Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation. Input: { id, project? }.
 - read-deployment — Details of a deployment node or deployed instance. Input: { id, project? }.
 - read-view — Full view details (nodes/edges) and sourceLocation. Input: { viewId, project? }.
 - find-relationships — Direct and indirect relationships between two elements in a project. Input: { element1, element2, project? }.
@@ -46,13 +46,14 @@ ${
 
 Instructions:
 - Identify the project first  
-  - Use "search-element" to find elements by id/title/kind/shape/tags and select the project
+  - Use "search-element" to find elements by id/title/kind/shape/tags/metadata and select the project
   - Use "read-project-summary" to find all elements and deployment nodes inside the project, what kinds, tags, metadata keys are available
   - Use "list-projects" to list all available projects
-- If resource returns "sourceLocation", provide link to this location in the editor
+- If response returns "sourceLocation", provide link to this location in the editor
 
-Docs: https://likec4.dev/llms-full.txt
+Full documentation: https://likec4.dev/llms-full.txt
 `,
+      enforceStrictCapabilities: true,
       ...options,
       capabilities: {
         tools: {},

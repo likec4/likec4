@@ -15,6 +15,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
+      metadata: z.record(z.string()),
       tags: z.array(z.string()),
     }),
     z.object({
@@ -27,6 +28,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
+      metadata: z.record(z.string()),
       tags: z.array(z.string()),
     }),
   ]),
@@ -43,21 +45,22 @@ export const searchElement = likec4Tool({
 Search LikeC4 elements and deployment nodes across all projects.
 
 Query syntax (case-insensitive):
-- Free text: matches id (FQN) or title
 - kind:<value>: filters by kind
 - shape:<value>: filters by shape
+- meta:<key>: filters by having metadata with the given key
 - #<value>: matches assigned tags
+- Free text: matches id (FQN) or title
 
 Request:
 - search: string — at least 2 characters
 
 Response (JSON object):
-- found: Result[] - returns top 20 results
 - total: number - total number of results
+- found: Result[] - returns top 20 results
 
 Result (discriminated union by "type"):
-- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[] }
-- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[] }
+- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
+- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
 
 View (object) fields:
 - id: string — view identifier
@@ -70,6 +73,7 @@ Notes:
 
 Example response:
 {
+  "total": 1,
   "found": [
     {
       "type": "logical",
@@ -87,7 +91,8 @@ Example response:
           "type": "element"
         }
       ],
-      "tags": ["public"]
+      "tags": ["public"],
+      "metadata": {}
     }
   ]
 }
@@ -96,28 +101,45 @@ Example response:
     search: z.string().min(2, 'Search must be at least 2 characters long'),
   },
   outputSchema: {
-    found: searchResultSchema,
     total: z.number(),
+    found: searchResultSchema,
   },
 }, async (languageServices, args) => {
   const projects = languageServices.projects()
   const found = [] as z.infer<typeof searchResultSchema>
   let search = args.search.toLowerCase()
 
-  let predicate: <E extends { id: string; title: string; kind: string; shape: string; tags: readonly string[] }>(
+  let predicate: <
+    E extends {
+      id: string
+      title: string
+      kind: string
+      shape: string
+      tags: readonly string[]
+      getMetadata: (key: string) => string | undefined
+    },
+  >(
     el: E,
   ) => boolean
 
   if (search.startsWith('kind:')) {
     search = search.slice(5)
-    predicate = (el) => el.kind.toLowerCase().includes(search)
+    logger.debug('search by kind: {search}', { search })
+    predicate = (el) => el.kind.toLowerCase() === search
   } else if (search.startsWith('shape:')) {
     search = search.slice(6)
-    predicate = (el) => el.shape.toLowerCase().includes(search)
+    logger.debug('search by shape: {search}', { search })
+    predicate = (el) => el.shape.toLowerCase() === search
+  } else if (search.startsWith('meta:')) {
+    search = search.slice(5)
+    logger.debug('search by metadata: {search}', { search })
+    predicate = (el) => !!el.getMetadata(search)
   } else if (search.startsWith('#')) {
     search = search.slice(1)
+    logger.debug('search by tag: {search}', { search })
     predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
   } else {
+    logger.debug('search by id/title: {search}', { search })
     predicate = (el) =>
       el.id.toLowerCase().includes(search)
       || el.title.toLowerCase().includes(search)
@@ -139,6 +161,7 @@ Example response:
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
+          metadata: el.getMetadata(),
           includedInViews: includedInViews(el.views()),
         })
       }
@@ -155,6 +178,7 @@ Example response:
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
+          metadata: el.getMetadata(),
           includedInViews: includedInViews(el.views()),
         })
       }
@@ -164,7 +188,7 @@ Example response:
   }
 
   return {
-    found: found.slice(0, 20),
     total: found.length,
+    found: found.slice(0, 20),
   }
 })
