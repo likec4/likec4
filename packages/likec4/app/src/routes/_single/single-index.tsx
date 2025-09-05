@@ -3,13 +3,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
 
 import { StaticLikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { aux, LikeC4ViewModel } from '@likec4/core/model'
 import { MarkdownBlock } from '@likec4/diagram/custom'
 import { Box, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
-import { useDocumentTitle } from '@mantine/hooks'
-import { useTimeoutEffect } from '@react-hookz/web'
+import { useDocumentTitle, useInViewport } from '@mantine/hooks'
+import { randomInteger } from 'remeda'
 import { pageTitle } from '../../const'
 import * as css from './index.css'
 
@@ -28,7 +28,7 @@ function RouteComponent() {
         spacing={{ base: 10, sm: 'xl' }}
         verticalSpacing={{ base: 'md', sm: 'xl' }}
       >
-        {views.map(v => <ViewCard key={v.id} view={v} />)}
+        {views.map((v) => <ViewCard key={v.id} view={v} />)}
       </SimpleGrid>
     </Container>
   )
@@ -36,13 +36,18 @@ function RouteComponent() {
 
 function ViewCard({ view }: { view: LikeC4ViewModel<aux.UnknownLayouted> }) {
   const [visible, setVisible] = useState(false)
+  const { ref, inViewport } = useInViewport()
 
-  useTimeoutEffect(() => {
-    setVisible(true)
-  }, 100)
+  // Deferred rendering to avoid initial freeze
+  useEffect(() => {
+    if (!inViewport || visible) return
+    const tm = setTimeout(() => setVisible(true), randomInteger(30, 80))
+    return () => clearTimeout(tm)
+  }, [inViewport])
 
   return (
     <Card
+      ref={ref}
       shadow="xs"
       padding="lg"
       radius="sm"
