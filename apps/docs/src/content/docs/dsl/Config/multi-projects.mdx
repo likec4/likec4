@@ -1,0 +1,79 @@
+---
+title: Multi-projects
+description: Learn how to split your LikeC4 model into multiple projects
+sidebar: 
+  label: Multi-projects
+  order: 14
+---
+
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+
+Sometimes you may want to split your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
+
+You can do this by creating multiple projects in your workspace and linking them together.  
+You can also use this feature to share your model with other teams or projects.
+
+Create `likec4.config.json` files in the folders you want to be projects:
+
+<FileTree>
+- cloud
+  - **likec4.config.json**
+  - service1.c4
+  - service2.c4
+  - ...
+- externals
+  - **likec4.config.json**
+  - amazon.c4
+  - ...
+</FileTree>
+
+Projects can be nested.  
+In this case, files from the nested project are not part of the parent project.
+
+<FileTree>
+- cloud
+  - likec4.config.json
+  - service1.c4
+  - service2.c4
+  - nested
+    - likec4.config.json
+    - service3.c4 // this will be part of the 'nested' project, not the 'cloud' project
+</FileTree>
+
+
+## Import elements
+
+You can import elements from other projects by using the `import` keyword.
+
+```likec4
+import { serviceA } from 'projectA'
+
+model {
+  serviceB = service {
+    -> serviceA.api 'calls serviceA'
+  }
+}
+```
+
+<Aside type='caution' title="Limitations">
+At the moment, the following limitations apply:
+- Referenced projects must be loaded in the same workspace
+- Only top-level **model** elements can be imported
+</Aside>
+
+## Share specification
+
+At the moment, the only way to share specification (or any other parts of the model) is to use symlinks:
+
+<FileTree>
+- shared
+  - specs.c4
+- cloud
+  - specs.c4 // -> ../shared/specs.c4
+  - likec4.config.json
+  - ...
+- externals
+  - specs.c4 // -> ../shared/specs.c4
+  - likec4.config.json
+  - ...
+</FileTree>

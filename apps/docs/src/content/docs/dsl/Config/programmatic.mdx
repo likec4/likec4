@@ -1,0 +1,121 @@
+---
+title: TypeScript/JavaScript Config
+description: Learn how to configure LikeC4 Projects programmatically and extend with custom generators
+sidebar: 
+  label: Programmatic config
+  order: 15
+---
+
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+
+:::caution
+This feature is experimental and not well tested with IDEs.
+
+If you find any issues, please report them to [GitHub](https://github.com/likec4/likec4/issues).
+:::
+
+You can configure your projects programmatically with TypeScript or JavaScript.  
+The config filename can be any of the following:
+
+- `likec4.config.js`
+- `likec4.config.mjs`
+- `likec4.config.ts`
+- `likec4.config.mts`
+
+Example:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from '@likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  exclude: ["**/node_modules/**", "**/.cache/**"],
+  imageAliases: {
+    "@": "./images",
+    "@root": "../../some-more-images"
+  }  
+})
+```
+
+:::tip
+You can also use `likec4/config`:
+
+```ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project'
+})
+```
+
+:::
+
+
+## Custom Generators
+
+LikeC4 CLI has a [`generate`](/tooling/cli/#generate-mermaid-dot-d2-plantuml) command to generate files from your model.  
+You can define custom generators in your project config:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from '@likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators: {
+    'hello': async ({ likec4model, ctx }) => {
+      await ctx.write({
+        path: 'hello.txt', // relative to the project root
+        content: `Project: ${likec4model.project.id}`,
+      })
+    },
+  },
+})
+```
+
+Now you can run your generator with [CLI](/tooling/cli):
+
+```bash
+likec4 gen hello
+```
+
+In [multi-project](/dsl/config/multi-projects) workspace use:
+
+```bash
+likec4 gen hello --project my-project
+# Other options
+likec4 gen hello --project my-project --use-dot
+```
+
+### Reusable Generators
+
+There is also helper function `defineGenerators` to define reusable generators:
+
+```ts title="example"
+// shared_generators.ts
+import { defineGenerators } from '@likec4/config'
+
+export default defineGenerators({
+  'hello': async ({ likec4model, ctx }) => {
+    await ctx.write({
+      path: 'hello.txt', // relative to the project root
+      content: `Project: ${likec4model.project.id}`,
+    })
+  },
+})
+
+// likec4.config.ts
+import { defineConfig } from '@likec4/config'
+import generators from './shared_generators'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators,
+})
+```

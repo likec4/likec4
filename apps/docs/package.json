@@ -20,6 +20,7 @@
     "@astrojs/check": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/starlight": "catalog:astro",
+    "@likec4/config": "workspace:*",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
     "@types/picomatch": "catalog:utils",

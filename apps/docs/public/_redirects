@@ -1,4 +1,5 @@
 /docs   /tutorial  301
 /docs/* /:splat
 /dsl/workspace/ /dsl/extend/
+/dsl/projects/ /dsl/config/multi-projects
 /examples/* /showcases/:splat

@@ -1,43 +1,42 @@
 ---
-title: Multi-projects
+title: Project config
 description: Learn how to split your LikeC4 model into multiple projects
 sidebar: 
-  label: Multi-projects
+  label: Project config
   order: 13
 ---
 
 import { Card, FileTree, Aside } from '@astrojs/starlight/components';
 
-Sometimes you may want to split your LikeC4 model into multiple ones, based on domains, teams, or any other criteria.
-
-You can do this by creating multiple projects in your workspace and linking them together.  
-You can also use this feature to share your model with other teams or projects.
-
-## Usage
-
-To mark a folder as a project, create a `likec4.config.json` file in the folder:
+To define a project, create a `likec4.config.json` file in the folder.  
+All files in the folder (and subfolders) will be part of this project:
 
 <FileTree>
-- cloud
-  - likec4.config.json
+- externals
+  - amazon.c4
+  - ...  
+- services
   - service1.c4
   - service2.c4
-  - ...
-- externals
-  - likec4.config.json
-  - amazon.c4
-  - ...
+  - ...  
+- specification.c4
+- **likec4.config.json**
 </FileTree>
 
-The `likec4.config.json` file must have the name of the project and must be unique in the workspace.
+## Configuration
+
+The `likec4.config.json` file must have the **name** of the project.
 
 
-```json
+```jsonc
 {
-  "name": "project-name",
-  "title": "Project Title"
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",  // required
+  "title": "Project Title" // optional
 }
 ```
+
+The name must be unique if you use [multiple projects](/dsl/config/multi-projects).
 
 :::note
 You can use these names for the config file:
@@ -46,6 +45,14 @@ You can use these names for the config file:
 - `likec4.config.json`
 
 LikeC4 interprets any file as JSON5
+
+You can also use these names:
+- `likec4.config.js`
+- `likec4.config.mjs`
+- `likec4.config.ts`
+- `likec4.config.mts`
+
+See [Custom Generators](/dsl/config/custom-generators) for more information.
 :::
 
 ## Exclude files
@@ -57,38 +64,17 @@ You can exclude files by adding an `exclude` array to the config file.
 {
   "name": "project-name",
   "exclude": [
-    "**/node_modules/**/*"
+    "**/node_modules/**"
   ]
 }
 ```
 
-If no exclude pattern is provided, LikeC4 uses `["**/node_modules/**/*"]` as default.  
+If no exclude pattern is provided, LikeC4 uses `["**/node_modules/**"]` as default.  
 The exclude pattern is the same as the one used by [picomatch](https://github.com/micromatch/picomatch).  
-
-
-## Import elements
-
-You can import elements from other projects by using the `import` keyword.
-
-```likec4
-import { serviceA } from 'projectA'
-
-model {
-  serviceB = service {
-    -> serviceA.api 'calls serviceA'
-  }
-}
-```
-
-<Aside type='caution' title="Limitations">
-At the moment, the following limitations apply:
-- Referenced projects must be loaded in the same workspace
-- Only top-level **model** elements can be imported
-</Aside>
 
 ## Image Aliases
 
-When using local images in your LikeC4 model, you can create aliases for the folder your immages are in to make them more readable and the files more transportable.
+When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.
 
 Use the `likec4.config.json` to add an `imageAliases` field:
 
@@ -104,7 +90,7 @@ Use the `likec4.config.json` to add an `imageAliases` field:
 
 You can then use the alias in your model:
 
-```likec4
+```likec4 title="example"
 // ./amazon.c4
 model {
   serviceA = service {
@@ -142,7 +128,7 @@ model {
 </FileTree>
 
 :::note
-In the example above the `externals.c4` is a nested file, but the aliasing works based on the workspace root.
+In the example above the `externals.c4` is a nested file, but the aliasing works based on the project root.
 :::
 
 ### Naming Rules
@@ -182,4 +168,3 @@ This is true even if you specify other aliases. Simply override the `@` to chang
   }
 }
 ```
-

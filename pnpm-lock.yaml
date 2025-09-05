@@ -396,6 +396,9 @@ importers:
       '@expressive-code/plugin-line-numbers':
         specifier: catalog:astro
         version: 0.41.3
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@types/picomatch':
         specifier: catalog:utils
         version: 4.0.2
