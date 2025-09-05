@@ -59,10 +59,10 @@
 
 .likec4-root:not([data-likec4-reduced-graphics])
   :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) {
-  filter: grayscale(85%) blur(3px);
+  filter: grayscale(85%);
 }
 .likec4-root:not([data-likec4-reduced-graphics]) .likec4-edge-label-container:is([data-likec4-dimmed]) {
-  filter: grayscale(85%) blur(3px);
+  filter: grayscale(85%);
 }
 
 .likec4-root:not([data-likec4-reduced-graphics])
