@@ -151,14 +151,6 @@
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.5",
     "@fontsource/ibm-plex-sans": "^5.2.6",
