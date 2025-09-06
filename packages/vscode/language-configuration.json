@@ -22,20 +22,8 @@
   // symbols that are auto closed when typing
   "autoClosingPairs": [
     [
-      "{",
-      "}"
-    ],
-    [
-      "[",
-      "]"
-    ],
-    [
-      "(",
-      ")"
-    ],
-    [
       "-[",
-      " ]->"
+      "]->"
     ],
     [
       "'''",
@@ -56,9 +44,21 @@
     [
       "/*",
       "*/"
-    ]
+    ],
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ],
   ],
-  "autoCloseBefore": "'\";:.,=}])>` \n\t",
+  "autoCloseBefore": "'\";:,=}])>` \n\t",
   // symbols that can be used to surround a selection
   "surroundingPairs": [
     [
@@ -78,6 +78,10 @@
       "'''"
     ],
     [
+      "\"\"\"",
+      "\"\"\""
+    ],
+    [
       "\"",
       "\""
     ],
@@ -93,16 +97,20 @@
     ]
   ],
   "onEnterRules": [
+    // If enter is pressed at the end of a string
     {
-      "beforeText": "{\\s*$",
+      "beforeText": "\\s*(\"|'){1,3}[^\"']*$",
+      "afterText": "^\\s*(\"|'){1,3}\\s*$",
       "action": {
         "indent": "indentOutdent"
       }
     },
+    // If enter is pressed inside a string
     {
-      "beforeText": "\\s*(\"|'){1,3}$",
+      "beforeText": "\\s+(\"|'){1,3}[^\"']*$",
+      "afterText": "^[^\"']+(\"|'){1,3}\\s*",
       "action": {
-        "indent": "indentOutdent"
+        "indent": "indent"
       }
     },
     {
@@ -113,9 +121,14 @@
     },
     {
       "beforeText": ":\\s*$",
+      "afterText": "^\\s*$",
       "action": {
         "indent": "indent"
       }
     }
-  ]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
+    "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$"
+  }
 }

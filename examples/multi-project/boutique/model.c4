@@ -89,11 +89,14 @@ model {
       cache = component 'Cart Cache' {
         #deprecated
         icon tech:redis
-        technology 'Redis'
-        description 'Stores cart data.'
+        technology '''# arsars'''
+        description: 'Stores cart data.'
       }
 
-      api -> cache 'gets cart data' #deprecated
+      api -> cache {
+        title ''
+      }
+      api -> cache 'gets cart data' #deprecated #teamB
       api -> catalogue 'gets product data'
       api -> actionLog 'sends activity data' #v2 #next
     }

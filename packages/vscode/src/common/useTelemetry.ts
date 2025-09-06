@@ -8,6 +8,7 @@ import {
   watch,
 } from 'reactive-vscode'
 import { keys } from 'remeda'
+import { isDev } from '../const'
 import { logger as root, logWarn } from '../logger'
 import { type Rpc, useRpc } from '../Rpc'
 import { whenExtensionActive } from './useIsActivated'
@@ -25,6 +26,10 @@ export const useTelemetry = createSingletonComposable(() => {
     watch(isEnabled, (_isEnabled) => {
       if (!_isEnabled) {
         logger.debug('telemetry disabled')
+        return
+      }
+      if (isDev) {
+        logger.debug('useTelemetry activation (dev)')
         return
       }
       logger.debug('useTelemetry activation')
@@ -76,15 +81,18 @@ function activateTelemetry(rpc: Rpc, telemetry: TelemetryReporter) {
 
   logger.info(`turn on telemetry`)
   const Minute = 60_000
-  // send first telemetry in 1 minute
-  setTimeout(() => sendTelemetryMetrics(), Minute)
+  // send first telemetry in 5 minutes
+  const timeout = setTimeout(() => sendTelemetryMetrics(), 5 * Minute)
 
-  // send telemetry every 30 minutes
+  // send telemetry every 1 hour
   const interval = setInterval(() => {
     sendTelemetryMetrics()
-  }, 30 * Minute)
+  }, 60 * Minute)
 
-  tryOnScopeDispose(() => clearInterval(interval))
+  tryOnScopeDispose(() => {
+    clearInterval(interval)
+    clearTimeout(timeout)
+  })
 
   return telemetry
 }

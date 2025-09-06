@@ -51,7 +51,10 @@ export const useDiagramPanel = createSingletonComposable(() => {
     const projectId = (panelState.projectId.value ?? 'default') as ProjectId
     const messenger = useMessenger()
     const panelExists = panel.value !== null
-    const _panel = panel.value ?? useDisposable(createWebviewPanel())
+    const _panel = panel.value ??= useDisposable(createWebviewPanel())
+
+    panelVisible.value = _panel.visible
+
     _panel.onDidDispose(() => {
       // if panel is not disposed by close() call, call close() to dispose it
       if (panel.value) {
@@ -104,8 +107,6 @@ export const useDiagramPanel = createSingletonComposable(() => {
       panelVisible.value = false
       participantId.value = null
     })
-    panelVisible.value = _panel.visible
-    panel.value = _panel
   }
 
   /**
@@ -160,11 +161,11 @@ export const useDiagramPanel = createSingletonComposable(() => {
 
   function close() {
     try {
-      logger.debug`close view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
       const _panel = panel.value
       // reset panel value to null to prevent dispose loop
       panel.value = null
       if (_panel) {
+        logger.debug`close view ${panelState.viewId.value} (project: ${panelState.projectId.value})`
         _panel.dispose()
       }
       panelScope?.stop()

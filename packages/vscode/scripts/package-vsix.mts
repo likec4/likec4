@@ -19,6 +19,7 @@ const [{ dependencies }] = await $`pnpm ls -P --json`.json<[{
   }>
 }]>()
 
+// Replace esbuild with esbuild-wasm
 const packageJson = JSON.parse(await readFile('package.json', 'utf-8'))
 packageJson.dependencies = Object.fromEntries(
   Object.entries(dependencies)

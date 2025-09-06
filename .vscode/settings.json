@@ -61,7 +61,7 @@
   },
   "json.schemas": [
     {
-      "url": "./node_modules/langium-cli/langium-config-schema.json",
+      "url": "./packages/language-server/node_modules/langium-cli/langium-config-schema.json",
       "fileMatch": [
         "langium-config.json"
       ]

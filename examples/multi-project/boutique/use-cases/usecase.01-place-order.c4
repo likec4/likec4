@@ -11,20 +11,27 @@ views "Use Cases" {
       '
     }
     boutique.frontend -> boutique.cart 'Creates or updates cart'
-    customer -> boutique.frontend 'enters shipping information' {
-      notes '
-        Custmer enters shipping information to get shipping cost estimates.
-      '
+    customer -> boutique.frontend {
+      title 'enters shipping information'
+      notes '''
+        Customer enters shipping information to get _shipping cost_ estimates.
+
+      '''
     }
-    customer -> boutique.frontend 'enters payment information' {
+    customer -> boutique.frontend {
+      title 'enters payment information'
       notes '
         Customer enters payment information and confirms the order.
       '
     }
-    boutique.frontend -> boutique.checkout 'initiates payment'
-
-    boutique.checkout -> boutique.db 'persists order'
-    boutique.checkout -> boutique.shipping 'reserves inventory' {
+    boutique.frontend -> boutique.checkout {
+      title 'initiates payment'
+    }
+    boutique.checkout -> boutique.db {
+      title 'persists order'
+    }
+    boutique.checkout -> boutique.shipping {
+      title 'reserves inventory'
       notes '
         Reserving inventory is an asynchronous process that may take a few seconds.
       '

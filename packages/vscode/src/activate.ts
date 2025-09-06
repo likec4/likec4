@@ -11,11 +11,9 @@ import {
   toRef,
   toValue,
   tryOnScopeDispose,
-  useActiveTextEditor,
   useCommand,
   useDisposable,
   useFsWatcher,
-  useVisibleTextEditors,
   watch,
 } from 'reactive-vscode'
 import { countBy, entries, groupBy, keys, map, pipe, prop } from 'remeda'
@@ -30,8 +28,8 @@ import { useExtensionLogger } from './common/useExtensionLogger'
 import { useIsActivated, whenExtensionActive } from './common/useIsActivated'
 import { activateMessenger, useMessenger } from './common/useMessenger'
 import { useTelemetry } from './common/useTelemetry'
-import { languageId } from './const'
-import { logError, logger, logWarn } from './logger'
+import { isDev } from './const'
+import { logger, logWarn } from './logger'
 import { commands } from './meta'
 import { useRpc } from './Rpc'
 import { performanceMark } from './utils'
@@ -41,47 +39,18 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   useBuiltinFileSystem()
   useExtensionLogger()
   logger.info(`activateExtension: ${extensionKind}`)
-  const visibleTextEditors = useVisibleTextEditors()
   const telemetry = useTelemetry()
 
-  let activated = false
-  function activate() {
-    if (activated) {
-      logger.debug(`language client already activated`)
-      return
-    }
-    try {
-      activateLc()
-    } catch (e) {
-      logError(e)
-    } finally {
-      activated = true
-    }
-  }
+  whenExtensionActive(() => {
+    logger.info(`activateExtension done in ${m.pretty}`)
+    telemetry.sendTelemetryEvent('activation', { extensionKind })
+  })
+
+  activateLc()
 
   createWebviewPanelSerializer(() => {
-    if (!activated) {
-      logger.info('activate language client because of opened preview panel')
-      activate()
-    }
+    logger.info('activate language client because of opened preview panel')
   })
-
-  const { stop } = watch(visibleTextEditors, (editors) => {
-    const textEditor = editors.find(editor => editor.document.languageId === languageId)
-    if (!textEditor) return
-    if (!activated) {
-      logger.info(`activate language client because of opened document\n${textEditor.document.uri.toString()}`)
-      activate()
-    }
-    nextTick(() => {
-      stop()
-    })
-  }, {
-    immediate: true,
-  })
-
-  logger.info(`activateExtension done in ${m.pretty}`)
-  telemetry.sendTelemetryEvent('activation', { extensionKind })
 
   onDeactivate(() => {
     logger.info('deactivate extension')
@@ -107,6 +76,7 @@ function activateLc() {
   const preview = useDiagramPanel()
   activateMessenger({ rpc, preview, messenger })
 
+  logger.debug('starting language server')
   client.start()
     .then(() => {
       logger.info('language server started')
@@ -117,7 +87,6 @@ function activateLc() {
     })
 
   const telemetry = useTelemetry()
-  logger.info('starting language server')
 
   const documentSelector = useDocumentSelector()
 
@@ -128,7 +97,7 @@ function activateLc() {
   useDisposable(client.onTelemetry((event) => {
     try {
       const { eventName, ...properties } = event
-      logger.debug(`onTelemetry: ${eventName}`, { event })
+      logger.debug(`onTelemetry: {eventName}`, { event })
       if (eventName === 'error') {
         if ('stack' in properties) {
           properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
@@ -142,9 +111,11 @@ function activateLc() {
     }
   }))
 
-  useDisposable(client.onDidChangeState((event) => {
-    logger.debug(`onDidChangeState: ${stateName(event.oldState)} -> ${stateName(event.newState)}`)
-  }))
+  if (isDev) {
+    useDisposable(client.onDidChangeState((event) => {
+      logger.debug(`onDidChangeState: ${stateName(event.oldState)} -> ${stateName(event.newState)}`)
+    }))
+  }
 
   async function restartServer() {
     logger.info('restarting language server')
@@ -326,7 +297,7 @@ function createWebviewPanelSerializer(onActivate: () => void) {
   whenExtensionActive(() => {
     const preview = useDiagramPanel()
     const { stop } = watch([deserializePanel, deserializeState], ([panel, state]) => {
-      if (!panel || !state) return
+      if (!panel) return
       preview.deserialize(panel, state)
       nextTick(() => {
         stop()

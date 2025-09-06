@@ -209,7 +209,7 @@
         },
         {
           "command": "likec4.validate-layout",
-          "when": "webviewId == \"likec4-preview\""
+          "when": "likec4.activated"
         }
       ]
     },

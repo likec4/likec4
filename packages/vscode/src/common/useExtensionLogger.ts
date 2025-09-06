@@ -16,6 +16,10 @@ export const useExtensionLogger = createSingletonComposable(() => {
     },
     loggers: [
       {
+        category: ['likec4', 'vscode', 'telemetry'],
+        sinks: ['console', 'vscode'],
+      },
+      {
         category: 'likec4',
         sinks: ['console', 'vscode', 'telemetry'],
       },

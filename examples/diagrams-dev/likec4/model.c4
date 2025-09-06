@@ -221,11 +221,11 @@ views {
   view cloud_graphql of graphql {
     include
       -> graphql ->
-      // graphql,
-      // ui,
-      // ui.* -> graphql,
-      // services,
-      // graphql -> services.*,
+    // graphql,
+    // ui,
+    // ui.* -> graphql,
+    // services,
+    // graphql -> services.*,
 
     style * {
       color secondary

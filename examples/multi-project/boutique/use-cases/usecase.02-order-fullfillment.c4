@@ -2,9 +2,10 @@ views "Use Cases" {
 
   dynamic view order-fulfillment {
     title 'Usecase 02: Order Fulfillment'
-    description '
+    description '''
       This use case describes the process of fulfilling an order.
-    '
+
+    '''
 
     customer -> boutique {
       title 'Customer places order'
@@ -43,12 +44,14 @@ views "Use Cases" {
       }
     }
     parallel {
-      boutique.shipping -> boutique.db 'updates inventory' {
+      boutique.shipping -> boutique.db {
+        title 'updates inventory'
         notes '
           The inventory is updated to reflect the shipped items.
         '
       }
-      boutique.shipping -> boutique.email 'sends shipping confirmation' {
+      boutique.shipping -> boutique.email {
+        title 'sends shipping confirmation'
         notes '
           Shipping confirmation is sent to the customer.
         '
