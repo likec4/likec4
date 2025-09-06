@@ -144,7 +144,11 @@ export const useDiagramPanel = createSingletonComposable(() => {
       if (!viewId || !projectId) {
         return 'Diagram Preview'
       }
-      return computedModels.value[projectId]?.views[viewId]?.title ?? 'Diagram Preview'
+      const view = computedModels.value[projectId]?.views[viewId]
+      if (!view) {
+        return 'Diagram Preview'
+      }
+      return view.title ?? `Preview ${view.id}`
     }),
   )
 

@@ -1,4 +1,4 @@
-import { createSingletonComposable, effectScope, useVscodeContext, watch } from 'reactive-vscode'
+import { createSingletonComposable, effectScope, onDeactivate, useVscodeContext, watch } from 'reactive-vscode'
 import { logError, logger } from '../logger'
 
 /**
@@ -10,6 +10,11 @@ import { logError, logger } from '../logger'
  */
 export const useIsActivated = createSingletonComposable(() => {
   const activated = useVscodeContext('likec4.activated', false)
+
+  onDeactivate(() => {
+    activated.value = false
+  })
+
   return activated
 })
 
