@@ -1,11 +1,9 @@
 ## [1.39.1](https://github.com/likec4/likec4/compare/v1.39.0...v1.39.1) (2025-09-06)
 
-
-### Bug Fixes
+### 🐞 Bug Fixes
 
 * **app:** index page takes a long time to load the preview of the views ([5f98bc4](https://github.com/likec4/likec4/commit/5f98bc4e674bd508cee921b6e2a8df70a0d4bc4b)), closes [#2194](https://github.com/likec4/likec4/issues/2194)
 * **docker:** Pre-built image is broken in 1.39.0 ([6370240](https://github.com/likec4/likec4/commit/63702406f6ff29713a17bd05e7e8b8dd84cd4161)), closes [#2196](https://github.com/likec4/likec4/issues/2196)
-
 
 
 # [1.39.0](https://github.com/likec4/likec4/compare/v1.38.1...v1.39.0) (2025-09-05)
