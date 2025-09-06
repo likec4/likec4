@@ -20,7 +20,7 @@
     "graph"
   ],
   "engines": {
-    "node": "~20.19.3 || ~22.18.0 || ~24.5.0"
+    "node": "~20.19.3 || ~22.18.0 || ~24.5.0 || ~24.7.0"
   },
   "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
