@@ -90,7 +90,7 @@ catalogs:
     defu: ^6.1.4
     esm-env: ^1.2.2
     fast-equals: ^5.2.2
-    fdir: 6.4.6
+    fdir: 6.5.0
     json5: ^2.2.3
     khroma: 2.1.0
     nano-spawn: ^1.0.2
