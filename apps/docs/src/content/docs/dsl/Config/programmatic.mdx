@@ -27,7 +27,7 @@ Example:
 
 ```ts
 // likec4.config.ts
-import { defineConfig } from '@likec4/config'
+import { defineConfig } from 'likec4/config'
 
 export default defineConfig({
   name: 'my-project',
@@ -41,10 +41,10 @@ export default defineConfig({
 ```
 
 :::tip
-You can also use `likec4/config`:
+You can also use smaller package `@likec4/config`:
 
 ```ts
-import { defineConfig } from 'likec4/config'
+import { defineConfig } from '@likec4/config'
 
 export default defineConfig({
   name: 'my-project',
@@ -62,7 +62,7 @@ You can define custom generators in your project config:
 
 ```ts
 // likec4.config.ts
-import { defineConfig } from '@likec4/config'
+import { defineConfig } from 'likec4/config'
 
 export default defineConfig({
   name: 'my-project',
@@ -98,7 +98,7 @@ There is also helper function `defineGenerators` to define reusable generators:
 
 ```ts title="example"
 // shared_generators.ts
-import { defineGenerators } from '@likec4/config'
+import { defineGenerators } from 'likec4/config'
 
 export default defineGenerators({
   'hello': async ({ likec4model, ctx }) => {
@@ -110,7 +110,7 @@ export default defineGenerators({
 })
 
 // likec4.config.ts
-import { defineConfig } from '@likec4/config'
+import { defineConfig } from 'likec4/config'
 import generators from './shared_generators'
 
 export default defineConfig({
