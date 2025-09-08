@@ -1,11 +1,10 @@
-import { consola } from 'consola'
 import { copyFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { isProduction } from 'std-env'
 import { type BuildConfig, defineBuildConfig } from 'unbuild'
 
 if (!isProduction) {
-  consola.warn('Bundling CLI in development mode')
+  console.warn('Bundling CLI in development mode')
 }
 
 const cli: BuildConfig = {
