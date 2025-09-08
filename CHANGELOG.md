@@ -1,3 +1,11 @@
+## [1.39.2](https://github.com/likec4/likec4/compare/v1.39.1...v1.39.2) (2025-09-08)
+
+### 🐞 Bug Fixes
+
+* **vscode:** improve indentation rules and extension activation ([9bf99d0](https://github.com/likec4/likec4/commit/9bf99d03e9c9fe7756e75c146ef892957555c78d))
+* **cli:** optimize bundle chunking and update treeshake preset for better code splitting ([f1a881d](https://github.com/likec4/likec4/commit/f1a881d5027e15d76a3d066934d315044dba87e5))
+* **vscode:** show view ID as fallback title in diagram preview panel ([3f10fe4](https://github.com/likec4/likec4/commit/3f10fe4864410ea7f6116468a8232d6e7c2a4c23))
+
 ## [1.39.1](https://github.com/likec4/likec4/compare/v1.39.0...v1.39.1) (2025-09-06)
 
 ### 🐞 Bug Fixes
