@@ -57,7 +57,6 @@ export async function viteReactConfig({
       emptyOutDir: false,
       sourcemap: false,
       minify: false,
-      target: 'es2022',
       copyPublicDir: false,
       chunkSizeWarningLimit,
       lib: {
@@ -81,6 +80,7 @@ export async function viteReactConfig({
           'react/jsx-dev-runtime',
           'react-dom/client',
           /likec4\/icons\/.*/,
+          /@likec4\/core.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
         onwarn(warning, defaultHandler) {

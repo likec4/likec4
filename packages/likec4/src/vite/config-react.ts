@@ -83,6 +83,7 @@ export async function viteReactConfig({
           'react/jsx-dev-runtime',
           'react-dom/client',
           /likec4\/icons\/.*/,
+          /@likec4\/core.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
         onwarn(warning, defaultHandler) {

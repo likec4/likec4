@@ -16,7 +16,7 @@ export const LikeC4FileSystem = (
   ...ehableWatcher ? chokidarFileSystemWatcher : noopFileSystemWatcher,
 })
 
-const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
+export const isLikeC4File = (path: string) => LikeC4LanguageMetaData.fileExtensions.some((ext) => path.endsWith(ext))
 
 export const isAnyLikeC4File = (path: string) => isLikeC4File(path) || isLikeC4Config(path)
 

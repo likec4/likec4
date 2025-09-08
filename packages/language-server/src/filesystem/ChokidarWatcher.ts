@@ -6,7 +6,7 @@ import { URI } from 'langium'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './FileSystemWatcher'
-import { isAnyLikeC4File } from './LikeC4FileSystem'
+import { isAnyLikeC4File, isLikeC4File } from './LikeC4FileSystem'
 
 const logger = mainLogger.getChild('chokidar')
 
@@ -42,10 +42,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
 
   private createWatcher(folder: string): FSWatcher {
     let watcher = chokidar.watch(folder, {
-      ignored: (path, stats) => {
-        return path.includes('node_modules') ||
-          (!!stats && stats.isFile() && !isAnyLikeC4File(path))
-      },
+      ignored: [
+        path => path.includes('node_modules') || path.includes('.git'),
+        (path, stats) => (!!stats && stats.isFile() && !isAnyLikeC4File(path)),
+      ],
       ignoreInitial: true,
     })
 
@@ -54,7 +54,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         if (isLikeC4Config(path)) {
           logger.debug`project file changed: ${path}`
           await this.services.workspace.ProjectsManager.reloadProjects()
-        } else {
+        } else if (isLikeC4File(path)) {
           logger.debug`file changed: ${path}`
           await this.services.workspace.DocumentBuilder.update([URI.file(path)], [])
         }
@@ -68,7 +68,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         if (isLikeC4Config(path)) {
           logger.debug`project file removed: ${path}`
           await this.services.workspace.ProjectsManager.reloadProjects()
-        } else {
+        } else if (isLikeC4File(path)) {
           logger.debug`file removed: ${path}`
           await this.services.workspace.DocumentBuilder.update([], [URI.file(path)])
         }
