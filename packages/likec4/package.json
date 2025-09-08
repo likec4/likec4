@@ -139,7 +139,6 @@
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-n-require": "catalog:utils",
     "boxen": "^8.0.1",
-    "esbuild": "catalog:esbuild",
     "playwright": "catalog:",
     "rollup": "catalog:vite",
     "type-fest": "catalog:utils",

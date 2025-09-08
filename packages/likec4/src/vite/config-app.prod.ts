@@ -85,6 +85,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         '@likec4/core/compute-view/relationships',
         '@likec4/core/utils',
         '@likec4/core',
+        'likec4/model',
+        'likec4/react',
         'likec4/vite-plugin/internal',
       ],
       noDiscovery: true,
@@ -109,7 +111,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       modulePreload: false,
       emptyOutDir: false,
       sourcemap: false,
-      cssMinify: true,
+      cssMinify: false,
       minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit,
@@ -125,9 +127,16 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
             resolve(root, 'src', 'style.css'),
           ],
           output: {
-            compact: true,
+            hoistTransitiveImports: false,
             manualChunks: (id) => {
-              if (id.includes('likec4/icons')) {
+              if (id.endsWith('.css') || id.endsWith('.html') || id.includes('likec4/icons')) {
+                return undefined
+              }
+              if (id.includes('__app__')) {
+                let match = id.match(/__app__\/src\/([\w]+)\.js/)
+                if (match) {
+                  return match[1]
+                }
                 return undefined
               }
               if (id.includes('node_modules/likec4') || id.includes('node_modules/@likec4')) {

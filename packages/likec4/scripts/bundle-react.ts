@@ -3,7 +3,7 @@ import { consola } from 'consola'
 import { generateDtsBundle } from 'dts-bundle-generator'
 import { build, formatMessagesSync } from 'esbuild'
 import { writeFile } from 'node:fs/promises'
-import { isProduction } from 'std-env'
+import { isDevelopment, isProduction } from 'std-env'
 
 try {
   const coreExports = Object
@@ -21,7 +21,7 @@ try {
     bundle: true,
     treeShaking: true,
     define: {
-      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+      'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production'),
     },
     external: [
       'react',
@@ -30,7 +30,6 @@ try {
       'react/jsx-dev-runtime',
       'react-dom/client',
       ...coreExports,
-      'likec4/model',
     ],
     minify: isProduction,
     minifyIdentifiers: false,

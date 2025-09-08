@@ -78,14 +78,18 @@ export async function bundleApp() {
         },
         output: {
           hoistTransitiveImports: false,
+          chunkFileNames: '[name].js',
           manualChunks: (id) => {
+            if (id.endsWith('.css')) {
+              return undefined
+            }
             if (id.includes('@mantine')) {
               return 'mantine'
             }
             if (id.includes('@tabler')) {
               return 'icons'
             }
-            if (id.includes('diagram/src')) {
+            if (id.includes('diagram/src') || id.includes('styled-system')) {
               return 'likec4'
             }
             if (id.includes('node_modules')) {

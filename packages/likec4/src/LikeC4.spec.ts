@@ -154,7 +154,6 @@ describe.concurrent('LikeC4', () => {
     const workspace = path.resolve(__dirname, '../../../examples')
 
     const likec4 = await LikeC4.fromWorkspace(workspace, {
-      watch: false,
       throwIfInvalid: true,
     })
     expect(likec4.hasErrors()).toBe(false)
