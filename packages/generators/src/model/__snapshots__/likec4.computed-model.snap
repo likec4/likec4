@@ -7,7 +7,6 @@
  ******************************************************************************/
 
 import { LikeC4Model } from '@likec4/core/model'
-import type { ComputedLikeC4ModelData } from '@likec4/core/types'
 import type { Aux, SpecAux } from '@likec4/core/types';
 
 export type $Specs = SpecAux<
@@ -83,7 +82,7 @@ export type $Tags = readonly $Aux['Tag'][]
 export type $MetadataKey = $Aux['MetadataKey']
 
 
-export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4ModelData<$Aux>>({
+export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
   _stage: 'computed',
   projectId: 'from-builder',
   project: {
@@ -1145,6 +1144,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(<ComputedLikeC4Mod
       ],
     },
   },
-} as unknown))
+} as any) as any
 
 /* prettier-ignore-end */

@@ -59,7 +59,7 @@ describe('generateAux', () => {
     )
 
   it('generate valid code', async ({ expect }) => {
-    const aux = generateAux(m.toLikeC4Model())
+    const aux = generateAux(m.toLikeC4Model({ id: 'aux-test' }))
     await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.generate-valid-code.snap')
   })
 })

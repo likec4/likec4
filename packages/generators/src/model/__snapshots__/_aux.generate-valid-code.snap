@@ -40,7 +40,7 @@ export type $Aux = Aux<
   | "view1"
   | "view2",
   // Project ID
-  "from-builder",
+  "aux-test",
   $Specs
 >
 
