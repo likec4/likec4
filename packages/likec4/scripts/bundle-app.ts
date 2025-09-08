@@ -52,7 +52,6 @@ export async function bundleApp() {
       cssCodeSplit: true,
       cssMinify: true,
       minify: true,
-      target: 'esnext',
       sourcemap: false,
       assetsInlineLimit: 2_000_000,
       lib: {
@@ -75,10 +74,25 @@ export async function bundleApp() {
           './app/src/style.css',
         ],
         treeshake: {
-          preset: 'safest',
+          preset: 'recommended',
         },
         output: {
           hoistTransitiveImports: false,
+          manualChunks: (id) => {
+            if (id.includes('@mantine')) {
+              return 'mantine'
+            }
+            if (id.includes('@tabler')) {
+              return 'icons'
+            }
+            if (id.includes('diagram/src')) {
+              return 'likec4'
+            }
+            if (id.includes('node_modules')) {
+              return 'vendors'
+            }
+            return undefined
+          },
         },
         external: [
           'react/jsx-runtime',

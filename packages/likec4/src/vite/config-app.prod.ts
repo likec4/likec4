@@ -131,7 +131,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
                 return undefined
               }
               if (id.includes('node_modules/likec4') || id.includes('node_modules/@likec4')) {
-                return 'likec4-core'
+                return 'likec4'
               }
               if (id.includes('node_modules')) {
                 return 'vendors'
