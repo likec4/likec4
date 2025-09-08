@@ -42,6 +42,7 @@ const cli: BuildConfig = {
     },
     output: {
       compact: isProduction,
+      hoistTransitiveImports: false,
     },
     resolve: {
       exportConditions: ['node'],

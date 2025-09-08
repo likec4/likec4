@@ -29,5 +29,8 @@ export default defineBuildConfig({
   rollup: {
     emitCJS: false,
     inlineDependencies: true,
+    output: {
+      hoistTransitiveImports: false,
+    },
   },
 })

@@ -184,9 +184,6 @@ catalogs:
     citty:
       specifier: ^0.1.6
       version: 0.1.6
-    consola:
-      specifier: ^3.4.2
-      version: 3.4.2
     date-fns:
       specifier: ^4.1.0
       version: 4.1.0
@@ -1441,9 +1438,6 @@ importers:
       conf:
         specifier: ^13.1.0
         version: 13.1.0
-      consola:
-        specifier: catalog:utils
-        version: 3.4.2
       defu:
         specifier: ^6.1.4
         version: 6.1.4

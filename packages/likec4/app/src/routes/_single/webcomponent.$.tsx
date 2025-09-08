@@ -1,7 +1,7 @@
-import { Box, Flex, useMantineColorScheme } from '@mantine/core'
+import { Box } from '@likec4/styles/jsx'
+import { useMantineColorScheme } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { ComponentName } from '../../const'
-import { cssWebcomponentIframeContainer, cssWebcomponentView } from './view.css'
 
 export const Route = createFileRoute('/_single/webcomponent/$')({
   component: WebcomponentPage,
@@ -39,32 +39,39 @@ function WebcomponentPage() {
           font-size: 16px;
         }
         body {
-          position: relative;
           min-height: 100%;
-          padding: clamp(0.5rem, 5vh, 4rem) clamp(0.5rem, 5vw, 5rem);
         }
       </style>
     </head>
-    <body>
+    <body>      
+      <div style="width: 100%; height: 100%; padding: clamp(0.5rem, 5vh, 4rem) clamp(0.5rem, 5vw, 5rem)">
+        <${ComponentName.View} view-id="${encodeURIComponent(viewId)}"></${ComponentName.View}>
+      </div>
       <script type="module" src="${jsurl.href}"></script>
-      <${ComponentName.View} view-id="${encodeURIComponent(viewId)}"></${ComponentName.View}>
     </body>
     </html>
   `
   return (
-    <Flex direction={'column'} className={cssWebcomponentView}>
-      {
-        /* <Group>
-        <Text size="xl">Webcomponent</Text>
-      </Group> */
-      }
-      <Box className={cssWebcomponentIframeContainer}>
-        <iframe
-          srcDoc={iframeHtml}
-          // @ts-expect-error allowtransparency is not in the iframe element type
-          allowtransparency={'true'}>
-        </iframe>
-      </Box>
-    </Flex>
+    <Box
+      css={{
+        position: 'fixed',
+        inset: '0',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        '& iframe': {
+          width: '100%',
+          height: '100%',
+          borderStyle: 'none',
+          backgroundColor: 'transparent',
+          overflow: 'hidden',
+        },
+      }}>
+      <iframe
+        srcDoc={iframeHtml}
+        // @ts-expect-error allowtransparency is not in the iframe element type
+        allowtransparency={'true'}>
+      </iframe>
+    </Box>
   )
 }

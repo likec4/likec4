@@ -41,35 +41,3 @@ export const cssViewOutlet = css({
   // ['--likec4-navigation-webview-top']: '0.8rem',
   // ['--likec4-navigation-webview-left']: '3.2rem'
 })
-
-export const cssExportView = css({
-  boxSizing: 'border-box',
-  border: '0px solid transparent',
-  padding: '0',
-  margin: '0',
-  marginRight: 'auto',
-  marginBottom: 'auto',
-  background: 'transparent',
-  overflow: 'hidden',
-})
-
-export const cssWebcomponentView = css({
-  position: 'fixed',
-  inset: '0',
-  width: '100%',
-  height: '100%',
-})
-
-export const cssWebcomponentIframeContainer = css({
-  flex: 1,
-  width: '100%',
-  height: '100%',
-  overflow: 'hidden',
-  '& iframe': {
-    width: '100%',
-    height: '100%',
-    borderStyle: 'none',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-  },
-})

@@ -1,6 +1,5 @@
 import pandaCss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import { consola } from 'consola'
 import { $ } from 'execa'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
@@ -12,14 +11,14 @@ import { amIExecuted } from './_utils'
 export async function bundleApp() {
   const cwd = process.cwd()
 
-  consola.info(`Run tanstack-router generate`)
+  console.info(`Run tanstack-router generate`)
   await $`tsr generate`
   await $`panda codegen`
 
   const root = resolve(cwd, 'app')
   const outDir = resolve(cwd, '__app__/src')
-  consola.start(`Bundling App...`)
-  consola.info(`root: ${root}`)
+  console.info(`Bundling App...`)
+  console.info(`root: ${root}`)
 
   const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
 
@@ -126,7 +125,7 @@ export async function bundleApp() {
     ],
   })
 
-  consola.info(`copy app files to __app__`)
+  console.info(`copy app files to __app__`)
   let indexHtml = await readFile('app/index.html', 'utf-8')
   indexHtml = indexHtml.replace('%VITE_HTML_DEV_INJECT%', '')
   await writeFile('__app__/index.html', indexHtml)
@@ -142,6 +141,6 @@ export async function bundleApp() {
 }
 
 if (amIExecuted(import.meta.filename)) {
-  consola.info('Running as script')
+  console.info('Running as script')
   await bundleApp()
 }

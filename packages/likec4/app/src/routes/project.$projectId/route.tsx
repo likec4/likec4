@@ -1,6 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
-import { Box, Button, Container, Stack, Title } from '@mantine/core'
+import { Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet } from '@tanstack/react-router'
+import { loadModel } from 'likec4:model'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Fallback } from '../../components/Fallback'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
@@ -15,7 +16,6 @@ export const Route = createFileRoute('/project/$projectId')({
     }
   },
   loader: async ({ context }) => {
-    const { loadModel } = await import('likec4:model')
     const projectId = context.projectId
     try {
       const { $likec4data, $likec4model } = await loadModel(projectId)
@@ -31,23 +31,22 @@ export const Route = createFileRoute('/project/$projectId')({
   },
   component: RouteComponent,
   notFoundComponent: () => (
-    <Box className={css.cssViewOutlet}>
+    <div className={css.cssViewOutlet}>
       <Container py={'xl'}>
         <Stack align="flex-start">
           <Title>Project not found</Title>
           <Button component={Link} to="/" search size="md">Open overview</Button>
         </Stack>
       </Container>
-    </Box>
+    </div>
   ),
 })
 
 function RouteComponent() {
-  const navigate = Route.useNavigate()
   const { $likec4data, $likec4model, projectId } = Route.useLoaderData()
 
   return (
-    <Box className={css.cssViewOutlet}>
+    <div className={css.cssViewOutlet}>
       <ErrorBoundary FallbackComponent={Fallback}>
         <LikeC4IconRendererContext projectId={projectId}>
           <LikeC4ModelContext likec4data={$likec4data} likec4model={$likec4model}>
@@ -55,6 +54,6 @@ function RouteComponent() {
           </LikeC4ModelContext>
         </LikeC4IconRendererContext>
       </ErrorBoundary>
-    </Box>
+    </div>
   )
 }

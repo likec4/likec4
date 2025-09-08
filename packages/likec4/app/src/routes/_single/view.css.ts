@@ -52,24 +52,3 @@ export const cssExportView = css({
   marginBottom: 'auto',
   background: 'transparent',
 })
-
-export const cssWebcomponentView = css({
-  position: 'fixed',
-  inset: '0',
-  width: '100%',
-  height: '100%',
-})
-
-export const cssWebcomponentIframeContainer = css({
-  flex: 1,
-  width: '100%',
-  height: '100%',
-  overflow: 'hidden',
-  '& iframe': {
-    width: '100%',
-    height: '100%',
-    borderStyle: 'none',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-  },
-})

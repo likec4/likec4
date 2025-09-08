@@ -1,4 +1,4 @@
-import { FqnExpr, FqnRef } from '@likec4/core'
+import { FqnExpr, FqnRef } from '@likec4/core/types'
 import type { ValidationCheck } from 'langium'
 import { AstUtils } from 'langium'
 import { isTruthy } from 'remeda'

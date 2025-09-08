@@ -5,13 +5,14 @@ const mkdist: BuildEntry = {
   input: './src/',
   outDir: './dist/',
   builder: 'mkdist',
-  ext: 'js',
+  ext: 'mjs',
   addRelativeDeclarationExtensions: false,
   declaration: true,
   globOptions: {
     ignore: [
+      'src/empty.ts',
       '**/*.langium',
-      '**/__test*/**',
+      '**/__*/**',
       '**/*.spec.ts',
     ],
   },

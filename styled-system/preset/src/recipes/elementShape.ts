@@ -142,7 +142,7 @@ export const elementShapeRecipe = defineRecipe({
             _shapeStorage: '50% 100%',
           },
           transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
-          filter: 'brightness(0.65)',
+          filter: 'brightness(0.65) !important',
           stroke: '[none]',
           display: {
             _smallZoom: 'none',

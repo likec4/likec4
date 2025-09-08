@@ -13,7 +13,7 @@ export const likec4tag = defineRecipe({
     fontSize: 'xs',
     gap: '[1px]',
     cursor: 'default',
-    fontFamily: 'likec4.element',
+    fontFamily: 'likec4',
     fontWeight: 'bold',
     layerStyle: 'likec4.tag',
     whiteSpace: 'nowrap',

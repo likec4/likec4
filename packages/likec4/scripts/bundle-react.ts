@@ -1,5 +1,4 @@
 import packageJson from '@likec4/core/package.json'
-import { consola } from 'consola'
 import { generateDtsBundle } from 'dts-bundle-generator'
 import { build, formatMessagesSync } from 'esbuild'
 import { writeFile } from 'node:fs/promises'
@@ -9,7 +8,7 @@ try {
   const coreExports = Object
     .keys(packageJson.exports)
     .map((key) => `@likec4/core${key.slice(1)}`)
-  consola.start('Bundle react')
+  console.info('Bundle react')
   const { errors, warnings } = await build({
     entryPoints: [
       'react/index.ts',
@@ -38,31 +37,31 @@ try {
   })
 
   if (errors.length) {
-    consola.error(formatMessagesSync(errors, {
+    console.error(formatMessagesSync(errors, {
       kind: 'error',
       color: true,
       terminalWidth: process.stdout.columns,
     }))
   }
   if (warnings.length) {
-    consola.warn(formatMessagesSync(warnings, {
+    console.warn(formatMessagesSync(warnings, {
       kind: 'warning',
       color: true,
       terminalWidth: process.stdout.columns,
     }))
   }
   if (errors.length || warnings.length) {
-    consola.error('⛔️ Build failed')
+    console.error('⛔️ Build failed')
     process.exit(1)
   }
 } catch (e) {
-  consola.error('⛔️ Build failed')
-  consola.error(e)
+  console.error('⛔️ Build failed')
+  console.error(e)
   process.exit(1)
 }
 
-consola.success('✅ React bundle done')
-consola.start('generating dts bundle')
+console.info('✅ React bundle done')
+console.info('generating dts bundle')
 
 try {
   const [dts] = await generateDtsBundle([
@@ -79,7 +78,7 @@ try {
       },
       output: {
         inlineDeclareGlobals: false,
-        exportReferencedTypes: false,
+        // exportReferencedTypes: false,
       },
     },
   ], {
@@ -87,15 +86,14 @@ try {
   })
 
   if (!dts) {
-    consola.error('⛔️ Failed to generate dts bundle')
+    console.error('⛔️ Failed to generate dts bundle')
     process.exit(1)
   }
 
   await writeFile('react/index.d.mts', dts, 'utf-8')
-  consola.success('✅ React Typings done')
+  console.info('✅ React Typings done')
   process.exit(0)
 } catch (e) {
-  consola.error('⛔️ Failed to generate dts bundle')
-  consola.error(e)
+  console.error('⛔️ Failed to generate dts bundle', e)
   process.exit(1)
 }

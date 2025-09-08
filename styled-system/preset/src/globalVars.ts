@@ -9,17 +9,8 @@ export const globalVars: ExtendableGlobalVars = {
     ...paletteGlobalVars,
     '--mantine-scale': '1',
     '--likec4-palette-outline': 'var(--likec4-palette-loContrast)',
-    '--likec4-spacing': {
-      syntax: '<length> | <percentage>',
-      inherits: false,
-    },
-    '--text-fz': {
-      syntax: '<length> | <percentage>',
-      inherits: false,
-    },
-    [iconSize]: {
-      syntax: '<length> | <percentage>',
-      inherits: false,
-    },
+    '--likec4-spacing': '/*-*/ /*-*/',
+    '--text-fz': '/*-*/ /*-*/',
+    [iconSize]: '/*-*/ /*-*/',
   },
 }

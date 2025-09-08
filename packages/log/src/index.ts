@@ -25,20 +25,16 @@ export {
   getTextFormatter,
 } from './formatters'
 
-export {
-  withFilter,
-} from '@logtape/logtape'
+export { withFilter } from '@logtape/logtape'
+
+export const logger = getLogger('likec4')
 
 export {
   logger as consola,
   logger as rootLogger,
 }
 
-export {
-  loggable,
-} from './utils'
-
-export const logger = getLogger('likec4')
+export { loggable } from './utils'
 
 /**
  * Get a child logger with the given subcategory.
@@ -50,13 +46,10 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
   return logger.getChild(subcategory)
 }
 
-let configureWasCalled = false
-
 export function configureLogger<TSinkId extends string, TFilterId extends string>(
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {
-    configureWasCalled = true
     const sinks = config?.sinks ?? {}
     configureLogtape<any, any>({
       reset: true,

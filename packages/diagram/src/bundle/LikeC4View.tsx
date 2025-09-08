@@ -1,7 +1,7 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
-import { shallowEqual } from '@mantine/hooks'
+import { shallowEqual, useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { memo, useState } from 'react'
 import { isBoolean } from 'remeda'
@@ -83,6 +83,10 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
 
   const [browserViewId, onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
 
+  const onNavigateToThisView = useCallbackRef(() => {
+    onNavigateTo(view.id)
+  })
+
   const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
 
   const notations = view.notation?.nodes ?? []
@@ -149,8 +153,8 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
             enableSearch={false}
             {...isBrowserEnabled && {
               onNavigateTo: onNavigateTo,
-              onCanvasClick: () => onNavigateTo(view.id),
-              onNodeClick: () => onNavigateTo(view.id),
+              onCanvasClick: onNavigateToThisView,
+              onNodeClick: onNavigateToThisView,
             }}
             reactFlowProps={reactFlowProps}
             renderNodes={renderNodes}

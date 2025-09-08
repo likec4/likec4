@@ -1,12 +1,10 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
-import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useSearch } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
-import { cssExportView } from './styles.css'
 
 async function downloadAsPng({
   pngFilename,
@@ -117,8 +115,15 @@ export function ExportPage() {
     <Box
       ref={viewportRef}
       data-testid="export-page"
-      className={cx(cssExportView)}
+      css={{
+        padding: '0',
+        margin: '0',
+        background: 'transparent',
+        overflow: 'hidden',
+      }}
       style={{
+        marginRight: 'auto',
+        marginBottom: 'auto',
         minWidth: width,
         width: width,
         minHeight: height,
@@ -126,14 +131,7 @@ export function ExportPage() {
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <StaticLikeC4Diagram
-        view={{
-          ...diagram,
-          bounds: {
-            ...diagram.bounds,
-            x: padding,
-            y: padding,
-          },
-        }}
+        view={diagram}
         fitView={false}
         fitViewPadding={0}
         background={'transparent'}

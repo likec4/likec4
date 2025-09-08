@@ -1,6 +1,5 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
-import { Box } from '@mantine/core'
-import { notFound, useSearch } from '@tanstack/react-router'
+import { useSearch } from '@tanstack/react-router'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
 
 export function EmbedPage() {
@@ -16,9 +15,9 @@ export function EmbedPage() {
   }
 
   return (
-    <Box
-      pos={'absolute'}
+    <div
       style={{
+        position: 'absolute',
         top: 0,
         left: '50%',
         boxSizing: 'border-box',
@@ -38,6 +37,6 @@ export function EmbedPage() {
         fitViewPadding={0}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />
-    </Box>
+    </div>
   )
 }
