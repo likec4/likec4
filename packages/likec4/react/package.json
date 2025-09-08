@@ -1,0 +1,4 @@
+{
+  "types": "./index.d.mts",
+  "module": "./index.mjs"
+}

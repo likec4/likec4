@@ -2,6 +2,7 @@ dist/**
 react/**
 !react/tsconfig.json
 !react/*.ts
+!react/package.json
 react/*.d.ts
 icons/**
 dev/export/**

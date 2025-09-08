@@ -1,0 +1,4 @@
+{
+  "module": "../dist/vite-plugin/index.mjs",
+  "types": "../dist/vite-plugin/index.d.mts"
+}
