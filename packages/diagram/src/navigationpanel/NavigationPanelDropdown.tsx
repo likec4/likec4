@@ -30,6 +30,7 @@ import { deepEqual } from 'fast-equals'
 import type { ComponentPropsWithoutRef, KeyboardEventHandler } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
+import { useOnDiagramEvent } from '../custom'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import type { NavigationPanelActorContext } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
@@ -47,6 +48,14 @@ const scopedKeydownHandler = createScopedKeydownHandler({
 export function NavigationPanelDropdown() {
   const actor = useNavigationActor()
   const searchQuery = useSelector(actor.actorRef, s => s.context.searchQuery)
+
+  useOnDiagramEvent('paneClick', () => {
+    actor.closeDropdown()
+  })
+
+  useOnDiagramEvent('nodeClick', () => {
+    actor.closeDropdown()
+  })
 
   const setSearchQuery = useThrottledCallback((value: string) => {
     actor.send({ type: 'searchQuery.change', value })

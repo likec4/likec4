@@ -1,14 +1,4 @@
 import {
-  type DiagramNode,
-  type DiagramView,
-  type EdgeId,
-  type Fqn,
-  type NodeId,
-  type NodeNotation as ElementNotation,
-  type StepEdgeId,
-  type ViewChange,
-  type ViewId,
-  type XYPoint,
   BBox,
   getParallelStepsPrefix,
   invariant,
@@ -16,6 +6,18 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  EdgeId,
+  Fqn,
+  NodeId,
+  NodeNotation as ElementNotation,
+  StepEdgeId,
+  ViewId,
+  XYPoint,
+} from '@likec4/core/types'
 import {
   type ReactFlowInstance,
   applyEdgeChanges,
@@ -69,7 +71,7 @@ import {
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import { findDiagramNode, focusedBounds, typedSystem } from './utils'
+import { findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
 
 export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
@@ -184,8 +186,10 @@ export type Events =
 
 export type EmittedEvents =
   | { type: 'navigateTo'; viewId: ViewId }
-  | { type: 'viewChange'; change: ViewChange }
   | { type: 'openSource'; params: OpenSourceParams }
+  | { type: 'paneClick' }
+  | { type: 'nodeClick'; node: DiagramNode; xynode: Types.Node }
+  | { type: 'edgeClick'; edge: DiagramEdge; xyedge: Types.Edge }
   | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
   | { type: 'edgeEditingStarted'; edge: Types.Edge }
@@ -261,11 +265,6 @@ const _diagramMachine = setup({
       viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
     })),
 
-    'trigger:OnChange': emit((_, _params: { change: ViewChange }) => ({
-      type: 'viewChange',
-      change: _params.change,
-    })),
-
     'trigger:OpenSource': emit((_, _params: OpenSourceParams) => ({
       type: 'openSource',
       params: _params,
@@ -277,6 +276,9 @@ const _diagramMachine = setup({
         lastClickedNode: lastClickedNode({ context, event }),
       }
     }),
+    'reset lastClickedNode': assign(() => ({
+      lastClickedNode: null,
+    })),
 
     'open source of focused or last clicked node': enqueueActions(({ context, enqueue }) => {
       const nodeId = context.focusedNode ?? context.lastClickedNode?.id
@@ -579,6 +581,27 @@ const _diagramMachine = setup({
         edge,
       })
     }),
+    'emit: paneClick': emit(() => ({
+      type: 'paneClick',
+    })),
+    'emit: nodeClick': emit(({ context, event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      const node = nonNullable(findDiagramNode(context, event.node.id), `Node ${event.node.id} not found in diagram`)
+      return {
+        type: 'nodeClick',
+        node,
+        xynode: event.node,
+      }
+    }),
+    'emit: edgeClick': emit(({ context, event }) => {
+      assertEvent(event, 'xyflow.edgeClick')
+      const edge = nonNullable(findDiagramEdge(context, event.edge.id), `Edge ${event.edge.id} not found in diagram`)
+      return {
+        type: 'edgeClick',
+        edge,
+        xyedge: event.edge,
+      }
+    }),
   },
 }).createMachine({
   initial: 'initializing',
@@ -857,6 +880,7 @@ const _diagramMachine = setup({
                     lastClickedNode,
                     focusedNode: ({ event }) => event.node.id as NodeId,
                   }),
+                  'emit: nodeClick',
                 ],
                 target: 'focused',
               },
@@ -864,19 +888,20 @@ const _diagramMachine = setup({
                 actions: [
                   'assign lastClickedNode',
                   'open source of focused or last clicked node',
+                  'emit: nodeClick',
                 ],
               },
             ],
             'xyflow.paneClick': {
               actions: [
-                assign({
-                  lastClickedNode: null,
-                }),
+                'reset lastClickedNode',
+                'emit: paneClick',
               ],
             },
             'xyflow.paneDblClick': {
               actions: [
-                { type: 'xyflow:fitDiagram' },
+                'reset lastClickedNode',
+                'xyflow:fitDiagram',
                 { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
               ],
             },
@@ -892,10 +917,13 @@ const _diagramMachine = setup({
                 'is dynamic view',
                 'click: selected edge',
               ]) as any,
-              actions: raise(({ event }) => ({
-                type: 'walkthrough.start',
-                stepId: event.edge.id as StepEdgeId,
-              })),
+              actions: [
+                raise(({ event }) => ({
+                  type: 'walkthrough.start',
+                  stepId: event.edge.id as StepEdgeId,
+                })),
+                'emit: edgeClick',
+              ],
             },
           },
         },
@@ -926,6 +954,7 @@ const _diagramMachine = setup({
             'xyflow.nodeClick': [
               {
                 guard: 'click: focused node',
+                actions: 'emit: nodeClick',
                 target: '#idle',
               },
               {
@@ -937,6 +966,7 @@ const _diagramMachine = setup({
                     type: 'focus.node',
                     nodeId: event.node.id as NodeId,
                   })),
+                  'emit: nodeClick',
                 ],
               },
             ],
@@ -954,9 +984,10 @@ const _diagramMachine = setup({
               target: 'idle',
             },
             'xyflow.paneClick': {
-              actions: assign({
-                lastClickedNode: null,
-              }),
+              actions: [
+                'reset lastClickedNode',
+                'emit: paneClick',
+              ],
               target: 'idle',
             },
             'notations.unhighlight': {
@@ -1035,6 +1066,7 @@ const _diagramMachine = setup({
                 }),
                 'update active walkthrough',
                 'xyflow:fitFocusedBounds',
+                'emit: edgeClick',
                 'emit: walkthroughStep',
               ],
             },
@@ -1118,6 +1150,15 @@ const _diagramMachine = setup({
     },
   },
   on: {
+    'xyflow.paneClick': {
+      actions: 'emit: paneClick',
+    },
+    'xyflow.nodeClick': {
+      actions: 'emit: nodeClick',
+    },
+    'xyflow.edgeClick': {
+      actions: 'emit: edgeClick',
+    },
     'xyflow.applyNodeChanges': {
       actions: assign({
         xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),

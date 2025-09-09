@@ -156,17 +156,17 @@ export function useShadowRootStyle(
   background: transparent;
   padding: 0;
   overflow: hidden;
+  aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
   ${
       isLandscape ? '' : `
-  max-width: var(--likec4-view-max-width, ${Math.ceil(view.bounds.width)}px);
+  max-width: min(100%, var(--likec4-view-max-width, ${Math.ceil(view.bounds.width)}px));
   margin-left: auto;
   margin-right: auto;`
     }
   width: ${isLandscape ? '100%' : 'auto'};
   height: ${isLandscape ? 'auto' : '100%'};
   ${isLandscape ? `min-width: 80px;` : `min-height: 80px;`}
-  aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
-  max-height: var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px);
+  max-height: min(100%, var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px));
 }
 `.trim(),
   ]

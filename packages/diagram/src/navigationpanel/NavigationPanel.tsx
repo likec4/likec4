@@ -93,9 +93,8 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
   return (
     <Popover
       offset={{
-        mainAxis: 2,
+        mainAxis: 4,
       }}
-      middlewares={{ flip: false }}
       opened={opened}
       position="bottom-start"
       trapFocus
@@ -104,7 +103,7 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
     >
       <NavigationPanelPopoverTarget actor={actor} />
-      <NavigationPanelDropdown />
+      {opened && <NavigationPanelDropdown />}
     </Popover>
   )
 }

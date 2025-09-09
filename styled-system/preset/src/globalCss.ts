@@ -18,6 +18,12 @@ export const globalCss: ExtendableGlobalCss = {
       '--mantine-font-family': 'var(--likec4-app-font, var(--likec4-app-font-default))',
       '--mantine-font-family-headings': 'var(--likec4-app-font, var(--likec4-app-font-default))',
     },
+    '.likec4-edge-label-container': {
+      display: {
+        _reduceGraphicsOnPan: 'none',
+        _smallZoom: 'none',
+      },
+    },
     ...generatedGlobalCss,
   },
 }

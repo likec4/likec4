@@ -69,12 +69,6 @@ export function EdgeLabelContainer({
       <div
         key={id}
         className={cx(
-          css({
-            display: {
-              _reduceGraphicsOnPan: 'none',
-              _smallZoom: 'none',
-            },
-          }),
           'nodrag nopan',
           'likec4-edge-label-container',
           className,
