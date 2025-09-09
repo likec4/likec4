@@ -116,7 +116,7 @@ catalogs:
       version: 8.2.8
   mcp:
     '@modelcontextprotocol/sdk':
-      specifier: ^1.17.4
+      specifier: ^1.17.5
       version: 1.17.5
   react:
     '@floating-ui/dom':
