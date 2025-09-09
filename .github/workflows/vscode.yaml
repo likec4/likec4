@@ -39,7 +39,7 @@ jobs:
       - name: 📦 upload vsix
         uses: actions/upload-artifact@v4
         with:
-          name: likec4-vscode-extension.vsix
+          name: likec4.vsix
           if-no-files-found: error
           path: packages/vscode/likec4.vsix
 
@@ -52,7 +52,7 @@ jobs:
 
       - name: 🚀 publish open vsx
         run: |
-          npx ovsx publish --skip-duplicate likec4.vsix
+          pnpx ovsx publish --skip-duplicate likec4.vsix
         working-directory: packages/vscode
         env:
           OVSX_PAT: ${{ secrets.VSX_PAT }}
