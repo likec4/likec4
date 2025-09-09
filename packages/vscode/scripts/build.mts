@@ -56,7 +56,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: ['vscode', 'esbuild', 'bundle-n-require'],
+  external: ['vscode', 'esbuild', 'bundle-require'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -80,7 +80,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node20',
-  external: ['vscode', 'esbuild', 'bundle-n-require'],
+  external: ['vscode', 'esbuild', 'bundle-require'],
   platform: 'node',
   conditions: ['node', 'sources', 'import'],
 }, {
@@ -90,7 +90,7 @@ configs.push({
   ],
   format: 'cjs',
   target: 'node20',
-  external: ['vscode', 'esbuild', 'bundle-n-require'],
+  external: ['vscode', 'esbuild', 'bundle-require'],
   platform: 'node',
   conditions: ['node', 'sources', 'import'],
 })

@@ -65,15 +65,24 @@
     "module": "./dist/index.mjs"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
-    "bundle-n-require": "catalog:utils",
+    "bundle-require": "catalog:utils",
     "defu": "catalog:utils",
     "json5": "catalog:utils",
-    "remeda": "catalog:utils",
-    "type-fest": "catalog:utils",
-    "vscode-uri": "catalog:vscode",
     "zod": "catalog:zod4"
+  },
+  "peerDependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
+    "esbuild": ">=0.25",
+    "vscode-uri": "catalog:vscode"
+  },
+  "peerDependenciesMeta": {
+    "@likec4/core": {
+      "optional": true
+    },
+    "vscode-uri": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

@@ -268,7 +268,7 @@
     }
   },
   "dependencies": {
-    "bundle-n-require": "catalog:utils",
+    "bundle-require": "catalog:utils",
     "esbuild": "catalog:esbuild"
   },
   "devDependencies": {

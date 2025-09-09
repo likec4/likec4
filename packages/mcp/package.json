@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:utils",
-    "bundle-n-require": "catalog:utils",
+    "bundle-require": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "std-env": "catalog:utils"
   },
