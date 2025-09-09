@@ -4,6 +4,12 @@ export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
 
+export type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
+
+export type ReorderedArray<T extends IterableContainer> = {
+  -readonly [P in keyof T]: T[number]
+}
+
 // dprint-ignore
 export type KeysOf<T> = keyof T extends infer K extends string ? K : never
 

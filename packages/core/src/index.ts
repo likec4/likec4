@@ -19,7 +19,6 @@ export {
   isNonEmptyArray,
   isSameHierarchy,
   isString,
-  type IterableContainer,
   LinkedList,
   memoizeProp,
   MultiMap,

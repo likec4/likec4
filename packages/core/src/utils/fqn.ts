@@ -1,4 +1,4 @@
-import type { Fqn } from '../types'
+import type { Fqn, IterableContainer, ReorderedArray } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
 
@@ -70,7 +70,7 @@ export function isSameHierarchy<T extends string>(one: T | WithId<T>, another?: 
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
 }
 
-type WithId<T> = { id: T }
+type WithId<T = string> = { id: T }
 
 export function isDescendantOf<T extends string>(ancestor: WithId<T>): (descedant: WithId<T>) => boolean
 export function isDescendantOf<T extends string>(descedant: WithId<T>, ancestor: WithId<T>): boolean
@@ -187,11 +187,6 @@ export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T)
   return compareFqnHierarchically(a.id, b.id)
 }
 
-export type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
-export type ReorderedArray<T extends IterableContainer> = {
-  -readonly [P in keyof T]: T[number]
-}
-
 /**
  * Sorts an array of objects hierarchically based on their fully qualified names (FQN).
  * Objects are sorted by the number of segments in their FQN (defined by dot-separated ID).
@@ -275,12 +270,12 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
  */
 export function sortNaturalByFqn(
   sort?: 'asc' | 'desc',
-): <T extends { id: string }, A extends IterableContainer<T>>(array: A) => ReorderedArray<A>
-export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+): <I extends WithId<string>, A extends IterableContainer<I>>(array: A) => ReorderedArray<A>
+export function sortNaturalByFqn<A extends IterableContainer<WithId>>(
   array: A,
   sort?: 'asc' | 'desc',
 ): ReorderedArray<A>
-export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+export function sortNaturalByFqn<A extends IterableContainer<WithId>>(
   array?: A | 'asc' | 'desc',
   sort?: 'asc' | 'desc',
 ) {
