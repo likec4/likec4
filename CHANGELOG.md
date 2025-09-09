@@ -1,3 +1,12 @@
+## [1.39.3](https://github.com/likec4/likec4/compare/v1.39.2...v1.39.3) (2025-09-09)
+
+
+### Bug Fixes
+
+* **config:** improve loading of programmatic configs ([b8122c3](https://github.com/likec4/likec4/commit/b8122c340ba139c48a885edb4d663cc56172fd07))
+
+
+
 ## [1.39.2](https://github.com/likec4/likec4/compare/v1.39.1...v1.39.2) (2025-09-08)
 
 ### 🐞 Bug Fixes
