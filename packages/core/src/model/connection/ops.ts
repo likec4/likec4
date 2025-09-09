@@ -1,8 +1,7 @@
-import { map, pipe, prop } from 'remeda'
+import { map, pipe } from 'remeda'
+import type { IterableContainer, ReorderedArray } from '../../types'
 import { isString } from '../../utils'
 import {
-  type IterableContainer,
-  type ReorderedArray,
   isAncestor,
   isDescendantOf,
   sortNaturalByFqn,
@@ -78,9 +77,12 @@ export function sortDeepestFirst<C extends ConnectionElemId>(
  * To make {@link sortConnectionsByBoundaryHierarchy} work correctly we add '.' to boundary
  * Othwerwise connection without boundary will be considered same level as connection with top-level boundary
  */
-export const boundaryHierarchy = <C extends WithBoundary>(conn: C) => conn.boundary?.id ? `.${conn.boundary.id}` : ''
+export function boundaryHierarchy<C extends WithBoundary>(conn: C): string {
+  return conn.boundary?.id ? `.${conn.boundary.id}` : ''
+}
 
 type WithBoundary = {
+  id: string
   boundary: null | { id: string }
 }
 export function sortConnectionsByBoundaryHierarchy(
@@ -109,10 +111,10 @@ function _sortByBoundary<C extends WithBoundary>(
     connections,
     map(conn => ({
       id: boundaryHierarchy(conn),
-      conn,
+      conn: conn,
     })),
     sortNaturalByFqn(order),
-    map(prop('conn')),
+    map(p => p.conn),
   )
 }
 
@@ -127,7 +129,7 @@ export function findAscendingConnections<C extends ConnectionElemId>(
 }
 
 /**
- * Find connections that includes given connection (i.e between it's descendants)
+ * Find connections that given connection includes (i.e between it's descendants)
  */
 export function findDescendantConnections<C extends ConnectionElemId>(
   connections: ReadonlyArray<C>,
