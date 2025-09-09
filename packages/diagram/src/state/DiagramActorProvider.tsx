@@ -1,4 +1,4 @@
-import type { DiagramView, ViewId, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
@@ -7,7 +7,9 @@ import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
+import { useOnDiagramEvent } from '../custom'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
+import { useCurrentViewId } from '../hooks/useCurrentViewId'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
@@ -78,8 +80,6 @@ export function DiagramActorProvider({
     },
   )
 
-  useActorEventHandlers(actorRef)
-
   const features = useEnabledFeatures()
   useCustomCompareEffect(
     () => {
@@ -113,21 +113,18 @@ export function DiagramActorProvider({
     <DiagramActorContextProvider value={actorRef}>
       <DiagramFeatures overrides={toggledFeatures}>
         <ErrorBoundary>
-          <CurrentViewModelProvider viewId={view.id}>
+          <CurrentViewModelProvider>
             {children}
           </CurrentViewModelProvider>
         </ErrorBoundary>
       </DiagramFeatures>
+      <DiagramActorEventListener actorRef={actorRef} />
     </DiagramActorContextProvider>
   )
 }
 
-function CurrentViewModelProvider({
-  children,
-  viewId,
-}: PropsWithChildren<{
-  viewId: ViewId
-}>) {
+function CurrentViewModelProvider({ children }: PropsWithChildren) {
+  const viewId = useCurrentViewId()
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
@@ -137,21 +134,16 @@ function CurrentViewModelProvider({
   )
 }
 
-function useActorEventHandlers(
-  actorRef: DiagramActorRef,
-) {
+function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) {
   const {
-    onChange,
     onNavigateTo,
     onOpenSource,
   } = useDiagramEventHandlers()
 
-  useEffect(() => {
-    if (!onChange) return
-    const subscription = actorRef.on('viewChange', ({ change }) => onChange({ change }))
-    return () => subscription.unsubscribe()
-  }, [actorRef, onChange])
+  useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
 
+  // onNavigateTo we defer the callback for better responsiveness
+  // (allowing animation to finish)
   useEffect(() => {
     if (!onNavigateTo) return
     let frame: number
@@ -169,9 +161,5 @@ function useActorEventHandlers(
     }
   }, [actorRef, onNavigateTo])
 
-  useEffect(() => {
-    if (!onOpenSource) return
-    const subscription = actorRef.on('openSource', ({ params }) => onOpenSource(params))
-    return () => subscription.unsubscribe()
-  }, [actorRef, onOpenSource])
+  return null
 }

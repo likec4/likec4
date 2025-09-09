@@ -67,7 +67,7 @@ export const RelationshipPopover = memo(() => {
 
   const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
 
-  useOnDiagramEvent('viewChange', () => {
+  useOnDiagramEvent('navigateTo', () => {
     actorRef.send({ type: 'close' })
   })
 
