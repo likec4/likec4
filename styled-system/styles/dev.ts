@@ -12,7 +12,7 @@ export function defineConfig(config: Omit<Config, 'importMap' | 'presets' | 'plu
     presets: [
       likec4preset,
     ],
-    cssVarRoot: ':where(:host, :root)',
+    cssVarRoot: ':where(:root,:host)',
     // hash: isProduction,
     // globalVars: {},
     // hash: true,

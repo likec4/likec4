@@ -4,12 +4,12 @@ import { type MantineThemeOverride, createTheme, Portal } from '@mantine/core'
 import {
   useColorScheme as usePreferredColorScheme,
   useDebouncedCallback,
-  useId,
   useMutationObserver,
 } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
+import { useId } from '../hooks/useId'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
 
@@ -72,8 +72,7 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
     const css = new CSSStyleSheet()
     css.replaceSync(
       inlinedStyles
-        .replaceAll(':where(:root, :host)', `.likec4-shadow-root`)
-        .replaceAll(':where(:host, :root)', `.likec4-shadow-root`)
+        .replaceAll(':where(:root,:host)', `.likec4-shadow-root`)
         .replaceAll(':root', `.likec4-shadow-root`)
         .replaceAll('body {', `.likec4-shadow-root{`)
         .replaceAll('body{', `.likec4-shadow-root{`),

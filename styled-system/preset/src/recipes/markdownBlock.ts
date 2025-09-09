@@ -92,7 +92,7 @@ export const markdownBlock = defineRecipe({
       },
       _dark: {
         backgroundColor: 'mantine.colors.yellow[5]',
-        color: 'mantine.colors.black',
+        color: 'var(--mantine-color-black)',
       },
     },
 
