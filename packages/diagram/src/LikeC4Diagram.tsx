@@ -1,5 +1,4 @@
 import type { Any } from '@likec4/core/types'
-import { useId } from '@mantine/hooks'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { type PropsWithChildren, useRef } from 'react'
 import {
@@ -12,6 +11,7 @@ import {
 } from './context'
 import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
 import { ReduceGraphicsContext } from './context/ReduceGraphics'
+import { useId } from './hooks/useId'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
@@ -67,7 +67,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   renderNodes,
   children,
 }: LikeC4DiagramProps<A>) {
-  const id = useId().replace('mantine-', 'likec4-')
+  const id = useId()
   const initialRef = useRef<{
     defaultNodes: Types.Node[]
     defaultEdges: Types.Edge[]

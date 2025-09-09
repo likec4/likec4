@@ -1,4 +1,3 @@
-import { css, cx } from '@likec4/styles/css'
 import { type MantineThemeOverride, MantineProvider } from '@mantine/core'
 import { type HTMLAttributes, useCallback, useRef } from 'react'
 import root from 'react-shadow'
@@ -38,12 +37,7 @@ export function ShadowRoot({
       <div
         ref={rootRef}
         {...(colorScheme && { 'data-mantine-color-scheme': colorScheme })}
-        className={cx(
-          'likec4-shadow-root',
-          css({
-            display: 'contents',
-          }),
-        )}
+        className={'likec4-shadow-root'}
       >
         <MantineProvider
           {...(colorScheme && { forceColorScheme: colorScheme })}

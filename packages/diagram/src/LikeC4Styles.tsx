@@ -8,7 +8,6 @@ import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
 import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
-import globalsCss from './globals.css?inline'
 import { useLikeC4Specification } from './likec4model'
 
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
@@ -122,11 +121,6 @@ const MemoizedStyles = memo<{
   { id, nonce, customColorsStyles, builtInColors },
 ) => (
   <>
-    <style
-      type="text/css"
-      data-likec4-global={id}
-      dangerouslySetInnerHTML={{ __html: globalsCss.replaceAll('.likec4-root', `#${id}.likec4-root`) }}
-      nonce={nonce} />
     <style
       type="text/css"
       data-likec4-colors={id}

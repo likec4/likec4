@@ -1,3 +1,4 @@
+export { useId } from './useId'
 export { useMantinePortalProps } from './useMantinePortalProps'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'
