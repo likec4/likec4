@@ -1,0 +1,24 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "LikeC4",
+  "description": "Architecture-as-a-code, DSL and toolchain for architecture diagrams",
+  "folders": [],
+  "excludeFolders": [
+    "apps/playground",
+    "e2e",
+    "examples",
+    "packages/create-likec4",
+    "packages/generators",
+    "packages/icons",
+    "packages/layouts",
+    "packages/log",
+    "packages/vscode",
+    "packages/vscode-preview",
+    "styled-system"
+  ],
+  "excludeFiles": [
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
+}
