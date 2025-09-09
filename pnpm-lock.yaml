@@ -1320,6 +1320,9 @@ importers:
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
+      esbuild:
+        specifier: 0.25.9
+        version: 0.25.9
       playwright:
         specifier: 'catalog:'
         version: 1.54.2
@@ -1444,9 +1447,6 @@ importers:
       dts-bundle-generator:
         specifier: ^9.5.1
         version: 9.5.1
-      esbuild:
-        specifier: 0.25.9
-        version: 0.25.9
       esbuild-node-externals:
         specifier: catalog:esbuild
         version: 1.18.0(esbuild@0.25.9)
