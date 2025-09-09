@@ -197,8 +197,8 @@ catalogs:
       specifier: ^5.2.2
       version: 5.2.2
     fdir:
-      specifier: 6.4.6
-      version: 6.4.6
+      specifier: 6.5.0
+      version: 6.5.0
     json5:
       specifier: ^2.2.3
       version: 2.2.3
@@ -835,7 +835,7 @@ importers:
         version: 3.0.3
       fdir:
         specifier: catalog:utils
-        version: 6.4.6(picomatch@4.0.3)
+        version: 6.5.0(picomatch@4.0.3)
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.8)
@@ -1044,7 +1044,7 @@ importers:
         version: 9.6.0
       fdir:
         specifier: catalog:utils
-        version: 6.4.6(picomatch@4.0.3)
+        version: 6.5.0(picomatch@4.0.3)
       picomatch:
         specifier: catalog:utils
         version: 4.0.3
@@ -1138,7 +1138,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.4.6(picomatch@4.0.3)
+        version: 6.5.0(picomatch@4.0.3)
       fetch-to-node:
         specifier: ^2.1.0
         version: 2.1.0
@@ -1458,7 +1458,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.4.6(picomatch@4.0.3)
+        version: 6.5.0(picomatch@4.0.3)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -5346,8 +5346,9 @@ packages:
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
 
-  fdir@6.4.6:
-    resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
+  fdir@6.5.0:
+    resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
+    engines: {node: '>=12.0.0'}
     peerDependencies:
       picomatch: ^3 || ^4
     peerDependenciesMeta:
@@ -11382,7 +11383,7 @@ snapshots:
       '@rollup/pluginutils': 5.1.4(rollup@4.44.0)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       is-reference: 1.2.1
       magic-string: 0.30.17
       picomatch: 4.0.3
@@ -13588,7 +13589,7 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.4.6(picomatch@4.0.3):
+  fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
 
@@ -16983,7 +16984,7 @@ snapshots:
 
   tinyglobby@0.2.14:
     dependencies:
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
 
   tinypool@1.1.1: {}
@@ -17493,7 +17494,7 @@ snapshots:
   vite@6.3.5(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0):
     dependencies:
       esbuild: 0.25.9
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
       rollup: 4.44.0
@@ -17511,7 +17512,7 @@ snapshots:
   vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0):
     dependencies:
       esbuild: 0.25.9
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
       rollup: 4.44.0
