@@ -114,7 +114,7 @@ catalogs:
     valibot: ^1.1.0
     zod: 3.25.76
   vite:
-    "@vitejs/plugin-react": ^4.6.0
+    "@vitejs/plugin-react": ^4.7.0
     rollup: ^4.44.0
     vite: ^6.3.5
     vite-plugin-dts: ^4.5.4
