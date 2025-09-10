@@ -1,3 +1,10 @@
+## [1.39.4](https://github.com/likec4/likec4/compare/v1.39.3...v1.39.4) (2025-09-10)
+
+### 🐞 Bug Fixes
+* **react:** clicking on the same item in the browser list twice or more does not hide the list ([9b2198e](https://github.com/likec4/likec4/commit/9b2198e98f18a6b613d74c02660c823013f09db0)), closes [#2199](https://github.com/likec4/likec4/issues/2199)
+* **cli:** `build` command produces broken static site, closes [#2213](https://github.com/likec4/likec4/issues/2213)
+
+
 ## [1.39.3](https://github.com/likec4/likec4/compare/v1.39.2...v1.39.3) (2025-09-09)
 
 ### 🐞 Bug Fixes
