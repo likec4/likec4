@@ -16,6 +16,7 @@ import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '.
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
+import { SequenceView } from './overlays/sequence-view/SequenceView'
 import { DiagramActorProvider } from './state/DiagramActorProvider'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
@@ -133,31 +134,34 @@ export function LikeC4Diagram<A extends Any = Any>({
               <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
                 <LikeC4Styles id={id} />
                 <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
-                  <XYFlowProvider
-                    fitView={fitView}
-                    {...initialRef.current}
-                  >
-                    <DiagramActorProvider
-                      view={view}
-                      zoomable={zoomable}
-                      pannable={pannable}
-                      fitViewPadding={fitViewPadding}
-                      nodesSelectable={nodesSelectable}
-                      where={where ?? null}
+                  {view._type === 'dynamic' && <SequenceView dynamicView={view} />}
+                  {view._type !== 'dynamic' && (
+                    <XYFlowProvider
+                      fitView={fitView}
+                      {...initialRef.current}
                     >
-                      <ControlsCustomLayoutProvider value={renderControls ?? null}>
-                        <LikeC4DiagramXYFlow
-                          nodesDraggable={nodesDraggable}
-                          nodesSelectable={nodesSelectable}
-                          background={background}
-                          reactFlowProps={reactFlowProps}
-                          renderNodes={renderNodes}
-                        >
-                          {children}
-                        </LikeC4DiagramXYFlow>
-                      </ControlsCustomLayoutProvider>
-                    </DiagramActorProvider>
-                  </XYFlowProvider>
+                      <DiagramActorProvider
+                        view={view}
+                        zoomable={zoomable}
+                        pannable={pannable}
+                        fitViewPadding={fitViewPadding}
+                        nodesSelectable={nodesSelectable}
+                        where={where ?? null}
+                      >
+                        <ControlsCustomLayoutProvider value={renderControls ?? null}>
+                          <LikeC4DiagramXYFlow
+                            nodesDraggable={nodesDraggable}
+                            nodesSelectable={nodesSelectable}
+                            background={background}
+                            reactFlowProps={reactFlowProps}
+                            renderNodes={renderNodes}
+                          >
+                            {children}
+                          </LikeC4DiagramXYFlow>
+                        </ControlsCustomLayoutProvider>
+                      </DiagramActorProvider>
+                    </XYFlowProvider>
+                  )}
                 </RootContainer>
               </ReduceGraphicsContext>
             </DiagramEventHandlers>

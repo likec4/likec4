@@ -81,7 +81,7 @@ export const globalCss: ExtendableGlobalCss = {
         opacity: 0.25,
       },
 
-      '& :where(.likec4-edge-container, .likec4-edge-label-container)': {
+      '& :where(.react-flow__edge, .likec4-edge-container, .likec4-edge-label-container)': {
         '--xy-edge-stroke-width': 3,
         '--xy-edge-stroke': 'var(--likec4-palette-relation-stroke)',
         '--xy-edge-stroke-selected': 'var(--likec4-palette-relation-stroke-selected)',
