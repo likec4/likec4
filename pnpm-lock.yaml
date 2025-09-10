@@ -206,8 +206,8 @@ catalogs:
       specifier: 2.1.0
       version: 2.1.0
     nano-spawn:
-      specifier: ^1.0.2
-      version: 1.0.2
+      specifier: ^1.0.3
+      version: 1.0.3
     nanoid:
       specifier: 5.1.5
       version: 5.1.5
@@ -1252,7 +1252,7 @@ importers:
         version: 2.1.0
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.2
+        version: 1.0.3
       p-limit:
         specifier: catalog:utils
         version: 6.2.0
@@ -1488,7 +1488,7 @@ importers:
         version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.2
+        version: 1.0.3
       nanostores:
         specifier: catalog:react
         version: 1.0.1
@@ -2004,7 +2004,7 @@ importers:
         version: 19.1.9(@types/react@19.1.12)
       nano-spawn:
         specifier: catalog:utils
-        version: 1.0.2
+        version: 1.0.3
       postcss:
         specifier: catalog:css
         version: 8.5.6
@@ -6658,8 +6658,8 @@ packages:
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
 
-  nano-spawn@1.0.2:
-    resolution: {integrity: sha512-21t+ozMQDAL/UGgQVBbZ/xXvNO10++ZPuTmKRO8k9V3AClVRht49ahtDjfY8l1q6nSHOrE5ASfthzH3ol6R/hg==}
+  nano-spawn@1.0.3:
+    resolution: {integrity: sha512-jtpsQDetTnvS2Ts1fiRdci5rx0VYws5jGyC+4IYOTnIQ/wwdf6JdomlHBwqC3bJYOvaKu0C2GSZ1A60anrYpaA==}
     engines: {node: '>=20.17'}
 
   nano-staged@0.8.0:
@@ -15291,7 +15291,7 @@ snapshots:
 
   mute-stream@0.0.8: {}
 
-  nano-spawn@1.0.2: {}
+  nano-spawn@1.0.3: {}
 
   nano-staged@0.8.0:
     dependencies:
