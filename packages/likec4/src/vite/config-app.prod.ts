@@ -108,7 +108,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     build: {
       outDir,
-      modulePreload: false,
       emptyOutDir: false,
       sourcemap: false,
       cssMinify: false,
@@ -127,13 +126,12 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
             resolve(root, 'src', 'style.css'),
           ],
           output: {
-            hoistTransitiveImports: false,
             manualChunks: (id) => {
               if (id.endsWith('.css') || id.endsWith('.html') || id.includes('likec4/icons')) {
                 return undefined
               }
               if (id.includes('__app__')) {
-                let match = id.match(/__app__\/src\/([\w]+)\.js/)
+                let match = id.match(/__app__\/src\/([\w]+)\.js/)?.[1]
                 if (match) {
                   return match[1]
                 }
