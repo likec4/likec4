@@ -44,7 +44,6 @@ export async function bundleApp() {
       tsconfigRaw: tsconfig,
     },
     build: {
-      modulePreload: false,
       emptyOutDir: true,
       outDir,
       chunkSizeWarningLimit: 2000,
@@ -72,23 +71,13 @@ export async function bundleApp() {
           './app/src/fonts.css',
           './app/src/style.css',
         ],
-        treeshake: {
-          preset: 'recommended',
-        },
         output: {
-          hoistTransitiveImports: false,
           chunkFileNames: '[name].js',
           manualChunks: (id) => {
             if (id.endsWith('.css')) {
               return undefined
             }
-            if (id.includes('@mantine')) {
-              return 'mantine'
-            }
-            if (id.includes('@tabler')) {
-              return 'icons'
-            }
-            if (id.includes('diagram/src') || id.includes('styled-system')) {
+            if (id.includes('@tabler') || id.includes('diagram/src') || id.includes('styled-system')) {
               return 'likec4'
             }
             if (id.includes('node_modules')) {
