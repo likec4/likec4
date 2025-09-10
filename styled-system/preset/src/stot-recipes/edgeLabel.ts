@@ -7,9 +7,8 @@ export const edgeLabel = defineSlotRecipe({
     root: {
       pointerEvents: 'all',
       fontFamily: 'likec4.relation',
-      paddingTop: '0.5',
-      paddingBottom: '1',
-      paddingX: '1.5',
+      paddingBlock: '1',
+      paddingInline: '1.5',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
