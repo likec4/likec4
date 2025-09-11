@@ -97,15 +97,20 @@ export function DiagramActorProvider({
     deepEqual,
   )
 
-  const { xyedges, xynodes } = useViewToNodesEdges({
+  const { xyedges, xynodes, bounds } = useViewToNodesEdges({
     view,
     where,
     nodesSelectable,
   })
 
   useEffect(() => {
-    actorRef.send({ type: 'update.view', view, xyedges, xynodes })
-  }, [view, xyedges, xynodes])
+    actorRef.send({
+      type: 'update.view',
+      view: bounds !== view.bounds ? { ...view, bounds } : view,
+      xyedges,
+      xynodes,
+    })
+  }, [view, xyedges, xynodes, bounds])
 
   const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
 

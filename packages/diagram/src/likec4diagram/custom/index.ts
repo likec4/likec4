@@ -20,6 +20,8 @@ export const BuiltinNodes = {
   sequenceActor: SequenceActorNode,
 } satisfies Required<CustomNodes>
 
+export { SequenceParallelArea } from './nodes/SequenceActorNode'
+
 export const edgeTypes = {
   relationship: RelationshipEdge,
   'sequence-step': SequenceStepEdge,

@@ -9,7 +9,7 @@ export {
   ElementNode,
   ViewGroupNode,
 } from './nodes'
-export { SequenceActorNode } from './SequenceActorNode'
+export { SequenceActorNode, SequenceParallelArea } from './SequenceActorNode'
 
 export * from './CompoundActions'
 export * from './ElementActions'

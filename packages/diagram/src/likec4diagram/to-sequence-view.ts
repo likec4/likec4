@@ -1,23 +1,29 @@
 import {
+  type BBox,
   type DiagramEdge,
   type DiagramNode,
   type EdgeId,
   type LayoutedDynamicView,
+  type NodeId,
   type NonEmptyArray,
+  getParallelStepsPrefix,
   isStepEdgeId,
   RichText,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'
-import { last } from 'remeda'
+import { forEach, groupBy, last, mapValues, pipe, values } from 'remeda'
 import type { Types } from './types'
 
 type Step = {
   id: EdgeId
-  row: number
-  columns: {
-    from: number
-    to: number
+  from: {
+    column: number
+    row: number
+  }
+  to: {
+    column: number
+    row: number
   }
   source: DiagramNode
   target: DiagramNode
@@ -28,6 +34,7 @@ type Step = {
   }
   isSelfLoop: boolean
   isBack: boolean
+  parallelPrefix: string | null
   offset: number // offset for continuing edges
   edge: DiagramEdge
 }
@@ -46,7 +53,7 @@ const STEP_LABEL_MARGIN = 50
 // offset from actor box
 const STEPS_OFFSET = 40
 
-const SELF_LOOP_ADDITIONAL_HEIGHT = 50
+// const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
 type CompareOperator = '<=' | '==' | '>='
 type Operator = CompareOperator | `${CompareOperator} 0`
@@ -86,6 +93,14 @@ class SequenceViewLayout {
     lastHeight: number
   }>
 
+  #parallelBoxes = [] as Array<{
+    parallelPrefix: string
+    x1: kiwi.Expression
+    y1: kiwi.Expression
+    x2: kiwi.Expression
+    y2: kiwi.Expression
+  }>
+
   constructor({
     actors,
     steps,
@@ -104,6 +119,33 @@ class SequenceViewLayout {
     for (const step of steps) {
       this.addStep(step)
     }
+
+    pipe(
+      steps,
+      groupBy(s => s.parallelPrefix ?? undefined),
+      mapValues((parallelSteps, parallelPrefix) => {
+        return parallelSteps.reduce(
+          (acc, step) => {
+            acc.minColumn = Math.min(acc.minColumn, step.from.column, step.to.column)
+            acc.maxColumn = Math.max(acc.maxColumn, step.from.column, step.to.column)
+            acc.minRow = Math.min(acc.minRow, step.from.row, step.to.row)
+            acc.maxRow = Math.max(acc.maxRow, step.from.row, step.to.row)
+            return acc
+          },
+          {
+            parallelPrefix,
+            minColumn: Infinity,
+            maxColumn: -Infinity,
+            minRow: Infinity,
+            maxRow: -Infinity,
+          },
+        )
+      }),
+      values(),
+      forEach(parallelBox => {
+        this.addParallelBox(parallelBox)
+      }),
+    )
     this.resolve()
   }
 
@@ -148,8 +190,8 @@ class SequenceViewLayout {
   }
 
   private addStep(step: Step): this {
-    const leftColumn = Math.min(step.columns.from, step.columns.to)
-    const rightColumn = Math.max(step.columns.from, step.columns.to)
+    const leftColumn = Math.min(step.from.column, step.to.column)
+    const rightColumn = Math.max(step.from.column, step.to.column)
 
     const left = this.#columnsX[leftColumn]
     invariant(left, 'left column not found')
@@ -172,13 +214,66 @@ class SequenceViewLayout {
       MIN_ROW_HEIGHT,
     )
     height += step.offset
+    // if (step.isSelfLoop) {
+    //   height += SELF_LOOP_ADDITIONAL_HEIGHT
+    // }
+
+    this.ensureRow(step.from.row, height)
     if (step.isSelfLoop) {
-      height += SELF_LOOP_ADDITIONAL_HEIGHT
+      this.ensureRow(step.to.row, MIN_ROW_HEIGHT)
     }
 
-    this.ensureRow(step.row, height)
-
     return this
+  }
+
+  private addParallelBox({
+    parallelPrefix,
+    minColumn,
+    maxColumn,
+    minRow,
+    maxRow,
+  }: {
+    parallelPrefix: string
+    minColumn: number
+    maxColumn: number
+    minRow: number
+    maxRow: number
+  }) {
+    const x1 = this.#columnsX[minColumn]?.minus(24)
+    const x2 = this.#columnsX[maxColumn]?.plus(24)
+    const firstRow = this.#rows[minRow]
+    const lastRow = this.#rows[maxRow]
+    invariant(x1 && x2 && firstRow && lastRow, `parallel box invalid x1${x1} x2${x2} y1${firstRow} y2${lastRow}`)
+
+    const y1 = firstRow.y.minus(32)
+    const y2 = lastRow.y.plus(lastRow.height)
+
+    const prevRow = this.#rows[minRow - 1]
+    if (prevRow) {
+      this.require(y1, '>=', prevRow.y.plus(prevRow.height).plus(16))
+    }
+    const nextRow = this.#rows[maxRow + 1]
+    if (nextRow) {
+      this.require(nextRow.y, '>=', y2.plus(32))
+    }
+
+    this.#parallelBoxes.push({
+      parallelPrefix,
+      x1,
+      y1,
+      x2,
+      y2,
+    })
+  }
+
+  get parallelBoxes(): Array<BBox & { parallelPrefix: string }> {
+    return this.#parallelBoxes.map(({ parallelPrefix, x1, y1, x2, y2 }) => ({
+      parallelPrefix,
+      x: x1.value(),
+      y: y1.value(),
+      width: x2.value() - x1.value(),
+      height: y2.value() - y1.value(),
+    }))
   }
 
   resolve(): this {
@@ -209,25 +304,15 @@ class SequenceViewLayout {
     }
   }
 
-  getPortCenter(column: number, step: Step, portType: 'source' | 'target') {
+  getPortCenter(step: Step, type: 'source' | 'target') {
+    const { column, row } = type === 'source' ? step.from : step.to
     const x = nonNullable(this.#columnsX[column])
-    const {
-      y: rowY,
-      height,
-    } = nonNullable(this.#rows[step.row])
-
-    let y = rowY.value()
-
-    if (portType === 'target' && step.isSelfLoop) {
-      y = y + height.value() - SELF_LOOP_ADDITIONAL_HEIGHT
-    }
-
-    // const portHeight = portType === 'source' ? PORT_HEIGHT + 16 : PORT_HEIGHT
+    const { y } = nonNullable(this.#rows[row])
 
     return {
-      x: x.value(),
-      y: y + PORT_HEIGHT / 2 + step.offset,
-      height: portType === 'source' ? 40 : 24,
+      cx: x.value(),
+      cy: y.value() + PORT_HEIGHT / 2 + step.offset,
+      height: type === 'source' ? 40 : 24,
     }
   }
 
@@ -351,7 +436,8 @@ class SequenceViewLayout {
 }
 
 export function toSequenceView(dynamicView: LayoutedDynamicView): {
-  xynodes: Array<Types.SequenceActorNode>
+  bounds: BBox
+  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea>
   xyedges: Array<Types.SequenceStepEdge>
 } {
   const actors = [] as Array<DiagramNode>
@@ -409,10 +495,11 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
 
     const isSelfLoop = source === target
     const isBack = sourceColumn > targetColumn
+    const parallelPrefix = getParallelStepsPrefix(edge.id)
 
     let isContinuing = false
-    if (prevStep && !prevStep.isSelfLoop && prevStep.target == source) {
-      isContinuing = prevStep.isBack === isBack
+    if (prevStep && prevStep.target == source && prevStep.parallelPrefix === parallelPrefix) {
+      isContinuing = prevStep.isSelfLoop !== isSelfLoop || prevStep.isBack === isBack
     }
 
     if (!isContinuing) {
@@ -421,15 +508,19 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
 
     const step: Step = {
       id: edge.id,
-      row,
+      from: {
+        column: sourceColumn,
+        row,
+      },
+      to: {
+        column: targetColumn,
+        row: isSelfLoop ? ++row : row,
+      },
       edge,
       isSelfLoop,
       isBack,
+      parallelPrefix,
       offset: isContinuing ? (prevStep?.offset ?? 0) + 10 : 0,
-      columns: {
-        from: sourceColumn,
-        to: targetColumn,
-      },
       source,
       target,
       label: edge.labelBBox
@@ -454,66 +545,105 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
 
   const bounds = layout.bounds
 
-  return {
-    xynodes: actors.map((actor, column): Types.SequenceActorNode => {
-      const { x, y, width, height } = layout.getActorBox(actor)
-      const ports = actorPorts.get(actor)
-      return ({
-        id: actor.id,
-        type: 'seq-actor',
-        data: {
-          id: actor.id,
-          position: [x, y],
-          level: 0,
-          icon: actor.icon ?? null,
-          isMultiple: actor.style.multiple ?? false,
-          title: actor.title,
-          width,
-          height,
-          color: actor.color,
-          navigateTo: actor.navigateTo ?? null,
-          shape: actor.shape,
-          style: actor.style,
-          tags: actor.tags,
-          modelFqn: actor.modelRef ?? null,
-          technology: actor.technology,
-          description: RichText.from(actor.description),
-          viewHeight: bounds.height,
-          viewId: dynamicView.id,
-          ports: ports.map((p): Types.SequenceActorNodePort => {
-            const bbox = layout.getPortCenter(column, p.step, p.type)
-            // if (p.type === 'target' && p.step.isSelfLoop) {
-            //   return ({
-            //     id: p.step.id + '_target',
-            //     x: bbox.x - x,
-            //     y: (bbox.y + bbox.height - SELF_LOOP_ADDITIONAL_HEIGHT * 1.5) - y,
-            //     width: bbox.width,
-            //     height: SELF_LOOP_ADDITIONAL_HEIGHT,
-            //     type: p.type,
-            //     position: p.position,
-            //   })
-            // }
-
-            return ({
-              id: p.step.id + '_' + p.type,
-              cx: bbox.x - x,
-              cy: bbox.y - y,
-              height: bbox.height,
-              type: p.type,
-              position: p.position,
-            })
-          }),
-        },
-        position: {
-          x,
-          y,
-        },
+  const parallelBoxes = layout.parallelBoxes.map(({
+    x,
+    y,
+    width,
+    height,
+    parallelPrefix,
+  }): Types.SequenceParallelArea => {
+    const id = `seq-parallel-${parallelPrefix}` as NodeId
+    return {
+      id,
+      type: 'seq-parallel',
+      data: {
+        id,
+        title: 'PARALLEL',
+        technology: null,
+        color: 'gray',
+        shape: 'rectangle',
+        style: {},
+        tags: [],
+        position: [x, y],
+        level: 0,
+        icon: null,
         width,
-        initialWidth: width,
         height,
-        initialHeight: height,
-      })
-    }),
+        description: RichText.EMPTY,
+        viewId: dynamicView.id,
+        parallelPrefix,
+      },
+      zIndex: 1,
+      position: {
+        x,
+        y,
+      },
+      draggable: false,
+      selectable: false,
+      focusable: false,
+      style: {
+        pointerEvents: 'none',
+      },
+      width,
+      initialWidth: width,
+      height,
+      initialHeight: height,
+    }
+  })
+
+  return {
+    bounds,
+    xynodes: [
+      ...parallelBoxes,
+      ...actors.map((actor): Types.SequenceActorNode => {
+        const { x, y, width, height } = layout.getActorBox(actor)
+        const ports = actorPorts.get(actor)
+        return ({
+          id: actor.id,
+          type: 'seq-actor',
+          data: {
+            id: actor.id,
+            position: [x, y],
+            level: 0,
+            icon: actor.icon ?? null,
+            isMultiple: actor.style.multiple ?? false,
+            title: actor.title,
+            width,
+            height,
+            color: actor.color,
+            navigateTo: actor.navigateTo ?? null,
+            shape: actor.shape,
+            style: actor.style,
+            tags: actor.tags,
+            modelFqn: actor.modelRef ?? null,
+            technology: actor.technology,
+            description: RichText.from(actor.description),
+            viewHeight: bounds.height,
+            viewId: dynamicView.id,
+            ports: ports.map((p): Types.SequenceActorNodePort => {
+              const bbox = layout.getPortCenter(p.step, p.type)
+              return ({
+                id: p.step.id + '_' + p.type,
+                cx: bbox.cx - x,
+                cy: bbox.cy - y,
+                height: bbox.height,
+                type: p.type,
+                position: p.position,
+              })
+            }),
+          },
+          zIndex: 10,
+          position: {
+            x,
+            y,
+          },
+          width,
+          initialWidth: width,
+          height,
+          initialHeight: height,
+        })
+      }),
+    ],
     xyedges: steps.map(({ id, edge, ...step }) => ({
       id: id,
       type: 'sequence-step',
@@ -539,6 +669,7 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
         head: 'normal',
         tail: 'none',
       },
+      zIndex: 20,
       interactionWidth: MIN_ROW_HEIGHT,
       source: step.source.id,
       sourceHandle: id + '_source',

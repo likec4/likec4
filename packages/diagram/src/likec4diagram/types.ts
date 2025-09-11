@@ -96,6 +96,13 @@ export namespace Types {
     }
   >
 
+  export type SequenceParallelAreaData = Simplify<
+    & LeafNodeData
+    & {
+      parallelPrefix: string
+    }
+  >
+
   export type CompoundNodeData =
     & Base.NodeData
     & NonOptional<
@@ -150,6 +157,7 @@ export namespace Types {
   export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
 
   export type SequenceActorNode = ReactFlowNode<SequenceActorNodeData, 'seq-actor'>
+  export type SequenceParallelArea = ReactFlowNode<SequenceParallelAreaData, 'seq-parallel'>
 
   export type CompoundElementNode = ReactFlowNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = ReactFlowNode<CompoundDeploymentNodeData, 'compound-deployment'>
@@ -162,6 +170,7 @@ export namespace Types {
     | CompoundDeploymentNode
     | ViewGroupNode
     | SequenceActorNode
+    | SequenceParallelArea
 
   export type NodeData = ExclusiveUnion<{
     ElementNodeData: ElementNodeData
@@ -170,6 +179,7 @@ export namespace Types {
     CompoundDeploymentNodeData: CompoundDeploymentNodeData
     ViewGroupNodeData: ViewGroupNodeData
     SequenceActorNodeData: SequenceActorNodeData
+    SequenceParallelAreaData: SequenceParallelAreaData
   }>
 
   export type RelationshipEdgeData = Simplify<

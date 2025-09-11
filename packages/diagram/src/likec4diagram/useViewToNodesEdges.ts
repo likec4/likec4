@@ -1,4 +1,5 @@
 import {
+  type BBox,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -22,10 +23,11 @@ import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 function viewToNodesEdge(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type'>
   where: WhereOperator | null
   nodesSelectable: boolean
 }): {
+  bounds: BBox
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
 } {
@@ -270,6 +272,7 @@ function viewToNodesEdge(opts: {
   }
 
   return {
+    bounds: view.bounds,
     xynodes,
     xyedges,
   }

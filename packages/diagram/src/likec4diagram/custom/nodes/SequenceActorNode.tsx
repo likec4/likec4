@@ -143,4 +143,29 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
     </>
   )
 }
-SequenceActorNode.displayName = 'SequenceActorNode'
+
+export function SequenceParallelArea(props: NodeProps<Types.SequenceActorNode>) {
+  return (
+    <Box
+      data-likec4-color={props.data.color}
+      css={{
+        width: '100%',
+        height: '100%',
+        border: 'default',
+        rounded: 'xs',
+        borderWidth: 1,
+        borderColor: 'var(--likec4-palette-stroke)/50',
+        backgroundColor: 'var(--likec4-palette-fill)/5',
+        pointerEvents: 'none',
+        paddingLeft: '2',
+        paddingTop: '0.5',
+        fontSize: 'xs',
+        fontWeight: 'bold',
+        letterSpacing: '.5px',
+        color: 'var(--likec4-palette-stroke)/75',
+      }}
+    >
+      PARALLEL
+    </Box>
+  )
+}

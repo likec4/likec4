@@ -205,10 +205,10 @@ views {
     }
 
     parallel {
-      api -> db '' {
+      api -> db {
         notes 'Queries persistent data from database'
       }
-      api -> cache '' {
+      api -> cache {
         notes 'Reads session data'
       }
     }
@@ -216,9 +216,14 @@ views {
     api -> api 'process' {
       notes 'Transforms data and prepares user dashboard'
     }
-    web <- api {
+
+    web <- api 'returns data' {
+      technology 'JSON'
       notes 'Returns data to frontend as JSON'
     }
+
+    customer <- web 'renders dashboard'
+
 
     include cloud, storage
 
