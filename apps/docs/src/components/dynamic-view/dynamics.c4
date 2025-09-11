@@ -100,7 +100,7 @@ model {
       }
     }
 
-    storage  = storage 'Data Stores' {
+    storage = storage 'Data Stores' {
       description 'Provides access to data'
 
       db = database 'Persistent Data' {
@@ -174,9 +174,12 @@ views {
   dynamic view index {
     title 'Story 1.1 - User dashboard'
 
-    customer -> web '' {
-      notes '
-        Opens application in the browser via secured connection, authenticates and navigates to the dashboard'
+    customer -> web {
+      notes '''
+        - Opens application in the browser via secured connection
+        - Authenticates and navigates to the dashboard
+
+'''
     }
 
     web -> auth 'updates token if needed' {
@@ -222,6 +225,11 @@ views {
     style cloud._ {
       color secondary
       opacity 30%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
     }
   }
 

@@ -1,4 +1,14 @@
-import type { DeploymentFqn, DiagramEdge, DiagramNode, Fqn, IconUrl, RichTextOrEmpty, ViewId } from '@likec4/core/types'
+import type {
+  BBox,
+  DeploymentFqn,
+  DiagramEdge,
+  DiagramNode,
+  ExclusiveUnion,
+  Fqn,
+  IconUrl,
+  RichTextOrEmpty,
+  ViewId,
+} from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
@@ -44,14 +54,16 @@ export namespace Types {
   /**
    * Represents element from logical model
    */
-  export type ElementNodeData = LeafNodeData & {
-    modelFqn: Fqn
-    deploymentFqn?: never
-    /**
-     * If set - this node has navigation to another view and diagram has handler for this
-     */
-    navigateTo: ViewId | null
-  }
+  export type ElementNodeData = Simplify<
+    LeafNodeData & {
+      modelFqn: Fqn
+      deploymentFqn?: never
+      /**
+       * If set - this node has navigation to another view and diagram has handler for this
+       */
+      navigateTo: ViewId | null
+    }
+  >
 
   /**
    * Represents element from deployment model
@@ -64,6 +76,25 @@ export namespace Types {
       // If set - this node refers to a model element
       modelFqn: Fqn | null
     }
+
+  export type SequenceActorNodePort = {
+    id: string
+    cx: number
+    cy: number
+    height: number
+    type: 'target' | 'source'
+    position: 'left' | 'right' | 'top' | 'bottom'
+  }
+  export type SequenceActorNodeData = Simplify<
+    & LeafNodeData
+    & {
+      navigateTo: ViewId | null
+      // If set - this node refers to a model element
+      modelFqn: Fqn | null
+      ports: Array<SequenceActorNodePort>
+      viewHeight: number
+    }
+  >
 
   export type CompoundNodeData =
     & Base.NodeData
@@ -117,13 +148,29 @@ export namespace Types {
 
   export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
   export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
+
+  export type SequenceActorNode = ReactFlowNode<SequenceActorNodeData, 'seq-actor'>
+
   export type CompoundElementNode = ReactFlowNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = ReactFlowNode<CompoundDeploymentNodeData, 'compound-deployment'>
   export type ViewGroupNode = ReactFlowNode<ViewGroupNodeData, 'view-group'>
 
-  export type Node = ElementNode | DeploymentElementNode | CompoundElementNode | CompoundDeploymentNode | ViewGroupNode
+  export type Node =
+    | ElementNode
+    | DeploymentElementNode
+    | CompoundElementNode
+    | CompoundDeploymentNode
+    | ViewGroupNode
+    | SequenceActorNode
 
-  export type NodeData = Node['data']
+  export type NodeData = ExclusiveUnion<{
+    ElementNodeData: ElementNodeData
+    DeploymentElementNodeData: DeploymentElementNodeData
+    CompoundElementNodeData: CompoundElementNodeData
+    CompoundDeploymentNodeData: CompoundDeploymentNodeData
+    ViewGroupNodeData: ViewGroupNodeData
+    SequenceActorNodeData: SequenceActorNodeData
+  }>
 
   export type RelationshipEdgeData = Simplify<
     & Base.EdgeData
@@ -150,8 +197,34 @@ export namespace Types {
     }
   >
 
-  export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
+  export type SequenceStepEdgeData = Simplify<
+    & Base.EdgeData
+    & NonOptional<
+      Pick<
+        DiagramEdge,
+        | 'id'
+        | 'label'
+        | 'technology'
+        | 'points'
+        | 'dir'
+        | 'color'
+        | 'line'
+        | 'head'
+        | 'tail'
+        | 'navigateTo'
+      >
+    >
+    & {
+      notes: RichTextOrEmpty
+      labelXY: XYPosition | null
+      labelBBox: BBox
+      controlPoints: XYPosition[] | undefined | null
+    }
+  >
 
-  export type Edge = RelationshipEdge
-  export type EdgeData = RelationshipEdgeData
+  export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
+  export type SequenceStepEdge = ReactFlowEdge<SequenceStepEdgeData, 'sequence-step'>
+
+  export type Edge = RelationshipEdge | SequenceStepEdge
+  export type EdgeData = RelationshipEdgeData | SequenceStepEdgeData
 }

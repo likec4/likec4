@@ -68,7 +68,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
     const currentEdges = context.xyedges
     xyedges = event.xyedges.map((update): Types.Edge => {
       const existing = currentEdges.find(n => n.id === update.id)
-      if (existing) {
+      if (existing && existing.type === update.type) {
         if (
           eq(existing.hidden ?? false, update.hidden ?? false)
           && eq(existing.data, update.data)
@@ -82,7 +82,7 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
             ...existing.data,
             ...update.data,
           },
-        }
+        } as Types.Edge
       }
       return update
     })
@@ -388,7 +388,7 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
           ...edge.data,
           controlPoints: getControlPointForEdge(edge),
         },
-      })
+      } as Types.Edge)
     }),
   }
 }

@@ -48,10 +48,10 @@ export const theme = {
     },
     'xyedgeAnimated': {
       '0%': {
-        strokeDashoffset: 18 * 2 + 10,
+        strokeDashoffset: 36 + 2,
       },
       '100%': {
-        strokeDashoffset: 10,
+        strokeDashoffset: 2, // 18 + 8 from dash array
       },
     },
   },

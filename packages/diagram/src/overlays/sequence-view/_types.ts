@@ -1,18 +1,28 @@
 import type {
+  DiagramEdge,
   DiagramNode,
-  EdgeId,
+  RichTextOrEmpty,
 } from '@likec4/core/types'
 import type { Simplify } from 'type-fest'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace SequenceViewTypes {
+  export type Port = {
+    id: string
+    x: number
+    y: number
+    width: number
+    height: number
+    type: 'target' | 'source'
+    position: 'left' | 'right' | 'top' | 'bottom'
+  }
+
   /**
    * The node's incoming and outgoing ports
    */
   export type Ports = {
-    totalRows: number
-    in: Array<{ step: EdgeId; row: number }>
-    out: Array<{ step: EdgeId; row: number }>
+    in: Array<Port>
+    out: Array<Port>
   }
 
   export type ActorNodeData =
@@ -20,17 +30,23 @@ export namespace SequenceViewTypes {
     & NonOptional<
       Pick<
         DiagramNode,
-        'title'
-      > // | 'technology'
-    > // | 'color'
-    // | 'shape'
-    // | 'width'
-    // | 'height'
-    // | 'navigateTo'
-    // | 'style'
-    // | 'tags'
+        | 'title'
+        | 'technology'
+        | 'modelRef'
+        | 'color'
+        | 'width'
+        | 'height'
+        | 'shape'
+        | 'navigateTo'
+        | 'style'
+        | 'tags'
+      >
+    >
     & {
-      ports: Ports
+      viewNode: DiagramNode
+      description: RichTextOrEmpty
+      ports: Array<Port>
+      verticalLineHeight: number
     }
 
   export type StepNodeData =
@@ -47,14 +63,25 @@ export namespace SequenceViewTypes {
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
   export type StepEdgeData = Simplify<
-    Base.EdgeData & {
-      // relationId: RelationId
-      // color: Color | undefined
-      // label: string | null
-      // technology?: string | undefined
-      // navigateTo: ViewId | null
-      // line: RelationshipLineType
-      // description: RichTextOrEmpty
+    & Base.EdgeData
+    & NonOptional<
+      Pick<
+        DiagramEdge,
+        | 'id'
+        | 'label'
+        | 'labelBBox'
+        | 'technology'
+        | 'dir'
+        | 'color'
+        | 'line'
+        | 'head'
+        | 'tail'
+        | 'navigateTo'
+      >
+    >
+    & {
+      notes: RichTextOrEmpty
+      description: RichTextOrEmpty
     }
   >
 

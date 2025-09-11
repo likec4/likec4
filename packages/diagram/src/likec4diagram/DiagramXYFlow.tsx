@@ -123,6 +123,7 @@ export function LikeC4DiagramXYFlow({
           'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes.compoundElement,
           'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes.compoundDeployment,
           'view-group': renderNodes?.viewGroup ?? defaultNodeTypes.viewGroup,
+          'seq-actor': renderNodes?.sequenceActor ?? defaultNodeTypes.sequenceActor,
         }
       },
       [renderNodes],

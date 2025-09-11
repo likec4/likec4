@@ -55,7 +55,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   if (isDotted) {
     strokeDasharray = '1,8'
   } else if (isDashed) {
-    strokeDasharray = '8,10'
+    strokeDasharray = '10,8'
   }
   // if (isLooseReduce) {
   //   strokeDasharray = undefined
@@ -77,7 +77,6 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           hideOnReducedGraphics,
           css({
             fill: '[none]',
-            strokeOpacity: 0,
           }),
         )}
         d={svgPath}

@@ -82,6 +82,7 @@
     "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
+    "@lume/kiwi": "catalog:utils",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",

@@ -17,6 +17,7 @@ import { useCustomCompareMemo } from '@react-hookz/web'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../base/const'
+import { toSequenceView } from './to-sequence-view'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
@@ -289,7 +290,7 @@ const viewToNodesEdgeEqual = (a: ViewToNodesEdgeInput, b: ViewToNodesEdgeInput) 
 
 export function useViewToNodesEdges(params: ViewToNodesEdgeInput) {
   return useCustomCompareMemo(
-    () => viewToNodesEdge(params),
+    () => params.view._type === 'dynamic' ? toSequenceView(params.view) : viewToNodesEdge(params),
     [params],
     ([a], [b]) => !!a && !!b && viewToNodesEdgeEqual(a, b),
   )

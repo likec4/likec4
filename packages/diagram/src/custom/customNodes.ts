@@ -266,10 +266,17 @@ export type CustomViewGroupNodeProps = {
   nodeModel: NodeModel.IsGroup<Any>
 }
 
+export const sequenceActorNode: CustomNodeComponent<CustomSequenceActorNodeProps> = customDiagramNode as any
+export type CustomSequenceActorNodeProps = {
+  nodeProps: NodeProps<Types.SequenceActorNodeData, 'seq-actor'>
+  nodeModel: NodeModel.WithElement<Any>
+}
+
 export interface CustomNodes {
   element?: FunctionComponent<NodeProps<Types.ElementNodeData, 'element'>>
   deployment?: FunctionComponent<NodeProps<Types.DeploymentElementNodeData, 'deployment'>>
   compoundElement?: FunctionComponent<NodeProps<Types.CompoundElementNodeData, 'compound-element'>>
   compoundDeployment?: FunctionComponent<NodeProps<Types.CompoundDeploymentNodeData, 'compound-deployment'>>
   viewGroup?: FunctionComponent<NodeProps<Types.ViewGroupNodeData, 'view-group'>>
+  sequenceActor?: FunctionComponent<NodeProps<Types.SequenceActorNodeData, 'seq-actor'>>
 }
