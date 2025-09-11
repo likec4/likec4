@@ -1,10 +1,8 @@
 ## [1.39.5](https://github.com/likec4/likec4/compare/v1.39.4...v1.39.5) (2025-09-11)
 
+### 🐞 Bug Fixes
 
-### Bug Fixes
-
-* **vscode:** downgrade fdir to 6.4.0 ([efea140](https://github.com/likec4/likec4/commit/efea1407cc9e326c2dbe75f0d990fc9cb34f9779)), closes [#2215](https://github.com/likec4/likec4/issues/2215)
-
+* **vscode:** VS Code extension crashed, downgrade fdir to 6.4.0 ([efea140](https://github.com/likec4/likec4/commit/efea1407cc9e326c2dbe75f0d990fc9cb34f9779)), closes [#2215](https://github.com/likec4/likec4/issues/2215)
 
 
 ## [1.39.4](https://github.com/likec4/likec4/compare/v1.39.3...v1.39.4) (2025-09-10)
