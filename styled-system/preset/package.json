@@ -37,7 +37,8 @@
     "./src": "./src/index.ts"
   },
   "peerDependencies": {
-    "@pandacss/dev": "catalog:css"
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css"
   },
   "devDependencies": {
     "@types/react": "catalog:react",

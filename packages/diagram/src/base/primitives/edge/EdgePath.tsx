@@ -55,7 +55,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   if (isDotted) {
     strokeDasharray = '1,8'
   } else if (isDashed) {
-    strokeDasharray = '10,8'
+    strokeDasharray = '8,10'
   }
   // if (isLooseReduce) {
   //   strokeDasharray = undefined

@@ -1,5 +1,6 @@
 import { type Preset, definePreset } from '@pandacss/dev'
 import radixColorsPreset from 'pandacss-preset-radix-colors'
+import { animationStyles, keyframes } from './animations'
 import { conditions } from './conditions'
 import { radixColors } from './const'
 import { breakpoints } from './generated'
@@ -29,59 +30,8 @@ export const theme = {
     md: '768px',
     lg: '1024px',
   },
-  keyframes: {
-    'indicatorOpacity': {
-      '0%': {
-        opacity: 0.9,
-      },
-      '100%': {
-        opacity: 0.6,
-      },
-    },
-    'indicatorStrokeOpacity': {
-      '0%': {
-        strokeOpacity: 0.8,
-      },
-      '100%': {
-        strokeOpacity: 0.4,
-      },
-    },
-    'xyedgeAnimated': {
-      '0%': {
-        strokeDashoffset: 36 + 2,
-      },
-      '100%': {
-        strokeDashoffset: 2, // 18 + 8 from dash array
-      },
-    },
-  },
-  animationStyles: {
-    'indicator': {
-      value: {
-        animationDuration: '1s',
-        animationIterationCount: 'infinite',
-        animationDirection: 'alternate',
-        animationName: 'indicatorStrokeOpacity',
-      },
-    },
-    'indicatorOpacity': {
-      value: {
-        animationDuration: '1s',
-        animationIterationCount: 'infinite',
-        animationDirection: 'alternate',
-        animationName: 'indicatorOpacity',
-      },
-    },
-    'xyedgeAnimated': {
-      value: {
-        animationDuration: '800ms',
-        animationIterationCount: 'infinite',
-        animationTimingFunction: 'linear',
-        animationFillMode: 'both',
-        animationName: 'xyedgeAnimated',
-      },
-    },
-  },
+  keyframes,
+  animationStyles,
 }
 
 export default definePreset({

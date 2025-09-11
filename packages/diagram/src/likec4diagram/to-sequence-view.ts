@@ -43,7 +43,7 @@ type Step = {
 const ACTOR_MARGIN = 60
 
 // minimum height of a step row
-const MIN_ROW_HEIGHT = 50
+const MIN_ROW_HEIGHT = 80
 
 const PORT_HEIGHT = 32
 
@@ -52,6 +52,12 @@ const STEP_LABEL_MARGIN = 50
 
 // offset from actor box
 const STEPS_OFFSET = 40
+
+// offset for continuing steps
+// A -> B,
+//      C -> D (sequential)
+// A -> B -> C (continuous)
+const CONTINUOUS_OFFSET = 22
 
 // const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
@@ -520,13 +526,13 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
       isSelfLoop,
       isBack,
       parallelPrefix,
-      offset: isContinuing ? (prevStep?.offset ?? 0) + 10 : 0,
+      offset: isContinuing ? (prevStep?.offset ?? 0) + CONTINUOUS_OFFSET : 0,
       source,
       target,
       label: edge.labelBBox
         ? {
-          height: edge.labelBBox.height + 8 + (edge.navigateTo ? 16 : 0),
-          width: edge.labelBBox.width + 8,
+          height: edge.labelBBox.height + 8 + (edge.navigateTo ? 20 : 0),
+          width: edge.labelBBox.width + 16,
           text: edge.label,
         }
         : null,
@@ -663,7 +669,7 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
         labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',
-        line: edge.line ?? 'dashed',
+        line: edge.line ?? 'solid',
         dir: 'forward',
         // dir: edge.dir ?? 'forward',
         head: 'normal',

@@ -100,7 +100,7 @@ export const elementShapeRecipe = defineRecipe({
           borderWidth: 'var(--likec4-outline-size)',
           borderRadius: '[10px]',
           borderColor: 'var(--likec4-palette-outline)',
-          animationStyle: 'indicatorOpacity',
+          animationStyle: 'indicator',
         },
       }),
       svg: parts({

@@ -23,8 +23,8 @@ export function SequenceStepEdge(props: EdgeProps<Types.SequenceStepEdgeData>) {
     targetY: props.targetY,
     targetPosition: props.targetPosition,
     ...(isSelfLoop && {
-      offset: 24,
-      borderRadius: 8,
+      offset: 30,
+      borderRadius: 16,
     }),
   })
 

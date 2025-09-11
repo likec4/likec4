@@ -2,10 +2,10 @@ packages:
   - apps/*
   - styled-system/*
   - packages/*
-  - '!packages/create-likec4'
+  - "!packages/create-likec4"
 
 catalog:
-  '@types/node': ~20.19.11
+  "@types/node": ~20.19.11
   playwright: 1.54.2
   tsx: 4.20.5
   turbo: 2.5.6
@@ -19,11 +19,11 @@ catalogMode: prefer
 
 catalogs:
   astro:
-    '@astrojs/check': ^0.9.4
-    '@astrojs/react': 4.3.0
-    '@astrojs/starlight': 0.35.2
-    '@expressive-code/plugin-collapsible-sections': ^0.41.3
-    '@expressive-code/plugin-line-numbers': ^0.41.3
+    "@astrojs/check": ^0.9.4
+    "@astrojs/react": 4.3.0
+    "@astrojs/starlight": 0.35.2
+    "@expressive-code/plugin-collapsible-sections": ^0.41.3
+    "@expressive-code/plugin-line-numbers": ^0.41.3
     astro: 5.13.5
     astro-og-canvas: ^0.7.0
     shiki: ^3.6.0
@@ -32,36 +32,37 @@ catalogs:
     starlight-links-validator: ^0.16.0
     starlight-package-managers: ^0.11.0
   css:
-    '@pandacss/dev': ^1.1.0
-    '@pandacss/preset-panda': ^1.1.0
+    "@pandacss/dev": ^1.3.0
+    "@pandacss/types": ^1.3.0
+    "@pandacss/preset-panda": ^1.3.0
     postcss: 8.5.6
   esbuild:
     esbuild: 0.25.9
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    '@hono/node-server': ^1.19.1
+    "@hono/node-server": ^1.19.1
     hono: ^4.9.6
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    '@mantine/colors-generator': 8.2.8
-    '@mantine/core': 8.2.8
-    '@mantine/hooks': 8.2.8
-    '@mantine/modals': 8.2.8
-    '@mantine/notifications': 8.2.8
-    '@mantine/vanilla-extract': 8.2.8
+    "@mantine/colors-generator": 8.2.8
+    "@mantine/core": 8.2.8
+    "@mantine/hooks": 8.2.8
+    "@mantine/modals": 8.2.8
+    "@mantine/notifications": 8.2.8
+    "@mantine/vanilla-extract": 8.2.8
   mcp:
-    '@modelcontextprotocol/sdk': ^1.17.5
+    "@modelcontextprotocol/sdk": ^1.17.5
   react:
-    '@floating-ui/dom': ^1.7.4
-    '@nanostores/react': 1.0.0
-    '@react-hookz/web': ^25.1.1
-    '@tabler/icons-react': 3.34.1
-    '@types/react': 19.1.12
-    '@types/react-dom': 19.1.9
+    "@floating-ui/dom": ^1.7.4
+    "@nanostores/react": 1.0.0
+    "@react-hookz/web": ^25.1.1
+    "@tabler/icons-react": 3.34.1
+    "@types/react": 19.1.12
+    "@types/react-dom": 19.1.9
     clsx: ^2.1.1
     motion: ^12.23.12
     nanostores: 1.0.1
@@ -69,18 +70,18 @@ catalogs:
     react-dom: 19.1.1
     react-error-boundary: ^6.0.0
   tanstack:
-    '@tanstack/react-query': ^5.85.0
-    '@tanstack/react-router': ^1.114.13
-    '@tanstack/router-cli': ^1.114.13
-    '@tanstack/router-vite-plugin': ^1.114.13
+    "@tanstack/react-query": ^5.85.0
+    "@tanstack/react-router": ^1.114.13
+    "@tanstack/router-cli": ^1.114.13
+    "@tanstack/router-vite-plugin": ^1.114.13
   utils:
-    '@hpcc-js/wasm-graphviz': 1.12.0
-    '@logtape/logtape': ^0.12.2
-    '@lume/kiwi': ^0.4.4
-    '@types/chroma-js': ^3.1.1
-    '@types/natural-compare-lite': ^1.4.2
-    '@types/picomatch': ^4.0.2
-    '@valibot/to-json-schema': ^1.3.0
+    "@hpcc-js/wasm-graphviz": 1.12.0
+    "@logtape/logtape": ^0.12.2
+    "@lume/kiwi": ^0.4.4
+    "@types/chroma-js": ^3.1.1
+    "@types/natural-compare-lite": ^1.4.2
+    "@types/picomatch": ^4.0.2
+    "@valibot/to-json-schema": ^1.3.0
     bundle-require: ^5.1.0
     caniuse-lite: ^1.0.30001739
     chokidar: ^4.0.3
@@ -115,17 +116,17 @@ catalogs:
     valibot: ^1.1.0
     zod: 3.25.76
   vite:
-    '@vitejs/plugin-react': ^4.7.0
+    "@vitejs/plugin-react": ^4.7.0
     rollup: ^4.44.0
     vite: ^6.3.5
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.23.0
     vite-tsconfig-paths: ^5.1.4
   vitest:
-    '@vitest/ui': 3.2.4
+    "@vitest/ui": 3.2.4
     vitest: 3.2.4
   vscode:
-    '@types/vscode': ^1.84.0
+    "@types/vscode": ^1.84.0
     vscode-jsonrpc: 8.2.1
     vscode-languageclient: 9.0.1
     vscode-languageserver: 9.0.1
@@ -135,11 +136,11 @@ catalogs:
     vscode-textmate: 9.2.0
     vscode-uri: 3.1.0
   xstate:
-    '@xstate/react': ^5.0.5
+    "@xstate/react": ^5.0.5
     xstate: ^5.20.2
   xyflow:
-    '@xyflow/react': 12.8.4
-    '@xyflow/system': 0.0.68
+    "@xyflow/react": 12.8.4
+    "@xyflow/system": 0.0.68
   zod4:
     zod: ^4.0.17
 

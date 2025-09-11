@@ -129,8 +129,13 @@ export const tokens = defineTokens({
     ...generated.colors,
     // For typesafety, otherwise wrap with []
     transparent: { value: 'transparent' },
+    // For fill: none
+    none: { value: 'none' },
   },
   fonts: {
+    mono: {
+      value: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace`,
+    },
     body: {
       value: 'var(--likec4-app-font, var(--likec4-app-font-default))',
     },
