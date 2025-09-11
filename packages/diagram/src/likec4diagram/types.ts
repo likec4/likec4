@@ -233,7 +233,7 @@ export namespace Types {
   >
 
   export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
-  export type SequenceStepEdge = ReactFlowEdge<SequenceStepEdgeData, 'sequence-step'>
+  export type SequenceStepEdge = ReactFlowEdge<SequenceStepEdgeData, 'seq-step'>
 
   export type Edge = RelationshipEdge | SequenceStepEdge
   export type EdgeData = RelationshipEdgeData | SequenceStepEdgeData

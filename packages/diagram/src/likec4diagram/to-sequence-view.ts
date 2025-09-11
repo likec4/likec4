@@ -544,6 +544,12 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
     actorPorts.get(target).push({ step, row, type: 'target', position: isBack || isSelfLoop ? 'right' : 'left' })
   }
 
+  // Update columns, as actors may have been re-ordered
+  for (const step of steps) {
+    step.from.column = actors.indexOf(step.source)
+    step.to.column = actors.indexOf(step.target)
+  }
+
   const layout = new SequenceViewLayout({
     actors,
     steps,
@@ -650,11 +656,11 @@ export function toSequenceView(dynamicView: LayoutedDynamicView): {
         })
       }),
     ],
-    xyedges: steps.map(({ id, edge, ...step }) => ({
+    xyedges: steps.map(({ id, edge, ...step }): Types.SequenceStepEdge => ({
       id: id,
-      type: 'sequence-step',
+      type: 'seq-step',
       data: {
-        id: edge.id,
+        id,
         label: step.label?.text ?? null,
         technology: edge.technology,
         notes: RichText.from(edge.notes),

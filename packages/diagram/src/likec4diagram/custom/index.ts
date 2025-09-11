@@ -24,5 +24,5 @@ export { SequenceParallelArea } from './nodes/SequenceActorNode'
 
 export const edgeTypes = {
   relationship: RelationshipEdge,
-  'sequence-step': SequenceStepEdge,
+  'seq-step': SequenceStepEdge,
 } satisfies { [key in Types.Edge['type']]: any }

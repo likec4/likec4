@@ -117,6 +117,14 @@ views {
         Multi line
       '
     }
+    cloud.graphql -> cloud.next.backend 'reads'
+    parallel {
+      cloud.next.backend -> amazon.lambdas.fn_enrich 'triggers'
+      cloud.next.backend -> cloud.legacy.backend.services 'calls legacy'
+      amazon.lambdas.fn_enrich -> cloud.next.events 'publishes'
+    }
+    cloud.graphql <- cloud.next.backend
+
     ui.dashboard <- cloud.graphql 'returns' {
       technology 'unknown'
       navigateTo cloud-to-amazon
@@ -128,8 +136,13 @@ views {
     include cloud
 
     autoLayout TopBottom
-    style * {
-      color secondary
+
+    style customer {
+      color green
+    }
+    style ui.* {
+      icon none
+      size sm
     }
     style cloud {
       opacity 40%
