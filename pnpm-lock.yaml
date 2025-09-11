@@ -197,8 +197,8 @@ catalogs:
       specifier: ^5.2.2
       version: 5.2.2
     fdir:
-      specifier: 6.5.0
-      version: 6.5.0
+      specifier: 6.4.0
+      version: 6.4.0
     json5:
       specifier: ^2.2.3
       version: 2.2.3
@@ -835,7 +835,7 @@ importers:
         version: 3.0.3
       fdir:
         specifier: catalog:utils
-        version: 6.5.0(picomatch@4.0.3)
+        version: 6.4.0(picomatch@4.0.3)
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.8)
@@ -1044,7 +1044,7 @@ importers:
         version: 9.6.0
       fdir:
         specifier: catalog:utils
-        version: 6.5.0(picomatch@4.0.3)
+        version: 6.4.0(picomatch@4.0.3)
       picomatch:
         specifier: catalog:utils
         version: 4.0.3
@@ -1138,7 +1138,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.5.0(picomatch@4.0.3)
+        version: 6.4.0(picomatch@4.0.3)
       fetch-to-node:
         specifier: ^2.1.0
         version: 2.1.0
@@ -1458,7 +1458,7 @@ importers:
         version: 5.2.2
       fdir:
         specifier: catalog:utils
-        version: 6.5.0(picomatch@4.0.3)
+        version: 6.4.0(picomatch@4.0.3)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -5345,6 +5345,14 @@ packages:
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
+
+  fdir@6.4.0:
+    resolution: {integrity: sha512-3oB133prH1o4j/L5lLW7uOCF1PlD+/It2L0eL/iAqWMB91RBbqTewABqxhj0ibBd90EEmWZq7ntIWzVaWcXTGQ==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
 
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
@@ -13588,6 +13596,10 @@ snapshots:
   fastq@1.19.1:
     dependencies:
       reusify: 1.1.0
+
+  fdir@6.4.0(picomatch@4.0.3):
+    optionalDependencies:
+      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
