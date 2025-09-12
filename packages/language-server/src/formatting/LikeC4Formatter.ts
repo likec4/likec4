@@ -710,17 +710,25 @@ export class LikeC4Formatter extends AbstractFormatter {
     return (command: ExtendedFormattingCommand, edits: TextEdit[]) => {
       const quotesToReplace = quoteStyle === 'single' ? '"' : '\''
       const quotesToInsert = quoteStyle === 'single' ? '\'' : '"'
+      const markdownFence = quotesToInsert.repeat(3)
+      const plainFence = quotesToInsert
 
-      const newEdits = command.region.nodes.map(node => ({
-        range: node.range,
-        newText: quotesToInsert +
-          this.escapeQuotesInternalQuotes(
-            node.text.slice(1, -1),
-            quotesToReplace,
-            quotesToInsert,
-          ) +
-          quotesToInsert,
-      }))
+      const newEdits = command.region.nodes.map(node => {
+        const fence = node.text.startsWith(`"""`) || node.text.startsWith(`'''`)
+          ? markdownFence
+          : plainFence
+
+        return {
+          range: node.range,
+          newText: fence +
+            this.escapeQuotesInternalQuotes(
+              node.text.slice(fence.length, -fence.length),
+              quotesToReplace,
+              quotesToInsert,
+            ) +
+            fence,
+        }
+      })
 
       edits.push(...newEdits)
     }
