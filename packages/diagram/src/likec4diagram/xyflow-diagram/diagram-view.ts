@@ -14,13 +14,10 @@ import {
   RichText,
   whereOperatorAsPredicate,
 } from '@likec4/core'
-import { useCustomCompareMemo } from '@react-hookz/web'
-import { deepEqual, shallowEqual } from 'fast-equals'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import type { Types } from '../types'
 
-// const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 export function diagramToXY(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type'>
   where: WhereOperator | null
@@ -275,25 +272,4 @@ export function diagramToXY(opts: {
     xynodes,
     xyedges,
   }
-}
-type ViewToNodesEdgeInput = {
-  view: DiagramView
-  where: WhereOperator | null
-  nodesSelectable: boolean
-}
-const viewToNodesEdgeEqual = (a: ViewToNodesEdgeInput, b: ViewToNodesEdgeInput) => (
-  a.view.id === b.view.id
-  && a.view._type === b.view._type
-  && a.nodesSelectable === b.nodesSelectable
-  && shallowEqual(a.view.nodes, b.view.nodes)
-  && shallowEqual(a.view.edges, b.view.edges)
-  && deepEqual(a.where, b.where)
-)
-
-export function useViewToNodesEdges(params: ViewToNodesEdgeInput) {
-  return useCustomCompareMemo(
-    () => params.view._type === 'dynamic' ? toSequenceView(params.view) : viewToNodesEdge(params),
-    [params],
-    ([a], [b]) => !!a && !!b && viewToNodesEdgeEqual(a, b),
-  )
 }
