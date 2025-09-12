@@ -170,13 +170,14 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
-   * Available for dynamic views only, returns null for other view types.
+   * Available for dynamic views only
+   * throws error if view is not dynamic
    */
-  get mode(): DynamicViewDisplayMode | null {
+  get mode(): DynamicViewDisplayMode {
     if (this.isDynamicView()) {
       return this.$view.mode ?? 'diagram'
     }
-    return null
+    throw new Error('View is not dynamic')
   }
 
   /**
@@ -356,9 +357,5 @@ export namespace LikeC4ViewModel {
   {
   }
 
-  export interface DynamicView<A extends Any, V extends $View<A> = $View<A>>
-    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
-  {
-    readonly mode: DynamicViewDisplayMode
-  }
+  export type DynamicView<A extends Any, V extends $View<A> = $View<A>> = LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
 }
