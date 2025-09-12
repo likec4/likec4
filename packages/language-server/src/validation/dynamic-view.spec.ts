@@ -137,7 +137,7 @@ describe.concurrent('DynamicView Checks', () => {
         }
       }
     `)
-      expect(errors).to.include.members(['Missing display mode value: "diagram" or "sequence"'])
+      expect(errors).to.include.members(['Invalid display mode: "diagram" or "sequence" are allowed'])
     })
 
     it('should not report for valid modes', async ({ expect }) => {
