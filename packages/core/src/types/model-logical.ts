@@ -17,9 +17,10 @@ import type {
 
 export const DefaultThemeColor: ThemeColor = 'primary'
 export const DefaultElementShape: ElementShape = 'rectangle'
-export const DefaultShapeSize: ShapeSize = 'md'
-export const DefaultPaddingSize: SpacingSize = 'md'
-export const DefaultTextSize: TextSize = 'md'
+export const DefaultSize = 'md'
+export const DefaultShapeSize: ShapeSize = DefaultSize
+export const DefaultPaddingSize: SpacingSize = DefaultSize
+export const DefaultTextSize: TextSize = DefaultSize
 
 export interface ElementStyle {
   readonly border?: BorderStyle
@@ -45,6 +46,29 @@ export interface ElementStyle {
   readonly padding?: SpacingSize
 
   readonly textSize?: TextSize
+}
+
+type WithSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize'>
+
+/**
+ * Ensures that the sizes are set to default values if they are not set
+ */
+export function ensureSizes<S extends WithSizes>({
+  size,
+  padding,
+  textSize,
+  ...rest
+}: S): Omit<S, 'size' | 'padding' | 'textSize'> & Required<WithSizes> {
+  size ??= DefaultSize
+  textSize ??= size
+  padding ??= size
+
+  return {
+    ...rest,
+    size,
+    padding,
+    textSize,
+  }
 }
 
 // dprint-ignore

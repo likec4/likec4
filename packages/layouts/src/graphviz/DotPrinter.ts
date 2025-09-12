@@ -1,11 +1,9 @@
 import {
-  DefaultPaddingSize,
   DefaultRelationshipColor,
-  DefaultShapeSize,
-  DefaultTextSize,
   defaultTheme,
   defaultTheme as Theme,
   DefaultThemeColor,
+  ensureSizes,
   isThemeColor,
 } from '@likec4/core'
 import type {
@@ -373,22 +371,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
     const colorValues = this.getElementColorValues(element.color)
-    let size = element.style.size
-    let textSize = element.style.textSize
-    let paddingSize = element.style.padding
-
-    if (!size && !!textSize) {
-      size = textSize
-    }
-    if (!textSize && !!size) {
-      textSize = size
-    }
-    if (!paddingSize && !!size) {
-      paddingSize = size
-    }
-    size ??= DefaultShapeSize
-    textSize ??= DefaultTextSize
-    paddingSize ??= DefaultPaddingSize
+    const { size, textSize, padding: paddingSize } = ensureSizes(element.style)
 
     const padding = defaultTheme.spacing[paddingSize]
 
@@ -402,8 +385,11 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       }),
       [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
-    node.attributes.set(_.width, pxToInch(defaultTheme.sizes[size].width))
-    node.attributes.set(_.height, pxToInch(defaultTheme.sizes[size].height))
+
+    const { width, height } = defaultTheme.sizes[size]
+
+    node.attributes.set(_.width, pxToInch(width))
+    node.attributes.set(_.height, pxToInch(height))
 
     if (element.color !== DefaultThemeColor) {
       node.attributes.apply({
@@ -436,8 +422,8 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       }
       case 'queue': {
         node.attributes.apply({
-          [_.width]: pxToInch(defaultTheme.sizes[size].width),
-          [_.height]: pxToInch(defaultTheme.sizes[size].height - 8),
+          [_.width]: pxToInch(width),
+          [_.height]: pxToInch(height - 8),
           [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding)}`,
         })
         break
