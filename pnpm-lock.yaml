@@ -313,9 +313,6 @@ catalogs:
       specifier: 0.0.68
       version: 0.0.68
   zod4:
-    zod:
-      specifier: ^4.0.17
-      version: 4.0.17
     zod4:
       specifier: npm:zod@^4.0.17
       version: 4.0.17
@@ -714,9 +711,6 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
-      zod:
-        specifier: catalog:zod4
-        version: 4.0.17
 
   packages/config:
     dependencies:
