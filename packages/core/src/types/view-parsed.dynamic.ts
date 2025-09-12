@@ -65,8 +65,18 @@ export type DynamicViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   AutoLayout: ViewRuleAutoLayout
 }>
 
+export type DynamicViewDisplayMode = 'diagram' | 'sequence'
+
 export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'dynamic'
+  /**
+   * How to display the dynamic view
+   * - `diagram`: display as a regular likec4 view
+   * - `sequence`: display as a sequence diagram
+   *
+   * @default 'diagram'
+   */
+  readonly mode?: DynamicViewDisplayMode
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]
 }

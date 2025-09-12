@@ -1,1 +1,2 @@
-export { ActiveWalkthroughControls, StartWalkthroughButton } from './ActiveWalkthroughControls'
+export { ActiveWalkthroughControls } from './ActiveWalkthroughControls'
+export { DynamicViewControls } from './DynamicViewControls'

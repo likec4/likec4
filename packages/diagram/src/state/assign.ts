@@ -72,11 +72,15 @@ export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Diagra
         if (
           eq(existing.hidden ?? false, update.hidden ?? false)
           && eq(existing.data, update.data)
+          && eq(existing.source, update.source)
+          && eq(existing.target, update.target)
+          && eq(existing.sourceHandle, update.sourceHandle)
+          && eq(existing.targetHandle, update.targetHandle)
         ) {
           return existing
         }
         return {
-          ...existing,
+          ...omit(existing, ['sourceHandle', 'targetHandle']),
           ...update,
           data: {
             ...existing.data,

@@ -2,6 +2,7 @@ import { isTruthy } from 'remeda'
 import type {
   Any,
   AnyView,
+  DynamicViewDisplayMode,
   IteratorLike,
   Link,
   scalar,
@@ -169,6 +170,16 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
+   * Available for dynamic views only, returns null for other view types.
+   */
+  get mode(): DynamicViewDisplayMode | null {
+    if (this.isDynamicView()) {
+      return this.$view.mode ?? 'diagram'
+    }
+    return null
+  }
+
+  /**
    * All tags from nodes and edges.
    */
   get includedTags(): aux.Tags<A> {
@@ -223,17 +234,26 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   /**
-   * Find edge by id.
+   * Get edge by id, throws error if edge is not found.
+   * Use {@link findEdge} if you are not sure if the edge exists.
+   *
    * @param edge Edge or id
-   * @returns EdgeModel
+   * @returns {@link EdgeModel}
    */
   public edge(edge: EdgeOrId): EdgeModel<A, V> {
     const edgeId = getId(edge)
     return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.$view.id}`)
   }
+
+  /**
+   * Find edge by id.
+   * @param edge Edge or id
+   * @returns {@link EdgeModel} or null if edge is not found
+   */
   public findEdge(edge: EdgeOrId): EdgeModel<A, V> | null {
     return this.#edges.get(getId(edge)) ?? null
   }
+
   /**
    * Iterate over all edges.
    */
@@ -339,5 +359,6 @@ export namespace LikeC4ViewModel {
   export interface DynamicView<A extends Any, V extends $View<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
   {
+    readonly mode: DynamicViewDisplayMode
   }
 }

@@ -87,7 +87,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
         className={css({
           position: 'absolute',
           rounded: 'xs',
-          top: '2',
+          top: '1',
           pointerEvents: 'none',
           transition: 'fast',
           translateX: '-1/2',

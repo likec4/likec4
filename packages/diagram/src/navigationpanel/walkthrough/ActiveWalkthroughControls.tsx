@@ -1,9 +1,7 @@
-import { RichText } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Badge, Button, Portal } from '@mantine/core'
 import {
-  IconPlayerPlayFilled,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
   IconPlayerStopFilled,
@@ -13,40 +11,7 @@ import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
 import { useMantinePortalProps } from '../../hooks'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
-import { Tooltip } from '../_common'
-import { useNavigationActor } from '../hooks'
-
-const TriggerWalkthroughButton = Button.withProps({
-  // Button is polymorphic, but we dont want it to inherit the motion props
-  component: m.button as any as 'button',
-  // @ts-expect-error
-  layoutId: 'trigger-dynamic-walkthrough',
-  variant: 'filled',
-  size: 'xs',
-  fw: '500',
-  className: css({
-    flexShrink: 0,
-  }),
-})
-
-export const StartWalkthroughButton = () => {
-  const diagram = useDiagram()
-  const actor = useNavigationActor()
-  return (
-    <Tooltip label="Start Dynamic View Walkthrough">
-      <TriggerWalkthroughButton
-        onClick={e => {
-          e.stopPropagation()
-          actor.closeDropdown()
-          diagram.startWalkthrough()
-        }}
-        rightSection={<IconPlayerPlayFilled size={10} />}
-      >
-        Start
-      </TriggerWalkthroughButton>
-    </Tooltip>
-  )
-}
+import { TriggerWalkthroughButton } from './DynamicViewControls'
 
 const PrevNextButton = Button.withProps({
   // Button is polymorphic, but we dont want it to inherit the motion props
@@ -82,7 +47,7 @@ const ParallelFrame = () => {
   )
 }
 
-export const ActiveWalkthroughControls = () => {
+export function ActiveWalkthroughControls() {
   const diagram = useDiagram()
   const {
     isParallel,
@@ -90,7 +55,6 @@ export const ActiveWalkthroughControls = () => {
     hasPrevious,
     currentStep,
     totalSteps,
-    notes,
   } = useDiagramContext(s => {
     const currentStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
     return ({
@@ -99,7 +63,6 @@ export const ActiveWalkthroughControls = () => {
       hasPrevious: currentStepIndex > 0,
       currentStep: currentStepIndex + 1,
       totalSteps: s.xyedges.length,
-      notes: s.xyedges[currentStepIndex]?.data?.notes ?? RichText.EMPTY,
     })
   })
 
@@ -107,6 +70,7 @@ export const ActiveWalkthroughControls = () => {
     <AnimatePresence propagate>
       <TriggerWalkthroughButton
         variant="light"
+        size="xs"
         color="orange"
         mr={'sm'}
         onClick={e => {

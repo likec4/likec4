@@ -130,12 +130,13 @@ views {
       navigateTo cloud-to-amazon
     }
 
-    ui.mobile -> cloud.graphql 'requests'
-    ui.mobile <- cloud.graphql
-
     include cloud
 
     autoLayout TopBottom
+
+    style * {
+      size sm
+    }
 
     style customer {
       color green

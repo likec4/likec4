@@ -1,7 +1,7 @@
 import { isAncestor } from '@likec4/core'
-import type { ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
+import { isEmpty } from 'remeda'
 import { ast } from '../ast'
-import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
@@ -30,6 +30,25 @@ export const dynamicViewStep = (services: LikeC4Services): ValidationCheck<ast.D
     if (source && target && (isAncestor(source, target) || isAncestor(target, source))) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,
+      })
+    }
+  })
+}
+
+export const dynamicViewDisplayMode = (
+  services: LikeC4Services,
+): ValidationCheck<ast.DynamicViewDisplayModeProperty> => {
+  return tryOrLog((prop, accept) => {
+    if (isEmpty(prop.value) || (prop.value !== 'diagram' && prop.value !== 'sequence')) {
+      accept('error', 'Invalid display mode: "diagram" or "sequence" are allowed', {
+        node: prop,
+        property: 'value',
+      })
+      return
+    }
+    if (!AstUtils.hasContainerOfType(prop, ast.isDynamicViewBody)) {
+      accept('error', `Display mode can be defined only inside dynamic view`, {
+        node: prop,
       })
     }
   })

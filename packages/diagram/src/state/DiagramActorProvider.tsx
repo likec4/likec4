@@ -3,7 +3,7 @@ import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
+import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
@@ -11,8 +11,8 @@ import { useOnDiagramEvent } from '../custom'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
 import { useCurrentViewId } from '../hooks/useCurrentViewId'
 import type { ViewPadding } from '../LikeC4Diagram.props'
+import { convertToXYFlow } from '../likec4diagram/convert-to-xyflow'
 import type { Types } from '../likec4diagram/types'
-import { useViewToNodesEdges } from '../likec4diagram/useViewToNodesEdges'
 import { CurrentViewModelContext } from '../likec4model/LikeC4ModelContext'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { type DiagramMachine, diagramMachine } from './diagram-machine'
@@ -27,6 +27,10 @@ const selectToggledFeatures = (state: DiagramActorSnapshot) => {
     }
   }
   return state.context.toggledFeatures
+}
+
+const selectDynamicViewMode = (state: DiagramActorSnapshot) => {
+  return state.context.dynamicViewMode
 }
 
 export function DiagramActorProvider({
@@ -97,20 +101,19 @@ export function DiagramActorProvider({
     deepEqual,
   )
 
-  const { xyedges, xynodes, bounds } = useViewToNodesEdges({
-    view,
-    where,
-    nodesSelectable,
-  })
+  const dynamicViewMode = useSelector(actorRef, selectDynamicViewMode)
+
+  const update = useMemo(
+    () => convertToXYFlow({ view, where, nodesSelectable, dynamicViewMode }),
+    [view, where, nodesSelectable, dynamicViewMode],
+  )
 
   useEffect(() => {
     actorRef.send({
       type: 'update.view',
-      view: bounds !== view.bounds ? { ...view, bounds } : view,
-      xyedges,
-      xynodes,
+      ...update,
     })
-  }, [view, xyedges, xynodes, bounds])
+  }, [actorRef, update])
 
   const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
 

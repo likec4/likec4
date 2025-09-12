@@ -65,9 +65,10 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           ].join('\n'),
         })
         break
-      case ['title', 'description', 'technology'].includes(keyword.value):
+      case ['title', 'description', 'technology', 'link'].includes(keyword.value):
         acceptor(context, {
           label: keyword.value,
+          detail: `Insert ${keyword.value} property`,
           kind: CompletionItemKind.Property,
           insertTextFormat: InsertTextFormat.Snippet,
           insertText: `${keyword.value} '\${0}'`,
@@ -102,10 +103,23 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         acceptor(context, {
           label: keyword.value,
           detail: `Insert group block`,
-          kind: CompletionItemKind.Class,
+          kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
           insertText: [
             'group \'${1:Title}\' {',
+            '\t$0',
+            '}',
+          ].join('\n'),
+        })
+        break
+      case ['par', 'parallel'].includes(keyword.value):
+        acceptor(context, {
+          label: keyword.value,
+          detail: `Insert block of parallel steps`,
+          kind: CompletionItemKind.Module,
+          insertTextFormat: InsertTextFormat.Snippet,
+          insertText: [
+            `${keyword.value} {`,
             '\t$0',
             '}',
           ].join('\n'),
@@ -166,9 +180,26 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       case keyword.value === 'autoLayout':
         acceptor(context, {
           label: keyword.value,
-          kind: CompletionItemKind.Class,
+          kind: CompletionItemKind.Property,
           insertTextFormat: InsertTextFormat.Snippet,
           insertText: 'autoLayout ${1|TopBottom,BottomTop,LeftRight,RightLeft|}$0',
+        })
+        break
+      case keyword.value === 'mode':
+        acceptor(context, {
+          label: keyword.value,
+          kind: CompletionItemKind.Property,
+          insertTextFormat: InsertTextFormat.Snippet,
+          insertText: 'mode ${1|sequence,diagram|}$0',
+        })
+        break
+      case ['include', 'exclude'].includes(keyword.value):
+        acceptor(context, {
+          label: keyword.value,
+          kind: CompletionItemKind.Operator,
+          detail: `Insert ${keyword.value} predicate`,
+          insertTextFormat: InsertTextFormat.PlainText,
+          insertText: `${keyword.value} `,
         })
         break
       default:

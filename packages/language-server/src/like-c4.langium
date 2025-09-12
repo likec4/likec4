@@ -284,12 +284,20 @@ ElementViewBody: '{'
 
 DynamicViewBody: '{'
   tags=Tags?
-  props+=ViewProperty*
+  props+=DynamicViewProperty*
   (
     steps+=(DynamicViewParallelSteps | DynamicViewStep) |
     rules+=DynamicViewRule
   )*
 '}'
+;
+
+DynamicViewProperty:
+  DynamicViewDisplayModeProperty | ViewProperty
+;
+
+DynamicViewDisplayModeProperty:
+  key='mode'  value=DynamicViewDisplayModeValue
 ;
 
 
@@ -806,6 +814,9 @@ ArrowType returns string:
   'vee'
 ;
 
+DynamicViewDisplayModeValue returns string:
+  'diagram' | 'sequence';
+
 ThemeColor returns string:
   'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string:
@@ -836,7 +847,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | DynamicViewDisplayModeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (
