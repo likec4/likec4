@@ -11,9 +11,8 @@ import type {
   ProjectId,
 } from '@likec4/core/types'
 import JSON5 from 'json5'
-import type Stream from 'node:stream'
 import type { URI } from 'vscode-uri'
-import * as z from 'zod'
+import * as z from 'zod4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 
 export const LikeC4ProjectJsonConfigSchema = z.object({
@@ -133,7 +132,7 @@ export interface GeneratorFnContext {
       | NodeJS.ArrayBufferView
       | Iterable<string | NodeJS.ArrayBufferView>
       | AsyncIterable<string | NodeJS.ArrayBufferView>
-      | Stream
+      | NodeJS.ReadableStream
   }): Promise<void>
 
   /**

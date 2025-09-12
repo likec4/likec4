@@ -316,6 +316,9 @@ catalogs:
     zod:
       specifier: ^4.0.17
       version: 4.0.17
+    zod4:
+      specifier: npm:zod@^4.0.17
+      version: 4.0.17
 
 overrides:
   esbuild: 0.25.9
@@ -711,6 +714,9 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
+      zod:
+        specifier: catalog:zod4
+        version: 4.0.17
 
   packages/config:
     dependencies:
@@ -735,9 +741,6 @@ importers:
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
-      zod:
-        specifier: catalog:zod4
-        version: 4.0.17
     devDependencies:
       '@likec4/tsconfig':
         specifier: workspace:*
@@ -760,6 +763,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
+      zod4:
+        specifier: catalog:zod4
+        version: zod@4.0.17
 
   packages/core:
     dependencies:

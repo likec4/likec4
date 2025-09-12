@@ -143,6 +143,7 @@ catalogs:
     "@xyflow/system": 0.0.68
   zod4:
     zod: ^4.0.17
+    zod4: npm:zod@^4.0.17
 
 onlyBuiltDependencies:
   - dprint
