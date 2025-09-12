@@ -6,7 +6,6 @@ import {
   isEmpty,
   isNonNullish,
   isNumber,
-  isTruthy,
 } from 'remeda'
 import type {
   ParsedAstDeployment,
@@ -111,12 +110,6 @@ export class MergedSpecification {
       description ??= __kind.description
       links ??= __kind.links
       title = title === nameFromFqn(id) && __kind.title ? __kind.title : title
-
-      if (isTruthy(size)) {
-        textSize ??= size
-        padding ??= size
-      }
-
       return {
         ...(color && { color }),
         ...(shape && { shape }),
