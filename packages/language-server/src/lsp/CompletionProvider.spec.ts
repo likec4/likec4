@@ -650,6 +650,33 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     })
   })
 
+  it('should suggest mode for dynamic view', async ({ expect }) => {
+    const text = `
+      specification {
+        element component
+      }
+      views {
+        view index {
+          include *
+        }
+        dynamic view view3 {
+          mode <|>
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: [
+        'diagram',
+        'sequence',
+      ],
+      disposeAfterCheck: true,
+    })
+  })
+
   it('should suggest tags', async ({ expect }) => {
     const text = `
       specification {
