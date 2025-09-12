@@ -2,11 +2,9 @@ import {
   type Color,
   type ElementShape,
   type ElementStyle,
-  DefaultPaddingSize,
-  DefaultShapeSize,
-  DefaultTextSize,
+  ensureSizes,
 } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import type { MotionNodeLayoutOptions } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type CSSProperties, type ReactNode, forwardRef } from 'react'
@@ -28,31 +26,6 @@ export type ElementNodeContainerProps =
     [key: `data-${string}`]: string | undefined
   }
   & MotionNodeLayoutOptions
-
-export function nodeSizes({
-  size,
-  padding,
-  textSize,
-}: ElementStyle) {
-  if (!size && !!textSize) {
-    size = textSize
-  }
-  if (!textSize && !!size) {
-    textSize = size
-  }
-  if (!padding && !!size) {
-    padding = size
-  }
-  size ??= DefaultShapeSize
-  textSize ??= DefaultTextSize
-  padding ??= DefaultPaddingSize
-  return {
-    size,
-    padding,
-    textSize,
-  }
-}
-
 /**
  * Top-level primitive to compose leaf nodes renderers.
  * This container provides the state via data-* attributes
@@ -86,7 +59,7 @@ export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContai
     size,
     padding,
     textSize,
-  } = nodeSizes(data.style ?? {})
+  } = ensureSizes(data.style ?? {})
 
   return (
     <m.div

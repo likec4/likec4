@@ -1,4 +1,4 @@
-import type { DiagramNode, RichTextOrEmpty } from '@likec4/core/types'
+import { type DiagramNode, type RichTextOrEmpty, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { elementNodeData, elementNodeIcon as elementIconRecipe } from '@likec4/styles/recipes'
@@ -8,7 +8,6 @@ import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps, NonOptional } from '../../types'
 import { MarkdownBlock } from '../MarkdownBlock'
-import { nodeSizes } from './ElementNodeContainer'
 
 type Data = Simplify<
   & NonOptional<
@@ -44,7 +43,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
     hasDescription: !!data.description?.nonEmpty,
     hasTechnology: !isEmpty(data.technology ?? ''),
   })
-  const size = nodeSizes(data.style).size
+  const { size } = ensureSizes(data.style)
   const isSm = size === 'sm'
   const isSmOrXs = isSm || size === 'xs'
   return (
