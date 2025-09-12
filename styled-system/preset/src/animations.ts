@@ -1,6 +1,7 @@
 import { defineAnimationStyles, defineKeyframes } from '@pandacss/dev'
+import type { AnimationStyles, CssKeyframes } from '@pandacss/types'
 
-export const keyframes = defineKeyframes({
+export const keyframes: CssKeyframes = defineKeyframes({
   'indicatorOpacity': {
     '0%': {
       opacity: 0.9,
@@ -21,7 +22,7 @@ export const keyframes = defineKeyframes({
   },
 })
 
-export const animationStyles = defineAnimationStyles({
+export const animationStyles: AnimationStyles = defineAnimationStyles({
   'indicator': {
     value: {
       animationDuration: '1s',

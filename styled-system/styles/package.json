@@ -67,8 +67,9 @@
     },
     "./dev": "./dev.ts"
   },
-  "dependencies": {
-    "@pandacss/dev": "catalog:css"
+  "peerDependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -76,6 +77,8 @@
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
     "@pandabox/unplugin": "^0.2.2",
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css",
     "@types/picomatch": "catalog:utils",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
