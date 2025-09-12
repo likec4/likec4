@@ -86,8 +86,8 @@ catalogs:
       specifier: ^1.19.1
       version: 1.19.1
     hono:
-      specifier: ^4.9.6
-      version: 4.9.6
+      specifier: ^4.9.7
+      version: 4.9.7
     hono-sessions:
       specifier: ^0.8.0
       version: 0.8.0
@@ -497,10 +497,10 @@ importers:
         version: 16.1.1
       '@hono/oauth-providers':
         specifier: ^0.8.5
-        version: 0.8.5(hono@4.9.6)
+        version: 0.8.5(hono@4.9.7)
       '@hono/valibot-validator':
         specifier: ^0.5.3
-        version: 0.5.3(hono@4.9.6)(valibot@1.1.0(typescript@5.9.2))
+        version: 0.5.3(hono@4.9.7)(valibot@1.1.0(typescript@5.9.2))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
         version: 1.12.0
@@ -596,7 +596,7 @@ importers:
         version: 5.2.2
       hono:
         specifier: catalog:hono
-        version: 4.9.6
+        version: 4.9.7
       hono-sessions:
         specifier: catalog:hono
         version: 0.8.0
@@ -1084,7 +1084,7 @@ importers:
     devDependencies:
       '@hono/node-server':
         specifier: catalog:hono
-        version: 1.19.1(hono@4.9.6)
+        version: 1.19.1(hono@4.9.7)
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -1153,7 +1153,7 @@ importers:
         version: 2.1.0
       hono:
         specifier: catalog:hono
-        version: 4.9.6
+        version: 4.9.7
       indent-string:
         specifier: ^5.0.0
         version: 5.0.0
@@ -5741,8 +5741,8 @@ packages:
   hono-sessions@0.8.0:
     resolution: {integrity: sha512-44nDuxcGTlk1hKE+7vH8KnNleKYnr8p3i/vkT8640jU8V0F1Tm873F5NdfXpctZax3CtnQ4cUKyEF1axXdkZrw==}
 
-  hono@4.9.6:
-    resolution: {integrity: sha512-doVjXhSFvYZ7y0dNokjwwSahcrAfdz+/BCLvAMa/vHLzjj8+CFyV5xteThGUsKdkaasgN+gF2mUxao+SGLpUeA==}
+  hono@4.9.7:
+    resolution: {integrity: sha512-t4Te6ERzIaC48W3x4hJmBwgNlLhmiEdEE5ViYb02ffw4ignHNHa5IBtPjmbKstmtKa8X6C35iWwK4HaqvrzG9w==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -10721,17 +10721,17 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.6': {}
 
-  '@hono/node-server@1.19.1(hono@4.9.6)':
+  '@hono/node-server@1.19.1(hono@4.9.7)':
     dependencies:
-      hono: 4.9.6
+      hono: 4.9.7
 
-  '@hono/oauth-providers@0.8.5(hono@4.9.6)':
+  '@hono/oauth-providers@0.8.5(hono@4.9.7)':
     dependencies:
-      hono: 4.9.6
+      hono: 4.9.7
 
-  '@hono/valibot-validator@0.5.3(hono@4.9.6)(valibot@1.1.0(typescript@5.9.2))':
+  '@hono/valibot-validator@0.5.3(hono@4.9.7)(valibot@1.1.0(typescript@5.9.2))':
     dependencies:
-      hono: 4.9.6
+      hono: 4.9.7
       valibot: 1.1.0(typescript@5.9.2)
 
   '@hpcc-js/wasm-graphviz@1.12.0': {}
@@ -14200,11 +14200,11 @@ snapshots:
 
   hono-sessions@0.8.0:
     dependencies:
-      hono: 4.9.6
+      hono: 4.9.7
       iron-webcrypto: 1.2.1
       ohash: 2.0.11
 
-  hono@4.9.6: {}
+  hono@4.9.7: {}
 
   hookable@5.5.3: {}
 
