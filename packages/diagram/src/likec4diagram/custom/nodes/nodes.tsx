@@ -20,7 +20,7 @@ import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
-type CustomNodes = Required<CustomNodesType>
+export type CustomNodes = Required<CustomNodesType>
 
 export function ElementDetailsButtonWithHandler(
   props: NodeProps<Types.ElementNodeData | Types.DeploymentElementNodeData>,

@@ -31,6 +31,10 @@ export const edgeLabel = defineSlotRecipe({
       minWidth: '22px',
       borderTopLeftRadius: '4px',
       borderBottomLeftRadius: '4px',
+      _only: {
+        borderRadius: '4px',
+        minWidth: '24px',
+      },
       background: `[color-mix(in srgb, var(--likec4-palette-relation-label-bg), {colors.likec4.mixColor} 10%)]`,
       fontVariantNumeric: 'tabular-nums',
       // _dark: {

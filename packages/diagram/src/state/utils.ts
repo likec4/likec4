@@ -1,5 +1,10 @@
-import type { BBox, DiagramEdge, DiagramNode, XYPoint } from '@likec4/core/types'
+import { type DiagramEdge, type DiagramNode, type XYPoint, BBox } from '@likec4/core/types'
+import { nonNullable } from '@likec4/core/utils'
+import { getEdgePosition, getNodeDimensions } from '@xyflow/system'
+import { hasAtLeast } from 'remeda'
 import type { ActorSystem } from 'xstate'
+import type { XYStoreState } from '../hooks'
+import type { Types } from '../likec4diagram/types'
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
 import type { SearchActorRef } from '../search/searchActor'
 import type { Context } from './diagram-machine'
@@ -47,12 +52,12 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
 
     const width = node.measured?.width ?? node.width ?? node.initialWidth
     const height = node.measured?.height ?? node.height ?? node.initialHeight
-    return {
-      minX: Math.min(acc.minX, position.x),
-      minY: Math.min(acc.minY, position.y),
-      maxX: Math.max(acc.maxX, position.x + width),
-      maxY: Math.max(acc.maxY, position.y + height),
-    }
+
+    acc.minX = Math.min(acc.minX, position.x)
+    acc.minY = Math.min(acc.minY, position.y)
+    acc.maxX = Math.max(acc.maxX, position.x + width)
+    acc.maxY = Math.max(acc.maxY, position.y + height)
+    return acc
   }, {
     minX: Infinity,
     minY: Infinity,
@@ -75,4 +80,70 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
       height: b.maxY - b.minY + 20,
     },
   }
+}
+
+const MARGIN = 32
+export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
+  const activeWalkthrough = nonNullable(params.context.activeWalkthrough)
+
+  if (activeWalkthrough.parallelPrefix) {
+    const parallelArea = params.context.xynodes.find(n =>
+      n.type === 'seq-parallel' && n.data.parallelPrefix === activeWalkthrough.parallelPrefix
+    )
+    if (parallelArea) {
+      return {
+        duration: 350,
+        bounds: BBox.expand({
+          x: parallelArea.position.x,
+          y: parallelArea.position.y,
+          ...getNodeDimensions(parallelArea),
+        }, MARGIN),
+      }
+    }
+  }
+
+  const xystate = params.context.xystore.getState()
+
+  const b = params.context.xyedges.reduce((acc, edge) => {
+    if (edge.hidden || edge.data.dimmed) {
+      return acc
+    }
+    const bounds = getEdgeBounds(edge, xystate)
+    if (bounds) {
+      acc.push(bounds)
+    }
+    return acc
+  }, [] as BBox[])
+
+  return {
+    duration: 350,
+    bounds: hasAtLeast(b, 1) ? BBox.expand(BBox.merge(...b), MARGIN) : params.context.view.bounds,
+  }
+}
+
+function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
+  const sourceNode = store.nodeLookup.get(edge.source)
+  const targetNode = store.nodeLookup.get(edge.target)
+
+  if (!sourceNode || !targetNode) {
+    return null
+  }
+
+  const edgePosition = getEdgePosition({
+    id: edge.id,
+    sourceNode,
+    targetNode,
+    sourceHandle: edge.sourceHandle || null,
+    targetHandle: edge.targetHandle || null,
+    connectionMode: store.connectionMode,
+  })
+
+  if (!edgePosition) {
+    return null
+  }
+
+  return BBox.fromPoints([
+    [edgePosition.sourceX, edgePosition.sourceY],
+    [edgePosition.targetX, edgePosition.targetY],
+  ])
 }

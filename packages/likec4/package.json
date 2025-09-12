@@ -126,7 +126,7 @@
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
     "dev:examples": "pnpm cli:serve ../../examples",
     "cli": "tsx --conditions=sources src/cli/index.ts",
-    "cli:serve": "tsx watch --conditions=sources src/cli/index.ts serve",
+    "cli:serve": "BUNDLE_REQUIRE_PRESERVE=1 tsx watch --conditions=sources --exclude=\"./../../examples/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
     "cli:build": "pnpm cli build -o dev/dist dev",
     "cli:preview": "pnpm cli preview -o dev/dist dev",
     "cli:export": "pnpm cli export png -o dev/export dev",

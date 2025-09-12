@@ -13,7 +13,7 @@ import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import type { DiagramContext } from '../state/types'
-import { BuiltinNodes as defaultNodeTypes, edgeTypes } from './custom'
+import { BuiltinNodes as defaultNodeTypes, edgeTypes, SequenceParallelArea } from './custom'
 import { DiagramUI } from './DiagramUI'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -123,7 +123,9 @@ export function LikeC4DiagramXYFlow({
           'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes.compoundElement,
           'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes.compoundDeployment,
           'view-group': renderNodes?.viewGroup ?? defaultNodeTypes.viewGroup,
-        }
+          'seq-actor': renderNodes?.sequenceActor ?? defaultNodeTypes.sequenceActor,
+          'seq-parallel': SequenceParallelArea,
+        } satisfies Record<Types.Node['type'], any>
       },
       [renderNodes],
       shallowEqual,

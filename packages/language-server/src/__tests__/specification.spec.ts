@@ -74,12 +74,14 @@ describe.concurrent('specification', () => {
         element it
       }`
 
-    test('allow element with kinds "element"/"node"/"deployment"').valid`
+    test('allow element with kinds "element"/"node"/"deployment"/"diagram"/"sequence"').valid`
       specification {
         element element
         element component
         element node
         element deployment
+        element diagram
+        element sequence
       }`
 
     test('kind with style').valid`

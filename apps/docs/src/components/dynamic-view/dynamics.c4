@@ -100,7 +100,7 @@ model {
       }
     }
 
-    storage  = storage 'Data Stores' {
+    storage = storage 'Data Stores' {
       description 'Provides access to data'
 
       db = database 'Persistent Data' {
@@ -174,9 +174,12 @@ views {
   dynamic view index {
     title 'Story 1.1 - User dashboard'
 
-    customer -> web '' {
-      notes '
-        Opens application in the browser via secured connection, authenticates and navigates to the dashboard'
+    customer -> web {
+      notes '''
+        - Opens application in the browser via secured connection
+        - Authenticates and navigates to the dashboard
+
+'''
     }
 
     web -> auth 'updates token if needed' {
@@ -202,10 +205,10 @@ views {
     }
 
     parallel {
-      api -> db '' {
+      api -> db {
         notes 'Queries persistent data from database'
       }
-      api -> cache '' {
+      api -> cache {
         notes 'Reads session data'
       }
     }
@@ -213,15 +216,25 @@ views {
     api -> api 'process' {
       notes 'Transforms data and prepares user dashboard'
     }
-    web <- api {
+
+    web <- api 'returns data' {
+      technology 'JSON'
       notes 'Returns data to frontend as JSON'
     }
+
+    customer <- web 'renders dashboard'
+
 
     include cloud, storage
 
     style cloud._ {
       color secondary
       opacity 30%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
     }
   }
 

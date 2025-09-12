@@ -10,6 +10,7 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { DynamicViewDisplayMode } from './view-parsed.dynamic'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   x: number
@@ -88,4 +89,10 @@ export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseL
 
 export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
   readonly [_type]: 'dynamic'
+  /**
+   * How to display the dynamic view
+   * - `diagram`: display as a regular likec4 view
+   * - `sequence`: display as a sequence diagram
+   */
+  readonly mode: DynamicViewDisplayMode
 }

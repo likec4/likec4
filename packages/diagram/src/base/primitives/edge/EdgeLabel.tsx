@@ -50,6 +50,8 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
     cursor: selectable || stepNum !== null ? 'pointer' : 'default',
   })
 
+  const hasLabel = isTruthy(label) || isTruthy(technology)
+
   return (
     <m.div
       ref={ref}
@@ -65,25 +67,27 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
           {stepNum}
         </Box>
       )}
-      <Box className={classes.labelContents}>
-        {isTruthy(label) && (
-          <Box
-            className={cx(
-              classes.labelText,
-              css({
-                lineClamp: 5,
-              }),
-            )}>
-            {label}
-          </Box>
-        )}
-        {isTruthy(technology) && (
-          <Box className={classes.labelTechnology}>
-            {'[ ' + technology + ' ]'}
-          </Box>
-        )}
-        {children}
-      </Box>
+      {hasLabel && (
+        <Box className={classes.labelContents}>
+          {isTruthy(label) && (
+            <Box
+              className={cx(
+                classes.labelText,
+                css({
+                  lineClamp: 5,
+                }),
+              )}>
+              {label}
+            </Box>
+          )}
+          {isTruthy(technology) && (
+            <Box className={classes.labelTechnology}>
+              {'[ ' + technology + ' ]'}
+            </Box>
+          )}
+          {children}
+        </Box>
+      )}
     </m.div>
   )
 })

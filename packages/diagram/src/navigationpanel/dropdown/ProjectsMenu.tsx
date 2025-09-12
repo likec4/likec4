@@ -23,7 +23,11 @@ export function ProjectsMenu(props: ButtonProps) {
         }}>
         Project
       </Box>
-      <Menu shadow="md" position="bottom-start" offset={{ mainAxis: 2 }} closeOnItemClick>
+      <Menu
+        withinPortal={false} // if we render menu in portal, NavigationPanelDropdown receives onMouseLeave event
+        shadow="md"
+        position="bottom-start"
+        offset={{ mainAxis: 2 }}>
         <MenuTarget>
           <Button
             tabIndex={-1}

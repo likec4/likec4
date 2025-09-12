@@ -69,7 +69,7 @@
       }
     },
     {
-      "match": "\\b(shape|head|tail|line|border):?\\s+([-\\w]+)\\b",
+      "match": "\\b(shape|head|tail|line|border|mode):?\\s+([-\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.property.likec4"
@@ -97,7 +97,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|color|description|technology|navigateTo|notation|multiple|size|padding|textSize|opacity)\\b"
+      "match": "\\b(title|color|description|technology|navigateTo|notation|multiple|size|padding|textSize|opacity|mode)\\b"
     },
     {
       "name": "keyword.control.likec4",

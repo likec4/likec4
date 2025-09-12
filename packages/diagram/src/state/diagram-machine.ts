@@ -10,6 +10,7 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramView,
+  DynamicViewDisplayMode,
   EdgeId,
   Fqn,
   NodeId,
@@ -71,7 +72,7 @@ import {
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import { findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
+import { activeSequenceBounds, findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
 
 export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
@@ -133,6 +134,7 @@ export interface Context extends Input {
   syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
   // If Dynamic View
+  dynamicViewMode: DynamicViewDisplayMode
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
@@ -175,6 +177,7 @@ export type Events =
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
+  | { type: 'switch.dynamicViewMode'; mode: DynamicViewDisplayMode }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
@@ -315,7 +318,10 @@ const _diagramMachine = setup({
     },
 
     'xyflow:fitFocusedBounds': ({ context }) => {
-      const { bounds, duration = 450 } = focusedBounds({ context })
+      const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewMode === 'sequence'
+      const { bounds, duration = 450 } = isActiveSequenceWalkthrough
+        ? activeSequenceBounds({ context })
+        : focusedBounds({ context })
       const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
       const maxZoom = Math.max(1, transform[2])
@@ -602,6 +608,12 @@ const _diagramMachine = setup({
         xyedge: event.edge,
       }
     }),
+    'assign: dynamicViewMode': assign(({ event }) => {
+      assertEvent(event, 'switch.dynamicViewMode')
+      return {
+        dynamicViewMode: event.mode,
+      }
+    }),
   },
 }).createMachine({
   initial: 'initializing',
@@ -630,6 +642,7 @@ const _diagramMachine = setup({
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
     syncLayoutActorRef: null,
+    dynamicViewMode: 'mode' in input.view ? input.view.mode : 'diagram',
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
@@ -1223,6 +1236,19 @@ const _diagramMachine = setup({
               })
               enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
+          } else {
+            // Check if dynamic view mode changed
+            const nextView = event.view
+            if (
+              nextView._type === 'dynamic' &&
+              context.view._type === 'dynamic' &&
+              nextView.mode !== context.view.mode
+            ) {
+              enqueue({
+                type: 'xyflow:setViewportCenter',
+                params: BBox.center(nextView.bounds),
+              })
+            }
           }
           enqueue.assign({
             ...mergeXYNodesEdges({ context, event }),
@@ -1248,6 +1274,9 @@ const _diagramMachine = setup({
         'ensure overlays actor state',
         'ensure search actor state',
       ],
+    },
+    'switch.dynamicViewMode': {
+      actions: 'assign: dynamicViewMode',
     },
   },
   exit: [

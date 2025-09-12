@@ -1,4 +1,4 @@
-import type { NodeId } from '@likec4/core'
+import type { NodeId } from '@likec4/core/types'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
@@ -7,6 +7,8 @@ import type { NodeProps } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
+
+type RequiredData = Pick<Types.ElementNodeData, 'modelFqn' | 'navigateTo'>
 
 type WithExtraButtons = {
   /**
@@ -31,7 +33,7 @@ type WithExtraButtons = {
   extraButtons?: ElementActionButtons.Item[]
 }
 
-export type ElementActionsProps = NodeProps<Types.ElementNodeData> & WithExtraButtons
+export type ElementActionsProps = NodeProps<RequiredData> & WithExtraButtons
 
 export const ElementActions = ({
   extraButtons,

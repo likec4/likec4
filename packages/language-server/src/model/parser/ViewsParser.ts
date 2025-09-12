@@ -1,6 +1,6 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { filter, isArray, isDefined, isEmpty, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
+import { filter, find, isArray, isDefined, isEmpty, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
@@ -286,6 +286,8 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const manualLayout = parseViewManualLayout(astNode)
 
+      const mode = find(props, ast.isDynamicViewDisplayModeProperty)?.value
+
       return {
         [c4._type]: 'dynamic',
         id: id as c4.ViewId,
@@ -294,6 +296,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,
+        ...(mode && { mode }),
         rules: [
           ...additionalStyles,
           ...body.rules.flatMap(n => {

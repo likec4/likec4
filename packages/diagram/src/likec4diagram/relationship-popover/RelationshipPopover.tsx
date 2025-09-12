@@ -61,6 +61,7 @@ function selectDiagramContext(c: DiagramContext) {
 }
 
 export const RelationshipPopover = memo(() => {
+  const likec4model = useLikeC4Model()
   const actorRef = useActorRef(RelationshipPopoverActorLogic)
   const diagram = useDiagram()
   const { viewId, selected } = useDiagramContext(selectDiagramContext)
@@ -136,9 +137,38 @@ export const RelationshipPopover = memo(() => {
     return null
   }
 
+  const [direct, nested] = pipe(
+    diagramEdge.relations,
+    map(id => {
+      try {
+        return likec4model.relationship(id)
+      } catch (e) {
+        // View was cached, but likec4model based on new data
+        console.error(
+          `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
+          e,
+        )
+        return null
+      }
+    }),
+    filter(isTruthy),
+    partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
+  )
+
+  if (direct.length === 0 && nested.length === 0) {
+    console.warn('No relationships found  diagram edge', {
+      diagramEdge,
+      sourceNode,
+      targetNode,
+    })
+    return null
+  }
+
   return (
     <RelationshipPopoverInternal
       viewId={viewId}
+      direct={direct}
+      nested={nested}
       diagramEdge={diagramEdge}
       sourceNode={sourceNode}
       targetNode={targetNode}
@@ -153,6 +183,8 @@ const getEdgeLabelElement = (edgeId: string, container: HTMLDivElement | undefin
 
 type RelationshipPopoverInternalProps = {
   viewId: ViewId
+  direct: LikeC4Model.AnyRelation[]
+  nested: LikeC4Model.AnyRelation[]
   diagramEdge: DiagramEdge
   sourceNode: DiagramNode
   targetNode: DiagramNode
@@ -163,6 +195,8 @@ const POPOVER_PADDING = 8
 const RelationshipPopoverInternal = ({
   viewId,
   diagramEdge,
+  direct,
+  nested,
   sourceNode,
   targetNode,
   onMouseEnter,
@@ -240,35 +274,7 @@ const RelationshipPopoverInternal = ({
     }
   }, [referenceEl])
 
-  const likec4model = useLikeC4Model()
   const diagram = useDiagram()
-
-  const [direct, nested] = pipe(
-    diagramEdge.relations,
-    map(id => {
-      try {
-        return likec4model.relationship(id)
-      } catch (e) {
-        // View was cached, but likec4model based on new data
-        console.error(
-          `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
-          e,
-        )
-        return null
-      }
-    }),
-    filter(isTruthy),
-    partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
-  )
-
-  if (direct.length === 0 && nested.length === 0) {
-    console.error('No relationships found  diagram edge', {
-      diagramEdge,
-      sourceNode,
-      targetNode,
-    })
-    return null
-  }
 
   const navigateTo = enableNavigateTo
     ? (viewId: ViewId) => {

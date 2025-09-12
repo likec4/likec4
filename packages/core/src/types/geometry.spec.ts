@@ -57,6 +57,73 @@ describe('BBox', () => {
       })
     })
   })
+
+  describe('expand', () => {
+    it('should expand the box by the given amount in all directions', () => {
+      const box: BBox = { x: 10, y: 20, width: 30, height: 40 }
+      const result = BBox.expand(box, 5)
+
+      expect(result).toEqual({
+        x: 5, // 10 - 5
+        y: 15, // 20 - 5
+        width: 40, // 30 + 2*5
+        height: 50, // 40 + 2*5
+      })
+    })
+
+    it('should return the same dimensions when expanding by 0', () => {
+      const box: BBox = { x: 1, y: 2, width: 3, height: 4 }
+      const result = BBox.expand(box, 0)
+      expect(result).toEqual(box)
+    })
+
+    it('should behave like shrink when expanding with a negative value', () => {
+      const box: BBox = { x: 10, y: 10, width: 20, height: 20 }
+      const expandNeg = BBox.expand(box, -3)
+      const shrinkPos = BBox.shrink(box, 3)
+      expect(expandNeg).toEqual(shrinkPos)
+    })
+  })
+
+  describe('shrink', () => {
+    it('should shrink the box by the given amount in all directions', () => {
+      const box: BBox = { x: 10, y: 20, width: 30, height: 40 }
+      const result = BBox.shrink(box, 5)
+
+      expect(result).toEqual({
+        x: 15, // 10 + 5
+        y: 25, // 20 + 5
+        width: 20, // 30 - 2*5
+        height: 30, // 40 - 2*5
+      })
+    })
+
+    it('should return the same dimensions when shrinking by 0', () => {
+      const box: BBox = { x: 1, y: 2, width: 3, height: 4 }
+      const result = BBox.shrink(box, 0)
+      expect(result).toEqual(box)
+    })
+
+    it('should allow negative width/height when shrinking beyond the box size', () => {
+      const box: BBox = { x: 0, y: 0, width: 10, height: 10 }
+      const result = BBox.shrink(box, 10)
+      expect(result).toEqual({ x: 10, y: 10, width: -10, height: -10 })
+    })
+
+    it('should be the inverse of expand by the same amount', () => {
+      const original: BBox = { x: 3, y: 4, width: 5, height: 6 }
+      const expanded = BBox.expand(original, 7)
+      const back = BBox.shrink(expanded, 7)
+      expect(back).toEqual(original)
+    })
+
+    it('should invert shrink by expand with the same amount', () => {
+      const original: BBox = { x: -3, y: -4, width: 50, height: 60 }
+      const shrunk = BBox.shrink(original, 2)
+      const back = BBox.expand(shrunk, 2)
+      expect(back).toEqual(original)
+    })
+  })
 })
 
 describe('RectBox', () => {

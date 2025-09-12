@@ -19,6 +19,8 @@ apps/*/styled-system-studio
 examples/*/.vscode
 examples/failed
 examples/multi-project/dyn-config/views
+examples/multi-project/dyn-config/likec4.config.bundled_*.mjs
+
 packages/*/contrib
 packages/*/dist
 packages/*/bundle

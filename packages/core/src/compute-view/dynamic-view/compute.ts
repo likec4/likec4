@@ -216,6 +216,7 @@ class DynamicViewCompute<A extends AnyAux> {
       ...view,
       [_type]: 'dynamic',
       [_stage]: 'computed',
+      mode: view.mode ?? 'diagram',
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),

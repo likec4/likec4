@@ -48,8 +48,8 @@ export const markerContext = css({
 })
 
 export const cssEdgePath = css({
-  fill: '[none!]',
-  strokeDashoffset: 10,
+  fill: 'none',
+  strokeDashoffset: 0,
   _noReduceGraphics: {
     animationStyle: 'xyedgeAnimated',
     animationPlayState: 'paused',

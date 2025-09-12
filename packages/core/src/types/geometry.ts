@@ -1,3 +1,4 @@
+import { hasAtLeast } from 'remeda'
 import { invariant } from '../utils/invariant'
 
 export type Point = readonly [x: number, y: number]
@@ -34,7 +35,10 @@ export namespace BBox {
   }
 
   export function merge(...boxes: BBox[]): BBox {
-    invariant(boxes.length > 0, 'No boxes provided')
+    invariant(hasAtLeast(boxes, 1), 'No boxes provided')
+    if (boxes.length === 1) {
+      return boxes[0]
+    }
     let minX = Infinity
     let minY = Infinity
     let maxX = -Infinity
@@ -59,6 +63,30 @@ export namespace BBox {
       y1: box.y,
       x2: box.x + box.width,
       y2: box.y + box.height,
+    }
+  }
+
+  export function expand(box: BBox, plus: number): BBox {
+    if (plus === 0) {
+      return box
+    }
+    return {
+      x: box.x - plus,
+      y: box.y - plus,
+      width: box.width + plus * 2,
+      height: box.height + plus * 2,
+    }
+  }
+
+  export function shrink(box: BBox, minus: number): BBox {
+    if (minus === 0) {
+      return box
+    }
+    return {
+      x: box.x + minus,
+      y: box.y + minus,
+      width: box.width - minus * 2,
+      height: box.height - minus * 2,
     }
   }
 }

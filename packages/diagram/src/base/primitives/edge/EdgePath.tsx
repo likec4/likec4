@@ -77,7 +77,6 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           hideOnReducedGraphics,
           css({
             fill: '[none]',
-            strokeOpacity: 0,
           }),
         )}
         d={svgPath}

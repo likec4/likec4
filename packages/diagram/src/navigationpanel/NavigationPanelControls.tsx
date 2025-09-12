@@ -13,7 +13,7 @@ import { type NavigationPanelActorSnapshot } from './actor'
 import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly, ViewDetailsCard } from './controls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
-import { StartWalkthroughButton } from './walkthrough'
+import { DynamicViewControls } from './walkthrough'
 
 const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
   const folder = context.viewModel.folder
@@ -126,7 +126,7 @@ export const NavigationPanelControls = () => {
         <OpenSource />
         <ToggleReadonly />
       </m.div>
-      {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="walkthrough-button" />}
+      {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
       {enableSearch && <SearchControl key="search-control" />}
     </AnimatePresence>
   )
