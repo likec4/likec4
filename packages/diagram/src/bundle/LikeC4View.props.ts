@@ -1,5 +1,4 @@
 import type * as t from '@likec4/core/types'
-import type { WhereOperator } from '@likec4/core/types'
 import type { CSSProperties } from 'react'
 import type {
   CustomNodes,
@@ -114,6 +113,12 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
+   * Default dynamic view display mode
+   * @default 'diagram'
+   */
+  dynamicViewMode?: t.DynamicViewDisplayMode | undefined
+
+  /**
    * Enable popup with element details
    * @default false
    */
@@ -145,7 +150,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    */
   reduceGraphics?: 'auto' | boolean | undefined
 
-  where?: WhereOperator<A> | undefined
+  where?: t.WhereOperator<A> | undefined
 
   /**
    * Override some react flow props

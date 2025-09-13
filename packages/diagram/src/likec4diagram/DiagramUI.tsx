@@ -32,7 +32,7 @@ export const DiagramUI = memo(() => {
         : <Controls />}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
-      {enableControls !== 'next' && (
+      {enableControls === true && (
         <>
           {enableViewTitle && <DiagramTitlePanel />}
           {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}

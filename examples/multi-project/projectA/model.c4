@@ -143,20 +143,24 @@ views {
   dynamic view cloud-to-amazon {
     title 'Use Cases / Cloud to amazon'
 
+    customer -> next.backend
+
     next.backend -> next.events {
       notes '
       - Backend triggers EventManager
       - These calls enriched with data before publishing
       '
     }
+    next.events -> amazon.sqs
+    next.backend -> amazon.aurora
 
     parallel {
       next.events -> amazon.sqs
+      next.graphql -> amazon.pg
       next.backend -> amazon.aurora
-      ui.supportPanel -> amazon.aurora
     }
 
-    include next, ui, amazon
+    include cloud, next, ui, amazon.rds
 
     style next, ui, amazon {
       opacity 40%

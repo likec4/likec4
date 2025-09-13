@@ -1,5 +1,4 @@
 import type * as t from '@likec4/core/types'
-import type { DiagramView } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type CSSProperties } from 'react'
 import { isFunction, isString } from 'remeda'
@@ -65,7 +64,7 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
 }
 
 type ReactLikeC4InnerProps<A extends t.aux.Any> = Omit<ReactLikeC4Props<A>, 'viewId'> & {
-  view: DiagramView<A>
+  view: t.DiagramView<A>
 }
 function ReactLikeC4Inner<A extends t.aux.Any>({
   className,

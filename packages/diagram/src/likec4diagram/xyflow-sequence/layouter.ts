@@ -5,53 +5,82 @@ import {
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'
-import { last } from 'remeda'
-import { type ParallelRect, type Step, findParallelRects } from './_common'
+import { last, map, only } from 'remeda'
+import type { Compound, ParallelRect, Step } from './_types'
 import {
-  ACTOR_MARGIN,
+  ACTOR_GAP,
+  COLUMN_GAP,
+  FIRST_STEP_OFFSET,
   MIN_ROW_HEIGHT,
   PORT_HEIGHT,
   STEP_LABEL_MARGIN,
-  STEPS_OFFSET,
 } from './const'
+import { findParallelRects } from './utils'
 
 // const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
 type CompareOperator = '<=' | '==' | '>='
 type Operator = CompareOperator | `${CompareOperator} 0`
 
+interface CompoundRect {
+  node: DiagramNode
+  from: ActorBox
+  to: ActorBox
+  depth: number
+  // Top-left
+  x1: kiwi.Expression | kiwi.Variable
+  y1: kiwi.Expression | kiwi.Variable
+  // Bottom-right
+  x2: kiwi.Expression | kiwi.Variable
+  y2: kiwi.Expression | kiwi.Variable
+  // bottowRow
+  bottom: kiwi.Variable
+}
+
+interface ActorBox {
+  readonly column: number // The column index of the actor box
+  readonly actor: DiagramNode
+  // The X and Y position of the actor node
+  readonly x: kiwi.Variable
+  readonly y: kiwi.Variable
+  readonly width: number
+  readonly height: number
+  // Derived properties
+  readonly centerX: kiwi.Expression
+  readonly centerY: kiwi.Expression
+  readonly right: kiwi.Expression
+  readonly bottom: kiwi.Expression
+  /**
+   * The offset of the actor box
+   * This is updated if actor box is inside a compound
+   */
+  readonly offset: {
+    top: kiwi.Expression | kiwi.Variable
+    left: kiwi.Expression | kiwi.Variable
+    right: kiwi.Expression | kiwi.Variable
+    bottom: kiwi.Expression | kiwi.Variable
+  }
+  /**
+   * The minimum and maximum row of the steps assigned to this actor box
+   */
+  minRow: number
+  maxRow: number
+}
+
 export class SequenceViewLayouter {
   #solver = new kiwi.Solver()
 
-  #actors = [] as Array<{
-    actor: DiagramNode
-    x: kiwi.Variable
-    y: kiwi.Variable
-    centerX: kiwi.Expression
-    centerY: kiwi.Expression
-    width: number
-    height: number
-  }>
+  #actors: NonEmptyArray<ActorBox>
 
-  #actorsRect = {
-    minX: 0,
-    minY: 0,
-    maxX: 0,
-    maxY: 0,
-  }
+  #compounds = [] as Array<CompoundRect>
 
-  /**
-   * The X position of each column (vertical line from the center of the actor)
-   */
-  #columnsX = [] as Array<kiwi.Expression>
-
-  #rows = [{
-    y: this.newVar(STEPS_OFFSET),
-    height: this.newVar(MIN_ROW_HEIGHT),
-    lastHeight: MIN_ROW_HEIGHT,
-  }] as NonEmptyArray<{
+  #viewportRight: kiwi.Variable
+  #viewportBottom: kiwi.Variable
+  #rowsTop: kiwi.Variable
+  #rows = [] as Array<{
     y: kiwi.Variable
     height: kiwi.Variable
+    bottom: kiwi.Expression
     lastHeight: number
   }>
 
@@ -66,18 +95,28 @@ export class SequenceViewLayouter {
   constructor({
     actors,
     steps,
+    compounds,
   }: {
-    actors: Array<DiagramNode>
+    actors: NonEmptyArray<DiagramNode>
     steps: Array<Step>
+    compounds: Array<Compound>
   }) {
-    const [firstRow] = this.#rows
+    this.#rowsTop = this.newVar(FIRST_STEP_OFFSET)
+    this.#viewportRight = this.newVar(0)
+    this.#viewportBottom = this.newVar(0)
 
-    this.require(firstRow.y, '>=', STEPS_OFFSET)
-    this.require(firstRow.height, '>=', MIN_ROW_HEIGHT)
+    this.#actors = this.addActors(actors)
 
-    for (const actor of actors) {
-      this.addActor(actor)
+    for (const compound of compounds) {
+      const result = this.addCompound(compound)
+      const toplevel = result[0]
+      // ensure that the top level compound is at the top
+      this.constraint(toplevel.y1, '==', 0, kiwi.Strength.strong)
+      this.put(this.#viewportBottom).after(toplevel.bottom)
+      this.put(this.#rowsTop).after(toplevel.y2)
+      this.#compounds.push(...result)
     }
+
     for (const step of steps) {
       this.addStep(step)
     }
@@ -86,8 +125,38 @@ export class SequenceViewLayouter {
       this.addParallelRect(parallelRect)
     }
 
+    const firstActor = this.#actors[0]
+    this.constraint(firstActor.offset.left, '==', 0, kiwi.Strength.strong)
+
+    const lastActor = this.#actors.reduce((prev, actor) => {
+      this.put(actor.x).after(prev.right, ACTOR_GAP)
+      this.put(actor.offset.left, kiwi.Strength.strong).after(prev.offset.right, COLUMN_GAP)
+      this.constraint(actor.centerY, '==', prev.centerY, kiwi.Strength.strong)
+      this.put(this.#rowsTop).after(actor.offset.bottom)
+      return actor
+    })
+
+    this.put(this.#viewportRight).after(lastActor.offset.right)
+    this.put(this.#viewportBottom).after(last(this.#rows)?.bottom ?? this.#rowsTop)
+
+    if (compounds.length > 0) {
+      for (const compound of this.#compounds) {
+        // if compound is not nested
+        if (compound.depth === 0) {
+          const from = compound.from.column
+          const to = compound.to.column
+          let maxRow = Math.max(compound.from.maxRow, compound.to.maxRow)
+          for (let i = from + 1; i < to; i++) {
+            const actorBox = this.actorBox(i)
+            maxRow = Math.max(maxRow, actorBox.maxRow)
+          }
+          const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
+          this.put(compound.bottom).after(lastRow.bottom, 16)
+        }
+      }
+    }
+
     this.#solver.updateVariables()
-    this.recalcActorsRect()
   }
 
   getParallelBoxes(): Array<BBox & { parallelPrefix: string }> {
@@ -101,8 +170,7 @@ export class SequenceViewLayouter {
   }
 
   getActorBox(actor: DiagramNode): BBox {
-    const actorBox = this.#actors.find(a => a.actor.id === actor.id)
-    invariant(actorBox, 'actor not found')
+    const actorBox = this.actorBox(actor)
     return {
       x: actorBox.x.value(),
       y: actorBox.y.value(),
@@ -111,9 +179,20 @@ export class SequenceViewLayouter {
     }
   }
 
+  getCompoundBoxes(): Array<BBox & { node: DiagramNode; depth: number }> {
+    return this.#compounds.map(({ node, depth, x1, y1, x2, y2, bottom }) => ({
+      node,
+      depth,
+      x: x1.value(),
+      y: y1.value(),
+      width: x2.value() - x1.value(),
+      height: bottom.value() - y1.value(),
+    }))
+  }
+
   getPortCenter(step: Step, type: 'source' | 'target') {
     const { column, row } = type === 'source' ? step.from : step.to
-    const x = nonNullable(this.#columnsX[column])
+    const x = this.actorBox(column).centerX
     const { y } = nonNullable(this.#rows[row])
 
     return {
@@ -129,86 +208,81 @@ export class SequenceViewLayouter {
     width: number
     height: number
   } {
-    const { maxX } = this.#actorsRect
-    const lastRow = last(this.#rows)
     return {
       x: 0,
       y: 0,
-      width: maxX,
-      height: lastRow.y.value() + lastRow.height.value(), // Max Y,
+      width: this.#viewportRight.value(),
+      height: this.#viewportBottom.value(), // Max Y,
     }
   }
 
-  private addActor(actor: DiagramNode): this {
-    const prev = last(this.#actors)
-
-    const x = this.newVar(this.#actors.length * 200)
-    const y = this.newVar(0)
-
-    this.require(x, '>= 0')
-    this.require(y, '>= 0')
-
-    const centerX = x.plus(Math.round(actor.width / 2))
-    const centerY = y.plus(Math.round(actor.height / 2))
-
-    this.#actors.push({
-      actor,
-      x,
-      y,
-      centerX,
-      centerY,
-      width: actor.width,
-      height: actor.height,
-    })
-    this.#columnsX.push(centerX)
-
-    if (prev) {
-      const prevRight = new kiwi.Expression(prev.x, prev.width, ACTOR_MARGIN)
-      // prev.x + prev.width + MARGIN <= x
-      this.require(prevRight, '<=', x)
-
-      // ensure vertical alignment
-      this.constraint(prev.centerY, '==', centerY, kiwi.Strength.strong)
+  private actorBox(actor: DiagramNode | string | number): ActorBox {
+    if (typeof actor !== 'number') {
+      const id = typeof actor === 'string' ? actor : actor.id
+      actor = this.#actors.findIndex(a => a.actor.id === id)
+      invariant(actor >= 0, `actor ${id} not found`)
     }
+    return nonNullable(this.#actors[actor], `actor at index ${actor} not found`)
+  }
 
-    const [firstRow] = this.#rows
+  private addActors(actors: NonEmptyArray<DiagramNode>): NonEmptyArray<ActorBox> {
+    let accX = 0
+    return map(actors, (actor, column) => {
+      const x = this.newVar(accX)
+      accX += actor.width + ACTOR_GAP
 
-    const offsetFromActor = new kiwi.Expression(y, actor.height, STEPS_OFFSET)
-    this.constraint(firstRow.y, '>=', offsetFromActor, kiwi.Strength.strong)
+      const y = this.newVar(0)
 
-    return this
+      const actorBox = {
+        column,
+        actor,
+        x,
+        y,
+        centerX: x.plus(Math.round(actor.width / 2)),
+        centerY: y.plus(Math.round(actor.height / 2)),
+        width: actor.width,
+        height: actor.height,
+        right: x.plus(actor.width),
+        bottom: y.plus(actor.height),
+        minRow: Infinity,
+        maxRow: -Infinity,
+      }
+      return {
+        ...actorBox,
+        offset: {
+          top: y,
+          left: x,
+          right: actorBox.right,
+          bottom: actorBox.bottom,
+        },
+      }
+    })
   }
 
   private addStep(step: Step): this {
-    const leftColumn = Math.min(step.from.column, step.to.column)
-    const rightColumn = Math.max(step.from.column, step.to.column)
+    const source = this.actorBox(step.source)
+    const target = this.actorBox(step.target)
 
-    const left = this.#columnsX[leftColumn]
-    invariant(left, 'left column not found')
+    source.minRow = Math.min(source.minRow, step.from.row)
+    source.maxRow = Math.max(source.maxRow, step.from.row)
 
-    const minStepWidth = 70 + (step.label?.width ?? 0) + STEP_LABEL_MARGIN * 2
+    target.minRow = Math.min(target.minRow, step.to.row)
+    target.maxRow = Math.max(target.maxRow, step.to.row)
 
-    if (leftColumn !== rightColumn) {
-      const right = this.#columnsX[rightColumn]
-      invariant(right, 'right column not found')
-      this.constraint(left.plus(minStepWidth), '<=', right)
-      // }
-      // // if this is the last column, ensure it's not too close to the right edge
-      // else if (leftColumn < this.#columnsX.length - 1) {
-      //   const right = this.#columnsX[leftColumn + 1]
-      //   invariant(right, 'right column not found')
+    const [left, right] = source.column <= target.column
+      ? [source, target]
+      : [target, source]
 
-      //   this.constraint(left.plus(minStepWidth), '<=', right)
+    const width = (step.label?.width ?? 70) + STEP_LABEL_MARGIN * 2
+
+    if (left !== right) {
+      this.constraint(left.centerX.plus(width), '<=', right.centerX)
+    } else {
+      this.constraint(left.centerX.plus(width), '<=', left.offset.right)
     }
 
-    let height = Math.max(
-      step.label?.height ? step.label.height + STEP_LABEL_MARGIN + PORT_HEIGHT / 2 : 0,
-      MIN_ROW_HEIGHT,
-    )
-    height += step.offset
-    // if (step.isSelfLoop) {
-    //   height += SELF_LOOP_ADDITIONAL_HEIGHT
-    // }
+    let height = step.label?.height ? step.label.height + STEP_LABEL_MARGIN + PORT_HEIGHT / 2 : MIN_ROW_HEIGHT
+    height = Math.max(height, MIN_ROW_HEIGHT) + step.offset
 
     this.ensureRow(step.from.row, height)
     if (step.isSelfLoop) {
@@ -223,25 +297,19 @@ export class SequenceViewLayouter {
     min,
     max,
   }: ParallelRect) {
-    const x1 = this.#columnsX[min.column]?.minus(24)
-    const x2 = this.#columnsX[max.column]?.plus(24)
+    const x1 = this.actorBox(min.column).centerX.minus(24)
+    const x2 = this.actorBox(max.column).centerX.plus(24)
     const firstRow = this.#rows[min.row]
     const lastRow = this.#rows[max.row]
-    invariant(x1 && x2 && firstRow && lastRow, `parallel box invalid x1${x1} x2${x2} y1${firstRow} y2${lastRow}`)
+    invariant(firstRow && lastRow, `parallel box invalid x1${x1} x2${x2} y1${firstRow} y2${lastRow}`)
 
     const y1 = firstRow.y.minus(32)
-    const y2 = lastRow.y.plus(lastRow.height)
+    const y2 = lastRow.bottom
 
     // margin top
     const prevRow = min.row > 0 && this.#rows[min.row - 1]
     if (prevRow) {
-      this.require(y1, '>=', prevRow.y.plus(prevRow.height).plus(16))
-    }
-
-    // margin bottom
-    const nextRow = max.row < this.#rows.length - 1 ? this.#rows[max.row + 1] : undefined
-    if (nextRow) {
-      this.require(nextRow.y, '>=', y2.plus(32))
+      this.put(y1).after(prevRow.bottom, 16)
     }
 
     this.#parallelBoxes.push({
@@ -253,12 +321,103 @@ export class SequenceViewLayouter {
     })
   }
 
+  private addCompound(compound: Compound): NonEmptyArray<CompoundRect> {
+    const PADDING = 32
+    const PADDING_TOP = 40
+    const PADDING_TOP_FROM_ACTOR = 52
+
+    const children = [] as CompoundRect[]
+    const nested = compound.nested.flatMap(c => {
+      const result = this.addCompound(c)
+      // first is the direct child
+      children.push(result[0])
+      return result
+    })
+    const depth = Math.max(...nested.map(c => c.depth + 1), 0)
+
+    const from = this.actorBox(compound.from)
+    const to = this.actorBox(compound.to)
+
+    const x1 = from.offset.left.minus(PADDING)
+    from.offset.left = x1 // change offset
+
+    const x2 = to.offset.right.plus(PADDING)
+    to.offset.right = x2 // change offset
+
+    const bottom = this.newVar(0)
+
+    const onlyChild = only(children)
+
+    let y1, y2
+    switch (true) {
+      case !!onlyChild: {
+        y1 = onlyChild.y1.minus(PADDING_TOP)
+        y2 = onlyChild.y2.plus(PADDING)
+        this.put(bottom).after(onlyChild.bottom, PADDING)
+        break
+      }
+      // Compound with single actor
+      case to === from: {
+        y1 = this.newVar(0)
+        y2 = this.newVar(0)
+        this.put(y1).before(from.offset.top, PADDING_TOP_FROM_ACTOR)
+        this.put(y2).after(from.offset.bottom, PADDING)
+        this.put(bottom).after(y2)
+        break
+      }
+      // Compound nested compound, offset from it
+      case children.length > 0: {
+        y1 = this.newVar(0)
+        y2 = this.newVar(0)
+        for (const child of children) {
+          this.put(y1).before(child.y1, PADDING)
+          this.put(y2).after(child.y2, PADDING)
+          this.put(bottom).after(child.bottom, PADDING)
+        }
+        break
+      }
+      default: {
+        y1 = this.newVar(0)
+        y2 = this.newVar(0)
+        for (var col = from.column; col <= to.column; col++) {
+          const offset = this.actorBox(col).offset
+          this.put(y1).before(offset.top, PADDING_TOP_FROM_ACTOR)
+          this.put(y2).after(offset.bottom, PADDING)
+        }
+        this.put(bottom).after(y2)
+        break
+      }
+    }
+
+    for (var col = from.column; col <= to.column; col++) {
+      const offset = this.actorBox(col).offset
+      offset.top = y1
+      offset.bottom = y2
+    }
+
+    return [
+      {
+        node: compound.node,
+        depth,
+        from,
+        to,
+        x1,
+        y1,
+        x2,
+        y2,
+        bottom,
+      },
+      ...nested,
+    ]
+  }
+
   private ensureRow(row: number, rowHeight: number) {
     while (row >= this.#rows.length) {
-      const prevRow = this.#rows[this.#rows.length - 1]!
+      const prevRowY = this.#rows.length > 0 && this.#rows[this.#rows.length - 1]?.bottom ||
+        this.#rowsTop.plus(FIRST_STEP_OFFSET)
 
-      const y = this.newVar(STEPS_OFFSET + this.#rows.length * MIN_ROW_HEIGHT)
-      this.require(y, '>=', prevRow.y.plus(prevRow.height))
+      const y = this.newVar(this.#rows.length * MIN_ROW_HEIGHT)
+      this.put(y).after(prevRowY)
 
       const height = this.newVar(MIN_ROW_HEIGHT)
       this.require(height, '>=', MIN_ROW_HEIGHT)
@@ -266,6 +425,7 @@ export class SequenceViewLayouter {
       this.#rows.push({
         y,
         height,
+        bottom: y.plus(height),
         lastHeight: MIN_ROW_HEIGHT,
       })
     }
@@ -279,13 +439,17 @@ export class SequenceViewLayouter {
 
   private newVar(initialValue?: number) {
     const v = new kiwi.Variable()
-    this.#solver.addEditVariable(v, kiwi.Strength.medium)
-    initialValue && this.#solver.suggestValue(v, initialValue)
+    this.#solver.addEditVariable(v, kiwi.Strength.weak)
+    if (initialValue) {
+      this.#solver.suggestValue(v, initialValue)
+      this.constraint(v, '>=', 0, kiwi.Strength.strong)
+    }
     return v
   }
 
   /**
-   * Adds a required constraint
+   * Adds a required constraint:
+   * Also adds a weak constraint == if the operator is <= or >=
    */
   private require(
     left: kiwi.Expression | kiwi.Variable,
@@ -346,18 +510,42 @@ export class SequenceViewLayouter {
     this.#solver.addConstraint(new kiwi.Constraint(left, operator, right ?? 0, strength))
   }
 
-  private recalcActorsRect() {
-    this.#actorsRect = this.#actors.reduce((acc, actor) => {
-      acc.minX = Math.min(acc.minX, actor.x.value())
-      acc.minY = Math.min(acc.minY, actor.y.value())
-      acc.maxX = Math.max(acc.maxX, actor.x.value() + actor.width)
-      acc.maxY = Math.max(acc.maxY, actor.y.value() + actor.height)
-      return acc
-    }, {
-      minX: Infinity,
-      minY: Infinity,
-      maxX: -Infinity,
-      maxY: -Infinity,
-    })
+  private put(variable: kiwi.Variable | kiwi.Expression, strength = kiwi.Strength.required) {
+    const eqStrength = strength === kiwi.Strength.required ? kiwi.Strength.medium : kiwi.Strength.weak
+    return {
+      before: (other: kiwi.Variable | kiwi.Expression, gap?: number) => {
+        if (gap) {
+          other = other.minus(gap)
+        }
+        this.constraint(variable, '<=', other, strength)
+        this.constraint(variable, '==', other, eqStrength)
+      },
+      after: (other: kiwi.Variable | kiwi.Expression, gap?: number) => {
+        if (gap) {
+          other = other.plus(gap)
+        }
+        this.constraint(variable, '>=', other, strength)
+        this.constraint(variable, '==', other, eqStrength)
+      },
+    }
   }
+
+  // private recalcActorsRect() {
+  //   this.#actorsRect = this.#columnRects.reduce((acc, rect, index, all) => {
+  //     if (index === 0) {
+  //       acc.minX = rect.min.x.value()
+  //     }
+  //     if (index === all.length - 1) {
+  //       acc.maxX = rect.max.x.value()
+  //     }
+  //     acc.minY = Math.min(acc.minY, rect.min.y.value())
+  //     acc.maxY = Math.max(acc.maxY, rect.max.y.value())
+  //     return acc
+  //   }, {
+  //     minX: Infinity,
+  //     minY: Infinity,
+  //     maxX: -Infinity,
+  //     maxY: -Infinity,
+  //   })
+  // }
 }

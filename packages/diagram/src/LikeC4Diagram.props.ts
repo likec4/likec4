@@ -1,5 +1,12 @@
 import type * as t from '@likec4/core/types'
-import type { DiagramEdge, DiagramNode, LayoutedView, ViewChange, WhereOperator } from '@likec4/core/types'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  DynamicViewDisplayMode,
+  LayoutedView,
+  ViewChange,
+  WhereOperator,
+} from '@likec4/core/types'
 import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { SetRequired } from 'type-fest'
@@ -249,6 +256,12 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
    * @default false
    */
   enableDynamicViewWalkthrough?: boolean | undefined
+
+  /**
+   * Default dynamic view display mode
+   * @default 'diagram'
+   */
+  dynamicViewMode?: DynamicViewDisplayMode | undefined
 
   /**
    * Display element tags in the bottom left corner
