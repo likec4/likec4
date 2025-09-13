@@ -247,13 +247,25 @@ export class SequenceViewLayouter {
         minRow: Infinity,
         maxRow: -Infinity,
       }
+
+      // Create variables for offsets
+      const top = this.newVar(0),
+        left = this.newVar(0),
+        right = this.newVar(0),
+        bottom = this.newVar(0)
+
+      this.put(top, kiwi.Strength.strong).before(y)
+      this.put(left, kiwi.Strength.strong).before(x)
+      this.put(right, kiwi.Strength.strong).after(actorBox.right)
+      this.put(bottom, kiwi.Strength.strong).after(actorBox.bottom)
+
       return {
         ...actorBox,
         offset: {
-          top: y,
-          left: x,
-          right: actorBox.right,
-          bottom: actorBox.bottom,
+          top,
+          left,
+          right,
+          bottom,
         },
       }
     })
@@ -273,7 +285,7 @@ export class SequenceViewLayouter {
       ? [source, target]
       : [target, source]
 
-    const width = (step.label?.width ?? 70) + STEP_LABEL_MARGIN * 2
+    const width = (step.label?.width ?? 100) + STEP_LABEL_MARGIN
 
     if (left !== right) {
       this.constraint(left.centerX.plus(width), '<=', right.centerX)
@@ -307,9 +319,14 @@ export class SequenceViewLayouter {
     const y2 = lastRow.bottom
 
     // margin top
-    const prevRow = min.row > 0 && this.#rows[min.row - 1]
-    if (prevRow) {
-      this.put(y1).after(prevRow.bottom, 16)
+    const rowBefore = min.row > 0 && this.#rows[min.row - 1]
+    if (rowBefore) {
+      this.put(y1).after(rowBefore.bottom, 16)
+    }
+
+    const rowAfter = max.row < this.#rows.length - 1 && this.#rows[max.row + 1]
+    if (rowAfter) {
+      this.put(y2).before(rowAfter.y, 16)
     }
 
     this.#parallelBoxes.push({

@@ -105,6 +105,10 @@ export const globalCss: ExtendableGlobalCss = {
         },
       },
 
+      '&:is([data-likec4-reduced-graphics]) .hide-on-reduced-graphics': {
+        display: 'none',
+      },
+
       '&:not([data-likec4-reduced-graphics])': {
         '& :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed])': {
           filter: 'grayscale(85%)',
@@ -112,7 +116,7 @@ export const globalCss: ExtendableGlobalCss = {
         '& :where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed="true"])': {
           transitionProperty: 'opacity, filter',
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
-          transitionDuration: '600ms',
+          transitionDuration: '400ms',
         },
         '& .likec4-edge-label-container:is([data-likec4-dimmed])': {
           filter: 'grayscale(85%)',
@@ -120,7 +124,7 @@ export const globalCss: ExtendableGlobalCss = {
         '& .likec4-edge-label-container:is([data-likec4-dimmed="true"])': {
           transitionProperty: 'opacity, filter',
           transitionTimingFunction: 'cubic-bezier(0.50, 0, 0.2, 1)',
-          transitionDuration: '600ms',
+          transitionDuration: '400ms',
         },
         '& :where(.react-flow__edges, .react-flow__edgelabel-renderer) > :where(svg, .likec4-edge-label-container)': {
           mixBlendMode: {

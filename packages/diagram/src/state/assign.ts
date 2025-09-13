@@ -5,6 +5,7 @@ import { isEmpty, mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base } from '../base/types'
 import type { Types } from '../likec4diagram/types'
+import { SeqParallelAreaColor } from '../likec4diagram/xyflow-sequence/const'
 import { type Vector, vector, VectorImpl } from '../utils/vector'
 import type { ActionArg, Context as DiagramContext } from './diagram-machine'
 
@@ -405,11 +406,19 @@ export function updateActiveWalkthrough({ context }: ActionArg): Partial<Diagram
       const active = stepId === edge.id || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
       return Base.setData(edge, {
         active,
-        dimmed: !active,
+        dimmed: stepId !== edge.id,
       })
     }),
     xynodes: context.xynodes.map(node => {
       const dimmed = step.source !== node.id && step.target !== node.id
+      if (node.type === 'seq-parallel') {
+        return Base.setData(node, {
+          color: parallelPrefix === node.data.parallelPrefix
+            ? SeqParallelAreaColor.active
+            : SeqParallelAreaColor.default,
+          dimmed,
+        })
+      }
       return Base.setDimmed(node, dimmed)
     }),
   }

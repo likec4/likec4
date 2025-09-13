@@ -1,5 +1,7 @@
+import type { ThemeColor } from '@likec4/core/types'
+
 // minimum space between actors
-export const ACTOR_GAP = 40
+export const ACTOR_GAP = 60
 
 // minimum space between columns
 export const COLUMN_GAP = 32
@@ -28,3 +30,8 @@ export const SeqZIndex = {
   actor: 10,
   step: 20,
 }
+
+export const SeqParallelAreaColor = {
+  default: 'gray',
+  active: 'amber',
+} satisfies Record<string, ThemeColor>

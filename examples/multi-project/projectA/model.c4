@@ -160,10 +160,14 @@ views {
       next.backend -> amazon.aurora
     }
 
-    include cloud, next, ui, amazon.rds
+    include cloud, next, ui, amazon
 
     style next, ui, amazon {
-      opacity 40%
+      opacity 10%
+    }
+
+    style amazon.* {
+      color amber
     }
 
     autoLayout TopBottom

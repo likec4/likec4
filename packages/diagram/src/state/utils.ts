@@ -1,7 +1,6 @@
 import { type DiagramEdge, type DiagramNode, type XYPoint, BBox } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
-import { getEdgePosition, getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast } from 'remeda'
+import { getEdgePosition, getNodeDimensions, getNodesBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
 import type { XYStoreState } from '../hooks'
 import type { Types } from '../likec4diagram/types'
@@ -86,38 +85,42 @@ const MARGIN = 32
 export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
   const activeWalkthrough = nonNullable(params.context.activeWalkthrough)
 
+  const stepEdge = nonNullable(params.context.xyedges.find(e => e.id === activeWalkthrough.stepId))
+  const xystate = params.context.xystore.getState()
+
+  const sourceNode = nonNullable(xystate.nodeLookup.get(stepEdge.source))
+  const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
+
+  const actorsBounds = getNodesBounds([sourceNode, targetNode])
+
+  let stepBounds: BBox | undefined | null
   if (activeWalkthrough.parallelPrefix) {
     const parallelArea = params.context.xynodes.find(n =>
       n.type === 'seq-parallel' && n.data.parallelPrefix === activeWalkthrough.parallelPrefix
     )
     if (parallelArea) {
-      return {
-        duration: 350,
-        bounds: BBox.expand({
-          x: parallelArea.position.x,
-          y: parallelArea.position.y,
-          ...getNodeDimensions(parallelArea),
-        }, MARGIN),
+      stepBounds = {
+        x: parallelArea.position.x,
+        y: parallelArea.position.y,
+        ...getNodeDimensions(parallelArea),
       }
     }
   }
 
-  const xystate = params.context.xystore.getState()
+  stepBounds ??= getEdgeBounds(stepEdge, xystate)
 
-  const b = params.context.xyedges.reduce((acc, edge) => {
-    if (edge.hidden || edge.data.dimmed) {
-      return acc
-    }
-    const bounds = getEdgeBounds(edge, xystate)
-    if (bounds) {
-      acc.push(bounds)
-    }
-    return acc
-  }, [] as BBox[])
+  if (stepBounds) {
+    stepBounds = BBox.merge(stepBounds, actorsBounds)
+  } else {
+    stepBounds = actorsBounds
+  }
 
   return {
     duration: 350,
-    bounds: hasAtLeast(b, 1) ? BBox.expand(BBox.merge(...b), MARGIN) : params.context.view.bounds,
+    bounds: BBox.expand(
+      stepBounds,
+      MARGIN,
+    ),
   }
 }
 

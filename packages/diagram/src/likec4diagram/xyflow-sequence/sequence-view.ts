@@ -13,7 +13,7 @@ import type { Types } from '../types'
 import type { Step } from './_types'
 import {
   CONTINUOUS_OFFSET,
-  MIN_ROW_HEIGHT,
+  SeqParallelAreaColor,
   SeqZIndex,
 } from './const'
 import { SequenceViewLayouter } from './layouter'
@@ -188,7 +188,7 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
         tail: 'none',
       },
       zIndex: 20,
-      interactionWidth: MIN_ROW_HEIGHT,
+      interactionWidth: 40,
       source: step.source.id,
       sourceHandle: id + '_source',
       target: step.target.id,
@@ -249,7 +249,7 @@ function toSeqParallelArea(
       id: `seq-parallel-${parallelPrefix}` as NodeId,
       title: 'PARALLEL',
       technology: null,
-      color: 'gray',
+      color: SeqParallelAreaColor.default,
       shape: 'rectangle',
       style: {},
       tags: [],

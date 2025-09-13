@@ -30,11 +30,13 @@ import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect 
 import type { MouseEvent } from 'react'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
 import type { PartialDeep } from 'type-fest'
+import type {
+  ActorLogicFrom,
+  ActorRef,
+  AnyEventObject,
+  Snapshot,
+} from 'xstate'
 import {
-  type ActorLogicFrom,
-  type ActorRef,
-  type AnyEventObject,
-  type Snapshot,
   and,
   assertEvent,
   assign,
@@ -54,6 +56,7 @@ import { type EnabledFeatures, type FeatureName, AllDisabled } from '../context/
 import type { OpenSourceParams, ViewPadding } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
+import { SeqParallelAreaColor } from '../likec4diagram/xyflow-sequence/const'
 import { overlaysActorLogic } from '../overlays/overlaysActor'
 import { searchActorLogic } from '../search/searchActor'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
@@ -226,10 +229,12 @@ const _diagramMachine = setup({
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
-    'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
+    'enabled: FocusMode': ({ context }) =>
+      context.features.enableFocusMode && (context.view._type !== 'dynamic' || context.dynamicViewMode !== 'sequence'),
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
+    'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -241,6 +246,10 @@ const _diagramMachine = setup({
         return context.view.id !== event.viewId
       }
       nonexhaustive(event.type)
+    },
+    'click: node has modelFqn': ({ event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return 'modelFqn' in event.node.data
     },
     'click: selected node': ({ event }) => {
       assertEvent(event, 'xyflow.nodeClick')
@@ -273,11 +282,26 @@ const _diagramMachine = setup({
       type: 'openSource',
       params: _params,
     })),
-
     'assign lastClickedNode': assign(({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return {
         lastClickedNode: lastClickedNode({ context, event }),
+      }
+    }),
+    'assign: focusedNode': assign(({ context, event }) => {
+      let focusedNode
+      switch (event.type) {
+        case 'xyflow.nodeClick':
+          focusedNode = event.node.data.id
+          break
+        case 'focus.node':
+          focusedNode = event.nodeId
+          break
+        default:
+          throw new Error(`Unexpected event type: ${event.type} in action 'assign: focusedNode'`)
+      }
+      return {
+        focusedNode,
       }
     }),
     'reset lastClickedNode': assign(() => ({
@@ -561,6 +585,61 @@ const _diagramMachine = setup({
       })),
     })),
     'update active walkthrough': assign(updateActiveWalkthrough),
+    'open element details': sendTo(
+      ({ system }) => typedSystem(system).overlaysActorRef!,
+      ({ context, event }, params?: { fqn: Fqn; fromNode?: NodeId | undefined }) => {
+        let initiatedFrom = null as null | {
+          node: NodeId
+          clientRect: Rect
+        }
+        let fromNodeId: NodeId | undefined, subject: Fqn
+        // Use from params if available
+        if (params) {
+          subject = params.fqn
+          fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
+        }
+        // Use from event if available
+        else if (event.type === 'xyflow.nodeClick') {
+          invariant('modelFqn' in event.node.data && !!event.node.data.modelFqn, 'No modelFqn in event node data')
+          subject = event.node.data.modelFqn
+          fromNodeId = event.node.data.id
+        }
+        else if (event.type === 'open.elementDetails') {
+          subject = event.fqn
+          fromNodeId = event.fromNode
+        }
+        // Use from lastClickedNode if available
+        else {
+          invariant(context.lastClickedNode, 'No last clicked node')
+          fromNodeId = nonNullable(context.lastClickedNode).id
+          const node = nonNullable(context.xynodes.find(n => n.id === fromNodeId))
+          invariant('modelFqn' in node.data && !!node.data.modelFqn, 'No modelFqn in last clicked node')
+          subject = node.data.modelFqn
+        }
+
+        const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
+        if (fromNodeId && internalNode) {
+          const nodeRect = nodeToRect(internalNode)
+          const zoom = context.xyflow!.getZoom()
+
+          const clientRect = {
+            ...context.xyflow!.flowToScreenPosition(nodeRect),
+            width: nodeRect.width * zoom,
+            height: nodeRect.height * zoom,
+          }
+          initiatedFrom = {
+            node: fromNodeId,
+            clientRect,
+          }
+        }
+        return ({
+          type: 'open.elementDetails' as const,
+          subject,
+          currentView: context.view,
+          ...(initiatedFrom && { initiatedFrom }),
+        })
+      },
+    ),
     'emit: walkthroughStarted': emit(({ context }) => {
       const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
       invariant(edge, 'Invalid walkthrough state')
@@ -750,34 +829,8 @@ const _diagramMachine = setup({
           ],
         },
         'open.elementDetails': {
-          actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => {
-            let initiatedFrom = null as null | {
-              node: NodeId
-              clientRect: Rect
-            }
-            const fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.modelRef === event.fqn)?.id
-            const internalNode = fromNodeId ? nonNullable(context.xystore).getState().nodeLookup.get(fromNodeId) : null
-            if (fromNodeId && internalNode) {
-              const nodeRect = nodeToRect(internalNode)
-              const zoom = context.xyflow!.getZoom()
-
-              const clientRect = {
-                ...context.xyflow!.flowToScreenPosition(nodeRect),
-                width: nodeRect.width * zoom,
-                height: nodeRect.height * zoom,
-              }
-              initiatedFrom = {
-                node: fromNodeId,
-                clientRect,
-              }
-            }
-            return ({
-              type: 'open.elementDetails' as const,
-              subject: event.fqn,
-              currentView: context.view,
-              ...(initiatedFrom && { initiatedFrom }),
-            })
-          }),
+          guard: 'enabled: ElementDetails',
+          actions: 'open element details',
         },
         'open.relationshipsBrowser': {
           actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
@@ -890,13 +943,28 @@ const _diagramMachine = setup({
                   ]),
                 ]) as any,
                 actions: [
-                  assign({
-                    lastClickedNode,
-                    focusedNode: ({ event }) => event.node.id as NodeId,
-                  }),
+                  'assign lastClickedNode',
+                  'assign: focusedNode',
                   'emit: nodeClick',
                 ],
                 target: 'focused',
+              },
+              {
+                // TODO: xstate fails to infer the type of the guard
+                guard: and([
+                  'enabled: ElementDetails',
+                  'click: node has modelFqn',
+                  or([
+                    'click: same node',
+                    'click: selected node',
+                  ]),
+                ]) as any,
+                actions: [
+                  'assign lastClickedNode',
+                  'open source of focused or last clicked node',
+                  'open element details',
+                  'emit: nodeClick',
+                ],
               },
               {
                 actions: [
@@ -921,9 +989,7 @@ const _diagramMachine = setup({
             },
             'focus.node': {
               guard: 'enabled: FocusMode',
-              actions: assign({
-                focusedNode: ({ event }) => event.nodeId as NodeId,
-              }),
+              actions: 'assign: focusedNode',
               target: 'focused',
             },
             'xyflow.edgeClick': {
@@ -967,15 +1033,23 @@ const _diagramMachine = setup({
           on: {
             'xyflow.nodeClick': [
               {
+                guard: and([
+                  'click: focused node',
+                  'click: node has modelFqn',
+                ]) as any,
+                actions: [
+                  'open element details',
+                  'emit: nodeClick',
+                ],
+              },
+              {
                 guard: 'click: focused node',
                 actions: 'emit: nodeClick',
                 target: '#idle',
               },
               {
                 actions: [
-                  assign({
-                    lastClickedNode,
-                  }),
+                  'assign lastClickedNode',
                   raise(({ event }) => ({
                     type: 'focus.node',
                     nodeId: event.node.id as NodeId,
@@ -986,9 +1060,7 @@ const _diagramMachine = setup({
             ],
             'focus.node': {
               actions: [
-                assign({
-                  focusedNode: ({ event }) => event.nodeId,
-                }),
+                'assign: focusedNode',
                 'focus on nodes and edges',
                 'open source of focused or last clicked node',
                 'xyflow:fitFocusedBounds',
@@ -1030,6 +1102,34 @@ const _diagramMachine = setup({
             'xyflow:fitFocusedBounds',
             'emit: walkthroughStarted',
           ],
+          exit: enqueueActions(({ enqueue, context, event }) => {
+            enqueue.stopChild('hotkey')
+            if (context.viewportBeforeFocus) {
+              enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
+            } else {
+              enqueue('xyflow:fitDiagram')
+            }
+            // Disable parallel areas highlight
+            if (context.dynamicViewMode === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
+              enqueue.assign({
+                xynodes: context.xynodes.map(n => {
+                  if (n.type === 'seq-parallel') {
+                    return Base.setData(n, {
+                      color: SeqParallelAreaColor.default,
+                    })
+                  }
+                  return n
+                }),
+              })
+            }
+            enqueue('undim everything')
+            enqueue.assign({
+              activeWalkthrough: null,
+              viewportBeforeFocus: null,
+            })
+
+            enqueue('emit: walkthroughStopped')
+          }),
           on: {
             'key.esc': {
               target: 'idle',
@@ -1103,20 +1203,6 @@ const _diagramMachine = setup({
               target: 'idle',
             },
           },
-          exit: enqueueActions(({ enqueue, context, event }) => {
-            enqueue.stopChild('hotkey')
-            if (context.viewportBeforeFocus) {
-              enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
-            } else {
-              enqueue('xyflow:fitDiagram')
-            }
-            enqueue('undim everything')
-            enqueue.assign({
-              activeWalkthrough: null,
-              viewportBeforeFocus: null,
-            })
-            enqueue('emit: walkthroughStopped')
-          }),
         },
       },
     },
@@ -1137,10 +1223,10 @@ const _diagramMachine = setup({
               enqueue({
                 type: 'xyflow:alignNodeFromToAfterNavigate',
                 params: {
-                  fromNode: fromNode.id,
+                  fromNode: fromNode.id as NodeId,
                   toPosition: {
-                    x: toNode.position[0],
-                    y: toNode.position[1],
+                    x: toNode.data.position[0],
+                    y: toNode.data.position[1],
                   },
                 },
               })
@@ -1222,10 +1308,10 @@ const _diagramMachine = setup({
               enqueue({
                 type: 'xyflow:alignNodeFromToAfterNavigate',
                 params: {
-                  fromNode: fromNode.id,
+                  fromNode: fromNode.id as NodeId,
                   toPosition: {
-                    x: toNode.position[0],
-                    y: toNode.position[1],
+                    x: toNode.data.position[0],
+                    y: toNode.data.position[1],
                   },
                 },
               })
@@ -1300,14 +1386,27 @@ const _diagramMachine = setup({
   ],
 })
 
-function nodeRef(node: DiagramNode) {
-  return node.modelRef ?? node.deploymentRef
+function nodeRef(node: Types.Node) {
+  switch (node.type) {
+    case 'element':
+    case 'compound-element':
+    case 'seq-actor':
+      return node.data.modelFqn
+    case 'deployment':
+    case 'compound-deployment':
+      return node.data.modelFqn ?? node.data.deploymentFqn
+    case 'seq-parallel':
+    case 'view-group':
+      return null
+    default:
+      nonexhaustive(node)
+  }
 }
-function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
+function findCorrespondingNode(context: Context, event: { view: DiagramView; xynodes: Types.Node[] }) {
   const fromNodeId = context.lastOnNavigate?.fromNode
-  const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)
+  const fromNode = fromNodeId && context.xynodes.find(n => n.id === fromNodeId)
   const fromRef = fromNode && nodeRef(fromNode)
-  const toNode = fromRef && event.view.nodes.find(n => nodeRef(n) === fromRef)
+  const toNode = fromRef && event.xynodes.find(n => nodeRef(n) === fromRef)
   return { fromNode, toNode }
 }
 
