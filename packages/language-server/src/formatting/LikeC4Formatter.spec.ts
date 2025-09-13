@@ -1794,6 +1794,7 @@ model {
   }
   views {
     view index {
+      description """markdown"""
       include *
     }
   }`,
@@ -1809,6 +1810,7 @@ model {
           }
           views {
             view index {
+              description '''markdown'''
               include *
             }
           }"
@@ -1828,6 +1830,9 @@ model {
     component user3 "escaped single quoute \\'"
     component user4 "single quoute with leading backslash \\\\'"
     component user5 "\\\\'"
+    component user6 "" {
+      description """ ' """
+    }
   }
   views {
     view index {
@@ -1844,6 +1849,9 @@ model {
             component user3 'escaped single quoute \\''
             component user4 'single quoute with leading backslash \\\\\\''
             component user5 '\\\\\\''
+            component user6 '' {
+              description ''' \\' '''
+            }
           }
           views {
             view index {
