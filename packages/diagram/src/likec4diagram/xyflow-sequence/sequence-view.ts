@@ -9,12 +9,13 @@ import {
 } from '@likec4/core/types'
 import { DefaultMap, nonNullable } from '@likec4/core/utils'
 import type { Types } from '../types'
-import type { Step } from './_common'
+import type { Step } from './_types'
 import {
   CONTINUOUS_OFFSET,
   MIN_ROW_HEIGHT,
 } from './const'
 import { SequenceViewLayouter } from './layouter'
+import { buildCompounds } from './utils'
 
 type Port = {
   step: Step
@@ -25,7 +26,7 @@ type Port = {
 
 export function sequenceViewToXY(view: LayoutedDynamicView): {
   bounds: BBox
-  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea>
+  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
 } {
   const actors = [] as Array<DiagramNode>
@@ -34,6 +35,15 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
   const steps = [] as Array<Step>
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
+  const parentsLookup: DefaultMap<DiagramNode, DiagramNode[]> = new DefaultMap(
+    key => {
+      const parent = key.parent ? getNode(key.parent) : null
+      if (parent) {
+        return [parent, ...parentsLookup.get(parent)]
+      }
+      return []
+    },
+  )
 
   const addActor = (...[source, target]: [DiagramNode, DiagramNode]) => {
     // source actor not yet added
@@ -129,6 +139,7 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
   const layout = new SequenceViewLayouter({
     actors,
     steps,
+    compounds: buildCompounds(actors, view.nodes),
   })
 
   const bounds = layout.getViewBounds()
@@ -136,6 +147,7 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
   return {
     bounds,
     xynodes: [
+      ...layout.getCompoundBoxes().map((box, i) => toCompoundArea(box, i, view)),
       ...layout.getParallelBoxes().map(box => toSeqParallelArea(box, view)),
       ...actors.map(actor =>
         toSeqActorNode({
@@ -166,10 +178,8 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
         labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',
-        // line: edge.line ?? 'solid',
-        line: 'solid',
+        line: edge.line ?? 'solid',
         dir: 'forward',
-        // dir: edge.dir ?? 'forward',
         head: 'normal',
         tail: 'none',
       },
@@ -180,6 +190,47 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
       target: step.target.id,
       targetHandle: id + '_target',
     })),
+  }
+}
+
+/**
+ * Shows a compound as a view group node
+ */
+function toCompoundArea(
+  { node, x, y, width, height, depth }: BBox & { node: DiagramNode; depth: number },
+  index: number,
+  view: LayoutedDynamicView,
+): Types.ViewGroupNode {
+  return {
+    id: `${node.id}-${index}` as NodeId,
+    type: 'view-group',
+    data: {
+      id: node.id,
+      title: node.title,
+      color: node.color ?? 'gray',
+      shape: node.shape,
+      style: node.style,
+      tags: node.tags,
+      position: [x, y],
+      viewId: view.id,
+      depth,
+      isViewGroup: true,
+    },
+    zIndex: 1,
+    position: {
+      x,
+      y,
+    },
+    draggable: false,
+    selectable: false,
+    focusable: false,
+    style: {
+      pointerEvents: 'none',
+    },
+    width,
+    initialWidth: width,
+    height,
+    initialHeight: height,
   }
 }
 
@@ -207,7 +258,7 @@ function toSeqParallelArea(
       viewId: view.id,
       parallelPrefix,
     },
-    zIndex: 1,
+    zIndex: 2,
     position: {
       x,
       y,

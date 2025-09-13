@@ -155,7 +155,10 @@ export function SequenceParallelArea(props: NodeProps<Types.SequenceActorNode>) 
         rounded: 'xs',
         borderWidth: 1,
         borderColor: 'var(--likec4-palette-stroke)/50',
-        backgroundColor: 'var(--likec4-palette-fill)/5',
+        backgroundColor: {
+          _light: 'var(--likec4-palette-fill)/20',
+          _dark: 'var(--likec4-palette-fill)/5',
+        },
         pointerEvents: 'none',
         paddingLeft: '2',
         paddingTop: '0.5',
