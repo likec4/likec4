@@ -128,6 +128,18 @@ export const globalCss: ExtendableGlobalCss = {
             _light: 'screen',
           },
         },
+        '&:has(.react-flow__node-seq-parallel) :where(.react-flow__edges > svg)': {
+          mixBlendMode: {
+            // _dark: 'plus-lighter',
+            _light: 'color-burn',
+          },
+        },
+        '& .react-flow__node-seq-parallel': {
+          mixBlendMode: {
+            // _dark: 'plus-lighter',
+            _light: 'color-burn',
+          },
+        },
       },
     },
 
