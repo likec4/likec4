@@ -42,7 +42,7 @@ export const conditions = {
     edgeActive: ':where([data-likec4-edge-active="true"]) &',
 
     whenHovered: ':where(.react-flow__node, .react-flow__edge):has([data-likec4-hovered="true"]) &',
-    whenSelected: ':where(.react-flow__node.selected, .react-flow__edge.selected) &',
+    whenSelected: ':where(.react-flow__node, .react-flow__edge):is(.selected) &',
     whenDimmed: ':where(.react-flow__node, .react-flow__edge):has([data-likec4-dimmed]) &',
     whenFocused: ':where(.react-flow__node, .react-flow__edge):is(:focus-visible, :focus, :focus-within) &',
     // likec4Color: ':where([data-likec4-color]) &',

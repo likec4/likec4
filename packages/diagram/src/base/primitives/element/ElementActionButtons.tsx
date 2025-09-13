@@ -4,7 +4,6 @@ import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import * as m from 'motion/react-m'
-import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 
@@ -43,8 +42,7 @@ export function ElementActionButtons({
   buttons,
 }: ElementActionButtonsProps) {
   const id = useId()
-  const zoomTooSmall = useIsZoomTooSmall()
-  if (!buttons.length || zoomTooSmall) {
+  if (!buttons.length) {
     return null
   }
   return (

@@ -3,7 +3,7 @@ import { css, cx } from '@likec4/styles/css'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
-import { cssEdgePath, edgePathBg, hideOnReducedGraphics, markerContext } from './edge.css'
+import { cssEdgePath, edgePathBg, markerContext } from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
 type Data = UndefinedOnPartialDeep<
@@ -32,6 +32,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
       tail,
       head,
     },
+    selectable = true,
     style,
     interactionWidth,
   },
@@ -71,24 +72,34 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
 
   return (
     <>
-      <path
-        className={cx(
-          'react-flow__edge-interaction',
-          hideOnReducedGraphics,
-          css({
-            fill: '[none]',
-          }),
-        )}
-        d={svgPath}
-        strokeWidth={interactionWidth ?? 10}
-      />
+      {selectable && (
+        <path
+          className={cx(
+            'react-flow__edge-interaction',
+            'hide-on-reduced-graphics',
+            css({
+              fill: 'none',
+            }),
+          )}
+          d={svgPath}
+          style={{
+            strokeWidth: interactionWidth ?? 10,
+            stroke: 'currentcolor',
+            strokeOpacity: 0,
+          }}
+        />
+      )}
       <g className={markerContext} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}
         </defs>
         <path
-          className={cx('react-flow__edge-path', edgePathBg)}
+          className={cx(
+            'react-flow__edge-path',
+            'hide-on-reduced-graphics',
+            edgePathBg,
+          )}
           d={svgPath}
           style={style}
           strokeLinecap={'round'}
@@ -97,7 +108,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           ref={svgPathRef}
           className={cx(
             'react-flow__edge-path',
-            'react-flow__edge-interaction',
+            selectable && 'react-flow__edge-interaction',
             cssEdgePath,
           )}
           d={svgPath}
@@ -112,3 +123,4 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
     </>
   )
 })
+EdgePath.displayName = 'EdgePath'

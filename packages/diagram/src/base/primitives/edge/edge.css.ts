@@ -8,18 +8,9 @@ export const edgeContainer = css({
   },
 })
 
-const _hideOnReducedGraphics = css.raw({
-  _reduceGraphicsOnPan: {
-    display: 'none',
-  },
-  _smallZoom: {
-    display: 'none',
-  },
-})
-export const hideOnReducedGraphics = css(_hideOnReducedGraphics)
-
-export const edgePathBg = css(_hideOnReducedGraphics, {
-  fill: '[none]',
+export const edgePathBg = css({
+  pointerEvents: 'none',
+  fill: 'none',
   strokeWidth: 'calc(var(--xy-edge-stroke-width) + 2)',
   strokeOpacity: 0.08,
   _noReduceGraphics: {
