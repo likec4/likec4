@@ -63,7 +63,10 @@ export class RichText {
       return source as RichTextOrEmpty
     }
     if (typeof source === 'string') {
-      return RichText.from({ txt: source })
+      if (source.trim() === emptyTxt) {
+        return RichText.EMPTY
+      }
+      return new RichText({ txt: source }) as RichTextOrEmpty
     }
     if ('isEmpty' in source && source.isEmpty) {
       return RichText.EMPTY

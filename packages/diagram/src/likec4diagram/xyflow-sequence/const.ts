@@ -21,3 +21,10 @@ export const FIRST_STEP_OFFSET = 30
 //      C -> D (sequential)
 // A -> B -> C (continuous)
 export const CONTINUOUS_OFFSET = 22
+
+export const SeqZIndex = {
+  compound: 0,
+  parallel: 1,
+  actor: 10,
+  step: 20,
+}

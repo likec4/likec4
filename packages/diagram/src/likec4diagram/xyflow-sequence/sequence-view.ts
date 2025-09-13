@@ -7,12 +7,14 @@ import {
   isStepEdgeId,
   RichText,
 } from '@likec4/core/types'
-import { DefaultMap, nonNullable } from '@likec4/core/utils'
+import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
+import { hasAtLeast } from 'remeda'
 import type { Types } from '../types'
 import type { Step } from './_types'
 import {
   CONTINUOUS_OFFSET,
   MIN_ROW_HEIGHT,
+  SeqZIndex,
 } from './const'
 import { SequenceViewLayouter } from './layouter'
 import { buildCompounds } from './utils'
@@ -136,6 +138,8 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
     step.to.column = actors.indexOf(step.target)
   }
 
+  invariant(hasAtLeast(actors, 1), 'actors array must not be empty')
+
   const layout = new SequenceViewLayouter({
     actors,
     steps,
@@ -216,7 +220,7 @@ function toCompoundArea(
       depth,
       isViewGroup: true,
     },
-    zIndex: 1,
+    // zIndex: SeqZIndex.compound,
     position: {
       x,
       y,
@@ -258,7 +262,7 @@ function toSeqParallelArea(
       viewId: view.id,
       parallelPrefix,
     },
-    zIndex: 2,
+    zIndex: SeqZIndex.parallel,
     position: {
       x,
       y,
@@ -318,7 +322,7 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
         })
       }),
     },
-    zIndex: 10,
+    zIndex: SeqZIndex.actor,
     position: { x, y },
     width,
     initialWidth: width,

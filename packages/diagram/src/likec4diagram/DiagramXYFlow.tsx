@@ -3,7 +3,7 @@ import { cx } from '@likec4/styles/css'
 import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { type PropsWithChildren } from 'react'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
@@ -26,7 +26,9 @@ const selectXYProps = (ctx: DiagramContext) => ({
   zoomable: ctx.zoomable,
   fitViewPadding: ctx.fitViewPadding,
   enableFitView: ctx.features.enableFitView,
-  enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly,
+  enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly
+    // if dynamic view display mode is sequence, enable readonly
+    || (ctx.dynamicViewMode === 'sequence' && ctx.view._type === 'dynamic'),
   ...(!ctx.features.enableFitView && {
     viewport: {
       x: -Math.min(ctx.view.bounds.x, 0),
@@ -41,7 +43,7 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.zoomable === b.zoomable &&
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
-  shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
+  deepEqual(a.fitViewPadding, b.fitViewPadding) &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport ?? null, b.viewport ?? null)
