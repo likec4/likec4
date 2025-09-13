@@ -92,6 +92,7 @@ export interface Input {
   pannable: boolean
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
+  dynamicViewMode?: DynamicViewDisplayMode | undefined
 }
 
 export type ToggledFeatures = Partial<EnabledFeatures>
@@ -160,7 +161,7 @@ export type Events =
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore'>> }
+  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewMode'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | ({ type: 'open.source' } & OpenSourceParams)
@@ -642,7 +643,7 @@ const _diagramMachine = setup({
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
     syncLayoutActorRef: null,
-    dynamicViewMode: 'mode' in input.view ? input.view.mode : 'diagram',
+    dynamicViewMode: input.dynamicViewMode ?? ('mode' in input.view ? input.view.mode : 'diagram'),
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),

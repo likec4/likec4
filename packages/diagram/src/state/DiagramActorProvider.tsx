@@ -1,4 +1,4 @@
-import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, DynamicViewDisplayMode, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
@@ -41,6 +41,7 @@ export function DiagramActorProvider({
   nodesSelectable,
   where,
   children,
+  dynamicViewMode: _defaultDynamicViewMode,
 }: PropsWithChildren<{
   view: DiagramView
   zoomable: boolean
@@ -48,6 +49,7 @@ export function DiagramActorProvider({
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
   where: WhereOperator | null
+  dynamicViewMode: DynamicViewDisplayMode | undefined
 }>) {
   const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
@@ -80,6 +82,7 @@ export function DiagramActorProvider({
         pannable,
         fitViewPadding,
         nodesSelectable,
+        dynamicViewMode: _defaultDynamicViewMode,
       },
     },
   )
