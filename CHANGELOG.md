@@ -1,3 +1,23 @@
+# [1.40.0](https://github.com/likec4/likec4/compare/v1.39.5...v1.40.0) (2025-09-14)
+
+
+### Bug Fixes
+
+* consolidate size handling with new `ensureSizes` utility ([#2222](https://github.com/likec4/likec4/issues/2222)) ([230bac5](https://github.com/likec4/likec4/commit/230bac5e2634ab709ff88c5f16c495da562799ea)), closes [#2220](https://github.com/likec4/likec4/issues/2220)
+* **formatter:** fixed formatting of quotes in markdown fields [#2147](https://github.com/likec4/likec4/issues/2147) ([#2223](https://github.com/likec4/likec4/issues/2223)) ([15af4e9](https://github.com/likec4/likec4/commit/15af4e932ca2c79ee894109ff3dab56527a64c8f))
+* update sequence edge type from sequence-step to seq-step and handle missing relationships ([d4f724f](https://github.com/likec4/likec4/commit/d4f724f8d9cab3b175cfd0f71d248965815387c5))
+
+
+### Features
+
+* add parallel sequence diagram areas with visual indicators and improved edge routing ([1cc09fe](https://github.com/likec4/likec4/commit/1cc09fe4c199ebf6f448bba314a1f5ab64d147c0))
+* add SequenceView component and update edge container styles for dynamic views ([4d716f5](https://github.com/likec4/likec4/commit/4d716f57696d27984d52e4940d72729d23d93271))
+* compound nodes in sequence diagram ([98f780d](https://github.com/likec4/likec4/commit/98f780d077980d9b32c828b08ad47c92fcd0c4dc))
+* **react:** set default mode via `dynamicViewMode` property ([795b588](https://github.com/likec4/likec4/commit/795b58835722e59c3403c4fb7d26c2673e032733))
+* walkthrough sequence diagram ([622cb79](https://github.com/likec4/likec4/commit/622cb7920e5533b6d7cd06810203e3d8cd0ba184))
+
+
+
 ## [1.39.5](https://github.com/likec4/likec4/compare/v1.39.4...v1.39.5) (2025-09-11)
 
 ### 🐞 Bug Fixes
