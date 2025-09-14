@@ -28,7 +28,7 @@ const selectXYProps = (ctx: DiagramContext) => ({
   enableFitView: ctx.features.enableFitView,
   enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly
     // if dynamic view display mode is sequence, enable readonly
-    || (ctx.dynamicViewMode === 'sequence' && ctx.view._type === 'dynamic'),
+    || (ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic'),
   ...(!ctx.features.enableFitView && {
     viewport: {
       x: -Math.min(ctx.view.bounds.x, 0),

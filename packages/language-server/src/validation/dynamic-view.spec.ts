@@ -124,7 +124,7 @@ describe.concurrent('DynamicView Checks', () => {
     })
   })
 
-  describe('displayMode', () => {
+  describe('display variant', () => {
     it('should report if invalid mode', async ({ expect }) => {
       const { validate } = createTestServices()
       const { errors } = await validate(`
@@ -133,11 +133,11 @@ describe.concurrent('DynamicView Checks', () => {
       }
       views {
         dynamic view index {
-          mode invalid
+          variant invalid
         }
       }
     `)
-      expect(errors).to.include.members(['Invalid display mode: "diagram" or "sequence" are allowed'])
+      expect(errors).to.include.members(['Invalid display variant: "diagram" or "sequence" are allowed'])
     })
 
     it('should not report for valid modes', async ({ expect }) => {
@@ -148,10 +148,10 @@ describe.concurrent('DynamicView Checks', () => {
       }
       views {
         dynamic view index {
-          mode sequence
+          variant sequence
         }
         dynamic view index2 {
-          mode diagram
+          variant diagram
         }
       }
     `)

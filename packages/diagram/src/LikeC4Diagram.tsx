@@ -55,7 +55,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   showNotations = true,
   showNavigationButtons = !!onNavigateTo,
   enableDynamicViewWalkthrough = false,
-  dynamicViewMode,
+  dynamicViewVariant,
   enableSearch = true,
   initialWidth,
   initialHeight,
@@ -145,7 +145,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       fitViewPadding={fitViewPadding}
                       nodesSelectable={nodesSelectable}
                       where={where ?? null}
-                      dynamicViewMode={dynamicViewMode}
+                      dynamicViewVariant={dynamicViewVariant}
                     >
                       <ControlsCustomLayoutProvider value={renderControls ?? null}>
                         <LikeC4DiagramXYFlow

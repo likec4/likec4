@@ -650,7 +650,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest mode for dynamic view', async ({ expect }) => {
+  it('should suggest variants for dynamic view', async ({ expect }) => {
     const text = `
       specification {
         element component
@@ -660,7 +660,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           include *
         }
         dynamic view view3 {
-          mode <|>
+          variant <|>
         }
       }
     `

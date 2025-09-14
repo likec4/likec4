@@ -258,10 +258,10 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
-   * Default dynamic view display mode
+   * Default dynamic view display variant
    * @default 'diagram'
    */
-  dynamicViewMode?: DynamicViewDisplayVariant | undefined
+  dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 
   /**
    * Display element tags in the bottom left corner

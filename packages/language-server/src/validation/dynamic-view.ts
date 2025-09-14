@@ -40,7 +40,7 @@ export const dynamicViewDisplayVariant = (
 ): ValidationCheck<ast.DynamicViewDisplayVariantProperty> => {
   return tryOrLog((prop, accept) => {
     if (isEmpty(prop.value) || (prop.value !== 'diagram' && prop.value !== 'sequence')) {
-      accept('error', 'Invalid display mode: "diagram" or "sequence" are allowed', {
+      accept('error', 'Invalid display variant: "diagram" or "sequence" are allowed', {
         node: prop,
         property: 'value',
       })

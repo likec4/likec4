@@ -29,8 +29,8 @@ const selectToggledFeatures = (state: DiagramActorSnapshot) => {
   return state.context.toggledFeatures
 }
 
-const selectDynamicViewMode = (state: DiagramActorSnapshot) => {
-  return state.context.dynamicViewMode
+const selectDynamicViewVariant = (state: DiagramActorSnapshot) => {
+  return state.context.dynamicViewVariant
 }
 
 export function DiagramActorProvider({
@@ -41,7 +41,7 @@ export function DiagramActorProvider({
   nodesSelectable,
   where,
   children,
-  dynamicViewMode: _defaultDynamicViewMode,
+  dynamicViewVariant: _defaultVariant,
 }: PropsWithChildren<{
   view: DiagramView
   zoomable: boolean
@@ -49,7 +49,7 @@ export function DiagramActorProvider({
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
   where: WhereOperator | null
-  dynamicViewMode: DynamicViewDisplayVariant | undefined
+  dynamicViewVariant: DynamicViewDisplayVariant | undefined
 }>) {
   const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
@@ -82,7 +82,7 @@ export function DiagramActorProvider({
         pannable,
         fitViewPadding,
         nodesSelectable,
-        dynamicViewMode: _defaultDynamicViewMode,
+        dynamicViewVariant: _defaultVariant,
       },
     },
   )
@@ -104,11 +104,11 @@ export function DiagramActorProvider({
     deepEqual,
   )
 
-  const dynamicViewMode = useSelector(actorRef, selectDynamicViewMode)
+  const dynamicViewVariant = useSelector(actorRef, selectDynamicViewVariant)
 
   const update = useMemo(
-    () => convertToXYFlow({ view, where, nodesSelectable, dynamicViewMode }),
-    [view, where, nodesSelectable, dynamicViewMode],
+    () => convertToXYFlow({ view, where, nodesSelectable, dynamicViewVariant }),
+    [view, where, nodesSelectable, dynamicViewVariant],
   )
 
   useEffect(() => {

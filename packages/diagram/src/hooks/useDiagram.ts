@@ -118,9 +118,9 @@ export interface DiagramApi {
   openSearch(searchValue?: string): void
 
   /**
-   * Switch dynamic view mode
+   * Switch dynamic view display variant
    */
-  switchDynamicViewMode(variant: DynamicViewDisplayVariant): void
+  switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void
 }
 
 /**
@@ -253,8 +253,8 @@ export function useDiagram(): DiagramApi {
       actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
     },
 
-    switchDynamicViewMode: (variant: DynamicViewDisplayVariant) => {
-      actor.send({ type: 'switch.dynamicViewMode', variant })
+    switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
+      actor.send({ type: 'switch.dynamicViewVariant', variant })
     },
   }), [actor])
 }

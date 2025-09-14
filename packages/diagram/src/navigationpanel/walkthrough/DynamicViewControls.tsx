@@ -99,15 +99,15 @@ function DynamicViewModeSwitcher({
 }
 
 export function DynamicViewControls() {
-  const dynamicViewMode = useDiagramContext(c => c.dynamicViewMode)
+  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
   const actor = useNavigationActor()
   return (
     <>
       <DynamicViewModeSwitcher
-        value={dynamicViewMode}
+        value={dynamicViewVariant}
         onChange={mode => {
-          diagram.switchDynamicViewMode(mode)
+          diagram.switchDynamicViewVariant(mode)
         }}
       />
       <StartWalkthroughButton

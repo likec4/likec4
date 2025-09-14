@@ -95,7 +95,7 @@ export interface Input {
   pannable: boolean
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
-  dynamicViewMode?: DynamicViewDisplayVariant | undefined
+  dynamicViewVariant?: DynamicViewDisplayVariant | undefined
 }
 
 export type ToggledFeatures = Partial<EnabledFeatures>
@@ -138,7 +138,7 @@ export interface Context extends Input {
   syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
   // If Dynamic View
-  dynamicViewMode: DynamicViewDisplayVariant
+  dynamicViewVariant: DynamicViewDisplayVariant
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
@@ -164,7 +164,7 @@ export type Events =
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewMode'>> }
+  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | ({ type: 'open.source' } & OpenSourceParams)
@@ -181,7 +181,7 @@ export type Events =
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
-  | { type: 'switch.dynamicViewMode'; variant: DynamicViewDisplayVariant }
+  | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
@@ -230,7 +230,8 @@ const _diagramMachine = setup({
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
     'enabled: FocusMode': ({ context }) =>
-      context.features.enableFocusMode && (context.view._type !== 'dynamic' || context.dynamicViewMode !== 'sequence'),
+      context.features.enableFocusMode &&
+      (context.view._type !== 'dynamic' || context.dynamicViewVariant !== 'sequence'),
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
@@ -343,7 +344,7 @@ const _diagramMachine = setup({
     },
 
     'xyflow:fitFocusedBounds': ({ context }) => {
-      const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewMode === 'sequence'
+      const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewVariant === 'sequence'
       const { bounds, duration = 450 } = isActiveSequenceWalkthrough
         ? activeSequenceBounds({ context })
         : focusedBounds({ context })
@@ -688,10 +689,10 @@ const _diagramMachine = setup({
         xyedge: event.edge,
       }
     }),
-    'assign: dynamicViewMode': assign(({ event }) => {
-      assertEvent(event, 'switch.dynamicViewMode')
+    'assign: dynamicViewVariant': assign(({ event }) => {
+      assertEvent(event, 'switch.dynamicViewVariant')
       return {
-        dynamicViewMode: event.variant,
+        dynamicViewVariant: event.variant,
       }
     }),
   },
@@ -722,9 +723,9 @@ const _diagramMachine = setup({
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
     syncLayoutActorRef: null,
-    dynamicViewMode: input.dynamicViewMode ?? (
+    dynamicViewVariant: input.dynamicViewVariant ?? (
       input.view._type === 'dynamic' ? input.view.variant : 'diagram'
-    ),
+    ) ?? 'diagram',
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
@@ -1112,7 +1113,7 @@ const _diagramMachine = setup({
               enqueue('xyflow:fitDiagram')
             }
             // Disable parallel areas highlight
-            if (context.dynamicViewMode === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
+            if (context.dynamicViewVariant === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
               enqueue.assign({
                 xynodes: context.xynodes.map(n => {
                   if (n.type === 'seq-parallel') {
@@ -1364,8 +1365,8 @@ const _diagramMachine = setup({
         'ensure search actor state',
       ],
     },
-    'switch.dynamicViewMode': {
-      actions: 'assign: dynamicViewMode',
+    'switch.dynamicViewVariant': {
+      actions: 'assign: dynamicViewVariant',
     },
   },
   exit: [

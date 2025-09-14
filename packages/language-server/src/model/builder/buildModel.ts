@@ -25,6 +25,7 @@ import {
   keys,
   map,
   mapValues,
+  omitBy,
   pipe,
   prop,
   reduce,
@@ -196,7 +197,7 @@ export function buildModelData(
       }
 
       return {
-        ...model,
+        ...omitBy(model, v => v === undefined),
         [_stage]: 'parsed',
         docUri,
         description,

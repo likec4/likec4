@@ -7,10 +7,10 @@ type ConvertToXYFlowInput = {
   view: LayoutedView
   where: WhereOperator | null
   nodesSelectable: boolean
-  dynamicViewMode: DynamicViewDisplayVariant
+  dynamicViewVariant: DynamicViewDisplayVariant
 }
 
-export function convertToXYFlow({ dynamicViewMode, ...params }: ConvertToXYFlowInput): {
+export function convertToXYFlow({ dynamicViewVariant, ...params }: ConvertToXYFlowInput): {
   view: LayoutedView
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
@@ -18,16 +18,16 @@ export function convertToXYFlow({ dynamicViewMode, ...params }: ConvertToXYFlowI
   const view = params.view
   const isDynamic = view._type === 'dynamic'
 
-  const { bounds, xynodes, xyedges } = isDynamic && dynamicViewMode === 'sequence'
+  const { bounds, xynodes, xyedges } = isDynamic && dynamicViewVariant === 'sequence'
     ? sequenceViewToXY(view)
     : diagramToXY(params)
 
-  if (isDynamic && view.variant !== dynamicViewMode) {
+  if (isDynamic && view.variant !== dynamicViewVariant) {
     return {
       view: {
         ...view,
         bounds,
-        variant: dynamicViewMode,
+        variant: dynamicViewVariant,
       },
       xynodes,
       xyedges,

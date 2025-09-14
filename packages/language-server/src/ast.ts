@@ -162,6 +162,7 @@ export interface ParsedAstDynamicView {
   links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.DynamicViewStepOrParallel[]
   rules: Array<c4.DynamicViewRule>
+  variant: c4.DynamicViewDisplayVariant | undefined
   manualLayout?: c4.ViewManualLayout
 }
 
