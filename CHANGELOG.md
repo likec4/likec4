@@ -1,3 +1,23 @@
+# [1.40.0](https://github.com/likec4/likec4/compare/v1.39.5...v1.40.0) (2025-09-14)
+
+### 🚀 Features
+
+- **Sequence view**
+  
+  <img alt="dynamic-variant-sequence" src="https://github.com/user-attachments/assets/0e811ecc-f6a1-4377-a4de-c347531bb7e5" />
+  
+  Now dynamic views support two variants: `diagram` and `sequence`.
+  
+  The sequence variant comes with a few limitations:
+  - only connections with _leaf_ elements are supported
+  - export to image is not yet available (_coming soon_)
+   
+### Bug Fixes
+
+* consolidate size handling with new `ensureSizes` utility ([#2222](https://github.com/likec4/likec4/issues/2222)) ([230bac5](https://github.com/likec4/likec4/commit/230bac5e2634ab709ff88c5f16c495da562799ea)), closes [#2220](https://github.com/likec4/likec4/issues/2220)
+* **formatter:** fixed formatting of quotes in markdown fields, thanks @pavelpykhtin, closes [#2147](https://github.com/likec4/likec4/issues/2147) ([#2223](https://github.com/likec4/likec4/issues/2223)) ([15af4e9](https://github.com/likec4/likec4/commit/15af4e932ca2c79ee894109ff3dab56527a64c8f))
+
+
 ## [1.39.5](https://github.com/likec4/likec4/compare/v1.39.4...v1.39.5) (2025-09-11)
 
 ### 🐞 Bug Fixes

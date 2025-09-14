@@ -2,7 +2,7 @@
   "name": "@likec4/log",
   "description": "Shared interface for logging",
   "license": "MIT",
-  "version": "1.39.5",
+  "version": "1.40.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
