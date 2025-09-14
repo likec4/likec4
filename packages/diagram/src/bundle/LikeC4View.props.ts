@@ -108,7 +108,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
 
   /**
    * If Walkthrough for dynamic views should be enabled
-   * @default enableFocusMode
+   * @default false
    */
   enableDynamicViewWalkthrough?: boolean | undefined
 
@@ -232,6 +232,12 @@ export interface LikeC4BrowserProps {
    * @default true
    */
   enableDynamicViewWalkthrough?: boolean | undefined
+
+  /**
+   * Default dynamic view display mode
+   * @default 'diagram'
+   */
+  dynamicViewMode?: t.DynamicViewDisplayMode | undefined
 
   /**
    * Enable popup with element details

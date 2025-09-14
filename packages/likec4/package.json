@@ -91,7 +91,10 @@
       "types": "./icons/icon.d.ts",
       "import": "./icons/*",
       "default": "./icons/*"
-    }
+    },
+    "./src": "./src/index.ts",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

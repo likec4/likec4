@@ -14,6 +14,12 @@
       ],
       "@assets/*": [
         "./src/assets/*"
+      ],
+      "likec4/model": [
+        "../../packages/likec4/src/model/index.ts"
+      ],
+      "likec4/react": [
+        "../../packages/likec4/react/index.ts"
       ]
     },
     "jsx": "react-jsx",

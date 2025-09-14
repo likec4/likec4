@@ -330,7 +330,16 @@ interface Props {
 const { viewId } = Astro.props
 ---
 
-<ReactLikeC4View viewId={viewId} client:only="react">
+<ReactLikeC4View
+  viewId={viewId}
+  {/* Configure view */}
+  controls={false}
+  browser={{
+    // options for likec4 browser
+    enableFocusMode: false,
+    enableSearch: false,
+  }}
+  client:only="react">
 </ReactLikeC4View>
 ```
 
@@ -352,6 +361,10 @@ This is an example of using LikeC4 in your documentation
 
 ```
 <br />
+
+:::tip
+Check sources how LikeC4 <a href="https://github.com/likec4/likec4/tree/main/apps/docs/src/components" target='_blank'>multi-projects</a> are embedded in this website.
+:::
 
 :::caution
 Don't forget to add type references as described [here](/tooling/vite-plugin/#add-type-references).  

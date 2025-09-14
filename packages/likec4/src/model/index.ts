@@ -1,20 +1,13 @@
 import { LikeC4Model } from '@likec4/core/model'
-import type { Aux, LayoutedLikeC4ModelData, SpecAux } from '@likec4/core/types'
+import type * as types from '@likec4/core/types'
 
-export type UnknownLayouted = Aux<
-  'layouted',
-  string,
-  string,
-  string,
-  string,
-  SpecAux<string, string, string, string, string>
->
+export type UnknownLayouted = types.UnknownLayouted
 
 /**
  * Used by vite plugin to generate `virtual:likec4/model`
  */
 export function createLikeC4Model(model: any): LikeC4Model<UnknownLayouted> {
-  return LikeC4Model.create(model as LayoutedLikeC4ModelData<UnknownLayouted>)
+  return LikeC4Model.create(model as types.LayoutedLikeC4ModelData<UnknownLayouted>)
 }
 
 export {
