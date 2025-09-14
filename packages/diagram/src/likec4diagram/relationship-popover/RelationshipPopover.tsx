@@ -29,7 +29,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { clamp, filter, isTruthy, map, partition, pipe } from 'remeda'
+import { clamp, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../components/Link'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
@@ -133,7 +133,7 @@ export const RelationshipPopover = memo(() => {
     [openedEdgeId],
   )
 
-  if (!diagramEdge || !sourceNode || !targetNode) {
+  if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
     return null
   }
 

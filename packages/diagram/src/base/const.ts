@@ -1,3 +1,5 @@
+import type { ViewPadding } from '../LikeC4Diagram.props'
+
 export const ZIndexes = {
   Compound: 1,
   // XYFlow increments zIndexes of compounds
@@ -8,3 +10,13 @@ export const ZIndexes = {
 
 export const MinZoom = 0.05
 export const MaxZoom = 3
+
+export const FitViewPaddings = {
+  default: '16px',
+  withControls: {
+    top: '50px',
+    left: '16px',
+    right: '16px',
+    bottom: '16px',
+  },
+} satisfies Record<string, ViewPadding>

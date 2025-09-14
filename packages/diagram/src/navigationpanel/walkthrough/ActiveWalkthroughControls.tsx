@@ -69,6 +69,7 @@ export function ActiveWalkthroughControls() {
   return (
     <AnimatePresence propagate>
       <TriggerWalkthroughButton
+        key="stop-walkthrough"
         variant="light"
         size="xs"
         color="orange"
@@ -125,7 +126,7 @@ export function ActiveWalkthroughControls() {
       >
         Next
       </PrevNextButton>
-      {isParallel && <ParallelFrame />}
+      {isParallel && <ParallelFrame key="parallel-frame" />}
     </AnimatePresence>
   )
 }

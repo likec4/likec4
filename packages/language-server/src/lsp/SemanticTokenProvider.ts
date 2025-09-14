@@ -310,7 +310,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       || ast.isLineProperty(node)
       || ast.isBorderProperty(node)
       || ast.isSizeProperty(node)
-      || ast.isDynamicViewDisplayModeProperty(node)
+      || ast.isDynamicViewDisplayVariantProperty(node)
     ) {
       acceptor({
         node,

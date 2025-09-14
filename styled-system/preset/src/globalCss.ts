@@ -145,6 +145,10 @@ export const globalCss: ExtendableGlobalCss = {
           },
         },
       },
+
+      '& :where(.relationships-browser, .likec4-relationship-details) .react-flow__attribution': {
+        display: 'none',
+      },
     },
 
     '.likec4-static-view .react-flow .react-flow__attribution': {

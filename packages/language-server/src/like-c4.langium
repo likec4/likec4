@@ -293,11 +293,11 @@ DynamicViewBody: '{'
 ;
 
 DynamicViewProperty:
-  DynamicViewDisplayModeProperty | ViewProperty
+  DynamicViewDisplayVariantProperty | ViewProperty
 ;
 
-DynamicViewDisplayModeProperty:
-  key='mode'  value=DynamicViewDisplayModeValue
+DynamicViewDisplayVariantProperty:
+  key='variant'  value=DynamicViewDisplayVariantValue
 ;
 
 
@@ -814,7 +814,7 @@ ArrowType returns string:
   'vee'
 ;
 
-DynamicViewDisplayModeValue returns string:
+DynamicViewDisplayVariantValue returns string:
   'diagram' | 'sequence';
 
 ThemeColor returns string:
@@ -847,7 +847,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | DynamicViewDisplayModeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | DynamicViewDisplayVariantValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

@@ -3,7 +3,7 @@ import {
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
-  type DynamicViewDisplayMode,
+  type DynamicViewDisplayVariant,
   type NodeId,
   type NodeNotation as ElementNotation,
   type scalar,
@@ -118,9 +118,9 @@ export interface DiagramApi {
   openSearch(searchValue?: string): void
 
   /**
-   * Switch dynamic view mode
+   * Switch dynamic view display variant
    */
-  switchDynamicViewMode(mode: DynamicViewDisplayMode): void
+  switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void
 }
 
 /**
@@ -253,8 +253,8 @@ export function useDiagram(): DiagramApi {
       actor.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
     },
 
-    switchDynamicViewMode: (mode: DynamicViewDisplayMode) => {
-      actor.send({ type: 'switch.dynamicViewMode', mode })
+    switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
+      actor.send({ type: 'switch.dynamicViewVariant', variant })
     },
   }), [actor])
 }

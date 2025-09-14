@@ -1,6 +1,7 @@
 import type { Any } from '@likec4/core/types'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { type PropsWithChildren, useRef } from 'react'
+import { FitViewPaddings } from './base'
 import {
   DiagramEventHandlers,
   DiagramFeatures,
@@ -37,9 +38,10 @@ export function LikeC4Diagram<A extends Any = Any>({
   onBurgerMenuClick,
   view,
   className,
-  fitView = true,
-  fitViewPadding = '8px',
   readonly = true,
+  controls = !readonly,
+  fitView = true,
+  fitViewPadding = controls === 'next' ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
   background = 'dots',
@@ -50,12 +52,11 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableRelationshipBrowser = enableRelationshipDetails,
   nodesDraggable = !readonly,
   nodesSelectable = !readonly || enableFocusMode || !!onNavigateTo || !!onNodeClick,
-  controls = !readonly,
   showDiagramTitle = true,
   showNotations = true,
   showNavigationButtons = !!onNavigateTo,
   enableDynamicViewWalkthrough = false,
-  dynamicViewMode,
+  dynamicViewVariant,
   enableSearch = true,
   initialWidth,
   initialHeight,
@@ -145,7 +146,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       fitViewPadding={fitViewPadding}
                       nodesSelectable={nodesSelectable}
                       where={where ?? null}
-                      dynamicViewMode={dynamicViewMode}
+                      dynamicViewVariant={dynamicViewVariant}
                     >
                       <ControlsCustomLayoutProvider value={renderControls ?? null}>
                         <LikeC4DiagramXYFlow

@@ -1,9 +1,10 @@
 import type { DiagramEdge } from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import { type HTMLAttributes } from 'react'
+import { type HTMLAttributes, useCallback } from 'react'
 import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
+import { useXYStore } from '../../../hooks'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
 
@@ -50,10 +51,14 @@ export function EdgeLabelContainer({
   children,
   ...rest
 }: EdgeLabelContainerProps) {
-  let zIndex = ZIndexes.Edge
+  let zIndex = useXYStore(
+    useCallback((state) => {
+      return state.edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
+    }, [id]),
+  )
+  // Move above the elements
   if (isHovered || isActive) {
-    // Move above the elements
-    zIndex = ZIndexes.Element + 1
+    zIndex += 100
   }
 
   let labelX = labelXY?.x ?? labelBBox?.x,
@@ -65,9 +70,10 @@ export function EdgeLabelContainer({
   const translate = labelXY?.translate
 
   return (
-    <EdgeLabelRenderer key={id}>
+    <EdgeLabelRenderer>
       <div
         key={id}
+        {...rest}
         className={cx(
           'nodrag nopan',
           'likec4-edge-label-container',
@@ -88,7 +94,6 @@ export function EdgeLabelContainer({
           ...style,
           transform: `translate(${toCssVarValue(labelX)}, ${toCssVarValue(labelY)}) ${translate || ''}`,
         }}
-        {...rest}
       >
         {children}
       </div>

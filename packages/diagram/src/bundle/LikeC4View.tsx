@@ -5,9 +5,9 @@ import { shallowEqual, useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { memo, useState } from 'react'
 import { isBoolean } from 'remeda'
+import { FitViewPaddings } from '../base/const'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { LikeC4Diagram } from '../LikeC4Diagram'
-import type { ViewPadding } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { Overlay } from '../overlays/overlay/Overlay'
 import type { LikeC4ViewProps } from './LikeC4View.props'
@@ -37,13 +37,6 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   return <LikeC4ViewInner view={view.$view} {...props} />
 }
 
-const DEFAULT_BROWSER_PADDING: ViewPadding = {
-  top: '50px',
-  bottom: '16px',
-  left: '16px',
-  right: '16px',
-}
-
 type LikeC4ViewInnerProps<A extends t.aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
   view: t.DiagramView<A>
 }
@@ -56,8 +49,6 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
   colorScheme: explicitColorScheme,
   injectFontCss = true,
   controls = false,
-  fitView = true,
-  fitViewPadding = '16px',
   background = 'transparent',
   browser = true,
   showDiagramTitle = false,
@@ -129,8 +120,8 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
             pannable={pannable}
             zoomable={zoomable}
             background={background}
-            fitView={fitView}
-            fitViewPadding={fitViewPadding}
+            fitView={true}
+            fitViewPadding={FitViewPaddings.default}
             showDiagramTitle={showDiagramTitle}
             showNotations={showNotations && hasNotations}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
@@ -152,7 +143,6 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
             // so we don't want enable search and hotkeys
             enableSearch={false}
             {...isBrowserEnabled && {
-              onNavigateTo: onNavigateTo,
               onCanvasClick: onNavigateToThisView,
               onNodeClick: onNavigateToThisView,
             }}
@@ -176,8 +166,8 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
                 controls="next"
                 readonly
                 fitView
-                fitViewPadding={DEFAULT_BROWSER_PADDING}
                 {...props}
+                fitViewPadding={FitViewPaddings.withControls}
                 {...browserProps}
                 showNotations={(browserProps.showNotations ?? true) &&
                   (browserView.notation?.nodes.length ?? 0) > 0}

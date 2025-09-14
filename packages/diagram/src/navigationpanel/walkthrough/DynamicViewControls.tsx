@@ -1,5 +1,5 @@
 import { invariant } from '@likec4/core'
-import type { DynamicViewDisplayMode } from '@likec4/core/types'
+import type { DynamicViewDisplayVariant } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
 import { type ButtonProps, Button, SegmentedControl } from '@mantine/core'
 import {
@@ -18,7 +18,7 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
 ) => (
   <Button
     variant="filled"
-    size="compact-xs"
+    size="xs"
     fw="500"
     {...props}
     ref={ref}
@@ -41,6 +41,8 @@ function StartWalkthroughButton({ onClick }: { onClick: () => void }) {
           actor.closeDropdown()
           diagram.startWalkthrough()
         }}
+        size="compact-xs"
+        h={26}
         classNames={{
           label: css({
             display: {
@@ -67,17 +69,18 @@ function DynamicViewModeSwitcher({
   value,
   onChange,
 }: {
-  value: DynamicViewDisplayMode
-  onChange: (mode: DynamicViewDisplayMode) => void
+  value: DynamicViewDisplayVariant
+  onChange: (variant: DynamicViewDisplayVariant) => void
 }) {
   return (
     <m.div layout="position">
       <SegmentedControl
         size="xs"
         value={value}
-        onChange={mode => {
-          invariant(mode === 'diagram' || mode === 'sequence', 'Invalid dynamic view mode')
-          onChange(mode)
+        component={m.div}
+        onChange={variant => {
+          invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
+          onChange(variant)
         }}
         classNames={{
           label: css({
@@ -99,18 +102,20 @@ function DynamicViewModeSwitcher({
 }
 
 export function DynamicViewControls() {
-  const dynamicViewMode = useDiagramContext(c => c.dynamicViewMode)
+  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
   const actor = useNavigationActor()
   return (
     <>
       <DynamicViewModeSwitcher
-        value={dynamicViewMode}
+        key="dynamic-view-mode-switcher"
+        value={dynamicViewVariant}
         onChange={mode => {
-          diagram.switchDynamicViewMode(mode)
+          diagram.switchDynamicViewVariant(mode)
         }}
       />
       <StartWalkthroughButton
+        key="trigger-dynamic-walkthrough"
         onClick={() => {
           actor.closeDropdown()
           diagram.startWalkthrough()

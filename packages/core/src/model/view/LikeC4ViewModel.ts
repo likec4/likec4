@@ -2,7 +2,7 @@ import { isTruthy } from 'remeda'
 import type {
   Any,
   AnyView,
-  DynamicViewDisplayMode,
+  DynamicViewDisplayVariant,
   IteratorLike,
   Link,
   scalar,
@@ -173,9 +173,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    * Available for dynamic views only
    * throws error if view is not dynamic
    */
-  get mode(): DynamicViewDisplayMode {
+  get mode(): DynamicViewDisplayVariant {
     if (this.isDynamicView()) {
-      return this.$view.mode ?? 'diagram'
+      return this.$view.variant ?? 'diagram'
     }
     throw new Error('View is not dynamic')
   }

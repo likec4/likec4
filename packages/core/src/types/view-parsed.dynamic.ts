@@ -65,7 +65,7 @@ export type DynamicViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   AutoLayout: ViewRuleAutoLayout
 }>
 
-export type DynamicViewDisplayMode = 'diagram' | 'sequence'
+export type DynamicViewDisplayVariant = 'diagram' | 'sequence'
 
 export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'dynamic'
@@ -76,7 +76,8 @@ export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsed
    *
    * @default 'diagram'
    */
-  readonly mode?: DynamicViewDisplayMode
+  readonly variant?: DynamicViewDisplayVariant
+
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]
 }

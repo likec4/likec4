@@ -54,7 +54,10 @@ export const elementShapeRecipe = defineRecipe({
               '0 1px 1px 0 color-mix(in srgb, var(--likec4-palette-stroke) 40%, transparent)',
               '0 5px 3px 0 rgb(0 0 0 / 10%)',
             ].join(','),
-            _whenHovered: `rgba(38, 57, 77, 95%) 0px 20px 30px -10px`,
+            _whenHovered: {
+              _light: `rgba(38, 57, 77, 95%) 0px 20px 30px -10px`,
+              _dark: `rgba(10, 11, 16, 90%) 0px 20px 30px -10px`,
+            },
             _whenSelected: 'none',
             _smallZoom: 'none',
             _whenPanning: 'none',

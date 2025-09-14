@@ -329,7 +329,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           <EdgeLabel edgeProps={props}>
             {navigateTo && (
               <EdgeActionButton
-                {...props}
                 onClick={e => {
                   e.stopPropagation()
                   diagram.navigateTo(navigateTo)

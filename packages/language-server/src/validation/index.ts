@@ -10,7 +10,7 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewDisplayMode, dynamicViewStep } from './dynamic-view'
+import { dynamicViewDisplayVariant, dynamicViewStep } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImported, checkImportsFromPoject } from './imports'
@@ -82,7 +82,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isDeploymentNode,
   ast.isDeploymentRelation,
   ast.isRelationshipStyleProperty,
-  ast.isDynamicViewDisplayModeProperty,
+  ast.isDynamicViewDisplayVariantProperty,
   ast.isMetadataProperty,
   ast.isRelation,
   ast.isElementProperty,
@@ -173,7 +173,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ImportsFromPoject: checkImportsFromPoject(services),
     Imported: checkImported(services),
     ColorLiteral: colorLiteralRuleChecks(services),
-    DynamicViewDisplayModeProperty: dynamicViewDisplayMode(services),
+    DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

@@ -19,7 +19,7 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
-import type { DynamicViewDisplayMode } from './view-parsed.dynamic'
+import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
 export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks {
   id: scalar.NodeId
@@ -114,5 +114,5 @@ export interface ComputedDynamicView<A extends Any = Any> extends BaseComputedVi
    * - `diagram`: display as a regular likec4 view
    * - `sequence`: display as a sequence diagram
    */
-  readonly mode: DynamicViewDisplayMode
+  readonly variant: DynamicViewDisplayVariant
 }

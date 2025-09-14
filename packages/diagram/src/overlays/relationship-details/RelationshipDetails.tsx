@@ -1,5 +1,5 @@
 import { type DiagramEdge, type DiagramView, invariant, isAncestor, nonNullable } from '@likec4/core'
-import { cx as clsx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
@@ -145,7 +145,10 @@ const RelationshipDetailsInner = memo(() => {
       id={browser.rootElementId}
       nodes={nodes}
       edges={edges}
-      className={clsx(initialized ? 'initialized' : 'not-initialized')}
+      className={cx(
+        initialized ? 'initialized' : 'not-initialized',
+        'likec4-relationship-details',
+      )}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodesChange={useCallbackRef((changes) => {

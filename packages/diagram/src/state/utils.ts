@@ -91,7 +91,7 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   const sourceNode = nonNullable(xystate.nodeLookup.get(stepEdge.source))
   const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
 
-  const actorsBounds = getNodesBounds([sourceNode, targetNode])
+  const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
 
   let stepBounds: BBox | undefined | null
   if (activeWalkthrough.parallelPrefix) {

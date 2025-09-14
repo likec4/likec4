@@ -15,11 +15,11 @@ type RFEdge<
 type ReactFlowNodeProps<
   NodeData extends Record<string, unknown> = Record<string, unknown>,
   NodeType extends string | undefined = string | undefined,
-> = RF.NodeProps<RFNode<NodeData, NodeType>>
+> = RF.NodeProps<RF.Node<NodeData, NodeType>>
 type ReactFlowEdgeProps<
   EdgeData extends Record<string, unknown> = Record<string, unknown>,
   EdgeType extends string | undefined = string | undefined,
-> = RF.EdgeProps<RFEdge<EdgeData, EdgeType>>
+> = RF.EdgeProps<RF.Edge<EdgeData, EdgeType>>
 
 export namespace Base {
   // 'immediate' means that the node is dimmed without delay
@@ -156,9 +156,11 @@ export type NodeProps<T extends Record<string, unknown> = {}, NodeType extends s
 /**
  * ReactFlow Custom Edge properties with BaseEdgeData at least
  */
-export type EdgeProps<T extends Record<string, unknown> = {}, EdgeType extends string = string> = SetRequired<
-  Simplify<ReactFlowEdgeProps<Base.EdgeData & T, EdgeType>>,
-  'data'
+export type EdgeProps<T extends Record<string, unknown> = {}, EdgeType extends string = string> = Simplify<
+  SetRequired<
+    ReactFlowEdgeProps<Base.EdgeData & T, EdgeType>,
+    'data'
+  >
 >
 
 export type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
