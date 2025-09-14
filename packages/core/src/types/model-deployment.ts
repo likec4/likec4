@@ -28,11 +28,8 @@ export interface DeploymentNode<A extends AnyAux = Unknown>
   readonly title: string
   readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
-  readonly tags?: aux.Tags<A> | null
-  readonly links?: readonly Link[] | null
   readonly style: DeploymentElementStyle
   readonly notation?: string | null
-  readonly metadata?: aux.Metadata<A>
 }
 
 // dprint-ignore
@@ -52,11 +49,8 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly title?: string
   readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
-  readonly tags?: aux.Tags<A> | null
-  readonly links?: readonly Link[] | null
   readonly style?: DeploymentElementStyle
   readonly notation?: string
-  readonly metadata?: aux.Metadata<A>
 }
 
 export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>
@@ -67,11 +61,11 @@ export type DeploymentElementRef<A extends AnyAux = Unknown> = {
 }
 
 export function isDeploymentNode<A extends AnyAux>(el: DeploymentElement<A>): el is DeploymentNode<A> {
-  return 'kind' in el && !isTruthy(el.element)
+  return isTruthy(el.kind) && !isTruthy(el.element)
 }
 
 export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): el is DeployedInstance<A> {
-  return 'element' in el && isTruthy(el.element)
+  return isTruthy(el.element) && !isTruthy(el.kind)
 }
 
 /**

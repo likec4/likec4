@@ -1,6 +1,5 @@
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
-import type { Link } from './_common'
 import type { FqnRef } from './fqnRef'
 import type * as scalar from './scalar'
 import type {
@@ -83,14 +82,11 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly title: string
   readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
-  readonly tags?: aux.Tags<A> | null
-  readonly links?: readonly Link[] | null
   readonly icon?: scalar.Icon
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string | null
-  readonly metadata?: aux.Metadata<A>
 }
 
 export const DefaultLineStyle: RelationshipLineType = 'dashed'
@@ -113,11 +109,8 @@ export interface AbstractRelationship<A extends AnyAux>
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
-  readonly tags?: aux.Tags<A> | null
-  readonly links?: readonly Link[] | null
   // Link to dynamic view
   readonly navigateTo?: aux.ViewId<A>
-  readonly metadata?: aux.Metadata<A>
 }
 
 /**
