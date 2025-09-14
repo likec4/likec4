@@ -115,14 +115,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const { title, description, technology } = this.parseTitleDescriptionTechnology(
-        {
-          title: undefined,
-          description: undefined,
-          technology: undefined,
-        },
-        bodyProps,
-      )
+      const { title, description, technology } = this.parseBaseProps(bodyProps)
       const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
 
       return {

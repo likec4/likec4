@@ -33,8 +33,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       const {
         title = null,
         description = null,
-      } = this.parseTitleDescriptionTechnology(
-        {},
+      } = this.parseBaseProps(
         pipe(
           props,
           filter(ast.isViewStringProperty),

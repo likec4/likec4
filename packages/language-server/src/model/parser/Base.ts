@@ -378,31 +378,35 @@ export class BaseParser {
   }
 
   /**
-   * Parses title, description and technology
-   * Inline properties (right on node) have higher priority than body properties (inside '{...}')
+   * Parse base properties: title, description and technology
+   *
+   * @param props - body properties (inside '{...}')
+   * @param override - optional, inline properties (right on the node)
+   *                   have higher priority and override body properties
    */
-  parseTitleDescriptionTechnology(
-    inlineProps: {
-      title?: string | undefined
-      description?: string | undefined
-      technology?: string | undefined
-    },
-    bodyProps: {
+  parseBaseProps(
+    props: {
       title?: ast.MarkdownOrString | undefined
       description?: ast.MarkdownOrString | undefined
       technology?: ast.MarkdownOrString | undefined
+    },
+    override?: {
+      title?: string | undefined
+      description?: string | undefined
+      technology?: string | undefined
     },
   ): {
     title?: string
     description?: c4.MarkdownOrString
     technology?: string
   } {
-    const title = removeIndent(inlineProps.title ?? parseMarkdownAsString(bodyProps.title))
+    const title = removeIndent(override?.title ?? parseMarkdownAsString(props.title))
 
-    const description = inlineProps.description
-      ? { txt: removeIndent(inlineProps.description) }
-      : this.parseMarkdownOrString(bodyProps.description)
-    const technology = toSingleLine(inlineProps.technology) ?? removeIndent(parseMarkdownAsString(bodyProps.technology))
+    const description = override?.description
+      ? { txt: removeIndent(override.description) }
+      : this.parseMarkdownOrString(props.description)
+    const technology = toSingleLine(override?.technology) ??
+      removeIndent(parseMarkdownAsString(props.technology))
 
     return {
       ...(isTruthy(title) && { title }),

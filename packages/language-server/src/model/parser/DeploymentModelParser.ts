@@ -88,12 +88,11 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
-        {
-          title: astNode.title,
-        },
-        bodyProps,
-      )
+      const { title, ...descAndTech } = this.parseBaseProps({
+        title: undefined,
+      }, {
+        title: astNode.title,
+      })
 
       const links = this.convertLinks(astNode.body)
 
@@ -127,12 +126,9 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const titleDescAndTech = this.parseTitleDescriptionTechnology(
-        {
-          title: astNode.title,
-        },
-        bodyProps,
-      )
+      const titleDescAndTech = this.parseBaseProps(bodyProps, {
+        title: astNode.title,
+      })
 
       const links = this.convertLinks(astNode.body)
 
@@ -210,12 +206,9 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         first(),
       )
 
-      const titleDescAndTech = this.parseTitleDescriptionTechnology(
-        {
-          title: astNode.title,
-        },
-        bodyProps,
-      )
+      const titleDescAndTech = this.parseBaseProps(bodyProps, {
+        title: astNode.title,
+      })
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
 

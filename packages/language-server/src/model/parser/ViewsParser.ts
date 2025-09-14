@@ -97,8 +97,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
-        {},
+      const { title = null, description = null } = this.parseBaseProps(
         pipe(
           body.props,
           filter(p => this.isValid(p)),
@@ -270,8 +269,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseTitleDescriptionTechnology(
-        {},
+      const { title = null, description = null } = this.parseBaseProps(
         pipe(
           props,
           filter(ast.isViewStringProperty),

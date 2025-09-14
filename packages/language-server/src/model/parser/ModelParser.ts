@@ -94,14 +94,11 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const { title, ...descAndTech } = this.parseTitleDescriptionTechnology(
-        {
-          title: _title,
-          description: _description,
-          technology: _technology,
-        },
-        bodyProps,
-      )
+      const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
+        title: _title,
+        description: _description,
+        technology: _technology,
+      })
 
       const links = this.parseLinks(astNode.body)
 
@@ -178,15 +175,12 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         filter(isTruthy),
         first(),
       )
-      const { title = '', ...descAndTech } = this.parseTitleDescriptionTechnology(
+      const { title = '', ...descAndTech } = this.parseBaseProps(bodyProps, {
         // inline props
-        {
-          title: astNode.title,
-          description: astNode.description,
-          technology: astNode.technology,
-        },
-        bodyProps,
-      )
+        title: astNode.title,
+        description: astNode.description,
+        technology: astNode.technology,
+      })
 
       const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
       const id = stringHash(
