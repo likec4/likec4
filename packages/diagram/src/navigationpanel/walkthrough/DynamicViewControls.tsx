@@ -18,7 +18,7 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
 ) => (
   <Button
     variant="filled"
-    size="compact-xs"
+    size="xs"
     fw="500"
     {...props}
     ref={ref}
@@ -41,6 +41,8 @@ function StartWalkthroughButton({ onClick }: { onClick: () => void }) {
           actor.closeDropdown()
           diagram.startWalkthrough()
         }}
+        size="compact-xs"
+        h={26}
         classNames={{
           label: css({
             display: {
@@ -75,6 +77,7 @@ function DynamicViewModeSwitcher({
       <SegmentedControl
         size="xs"
         value={value}
+        component={m.div}
         onChange={variant => {
           invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
           onChange(variant)
@@ -105,12 +108,14 @@ export function DynamicViewControls() {
   return (
     <>
       <DynamicViewModeSwitcher
+        key="dynamic-view-mode-switcher"
         value={dynamicViewVariant}
         onChange={mode => {
           diagram.switchDynamicViewVariant(mode)
         }}
       />
       <StartWalkthroughButton
+        key="trigger-dynamic-walkthrough"
         onClick={() => {
           actor.closeDropdown()
           diagram.startWalkthrough()

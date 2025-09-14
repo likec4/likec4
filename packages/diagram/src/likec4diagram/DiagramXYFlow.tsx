@@ -228,6 +228,7 @@ export function LikeC4DiagramXYFlow({
         }}
         nodesDraggable={notReadOnly && nodesDraggable}
         nodesSelectable={nodesSelectable}
+        edgesFocusable={false}
         {...(notReadOnly && nodesDraggable && layoutConstraints)}
         {...props}
         {...reactFlowProps}>

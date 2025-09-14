@@ -187,6 +187,8 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
         head: 'normal',
         tail: 'none',
       },
+      selectable: true,
+      focusable: false,
       zIndex: 20,
       interactionWidth: 40,
       source: step.source.id,
@@ -268,6 +270,7 @@ function toSeqParallelArea(
       y,
     },
     draggable: false,
+    deletable: false,
     selectable: false,
     focusable: false,
     style: {
@@ -322,6 +325,8 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
         })
       }),
     },
+    deletable: false,
+    selectable: true,
     zIndex: SeqZIndex.actor,
     position: { x, y },
     width,

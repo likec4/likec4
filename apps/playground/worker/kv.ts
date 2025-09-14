@@ -217,6 +217,7 @@ function convertLegacyModel(
       })),
       tags: tags ? [...tags] : [],
       id: id as unknown as scalar.ViewId<string>,
+      variant: 'diagram',
       _type: (__ ?? 'element' as const) as any,
       _stage: 'layouted',
     })),

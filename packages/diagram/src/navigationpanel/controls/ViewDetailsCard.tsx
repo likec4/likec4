@@ -41,6 +41,9 @@ export const ViewDetailsCard = (props: PopoverProps) => {
       shadow="xl"
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       trapFocus
+      offset={{
+        mainAxis: 4,
+      }}
       {...portalProps}
       {...props}
     >
@@ -63,8 +66,8 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
         'group',
         hstack({
           gap: '2',
-          paddingInline: 'xxs',
-          paddingBlock: 'xxs',
+          paddingInline: '2',
+          paddingBlock: '1',
           rounded: 'sm',
           userSelect: 'none',
           cursor: 'pointer',

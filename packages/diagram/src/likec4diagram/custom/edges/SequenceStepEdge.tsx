@@ -7,12 +7,7 @@ import type { Types } from '../../types'
 const LABEL_OFFSET = 16
 export function SequenceStepEdge(props: EdgeProps<Types.SequenceStepEdgeData>) {
   const diagram = useDiagram()
-  const {
-    label,
-    labelBBox,
-    navigateTo,
-    dir,
-  } = props.data
+  const { navigateTo } = props.data
   const isSelfLoop = props.source === props.target
   const isBack = props.sourceX > props.targetX
   const [path] = getSmoothStepPath({
@@ -58,7 +53,6 @@ export function SequenceStepEdge(props: EdgeProps<Types.SequenceStepEdgeData>) {
         <EdgeLabel edgeProps={props}>
           {navigateTo && (
             <EdgeActionButton
-              {...props}
               onClick={e => {
                 e.stopPropagation()
                 diagram.navigateTo(navigateTo)
