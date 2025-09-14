@@ -10,7 +10,7 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramView,
-  DynamicViewDisplayMode,
+  DynamicViewDisplayVariant,
   EdgeId,
   Fqn,
   NodeId,
@@ -95,7 +95,7 @@ export interface Input {
   pannable: boolean
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
-  dynamicViewMode?: DynamicViewDisplayMode | undefined
+  dynamicViewMode?: DynamicViewDisplayVariant | undefined
 }
 
 export type ToggledFeatures = Partial<EnabledFeatures>
@@ -138,7 +138,7 @@ export interface Context extends Input {
   syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
   // If Dynamic View
-  dynamicViewMode: DynamicViewDisplayMode
+  dynamicViewMode: DynamicViewDisplayVariant
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
@@ -181,7 +181,7 @@ export type Events =
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
-  | { type: 'switch.dynamicViewMode'; mode: DynamicViewDisplayMode }
+  | { type: 'switch.dynamicViewMode'; mode: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }

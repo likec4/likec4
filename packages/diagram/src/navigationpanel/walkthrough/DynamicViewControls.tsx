@@ -1,5 +1,5 @@
 import { invariant } from '@likec4/core'
-import type { DynamicViewDisplayMode } from '@likec4/core/types'
+import type { DynamicViewDisplayVariant } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
 import { type ButtonProps, Button, SegmentedControl } from '@mantine/core'
 import {
@@ -67,8 +67,8 @@ function DynamicViewModeSwitcher({
   value,
   onChange,
 }: {
-  value: DynamicViewDisplayMode
-  onChange: (mode: DynamicViewDisplayMode) => void
+  value: DynamicViewDisplayVariant
+  onChange: (mode: DynamicViewDisplayVariant) => void
 }) {
   return (
     <m.div layout="position">

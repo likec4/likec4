@@ -116,7 +116,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    * Default dynamic view display mode
    * @default 'diagram'
    */
-  dynamicViewMode?: t.DynamicViewDisplayMode | undefined
+  dynamicViewMode?: t.DynamicViewDisplayVariant | undefined
 
   /**
    * Enable popup with element details
@@ -237,7 +237,7 @@ export interface LikeC4BrowserProps {
    * Default dynamic view display mode
    * @default 'diagram'
    */
-  dynamicViewMode?: t.DynamicViewDisplayMode | undefined
+  dynamicViewMode?: t.DynamicViewDisplayVariant | undefined
 
   /**
    * Enable popup with element details

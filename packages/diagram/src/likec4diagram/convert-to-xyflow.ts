@@ -1,4 +1,4 @@
-import type { DynamicViewDisplayMode, LayoutedView, WhereOperator } from '@likec4/core/types'
+import type { DynamicViewDisplayVariant, LayoutedView, WhereOperator } from '@likec4/core/types'
 import type { Types } from './types'
 import { diagramToXY } from './xyflow-diagram/diagram-view'
 import { sequenceViewToXY } from './xyflow-sequence/sequence-view'
@@ -7,7 +7,7 @@ type ConvertToXYFlowInput = {
   view: LayoutedView
   where: WhereOperator | null
   nodesSelectable: boolean
-  dynamicViewMode: DynamicViewDisplayMode
+  dynamicViewMode: DynamicViewDisplayVariant
 }
 
 export function convertToXYFlow({ dynamicViewMode, ...params }: ConvertToXYFlowInput): {

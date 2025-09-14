@@ -1,4 +1,4 @@
-import type { DiagramView, DynamicViewDisplayMode, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
@@ -49,7 +49,7 @@ export function DiagramActorProvider({
   fitViewPadding: ViewPadding
   nodesSelectable: boolean
   where: WhereOperator | null
-  dynamicViewMode: DynamicViewDisplayMode | undefined
+  dynamicViewMode: DynamicViewDisplayVariant | undefined
 }>) {
   const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()

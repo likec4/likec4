@@ -2,7 +2,7 @@ import type * as t from '@likec4/core/types'
 import type {
   DiagramEdge,
   DiagramNode,
-  DynamicViewDisplayMode,
+  DynamicViewDisplayVariant,
   LayoutedView,
   ViewChange,
   WhereOperator,
@@ -261,7 +261,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
    * Default dynamic view display mode
    * @default 'diagram'
    */
-  dynamicViewMode?: DynamicViewDisplayMode | undefined
+  dynamicViewMode?: DynamicViewDisplayVariant | undefined
 
   /**
    * Display element tags in the bottom left corner

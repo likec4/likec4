@@ -286,7 +286,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const manualLayout = parseViewManualLayout(astNode)
 
-      const mode = find(props, ast.isDynamicViewDisplayModeProperty)?.value
+      const mode = find(props, ast.isDynamicViewDisplayVariantProperty)?.value
 
       return {
         [c4._type]: 'dynamic',
