@@ -140,7 +140,7 @@ export const globalCss: ExtendableGlobalCss = {
         },
         '& .react-flow__node-seq-parallel': {
           mixBlendMode: {
-            // _dark: 'plus-lighter',
+            _dark: 'luminosity',
             _light: 'color-burn',
           },
         },

@@ -87,9 +87,9 @@ export class SequenceViewLayouter {
   #parallelBoxes = [] as Array<{
     parallelPrefix: string
     x1: kiwi.Expression
-    y1: kiwi.Expression
+    y1: kiwi.Expression | kiwi.Variable
     x2: kiwi.Expression
-    y2: kiwi.Expression
+    y2: kiwi.Expression | kiwi.Variable
   }>
 
   constructor({
@@ -141,18 +141,16 @@ export class SequenceViewLayouter {
 
     if (compounds.length > 0) {
       for (const compound of this.#compounds) {
-        // if compound is not nested
-        if (compound.depth === 0) {
-          const from = compound.from.column
-          const to = compound.to.column
-          let maxRow = Math.max(compound.from.maxRow, compound.to.maxRow)
-          for (let i = from + 1; i < to; i++) {
-            const actorBox = this.actorBox(i)
-            maxRow = Math.max(maxRow, actorBox.maxRow)
-          }
-          const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
-          this.put(compound.bottom).after(lastRow.bottom, 16)
+        const from = compound.from.column
+        const to = compound.to.column
+        let maxRow = Math.max(compound.from.maxRow, compound.to.maxRow)
+        for (let i = from + 1; i < to; i++) {
+          const actorBox = this.actorBox(i)
+          maxRow = Math.max(maxRow, actorBox.maxRow)
         }
+        const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
+        this.put(compound.bottom).after(lastRow.bottom, 16)
+        this.put(this.#viewportBottom).after(compound.bottom)
       }
     }
 
@@ -309,13 +307,14 @@ export class SequenceViewLayouter {
     min,
     max,
   }: ParallelRect) {
-    const x1 = this.actorBox(min.column).centerX.minus(24)
-    const x2 = this.actorBox(max.column).centerX.plus(24)
+    const x1 = this.actorBox(min.column).centerX.minus(30)
+    const x2 = this.actorBox(max.column).centerX.plus(30)
     const firstRow = this.#rows[min.row]
     const lastRow = this.#rows[max.row]
     invariant(firstRow && lastRow, `parallel box invalid x1${x1} x2${x2} y1${firstRow} y2${lastRow}`)
 
-    const y1 = firstRow.y.minus(32)
+    const y1 = this.newVar(0)
+    this.put(y1).before(firstRow.y, 40)
     const y2 = lastRow.bottom
 
     // margin top
