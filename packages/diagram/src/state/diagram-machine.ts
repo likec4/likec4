@@ -181,7 +181,7 @@ export type Events =
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
-  | { type: 'switch.dynamicViewMode'; mode: DynamicViewDisplayVariant }
+  | { type: 'switch.dynamicViewMode'; variant: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
@@ -691,7 +691,7 @@ const _diagramMachine = setup({
     'assign: dynamicViewMode': assign(({ event }) => {
       assertEvent(event, 'switch.dynamicViewMode')
       return {
-        dynamicViewMode: event.mode,
+        dynamicViewMode: event.variant,
       }
     }),
   },
@@ -722,7 +722,9 @@ const _diagramMachine = setup({
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
     syncLayoutActorRef: null,
-    dynamicViewMode: input.dynamicViewMode ?? ('mode' in input.view ? input.view.mode : 'diagram'),
+    dynamicViewMode: input.dynamicViewMode ?? (
+      input.view._type === 'dynamic' ? input.view.variant : 'diagram'
+    ),
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
@@ -1329,7 +1331,7 @@ const _diagramMachine = setup({
             if (
               nextView._type === 'dynamic' &&
               context.view._type === 'dynamic' &&
-              nextView.mode !== context.view.mode
+              nextView.variant !== context.view.variant
             ) {
               enqueue({
                 type: 'xyflow:setViewportCenter',

@@ -76,7 +76,7 @@ export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsed
    *
    * @default 'diagram'
    */
-  readonly mode?: DynamicViewDisplayVariant
+  readonly variant?: DynamicViewDisplayVariant
 
   readonly steps: DynamicViewStepOrParallel<A>[]
   readonly rules: DynamicViewRule<A>[]

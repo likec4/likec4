@@ -68,16 +68,16 @@ function DynamicViewModeSwitcher({
   onChange,
 }: {
   value: DynamicViewDisplayVariant
-  onChange: (mode: DynamicViewDisplayVariant) => void
+  onChange: (variant: DynamicViewDisplayVariant) => void
 }) {
   return (
     <m.div layout="position">
       <SegmentedControl
         size="xs"
         value={value}
-        onChange={mode => {
-          invariant(mode === 'diagram' || mode === 'sequence', 'Invalid dynamic view mode')
-          onChange(mode)
+        onChange={variant => {
+          invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
+          onChange(variant)
         }}
         classNames={{
           label: css({

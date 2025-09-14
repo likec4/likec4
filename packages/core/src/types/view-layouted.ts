@@ -94,5 +94,5 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
    * - `diagram`: display as a regular likec4 view
    * - `sequence`: display as a sequence diagram
    */
-  readonly mode: DynamicViewDisplayVariant
+  readonly variant: DynamicViewDisplayVariant
 }

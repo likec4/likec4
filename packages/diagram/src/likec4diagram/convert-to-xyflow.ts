@@ -22,12 +22,12 @@ export function convertToXYFlow({ dynamicViewMode, ...params }: ConvertToXYFlowI
     ? sequenceViewToXY(view)
     : diagramToXY(params)
 
-  if (isDynamic && view.mode !== dynamicViewMode) {
+  if (isDynamic && view.variant !== dynamicViewMode) {
     return {
       view: {
         ...view,
         bounds,
-        mode: dynamicViewMode,
+        variant: dynamicViewMode,
       },
       xynodes,
       xyedges,
