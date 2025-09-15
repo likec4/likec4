@@ -6,12 +6,13 @@ import {
   type DiagramEdge,
   type IteratorLike,
   type RelationshipLineType,
+  type RichTextOrEmpty,
   type scalar,
   type StepEdgeId,
   extractStep,
   isStepEdgeId,
+  RichText,
 } from '../../types'
-import { type RichTextOrEmpty, RichText } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { $View, WithTags } from '../types'
@@ -44,7 +45,7 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.#edge.description)
+    return RichText.memoize(this, 'description', this.#edge.description)
   }
 
   get technology(): string | null {

@@ -1,5 +1,5 @@
 import type * as aux from './_aux'
-import type { Any } from './_aux'
+import type { AnyAux } from './_aux'
 import type { _stage, _type } from './const'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
@@ -21,26 +21,33 @@ import type {
 } from './view-common'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
-export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks {
+// dprint-ignore
+export interface ComputedNode<A extends AnyAux = AnyAux>
+  extends
+    aux.WithTags<A>,
+    aux.WithOptionalLinks
+{  
   id: scalar.NodeId
   kind: aux.ElementKind<A> | aux.DeploymentKind<A> | '@group'
   parent: scalar.NodeId | null
   /**
    * Reference to model element
    */
-  modelRef?: aux.Fqn<A> | undefined
+  modelRef?: aux.Fqn<A>
   /**
    * Reference to deployment element
    */
-  deploymentRef?: aux.DeploymentFqn<A> | undefined
+  deploymentRef?: aux.DeploymentFqn<A>
   title: string
+  /**
+   * Description of the node
+   * either summary or description
+   */
   description?: scalar.MarkdownOrString | null
   technology?: string | null
-  notation?: string
   children: scalar.NodeId[]
   inEdges: scalar.EdgeId[]
   outEdges: scalar.EdgeId[]
-  tags: aux.Tags<A>
   shape: ElementShape
   color: Color
   icon?: Icon
@@ -48,21 +55,22 @@ export interface ComputedNode<A extends Any = Any> extends aux.WithOptionalLinks
   navigateTo?: aux.StrictViewId<A> | null
   level: number
   // For compound nodes, the max depth of nested nodes
-  depth?: number
+  depth?: number | null
   /**
    * If this node was customized in the view
    */
   isCustomized?: boolean
+  notation?: string | null
 }
 
-export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<A> {
+export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A> {
   id: scalar.EdgeId
   parent: scalar.NodeId | null
   source: scalar.NodeId
   target: scalar.NodeId
   label: string | null
   description?: scalar.MarkdownOrString | null
-  technology?: string
+  technology?: string | null
   relations: scalar.RelationId[]
   kind?: aux.RelationKind<A> | typeof scalar.StepEdgeKind
   notation?: string
@@ -85,7 +93,7 @@ export interface ComputedEdge<A extends Any = Any> extends aux.WithOptionalTags<
   dir?: 'forward' | 'back' | 'both'
 }
 
-interface BaseComputedViewProperties<A extends Any> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
+interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'computed'
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode<A>[]
@@ -97,17 +105,17 @@ interface BaseComputedViewProperties<A extends Any> extends BaseViewProperties<A
   readonly manualLayout?: ViewManualLayout | undefined
 }
 
-export interface ComputedElementView<A extends Any = Any> extends BaseComputedViewProperties<A> {
+export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'element'
   readonly viewOf?: aux.StrictFqn<A>
   readonly extends?: aux.StrictViewId<A>
 }
 
-export interface ComputedDeploymentView<A extends Any = Any> extends BaseComputedViewProperties<A> {
+export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'deployment'
 }
 
-export interface ComputedDynamicView<A extends Any = Any> extends BaseComputedViewProperties<A> {
+export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'dynamic'
   /**
    * How to display the dynamic view

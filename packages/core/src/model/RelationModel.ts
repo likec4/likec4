@@ -83,7 +83,7 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$relationship.description)
+    return RichText.memoize(this, 'description', this.$relationship.description)
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {

@@ -26,6 +26,9 @@ import type {
 export interface ElementSpecification {
   tags?: scalar.Tag[]
   title?: string
+  // short summary
+  summary?: scalar.MarkdownOrString
+  // long description
   description?: scalar.MarkdownOrString
   technology?: string
   notation?: string

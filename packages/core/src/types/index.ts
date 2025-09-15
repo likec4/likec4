@@ -13,6 +13,8 @@ export type {
   UnknownParsed,
 } from './_aux'
 
+export { preferDescription, preferSummary } from './_aux'
+
 export * from './const'
 export * from './expression'
 export * from './expression-model'

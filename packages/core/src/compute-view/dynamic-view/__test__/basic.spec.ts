@@ -371,6 +371,7 @@ describe('dynamic-view', () => {
       {
         ...common,
         id: 'customer',
+        description: { txt: 'short description' },
         parent: null,
         outEdges: ['step-01'],
         inEdges: [],

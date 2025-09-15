@@ -1,11 +1,9 @@
 import { isTruthy } from 'remeda'
 import type * as aux from './_aux'
 import type { AnyAux, Unknown } from './_aux'
-import type { Link } from './_common'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 import type { Icon } from './scalar'
-import type * as scalar from './scalar'
 import type { Color, ElementShape } from './styles'
 
 export interface DeploymentElementStyle extends ElementStyle {
@@ -17,27 +15,28 @@ export interface DeploymentElementStyle extends ElementStyle {
 // dprint-ignore
 export interface DeploymentNode<A extends AnyAux = Unknown>
   extends
+    aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,
-    aux.WithMetadata<A>
+    aux.WithMetadata<A>,
+    aux.WithNotation
 {
   element?: never
   // Full-qualified-name for Deployment model
   readonly id: aux.StrictDeploymentFqn<A>
   readonly kind: aux.DeploymentKind<A>
   readonly title: string
-  readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: string | null
   readonly style: DeploymentElementStyle
-  readonly notation?: string | null
 }
 
 // dprint-ignore
 export interface DeployedInstance<A extends AnyAux = Unknown>
   extends
+    aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,
-    aux.WithMetadata<A>
+    aux.WithMetadata<A>,
+    aux.WithNotation
 {
   kind?: never
   /**
@@ -47,10 +46,7 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly id: aux.StrictDeploymentFqn<A>
   readonly element: aux.StrictFqn<A>
   readonly title?: string
-  readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: string | null
   readonly style?: DeploymentElementStyle
-  readonly notation?: string
 }
 
 export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>

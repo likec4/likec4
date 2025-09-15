@@ -1,0 +1,113 @@
+{
+  "_stage": "computed",
+  "deployments": {
+    "elements": {
+      "prod": {
+        "id": "prod",
+        "kind": "env",
+        "style": {
+          "color": "primary",
+          "shape": "rectangle",
+        },
+        "title": "prod",
+      },
+      "prod.eu": {
+        "id": "prod.eu",
+        "kind": "node",
+        "style": {
+          "color": "primary",
+          "shape": "rectangle",
+        },
+        "title": "eu",
+      },
+      "prod.eu.ui": {
+        "element": "cloud.ui",
+        "id": "prod.eu.ui",
+      },
+    },
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "color": "primary",
+      "id": "cloud",
+      "kind": "system",
+      "shape": "rectangle",
+      "style": {},
+      "tags": [
+        "tag2",
+      ],
+      "title": "cloud",
+    },
+    "cloud.ui": {
+      "color": "primary",
+      "id": "cloud.ui",
+      "kind": "component",
+      "shape": "rectangle",
+      "style": {},
+      "title": "ui",
+    },
+    "customer": {
+      "color": "primary",
+      "id": "customer",
+      "kind": "actor",
+      "shape": "rectangle",
+      "style": {},
+      "tags": [
+        "tag1",
+      ],
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {
+    "rel1": {
+      "id": "rel1",
+      "kind": "like",
+      "source": {
+        "model": "customer",
+      },
+      "tags": [
+        "tag1",
+      ],
+      "target": {
+        "model": "cloud.ui",
+      },
+      "title": null,
+    },
+  },
+  "specification": {
+    "customColors": {},
+    "deployments": {
+      "env": {},
+      "node": {},
+    },
+    "elements": {
+      "actor": {},
+      "component": {},
+      "system": {},
+    },
+    "relationships": {
+      "dislike": {},
+      "like": {},
+    },
+    "tags": {
+      "tag1": {
+        "color": "primary",
+      },
+      "tag2": {
+        "color": "primary",
+      },
+    },
+  },
+  "views": {},
+}

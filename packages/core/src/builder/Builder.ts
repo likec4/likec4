@@ -2,7 +2,9 @@ import defu from 'defu'
 import {
   entries,
   fromEntries,
+  fromKeys,
   hasAtLeast,
+  isArray,
   isFunction,
   isNonNullish,
   isNullish,
@@ -23,6 +25,7 @@ import type {
   ParsedElementView,
   ParsedLikeC4ModelData,
   Specification,
+  TagSpecification,
 } from '../types'
 import {
   type Color,
@@ -200,30 +203,51 @@ interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>
 
 type Op<T> = (b: T) => T
 
-function validateSpec(specification: BuilderSpecification) {
-  for (const [kind, spec] of entries(specification.elements)) {
+function ensureObj<T>(value: string[] | Record<string, Partial<T>>): Record<string, Partial<T>> {
+  return isArray(value) ? fromKeys(value, v => ({})) : value
+}
+
+function validateSpec({ tags, elements, deployments, relationships, ...specification }: BuilderSpecification) {
+  const spectags = {} as Record<string, Partial<TagSpecification>>
+  if (tags) {
+    Object.assign(
+      spectags,
+      ensureObj(tags),
+    )
+  }
+  const _elements = ensureObj(elements)
+
+  for (const [kind, spec] of entries(_elements)) {
     if (spec.tags) {
       for (const tag of spec.tags) {
-        invariant(specification.tags?.[tag], `Invalid specification for element kind "${kind}": tag "${tag}" not found`)
+        invariant(tag in spectags, `Invalid specification for element kind "${kind}": tag "${tag}" not found`)
       }
     }
   }
-  if (specification.deployments) {
-    for (const [kind, spec] of entries(specification.deployments)) {
-      if (spec.tags) {
-        for (const tag of spec.tags) {
-          invariant(
-            specification.tags?.[tag],
-            `Invalid specification for deployment kind "${kind}": tag "${tag}" not found`,
-          )
-        }
+  const _deployments = ensureObj(deployments ?? {})
+
+  for (const [kind, spec] of entries(_deployments)) {
+    if (spec.tags) {
+      for (const tag of spec.tags) {
+        invariant(
+          tag in spectags,
+          `Invalid specification for deployment kind "${kind}": tag "${tag}" not found`,
+        )
       }
     }
+  }
+
+  return {
+    ...specification,
+    tags: spectags,
+    elements: _elements,
+    deployments: _deployments,
+    relationships: ensureObj(relationships ?? {}),
   }
 }
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
-  spec: Spec,
+  _spec: Spec,
   _elements = new Map<string, Element<Any>>(),
   _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
@@ -235,22 +259,17 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
+  const spec = validateSpec(_spec)
+
   const toLikeC4Specification = (): Specification<Types.ToAux<T>> => {
-    validateSpec(spec)
     return ({
-      elements: {
-        ...structuredClone(spec.elements) as any,
-      },
-      deployments: {
-        ...structuredClone(spec.deployments) as any,
-      },
-      relationships: {
-        ...structuredClone(spec.relationships) as any,
-      },
-      tags: mapValues(spec.tags ?? {}, (tagSpec) => ({
+      elements: structuredClone(spec.elements),
+      deployments: structuredClone(spec.deployments),
+      relationships: structuredClone(spec.relationships),
+      tags: mapValues(spec.tags, (tagSpec) => ({
         color: DefaultThemeColor,
         ...tagSpec,
-      })) as any,
+      })),
       ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)
@@ -510,7 +529,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 icon: _icon,
                 style,
                 title,
-                description = null,
+                description,
+                summary,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -525,8 +545,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
                 ...(description && { description: { txt: description } }),
-                technology: null,
-                tags: [],
+                ...(summary && { summary: { txt: summary } }),
                 color: specStyle?.color ?? DefaultThemeColor as Color,
                 shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
                 style: pickBy({
@@ -537,7 +556,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   textSize: specStyle?.textSize,
                   ...style,
                 }, isNonNullish),
-                links,
+                ...(links && { links }),
                 ...icon && { icon: icon as IconUrl },
                 ...spec,
                 ...props,
@@ -704,7 +723,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             const {
               links,
               title,
-              description = null,
+              description,
+              summary,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
             const _id = b.__deploymentFqn(id)
@@ -713,6 +733,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               id: _id,
               element: target as Fqn,
               ...title && { title },
+              ...(summary && { summary: { txt: summary } }),
               ...(description && { description: { txt: description } }),
               ...links && { links: mapLinks(links) },
               ...props,
@@ -757,7 +778,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 icon: _icon,
                 style,
                 title,
-                description = null,
+                description,
+                summary,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -770,8 +792,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
                 ...(description && { description: { txt: description } }),
-                technology: null,
-                tags: null,
+                ...(summary && { summary: { txt: summary } }),
                 style: {
                   ...icon && { icon: icon as IconUrl },
                   color: specStyle?.color ?? DefaultThemeColor as Color,
@@ -841,11 +862,40 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
   return self
 }
-
-export namespace Builder {
-  export type Any = Builder<AnyTypes>
-
-  export function forSpecification<const Spec extends BuilderSpecification>(
+export const Builder = {
+  /**
+   * Creates a builder with compositional methods
+   *
+   * @example
+   * ```ts
+   * const {
+   *   model: { model, system, component, relTo },
+   *   deployment: { env, vm},
+   *   views: { view, $include },
+   *   builder,
+   * } = Builder.forSpecification({
+   *   elements: {
+   *     system: {},
+   *     component: {},
+   *   },
+   *   deployments: ['env', 'vm'],
+   * })
+   *
+   * const b = builder
+   *   .with(
+   *     model(
+   *       system('cloud').with(
+   *         component('backend'),
+   *         component('backend.api'),
+   *         component('frontend').with(
+   *           relTo('cloud.backend.api'),
+   *         ),
+   *       ),
+   *     ),
+   *   )
+   * ```
+   */
+  forSpecification<const Spec extends BuilderSpecification>(
     spec: Spec,
   ): {
     builder: Builder<Types.FromSpecification<Spec>>
@@ -853,18 +903,44 @@ export namespace Builder {
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
     views: ViewsHelpers
   } {
-    validateSpec(spec)
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
       builder: b,
     }
-  }
+  },
 
-  export function specification<const Spec extends BuilderSpecification>(
+  /**
+   * Creates a builder with chainable methods
+   *
+   * @example
+   * ```ts
+   * const b = Builder
+   *   .specification({
+   *     elements: ['system', 'component'],
+   *     deployments: ['env', 'vm'],
+   *   })
+   *   .model(({ system, component, relTo }, _) =>
+   *     _(
+   *       system('cloud').with(
+   *         component('backend').with(
+   *           component('api'),
+   *         ),
+   *         component('frontend').with(
+   *           relTo('cloud.backend.api'),
+   *         )
+   *       )
+   *     )
+   *   )
+   * ```
+   */
+  specification<const Spec extends BuilderSpecification>(
     spec: Spec,
   ): Builder<Types.FromSpecification<Spec>> {
-    validateSpec(spec)
     return builder<Spec, Types.FromSpecification<Spec>>(spec)
-  }
+  },
+}
+
+export namespace Builder {
+  export type Any = Builder<AnyTypes>
 }

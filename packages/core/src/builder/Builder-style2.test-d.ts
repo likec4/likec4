@@ -38,7 +38,8 @@ test('Builder types - style 2', () => {
             component('api'),
             component('db', {
               metadata: {
-                key1: 'value1',
+                // @ts-expect-error
+                unknown: 'value1',
               },
             }),
           ),
@@ -268,6 +269,85 @@ test('Builder types - style 2', () => {
           'like' | 'dislike',
           'tag1' | 'tag2',
           'key1' | 'key2' | 'key3'
+        >
+      >
+    >
+  >()
+})
+
+test('Builder tags - style 2', () => {
+  const b1 = Builder
+    .specification({
+      elements: {
+        element: {},
+      },
+      tags: ['tag1', 'tag2'],
+    })
+    .model(({ element }, _) =>
+      _(
+        element(
+          'a',
+          {
+            tags: ['tag1', 'tag2'],
+          },
+        ).with(
+          element('b', {
+            // @ts-expect-error unknown tag
+            tags: ['unknown'],
+          }),
+        ),
+      )
+    )
+
+  const b2 = b1
+    .clone()
+    .model(({ element, relTo }, _) =>
+      _(
+        element('a.b2').with(
+          element('c'),
+          relTo('a.b', {
+            // @ts-expect-error
+            tags: ['o'],
+          }),
+          // @ts-expect-error unknown element
+          relTo('ac'),
+        ),
+      )
+    )
+
+  expectTypeOf(b1.build()).toEqualTypeOf<
+    ParsedLikeC4ModelData<
+      Aux<
+        'parsed',
+        'a' | 'a.b',
+        never,
+        never,
+        'from-builder',
+        SpecAux<
+          'element',
+          never,
+          never,
+          'tag1' | 'tag2',
+          never
+        >
+      >
+    >
+  >()
+
+  expectTypeOf(b2.build()).toEqualTypeOf<
+    ParsedLikeC4ModelData<
+      Aux<
+        'parsed',
+        'a' | 'a.b' | 'a.b2' | 'a.b2.c',
+        never,
+        never,
+        'from-builder',
+        SpecAux<
+          'element',
+          never,
+          never,
+          'tag1' | 'tag2',
+          never
         >
       >
     >

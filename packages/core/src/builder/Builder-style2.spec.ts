@@ -1,4 +1,6 @@
+import type { PartialDeep } from 'type-fest'
 import { describe, expect, it } from 'vitest'
+import type { ParsedLikeC4ModelData } from '../types'
 import { Builder } from './Builder'
 
 describe('Builder (style 2)', () => {
@@ -102,6 +104,39 @@ describe('Builder (style 2)', () => {
     expect(b.build()).toMatchSnapshot()
   })
 
+  it('should build with string-based spec', async ({ expect }) => {
+    const m = Builder
+      .specification({
+        elements: ['actor', 'system', 'component'],
+        deployments: ['env', 'node'],
+        relationships: ['like', 'dislike'],
+        tags: ['tag1', 'tag2'],
+      })
+      .model(({ _, actor, system, component, rel }) =>
+        _(
+          actor('customer', { tags: ['tag1'] }),
+          system('cloud', { tags: ['tag2'] }),
+          component('cloud.ui'),
+          rel('customer', 'cloud.ui', {
+            kind: 'like',
+            tags: ['tag1'],
+          }),
+        )
+      )
+      .deployment(({ _, env, node, instanceOf }) =>
+        _(
+          env('prod').with(
+            node('eu').with(
+              instanceOf('cloud.ui'),
+            ),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    await expect(m.$data).toMatchFileSnapshot('__snapshots__/Builder-style2.string-based-spec.json5')
+  })
+
   it('should fail if invalid ID provided ', () => {
     expect(() => {
       spec.model(({ actor }, _) =>
@@ -177,5 +212,64 @@ describe('Builder (style 2)', () => {
       .toLikeC4Model()
 
     await expect(m.$data).toMatchFileSnapshot('__snapshots__/Builder-style2.compute-model.json5')
+  })
+
+  it('should set summary and description', async ({ expect }) => {
+    const m = spec.clone()
+      .model(({ component, relTo, rel }, _) =>
+        _(
+          component('c1', {
+            summary: 'summary',
+            description: 'description',
+          }),
+        )
+      )
+      .deployment(({ node, instanceOf }, _) =>
+        _(
+          node('n1', {
+            summary: 'n1-summary',
+            description: 'n1-description',
+          }),
+          instanceOf('n1.c1', 'c1', {
+            summary: 'n1.c1-summary',
+            description: 'n1.c1-description',
+          }),
+        )
+      )
+      .build()
+
+    expect(m.elements).toMatchObject(
+      {
+        c1: {
+          description: {
+            txt: 'description',
+          },
+          summary: {
+            txt: 'summary',
+          },
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['elements']>,
+    )
+
+    expect(m.deployments.elements).toMatchObject(
+      {
+        n1: {
+          description: {
+            txt: 'n1-description',
+          },
+          summary: {
+            txt: 'n1-summary',
+          },
+        },
+        'n1.c1': {
+          description: {
+            txt: 'n1.c1-description',
+          },
+          summary: {
+            txt: 'n1.c1-summary',
+          },
+        },
+      } satisfies PartialDeep<ParsedLikeC4ModelData['deployments']['elements']>,
+    )
   })
 })

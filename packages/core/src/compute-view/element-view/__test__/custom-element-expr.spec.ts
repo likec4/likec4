@@ -6,36 +6,36 @@ describe('custom-element-expr', () => {
     const { nodes, nodeIds, edgeIds } = computeView([
       $include('amazon', {
         with: {
-          icon: 'none'
-        }
+          icon: 'none',
+        },
       }),
       $include('cloud', {
         with: {
           title: 'CHANGED',
           icon: 'tech:cloud',
-          navigateTo: 'custom'
-        }
+          navigateTo: 'custom',
+        },
       }),
       $include('customer', {
         with: {
           title: null as any, // null should be ignored
           technology: '',
-          description: undefined as any // undefined should be ignored
-        }
-      })
+          description: undefined as any, // undefined should be ignored
+        },
+      }),
     ])
     expect(nodeIds).toEqual([
       'customer',
       'cloud',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([
       'cloud:amazon',
-      'customer:cloud'
+      'customer:cloud',
     ])
     const amazon = nodes.find(n => n.id === 'amazon')!
     expect(amazon).toMatchObject({
-      title: 'amazon'
+      title: 'amazon',
     })
     expect(amazon).not.toHaveProperty('icon')
 
@@ -43,7 +43,9 @@ describe('custom-element-expr', () => {
     expect(customer).toMatchObject({
       title: 'customer',
       technology: '',
-      description: null
+      description: {
+        txt: 'short description',
+      },
     })
     expect(customer).not.toHaveProperty('icon')
 
@@ -53,7 +55,7 @@ describe('custom-element-expr', () => {
       technology: null,
       description: null,
       icon: 'tech:cloud',
-      navigateTo: 'custom'
+      navigateTo: 'custom',
     })
   })
 
@@ -63,41 +65,41 @@ describe('custom-element-expr', () => {
       $include('cloud.frontend'),
       // style all elements
       $style('*', {
-        color: 'muted'
+        color: 'muted',
       }),
       // override color
       $include('cloud', {
         with: {
-          color: 'red'
-        }
+          color: 'red',
+        },
       }),
       // override shape
       $include('amazon', {
         with: {
-          shape: 'queue'
-        }
+          shape: 'queue',
+        },
       }),
       // style only cloud, color should be red
       $style('cloud', {
         color: 'green',
-        shape: 'cylinder'
-      })
+        shape: 'cylinder',
+      }),
     ])
     const cloud = nodes.find(n => n.id === 'cloud')
     expect(cloud).toMatchObject({
       color: 'red',
-      shape: 'cylinder'
+      shape: 'cylinder',
     })
     const amazon = nodes.find(n => n.id === 'amazon')
     expect(amazon).toMatchObject({
       color: 'muted',
       icon: 'tech:aws',
-      shape: 'queue'
+      shape: 'queue',
     })
     const frontend = nodes.find(n => n.id === 'cloud.frontend')
     expect(frontend).toMatchObject({
       color: 'muted',
-      shape: 'browser'
+      shape: 'browser',
     })
   })
 })

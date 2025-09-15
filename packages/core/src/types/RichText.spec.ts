@@ -73,16 +73,24 @@ describe('RichText', () => {
     it('should memoize RichText instances', () => {
       const obj = {}
       const source = { txt: 'memoized' }
-      const result1 = RichText.memoize(obj, source)
-      const result2 = RichText.memoize(obj, source)
+      const result1 = RichText.memoize(obj, 'test', source)
+      const result2 = RichText.memoize(obj, 'test', source)
       expect(result1).toStrictEqual(result2)
       expect(result1.text).toBe('memoized')
+      // different source
+      const result3 = RichText.memoize(obj, 'test2', { txt: 'memoized2' })
+      expect(result3).not.toStrictEqual(result1)
+      expect(result3.text).toBe('memoized2')
+      // does not override
+      const result4 = RichText.memoize(obj, 'test', { txt: 'memoized3' })
+      expect(result4.text).toBe('memoized')
+      expect(result4).toStrictEqual(result1)
     })
 
     it('should return EMPTY for null/undefined source', () => {
       const obj = {}
-      expect(RichText.memoize(obj, null)).toStrictEqual(RichText.EMPTY)
-      expect(RichText.memoize(obj, undefined)).toStrictEqual(RichText.EMPTY)
+      expect(RichText.memoize(obj, 'test', null)).toStrictEqual(RichText.EMPTY)
+      expect(RichText.memoize(obj, 'test', undefined)).toStrictEqual(RichText.EMPTY)
     })
   })
 
