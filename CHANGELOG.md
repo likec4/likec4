@@ -1,11 +1,11 @@
 # [1.41.0](https://github.com/likec4/likec4/compare/v1.40.0...v1.41.0) (2025-09-16)
 
+### 🚀 Features
 
-### Features
-
-* add `summary` field to the model ([caca0f8](https://github.com/likec4/likec4/commit/caca0f88e7fcf1271637153bd15076bf0122044c))
-* **cli:** option to generate code referencing`@likec4/core` ([1e7c9ec](https://github.com/likec4/likec4/commit/1e7c9ecf74af9cb2c5b5b0bf07e49f7006d29b53))
-
+- **Summary**  
+  Elements may have a short `summary`, and `description` becomes a "long description"  
+  If `summary` is provided, it will be shown on the diagram, and `description` in the details dialog.  
+  Closes [#2218](https://github.com/likec4/likec4/issues/2218)
 
 
 # [1.40.0](https://github.com/likec4/likec4/compare/v1.39.5...v1.40.0) (2025-09-14)
