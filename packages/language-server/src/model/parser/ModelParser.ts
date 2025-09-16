@@ -130,8 +130,8 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         id,
         astPath,
         metadata,
-        tags: tags ?? undefined,
-        ...(links && isNonEmptyArray(links) && { links }),
+        tags,
+        links: isNonEmptyArray(links) ? links : null,
       })
     }
 

@@ -9,7 +9,7 @@ describe('Summary field in dynamic view', () => {
     expect(customer).toMatchObject({
       id: 'customer',
       description: {
-        txt: 'summary', // comes from summary field
+        txt: 'short description', // comes from summary field
       },
     })
     expect(support).toMatchObject({

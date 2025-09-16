@@ -37,55 +37,109 @@ describe.concurrent('LikeC4ModelBuilder - Deployment', () => {
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
     expect(model).toBeDefined()
-    expect(model.deployments.elements).toMatchInlineSnapshot({
-      node1: {
-        description: {
-          txt: 'Node1 Description',
+    expect(model.deployments.elements).toMatchInlineSnapshot(
+      {
+        node1: {
+          description: {
+            txt: 'Node1 Description',
+          },
+          id: 'node1',
+          kind: 'node',
+          style: {
+            border: 'dashed',
+            opacity: 10,
+          },
+          summary: {
+            txt: 'Noode1 Summary',
+          },
+          title: 'Node1 title',
         },
-        id: 'node1',
-        kind: 'node',
-        style: {
-          border: 'dashed',
-          opacity: 10,
+        'node1.f1': {
+          description: {
+            txt: 'f1 description',
+          },
+          element: 'frontend',
+          id: 'node1.f1',
+          style: {},
+          summary: {
+            txt: 'f1 summary',
+          },
+          title: 'f1 title',
         },
-        summary: {
-          txt: 'Noode1 Summary',
+        'node1.f2': {
+          element: 'frontend',
+          id: 'node1.f2',
+          style: {},
+          summary: {
+            txt: 'f2 summary',
+          },
+          title: 'f2 title',
         },
-        title: 'Node1 title',
+        node2: {
+          id: 'node2',
+          kind: 'node',
+          style: {
+            border: 'dashed',
+            opacity: 10,
+          },
+          summary: {
+            txt: 'Node2 summary',
+          },
+          title: 'Node2 title',
+        },
       },
-      'node1.f1': {
-        description: {
-          txt: 'f1 description',
+      `
+      {
+        "node1": {
+          "description": {
+            "txt": "Node1 Description",
+          },
+          "id": "node1",
+          "kind": "node",
+          "style": {
+            "border": "dashed",
+            "opacity": 10,
+          },
+          "summary": {
+            "txt": "Noode1 Summary",
+          },
+          "title": "Node1 title",
         },
-        element: 'frontend',
-        id: 'node1.f1',
-        style: {},
-        summary: {
-          txt: 'f1 summary',
+        "node1.f1": {
+          "description": {
+            "txt": "f1 description",
+          },
+          "element": "frontend",
+          "id": "node1.f1",
+          "style": {},
+          "summary": {
+            "txt": "f1 summary",
+          },
+          "title": "f1 title",
         },
-        title: 'f1 title',
-      },
-      'node1.f2': {
-        element: 'frontend',
-        id: 'node1.f2',
-        style: {},
-        summary: {
-          txt: 'f2 summary',
+        "node1.f2": {
+          "element": "frontend",
+          "id": "node1.f2",
+          "style": {},
+          "summary": {
+            "txt": "f2 summary",
+          },
+          "title": "f2 title",
         },
-        title: 'f2 title',
-      },
-      node2: {
-        id: 'node2',
-        kind: 'node',
-        style: {
-          border: 'dashed',
-          opacity: 10,
+        "node2": {
+          "id": "node2",
+          "kind": "node",
+          "style": {
+            "border": "dashed",
+            "opacity": 10,
+          },
+          "summary": {
+            "txt": "Node2 summary",
+          },
+          "title": "Node2 title",
         },
-        summary: {
-          txt: 'Node2 summary',
-        },
-        title: 'Node2 title',
-      },
-    })
+      }
+    `,
+    )
   })
 })
