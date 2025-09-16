@@ -6,8 +6,8 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { LikeC4Model } from '@likec4/core/model'
-import type { Aux, SpecAux } from '@likec4/core/types';
+import { LikeC4Model } from 'likec4/model'
+import type { Aux, SpecAux } from 'likec4/model';
 
 export type $Specs = SpecAux<
   // Element kinds

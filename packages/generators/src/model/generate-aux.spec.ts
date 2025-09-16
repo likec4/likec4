@@ -62,4 +62,9 @@ describe('generateAux', () => {
     const aux = generateAux(m.toLikeC4Model({ id: 'aux-test' }))
     await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.generate-valid-code.snap')
   })
+
+  it('generate valid code with core package', async ({ expect }) => {
+    const aux = generateAux(m.toLikeC4Model({ id: 'aux-test' }), { useCorePackage: true })
+    await expect(aux).toMatchFileSnapshot('__snapshots__/_aux.generate-valid-code-with-core.snap')
+  })
 })

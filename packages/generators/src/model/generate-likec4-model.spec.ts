@@ -181,4 +181,12 @@ describe('generateLikeC4Model', () => {
     const m = LikeC4Model.create(computed)
     await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4.computed-model.snap')
   })
+
+  it('computed-model with core package', async ({ expect }) => {
+    const computed = viewsWithReadableEdges(computeParsedModelData(builder.build()))
+    const m = LikeC4Model.create(computed)
+    await expect(generateLikeC4Model(m, { useCorePackage: true })).toMatchFileSnapshot(
+      '__snapshots__/likec4.computed-model-with-core.snap',
+    )
+  })
 })
