@@ -1,3 +1,4 @@
+import { UriUtils } from 'langium'
 import { keys } from 'remeda'
 import z from 'zod'
 import { likec4Tool } from '../utils'
@@ -17,31 +18,16 @@ Request:
 Response (JSON object):
 - title: string — human-readable project title
 - folder: string — absolute path to the project root
-- sources: string[] — absolute file paths of model documents
+- sources: string[] — file paths of source documents, relative to the project root
 - specification: object
   - elementKinds: string[] — all element kinds
   - relationshipKinds: string[] — all relationship kinds
   - deploymentKinds: string[] — all deployment kinds
   - tags: string[] — all tags
   - metadataKeys: string[] — used metadata keys
-- elements: Element[] — list of elements
-- deployments: Deployment[] — list of deployment entities
-- views: View[] — list of views defined in the model
-
-Element (object) fields:
-- id: string — element id (FQN)
-- kind: string — element kind
-- title: string — element title
-- tags: string[] — element tags
-
-Deployment (object) fields:
-- type = "deployment-node": { id: string, kind: string, title: string, tags: string[] }
-- type = "deployed-instance": { id: string, title: string, tags: string[], referencedElementId: string }
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
+- elements: number — number of elements
+- deployments: number — number of deployment entities
+- views: number — number of views defined in the model
 
 Notes:
 - Read-only, idempotent, no side effects.
@@ -52,7 +38,7 @@ Example response:
   "title": "Cloud Boutique",
   "folder": "/abs/path/to/workspace/examples/cloud-system",
   "sources": [
-    "/abs/path/to/workspace/examples/cloud-system/model.c4"
+    "model.c4"
   ],
   "specification": {
     "elementKinds": ["system", "container", "component"],
@@ -61,30 +47,9 @@ Example response:
     "tags": ["public", "internal"],
     "metadataKeys": ["owner", "tier"]
   },
-  "elements": [
-    {
-      "id": "shop.frontend",
-      "kind": "component",
-      "title": "Frontend",
-      "tags": ["public"]
-    }
-  ],
-  "deployments": [
-    {
-      "type": "deployment-node",
-      "id": "k8s.shop.frontend",
-      "kind": "cluster",
-      "title": "Frontend",
-      "tags": []
-    }
-  ],
-  "views": [
-    {
-      "name": "system-overview",
-      "title": "System Overview",
-      "type": "element"
-    }
-  ]
+  "elements": 0,
+  "deployments": 0,
+  "views": 0
 }
   `,
   inputSchema: {
@@ -101,35 +66,9 @@ Example response:
       tags: z.array(z.string()),
       metadataKeys: z.array(z.string()),
     }),
-    elements: z.array(z.object({
-      id: z.string(),
-      kind: z.string(),
-      title: z.string(),
-      tags: z.array(z.string()),
-    })).describe('List of elements in the project'),
-    deployments: z.array(
-      z.discriminatedUnion('type', [
-        z.object({
-          type: z.literal('deployment-node'),
-          id: z.string().describe('Node ID'),
-          kind: z.string().describe('Deployment node kind'),
-          title: z.string().describe('Node title'),
-          tags: z.array(z.string()),
-        }),
-        z.object({
-          type: z.literal('deployed-instance'),
-          id: z.string().describe('Node ID'),
-          title: z.string().describe('Node title'),
-          tags: z.array(z.string()),
-          referencedElementId: z.string().describe('Element ID (FQN)'),
-        }),
-      ]),
-    ).describe('List of deployment nodes and deployed instances in the project'),
-    views: z.array(z.object({
-      id: z.string(),
-      title: z.string(),
-      type: z.enum(['element', 'deployment', 'dynamic']),
-    })),
+    elements: z.number().describe('Number of elements in the project'),
+    deployments: z.number().describe('Number of deployment nodes and deployed instances in the project'),
+    views: z.number().describe('Number of views in the project'),
   },
 }, async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
@@ -146,35 +85,9 @@ Example response:
       tags: [...model.tags],
       metadataKeys: model.specification.metadataKeys ?? [],
     },
-    elements: [...model.elements()].filter(e => !e.imported).map(e => ({
-      id: e.id,
-      kind: e.kind,
-      title: e.title,
-      tags: [...e.tags],
-    })),
-    deployments: [...model.deployment.elements()].map(d => {
-      if (d.isInstance()) {
-        return ({
-          type: 'deployed-instance',
-          id: d.id,
-          title: d.title,
-          tags: [...d.tags],
-          referencedElementId: d.element.id,
-        })
-      }
-      return ({
-        type: 'deployment-node',
-        id: d.id,
-        kind: d.kind,
-        title: d.title,
-        tags: [...d.tags],
-      })
-    }),
-    views: [...model.views()].map(v => ({
-      id: v.id,
-      title: v.titleOrId,
-      type: v.$view._type,
-    })),
-    sources: project.documents?.map(d => d.fsPath) ?? [],
+    elements: [...model.elements()].filter(e => !e.imported).length,
+    deployments: [...model.deployment.elements()].length,
+    views: [...model.views()].length,
+    sources: project.documents?.map(d => UriUtils.relative(project.folder, d)) ?? [],
   }
 })

@@ -277,7 +277,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   /**
    * Nodes that have references to elements from logical model.
    */
-  public *elements(): IteratorLike<NodeModel.WithElement<A, V>> {
+  public *nodesWithElement(): IteratorLike<NodeModel.WithElement<A, V>> {
     // return this.#nodes.values().filter(node => node.hasElement())
     for (const node of this.#nodes.values()) {
       if (node.hasElement()) {

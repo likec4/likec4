@@ -1,3 +1,4 @@
+import { UriUtils } from 'langium'
 import z from 'zod'
 import { likec4Tool } from '../utils'
 
@@ -16,7 +17,7 @@ Project (object) fields:
 - id: string — stable project identifier
 - title: string — human-readable project title
 - folder: string — absolute path to the project root
-- sources: string[] — absolute file paths of related documents
+- sources: string[] — file paths of source documents, relative to the project root
 
 Notes:
 - Read-only, idempotent, no side effects.
@@ -30,8 +31,8 @@ Example response:
       "title": "Documentation",
       "folder": "/abs/path/to/workspace/docs",
       "sources": [
-        "/abs/path/to/workspace/docs/model/contexts.likec4",
-        "/abs/path/to/workspace/docs/model/relations.likec4"
+        "contexts.likec4",
+        "model/relations.likec4"
       ]
     }
   ]
@@ -57,7 +58,7 @@ Example response:
       id: p.id,
       title: p.title,
       folder: p.folder.fsPath,
-      sources: p.documents.map(d => d.fsPath),
+      sources: p.documents.map(d => UriUtils.relative(p.folder, d)),
     })),
   }
 })

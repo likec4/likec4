@@ -9,7 +9,10 @@ import { listProjects } from './tools/list-projects'
 import { openView } from './tools/open-view'
 import { readDeployment } from './tools/read-deployment'
 import { readElement } from './tools/read-element'
+import { readProjectDeployments } from './tools/read-project-deployments'
+import { readProjectElements } from './tools/read-project-elements'
 import { readProjectSummary } from './tools/read-project-summary'
+import { readProjectViews } from './tools/read-project-views'
 import { readView } from './tools/read-view'
 import { searchElement } from './tools/search-element'
 
@@ -32,7 +35,10 @@ Conventions:
 
 Available tools:
 - list-projects — List all LikeC4 projects in the workspace.
-- read-project-summary — Project specification (element kinds, deployment node kinds, tags, metadata keys), all elements, deployment nodes and views. Input: { project? }.
+- read-project-summary — Project specification (element kinds, deployment node kinds, tags, metadata keys). Input: { project? }.
+- read-project-elements — Details of all elements in a project. Input: { project? }.
+- read-project-deployments — Details of all deployment nodes and deployed instances in a project. Input: { project? }.
+- read-project-views — Details of all views in a project. Input: { project? }.
 - search-element — Search elements and deployment nodes across all projects by id/title/kind/shape/tags/metadata. Input: { search }.
 - read-element — Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation. Input: { id, project? }.
 - read-deployment — Details of a deployment node or deployed instance. Input: { id, project? }.
@@ -47,7 +53,8 @@ ${
 Instructions:
 - Identify the project first  
   - Use "search-element" to find elements by id/title/kind/shape/tags/metadata and select the project
-  - Use "read-project-summary" to find all elements and deployment nodes inside the project, what kinds, tags, metadata keys are available
+  - Use "read-project-summary" to read project specification (element kinds, deployment node kinds, tags, metadata keys)
+  - Use "read-project-elements" to find all elements inside the project
   - Use "list-projects" to list all available projects
 - If response returns "sourceLocation", provide link to this location in the editor
 
@@ -62,6 +69,9 @@ Full documentation: https://likec4.dev/llms-full.txt
     })
     mcp.registerTool(...listProjects(this.services.likec4.LanguageServices))
     mcp.registerTool(...readProjectSummary(this.services.likec4.LanguageServices))
+    mcp.registerTool(...readProjectElements(this.services.likec4.LanguageServices))
+    mcp.registerTool(...readProjectDeployments(this.services.likec4.LanguageServices))
+    mcp.registerTool(...readProjectViews(this.services.likec4.LanguageServices))
     mcp.registerTool(...readElement(this.services.likec4.LanguageServices))
     mcp.registerTool(...readDeployment(this.services.likec4.LanguageServices))
     mcp.registerTool(...readView(this.services.likec4.LanguageServices))
