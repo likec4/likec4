@@ -13,6 +13,9 @@
       "include": "#string"
     },
     {
+      "include": "#relationship"
+    },
+    {
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
       "captures": {
         "1": {
@@ -108,10 +111,6 @@
       "match": "\\b(and|as|autoLayout|border|browser|color|crow|cylinder|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|from|global|group|element|exclude|extend|extends|head|icon|icons|import|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|person|predicateGroup|predicate|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
     },
     {
-      "name": "keyword.operator.likec4",
-      "match": "(\\]->|-\\[|<->|<-|->)"
-    },
-    {
       "name": "keyword.symbol.likec4",
       "match": "(\\{|\\}|\\(|\\)|\\:|\\,|\\;|\\!|\\=+)"
     },
@@ -125,6 +124,19 @@
     }
   ],
   "repository": {
+    "relationship": {
+      "patterns": [
+        {
+          "name": "storage.type.function.likec4",
+          "begin": "(-\\[)",
+          "end": "(\\]->)"
+        },
+        {
+          "name": "storage.type.function.likec4",
+          "match": "(<->|<-|->)"
+        }
+      ]
+    },
     "comments": {
       "patterns": [
         {
@@ -157,16 +169,16 @@
     "triple-quoted-string": {
       "patterns": [
         {
-          "begin": "(\"\"\")\\s*$",
+          "begin": "(\"{3})\\s*$",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.likec4"
+              "name": "string.quoted.triple.likec4"
             }
           },
-          "end": "^\\s*(\"\"\")\\s*$",
+          "end": "(?:[^\"]*)(\"{3})\\s*$",
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.likec4"
+              "name": "string.quoted.triple.likec4"
             }
           },
           "contentName": "meta.embedded.text.html.markdown",
@@ -178,13 +190,13 @@
           "begin": "('{3})\\s*$",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.likec4"
+              "name": "string.quoted.triple.likec4"
             }
           },
-          "end": "\\s*('{3})\\s*$",
+          "end": "(?:[^']*)('{3})\\s*$",
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.likec4"
+              "name": "string.quoted.triple.likec4"
             }
           },
           "contentName": "meta.embedded.text.html.markdown",

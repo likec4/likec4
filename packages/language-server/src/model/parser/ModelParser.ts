@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
-import { FqnRef } from '@likec4/core/types'
+import { FqnRef, omitUndefined } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
@@ -85,7 +85,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      let [_title, _description, _technology] = astNode.props ?? []
+      let [_title, _summary, _technology] = astNode.props ?? []
 
       const bodyProps = pipe(
         astNode.body?.props ?? [],
@@ -96,23 +96,23 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
         title: _title,
-        description: _description,
+        summary: _summary,
         technology: _technology,
       })
 
       const links = this.parseLinks(astNode.body)
 
-      return {
+      return omitUndefined({
         id,
         kind,
         astPath,
         title: title ?? astNode.name,
-        ...(metadata && { metadata }),
-        ...(tags && { tags }),
+        metadata,
+        tags: tags ?? undefined,
         ...(links && isNonEmptyArray(links) && { links }),
         ...descAndTech,
         style,
-      }
+      })
     }
 
     parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtend | null {
@@ -126,13 +126,13 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         return null
       }
 
-      return {
+      return omitUndefined({
         id,
         astPath,
-        ...(metadata && { metadata }),
-        ...(tags && { tags }),
+        metadata,
+        tags: tags ?? undefined,
         ...(links && isNonEmptyArray(links) && { links }),
-      }
+      })
     }
 
     _resolveRelationSource(node: ast.Relation): FqnRef.ModelRef | FqnRef.ImportRef {
@@ -175,7 +175,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         filter(isTruthy),
         first(),
       )
-      const { title = '', ...descAndTech } = this.parseBaseProps(bodyProps, {
+      const { title = '', description, technology } = this.parseBaseProps(bodyProps, {
         // inline props
         title: astNode.title,
         description: astNode.description,
@@ -188,20 +188,21 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         source.model,
         target.model,
       ) as c4.RelationId
-      return {
+      return omitUndefined({
         id,
         astPath,
         source,
         target,
         title,
-        ...(metadata && { metadata }),
-        ...descAndTech,
-        ...(kind && { kind }),
-        ...(tags && { tags }),
-        ...(isNonEmptyArray(links) && { links }),
+        metadata,
+        kind,
+        tags: tags ?? undefined,
+        links: isNonEmptyArray(links) ? links : undefined,
+        navigateTo: navigateTo ? navigateTo as c4.ViewId : undefined,
+        description,
+        technology,
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
-      }
+      })
     }
   }
 }

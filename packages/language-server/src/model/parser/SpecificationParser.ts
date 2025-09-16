@@ -1,9 +1,13 @@
 import * as c4 from '@likec4/core'
+import { omitUndefined } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
+import { loggable } from '@likec4/log'
 import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
 import { ast, parseMarkdownAsString, toRelationshipStyleExcludeDefaults } from '../../ast'
-import { logger, logWarnError } from '../../logger'
+import { serverLogger } from '../../logger'
 import { type Base, removeIndent } from './Base'
+
+const logger = serverLogger.getChild('SpecificationParser')
 
 export function SpecificationParser<TBase extends Base>(B: TBase) {
   return class SpecificationParser extends B {
@@ -22,7 +26,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           Object.assign(c4Specification.elements, this.parseElementSpecificationNode(elementSpec))
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
 
@@ -30,7 +34,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           Object.assign(c4Specification.deployments, this.parseElementSpecificationNode(deploymentNodeSpec))
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
 
@@ -56,7 +60,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             ...toRelationshipStyleExcludeDefaults(props, this.isValid),
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
 
@@ -73,7 +77,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             }
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
 
@@ -89,7 +93,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             color: nonNullable(this.parseColorLiteral(color), `Color "${colorName}" is not valid: ${color}`),
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
     }
@@ -115,19 +119,17 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const { title, description, technology } = this.parseBaseProps(bodyProps)
+      const baseProps = this.parseBaseProps(bodyProps)
       const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
 
       return {
-        [kindName]: {
-          ...(title && { title }),
-          ...(description && { description }),
-          ...(technology && { technology }),
-          ...(notation && { notation }),
-          ...(tags && { tags }),
+        [kindName]: omitUndefined({
+          ...baseProps,
+          notation,
+          tags: tags ?? undefined,
           ...(links && c4.isNonEmptyArray(links) && { links }),
           style,
-        } satisfies c4.ElementSpecification,
+        }) satisfies c4.ElementSpecification,
       }
     }
   }

@@ -12,6 +12,10 @@ import {
 import type { Connection } from 'vscode-languageserver'
 
 export const logger: Logger = root.getChild('server')
+
+export {
+  logger as serverLogger,
+}
 // export const logger = root
 
 export function logError(err: unknown): void {

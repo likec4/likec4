@@ -1,6 +1,16 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef, invariant, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
+import {
+  FqnRef,
+  invariant,
+  isNonEmptyArray,
+  LinkedList,
+  nameFromFqn,
+  nonexhaustive,
+  nonNullable,
+  omitUndefined,
+} from '@likec4/core'
+import { loggable } from '@likec4/log'
+import { filter, first, isDefined, isEmpty, isTruthy, mapToObj, pipe } from 'remeda'
 import {
   type LikeC4LangiumDocument,
   type ParsedAstDeployment,
@@ -9,9 +19,11 @@ import {
   ast,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
-import { logWarnError } from '../../logger'
+import { serverLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
 import type { WithExpressionV2 } from './FqnRefParser'
+
+const logger = serverLogger.getChild('DeploymentModelParser')
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 
@@ -68,7 +80,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
               nonexhaustive(el)
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
     }
@@ -88,24 +100,23 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const { title, ...descAndTech } = this.parseBaseProps({
-        title: undefined,
-      }, {
+      const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
         title: astNode.title,
+        summary: astNode.summary,
       })
 
       const links = this.convertLinks(astNode.body)
 
-      return {
+      return omitUndefined({
         id,
         kind,
         title: title ?? nameFromFqn(id),
-        ...(metadata && { metadata }),
-        ...(tags && { tags }),
-        ...(links && isNonEmptyArray(links) && { links }),
         ...descAndTech,
+        tags: tags ?? undefined,
+        ...(links && isNonEmptyArray(links) && { links }),
         style,
-      }
+        metadata,
+      })
     }
 
     parseDeployedInstance(astNode: ast.DeployedInstance): ParsedAstDeployment.Instance {
@@ -126,21 +137,22 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
 
-      const titleDescAndTech = this.parseBaseProps(bodyProps, {
+      const baseProps = this.parseBaseProps(bodyProps, {
         title: astNode.title,
+        summary: astNode.summary,
       })
 
       const links = this.convertLinks(astNode.body)
 
-      return {
+      return omitUndefined({
         id,
         element: target,
-        ...(metadata && { metadata }),
-        ...(tags && { tags }),
+        tags: tags ?? undefined,
         ...(links && isNonEmptyArray(links) && { links }),
-        ...titleDescAndTech,
+        ...baseProps,
         style,
-      }
+        metadata,
+      })
     }
 
     parseExtendDeployment(astNode: ast.ExtendDeployment): ParsedAstExtend | null {
@@ -161,8 +173,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         id,
         astPath,
         ...(metadata && { metadata }),
-        ...(tags && { tags }),
-        ...(links && isNonEmptyArray(links) && { links }),
+        tags,
+        links: isNonEmptyArray(links) ? links : null,
       }
     }
 
@@ -201,10 +213,8 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const navigateTo = pipe(
         astNode.body?.props ?? [],
         filter(ast.isRelationNavigateToProperty),
-        map(p => p.value.view.ref?.name),
-        filter(isTruthy),
         first(),
-      )
+      )?.value.view.ref?.name as (c4.ViewId | undefined)
 
       const titleDescAndTech = this.parseBaseProps(bodyProps, {
         title: astNode.title,
@@ -219,19 +229,19 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         target.deployment,
       ) as c4.RelationId
 
-      return {
+      return omitUndefined({
         id,
         source,
         target,
         ...titleDescAndTech,
-        ...(metadata && { metadata }),
-        ...(kind && { kind }),
-        ...(tags && { tags }),
+        metadata,
+        kind,
+        tags: tags ?? undefined,
         ...(isNonEmptyArray(links) && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
+        navigateTo,
         astPath,
-      }
+      })
     }
   }
 }

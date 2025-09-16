@@ -3,8 +3,12 @@ specification {
   deploymentNode node
   deploymentNode region {
     notation 'Geo Region'
+    summary 'Geo Region'
   }
-  deploymentNode zone
+  deploymentNode zone {
+    notation 'Availability Zone'
+    summary 'Availability Zone'
+  }
   deploymentNode group
   deploymentNode environment {
     notation 'Environment'
@@ -38,7 +42,7 @@ deployment {
         }
         node server3 {
           instanceOf cloud.next.backend
-         // instanceOf cloud.legacy
+          // instanceOf cloud.legacy
           instanceOf cloud.next.events
         }
         node server4 {
@@ -54,9 +58,9 @@ deployment {
 
         }
         server3.events -> server4.backend 'reuse' {
-           style {
-              color red
-            }
+          style {
+            color red
+          }
         }
       }
     }
@@ -69,7 +73,7 @@ deployment {
       node serv2 {
         instanceOf cloud.next.backend
       }
-      group amazon 'Amazon'  {
+      group amazon 'Amazon' {
         instanceOf amazon.rds
         instanceOf amazon.sqs
       }
@@ -77,12 +81,12 @@ deployment {
 
     eu.rds -> us.rds 'replicates' {
       style {
-         color green
+        color green
       }
     }
     us.rds -> eu.rds 'replicates' {
       style {
-       color green
+        color green
       }
     }
   }
@@ -113,7 +117,7 @@ views {
       eu.amazon.* <-> us.amazon.*,
       server3.backend -> eu.rds,
       server4.backend -> eu.rds,
-      //serv1.backend -> us.amazon.*
+    //serv1.backend -> us.amazon.*
 
     style eu._ {
       color muted
@@ -130,6 +134,6 @@ views {
       color amber
     }
 
-	}
+  }
 
 }

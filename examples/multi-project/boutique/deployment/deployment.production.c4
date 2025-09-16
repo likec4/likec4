@@ -7,7 +7,7 @@ views "Deployment" {
 
     include
       prod,
-      prod.**,
+      prod.*,
       internet.customer
 
     exclude

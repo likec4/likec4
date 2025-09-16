@@ -60,7 +60,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['title', 'description', 'technology', 'notation', 'link', 'style'],
+      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'style'],
     })
     await completion({
       text,
@@ -564,8 +564,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       expectedItems: [
         'navigateTo',
         'title',
-        'technology',
         'description',
+        'technology',
+        'summary',
         'notation',
         'color',
         'shape',

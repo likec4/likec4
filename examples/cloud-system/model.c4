@@ -40,7 +40,7 @@ model {
 
     supportUser = actor 'Support User' {
       description '
-        A emploere from the support team
+        Support team member
         Has limited access to the system
       '
       -> customer 'helps with questions' {

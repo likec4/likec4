@@ -1,5 +1,12 @@
 import type * as c4 from '@likec4/core'
-import { type MarkdownOrString, GlobalFqn, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
+import {
+  type MarkdownOrString,
+  GlobalFqn,
+  isNonEmptyArray,
+  nonexhaustive,
+  nonNullable,
+  omitUndefined,
+} from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   filter,
@@ -27,12 +34,14 @@ import {
   parseMarkdownAsString,
   toColor,
 } from '../../ast'
-import { logger } from '../../logger'
+import { serverLogger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 import type { Project } from '../../workspace/ProjectsManager'
+
+const logger = serverLogger.getChild('BaseParser')
 
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
@@ -144,9 +153,8 @@ export class BaseParser {
       map(p => [p.key, removeIndent(p.value)] as [string, MarkdownOrString]),
       map(([key, value]) => [key, value.md || value.txt] as [string, string]),
       filter(([_, value]) => isTruthy(value)),
-      fromEntries(),
     )
-    return isEmpty(data) ? undefined : data
+    return data.length > 0 ? fromEntries(data) : undefined
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
@@ -387,16 +395,19 @@ export class BaseParser {
   parseBaseProps(
     props: {
       title?: ast.MarkdownOrString | undefined
+      summary?: ast.MarkdownOrString | undefined
       description?: ast.MarkdownOrString | undefined
       technology?: ast.MarkdownOrString | undefined
     },
     override?: {
       title?: string | undefined
+      summary?: string | undefined
       description?: string | undefined
       technology?: string | undefined
     },
   ): {
     title?: string
+    summary?: c4.MarkdownOrString
     description?: c4.MarkdownOrString
     technology?: string
   } {
@@ -405,13 +416,19 @@ export class BaseParser {
     const description = override?.description
       ? { txt: removeIndent(override.description) }
       : this.parseMarkdownOrString(props.description)
+
+    const summary = override?.summary
+      ? { txt: removeIndent(override.summary) }
+      : this.parseMarkdownOrString(props.summary)
+
     const technology = toSingleLine(override?.technology) ??
       removeIndent(parseMarkdownAsString(props.technology))
 
-    return {
-      ...(isTruthy(title) && { title }),
-      ...(isTruthy(description) && { description }),
-      ...(isTruthy(technology) && { technology }),
-    }
+    return omitUndefined({
+      title,
+      summary,
+      description,
+      technology,
+    })
   }
 }

@@ -28,10 +28,10 @@ model {
 
     legacy = container 'Cloud Legacy' {
       #deprecated
-      description '
-        The legacy version of our SaaS
+      description '''
+        The **legacy** version of our SaaS  
         MVP as was presented to the first customers
-      '
+    '''
       link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
     }
 
@@ -39,11 +39,11 @@ model {
       description 'Cloud Next is the next version of our cloud systems'
     }
 
-    supportUser = actor 'Support User' {
-      description '
-        A emploere from the support team
-        Has limited access to the system
-      '
+    supportUser = actor 'Support User' 'Support team member with limited access' {
+      description ''' 
+        Support users require limited access to the system  
+        to help customers with their issues
+  '''
       -> customer 'helps with questions' {
         metadata {
           rps '1000'
@@ -64,7 +64,8 @@ views {
     group 'SAAS' {
       color primary
       opacity 20%
-      include * -> *
+      include *
+      exclude customer
     }
     group 'External' {
       color green
@@ -73,10 +74,8 @@ views {
         customer with {
           color green
         }
+      exclude -> customer
     }
-
-
-    exclude -> customer
   }
 
   view customer of customer {

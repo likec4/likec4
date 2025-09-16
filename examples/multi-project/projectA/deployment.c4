@@ -3,8 +3,12 @@ specification {
   deploymentNode node
   deploymentNode region {
     notation 'Geo Region'
+    summary 'Geo Region'
   }
-  deploymentNode zone
+  deploymentNode zone {
+    notation 'Availability Zone'
+    summary 'Availability Zone'
+  }
   deploymentNode group
   deploymentNode environment {
     notation 'Environment'
@@ -21,8 +25,7 @@ deployment {
     instanceOf customer
   }
 
-  environment prod {
-    title 'Deployment / Production environment'
+  environment prod 'Production environment' {
     technology 'OpenTofu'
 
     region eu 'EU' {

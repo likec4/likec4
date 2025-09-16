@@ -1,4 +1,4 @@
-import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
+import { type Fqn, type ProjectId, FqnRef, preferSummary } from '@likec4/core'
 import { type AstNode, type MaybePromise, AstUtils } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
 import type { Hover } from 'vscode-languageserver-types'
@@ -34,6 +34,12 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
         lines.push(`### ${el.title}`)
       }
       lines.push('deployment node `' + el.kind + '` ')
+
+      const summary = preferSummary(el)
+      if (summary) {
+        lines.push('', summary.md ?? summary.txt)
+      }
+
       return {
         contents: {
           kind: 'markdown',
@@ -93,7 +99,15 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       if (!el) {
         return
       }
-      const lines = [el.id, `### ${el.title}`, 'element kind `' + el.kind + '` ']
+      const lines = [
+        el.id,
+        `### ${el.title}`,
+        'element kind `' + el.kind + '` ',
+      ]
+      const summary = preferSummary(el)
+      if (summary) {
+        lines.push('', summary.md ?? summary.txt)
+      }
       return {
         contents: {
           kind: 'markdown',
