@@ -1,16 +1,48 @@
 ---
-title: Build a static website
-description: How to build a static website with LikeC4
+title: Deploy a static website
+description: How to build and deploy static website with LikeC4
 sidebar:
   order: 1
 ---
 
-import { Card, Aside } from '@astrojs/starlight/components';
+import { LinkCard } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
 
-<Card title="Soon" icon="warning">
-  This page is under construction.  
-</Card>
+## Pre-requisites
 
-<Aside title="Meanwhile">
-  Check  [`build`](/tooling/cli/#build-static-website) command in CLI documentation.
-</Aside>
+You must have [Node.js](https://nodejs.org) installed.  
+Minimum supported version is 20.x, but using the latest stable version is recommended.  
+
+You can also use [LikeC4 Docker](/tooling/docker/).
+
+## Build
+
+Run `build` command, that prepares a folder with static files ready to be deployed to any host.
+
+```sh
+npx likec4 build -o ./dist
+```
+
+Available options:
+
+| Option                  | Description                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `-o, --output`          | Output directory                                                                                      |
+| `--base`                | Base URL the app is being served from, e.g. "/", "/pages/" or "./" for a relocatable app              |
+| `--use-hash-history`    | Hash-based navigation, e.g. "/#/view" instead of "/view"                                              |
+| `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
+| `--title`               | Base title of the app pages (default is "LikeC4")                                                     |
+| `--output-single-file`  | Generates a single self-contained HTML file                                                           |
+
+To see all available options run:
+```sh
+npx likec4 build -h
+```
+
+
+## Deploy
+
+LikeC4 CLI uses Vite to build the website.  
+
+All the examples from [Vite documentation](https://vitejs.dev/guide/static-deploy.html) apply to LikeC4, just replace `vite build` with `likec4 build`.

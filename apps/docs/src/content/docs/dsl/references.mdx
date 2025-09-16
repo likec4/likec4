@@ -11,7 +11,7 @@ tableOfContents:
 
 import { Aside } from '@astrojs/starlight/components';
 
-LikeC4 uses the lexical scope, with hoisting, almost like in JavaScript.
+LikeC4 uses the lexical scope with hoisting, almost like in JavaScript.
 
 ## Scope
 
@@ -89,7 +89,7 @@ In LikeC4, the element, besides being hoisted in its scope, also _"bubbles"_ to 
 We may reference something that is not yet declared but will be hoisted later.  
 The relationship on line 8 references `graphql` defined below on line 15:
 
-```likec4 showLineNumbers {8,17} copy
+```likec4 showLineNumbers copy
 model {
 
   service service1 {
@@ -114,16 +114,15 @@ model {
 
 <Aside>
 Lines 7 and 17 are the same: `frontend -> api`  
-But they reference to different elements:  
-{'-'} Line 7 to `service1.api`  
-{'-'} Line 17 to `service2.api`
+But they reference different elements:  
+{'-'} Line 7 references `service1.api`  
+{'-'} Line 17 references `service2.api`
 </Aside>
 
 ## Fully qualified names
 
 Top-level elements (placed directly in the `model` block) are available globally.  
-
-To reference nested elements we use their fully qualified names (FQN).
+You can use fully qualified names (FQN) to reference nested elements.
 
 Example:
 
@@ -145,12 +144,13 @@ model {
 
 Or even:
 
-```likec4 {5}
+```likec4 {6}
 model {
   service service1 {
     component api
     component frontend {
-      -> service2.api
+      -> api             
+      -> service2.api    // references to outer scope
     }
   }
   service service2 {
@@ -191,6 +191,4 @@ model {
 <Aside type='caution'>
 While omitting FQN-parts makes code better looking and references shorter,  
 it may be error-prone when you refactor the model
-
-_Sure, only if you have same-named elements_
 </Aside>

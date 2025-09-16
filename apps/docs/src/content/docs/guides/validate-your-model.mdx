@@ -12,6 +12,11 @@ import { PackageManagers } from 'starlight-package-managers';
 Sometimes you may want to enforce custom rules on your model or validate its consistency.  
 Here's a simple recipe for how to do that.
 
+:::note
+Check <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> repository for a complete example.
+:::
+
+
 ## Test your model
 
 In this example we'll use [Vitest](https://vitest.dev) together with the [LikeC4 API](/tooling/model-api/).  
@@ -140,7 +145,3 @@ likec4test('Relationships should have metadata', ({ expect, likec4 }) => {
 
 This approach makes it easy to enforce custom constraints and validate your model consistency.  
 Running these checks in CI pipeline is fast and provides immediate feedback when the model breaks your rules.
-
-:::note
-Check <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> repository for a complete example.
-:::

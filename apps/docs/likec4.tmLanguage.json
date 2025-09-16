@@ -140,7 +140,7 @@
       }
     },
     {
-      "match": "\\b(navigateTo)\\s+([_\\*\\.\\w]+)\\b",
+      "match": "\\b(navigateTo)\\s+([_\\-\\*\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.parameter.function.likec4"
@@ -166,7 +166,7 @@
       }
     },
     {
-      "match": "\\b(title|description|technology|notation|multiple|padding|size|textSize|prop\\d*):?\\b",
+      "match": "\\b(title|description|summary|technology|notation|multiple|padding|size|textSize|prop\\d*):?\\b",
       "name": "variable.parameter.function.likec4"
     },
     {

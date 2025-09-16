@@ -61,14 +61,21 @@ deployment {
 
 Node names must be unique within its container (parent node); same rules as for element names in the logical model.
 
-Nodes can also have titles, descriptions, tags, style, and other properties just like [logical elements](/dsl/model/#element-properties).
+Nodes may have properties just like [logical elements](/dsl/model/#element-properties).
 
 ```likec4
 deployment {
   environment prod 'Production' {
     #live #sla-customer 
-    description 'Production environment'
     technology 'OpenTofu'
+    summary 'Production environment'
+    description '''
+      ## Detailed description
+      
+      With **Markdown** support
+
+    '''
+    
     link https://likec4.dev
 
     zone eu {
