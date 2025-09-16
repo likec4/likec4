@@ -1,4 +1,4 @@
-import { describe, test, vi } from 'vitest'
+import { describe, test } from 'vitest'
 import { invalid, valid } from './asserts'
 
 describe.concurrent('model relation', () => {
@@ -54,8 +54,8 @@ describe.concurrent('model relation', () => {
   )
 
   test(
-    'fail if defined in extend without source',
-    invalid`
+    'valid sourceless in extend',
+    valid`
       specification {
         element person
       }
@@ -69,8 +69,8 @@ describe.concurrent('model relation', () => {
   )
 
   test(
-    'fail if defined in extend with this',
-    invalid`
+    'valid this in extend',
+    valid`
       specification {
         element person
       }
@@ -84,8 +84,8 @@ describe.concurrent('model relation', () => {
   )
 
   test(
-    'fail if defined in extend with it',
-    invalid`
+    'valid it in extend',
+    valid`
       specification {
         element person
       }

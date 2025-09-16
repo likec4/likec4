@@ -1,4 +1,4 @@
-import { type Fqn, type ProjectId, nonexhaustive } from '@likec4/core'
+import { type ProjectId, nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -15,7 +15,7 @@ import {
   StreamImpl,
   StreamScope,
 } from 'langium'
-import { type AstNodeDescriptionWithFqn, ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
+import { ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
 import { logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
@@ -99,6 +99,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected *genScopeExtendElement({ element }: ast.ExtendElement): Generator<AstNodeDescription> {
     if (element.el.$nodeDescription) {
       yield element.el.$nodeDescription
+      yield {
+        ...element.el.$nodeDescription,
+        name: 'this',
+      }
+      yield {
+        ...element.el.$nodeDescription,
+        name: 'it',
+      }
     }
     // we make extended element resolvable inside ExtendElementBody
     yield* this.genUniqueDescedants(() => elementRef(element))

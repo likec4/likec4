@@ -141,12 +141,17 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         invariant(FqnRef.isModelRef(source) || FqnRef.isImportRef(source), 'Relation source must be a model reference')
         return source
       }
-      if (!ast.isElementBody(node.$container)) {
-        throw new Error('RelationRefError: Invalid container for sourceless relation')
+      if (ast.isElementBody(node.$container)) {
+        return {
+          model: this.resolveFqn(node.$container.$container),
+        }
       }
-      return {
-        model: this.resolveFqn(node.$container.$container),
+      if (ast.isExtendElementBody(node.$container)) {
+        return {
+          model: this.resolveFqn(node.$container.$container),
+        }
       }
+      throw new Error('RelationRefError: Invalid container for sourceless relation')
     }
 
     parseRelation(astNode: ast.Relation): ParsedAstRelation {

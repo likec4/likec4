@@ -1,6 +1,6 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
-import { DocumentState, TextDocument, UriUtils } from 'langium'
+import { type LangiumDocument, DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
 import { entries } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -77,19 +77,20 @@ export function createTestServices(options?: {
     return document as LikeC4LangiumDocument
   }
 
+  const removeDocument = async (doc: LangiumDocument | URI) => {
+    const uri = doc instanceof URI ? doc : doc.uri
+    await documentBuilder.update([], [uri])
+  }
+
   const parse = async (input: string, uri?: string) => {
     const document = await addDocument(input, uri)
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      await documentBuilder.build([document], { validation: false })
-    })
+    await documentBuilder.build([document], { validation: false })
     return document as LikeC4LangiumDocument
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
     const document = typeof input === 'string' ? await addDocument(input, uri) : input
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      await documentBuilder.build([document], { validation: true })
-    })
+    await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -103,9 +104,7 @@ export function createTestServices(options?: {
 
   const format = async (input: string | LikeC4LangiumDocument, uri?: string) => {
     const document = typeof input === 'string' ? await parse(input, uri) : input
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      await documentBuilder.build([document], { validation: true })
-    })
+    await documentBuilder.build([document], { validation: true })
 
     const edits = await formatter?.formatDocument(
       document,
@@ -163,6 +162,7 @@ export function createTestServices(options?: {
   return {
     services,
     addDocument,
+    removeDocument,
     parse,
     validate,
     validateAll,

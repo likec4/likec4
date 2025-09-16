@@ -155,7 +155,7 @@ ExtendElementBody:  '{'
   props+=ExtendElementProperty*
 
   elements+=(
-    Relation<true> |
+    Relation<false> |
     Element
   )*
 '}'

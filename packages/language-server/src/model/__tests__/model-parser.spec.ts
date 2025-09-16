@@ -3,7 +3,7 @@ import {
   isViewRulePredicate,
   ModelRelationExpr,
 } from '@likec4/core'
-import { indexBy } from 'remeda'
+import { indexBy, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
@@ -424,6 +424,89 @@ describe.concurrent('LikeC4ModelParser', () => {
       expect(views.v3).toBeDefined()
       expect(views.v3).toBeDefined()
       expect(views.v3!.title, ` markdown to single line`).toEqual('**Line 1** Line 2')
+    })
+
+    it('parses sourceless relation in extended', async ({ expect }) => {
+      const { validateAll, buildModel, addDocument, removeDocument } = createTestServices()
+      await addDocument(`
+        specification {
+          element component
+        }
+        model {
+          component sys1 {
+            component a {
+              component b
+            }
+          }
+          component sys2 {
+            component a {
+              component b
+            }
+          }
+        }
+      `)
+      let doc2 = await addDocument(`
+        model {
+          extend sys2.a.b {
+            -> sys1.b
+          }
+        }
+      `)
+
+      let { errors } = await validateAll()
+      expect(errors).toEqual([])
+      let model = await buildModel()
+
+      let relations = values(model.relations)
+      expect(relations).toHaveLength(1)
+      expect(relations[0]).toEqual({
+        id: expect.any(String),
+        source: {
+          model: 'sys2.a.b',
+        },
+        target: {
+          model: 'sys1.a.b',
+        },
+        title: '',
+      })
+
+      await removeDocument(doc2)
+      doc2 = await addDocument(`
+        model {
+          extend sys2.a {
+            it -> sys1.b
+            sys1.b -> this
+          }
+        }
+      `)
+
+      errors = await validateAll().then(r => r.errors)
+      expect(errors).toEqual([])
+      model = await buildModel()
+
+      relations = values(model.relations)
+      expect(relations).toEqual([
+        {
+          id: expect.any(String),
+          source: {
+            model: 'sys2.a',
+          },
+          target: {
+            model: 'sys1.a.b',
+          },
+          title: '',
+        },
+        {
+          id: expect.any(String),
+          source: {
+            model: 'sys1.a.b',
+          },
+          target: {
+            model: 'sys2.a',
+          },
+          title: '',
+        },
+      ])
     })
   })
 
