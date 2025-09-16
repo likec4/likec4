@@ -518,7 +518,7 @@ export function layoutRelationshipsView(
       y: position.y,
       position: [position.x, position.y],
       title: element.title,
-      description: RichText.from(element.description),
+      description: element.summary,
       technology: element.technology,
       tags: [...element.tags],
       links: null,

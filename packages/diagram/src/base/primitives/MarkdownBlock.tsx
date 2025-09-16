@@ -45,6 +45,7 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
   hideIfEmpty = false,
   emptyText = 'no content',
   className,
+  style,
   ...props
 }, ref) => {
   if (value.isEmpty && hideIfEmpty) {
@@ -67,6 +68,7 @@ export const MarkdownBlock = forwardRef<HTMLDivElement, MarkdownBlockProps>(({
         className,
       )}
       style={{
+        ...style,
         ...props.fontSize && {
           '--text-fz': `var(--font-sizes-${props.fontSize}, var(--font-sizes-md))`,
         },

@@ -1,9 +1,27 @@
 model {
 
-  customer = actor 'Cloud System Customer' {
-    description '
-      The regular customer of the system
-    '
+  customer = actor 'Cloud System Customer' 'Interacts with the system' {
+    description '''
+      Long description
+
+      ## Markdown
+
+      ```
+      Code block
+      ```
+
+      - List item
+      - List item
+      - List item
+
+      ## Table
+
+      | Column 1 | Column 2 | Column 3 |
+      | -------- | -------- | -------- |
+      | Row 1    | Row 1    | Row 1    |
+      | Row 2    | Row 2    | Row 2    |
+      | Row 3    | Row 3    | Row 3    |
+  '''
   }
 
   cloud = system 'Cloud System' {
@@ -59,11 +77,15 @@ model {
 views {
 
   view index {
-    title "Landscape"
+    title 'Landscape'
+    description 'The overview of the system'
+
+
     group 'SAAS' {
       color primary
       opacity 20%
-      include * -> *
+      include *
+      exclude customer
     }
     group 'External' {
       color green
@@ -72,10 +94,9 @@ views {
         customer with {
           color green
         }
+      exclude -> customer
     }
 
-
-    exclude -> customer
   }
 
   view customer of customer {

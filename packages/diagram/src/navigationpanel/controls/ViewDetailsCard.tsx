@@ -10,9 +10,10 @@ import {
 } from '@mantine/core'
 import { IconId, IconLink } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import { useState } from 'react'
 import { ElementTag, MarkdownBlock } from '../../base/primitives'
 import { Link } from '../../components/Link'
-import { useDiagram } from '../../hooks/useDiagram'
+import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import type { NavigationPanelActorSnapshot } from '../actor'
 import { useNavigationActorSnapshot } from '../hooks'
@@ -32,6 +33,7 @@ const selector = ({ context }: NavigationPanelActorSnapshot) => {
 type ViewDetailsCardData = ReturnType<typeof selector>
 
 export const ViewDetailsCard = (props: PopoverProps) => {
+  const [opened, setOpened] = useState(false)
   const data = useNavigationActorSnapshot(selector)
   const portalProps = useMantinePortalProps()
 
@@ -40,20 +42,21 @@ export const ViewDetailsCard = (props: PopoverProps) => {
       position="bottom-end"
       shadow="xl"
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-      trapFocus
       offset={{
         mainAxis: 4,
       }}
+      opened={opened}
+      onChange={setOpened}
       {...portalProps}
       {...props}
     >
-      <ViewDetailsCardTrigger linksCount={data.links.length} />
-      <ViewDetailsCardDropdown data={data} />
+      <ViewDetailsCardTrigger linksCount={data.links.length} onOpen={() => setOpened(true)} />
+      {opened && <ViewDetailsCardDropdown data={data} onClose={() => setOpened(false)} />}
     </Popover>
   )
 }
 
-const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
+const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; onOpen: () => void }) => (
   <Popover.Target>
     <UnstyledButton
       component={m.button}
@@ -61,6 +64,10 @@ const ViewDetailsCardTrigger = ({ linksCount }: { linksCount: number }) => (
       whileTap={{
         scale: 0.95,
         translateY: 1,
+      }}
+      onClick={e => {
+        e.stopPropagation()
+        onOpen()
       }}
       className={cx(
         'group',
@@ -123,8 +130,13 @@ const ViewDetailsCardDropdown = ({
     links,
     relativePath,
   },
-}: { data: ViewDetailsCardData }) => {
+  onClose,
+}: { data: ViewDetailsCardData; onClose: () => void }) => {
   const diagram = useDiagram()
+
+  useOnDiagramEvent('paneClick', onClose)
+  useOnDiagramEvent('nodeClick', onClose)
+
   return (
     <Popover.Dropdown
       className={cx(
@@ -134,9 +146,10 @@ const ViewDetailsCardDropdown = ({
           layerStyle: 'likec4.dropdown',
           gap: 'md',
           padding: 'md',
+          paddingBottom: 'lg',
           pointerEvents: 'all',
-          maxWidth: 'calc(100cqw - 32px)',
-          minWidth: 'calc(100cqw - 50px)',
+          maxWidth: 'calc(100cqw - 52px)',
+          minWidth: '200px',
           maxHeight: 'calc(100cqh - 100px)',
           width: 'max-content',
           cursor: 'default',
@@ -152,7 +165,7 @@ const ViewDetailsCardDropdown = ({
         }),
       )}>
       <section>
-        <Text component="div" fw={500} size="xl">{title}</Text>
+        <Text component="div" fw={500} size="xl" lh={'sm'}>{title}</Text>
         <HStack alignItems={'flex-start'} mt="1">
           <ViewBadge label="id" value={id} />
           {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
@@ -179,7 +192,7 @@ const ViewDetailsCardDropdown = ({
         </section>
       )}
       {description.isEmpty && (
-        <Text component="div" fw={500} size="xs" c="dimmed" my="md" style={{ userSelect: 'none' }}>No description</Text>
+        <Text component="div" fw={500} size="xs" c="dimmed" style={{ userSelect: 'none' }}>No description</Text>
       )}
       {description.nonEmpty && (
         <section>
@@ -221,6 +234,7 @@ const ViewBadge = ({
             overflow: 'visible',
             px: '1',
             color: {
+              _dark: 'mantine.colors.gray[4]',
               _light: 'mantine.colors.gray[8]',
             },
           }),

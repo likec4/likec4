@@ -16,7 +16,6 @@ import {
   ActionIconGroup,
   Badge,
   Box,
-  Card,
   CloseButton,
   Divider as MantineDivider,
   Flex,
@@ -48,7 +47,7 @@ import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
-import { useLikeC4Model } from '../../likec4model'
+import { useCurrentViewModel } from '../../likec4model'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
@@ -115,8 +114,7 @@ export function ElementDetailsCard({
     defaultValue: 'Properties',
   })
   const diagram = useDiagram()
-  const likec4model = useLikeC4Model()
-  const viewModel = likec4model.view(viewId)
+  const viewModel = useCurrentViewModel()
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
 
   const elementModel = viewModel.$model.element(fqn)
@@ -221,7 +219,7 @@ export function ElementDetailsCard({
    */
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 200)
+  }, 220)
 
   return (
     <m.dialog
@@ -257,9 +255,7 @@ export function ElementDetailsCard({
       }}
     >
       <RemoveScroll forwardProps removeScrollBar={false}>
-        <Card
-          shadow="md"
-          component={m.div}
+        <m.div
           layout
           layoutRoot
           drag
@@ -292,13 +288,12 @@ export function ElementDetailsCard({
             },
           }}
           style={{
-            // `style` prop in Mantine doesn't accept motion values
-            width: width as any,
-            height: height as any,
+            width,
+            height,
           }}>
           <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
-            <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
-              <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
+            <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
+              <HStack alignItems="start" gap={'sm'} style={{ cursor: 'default' }} flexWrap="nowrap">
                 {elementIcon}
                 <div>
                   <Text
@@ -312,15 +307,15 @@ export function ElementDetailsCard({
                     </Text>
                   )}
                 </div>
-              </Group>
+              </HStack>
               <CloseButton
                 size={'lg'}
                 onClick={e => {
                   e.stopPropagation()
                   close()
                 }} />
-            </Group>
-            <Group align="baseline" gap={'sm'} wrap="nowrap">
+            </HStack>
+            <HStack alignItems="baseline" gap={'sm'} flexWrap="nowrap">
               <div>
                 <SmallLabel>kind</SmallLabel>
                 <Badge
@@ -403,7 +398,7 @@ export function ElementDetailsCard({
                   </Tooltip>
                 )}
               </ActionIconGroup>
-            </Group>
+            </HStack>
           </div>
           <Tabs
             value={activeTab}
@@ -426,6 +421,12 @@ export function ElementDetailsCard({
             <TabsPanel value="Properties">
               <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
                 <Box className={styles.propertiesGrid} pt={'xs'}>
+                  {elementModel.hasSummary && (
+                    <>
+                      <PropertyLabel>summary</PropertyLabel>
+                      <MarkdownBlock value={elementModel.summary} />
+                    </>
+                  )}
                   <>
                     <PropertyLabel>description</PropertyLabel>
                     <MarkdownBlock
@@ -517,7 +518,7 @@ export function ElementDetailsCard({
             dragMomentum={false}
             onDrag={handleDrag}
             dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
-        </Card>
+        </m.div>
       </RemoveScroll>
     </m.dialog>
   )
@@ -609,12 +610,10 @@ function ElementMetata({
         {entries(metadata).map(([key, value]) => (
           <div
             key={key}
-            className={cx(
-              'group',
-              css({
-                display: 'contents',
-              }),
-            )}
+            style={{
+              display: 'contents',
+            }}
+            className={'group'}
           >
             <div
               className={css({
@@ -651,7 +650,7 @@ function ElementMetata({
                     fontSize: 'sm',
                     padding: 'xxs',
                     whiteSpace: 'pre',
-                    fontFamily: '[var(--mantine-font-family-monospace)]',
+                    fontFamily: 'mono',
                     userSelect: 'all',
                   })}>
                   {value}

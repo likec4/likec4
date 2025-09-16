@@ -1,4 +1,4 @@
-import { isEmpty, isTruthy, unique } from 'remeda'
+import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
@@ -95,6 +95,15 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
 
   get title(): string {
     return this.$element.title
+  }
+
+  /**
+   * Returns true if the element has a summary and a description
+   * (if one is missing - it falls back to another)
+   */
+  get hasSummary(): boolean {
+    return !!this.$element.summary && !!this.$element.description &&
+      !isShallowEqual(this.$element.summary, this.$element.description)
   }
 
   /**

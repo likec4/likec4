@@ -25,13 +25,19 @@ export const dialog = css({
 export const card = css({
   position: 'absolute',
   pointerEvents: 'all',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '4',
   gap: 'lg',
   justifyContent: 'stretch',
+  color: 'mantine.colors.text',
   backgroundColor: {
     base: 'mantine.colors.body',
     _dark: 'mantine.colors.dark[6]',
   },
-  border: `none`,
+  boxShadow: 'md',
+  overflow: 'hidden',
+  border: 'none',
   backgroundImage: `
     linear-gradient(180deg,
       color-mix(in srgb, var(--likec4-palette-fill) 60%, transparent),
