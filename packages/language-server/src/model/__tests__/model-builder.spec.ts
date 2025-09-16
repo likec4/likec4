@@ -2,7 +2,7 @@ import type { Element, ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { createTestServices } from '../../test'
 
 describe.concurrent('LikeC4ModelBuilder', () => {
   it('builds model with colors and shapes', async ({ expect }) => {
@@ -65,7 +65,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(elements['system']).not.toHaveProperty('color')
   })
 
-  it('builds model with description and technology', async ({ expect }) => {
+  it('builds model with description, summary and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -82,6 +82,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       component system {
         backend = component 'Backend' {
           technology 'NodeJS'
+          summary 'Backend summary'
 
           style {
             color secondary
@@ -115,6 +116,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         color: 'secondary',
         title: 'Backend',
         technology: 'NodeJS',
+        summary: { txt: 'Backend summary' },
       },
       'system.frontend': {
         color: 'muted',
@@ -134,12 +136,20 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const { diagnostics } = await validate(`
     specification {
       element component
-      tag deprecated
+      tag tag1
+      tag tag2
+      element tagged {
+        #tag1
+      }
     }
     model {
       component system1
       component system2 {
-        #deprecated
+        #tag1
+      }
+      tagged system3 
+      tagged system4 {
+        #tag2
       }
     }
     `)
@@ -149,13 +159,21 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'component',
-        tags: [],
       },
       system2: {
         kind: 'component',
-        tags: ['deprecated'],
+        tags: ['tag1'],
+      },
+      system3: {
+        kind: 'tagged',
+        tags: ['tag1'],
+      },
+      system4: {
+        kind: 'tagged',
+        tags: ['tag1', 'tag2'],
       },
     })
+    expect(model.elements['system1']).not.to.have.property('tags')
   })
 
   it('builds model with metadata', async ({ expect }) => {
@@ -315,6 +333,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         kind: 'component',
       },
     })
+    expect(model.elements['component1']).not.to.have.property('links')
   })
 
   it('builds model and give default name for index view', async ({ expect }) => {
@@ -415,7 +434,6 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
     })
     expect(model.views['index' as ViewId]).not.toHaveProperty('viewOf')
-
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
@@ -464,11 +482,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       system1: {
         kind: 'component',
         tags: ['v2'],
-        links: null,
       },
       system2: {
         kind: 'component',
-        tags: [],
         links: [
           { url: './samefolder.js', relative: 'src/samefolder.js' },
           { url: './sub/folder.js#L1-2', relative: 'src/sub/folder.js#L1-2' },
@@ -479,6 +495,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         ],
       },
     })
+    expect(model.elements['system1']).not.to.have.property('links')
+    expect(model.elements['system2']).not.to.have.property('tags')
+
     expect(model.views).toMatchObject({
       index: {
         id: 'index',
@@ -1418,11 +1437,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     await validate(`
     specification {
       deploymentNode node
-      element component {
-        style {
-          color red
-        }
-      }
+      element component
     }
     model {
       component c1 {
@@ -1456,9 +1471,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       customColors: {},
       elements: {
         component: {
-          style: {
-            color: 'red',
-          },
+          style: {},
         },
       },
       relationships: {},

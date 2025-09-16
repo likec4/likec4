@@ -1,9 +1,12 @@
 import type * as c4 from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
+import { loggable } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import { type ParsedAstGlobals, ast } from '../../ast'
-import { logger, logWarnError } from '../../logger'
+import { serverLogger } from '../../logger'
 import type { WithViewsParser } from './ViewsParser'
+
+const logger = serverLogger.getChild('GlobalsParser')
 
 export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
   return class GlobalsParser extends B {
@@ -27,7 +30,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
 
           this.parseAndStoreGlobalPredicateGroupOrDynamic(predicate, globalPredicateId, c4Globals)
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
 
@@ -48,7 +51,7 @@ export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
             c4Globals.styles[globalStyleId] = styles
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
     }

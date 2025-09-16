@@ -52,7 +52,7 @@ SpecificationElementKind:
   '}')?;
 
 SpecificationElementStringProperty:
-  key=('title' | 'description' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'notation' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 SpecificationDeploymentNodeKind:
   'deploymentNode' kind=DeploymentNodeKind ('{'
@@ -117,7 +117,7 @@ Element:
     name=Id Eq kind=[ElementKind]
   )
   (props+=String  // title
-    (props+=String  // description
+    (props+=String  // summary
       (props+=String  // technology
         (props+=String)?   // tags (ignored by likec4, but still parsed for Structurizr compatibility)
       )?
@@ -144,7 +144,7 @@ ElementProperty:
   MetadataProperty;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 ExtendElement:
   'extend' element=StrictFqnElementRef body=ExtendElementBody
@@ -572,7 +572,10 @@ DeploymentNode:
     kind=[DeploymentNodeKind:Id] name=Id |
     name=Id Eq kind=[DeploymentNodeKind:Id]
   )
-  title=String?
+  (
+    title=String
+    summary=String?
+  )?
   body=DeploymentNodeBody?
 ;
 
@@ -590,7 +593,10 @@ DeployedInstance:
   (name=Id Eq)?
   'instanceOf'
   target=ElementRef
-  title=String?
+  (
+    title=String
+    summary=String?
+  )?
   body=DeployedInstanceBody?
   ';'?
 ;

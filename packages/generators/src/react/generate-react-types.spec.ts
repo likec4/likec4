@@ -64,4 +64,9 @@ describe('generateReactTypes', () => {
     const aux = generateReactTypes(m.toLikeC4Model())
     await expect(aux).toMatchFileSnapshot('__snapshots__/valid-code.snap')
   })
+
+  it('generate valid code with core package', async ({ expect }) => {
+    const aux = generateReactTypes(m.toLikeC4Model(), { useCorePackage: true })
+    await expect(aux).toMatchFileSnapshot('__snapshots__/valid-code-with-core.snap')
+  })
 })

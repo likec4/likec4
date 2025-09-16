@@ -1,4 +1,4 @@
-import { entries, flatMap, groupBy, map, mapValues, pipe, piped, prop, sortBy, unique } from 'remeda'
+import { entries, filter, flatMap, groupBy, map, mapValues, pipe, piped, prop, sortBy, unique } from 'remeda'
 import type { ComputedNode, NodeNotation } from '../../types'
 
 /**
@@ -12,6 +12,7 @@ import type { ComputedNode, NodeNotation } from '../../types'
 export function buildElementNotations(nodes: ComputedNode<any>[]): NodeNotation[] {
   return pipe(
     nodes,
+    filter((n): n is ComputedNode<any> & { notation: string } => !!n.notation),
     groupBy(prop('notation')),
     mapValues(
       piped(

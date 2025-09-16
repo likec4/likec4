@@ -1,6 +1,6 @@
 ---
 title: Relationships
-description: How to define connections, data flows and interactions inside your architecture with LikeC4
+description: How to define connections, data flows and interactions within your model
 sidebar: 
   label: Relationships
   order: 4
@@ -8,8 +8,11 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components';
 
-Relationships describe the connections, data flows and interactions of the elements,  
-and created with the **`->`** operator:
+Relationships describe the connections, data flows and interactions within your model.  
+
+## Relationship definition
+
+Relationships are defined with the **`->`** operator:
 
 ```likec4
 model {
@@ -19,6 +22,62 @@ model {
   customer -> cloud
 }
 ```
+
+Relationships may be nested
+
+```likec4
+model {
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend
+    customer -> frontend
+  }
+}
+```
+
+In nested relationships you can use `it` or `this` to refer parent:
+
+```likec4
+model {
+  customer = actor {
+    // as a source
+    it -> frontend
+    // as a target
+    frontend -> this
+  }
+}
+```
+
+Nested relationships may be _"sourceless"_, then the source is the parent element
+
+```likec4
+model { 
+  actor customer {
+    // same as customer -> frontend
+    -> frontend
+  }
+  service cloud {
+    component backend
+    component frontend {
+      // same as frontend -> backend
+      -> backend
+    }
+  }
+}
+```
+
+:::caution
+
+_"sourceless"_ relationships must be nested:
+
+```likec4
+model {  
+  -> backend // ⛔️ Error: model can't be a source
+}
+```
+:::
 
 ## Relationship kinds
 
@@ -43,86 +102,15 @@ model {
 }
 ```
 
-This allows us to express and add more semantics to the interactions between the elements,
-for instance, from a technology perspective (REST, GRPC, GraphQL, Sync/Async, etc.)
-or from a business perspective (delegation, inform, accountability, etc.).
+This makes it possible to add richer semantics to the interactions between elements, for example,
+from a technology perspective (REST, gRPC, GraphQL, Sync/Async, etc.)
+or from a business perspective (delegation, informing, accountability, etc.).
 
-It's up to you to define the relationship kinds that make sense for your context.
+You can define whichever relationship types best fit your context.
 
 <Aside type='tip'>
   With kinds you can customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>
-
-## Relationship definition
-
-Relationships may be nested
-
-```likec4
-model {
-  actor customer
-  service cloud {
-    component backend
-    component frontend
-
-    frontend -> backend
-    customer -> frontend
-  }
-}
-```
-
-Use `it` or `this` to refer parent as the source:
-
-```likec4
-model {
-  customer = actor {
-    it -> frontend 'opens in browser'
-    this -> frontend 'opens in browser'
-  }
-}
-```
-
-or to refer as the target:
-
-```likec4
-model {
-  component frontend {
-    customer -> it 'opens in browser'
-    customer -> this 'opens in browser'
-  }
-}
-```
-
-Nested relationships may be _"sourceless"_, then the source is the parent element
-
-```likec4
-specification {
-  relationship graphql
-}
-model {
-  customer = actor {
-    // same as customer -> frontend
-    -> frontend 'opens in browser' 
-  }
-  service cloud {
-    component backend
-    component frontend {
-      // same as frontend -[graphql]-> backend
-      -[graphql]-> backend 'requests data'  
-    }
-  }
-}
-```
-
-:::caution
-
-_"sourceless"_ relationships must be nested:
-
-```likec4
-model {  
-  -> backend // ⛔️ Error: model can't be a source
-}
-```
-:::
 
 ## Relationship Properties
 
@@ -130,47 +118,30 @@ model {
 
 Relationships may have a title (and better to have one):
 
-```likec4 {7-8, 12}
+```likec4 'opens in browser'
 model {
-  actor customer
-  service cloud {
-    component backend
-    component frontend
-
-    // Title can be inlined
-    frontend -> backend 'requests data to display'
-  }
-
+  customer -> frontend 'opens in browser'
+  // or nested
   customer -> frontend {
-    title 'opens in browser' // or nested
+    title 'opens in browser'
   }
-}
-```
-
-### Technology
-
-```likec4
-model {
-  customer -> frontend 'opens in browser' {
-    technology 'HTTPS'
-  }
-
-  // Or in a shorter way
-  customer -> frontend 'opens in browser' 'HTTPS'
 }
 ```
 
 ### Description
 
-```likec4
+```likec4 'Customer opens...'
 model {
   customer -> frontend 'opens in browser' {
-    description 'Customer opens the frontend in the browser to interact with the system'
+    description 'Customer opens...'
   }
+
+  // Or in a shorter way
+  customer -> frontend 'opens in browser' 'Customer opens...'
 }
 ```
 
-Same as for elements, you can use markdown in `description` with triple quotes: 
+Same as for elements, you can [use markdown](/dsl/model#using-markdown) in `description` with triple quotes: 
 
 ```likec4
 model {
@@ -190,9 +161,24 @@ model {
 }
 ```
 
+### Technology
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    technology 'HTTPS'
+  }
+
+  // Or in a shorter way
+  // order is [title] [description] [technology]
+  customer -> frontend 'opens in browser'  'Customer opens...' 'HTTPS'
+}
+```
+
+
 ### Tags
 
-Relationships may be tagged
+Relationships may have tags:
 
 ```likec4
 model {
@@ -216,6 +202,9 @@ model {
     // External link
     link https://any-external-link.com
 
+    // With label
+    link https://github.com/likec4/likec4 'Repository'
+
     // or any URI
     link ssh://bastion.internal 'SSH'
 
@@ -228,14 +217,14 @@ model {
 
 ### Navigate To
 
-Relationship may have a `navigateTo` property, which is a link to some [dynamic view](/dsl/views/dynamic).  
-This allows to "zoom-in" and see more details about this relationship.
+Relationship may have a `navigateTo` property, which is a link to [dynamic view](/dsl/views/dynamic).  
+This allows to _"zoom-in"_ and see more details about this relationship.
 
 ```likec4 copy
 model {
   webApp -> backend.api {
     title 'requests data for the dashboard'
-    navigateTo dashboardRequestFlow
+    navigateTo dashboard-request-flow
   }
   
 }
@@ -243,20 +232,25 @@ model {
 
 ## Relationships Metadata
 
-Same as [elements metadata](/dsl/model/#element-metadata):
+Same as [elements metadata](/dsl/model/#metadata):
 
 ```likec4
 model {
   customer -> frontend 'opens in browser' {
     metadata {
       prop1 'value1'
-      prop2 '
-        apiVersion: apps/v1
-        kind: StatefulSet
-        metadata:
-          name: app-statefulset
-        spec: {}
-      '
+      prop2 '{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          }
+        }
+      }'
     }
   }
 }

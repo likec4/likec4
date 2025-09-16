@@ -1,4 +1,11 @@
-import type { IsAny, Simplify, UnionToIntersection } from 'type-fest'
+import { omitBy } from 'remeda'
+import type {
+  Exact,
+  IsAny,
+  KeysOfUnion,
+  Simplify,
+  UnionToIntersection,
+} from 'type-fest'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
@@ -78,3 +85,18 @@ export interface Link {
  * Coalesce `V` to a string if it is `any`
  */
 export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V
+
+type ExactObject<T, InputType = unknown> =
+  & {
+    [KeyType in keyof T]: undefined extends T[KeyType] ? T[KeyType] | undefined : T[KeyType]
+  }
+  & Record<Exclude<keyof InputType, KeysOfUnion<T>>, never>
+
+/**
+ * Allows only exact properties of `U` to be present in `T` and omits undefined values
+ *
+ * See {@link Exact} for more details (this version is non-deep)
+ */
+export function omitUndefined<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
+  return omitBy(a, v => v === undefined) as Expected
+}

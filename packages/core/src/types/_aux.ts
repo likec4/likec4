@@ -255,6 +255,28 @@ export type StrictDeploymentKind<A> = A extends infer T extends Any ? scalar.Dep
   : never
 export type StrictRelationKind<A> = A extends infer T extends Any ? scalar.RelationshipKind<RelationKind<T>> : never
 
+export type WithDescriptionAndTech = {
+  // short summary (displayed in the diagram)
+  readonly summary?: scalar.MarkdownOrString | null
+  // long description (displayed in the details panel, or in the diagram if summary is not set)
+  readonly description?: scalar.MarkdownOrString | null
+  readonly technology?: string | null
+}
+
+/**
+ * Returns summary if it is not null, otherwise returns description
+ */
+export function preferSummary(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
+  return a.summary ?? a.description
+}
+
+/**
+ * Returns description if it is not null, otherwise returns summary
+ */
+export function preferDescription(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
+  return a.description ?? a.summary
+}
+
 export type WithTags<A extends Any> = {
   readonly tags: Tags<A>
 }
@@ -273,6 +295,10 @@ export type WithOptionalLinks = {
 
 export type WithMetadata<A extends Any> = {
   readonly metadata?: Metadata<A>
+}
+
+export type WithNotation = {
+  readonly notation?: string | null
 }
 
 /**

@@ -296,6 +296,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'title',
         'description',
         'technology',
+        'summary',
         'notation',
         'notes',
         'color',

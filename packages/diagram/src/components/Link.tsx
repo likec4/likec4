@@ -1,5 +1,6 @@
 import type { Link as LinkData } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
+import { styled } from '@likec4/styles/jsx'
 import { type BadgeProps, ActionIcon, Badge, CopyButton } from '@mantine/core'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 import { forwardRef } from 'react'
@@ -72,29 +73,31 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
               userSelect: 'none',
               pointerEvents: 'none',
               _groupHover: {
-                color: '[inherit]',
+                color: '[var(--badge-color)]',
                 opacity: .7,
-              },
-            },
-          }),
-          label: css({
-            '& > a': {
-              color: '[inherit]',
-              cursor: 'pointer',
-              transition: 'fast',
-              opacity: {
-                base: 0.7,
-                _hover: 1,
-              },
-              textDecoration: {
-                base: 'none',
-                _hover: 'underline',
               },
             },
           }),
         }}
       >
-        <a href={url} target="_blank">
+        <styled.a
+          href={url}
+          target="_blank"
+          style={{
+            color: 'var(--badge-color)',
+            cursor: 'pointer',
+          }}
+          css={{
+            transition: 'fast',
+            opacity: {
+              base: 0.7,
+              _hover: 1,
+            },
+            textDecoration: {
+              base: 'none',
+              _hover: 'underline',
+            },
+          }}>
           {isGithub && (
             <GithubIcon
               height="12"
@@ -102,7 +105,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
               style={{ verticalAlign: 'middle', marginRight: '4px' }} />
           )}
           {isGithub ? url.replace(GITHUB_PREFIX, '') : url}
-        </a>
+        </styled.a>
       </Badge>
     )
   },

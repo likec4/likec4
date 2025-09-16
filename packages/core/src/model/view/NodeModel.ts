@@ -49,7 +49,7 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.#node.description)
+    return RichText.memoize(this, 'description', this.#node.description)
   }
 
   get technology(): string | null {

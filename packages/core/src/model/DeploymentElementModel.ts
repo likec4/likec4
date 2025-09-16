@@ -18,6 +18,8 @@ import {
   DefaultLineStyle,
   DefaultShapeSize,
   DefaultThemeColor,
+  preferDescription,
+  preferSummary,
   RichText,
 } from '../types'
 import * as aux from '../types/_aux'
@@ -67,8 +69,20 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
     return this.$node.style?.color as Color ?? DefaultThemeColor
   }
 
+  /**
+   * Short description of the element.
+   * Falls back to description if summary is not provided.
+   */
+  get summary(): RichTextOrEmpty {
+    return RichText.memoize(this, 'summary', preferSummary(this.$node))
+  }
+
+  /**
+   * Long description of the element.
+   * Falls back to summary if description is not provided.
+   */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$node.description)
+    return RichText.memoize(this, 'description', preferDescription(this.$node))
   }
 
   get technology(): string | null {
@@ -412,8 +426,20 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return this.element.kind
   }
 
+  override get summary(): RichTextOrEmpty {
+    return RichText.memoize(
+      this,
+      'summary',
+      preferSummary(this.$instance) ?? preferSummary(this.element.$element),
+    )
+  }
+
   override get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$instance.description ?? this.element.$element.description)
+    return RichText.memoize(
+      this,
+      'description',
+      preferDescription(this.$instance) ?? preferDescription(this.element.$element),
+    )
   }
 
   override get technology(): string | null {
@@ -496,6 +522,10 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.element.title
   }
 
+  get summary(): RichTextOrEmpty {
+    return this.element.summary
+  }
+
   get description(): RichTextOrEmpty {
     return this.element.description
   }
@@ -550,7 +580,7 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$relationship.description)
+    return RichText.memoize(this, 'description', this.$relationship.description)
   }
 
   get tags(): aux.Tags<A> {

@@ -27,10 +27,6 @@ export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>,
    * (Absolute coordinates)
    */
   labelBBox: BBox
-
-  // description?: scalar.HtmlOrString | null
-  // technology?: scalar.HtmlOrString | null
-  // notation?: scalar.HtmlOrString | null
 }
 
 export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> {

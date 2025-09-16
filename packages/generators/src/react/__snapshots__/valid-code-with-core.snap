@@ -1,13 +1,3 @@
-import type { AnyLikeC4Model } from '@likec4/core/model'
-import { invariant } from '@likec4/core/utils'
-import { generateAux } from '../model/generate-aux'
-
-export function generateReactTypes(model: AnyLikeC4Model, options: { useCorePackage?: boolean } = {}) {
-  const { useCorePackage = false } = options
-  invariant(!model.isParsed(), 'can not generate react types for parsed model')
-  const aux = generateAux(model, options)
-
-  return `
 /* prettier-ignore-start */
 /* eslint-disable */
 
@@ -18,14 +8,70 @@ export function generateReactTypes(model: AnyLikeC4Model, options: { useCorePack
 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import type { LikeC4Model } from '${useCorePackage ? '@likec4/core' : 'likec4'}/model'
-import type { DiagramView } from '${useCorePackage ? '@likec4/core/types' : 'likec4/model'}'
+import type { LikeC4Model } from '@likec4/core/model'
+import type { DiagramView } from '@likec4/core/types'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 
-${aux}
+import type { Aux, SpecAux } from '@likec4/core/types';
+
+export type $Specs = SpecAux<
+  // Element kinds
+  | "actor"
+  | "component"
+  | "system",
+  // Deployment kinds
+  | "env"
+  | "vm",
+  // Relationship kinds
+  | "dislike"
+  | "like",
+  // Tags
+  | "tag1"
+  | "tag2",
+  // Metadata keys
+  | "key1"
+  | "key2"
+>
+
+export type $Aux = Aux<
+  "computed",
+  // Elements
+  | "alice"
+  | "bob"
+  | "cloud"
+  | "cloud.backend"
+  | "cloud.frontend"
+  | "cloud.backend.api"
+  | "cloud.backend.db",
+  // Deployments
+  | "dev"
+  | "prod"
+  | "dev.api"
+  | "dev.vm1"
+  | "prod.vm1"
+  | "prod.vm2",
+  // Views
+  | "view1"
+  | "view2",
+  // Project ID
+  "from-builder",
+  $Specs
+>
+
+export type $ElementId = $Aux['ElementId']
+export type $DeploymentId = $Aux['DeploymentId']
+export type $ViewId = $Aux['ViewId']
+
+export type $ElementKind = $Aux['ElementKind']
+export type $RelationKind = $Aux['RelationKind']
+export type $DeploymentKind = $Aux['DeploymentKind']
+export type $Tag = $Aux['Tag']
+export type $Tags = readonly $Aux['Tag'][]
+export type $MetadataKey = $Aux['MetadataKey']
+
 
 declare function isLikeC4ViewId(value: unknown): value is $ViewId;
 
@@ -63,5 +109,3 @@ export {
   ReactLikeC4
 }
 /* prettier-ignore-end */
-`.trimStart()
-}

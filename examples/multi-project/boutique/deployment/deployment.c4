@@ -22,7 +22,9 @@ deployment {
     description 'Development environment.'
 
     developer = instanceOf customer {
-      title 'Developer'
+      title '''
+Developer
+'''
     }
 
     devmachine = vm 'Developer Machine' {

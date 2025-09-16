@@ -167,8 +167,8 @@ and purchasing them.
   view catalogue of boutique.catalogue {
     include
       *,
-      -> boutique.db.*,
-      boutique
+      -> boutique.db._,
+      boutique._
 
     style * {
       color secondary

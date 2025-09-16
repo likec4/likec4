@@ -1,4 +1,4 @@
-import { isEmpty, isTruthy, unique } from 'remeda'
+import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type { Any, AnyAux, Color, IteratorLike } from '../types'
 import {
@@ -12,6 +12,8 @@ import {
   DefaultElementShape,
   DefaultShapeSize,
   DefaultThemeColor,
+  preferDescription,
+  preferSummary,
   RichText,
   splitGlobalFqn,
 } from '../types'
@@ -95,8 +97,29 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.$element.title
   }
 
+  /**
+   * Returns true if the element has a summary and a description
+   * (if one is missing - it falls back to another)
+   */
+  get hasSummary(): boolean {
+    return !!this.$element.summary && !!this.$element.description &&
+      !isShallowEqual(this.$element.summary, this.$element.description)
+  }
+
+  /**
+   * Short description of the element.
+   * Falls back to description if summary is not provided.
+   */
+  get summary(): RichTextOrEmpty {
+    return RichText.memoize(this, 'summary', preferSummary(this.$element))
+  }
+
+  /**
+   * Long description of the element.
+   * Falls back to summary if description is not provided.
+   */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$element.description)
+    return RichText.memoize(this, 'description', preferDescription(this.$element))
   }
 
   get technology(): string | null {

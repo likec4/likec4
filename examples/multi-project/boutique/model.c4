@@ -1,6 +1,10 @@
 model {
 
-  customer = actor 'Customer' {
+  customer = actor 'Customer' 'Interacts with the system' {
+    description '''
+      Details about the customer
+  '''
+
     -> boutique.frontend 'browses and buys products' {
       navigateTo place-order
       link https://github.com/likec4/template 'Repository'
@@ -93,7 +97,7 @@ model {
         description: 'Stores cart data.'
       }
 
-      api -> cache {
+      api -[solid]-> cache {
         title ''
       }
       api -> cache 'gets cart data' #deprecated #teamB
@@ -146,6 +150,7 @@ model {
       technology 'VUE SPA'
       description 'Provides access to boutique services.'
 
+      this .solid actionLog
       -> actionLog 'sends user activity data'
 
       catalogue = component 'Product Catalogue' {

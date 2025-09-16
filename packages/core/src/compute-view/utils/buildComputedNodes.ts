@@ -1,15 +1,16 @@
-import type { Simplify } from 'type-fest'
+import type { Except } from 'type-fest'
 import type { ElementModel } from '../../model'
 import {
   type AnyAux,
   type aux,
   type ComputedNode,
-  type Element,
   type scalar,
   type Unknown,
   DefaultElementShape,
   DefaultThemeColor,
   GroupElementKind,
+  omitUndefined,
+  preferSummary,
 } from '../../types'
 import { nonNullable } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
@@ -28,18 +29,30 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, C
   }
 }
 
-export type ComputedNodeSource<A extends AnyAux = Unknown> = Simplify<
-  & Pick<ComputedNode<A>, 'id' | 'title' | 'description' | 'kind' | 'deploymentRef' | 'modelRef'>
-  & Partial<Omit<Element<A>, 'id' | 'title' | 'description' | 'kind'>>
+export type ComputedNodeSource<A extends AnyAux = Unknown> = Except<
+  ComputedNode<A>,
+  'parent' | 'children' | 'inEdges' | 'outEdges' | 'level' | 'depth',
+  { requireExactProps: true }
 >
 
 export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
-  return {
-    ...el.$element,
+  const {
+    id,
+    summary, // omit
+    style,
+    metadata, // omit
+    ...rest
+  } = el.$element
+  return omitUndefined({
+    id: id as scalar.NodeId,
+    modelRef: id,
+    ...rest,
+    style: { ...style },
+    color: el.color,
+    shape: el.shape,
+    description: preferSummary(el.$element),
     tags: [...el.tags],
-    id: el.id as scalar.NodeId,
-    modelRef: el.id,
-  }
+  })
 }
 
 export function buildComputedNodes<A extends AnyAux>(

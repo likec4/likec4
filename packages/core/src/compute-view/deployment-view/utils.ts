@@ -1,4 +1,4 @@
-import { hasAtLeast, isEmpty, unique } from 'remeda'
+import { hasAtLeast, unique } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -17,8 +17,12 @@ import {
   type scalar,
   type Unknown,
   DefaultArrowType,
+  DefaultElementShape,
+  DefaultThemeColor,
   FqnExpr,
   isViewRuleStyle,
+  omitUndefined,
+  preferSummary,
 } from '../../types'
 import { invariant, nameFromFqn, nonexhaustive, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
@@ -135,44 +139,56 @@ export function deploymentExpressionToPredicate<
   nonexhaustive(target)
 }
 
+function instanceSummary(model: DeployedInstanceModel<any>) {
+  return preferSummary(model.$instance) ?? preferSummary(model.element.$element)
+}
+
 export function toNodeSource<A extends AnyAux>(
   el: DeploymentNodeModel<A> | DeployedInstanceModel<A>,
 ): ComputedNodeSource<A> {
   if (el.isDeploymentNode()) {
     const onlyOneInstance = el.onlyOneInstance()
-    let { title, kind, id, description, ...$node } = el.$node
-    const { icon, color, shape, ...style } = el.$node.style ?? {}
+    let {
+      title,
+      id,
+      description,
+      summary,
+      metadata,
+      style,
+      element,
+      tags: _tags, // omit
+      ...$node
+    } = el.$node
+    let icon = style.icon
     let tags = [...el.tags]
     // let description
     // If there is only one instance
+    summary ??= description
     if (onlyOneInstance) {
       tags = unique([...tags, ...onlyOneInstance.tags])
       // If title was not overriden, take title from the instance
       if (title === nameFromFqn(el.id)) {
         title = onlyOneInstance.title
       }
-      description = onlyOneInstance.description.$source ?? description
+      icon ??= onlyOneInstance.style.icon
+      summary ??= instanceSummary(onlyOneInstance)
     }
 
-    return {
-      ...(onlyOneInstance && {
-        ...toNodeSource(onlyOneInstance),
-        modelRef: onlyOneInstance.element.id,
-      }),
+    return omitUndefined({
+      id: id as scalar.NodeId,
+      deploymentRef: id,
       title,
       ...$node,
-      ...(icon && { icon }),
-      ...(color && { color }),
-      ...(shape && { shape }),
-      ...(description && { description }),
+      color: style.color ?? onlyOneInstance?.color ?? DefaultThemeColor,
+      shape: style.shape ?? DefaultElementShape,
+      ...(onlyOneInstance && {
+        modelRef: onlyOneInstance.element.id,
+      }),
+      icon,
+      description: summary,
       tags,
-      style: {
-        ...style,
-      },
-      deploymentRef: id,
-      kind,
-      id: id as scalar.NodeId,
-    }
+      style,
+    })
   }
   invariant(el.isInstance(), 'Expected Instance')
   const instance = el.$instance
@@ -184,33 +200,28 @@ export function toNodeSource<A extends AnyAux>(
     ...(instance.links ?? []),
   ]
 
-  const metadata = {
-    ...element.getMetadata(),
-    ...instance.metadata,
-  }
-
   const notation = instance.notation ?? element.$element.notation
 
-  let description = el.description.$source
-  let technology = instance.technology ?? element.technology
+  const description = instanceSummary(el)
 
-  return {
+  const technology = el.technology ?? undefined
+
+  return omitUndefined({
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: el.title,
-    ...(description && { description }),
-    ...(technology && { technology }),
+    description,
+    technology,
     tags: [...el.tags],
-    links: hasAtLeast(links, 1) ? links : null,
-    ...icon && { icon },
-    ...color && { color },
-    ...shape && { shape },
+    links: hasAtLeast(links, 1) ? links : undefined,
+    icon,
+    color,
+    shape,
     style,
     deploymentRef: instance.id,
     modelRef: element.id,
-    ...notation && { notation },
-    ...!isEmpty(metadata) && ({ metadata }),
-  }
+    notation,
+  })
 }
 
 export function toComputedEdges<A extends AnyAux>(

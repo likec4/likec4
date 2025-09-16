@@ -1,7 +1,6 @@
 import { markdownToHtml, markdownToText, memoizeProp, nonexhaustive } from '../utils'
 import type { MarkdownOrString } from './scalar'
 
-const richtxt = Symbol.for('richtxt')
 const symb_text = Symbol.for('text')
 const symb_html = Symbol.for('html')
 
@@ -48,8 +47,8 @@ export class RichText {
    *    return RichText.memoize(this, this.$element.description)
    *  }
    */
-  static memoize(obj: object, source: MarkdownOrString | null | undefined): RichTextOrEmpty {
-    return memoizeProp(obj, richtxt, () => RichText.from(source))
+  static memoize(obj: object, tag: symbol | string, source: MarkdownOrString | null | undefined): RichTextOrEmpty {
+    return memoizeProp(obj, tag, () => RichText.from(source))
   }
 
   /**

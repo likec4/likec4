@@ -1,5 +1,4 @@
-import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { LayoutedView } from '@likec4/core/types'
+import type { LayoutedView, LikeC4ViewModel } from 'likec4/model'
 import { expectTypeOf, test } from 'vitest'
 import { likec4model } from './likec4-model'
 

@@ -5,7 +5,7 @@ import * as assert from 'node:assert'
 import { entries } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { LiteralUnion } from 'type-fest'
-import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
+import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { NoopFileSystem } from '../filesystem'
@@ -35,33 +35,31 @@ export function createTestServices(options?: {
   async function initialize() {
     if (isInitialized) return
     isInitialized = true
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      services.shared.workspace.ConfigurationProvider.updateConfiguration({
-        settings: { likec4: { formatting: { quoteStyle: 'single' } } },
-      })
-      services.shared.workspace.WorkspaceManager.initialize({
-        capabilities: {},
-        processId: null,
-        rootUri: workspaceFolder.uri,
-        workspaceFolders: [workspaceFolder],
-      })
-      await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
-
-      // Register project with config if provided...
-      if (projectConfig) {
-        const projectFolderUri = Utils.resolvePath(workspaceUri, 'src')
-        services.shared.workspace.ProjectsManager.registerProject({
-          config: {
-            name: projectConfig?.name || 'test-project',
-            title: projectConfig?.title || 'Test Project',
-            contactPerson: projectConfig?.contactPerson || 'Unknown',
-            imageAliases: projectConfig?.imageAliases || {},
-            exclude: projectConfig?.exclude || ['node_modules'],
-          },
-          folderUri: projectFolderUri,
-        })
-      }
+    services.shared.workspace.ConfigurationProvider.updateConfiguration({
+      settings: { likec4: { formatting: { quoteStyle: 'single' } } },
     })
+    services.shared.workspace.WorkspaceManager.initialize({
+      capabilities: {},
+      processId: null,
+      rootUri: workspaceFolder.uri,
+      workspaceFolders: [workspaceFolder],
+    })
+    await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+
+    // Register project with config if provided...
+    if (projectConfig) {
+      const projectFolderUri = Utils.resolvePath(workspaceUri, 'src')
+      await services.shared.workspace.ProjectsManager.registerProject({
+        config: {
+          name: projectConfig?.name || 'test-project',
+          title: projectConfig?.title || 'Test Project',
+          contactPerson: projectConfig?.contactPerson || 'Unknown',
+          imageAliases: projectConfig?.imageAliases || {},
+          exclude: projectConfig?.exclude || ['node_modules'],
+        },
+        folderUri: projectFolderUri,
+      })
+    }
   }
 
   const addDocument = async (input: string, uri?: string) => {

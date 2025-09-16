@@ -151,6 +151,8 @@ export const fakeElements = {
     id: 'customer',
     kind: 'actor',
     title: 'customer',
+    description: { txt: 'fufll description' },
+    summary: { txt: 'short description' },
     shape: 'person',
   }),
   'support': el({
@@ -158,6 +160,7 @@ export const fakeElements = {
     kind: 'actor',
     title: 'support',
     shape: 'person',
+    description: { txt: 'description' },
   }),
   'cloud': el({
     id: 'cloud',

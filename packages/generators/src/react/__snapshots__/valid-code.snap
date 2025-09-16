@@ -8,14 +8,14 @@
 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import type { LikeC4Model } from '@likec4/core/model'
-import type { DiagramView } from '@likec4/core/types'
+import type { LikeC4Model } from 'likec4/model'
+import type { DiagramView } from 'likec4/model'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 
-import type { Aux, SpecAux } from '@likec4/core/types';
+import type { Aux, SpecAux } from 'likec4/model';
 
 export type $Specs = SpecAux<
   // Element kinds

@@ -76,14 +76,16 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "222934c5cc26fad8c43658376bc4e475e47c666f",
+  "hash": "9fd9f3070cb9c4a1b0e0bccccae5eaa71659a5e0",
   "id": "index",
   "links": null,
   "nodes": [
     {
       "children": [],
       "color": "primary",
-      "description": null,
+      "description": {
+        "txt": "short description",
+      },
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
@@ -103,7 +105,9 @@ exports[`compute-element-view > view of cloud 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": null,
+      "description": {
+        "txt": "description",
+      },
       "id": "support",
       "inEdges": [],
       "kind": "actor",
@@ -308,14 +312,16 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "3d2473dacefacc5be93c73cfe3b1c20824c1b57f",
+  "hash": "2e4803c2ec35d8983615b6b12843abc4092f4fbb",
   "id": "index",
   "links": null,
   "nodes": [
     {
       "children": [],
       "color": "primary",
-      "description": null,
+      "description": {
+        "txt": "short description",
+      },
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
@@ -335,7 +341,9 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": null,
+      "description": {
+        "txt": "description",
+      },
       "id": "support",
       "inEdges": [],
       "kind": "actor",

@@ -60,17 +60,21 @@ model {
     backend -> aurora.tblUsers 'reads/writes' {
       navigateTo cloud-to-amazon
       description '''
-        # Reads/writes users table.
-        [deprecated, moving to Aurora]
+  ## Reads/writes users table.
 
-      '''
+  [deprecated, moving to Aurora]
+  
+  '''
     }
-    backend -> cloud.legacy.backend.services 'calls legacy'
+    backend -> cloud.legacy.backend.services
 
     events = component 'Events Manager' {
       -> amazon.queue1 {
         title 'publishes events'
         technology 'JSON'
+        description '
+          
+        '
         navigateTo cloud-to-amazon
       }
       -> amazon.queue2 {

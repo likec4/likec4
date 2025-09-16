@@ -34,6 +34,7 @@ import {
   sortBy,
   tap,
 } from 'remeda'
+import type { Except } from 'type-fest'
 import type { RelationshipDetailsTypes } from './_types'
 import type { RelationshipDetailsViewData } from './compute'
 
@@ -218,14 +219,14 @@ export type LayoutResult = {
 }
 
 export namespace LayoutResult {
-  export type Node = Omit<DiagramNode, 'modelRef' | 'description' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
+  export type Node = Except<DiagramNode, 'modelRef' | 'description' | 'deploymentRef' | 'inEdges' | 'outEdges'> & {
     description: RichTextOrEmpty
     modelRef: Fqn
     column: RelationshipDetailsTypes.Column
     ports: RelationshipDetailsTypes.Ports
     // existsInCurrentView: boolean
   }
-  export type Edge = Omit<DiagramEdge, 'relations' | 'description'> & {
+  export type Edge = Except<DiagramEdge, 'relations' | 'description'> & {
     relationId: RelationId
     sourceHandle: string
     targetHandle: string
@@ -402,7 +403,7 @@ export function layoutRelationshipDetails(
       y: position.y,
       position: [position.x, position.y],
       title: element.title,
-      description: RichText.from(element.description),
+      description: element.summary,
       technology: element.technology,
       tags: [...element.tags],
       links: null,

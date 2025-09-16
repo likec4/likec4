@@ -5,7 +5,7 @@ import {
 } from '@likec4/core'
 import { indexBy } from 'remeda'
 import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { createTestServices } from '../../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
   it('parses strings with escaped quotes', async ({ expect }) => {
@@ -48,27 +48,22 @@ describe.concurrent('LikeC4ModelParser', () => {
           element element
         }
         model {
-           element el1 {
+          element el1 {
+            summary '''el1-tech'''
+            // Should treat internal quotes as part of the string
             description '''
-              el1-tech
+              el'1-n'ota"tion
+              second line
             '''
-            element el11 {
-              // Should treat internal quotes as part of the string
-              description '''
-                el'1-n'ota"tion
-              '''
-            }
           }
           element el2 {
+            summary """el2-tech"""            
+            // Should treat internal quotes as part of the string
             description """
-              el2-tech
+              el"2-n"ota'tion
+              second line
             """
-            element el21 {
-              // Should treat internal quotes as part of the string
-              description """
-                el"2-n"ota'tion
-              """
-            }
+          }
         }
       `)
     const doc = services.likec4.ModelParser.parse(document)
@@ -76,22 +71,14 @@ describe.concurrent('LikeC4ModelParser', () => {
       {
         id: 'el1',
         kind: 'element',
-        description: { md: 'el1-tech' },
+        summary: { md: 'el1-tech' },
+        description: { md: 'el\'1-n\'ota"tion\nsecond line' },
       },
       {
         id: 'el2',
         kind: 'element',
-        description: { md: 'el2-tech' },
-      },
-      {
-        id: 'el1.el11',
-        kind: 'element',
-        description: { md: 'el\'1-n\'ota"tion' },
-      },
-      {
-        id: 'el2.el21',
-        kind: 'element',
-        description: { md: 'el"2-n"ota\'tion' },
+        summary: { md: 'el2-tech' },
+        description: { md: 'el"2-n"ota\'tion\nsecond line' },
       },
     ])
   })
@@ -126,38 +113,65 @@ describe.concurrent('LikeC4ModelParser', () => {
       })
     })
 
-    it('parses tags in elements', async ({ expect }) => {
+    it('parses custom colors', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          color customcolor1 #00ffff
+          color customcolor2 rgb(201 200 6)
+          color customcolor3 rgba(201, 6, 6, 0.9)
+          color customcolor4 rgba(201 200 6 80%)
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        colors: {
+          customcolor1: {
+            color: '#00ffff',
+          },
+          customcolor2: {
+            color: 'rgb(201,200,6)',
+          },
+          customcolor3: {
+            color: 'rgba(201,6,6,0.9)',
+          },
+          customcolor4: {
+            color: 'rgba(201,200,6,0.8)',
+          },
+        },
+      })
+    })
+
+    it('parses summary, title, description', async ({ expect }) => {
       const { validate, services } = createTestServices()
       const { document } = await validate(`
         specification {
           element system {
-            #tag1 #tag2
+            summary "system summary"
+            title "system title"
+            description "system description"
           }
           deploymentNode vm {
-            #tag2
+            summary "vm summary"
+            title "vm title"
+            description "vm description"
           }
-          tag tag1
-          tag tag2
         }
       `)
       const doc = services.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
         elements: {
           system: {
-            tags: ['tag1', 'tag2'],
+            summary: { txt: 'system summary' },
+            title: 'system title',
+            description: { txt: 'system description' },
           },
         },
         deployments: {
           vm: {
-            tags: ['tag2'],
-          },
-        },
-        tags: {
-          tag1: {
-            astPath: expect.any(String),
-          },
-          tag2: {
-            astPath: expect.any(String),
+            summary: { txt: 'vm summary' },
+            title: 'vm title',
+            description: { txt: 'vm description' },
           },
         },
       })
@@ -177,10 +191,18 @@ describe.concurrent('LikeC4ModelParser', () => {
           tag tag4 {
             color rgba(200, 200, 200, 55%)
           }
+          element tagged {
+            #tag1 #tag2
+          }
         }
       `)
       const doc = services.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
+        elements: {
+          tagged: {
+            tags: ['tag1', 'tag2'],
+          },
+        },
         tags: {
           tag1: {
             astPath: expect.any(String),
@@ -311,6 +333,48 @@ describe.concurrent('LikeC4ModelParser', () => {
           'title': 'c2',
         },
       ])
+    })
+
+    it('parses summary, title, description', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          element el
+        }
+        model {
+          el el1 {
+            title "el1 title"
+            summary "el1 summary"
+            description "el1 description"
+          }
+          el el2 "el2 title" {
+            title "el2 ignored title"
+            summary """ el2 summary """
+            description """ el2 description """
+          }
+          el el3 "el3 title" "el3 summary" {
+            title "el2 ignored title"
+            summary "el2 ignored  summary"
+            description """ el3 description """
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Elements[0]).toMatchObject({
+        title: 'el1 title',
+        summary: { txt: 'el1 summary' },
+        description: { txt: 'el1 description' },
+      })
+      expect(doc.c4Elements[1]).toMatchObject({
+        title: 'el2 title',
+        summary: { md: 'el2 summary' },
+        description: { md: 'el2 description' },
+      })
+      expect(doc.c4Elements[2]).toMatchObject({
+        title: 'el3 title',
+        summary: { txt: 'el3 summary' },
+        description: { md: 'el3 description' },
+      })
     })
 
     it('transforms multi-line view title to single line', async ({ expect }) => {

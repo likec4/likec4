@@ -73,20 +73,19 @@ export function ensureSizes<S extends WithSizes>({
 // dprint-ignore
 export interface Element<A extends AnyAux = AnyAux>
   extends
+    aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,
-    aux.WithMetadata<A>
+    aux.WithMetadata<A>,
+    aux.WithNotation
 {
   readonly id: aux.StrictFqn<A>
   readonly kind: aux.ElementKind<A>
   readonly title: string
-  readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: string | null
   readonly icon?: scalar.Icon
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
-  readonly notation?: string | null
 }
 
 export const DefaultLineStyle: RelationshipLineType = 'dashed'
@@ -96,14 +95,13 @@ export const DefaultRelationshipColor: ThemeColor = 'gray'
 // dprint-ignore
 export interface AbstractRelationship<A extends AnyAux>
   extends
+    aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
     aux.WithOptionalLinks,
     aux.WithMetadata<A>
 {
   readonly id: scalar.RelationId
   readonly title?: string | null
-  readonly description?: scalar.MarkdownOrString | null
-  readonly technology?: string | null
   readonly kind?: aux.RelationKind<A>
   readonly color?: Color
   readonly line?: RelationshipLineType

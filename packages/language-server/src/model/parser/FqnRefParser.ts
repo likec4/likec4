@@ -1,21 +1,31 @@
 import type * as c4 from '@likec4/core'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import { loggable } from '@likec4/log'
+import { type AstNode, AstUtils } from 'langium'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
-import { logWarnError } from '../../logger'
+import { serverLogger } from '../../logger'
 import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { createBinaryOperator, parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
 
+const logger = serverLogger.getChild('ExpressionV2Parser')
+
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
+
+const location = (astNode: AstNode) => {
+  const cst = astNode.$cstNode
+  const position = cst ? `:${cst.range.start.line + 1}:${cst.range.start.character + 1}` : ''
+  return `${AstUtils.getDocument(astNode).uri.fsPath}${position}`
+}
 
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value?.ref,
-        `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
+        () => `FqnRef "${astNode.$cstNode?.text}" is empty at ${location(astNode)}`,
       )
       if (ast.isImported(refValue)) {
         const fqnRef = {
@@ -95,7 +105,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             return acc
           }
           if (ast.isElementStringProperty(prop)) {
-            if (isDefined(prop.value)) {
+            if (isDefined(prop.value) && prop.key !== 'summary') {
               if (prop.key === 'description') {
                 const parsed = this.parseMarkdownOrString(prop.value)
                 if (parsed) {
@@ -261,7 +271,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             exprs.push(this.parseFqnExpr(iter.value))
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
         iter = iter.prev
       }

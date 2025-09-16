@@ -1,6 +1,7 @@
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
+import { useRafEffect } from '@react-hookz/web'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -183,7 +184,7 @@ const RelationshipsBrowserInner = memo(() => {
     }
   }, [historySubjectId, browser])
 
-  useEffect(() => {
+  useRafEffect(() => {
     browser.updateView(layouted)
   }, [layouted, browser])
 

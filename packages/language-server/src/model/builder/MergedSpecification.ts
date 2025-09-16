@@ -1,11 +1,10 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef } from '@likec4/core/types'
-import { MultiMap, nameFromFqn } from '@likec4/core/utils'
+import { FqnRef, omitUndefined } from '@likec4/core/types'
+import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
-  isBoolean,
   isEmpty,
   isNonNullish,
-  isNumber,
+  unique,
 } from 'remeda'
 import type {
   ParsedAstDeployment,
@@ -89,6 +88,7 @@ export class MergedSpecification {
     title,
     description,
     technology,
+    summary,
     metadata,
   }: ParsedAstElement): c4.Element | null => {
     try {
@@ -108,30 +108,42 @@ export class MergedSpecification {
       padding ??= __kind.style.padding
       textSize ??= __kind.style.textSize
       description ??= __kind.description
+      summary ??= __kind.summary
       links ??= __kind.links
       title = title === nameFromFqn(id) && __kind.title ? __kind.title : title
-      return {
-        ...(color && { color }),
-        ...(shape && { shape }),
-        ...(icon && { icon }),
-        ...(metadata && !isEmpty(metadata) && { metadata }),
-        ...(__kind.notation && { notation: __kind.notation }),
-        style: {
-          ...(border && { border }),
-          ...(size && { size }),
-          ...(padding && { padding }),
-          ...(textSize && { textSize }),
-          ...(isBoolean(multiple) && { multiple }),
-          ...(isNumber(opacity) && { opacity }),
-        },
-        links: links ?? null,
-        tags: tags ?? [],
-        ...(technology && { technology }),
-        ...(description && { description }),
+
+      if (__kind.tags && isNonEmptyArray(__kind.tags)) {
+        tags = tags
+          ? unique([
+            ...__kind.tags,
+            ...tags,
+          ])
+          : __kind.tags
+      }
+
+      return omitUndefined({
+        metadata: metadata && !isEmpty(metadata) ? metadata : undefined,
+        color,
+        notation: __kind?.notation,
+        shape,
+        icon,
+        style: omitUndefined({
+          border,
+          size,
+          padding,
+          textSize,
+          multiple,
+          opacity,
+        }) satisfies c4.ElementStyle,
+        links,
+        tags,
+        summary,
+        technology,
+        description,
         title,
         kind,
         id,
-      }
+      })
     } catch (e) {
       logWarnError(e)
     }
@@ -191,28 +203,24 @@ export class MergedSpecification {
         return null
       }
       let {
-        technology = __kind.technology,
-        notation = __kind.notation,
+        id,
         style,
         title,
-        description,
         ...rest
       } = parsed
-      description ??= __kind.description
       title = title === nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
-      return {
+      return omitUndefined({
+        ...__kind,
         ...rest,
-        ...({ title }),
-        ...(description && { description }),
-        ...(notation && { notation }),
-        ...(technology && { technology }),
-        style: {
+        title,
+        style: omitUndefined({
           border: 'dashed',
           opacity: 10,
           ...__kind.style,
           ...style,
-        },
-      }
+        }) satisfies c4.DeploymentElementStyle,
+        id,
+      })
     } catch (e) {
       logWarnError(e)
     }

@@ -16,7 +16,7 @@ The `model` describes architecture as a set of hierarchical elements and any rel
 ## Element
 
 Element is a basic building block. It represents a logical part of the architecture.  
-Any element must have a [kind](/dsl/specification#element-kind) and a name (_identifier_):
+Any element must have a [`kind`](/dsl/specification#element-kind) and a `name` (_identifier_):
 
 ```likec4
 specification {
@@ -36,96 +36,123 @@ model {
 ```
 
 Element name is required for references.  
-It can contain letters, digits and underscore, but can't start with a digit or contain `.`
+It can contain letters, digits, hyphens and underscore, but can't start with a digit or contain `.`
 
-| name       |     |
-| :--------- | :-- |
-| api        | ✅  |
-| Api2       | ✅  |
-| \_api      | ✅  |
-| \__Api1    | ✅  |
-| 1api       | ⛔️  |
-| a.pi       | ⛔️  |
+| name        | valid    |
+| :---------  | :-- |
+| api         | ✅  |
+| Api2        | ✅  |
+| \_api       | ✅  |
+| \__Api-1    | ✅  |
+| 1api        | ⛔️  |
+| a.pi        | ⛔️  |
 
 
-### Element Properties
+## Element Properties
 
-Elements may have properties: `title`, `description` and `technology`.  
-For example:
+### Title
 
-```likec4 copy
+```likec4 'SaaS' copy
 specification {
   element softwareSystem
 }
 model {
-  // Structurizr DSL style:
-  // <name> = softwareSystem [title] [description] [technology]
-  cloud = softwareSystem 'Cloud' 'Provides services to customers' 'SaaS'
-}
-```
-
-LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.\
-Check the [Big Bank example](/showcases/bigbank).
-
-All properties are optional, and element's name will be used as a title by default:
-
-```likec4
-model {
-  // element of kind 'actor'  with name='customer' and title='customer'
-  actor customer
-  // element of kind 'service' with name='cloud' and title='Cloud Systems'
-  service cloud 'Cloud Systems'
+  // Title can be inlined 
+  saas = softwareSystem 'SaaS'
   
-  // or with '='
-  cloud = service 'Cloud Systems'
+  // or nested
+  saas = softwareSystem {
+    title 'SaaS'
+
+    // You can use `:` (optional)
+    title: 'SaaS'
+  }
+
+  // If title is not specified, name will be used by default
+  saas = softwareSystem
 }
 ```
 
 :::note
 You can use single or double quotes:
 ```likec4
-specification {
-  service cloud 'Cloud Systems' 
+model {
+  service cloud 'Cloud Service' 
   // Or
-  service cloud "Cloud Systems"
+  service cloud "Cloud Service"
 }
 ```
-If you need quotes inside, you can escape with backslash:
+If you need quotes inside, escape with backslash:
 ```likec4
-specification {
-  service cloud 'Cloud\'s Systems' 
-  service cloud "Cloud\"s Systems"
+model {
+  service cloud 'Cloud\'s Service' 
+  service cloud "Cloud\"s Service"
 }
 ```
 :::
 
-These properties may be defined as nested:
+### Description
+
+```likec4  'Provides services to customers' copy
+model {
+  // Can be inlined 
+  saas = softwareSystem 'SaaS' 'Provides services to customers'
+  
+  // or nested
+  saas = softwareSystem {
+    title 'SaaS'
+    description 'Provides services to customers'
+  }
+}
+```
+
+Element may have a short `summary` (optional, falls back to `description`):
 
 ```likec4 copy
 model {
-  // Only description inside
-  customer = actor 'Customer' {     
-    description: 'Uses the Mobile Application' // ':' is optional, but if you prefer
-  }
-  // All properties inside
-  mobile = application {
-    title 'Mobile Application'
-    description 'Provides services to customers'
-    technology 'React Native'
-  }
-  // Multiline
-  web = application {
-    title 'Web Application'
+  saas = softwareSystem {
+    title 'SaaS'
+    summary 'Provides services to customers'
     description '
-      Provides services to customers through
-      the web interface.
+      Detailed description
+      ...
     '
   }
 }
 ```
 
+If `summary` is provided, it will be shown on the diagram, and `description` in the details dialog.  
+If you don't provide `description`, summary will be used.
+
+For inlined definition:
+```likec4 copy
+model {
+  // [title] [summary]
+  saas = softwareSystem 'SaaS' 'Provides services to customers' {
+    description '
+      Detailed description
+      ...
+    '
+  }
+}
+```
+
+### Technology
+
+```likec4 copy
+model {
+  api = service {
+    technology 'REST'
+  }
+
+  // Structurizr DSL style:
+  // <name> = softwareSystem [title] [summary] [technology]
+  saas = softwareSystem 'SaaS' 'Provides services to customers' 'SaaS'  
+}
+```
+
 :::tip
-You may define title, description and technology in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
+You can define element properties in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
 
 ```likec4
 specification {
@@ -136,11 +163,109 @@ specification {
   }
 }
 ```
+
+This allows to define properties once and reuse them across the model.  
+Properties from the element definition override the ones from the specification.
 :::
 
-#### Markdown
+### Tags
 
-You can use markdown in `description` with triple quotes: 
+Element [tags](/dsl/specification/#tag) are defined in a nested block and must come first, before any properties:
+
+```likec4 copy
+model {
+  appV1 = application 'App v1' {
+    #deprecated
+    description 'Old version of the application'
+  }
+
+  // multiple tags
+  appV2 = application {
+    #next, #serverless
+    #team2
+    title 'App v2'
+  }
+
+  appV3 = application {        
+    title 'App v3'
+    #team3 // ⛔️ Error: tags must be defined first
+  }  
+}
+```
+
+:::tip
+
+You can add tags in the [specification](/dsl/specification/#tag), if it is common for all of the kind:
+
+```likec4
+specification {
+  element lambda {
+    #serverless
+  }
+}
+```
+:::
+
+### Links
+
+Element may have multiple links:
+
+```likec4 copy
+model {
+  bastion = application 'Bastion' {
+    // External link
+    link https://any-external-link.com
+
+    // With label
+    link https://github.com/likec4/likec4 'Repository'
+
+    // or any URI
+    link ssh://bastion.internal 'SSH'
+
+    // or relative link to navigate to sources
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+### Metadata
+
+Element metadata is a set of key-value pairs, defined in a nested block:
+
+```likec4 copy
+model {
+  app = application 'App' {
+    metadata {
+      prop1 'value1'
+      prop2 '
+        apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: app-statefulset
+        spec: {}        
+      '
+      prop3 '{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          }
+        }
+      }'
+    }
+  }
+}
+```
+
+Only string values are allowed, but you can use JSON or YAML format for complex data.
+
+## Using Markdown
+
+You can use markdown in `description` (and `summary`) with triple quotes: 
 
 ```likec4 copy
 model {
@@ -170,87 +295,7 @@ model {
 }
 ```
 
-### Element Tags
-
-Tags are defined in nested block and before any properties:
-
-```likec4 copy
-model {
-  appV1 = application 'App v1' {
-    #deprecated
-    description 'Old version of the application'
-  }
-
-  // multiple tags
-  appV2 = application {
-    #next, #serverless
-    #team2
-    title 'App v2'
-  }
-
-  appV3 = application {        
-    title 'App v3'
-    #team3 // ⛔️ Error: tags must be defined first
-  }  
-}
-```
-
-:::tip
-
-You can add tags to element kind in [specification](/dsl/specification/#tag), if it is common for all of the kind:
-
-```likec4
-specification {
-  element lambda {
-    #serverless
-  }
-}
-```
-:::
-
-### Element Links
-
-Element may have multiple links:
-
-```likec4 copy
-model {
-  bastion = application 'Bastion' {
-    // External link
-    link https://any-external-link.com
-
-    // or any URI
-    link ssh://bastion.internal 'SSH'
-
-    // or relative link to navigate to sources
-    link ../src/index.ts#L1-L10
-  }
-}
-```
-
-## Element Metadata
-
-Element metadata is a set of key-value pairs, defined in a nested block:
-
-```likec4 copy
-model {
-  app = application 'App' {
-    metadata {
-      prop1 'value1'
-      prop2 '
-        apiVersion: apps/v1
-        kind: StatefulSet
-        metadata:
-          name: app-statefulset
-        spec: {}        
-      '
-    }
-  }
-}
-```
-
-Only string values are allowed, but you can use JSON or YAML format for complex data.
-
-## Structure
+## Structuring Model
 
 Any element is a container and can contain other elements.  
 This way you define the structure and internals of the element.
@@ -276,11 +321,6 @@ model {
 }
 ```
 
-<Aside type="caution">
-Element name must be unique within the container.  
-We learn this in detail with [references](/dsl/references)
-</Aside>
-
 Nested elements are _"namespaced"_, the parent name is used as a prefix.  
 So, the model above has the elements with these fully qualified names:
 
@@ -296,7 +336,9 @@ and:
 - `service2.backend.api`
 - `service2.frontend`
 
-It is not possible to have elements with the same name on the same hierarchy level.
+:::caution
+It is not possible to have elements with the same name on the same hierarchy level.  
+It is explained in detail in [references](/dsl/references).
 
 ```likec4 filename="nested-elements.c4"
 model {
@@ -318,3 +360,4 @@ model {
   component backend // ✅ This is OK - 'backend'
 }
 ```
+:::

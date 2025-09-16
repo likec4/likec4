@@ -1,7 +1,10 @@
 import { type ProjectId, nonNullable } from '@likec4/core'
+import { loggable } from '@likec4/log'
 import type { ast } from '../../ast'
-import { logWarnError } from '../../logger'
+import { serverLogger } from '../../logger'
 import type { Base } from './Base'
+
+const logger = serverLogger.getChild('ImportsParser')
 
 export function ImportsParser<TBase extends Base>(B: TBase) {
   return class ImportsParser extends B {
@@ -19,7 +22,7 @@ export function ImportsParser<TBase extends Base>(B: TBase) {
               ),
             )
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
           }
           imported = imported.prev
         }

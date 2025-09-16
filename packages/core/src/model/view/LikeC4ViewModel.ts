@@ -150,7 +150,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, this.$view.description)
+    return RichText.memoize(this, 'description', this.$view.description)
   }
 
   get tags(): aux.Tags<A> {

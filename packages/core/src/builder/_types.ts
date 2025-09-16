@@ -26,16 +26,16 @@ type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
 }
 
 export type BuilderSpecification = {
-  elements: {
+  elements: string[] | {
     [kind: string]: Partial<ElementSpecification>
   }
-  relationships?: {
+  relationships?: string[] | {
     [kind: string]: Partial<RelationshipKindSpecification>
   }
-  deployments?: {
+  deployments?: string[] | {
     [kind: string]: Partial<ElementSpecification>
   }
-  tags?: {
+  tags?: string[] | {
     [kind: string]: Partial<TagSpecification>
   }
   metadataKeys?: string[]
@@ -59,6 +59,7 @@ export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends 
 
 export type NewElementProps<Tag, Metadata> = {
   title?: string
+  summary?: string
   description?: string
   technology?: string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
@@ -79,6 +80,7 @@ export type NewElementProps<Tag, Metadata> = {
 
 export type NewDeploymentNodeProps<Tag, Metadata> = {
   title?: string
+  summary?: string
   description?: string
   technology?: string
   tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
@@ -211,15 +213,17 @@ export type AnyTypesNested = TypesNested<
   any
 >
 
+type KeysOrTuple<T> = T extends readonly string[] ? TupleToUnion<T> : KeysOf<T>
+
 export namespace Types {
   export type FromSpecification<Spec> = Spec extends BuilderSpecification ? Types<
-      KeysOf<Spec['elements']>,
+      KeysOrTuple<Spec['elements']>,
       never,
       never,
-      KeysOf<Spec['relationships']>,
-      KeysOf<Spec['tags']>,
+      KeysOrTuple<Spec['relationships']>,
+      KeysOrTuple<Spec['tags']>,
       TupleToUnion<Spec['metadataKeys']>,
-      KeysOf<Spec['deployments']>,
+      KeysOrTuple<Spec['deployments']>,
       never
     >
     : never

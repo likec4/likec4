@@ -66,10 +66,14 @@ model {
 
 }
 
-views {
+views 'External' {
 
   view amazon of amazon {
-    title 'External / Overview Amazon'
+    title 'Overview Amazon'
+    description '''
+      Overview of Amazon services
+      used by the system
+  '''
 
     include
       *,
@@ -88,7 +92,10 @@ views {
   }
 
   view amazon_sqs of sqs {
-    title 'External / Amazon / SQS'
+    title 'Amazon / SQS'
+    description '''
+      SQS queues used by the system
+  '''
 
     include
       *,
@@ -96,7 +103,7 @@ views {
   }
 
   view amazon_lambdas of lambdas {
-    title: 'External / Amazon / Lambdas'
+    title: 'Amazon / Lambdas'
 
     include
       *,
@@ -116,7 +123,10 @@ views {
   }
 
   view amazon_rds of amazon.rds {
-    title 'External / Amazon / RDS'
+    title 'Amazon / RDS'
+    description '''
+      RDS databases used by the system
+  '''
 
     include
       *,

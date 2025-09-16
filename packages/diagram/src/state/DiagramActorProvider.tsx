@@ -1,15 +1,14 @@
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
-import { useCustomCompareEffect } from '@react-hookz/web'
+import { useCustomCompareEffect, useRafEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import { type PropsWithChildren, useMemo, useRef } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOnDiagramEvent } from '../custom'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
-import { useCurrentViewId } from '../hooks/useCurrentViewId'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import { convertToXYFlow } from '../likec4diagram/convert-to-xyflow'
 import type { Types } from '../likec4diagram/types'
@@ -18,16 +17,6 @@ import { useLikeC4Model } from '../likec4model/useLikeC4Model'
 import { type DiagramMachine, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
-
-const selectToggledFeatures = (state: DiagramActorSnapshot) => {
-  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
-    return {
-      ...state.context.toggledFeatures,
-      enableReadOnly: true,
-    }
-  }
-  return state.context.toggledFeatures
-}
 
 const selectDynamicViewVariant = (state: DiagramActorSnapshot) => {
   return state.context.dynamicViewVariant
@@ -111,36 +100,49 @@ export function DiagramActorProvider({
     [view, where, nodesSelectable, dynamicViewVariant],
   )
 
-  useEffect(() => {
+  useRafEffect(() => {
     actorRef.send({
       type: 'update.view',
       ...update,
     })
   }, [actorRef, update])
 
-  const toggledFeatures = useSelector(actorRef, selectToggledFeatures, shallowEqual)
-
   return (
     <DiagramActorContextProvider value={actorRef}>
-      <DiagramFeatures overrides={toggledFeatures}>
-        <ErrorBoundary>
-          <CurrentViewModelProvider>
-            {children}
-          </CurrentViewModelProvider>
-        </ErrorBoundary>
-      </DiagramFeatures>
+      <ErrorBoundary>
+        <CurrentViewModelProvider actorRef={actorRef}>
+          {children}
+        </CurrentViewModelProvider>
+      </ErrorBoundary>
       <DiagramActorEventListener actorRef={actorRef} />
     </DiagramActorContextProvider>
   )
 }
 
-function CurrentViewModelProvider({ children }: PropsWithChildren) {
-  const viewId = useCurrentViewId()
+const selectViewIdAndToggledFeatures = (state: DiagramActorSnapshot) => {
+  if (state.context.features.enableReadOnly || state.context.activeWalkthrough) {
+    return {
+      viewId: state.context.view.id,
+      toggledFeatures: {
+        ...state.context.toggledFeatures,
+        enableReadOnly: true,
+      },
+    }
+  }
+  return {
+    viewId: state.context.view.id,
+    toggledFeatures: state.context.toggledFeatures,
+  }
+}
+function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ actorRef: DiagramActorRef }>) {
+  const { viewId, toggledFeatures } = useSelector(actorRef, selectViewIdAndToggledFeatures, deepEqual)
   const likec4model = useLikeC4Model()
   const viewmodel = likec4model.findView(viewId)
   return (
     <CurrentViewModelContext.Provider value={viewmodel}>
-      {children}
+      <DiagramFeatures overrides={toggledFeatures}>
+        {children}
+      </DiagramFeatures>
     </CurrentViewModelContext.Provider>
   )
 }
@@ -152,25 +154,7 @@ function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) 
   } = useDiagramEventHandlers()
 
   useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
-
-  // onNavigateTo we defer the callback for better responsiveness
-  // (allowing animation to finish)
-  useEffect(() => {
-    if (!onNavigateTo) return
-    let frame: number
-
-    const subscription = actorRef.on('navigateTo', ({ viewId }) => {
-      cancelAnimationFrame(frame)
-      // Slightly defer callback for better responsiveness
-      frame = requestAnimationFrame(() => {
-        onNavigateTo(viewId)
-      })
-    })
-    return () => {
-      cancelAnimationFrame(frame)
-      subscription.unsubscribe()
-    }
-  }, [actorRef, onNavigateTo])
+  useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
 
   return null
 }

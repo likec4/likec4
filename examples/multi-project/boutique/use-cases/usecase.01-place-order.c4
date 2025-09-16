@@ -20,9 +20,9 @@ views "Use Cases" {
     }
     customer -> boutique.frontend {
       title 'enters payment information'
-      notes '
+      notes '''
         Customer enters payment information and confirms the order.
-      '
+'''
     }
     boutique.frontend -> boutique.checkout {
       title 'initiates payment'
