@@ -1,5 +1,6 @@
 import type * as c4 from '@likec4/core'
 import {
+  exact,
   FqnRef,
   invariant,
   isNonEmptyArray,
@@ -7,7 +8,6 @@ import {
   nameFromFqn,
   nonexhaustive,
   nonNullable,
-  omitUndefined,
 } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, mapToObj, pipe } from 'remeda'
@@ -107,7 +107,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const links = this.convertLinks(astNode.body)
 
-      return omitUndefined({
+      return exact({
         id,
         kind,
         title: title ?? nameFromFqn(id),
@@ -144,7 +144,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const links = this.convertLinks(astNode.body)
 
-      return omitUndefined({
+      return exact({
         id,
         element: target,
         tags: tags ?? undefined,
@@ -229,7 +229,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         target.deployment,
       ) as c4.RelationId
 
-      return omitUndefined({
+      return exact({
         id,
         source,
         target,

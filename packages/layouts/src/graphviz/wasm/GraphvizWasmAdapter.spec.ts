@@ -15,8 +15,8 @@ import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
 async function dotLayout(view: ComputedView) {
   const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
   return await graphviz.layout({
-    likec4model,
     view,
+    styles: likec4model.$styles,
   }).then(({ diagram }) => diagram)
 }
 

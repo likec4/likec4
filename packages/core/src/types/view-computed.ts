@@ -1,3 +1,10 @@
+import type { Except } from 'type-fest'
+import type {
+  Color,
+  ElementShape,
+  RelationshipArrowType,
+  RelationshipLineType,
+} from '../styles/types'
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { _stage, _type } from './const'
@@ -7,12 +14,6 @@ import {
   type Icon,
 } from './scalar'
 import type {
-  Color,
-  ElementShape,
-  RelationshipArrowType,
-  RelationshipLineType,
-} from './styles'
-import type {
   BaseViewProperties,
   ViewAutoLayout,
   ViewManualLayout,
@@ -20,6 +21,8 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
+
+export type ComputedNodeStyle = Except<ElementStyle, 'icon' | 'shape' | 'color', { requireExactProps: true }>
 
 // dprint-ignore
 export interface ComputedNode<A extends AnyAux = AnyAux>
@@ -51,7 +54,7 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
   shape: ElementShape
   color: Color
   icon?: Icon
-  style: ElementStyle
+  style: ComputedNodeStyle
   navigateTo?: aux.StrictViewId<A> | null
   level: number
   // For compound nodes, the max depth of nested nodes
@@ -76,9 +79,9 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
   notation?: string
   // Notes for walkthrough
   notes?: scalar.MarkdownOrString
-  color?: Color
-  line?: RelationshipLineType
-  head?: RelationshipArrowType
+  color: Color
+  line: RelationshipLineType
+  head: RelationshipArrowType
   tail?: RelationshipArrowType
   // Link to dynamic view
   navigateTo?: aux.StrictViewId<A> | null

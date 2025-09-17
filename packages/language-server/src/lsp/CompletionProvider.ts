@@ -1,4 +1,4 @@
-import { ThemeColors } from '@likec4/core'
+import { ThemeColors } from '@likec4/core/styles'
 import { type GrammarAST, type MaybePromise, AstUtils } from 'langium'
 import {
   type CompletionAcceptor,

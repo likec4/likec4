@@ -16,9 +16,9 @@ import {
   type DeploymentViewRule,
   type scalar,
   type Unknown,
+  exact,
   FqnExpr,
   isViewRuleStyle,
-  omitUndefined,
   preferSummary,
 } from '../../types'
 import { invariant, nameFromFqn, nonexhaustive, parentFqn } from '../../utils'
@@ -151,12 +151,16 @@ export function toNodeSource<A extends AnyAux>(
       description,
       summary,
       metadata,
-      style,
+      style: {
+        icon,
+        shape,
+        color,
+        ...style
+      },
       element,
       tags: _tags, // omit
       ...$node
     } = el.$node
-    let icon = el.style.icon
     let tags = [...el.tags]
     // let description
     // If there is only one instance
@@ -168,16 +172,18 @@ export function toNodeSource<A extends AnyAux>(
         title = onlyOneInstance.title
       }
       icon ??= onlyOneInstance.style.icon
+      color ??= onlyOneInstance.style.color
+      shape ??= onlyOneInstance.style.shape
       summary ??= instanceSummary(onlyOneInstance)
     }
 
-    return omitUndefined({
+    return exact({
       id: id as scalar.NodeId,
       deploymentRef: id,
       title,
       ...$node,
-      color: style.color ?? onlyOneInstance?.color ?? el.color,
-      shape: el.shape,
+      color: color ?? el.color,
+      shape: shape ?? el.shape,
       ...(onlyOneInstance && {
         modelRef: onlyOneInstance.element.id,
       }),
@@ -203,7 +209,7 @@ export function toNodeSource<A extends AnyAux>(
 
   const technology = el.technology ?? undefined
 
-  return omitUndefined({
+  return exact({
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: el.title,
@@ -241,7 +247,7 @@ export function toComputedEdges<A extends AnyAux>(
       ...props
     } = mergePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
 
-    const edge: ComputedEdge<A> = {
+    const edge: ComputedEdge<A> = exact({
       id: e.id,
       parent: e.boundary?.id as scalar.NodeId ?? null,
       source,
@@ -249,7 +255,7 @@ export function toComputedEdges<A extends AnyAux>(
       label: title ?? null,
       relations: relations.map((r) => r.id),
       ...props,
-    }
+    })
 
     // If exists same edge but in opposite direction
     const existing = acc.find(e => e.source === target && e.target === source)

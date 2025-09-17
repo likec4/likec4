@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../../../builder'
+import { Builder } from '../../builder'
 
-describe('computed nodes and edges inherit project styles', () => {
+describe('Project styles', () => {
   const builder = Builder
     .specification({
       elements: {
@@ -26,17 +26,17 @@ describe('computed nodes and edges inherit project styles', () => {
       m(
         _.el('el'),
         _.queue('queue'),
-        _.full('full'),
-      )
-    )
-    .views((_, v) =>
-      v(
-        _.view('index', _.$include('*')),
+        _.full('full', {
+          color: 'blue',
+          style: {
+            textSize: 'xl',
+          },
+        }),
       )
     )
 
-  it('inherits element styles', () => {
-    const view = builder.toLikeC4Model({
+  it('inherit element styles', () => {
+    const m = builder.toLikeC4Model({
       id: 'test',
       styles: {
         defaults: {
@@ -45,50 +45,47 @@ describe('computed nodes and edges inherit project styles', () => {
           size: 'lg',
         },
       },
-    }).view('index')
+    })
 
-    const elnode = view.node('el')
-    expect(elnode.color).toBe('red')
-    expect(elnode.shape).toBe('browser')
-    expect(elnode.style).toMatchInlineSnapshot(
-      `
+    expect(m.element('el').shape).toBe('browser')
+    expect(m.element('el').color).toBe('red')
+    expect(m.element('el').style).toMatchInlineSnapshot(`
       {
         "border": "dashed",
+        "color": "red",
         "opacity": 15,
+        "shape": "browser",
         "size": "lg",
       }
-    `,
-    )
-
-    const queuenode = view.node('queue')
-    expect(queuenode.color).toBe('green')
-    expect(queuenode.shape).toBe('queue')
-    expect(queuenode.style).toMatchInlineSnapshot(
-      `
+    `)
+    expect(m.element('queue').shape).toBe('queue')
+    expect(m.element('queue').color).toBe('green')
+    expect(m.element('queue').style).toMatchInlineSnapshot(`
       {
         "border": "dashed",
+        "color": "green",
         "opacity": 15,
+        "shape": "queue",
         "size": "lg",
       }
-    `,
-    )
+    `)
 
-    const fullnode = view.node('full')
-    expect(fullnode.color).toBe('red')
-    expect(fullnode.shape).toBe('browser')
-    expect(fullnode.style).toMatchInlineSnapshot(
-      `
+    expect(m.element('full').shape).toBe('browser')
+    expect(m.element('full').color).toBe('blue')
+    expect(m.element('full').style).toMatchInlineSnapshot(`
       {
         "border": "none",
+        "color": "blue",
         "opacity": 37,
         "padding": "xs",
+        "shape": "browser",
         "size": "xs",
+        "textSize": "xl",
       }
-    `,
-    )
+    `)
   })
 
-  it('inherits relationship styles', () => {
+  it('inherit relationship styles', () => {
     const m = builder
       .clone()
       .model((_, m) => m(_.rel('full', 'queue')))
@@ -105,17 +102,15 @@ describe('computed nodes and edges inherit project styles', () => {
         },
       })
 
-    const view = m.view('index')
-    const edges = [...view.edges()]
-    expect(edges.length).toBe(1)
-    const edge = edges[0]!
-
-    expect(edge.color).toBe('green')
-    expect(edge.line).toBe('solid')
-    expect(edge.head).toBe('diamond')
+    const rels = [...m.relationships()]
+    expect(rels.length).toBe(1)
+    const rel = rels[0]!
+    expect(rel.color).toBe('green')
+    expect(rel.line).toBe('solid')
+    expect(rel.head).toBe('diamond')
   })
 
-  it('overrides relationship styles', () => {
+  it('override relationship style', () => {
     const m = builder
       .clone()
       .model((_, m) =>
@@ -138,13 +133,11 @@ describe('computed nodes and edges inherit project styles', () => {
         },
       })
 
-    const view = m.view('index')
-    const edges = [...view.edges()]
-    expect(edges.length).toBe(1)
-    const edge = edges[0]!
-
-    expect(edge.color).toBe('blue')
-    expect(edge.line).toBe('dotted')
-    expect(edge.head).toBe('dot')
+    const rels = [...m.relationships()]
+    expect(rels.length).toBe(1)
+    const rel = rels[0]!
+    expect(rel.color).toBe('blue')
+    expect(rel.line).toBe('dotted')
+    expect(rel.head).toBe('dot')
   })
 })

@@ -5,15 +5,17 @@ import {
   type Color,
   type DeployedInstance,
   type DeploymentElement,
-  type DeploymentElementStyle,
   type DeploymentNode,
   type DeploymentRelationship,
   type ElementShape as C4ElementShape,
+  type ElementStyle,
   type IteratorLike,
   type Link,
+  type RelationshipArrowType,
   type RelationshipLineType,
   type RichTextOrEmpty,
   type scalar,
+  exact,
   preferDescription,
   preferSummary,
   RichText,
@@ -44,11 +46,18 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   abstract readonly $node: DeploymentElement<A>
   abstract readonly tags: aux.Tags<A>
 
-  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
-    return {
-      ...this.$model.$styles.defaults.element,
-      ...this.$node.style,
-    }
+  get style(): SetRequired<ElementStyle, 'shape' | 'color'> {
+    return memoizeProp(this, 'style', () =>
+      exact({
+        shape: this.$model.$styles.defaults.shape,
+        color: this.$model.$styles.defaults.color,
+        border: this.$model.$styles.defaults.border,
+        opacity: this.$model.$styles.defaults.opacity,
+        size: this.$model.$styles.defaults.size,
+        padding: this.$model.$styles.defaults.padding,
+        textSize: this.$model.$styles.defaults.text,
+        ...this.$node.style,
+      }))
   }
 
   get name(): string {
@@ -56,11 +65,11 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   get shape(): C4ElementShape {
-    return this.$node.style?.shape ?? this.$model.$styles.defaults.element.shape
+    return this.style.shape
   }
 
   get color(): Color {
-    return this.$node.style?.color as Color ?? this.$model.$styles.defaults.element.color
+    return this.style.color
   }
 
   /**
@@ -387,24 +396,19 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return nonNullable(this.$model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  override get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
-    const { icon, style } = this.element.$element
-    return {
-      shape: this.element.shape,
-      color: this.element.color,
-      size: this.element.style.size,
-      ...icon && { icon },
-      ...style,
-      ...this.$instance.style,
-    }
-  }
-
-  override get shape(): C4ElementShape {
-    return this.$instance.style?.shape ?? this.element.shape
-  }
-
-  override get color(): Color {
-    return this.$instance.style?.color as Color ?? this.element.color
+  override get style(): SetRequired<ElementStyle, 'shape' | 'color'> {
+    return memoizeProp(this, 'style', () =>
+      exact({
+        shape: this.$model.$styles.defaults.shape,
+        color: this.$model.$styles.defaults.color,
+        border: this.$model.$styles.defaults.border,
+        opacity: this.$model.$styles.defaults.opacity,
+        size: this.$model.$styles.defaults.size,
+        padding: this.$model.$styles.defaults.padding,
+        textSize: this.$model.$styles.defaults.text,
+        ...this.element.$element.style,
+        ...this.$instance.style,
+      }))
   }
 
   override get tags(): aux.Tags<A> {
@@ -494,14 +498,12 @@ export class NestedElementOfDeployedInstanceModel<A extends Any = Any> {
     return this.instance.id
   }
 
-  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
-    const { icon, style } = this.element.$element
-    return {
+  get style(): SetRequired<ElementStyle, 'shape' | 'color'> {
+    return memoizeProp(this, 'style ', () => ({
       shape: this.element.shape,
       color: this.element.color,
-      ...icon && { icon },
-      ...style,
-    }
+      ...this.element.$element.style,
+    }))
   }
 
   get shape(): C4ElementShape {
@@ -599,6 +601,14 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
 
   get line(): RelationshipLineType {
     return this.$relationship.line ?? this.$model.$styles.defaults.relationship.line
+  }
+
+  get head(): RelationshipArrowType {
+    return this.$relationship.head ?? this.$model.$styles.defaults.relationship.arrow
+  }
+
+  get tail(): RelationshipArrowType | undefined {
+    return this.$relationship.tail
   }
 
   public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {

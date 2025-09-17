@@ -1,27 +1,27 @@
-import type { ElementThemeColors, ElementThemeColorValues } from '../types/styles'
+import type { ElementColorValues, ThemeColor } from './types'
 
 const blue = {
   fill: '#3b82f6',
   stroke: '#2563eb',
   hiContrast: '#eff6ff',
   loContrast: '#bfdbfe',
-} satisfies ElementThemeColorValues
+} satisfies ElementColorValues
 
 const sky = {
   fill: '#0284c7',
   stroke: '#0369a1',
   hiContrast: '#f0f9ff',
   loContrast: '#B6ECF7',
-} satisfies ElementThemeColorValues
+} satisfies ElementColorValues
 
 const slate = {
   fill: '#64748b',
   stroke: '#475569',
   hiContrast: '#f8fafc',
   loContrast: '#cbd5e1',
-} satisfies ElementThemeColorValues
+} satisfies ElementColorValues
 
-export const ElementColors: ElementThemeColors = {
+export const ElementColors: Record<ThemeColor, ElementColorValues> = {
   primary: blue,
   blue,
   secondary: sky,

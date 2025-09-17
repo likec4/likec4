@@ -10,7 +10,7 @@ export default defineBuildConfig({
     'src/model/connection/model/index.ts',
     'src/model/connection/index.ts',
     'src/model/index.ts',
-    'src/theme/index.ts',
+    'src/styles/index.ts',
     'src/types/index.ts',
     'src/types/_aux.ts',
     'src/types/scalar.ts',

@@ -28,6 +28,9 @@ describe('topologicalSort', () => {
         parent: null,
         label: null,
         relations: [],
+        color: 'primary',
+        line: 'solid',
+        head: 'normal',
       } as ComputedEdge
     })
     linkNodesWithEdges(nodesMap, _edges)

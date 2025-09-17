@@ -2,11 +2,11 @@ import type * as c4 from '@likec4/core'
 import {
   type MultiMap,
   type ViewId,
-  computeColorValues,
   isDeploymentNode,
   isGlobalFqn,
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
+import { computeColorValues } from '@likec4/core/styles'
 import { _stage, _type, FqnRef } from '@likec4/core/types'
 import {
   compareNatural,

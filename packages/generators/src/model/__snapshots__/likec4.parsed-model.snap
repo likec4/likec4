@@ -128,8 +128,9 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'customer',
       kind: 'person',
       title: 'customer',
-      shape: 'person',
-      style: {},
+      style: {
+        shape: 'person',
+      },
     },
     cloud: {
       id: 'cloud',
@@ -147,15 +148,17 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud.frontend.dashboard',
       kind: 'webapp',
       title: 'dashboard',
-      shape: 'browser',
-      style: {},
+      style: {
+        shape: 'browser',
+      },
     },
     'cloud.frontend.mobile': {
       id: 'cloud.frontend.mobile',
       kind: 'mobile',
       title: 'mobile',
-      shape: 'mobile',
-      style: {},
+      style: {
+        shape: 'mobile',
+      },
     },
     'cloud.auth': {
       id: 'cloud.auth',
@@ -191,8 +194,9 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud.media',
       kind: 'component',
       title: 'media',
-      shape: 'storage',
-      style: {},
+      style: {
+        shape: 'storage',
+      },
       tags: [
         'internal',
       ],
@@ -207,15 +211,17 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'aws.rds',
       kind: 'component',
       title: 'rds',
-      shape: 'storage',
-      style: {},
+      style: {
+        shape: 'storage',
+      },
     },
     'aws.s3': {
       id: 'aws.s3',
       kind: 'component',
       title: 's3',
-      shape: 'storage',
-      style: {},
+      style: {
+        shape: 'storage',
+      },
       metadata: {
         key1: 'value2',
       },
@@ -401,6 +407,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       'customer.instance': {
         id: 'customer.instance',
         element: 'customer',
+        style: {},
       },
       prod: {
         id: 'prod',
@@ -423,10 +430,12 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       'prod.eu.zone1.ui': {
         id: 'prod.eu.zone1.ui',
         element: 'cloud.frontend.dashboard',
+        style: {},
       },
       'prod.eu.zone1.api': {
         id: 'prod.eu.zone1.api',
         element: 'cloud.backend.api',
+        style: {},
       },
       'prod.eu.zone2': {
         id: 'prod.eu.zone2',
@@ -437,18 +446,22 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       'prod.eu.zone2.ui': {
         id: 'prod.eu.zone2.ui',
         element: 'cloud.frontend.dashboard',
+        style: {},
       },
       'prod.eu.zone2.api': {
         id: 'prod.eu.zone2.api',
         element: 'cloud.backend.api',
+        style: {},
       },
       'prod.eu.media': {
         id: 'prod.eu.media',
         element: 'cloud.media',
+        style: {},
       },
       'prod.eu.db': {
         id: 'prod.eu.db',
         element: 'aws.rds',
+        style: {},
       },
       'prod.us': {
         id: 'prod.us',
@@ -459,6 +472,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       'prod.us.db': {
         id: 'prod.us.db',
         element: 'aws.rds',
+        style: {},
       },
     },
     relations: {
@@ -480,7 +494,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       title: null,
       description: null,
       tags: [],
-      links: null,
       _stage: 'parsed',
       _type: 'element',
       rules: [
@@ -498,7 +511,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       title: null,
       description: null,
       tags: [],
-      links: null,
       _stage: 'parsed',
       viewOf: 'cloud',
       _type: 'element',
@@ -526,7 +538,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       title: 'prod',
       description: null,
       tags: [],
-      links: null,
       _stage: 'parsed',
       _type: 'deployment',
       rules: [

@@ -67,7 +67,8 @@
   "dependencies": {
     "bundle-require": "catalog:utils",
     "defu": "catalog:utils",
-    "json5": "catalog:utils"
+    "json5": "catalog:utils",
+    "zod": "catalog:utils"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",
@@ -90,7 +91,6 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
-    "zod4": "catalog:zod4",
     "vitest": "catalog:vitest"
   }
 }

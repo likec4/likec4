@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
-import { FqnRef, omitUndefined } from '@likec4/core/types'
+import { exact, FqnRef } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { filter, first, isDefined, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
@@ -102,7 +102,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       const links = this.parseLinks(astNode.body)
 
-      return omitUndefined({
+      return exact({
         id,
         kind,
         astPath,
@@ -126,7 +126,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         return null
       }
 
-      return omitUndefined({
+      return exact({
         id,
         astPath,
         metadata,
@@ -193,7 +193,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         source.model,
         target.model,
       ) as c4.RelationId
-      return omitUndefined({
+      return exact({
         id,
         astPath,
         source,

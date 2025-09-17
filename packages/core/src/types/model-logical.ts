@@ -1,8 +1,4 @@
-import { defaultStyles } from '../theme'
-import type * as aux from './_aux'
-import type { AnyAux } from './_aux'
-import type { FqnRef } from './fqnRef'
-import type * as scalar from './scalar'
+import { defaultStyle } from '../styles'
 import type {
   BorderStyle,
   Color,
@@ -12,7 +8,11 @@ import type {
   ShapeSize,
   SpacingSize,
   TextSize,
-} from './styles'
+} from '../styles/types'
+import type * as aux from './_aux'
+import type { AnyAux } from './_aux'
+import type { FqnRef } from './fqnRef'
+import type * as scalar from './scalar'
 
 // export const DefaultThemeColor: ThemeColor = 'primary'
 // export const DefaultElementShape: ElementShape = 'rectangle'
@@ -22,6 +22,9 @@ import type {
 // export const DefaultTextSize: TextSize = DefaultSize
 
 export interface ElementStyle {
+  readonly icon?: scalar.Icon
+  readonly shape?: ElementShape
+  readonly color?: Color
   readonly border?: BorderStyle
   /**
    * In percentage 0-100, 0 is fully transparent
@@ -58,7 +61,7 @@ export function ensureSizes<S extends WithSizes>({
   textSize,
   ...rest
 }: S): Omit<S, 'size' | 'padding' | 'textSize'> & Required<WithSizes> {
-  size ??= defaultStyles.element.size
+  size ??= defaultStyle.defaults.size
   textSize ??= size
   padding ??= size
 
@@ -82,10 +85,7 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly id: aux.StrictFqn<A>
   readonly kind: aux.ElementKind<A>
   readonly title: string
-  readonly icon?: scalar.Icon
-  readonly shape?: ElementShape
-  readonly color?: Color
-  readonly style?: ElementStyle
+  readonly style: ElementStyle
 }
 
 // export const DefaultLineStyle: RelationshipLineType = 'dashed'

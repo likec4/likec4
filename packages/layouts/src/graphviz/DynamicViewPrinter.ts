@@ -26,7 +26,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    if (edge.color) {
+    if (edge.color && edge.color !== this.$defaults.relationship.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.line,
@@ -59,7 +59,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
     }
 
-    let [head, tail] = [edge.head ?? this.likec4model.$styles.defaults.relationship.arrow, edge.tail ?? 'none']
+    let [head, tail] = [edge.head, edge.tail ?? 'none']
 
     if (edge.dir === 'back') {
       e.attributes.apply({
@@ -97,9 +97,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
       return e
     }
-    if (head !== this.likec4model.$styles.defaults.relationship.arrow) {
-      e.attributes.set(_.arrowhead, toArrowType(head))
-    }
+    e.attributes.set(_.arrowhead, toArrowType(head))
 
     return e
   }

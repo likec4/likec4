@@ -36,6 +36,7 @@ exports[`Builder (style 2) > should build  1`] = `
       "prod.eu.ui": {
         "element": "cloud.ui",
         "id": "prod.eu.ui",
+        "style": {},
       },
     },
     "relations": {},
@@ -116,7 +117,6 @@ exports[`Builder (style 2) > should build  1`] = `
       "_type": "element",
       "description": null,
       "id": "cloud",
-      "links": null,
       "rules": [
         {
           "include": [
@@ -143,7 +143,6 @@ exports[`Builder (style 2) > should build  1`] = `
       "_type": "deployment",
       "description": null,
       "id": "deployment",
-      "links": null,
       "rules": [
         {
           "include": [
@@ -164,7 +163,6 @@ exports[`Builder (style 2) > should build  1`] = `
       "_type": "element",
       "description": null,
       "id": "index",
-      "links": null,
       "rules": [
         {
           "include": [

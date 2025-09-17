@@ -126,7 +126,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
         label,
       )
     }
-    if (edge.color) {
+    if (edge.color && edge.color !== this.$defaults.relationship.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.line,
@@ -134,7 +134,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
     }
 
-    let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
+    let [head, tail] = [edge.head, edge.tail ?? 'none']
 
     if (edge.dir === 'back') {
       e.attributes.apply({
@@ -172,9 +172,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       return e
     }
 
-    if (head !== this.$defaults.relationship.arrow) {
-      e.attributes.set(_.arrowhead, toArrowType(head))
-    }
+    e.attributes.set(_.arrowhead, toArrowType(head))
     if (tail !== 'none') {
       e.attributes.set(_.arrowtail, toArrowType(tail))
     }

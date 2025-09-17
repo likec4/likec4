@@ -3,8 +3,6 @@ import {
   type ComputedDeploymentView,
   type ComputedEdge,
   type ComputedNode,
-  type HexColor,
-  DefaultArrowType,
 } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'
@@ -104,15 +102,15 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
         label,
       )
     }
-    if (edge.color) {
+    if (edge.color && edge.color !== this.$defaults.relationship.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor as HexColor,
+        [_.color]: colorValues.line,
+        [_.fontcolor]: colorValues.label,
       })
     }
 
-    let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
+    let [head, tail] = [edge.head, edge.tail ?? 'none']
 
     if (head === 'none' && tail === 'none') {
       e.attributes.apply({
@@ -141,7 +139,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
       return e
     }
 
-    if (head !== DefaultArrowType) {
+    if (head) {
       e.attributes.set(_.arrowhead, toArrowType(head))
     }
     if (tail !== 'none') {

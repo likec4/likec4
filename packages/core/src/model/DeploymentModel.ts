@@ -6,6 +6,7 @@ import {
   type DeploymentRelationship,
   type IteratorLike,
   type LikeC4ProjectStylesConfig,
+  type LikeC4StyleConfig,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -94,7 +95,7 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     }
   }
 
-  get $styles(): ReadonlyDeep<LikeC4ProjectStylesConfig> {
+  get $styles(): LikeC4StyleConfig {
     return this.$model.$styles
   }
 

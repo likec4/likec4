@@ -5,58 +5,58 @@ import { type RelationshipLike, compareRelations } from './relations'
 const relations = [
   {
     source: {
-      model: 'customer',
+      id: 'customer',
     },
     target: {
-      model: 'cloud.frontend.dashboard',
+      id: 'cloud.frontend.dashboard',
     },
   },
   {
     source: {
-      model: 'support',
+      id: 'support',
     },
     target: {
-      model: 'cloud.frontend.supportPanel',
+      id: 'cloud.frontend.supportPanel',
     },
   },
   {
     source: {
-      model: 'cloud.backend.storage',
+      id: 'cloud.backend.storage',
     },
     target: {
-      model: 'amazon.s3',
+      id: 'amazon.s3',
     },
   },
   {
     source: {
-      model: 'amazon.api',
+      id: 'amazon.api',
     },
     target: {
-      model: 'cloud.backend.graphql',
+      id: 'cloud.backend.graphql',
     },
   },
   {
     source: {
-      model: 'cloud.backend.graphql',
+      id: 'cloud.backend.graphql',
     },
     target: {
-      model: 'cloud.backend.storage',
+      id: 'cloud.backend.storage',
     },
   },
   {
     source: {
-      model: 'cloud.frontend.dashboard',
+      id: 'cloud.frontend.dashboard',
     },
     target: {
-      model: 'cloud.backend.graphql',
+      id: 'cloud.backend.graphql',
     },
   },
   {
     source: {
-      model: 'cloud.frontend.supportPanel',
+      id: 'cloud.frontend.supportPanel',
     },
     target: {
-      model: 'cloud.backend.graphql',
+      id: 'cloud.backend.graphql',
     },
   },
 ] satisfies RelationshipLike[]
@@ -65,15 +65,15 @@ describe('compareRelations', () => {
   function rel(source: string, target: string): RelationshipLike {
     return {
       source: {
-        model: source,
+        id: source,
       },
       target: {
-        model: target,
+        id: target,
       },
     }
   }
   function sorted(...relations: Array<RelationshipLike>) {
-    return sort(relations, compareRelations).map(r => r.source.model + ' -> ' + r.target.model)
+    return sort(relations, compareRelations).map(r => r.source.id + ' -> ' + r.target.id)
   }
 
   it('should sort by source and target', () => {

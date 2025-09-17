@@ -2,7 +2,7 @@ import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
-import { type DiagramNode, type DiagramView, type Fqn, type NodeId, omitUndefined } from '../../types'
+import { type DiagramNode, type DiagramView, type Fqn, type NodeId, exact } from '../../types'
 import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
@@ -311,7 +311,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     // }
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
 
-    return omitUndefined({
+    const { color, icon, shape, ...style } = element.style
+
+    return exact({
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
       title: element.title,
@@ -322,8 +324,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       technology: element.technology,
       tags: [],
       links: null,
-      color: element.color,
-      shape: element.shape,
+      color,
+      icon,
+      shape,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -333,9 +336,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
         width: width,
         height: height,
       },
-      style: {
-        ...element.$element.style,
-      },
+      style,
       inEdges: [],
       outEdges: [],
       depth: children.length > 0 ? nodeDepth(id) : 0,

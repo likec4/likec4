@@ -5,6 +5,7 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type scalar,
+  exact,
 } from '../../types'
 import { invariant } from '../../utils'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
@@ -25,11 +26,16 @@ export function toComputedEdges<A extends AnyAux>(
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
+    const $defaults = e.source.$model.$styles.defaults
+
     const source = e.source.id
     const target = e.target.id
 
     const {
       title,
+      color = $defaults.relationship.color,
+      line = $defaults.relationship.line,
+      head = $defaults.relationship.arrow,
       ...props
     } = mergePropsFromRelationships(
       relations.map(r => r.$relationship),
@@ -40,15 +46,18 @@ export function toComputedEdges<A extends AnyAux>(
       )?.$relationship,
     )
 
-    const edge: ComputedEdge<A> = {
+    const edge: ComputedEdge<A> = exact({
       id: e.id,
       parent: e.boundary?.id as scalar.NodeId ?? null,
       source: source as scalar.NodeId,
       target: target as scalar.NodeId,
       label: title ?? null,
       relations: relations.map((r) => r.id),
+      color,
+      line,
+      head,
       ...props,
-    }
+    })
 
     acc.push(edge)
     return acc

@@ -1,11 +1,4 @@
 import type { IsNever } from 'type-fest'
-import type * as aux from './_aux'
-import type { Any } from './_aux'
-import type { Link, NonEmptyArray } from './_common'
-import type * as scalar from './scalar'
-import type {
-  Icon,
-} from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -18,7 +11,12 @@ import type {
   SpacingSize,
   TextSize,
   ThemeColor,
-} from './styles'
+} from '../styles/types'
+import type * as aux from './_aux'
+import type { Any } from './_aux'
+import type { Link, NonEmptyArray } from './_common'
+import type * as scalar from './scalar'
+import type { Icon } from './scalar'
 
 /**
  * Element and deployment kind specification

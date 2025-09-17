@@ -1,12 +1,11 @@
 import {
   type ComputedEdge,
   type ComputedNode,
-  type ElementThemeColorValues,
+  type ElementColorValues,
   type ShapeSize,
   type SpacingSize,
   type TextSize,
-  defaultStyles,
-  defaultTheme,
+  defaultStyle,
   RichText,
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
@@ -72,7 +71,7 @@ export function nodeIcon() {
 }
 
 function fontSize(textSize: TextSize) {
-  return Math.round(defaultTheme.textSizes[textSize])
+  return Math.round(defaultStyle.theme.textSizes[textSize])
 }
 function maxchars(size: ShapeSize) {
   switch (size) {
@@ -91,7 +90,7 @@ function maxchars(size: ShapeSize) {
 
 export function nodeLabel(
   node: ComputedNode,
-  colorValues: ElementThemeColorValues,
+  colorValues: ElementColorValues,
   sizes: {
     shape: ShapeSize
     padding: SpacingSize
@@ -184,7 +183,9 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 
 export const EDGE_LABEL_MAX_CHARS = 40
 export const EDGE_LABEL_MAX_LINES = 5
-const BGCOLOR = `BGCOLOR="${defaultTheme.colors[defaultStyles.relationship.color].relationships.labelBg}A0"`
+const BGCOLOR = `BGCOLOR="${
+  defaultStyle.theme.colors[defaultStyle.defaults.relationship.color].relationships.labelBg
+}A0"`
 
 export function edgelabel({ label, technology }: ComputedEdge) {
   const lines = [] as string[]

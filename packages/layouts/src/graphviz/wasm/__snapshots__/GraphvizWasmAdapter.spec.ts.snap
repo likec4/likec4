@@ -16,7 +16,9 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
       "dotpos": "s,359.66,151.2 e,577.02,151.2 370.61,151.2 433.22,151.2 504.06,151.2 566.65,151.2",
+      "head": "normal",
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
@@ -25,6 +27,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         "x": 416,
         "y": 125,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -52,7 +55,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
-  "hash": "6ec7a0bfdf61ac1b68cbe84ee434993f850234aa",
+  "hash": "b038953ca958a69a2a5b2f1b2c72f6c0a47e0624",
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -85,7 +88,11 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         8,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "cloud",
@@ -119,7 +126,11 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         61,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Backend",
@@ -158,7 +169,11 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         8,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Amazon",
@@ -194,7 +209,11 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         61,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "S3",
@@ -225,7 +244,9 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
       "dotpos": "e,228,332.26 228,179.87 228,223.7 228,276.72 228,321.86",
+      "head": "normal",
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
@@ -234,6 +255,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
         "x": 229,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -260,7 +282,9 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "target": "cloud.frontend.dashboard",
     },
     {
+      "color": "gray",
       "dotpos": "e,658,332.26 658,179.87 658,223.7 658,276.72 658,321.86",
+      "head": "normal",
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
@@ -269,6 +293,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
         "x": 659,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -295,7 +320,9 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "target": "cloud.frontend.adminPanel",
     },
     {
+      "color": "gray",
       "dotpos": "e,353.14,680.87 552.95,511.86 494.25,561.51 421.08,623.4 361.13,674.11",
+      "head": "normal",
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network with 
 sso authentification",
@@ -305,6 +332,7 @@ sso authentification",
         "x": 479,
         "y": 572,
       },
+      "line": "dashed",
       "parent": "cloud",
       "points": [
         [
@@ -331,7 +359,9 @@ sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
+      "color": "gray",
       "dotpos": "e,242.87,680.87 233.12,511.86 235.92,560.29 239.38,620.37 242.27,670.36",
+      "head": "normal",
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
@@ -340,6 +370,7 @@ sso authentification",
         "x": 240,
         "y": 580,
       },
+      "line": "dashed",
       "parent": "cloud",
       "points": [
         [
@@ -366,7 +397,9 @@ sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
+      "color": "gray",
       "dotpos": "s,838.75,770.8 e,1055.2,770.8 849.67,770.8 912.09,770.8 982.57,770.8 1044.9,770.8",
+      "head": "normal",
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -375,6 +408,7 @@ sso authentification",
         "x": 894,
         "y": 745,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -402,10 +436,13 @@ sso authentification",
       "target": "amazon",
     },
     {
+      "color": "gray",
       "dotpos": "e,517.15,770.8 407.99,770.8 440.97,770.8 473.94,770.8 506.92,770.8",
+      "head": "normal",
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
       "labelBBox": null,
+      "line": "dashed",
       "parent": "cloud.backend",
       "points": [
         [
@@ -432,7 +469,7 @@ sso authentification",
       "target": "cloud.backend.storage",
     },
   ],
-  "hash": "99fa18910f6ab081a0172b2cd694e29e9c24978a",
+  "hash": "d751dec82be7d5259fc5d15e926ca47a1ff4e69e",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -462,7 +499,11 @@ sso authentification",
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "customer",
@@ -498,7 +539,11 @@ sso authentification",
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Support Engineer",
@@ -540,7 +585,11 @@ sso authentification",
         271,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "cloud",
@@ -578,7 +627,11 @@ sso authentification",
         332,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Customer Dashboard Webapp",
@@ -616,7 +669,11 @@ sso authentification",
         332,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Admin Panel Webapp",
@@ -657,7 +714,11 @@ sso authentification",
         620,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Backend",
@@ -696,7 +757,11 @@ sso authentification",
         681,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Graphql API",
@@ -734,7 +799,11 @@ sso authentification",
         681,
       ],
       "shape": "storage",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Backend Storage",
@@ -770,7 +839,11 @@ sso authentification",
         681,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Amazon",
@@ -801,7 +874,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
       "dotpos": "e,317.2,332.26 217.92,179.87 246.84,224.26 281.89,278.06 311.54,323.57",
+      "head": "normal",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "labelBBox": {
@@ -810,6 +885,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "x": 269,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -836,7 +912,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "color": "gray",
       "dotpos": "e,432.84,332.26 532.12,179.87 503.2,224.26 468.15,278.06 438.5,323.57",
+      "head": "normal",
       "id": "support:cloud.frontend",
       "label": "manages",
       "labelBBox": {
@@ -845,6 +923,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "x": 490,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -871,7 +950,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "color": "gray",
       "dotpos": "e,672.27,422 534.86,422 575.91,422 620.22,422 661.77,422",
+      "head": "normal",
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
@@ -880,6 +961,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "x": 591,
         "y": 395,
       },
+      "line": "dashed",
       "parent": "cloud",
       "points": [
         [
@@ -907,7 +989,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.backend",
     },
     {
+      "color": "gray",
       "dotpos": "s,991.68,422 e,1209,422 1002.6,422 1065.2,422 1136.1,422 1198.7,422",
+      "head": "normal",
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -916,6 +1000,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "x": 1048,
         "y": 396,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -943,7 +1028,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "3d9fd3e6f1b9accf0d5d2cf3522faa1800fdc431",
+  "hash": "ae5f26f9d79696739b08b98885dcc5215200b0b2",
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -973,7 +1058,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "customer",
@@ -1009,7 +1098,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Support Engineer",
@@ -1050,7 +1143,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         271,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "cloud",
@@ -1087,7 +1184,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         332,
       ],
       "shape": "browser",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Frontend",
@@ -1123,7 +1224,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         332,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Backend",
@@ -1159,7 +1264,11 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         332,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Amazon",
@@ -1190,7 +1299,9 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
       "dotpos": "s,534.68,412.8 e,752.04,412.8 545.63,412.8 608.24,412.8 679.08,412.8 741.67,412.8",
+      "head": "normal",
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -1199,6 +1310,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "x": 591,
         "y": 387,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -1226,7 +1338,9 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "amazon",
     },
     {
+      "color": "gray",
       "dotpos": "e,315.49,322.97 219.62,179.93 247.59,221.66 280.98,271.49 309.64,314.24",
+      "head": "normal",
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
@@ -1235,6 +1349,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "x": 275,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -1261,7 +1376,9 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
     {
+      "color": "gray",
       "dotpos": "e,434.55,322.97 530.42,179.93 502.45,221.66 469.06,271.49 440.4,314.24",
+      "head": "normal",
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
@@ -1270,6 +1387,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "x": 490,
         "y": 240,
       },
+      "line": "dashed",
       "parent": null,
       "points": [
         [
@@ -1296,7 +1414,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
   ],
-  "hash": "4736354413203b853e85d9eea0bd6e99272bb510",
+  "hash": "a7e8b58fed2c69c756bf4d0cab743a0002a24e2a",
   "id": "index",
   "links": null,
   "nodes": [
@@ -1326,7 +1444,11 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "customer",
@@ -1362,7 +1484,11 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         0,
       ],
       "shape": "person",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Support Engineer",
@@ -1399,7 +1525,11 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         323,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "cloud",
@@ -1435,7 +1565,11 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         323,
       ],
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "border": "dashed",
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "Amazon",

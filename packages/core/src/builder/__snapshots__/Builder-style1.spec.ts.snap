@@ -9,10 +9,10 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
   },
   "elements": {
     "s1": {
-      "color": "green",
       "id": "s1",
       "kind": "system",
       "style": {
+        "color": "green",
         "opacity": 10,
         "size": "lg",
       },
@@ -21,17 +21,17 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     "s1.c1": {
       "id": "s1.c1",
       "kind": "component",
-      "shape": "browser",
       "style": {
+        "shape": "browser",
         "textSize": "sm",
       },
       "title": "c1",
     },
     "s2": {
-      "color": "green",
       "id": "s2",
       "kind": "system",
       "style": {
+        "color": "green",
         "opacity": 10,
         "size": "lg",
       },
@@ -40,8 +40,8 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     "s2.c1": {
       "id": "s2.c1",
       "kind": "component",
-      "shape": "browser",
       "style": {
+        "shape": "browser",
         "textSize": "sm",
       },
       "title": "Component s2.1",
@@ -49,8 +49,8 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     "s2.c1.c2": {
       "id": "s2.c1.c2",
       "kind": "component",
-      "shape": "browser",
       "style": {
+        "shape": "browser",
         "textSize": "sm",
       },
       "title": "Component s2.1.2",
@@ -58,8 +58,8 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
     "s2.c1.c2.c3": {
       "id": "s2.c1.c2.c3",
       "kind": "component",
-      "shape": "browser",
       "style": {
+        "shape": "browser",
         "textSize": "sm",
       },
       "title": "c3",
@@ -190,7 +190,6 @@ exports[`Builder (style1) > should build view  1`] = `
       "_type": "element",
       "description": null,
       "id": "1",
-      "links": null,
       "rules": [
         {
           "include": [
@@ -208,7 +207,6 @@ exports[`Builder (style1) > should build view  1`] = `
       "_type": "element",
       "description": null,
       "id": "2",
-      "links": null,
       "rules": [
         {
           "include": [
@@ -236,7 +234,6 @@ exports[`Builder (style1) > should build view  1`] = `
       "_type": "element",
       "description": null,
       "id": "3",
-      "links": null,
       "rules": [
         {
           "include": [
@@ -315,7 +312,6 @@ exports[`Builder (style1) > should build viewOf  1`] = `
       "_type": "element",
       "description": null,
       "id": "1",
-      "links": null,
       "rules": [
         {
           "include": [

@@ -38,56 +38,6 @@ describe.concurrent('LikeC4ModelBuilder - Deployment', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.deployments.elements).toMatchInlineSnapshot(
-      {
-        node1: {
-          description: {
-            txt: 'Node1 Description',
-          },
-          id: 'node1',
-          kind: 'node',
-          style: {
-            border: 'dashed',
-            opacity: 10,
-          },
-          summary: {
-            txt: 'Noode1 Summary',
-          },
-          title: 'Node1 title',
-        },
-        'node1.f1': {
-          description: {
-            txt: 'f1 description',
-          },
-          element: 'frontend',
-          id: 'node1.f1',
-          style: {},
-          summary: {
-            txt: 'f1 summary',
-          },
-          title: 'f1 title',
-        },
-        'node1.f2': {
-          element: 'frontend',
-          id: 'node1.f2',
-          style: {},
-          summary: {
-            txt: 'f2 summary',
-          },
-          title: 'f2 title',
-        },
-        node2: {
-          id: 'node2',
-          kind: 'node',
-          style: {
-            border: 'dashed',
-            opacity: 10,
-          },
-          summary: {
-            txt: 'Node2 summary',
-          },
-          title: 'Node2 title',
-        },
-      },
       `
       {
         "node1": {
@@ -96,10 +46,7 @@ describe.concurrent('LikeC4ModelBuilder - Deployment', () => {
           },
           "id": "node1",
           "kind": "node",
-          "style": {
-            "border": "dashed",
-            "opacity": 10,
-          },
+          "style": {},
           "summary": {
             "txt": "Noode1 Summary",
           },
@@ -129,10 +76,7 @@ describe.concurrent('LikeC4ModelBuilder - Deployment', () => {
         "node2": {
           "id": "node2",
           "kind": "node",
-          "style": {
-            "border": "dashed",
-            "opacity": 10,
-          },
+          "style": {},
           "summary": {
             "txt": "Node2 summary",
           },

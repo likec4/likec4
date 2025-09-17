@@ -17,6 +17,7 @@
       "prod.eu.ui": {
         "element": "cloud.ui",
         "id": "prod.eu.ui",
+        "style": {},
       },
     },
     "relations": {},

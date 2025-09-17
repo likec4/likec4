@@ -96,7 +96,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     logger.debug`layoutAll: ${views.length} views`
 
     const tasks = [] as LayoutTaskParams[]
-    const specification = likeC4Model.$data.specification
+    const styles = likeC4Model.$styles
     const results = [] as GraphvizOut[]
     //
     for (const view of views) {
@@ -108,7 +108,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
       }
       tasks.push({
         view,
-        specification,
+        styles,
       })
     }
     if (tasks.length > 0) {
@@ -154,7 +154,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
       const m0 = performanceMark()
       const result = await this.layouter.layout({
         view,
-        specification: model.$data.specification,
+        styles: model.$styles,
       })
       this.viewsWithReportedErrors.delete(viewId)
       this.cache.set(view, result)
@@ -196,7 +196,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     const tasks = views.map(async view => {
       const { dot, svg } = await this.layouter.svg({
         view,
-        specification: likeC4Model.$data.specification,
+        styles: likeC4Model.$styles,
       })
       return {
         id: view.id,

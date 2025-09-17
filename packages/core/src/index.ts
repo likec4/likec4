@@ -1,10 +1,4 @@
-export {
-  computeColorValues,
-  defaultStyles,
-  defaultTheme,
-  ElementColors,
-  RelationshipColors,
-} from './theme'
+export { defaultStyle, defaultTheme } from './styles'
 
 export * from './types'
 

@@ -1,12 +1,15 @@
-import type { PartialDeep } from 'type-fest'
+import type { PartialDeep, WritableDeep } from 'type-fest'
+import type { LikeC4StyleDefaults, LikeC4Theme } from '../styles/types'
 import * as scalar from './scalar'
-import type { DefaultStyleValues, LikeC4Theme } from './styles'
 
-export type LikeC4ProjectTheme = Pick<LikeC4Theme, 'colors' | 'sizes' | 'spacing' | 'textSizes'>
+export type LikeC4ProjectTheme = PartialDeep<WritableDeep<LikeC4Theme>, {
+  recurseIntoArrays: false
+  allowUndefinedInNonTupleArrays: false
+}>
 
 export interface LikeC4ProjectStylesConfig {
-  theme: LikeC4ProjectTheme
-  defaults: DefaultStyleValues
+  theme?: LikeC4ProjectTheme | undefined
+  defaults?: PartialDeep<LikeC4StyleDefaults> | undefined
 }
 
 /**
@@ -24,5 +27,5 @@ export interface LikeC4Project {
   /**
    * Custom styles
    */
-  styles?: PartialDeep<LikeC4ProjectStylesConfig> | undefined
+  styles?: LikeC4ProjectStylesConfig | undefined
 }

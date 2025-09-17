@@ -1,3 +1,4 @@
+import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import { describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
@@ -52,8 +53,13 @@ describe.concurrent('ProjectsManager', () => {
     it('should load config file', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
 
-      const config = {
+      const config: LikeC4ProjectJsonConfig = {
         name: 'test-project',
+        styles: {
+          defaults: {
+            color: 'red',
+          },
+        },
       }
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)

@@ -1,26 +1,23 @@
+import { type LikeC4StyleConfig, type ThemeColor } from '@likec4/core/styles'
 import {
-  defaultTheme,
+  type AnyAux,
+  type AnyFqn,
+  type Color,
+  type ComputedEdge,
+  type ComputedNode,
+  type ComputedView,
+  type DeploymentFqn,
+  type EdgeId,
+  type ElementColorValues,
+  type Fqn,
+  type HexColor,
+  type LikeC4StyleDefaults,
+  type LikeC4Theme,
+  type NodeId,
+  type RelationshipColorValues,
+  type RelationshipLineType,
+  type XYPoint,
   ensureSizes,
-  isThemeColor,
-} from '@likec4/core'
-import type {
-  AnyAux,
-  AnyFqn,
-  Color,
-  ComputedEdge,
-  ComputedNode,
-  ComputedView,
-  DefaultStyleValues,
-  DeploymentFqn,
-  EdgeId,
-  ElementThemeColorValues,
-  Fqn,
-  HexColor,
-  LikeC4ProjectTheme,
-  NodeId,
-  RelationshipLineType,
-  RelationshipThemeColorValues,
-  XYPoint,
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
@@ -67,7 +64,7 @@ import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } f
 
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
-const FontName = defaultTheme.font
+const FontName = 'Arial'
 
 const logger = createLogger('dot')
 
@@ -123,7 +120,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
 
   constructor(
     protected readonly view: V,
-    protected readonly likec4model: AnyLikeC4Model,
+    protected readonly $styles: LikeC4StyleConfig,
   ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
@@ -207,26 +204,31 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.postBuild(G)
   }
 
-  protected get $theme(): LikeC4ProjectTheme {
-    return this.likec4model.$styles.theme
+  protected get $theme(): LikeC4Theme {
+    return this.$styles.theme
   }
 
-  protected get $defaults(): DefaultStyleValues {
-    return this.likec4model.$styles.defaults
+  protected get $defaults(): LikeC4StyleDefaults {
+    return this.$styles.defaults
   }
 
   public get hasEdgesWithCompounds(): boolean {
     return this.edgesWithCompounds.size > 0
   }
 
-  protected get defaultElementColors(): ElementThemeColorValues {
-    const color = this.$defaults.element.color
+  protected get defaultElementColors(): ElementColorValues {
+    const color = this.$defaults.color
     return this.$theme.colors[color].elements
   }
 
-  protected get defaultRelationshipColors(): RelationshipThemeColorValues {
+  protected get defaultRelationshipColors(): RelationshipColorValues {
     const color = this.$defaults.relationship.color
-    return this.$theme.colors[color].relationships
+    const colorValues = this.$theme.colors[color].relationships
+    return {
+      line: colorValues.line,
+      label: colorValues.label as HexColor,
+      labelBg: colorValues.labelBg,
+    }
   }
 
   protected postBuild(_G: RootGraphModel): void {
@@ -331,8 +333,8 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      [_.color]: colors.line ?? colors.lineColor,
-      [_.fontcolor]: (colors.label ?? colors.labelColor) as HexColor,
+      [_.color]: colors.line,
+      [_.fontcolor]: colors.label as HexColor,
     })
   }
 
@@ -391,7 +393,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     const colorValues = this.getElementColorValues(element.color)
     const { size, textSize, padding: paddingSize } = ensureSizes(element.style)
 
-    const padding = defaultTheme.spacing[paddingSize]
+    const padding = this.$theme.spacing[paddingSize]
 
     node.attributes.apply({
       [_.likec4_id]: element.id,
@@ -404,7 +406,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
 
-    const { width, height } = this.likec4model.$styles.theme.sizes[size]
+    const { width, height } = this.$theme.sizes[size]
 
     node.attributes.set(_.width, pxToInch(width))
     node.attributes.set(_.height, pxToInch(height))
@@ -669,18 +671,20 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     return this
   }
   protected getRelationshipColorValues(color: Color) {
-    const colorValues = isThemeColor(color)
-      ? this.$theme.colors[color].relationships
-      : this.likec4model.specification.customColors?.[color]?.relationships ?? this.defaultRelationshipColors
+    const colorValues = this.$theme.colors[color as ThemeColor]?.relationships ?? this.defaultRelationshipColors
     return {
-      line: colorValues.line ?? colorValues.lineColor,
-      label: (colorValues.label ?? colorValues.labelColor) as HexColor,
-      labelBg: colorValues.labelBg ?? colorValues.labelBgColor,
+      line: colorValues.line,
+      label: colorValues.label as HexColor,
+      labelBg: colorValues.labelBg,
     }
   }
-  protected getElementColorValues(color: Color): ElementThemeColorValues {
-    return isThemeColor(color)
-      ? this.$theme.colors[color].elements
-      : this.likec4model.specification.customColors?.[color]?.elements ?? this.defaultElementColors
+  protected getElementColorValues(color: Color): ElementColorValues {
+    const colorValues = this.$theme.colors[color as ThemeColor]?.elements ?? this.defaultElementColors
+    return {
+      fill: colorValues.fill,
+      stroke: colorValues.stroke,
+      hiContrast: colorValues.hiContrast as HexColor,
+      loContrast: colorValues.loContrast as HexColor,
+    }
   }
 }

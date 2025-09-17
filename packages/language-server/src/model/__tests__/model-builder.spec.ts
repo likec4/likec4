@@ -41,7 +41,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(elements).toMatchObject({
       customer: {
         kind: 'user',
-        shape: 'person',
+        style: {
+          shape: 'person',
+        },
         title: 'Customer',
       },
       system: {
@@ -50,13 +52,17 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
       spa: {
         kind: 'component',
-        shape: 'browser',
+        style: {
+          shape: 'browser',
+        },
         title: 'SPA',
       },
       mobile: {
         kind: 'component',
-        shape: 'mobile',
-        color: 'green',
+        style: {
+          shape: 'mobile',
+          color: 'green',
+        },
         title: 'Mobile',
       },
     })
@@ -110,18 +116,25 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       'client': {
         kind: 'user',
-        shape: 'person',
+        style: {
+          shape: 'person',
+        },
+        title: 'client',
       },
       'system.backend': {
-        color: 'secondary',
         title: 'Backend',
         technology: 'NodeJS',
         summary: { txt: 'Backend summary' },
+        style: {
+          color: 'secondary',
+        },
       },
       'system.frontend': {
-        color: 'muted',
-        shape: 'browser',
         description: { txt: 'Frontend description' },
+        style: {
+          color: 'muted',
+          shape: 'browser',
+        },
       },
     })
     expect(model.elements['client']).not.to.have.property('description')
@@ -247,19 +260,27 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'system',
-        icon: 'https://system1.png',
+        style: {
+          icon: 'https://system1.png',
+        },
       },
       system2: {
         kind: 'system',
-        icon: 'tech:react',
+        style: {
+          icon: 'tech:react',
+        },
       },
       system3: {
         kind: 'system',
-        icon: 'tech:astro',
+        style: {
+          icon: 'tech:astro',
+        },
       },
       component1: {
         kind: 'component',
-        icon: 'https://component.png',
+        style: {
+          icon: 'https://component.png',
+        },
       },
     })
   })
