@@ -6,12 +6,10 @@ import {
   hasAtLeast,
   isArray,
   isFunction,
-  isNonNullish,
   isNullish,
   map,
   mapToObj,
   mapValues,
-  pickBy,
 } from 'remeda'
 import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
@@ -20,7 +18,10 @@ import type {
   Any,
   aux,
   DeployedInstance,
+  DeploymentElementStyle,
   DeploymentFqn,
+  DeploymentNode,
+  ElementStyle,
   LikeC4Project,
   ParsedElementView,
   ParsedLikeC4ModelData,
@@ -28,11 +29,9 @@ import type {
   TagSpecification,
 } from '../types'
 import {
-  type Color,
   type DeploymentElement,
   type DeploymentRelation,
   type Element,
-  type ElementShape,
   type Fqn,
   type IconUrl,
   type LikeC4View,
@@ -44,11 +43,10 @@ import {
   type RelationId,
   _stage,
   _type,
-  DefaultElementShape,
-  DefaultThemeColor,
   FqnRef,
   isDeployedInstance,
   isElementView,
+  omitUndefined,
 } from '../types'
 import { invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
@@ -266,10 +264,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       elements: structuredClone(spec.elements),
       deployments: structuredClone(spec.deployments),
       relationships: structuredClone(spec.relationships),
-      tags: mapValues(spec.tags, (tagSpec) => ({
-        color: DefaultThemeColor,
-        ...tagSpec,
-      })),
+      tags: structuredClone(spec.tags),
       ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)
@@ -540,27 +535,27 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const _id = b.__fqn(id)
 
-              b.__addElement({
+              b.__addElement(omitUndefined({
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
                 ...(description && { description: { txt: description } }),
                 ...(summary && { summary: { txt: summary } }),
-                color: specStyle?.color ?? DefaultThemeColor as Color,
-                shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                style: pickBy({
+                color: specStyle?.color,
+                shape: specStyle?.shape,
+                style: omitUndefined({
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
                   size: specStyle?.size,
                   padding: specStyle?.padding,
                   textSize: specStyle?.textSize,
                   ...style,
-                }, isNonNullish),
+                }) satisfies ElementStyle,
                 ...(links && { links }),
                 ...icon && { icon: icon as IconUrl },
                 ...spec,
                 ...props,
-              })
+              }))
               return b
             }) as AddElement<Id>
 
@@ -780,6 +775,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 title,
                 description,
                 summary,
+                color,
+                shape,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -787,29 +784,29 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const _id = b.__deploymentFqn(id)
 
-              b.__addDeployment({
-                id: _id,
-                kind: kind as any,
-                title: title ?? nameFromFqn(_id),
-                ...(description && { description: { txt: description } }),
-                ...(summary && { summary: { txt: summary } }),
-                style: {
-                  ...icon && { icon: icon as IconUrl },
-                  color: specStyle?.color ?? DefaultThemeColor as Color,
-                  shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                  ...pickBy({
+              b.__addDeployment(
+                omitUndefined({
+                  id: _id,
+                  kind: kind as any,
+                  title: title ?? nameFromFqn(_id),
+                  ...(description && { description: { txt: description } }),
+                  ...(summary && { summary: { txt: summary } }),
+                  style: omitUndefined({
+                    icon: icon as IconUrl | undefined,
+                    color: color ?? specStyle?.color,
+                    shape: shape ?? specStyle?.shape,
                     border: specStyle?.border,
                     opacity: specStyle?.opacity,
                     size: specStyle?.size,
                     padding: specStyle?.padding,
                     textSize: specStyle?.textSize,
                     ...style,
-                  }, isNonNullish),
-                },
-                ...links && { links: mapLinks(links) },
-                ...spec,
-                ...props,
-              })
+                  }) satisfies DeploymentElementStyle,
+                  ...links && { links: mapLinks(links) },
+                  ...spec,
+                  ...props,
+                }) satisfies DeploymentNode,
+              )
               return b
             }) as AddDeploymentNode<Id>
 

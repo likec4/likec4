@@ -16,9 +16,6 @@ import {
   type DeploymentViewRule,
   type scalar,
   type Unknown,
-  DefaultArrowType,
-  DefaultElementShape,
-  DefaultThemeColor,
   FqnExpr,
   isViewRuleStyle,
   omitUndefined,
@@ -159,7 +156,7 @@ export function toNodeSource<A extends AnyAux>(
       tags: _tags, // omit
       ...$node
     } = el.$node
-    let icon = style.icon
+    let icon = el.style.icon
     let tags = [...el.tags]
     // let description
     // If there is only one instance
@@ -179,8 +176,8 @@ export function toNodeSource<A extends AnyAux>(
       deploymentRef: id,
       title,
       ...$node,
-      color: style.color ?? onlyOneInstance?.color ?? DefaultThemeColor,
-      shape: style.shape ?? DefaultElementShape,
+      color: style.color ?? onlyOneInstance?.color ?? el.color,
+      shape: el.shape,
       ...(onlyOneInstance && {
         modelRef: onlyOneInstance.element.id,
       }),
@@ -258,7 +255,7 @@ export function toComputedEdges<A extends AnyAux>(
     const existing = acc.find(e => e.source === target && e.target === source)
     if (existing && edge.label === existing.label) {
       existing.dir = 'both'
-      const head = existing.head ?? edge.head ?? DefaultArrowType
+      const head = existing.head ?? edge.head ?? e.source.$model.$styles.defaults.relationship.arrow
       existing.head ??= head
       existing.tail ??= head
 

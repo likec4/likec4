@@ -8,6 +8,7 @@ import {
   isDynamicView,
   isElementView,
 } from '@likec4/core'
+import type { AnyLikeC4Model } from '@likec4/core/model'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
@@ -28,14 +29,14 @@ export interface GraphvizPort extends Disposable {
   dispose(): void
 }
 
-const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<A>) => {
+const getPrinter = <A extends AnyAux>({ view, likec4model }: LayoutTaskParams<A>) => {
   switch (true) {
     case isDynamicView(view):
-      return new DynamicViewPrinter(view, specification)
+      return new DynamicViewPrinter(view, likec4model)
     case isDeploymentView(view):
-      return new DeploymentViewPrinter(view, specification)
+      return new DeploymentViewPrinter(view, likec4model)
     case isElementView(view):
-      return new ElementViewPrinter(view, specification)
+      return new ElementViewPrinter(view, likec4model)
     default:
       nonexhaustive(view)
   }
@@ -43,7 +44,7 @@ const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<
 
 export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
-  specification: Specification<A>
+  likec4model: AnyLikeC4Model
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {

@@ -14,9 +14,6 @@ import {
   type StepEdgeId,
   _stage,
   _type,
-  DefaultArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
   isDynamicViewParallelSteps,
   isViewRuleAutoLayout,
   isViewRulePredicate,
@@ -156,6 +153,8 @@ class DynamicViewCompute<A extends AnyAux> {
       [...this.explicits].map(elementModelToNodeSource),
     )
 
+    const defaults = this.model.$styles.defaults.relationship
+
     const edges = this.steps.map(({ id, source, target, relations, title, description, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
@@ -167,9 +166,9 @@ class DynamicViewCompute<A extends AnyAux> {
         label: title,
         relations,
         description: description ? { txt: description } : null,
-        color: DefaultRelationshipColor,
-        line: DefaultLineStyle,
-        head: DefaultArrowType,
+        color: defaults.color,
+        line: defaults.line,
+        head: defaults.arrow,
         tags: tags ?? [],
         ...step,
       }

@@ -18,4 +18,7 @@ export {
 export {
   defineConfig,
   defineGenerators,
+  defineStyle,
+  defineTheme,
+  defineThemeColor,
 } from './define-config'

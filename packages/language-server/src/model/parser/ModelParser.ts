@@ -9,7 +9,7 @@ import {
   type ParsedAstExtend,
   type ParsedAstRelation,
   ast,
-  toRelationshipStyleExcludeDefaults,
+  toRelationshipStyle,
 } from '../../ast'
 import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
@@ -206,7 +206,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         navigateTo: navigateTo ? navigateTo as c4.ViewId : undefined,
         description,
         technology,
-        ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
+        ...toRelationshipStyle(styleProp?.props, isValid),
       })
     }
   }

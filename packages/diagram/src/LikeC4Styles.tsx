@@ -1,14 +1,13 @@
 import {
   type CustomColorDefinitions,
+  type LikeC4ProjectStylesConfig,
   type ThemeColorValues,
-  defaultTheme,
-  ThemeColors,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
-import { useLikeC4Specification } from './likec4model'
+import { useLikeC4ProjectStyles, useLikeC4Specification } from './likec4model'
 
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
 
@@ -46,23 +45,25 @@ ${whenDark} ${selector} {
 }
 
 function toStyle(rootSelector: string, name: string, colors: ThemeColorValues): string {
+  const { elements, relationships } = colors
   const selector = `:where(${rootSelector} [data-likec4-color=${name}])`
+  const line = relationships.line ?? relationships.lineColor
   return [
     `
 ${selector} {
-  --likec4-palette-fill: ${colors.elements.fill};
-  --likec4-palette-stroke: ${colors.elements.stroke};
-  --likec4-palette-hiContrast: ${colors.elements.hiContrast};
-  --likec4-palette-loContrast: ${colors.elements.loContrast};
-  --likec4-palette-relation-stroke: ${colors.relationships.lineColor};
-  --likec4-palette-relation-label: ${colors.relationships.labelColor};
-  --likec4-palette-relation-label-bg: ${colors.relationships.labelBgColor};
+  --likec4-palette-fill: ${elements.fill};
+  --likec4-palette-stroke: ${elements.stroke};
+  --likec4-palette-hiContrast: ${elements.hiContrast};
+  --likec4-palette-loContrast: ${elements.loContrast};
+  --likec4-palette-relation-stroke: ${line};
+  --likec4-palette-relation-label: ${relationships.label ?? relationships.labelColor};
+  --likec4-palette-relation-label-bg: ${relationships.labelBg ?? relationships.labelBgColor};
 }
 ${whenLight} ${selector} {
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(colors.relationships.lineColor, 'black', 85))};
+  --likec4-palette-relation-stroke-selected: ${toRgba(mix(line, 'black', 85))};
 }
 ${whenDark} ${selector} {
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(colors.relationships.lineColor, 'white', 70))};
+  --likec4-palette-relation-stroke-selected: ${toRgba(mix(line, 'white', 70))};
 }
 
   `.trim(),
@@ -78,15 +79,11 @@ function generateCustomColorStyles(customColors: CustomColorDefinitions, rootSel
   )
 }
 
-function generateBuiltInColorStyles(rootSelector: string) {
+function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4ProjectStylesConfig['theme']) {
   return pipe(
-    ThemeColors,
-    map((color) =>
-      toStyle(rootSelector, color, {
-        elements: defaultTheme.elements[color],
-        relationships: defaultTheme.relationships[color],
-      })
-    ),
+    theme.colors,
+    entries(),
+    map(([color, values]) => toStyle(rootSelector, color, values)),
     join('\n'),
   )
 }
@@ -94,11 +91,16 @@ function generateBuiltInColorStyles(rootSelector: string) {
 export function LikeC4Styles({ id }: { id: string }) {
   const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
-
+  const projectStyles = useLikeC4ProjectStyles()
   const { customColors } = useLikeC4Specification()
-  const customColorsStyles = customColors ? generateCustomColorStyles(customColors, rootSelector) : ''
 
-  const builtInColors = generateBuiltInColorStyles(rootSelector)
+  const {
+    customColorsStyles,
+    builtInColors,
+  } = useMemo(() => ({
+    customColorsStyles: customColors ? generateCustomColorStyles(customColors, rootSelector) : '',
+    builtInColors: generateBuiltInColorStyles(rootSelector, projectStyles.theme),
+  }), [customColors, rootSelector, projectStyles.theme])
 
   return (
     <MemoizedStyles

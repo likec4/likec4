@@ -14,6 +14,7 @@ import JSON5 from 'json5'
 import type { URI } from 'vscode-uri'
 import * as z from 'zod4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
+import { StylesConfigSchema } from './schema.theme'
 
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
@@ -37,6 +38,8 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
   imageAliases: ImageAliasesSchema
+    .optional(),
+  styles: StylesConfigSchema
     .optional(),
   exclude: z.array(z.string())
     .optional()

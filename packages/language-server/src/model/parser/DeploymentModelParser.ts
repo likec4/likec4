@@ -17,7 +17,7 @@ import {
   type ParsedAstDeploymentRelation,
   type ParsedAstExtend,
   ast,
-  toRelationshipStyleExcludeDefaults,
+  toRelationshipStyle,
 } from '../../ast'
 import { serverLogger } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
@@ -238,7 +238,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         kind,
         tags: tags ?? undefined,
         ...(isNonEmptyArray(links) && { links }),
-        ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
+        ...toRelationshipStyle(styleProp?.props, isValid),
         navigateTo,
         astPath,
       })

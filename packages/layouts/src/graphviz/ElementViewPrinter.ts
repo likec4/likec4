@@ -1,5 +1,4 @@
-import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn, HexColor } from '@likec4/core'
-import { DefaultArrowType } from '@likec4/core'
+import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
@@ -130,12 +129,12 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor as HexColor,
+        [_.color]: colorValues.line,
+        [_.fontcolor]: colorValues.label,
       })
     }
 
-    let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
+    let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
 
     if (edge.dir === 'back') {
       e.attributes.apply({
@@ -173,7 +172,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       return e
     }
 
-    if (head !== DefaultArrowType) {
+    if (head !== this.$defaults.relationship.arrow) {
       e.attributes.set(_.arrowhead, toArrowType(head))
     }
     if (tail !== 'none') {

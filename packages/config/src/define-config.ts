@@ -1,4 +1,12 @@
 import { type GeneratorFn, type LikeC4ProjectConfig, GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
+import {
+  type StylesConfigInput,
+  type ThemeColorValues,
+  type ThemeConfigInput,
+  StylesConfigSchema,
+  ThemeColorValuesSchema,
+  ThemeConfigSchema,
+} from './schema.theme'
 
 /**
  * Defines LikeC4 Project, allows custom generators that can be executed using CLI:
@@ -48,4 +56,60 @@ export function defineConfig<const C extends LikeC4ProjectConfig>(config: C): C 
  */
 export function defineGenerators<const G extends Record<string, GeneratorFn>>(generators: G): G {
   return GeneratorsSchema.parse(generators) as unknown as G
+}
+
+/**
+ * Define reusable custom style
+ * @example
+ * ```ts
+ * // styles.ts
+ * export default defineStyle({
+ *   theme: {
+ *     colors: {
+ *       primary: '#FF0000'
+ *     }
+ *   },
+ *   defaults: {
+ *     element: {
+ *       opacity: 0.5
+ *     },
+ *     relationship: {
+ *       color: 'grey'
+ *       line: 'solid'
+ *     }
+ *   }
+ * })
+ */
+export function defineStyle<const S extends StylesConfigInput>(styles: S): S {
+  return StylesConfigSchema.parse(styles) as unknown as S
+}
+
+/**
+ * Define reusable custom theme
+ * @example
+ * ```ts
+ * export default defineTheme({
+ *   colors: {
+ *     primary: '#FF0000'
+ *   }
+ * })
+ * ```
+ */
+export function defineTheme<const S extends ThemeConfigInput>(theme: S): S {
+  return ThemeConfigSchema.parse(theme) as unknown as S
+}
+
+/**
+ * Define reusable custom theme color
+ * @example
+ * ```ts
+ * export default defineThemeColor({
+ *   element: {
+ *     fill: 'red'
+ *   }
+ * })
+ * ```
+ */
+export function defineThemeColor<const S extends ThemeColorValues>(colors: S): S {
+  return ThemeColorValuesSchema.parse(colors) as unknown as S
 }

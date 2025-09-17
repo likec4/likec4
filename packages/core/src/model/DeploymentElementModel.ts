@@ -14,10 +14,6 @@ import {
   type RelationshipLineType,
   type RichTextOrEmpty,
   type scalar,
-  DefaultElementShape,
-  DefaultLineStyle,
-  DefaultShapeSize,
-  DefaultThemeColor,
   preferDescription,
   preferSummary,
   RichText,
@@ -50,9 +46,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
 
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     return {
-      shape: DefaultElementShape,
-      color: DefaultThemeColor,
-      size: DefaultShapeSize,
+      ...this.$model.$styles.defaults.element,
       ...this.$node.style,
     }
   }
@@ -62,11 +56,11 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   get shape(): C4ElementShape {
-    return this.$node.style?.shape ?? DefaultElementShape
+    return this.$node.style?.shape ?? this.$model.$styles.defaults.element.shape
   }
 
   get color(): Color {
-    return this.$node.style?.color as Color ?? DefaultThemeColor
+    return this.$node.style?.color as Color ?? this.$model.$styles.defaults.element.color
   }
 
   /**
@@ -398,7 +392,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return {
       shape: this.element.shape,
       color: this.element.color,
-      size: DefaultShapeSize,
+      size: this.element.style.size,
       ...icon && { icon },
       ...style,
       ...this.$instance.style,
@@ -600,11 +594,11 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
   }
 
   get color(): Color {
-    return this.$relationship.color ?? DefaultThemeColor
+    return this.$relationship.color ?? this.$model.$styles.defaults.relationship.color
   }
 
   get line(): RelationshipLineType {
-    return this.$relationship.line ?? DefaultLineStyle
+    return this.$relationship.line ?? this.$model.$styles.defaults.relationship.line
   }
 
   public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {

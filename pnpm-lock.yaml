@@ -763,6 +763,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../config
       '@mantine/colors-generator':
         specifier: catalog:mantine
         version: 8.2.8(chroma-js@3.1.2)

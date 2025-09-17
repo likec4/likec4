@@ -1,19 +1,52 @@
 import { generateColors } from '@mantine/colors-generator'
-import chroma from 'chroma-js';
-import type { ColorLiteral, HexColor, LikeC4Theme, ThemeColorValues } from '../types'
+import chroma from 'chroma-js'
+import { fromKeys, isDeepEqual } from 'remeda'
+import {
+  type ColorLiteral,
+  type DefaultStyleValues,
+  type HexColor,
+  type LikeC4Theme,
+  type ThemeColorValues,
+  ThemeColors,
+} from '../types/styles'
 import { ElementColors } from './element'
 import { RelationshipColors } from './relationships'
-import { isDeepEqual } from 'remeda'
 
 const CONTRAST_MIN_WITH_FOREGROUND = 60
 const CONTRAST_START_TONE_DIFFERENCE = 2
 const CONTRAST_STEP_TONE_DIFFERENCE = 1
+
+export const defaultStyles: DefaultStyleValues = {
+  color: 'primary',
+  size: 'md',
+  element: {
+    shape: 'rectangle',
+    color: 'primary',
+    opacity: 100,
+    border: 'solid',
+    size: 'md',
+  },
+  group: {
+    color: 'primary',
+    opacity: 20,
+    border: 'dashed',
+  },
+  relationship: {
+    color: 'gray',
+    line: 'dashed',
+    arrow: 'normal',
+  },
+}
 
 export const defaultTheme: LikeC4Theme = {
   elements: ElementColors,
   relationships: RelationshipColors,
   font: 'Arial',
   shadow: '#0a0a0a',
+  colors: fromKeys(ThemeColors, (key) => ({
+    elements: ElementColors[key],
+    relationships: RelationshipColors[key],
+  })),
   sizes: {
     xs: {
       width: 180,
@@ -65,7 +98,7 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
 
     const fillColor = colors[6]
     const contrastedColors = getContrastedColorsAPCA(fillColor)
-    
+
     return {
       elements: {
         fill: fillColor as HexColor,
@@ -74,16 +107,13 @@ export function computeColorValues(color: ColorLiteral): ThemeColorValues {
         loContrast: contrastedColors[1] as HexColor,
       },
       relationships: {
-        lineColor: colors[4] as HexColor,
-        labelColor: colors[3] as HexColor,
-        labelBgColor: colors[9] as HexColor,
+        line: colors[4] as HexColor,
+        label: colors[3] as HexColor,
+        labelBg: colors[9] as HexColor,
       },
     }
   } else {
-    return {
-      elements: defaultTheme.elements['primary'],
-      relationships: defaultTheme.relationships['primary'],
-    }
+    return defaultTheme.colors.primary
   }
 }
 
@@ -91,8 +121,8 @@ function getContrastedColorsAPCA(refColor: string): [string, string] {
   const refColorChroma = chroma(refColor)
 
   // Start with 2 steps tone difference in the CIELAB color space from reference
-  let lightColorRgb = refColorChroma.brighten(CONTRAST_START_TONE_DIFFERENCE);
-  let darkColorRgb = refColorChroma.darken(CONTRAST_START_TONE_DIFFERENCE);
+  let lightColorRgb = refColorChroma.brighten(CONTRAST_START_TONE_DIFFERENCE)
+  let darkColorRgb = refColorChroma.darken(CONTRAST_START_TONE_DIFFERENCE)
 
   let previousLight
   let previousDark
@@ -108,13 +138,15 @@ function getContrastedColorsAPCA(refColor: string): [string, string] {
     darkColorRgb = darkColorRgb.darken(CONTRAST_STEP_TONE_DIFFERENCE)
 
     // Calculate contrast of each color with the reference color
-    contrastWithLight = chroma.contrastAPCA(refColorChroma, lightColorRgb);
-    contrastWithDark = chroma.contrastAPCA(refColorChroma, darkColorRgb);
+    contrastWithLight = chroma.contrastAPCA(refColorChroma, lightColorRgb)
+    contrastWithDark = chroma.contrastAPCA(refColorChroma, darkColorRgb)
   }
-  // Stop if one of the contrast is high enough or if we reach max value for each (aka when they are equal between two rounds)
-  while (Math.abs(contrastWithLight) < CONTRAST_MIN_WITH_FOREGROUND
+  while (
+    // Stop if one of the contrast is high enough or if we reach max value for each (aka when they are equal between two rounds)
+    Math.abs(contrastWithLight) < CONTRAST_MIN_WITH_FOREGROUND
     && Math.abs(contrastWithDark) < CONTRAST_MIN_WITH_FOREGROUND
-    && (!isDeepEqual(lightColorRgb, previousLight) || !isDeepEqual(darkColorRgb, previousDark)))
+    && (!isDeepEqual(lightColorRgb, previousLight) || !isDeepEqual(darkColorRgb, previousDark))
+  )
 
   // Choose the max contrast between the two
   if (Math.abs(contrastWithLight) > Math.abs(contrastWithDark)) {

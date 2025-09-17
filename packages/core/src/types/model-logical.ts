@@ -1,3 +1,4 @@
+import { defaultStyles } from '../theme'
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { FqnRef } from './fqnRef'
@@ -11,15 +12,14 @@ import type {
   ShapeSize,
   SpacingSize,
   TextSize,
-  ThemeColor,
 } from './styles'
 
-export const DefaultThemeColor: ThemeColor = 'primary'
-export const DefaultElementShape: ElementShape = 'rectangle'
-export const DefaultSize = 'md'
-export const DefaultShapeSize: ShapeSize = DefaultSize
-export const DefaultPaddingSize: SpacingSize = DefaultSize
-export const DefaultTextSize: TextSize = DefaultSize
+// export const DefaultThemeColor: ThemeColor = 'primary'
+// export const DefaultElementShape: ElementShape = 'rectangle'
+// export const DefaultSize = 'md'
+// export const DefaultShapeSize: ShapeSize = DefaultSize
+// export const DefaultPaddingSize: SpacingSize = DefaultSize
+// export const DefaultTextSize: TextSize = DefaultSize
 
 export interface ElementStyle {
   readonly border?: BorderStyle
@@ -58,7 +58,7 @@ export function ensureSizes<S extends WithSizes>({
   textSize,
   ...rest
 }: S): Omit<S, 'size' | 'padding' | 'textSize'> & Required<WithSizes> {
-  size ??= DefaultSize
+  size ??= defaultStyles.element.size
   textSize ??= size
   padding ??= size
 
@@ -88,9 +88,9 @@ export interface Element<A extends AnyAux = AnyAux>
   readonly style?: ElementStyle
 }
 
-export const DefaultLineStyle: RelationshipLineType = 'dashed'
-export const DefaultArrowType: RelationshipArrowType = 'normal'
-export const DefaultRelationshipColor: ThemeColor = 'gray'
+// export const DefaultLineStyle: RelationshipLineType = 'dashed'
+// export const DefaultArrowType: RelationshipArrowType = 'normal'
+// export const DefaultRelationshipColor: ThemeColor = 'gray'
 
 // dprint-ignore
 export interface AbstractRelationship<A extends AnyAux>

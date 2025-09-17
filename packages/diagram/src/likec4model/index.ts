@@ -16,4 +16,5 @@ export {
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,
+  useLikeC4ProjectStyles,
 } from './useLikeC4Project'

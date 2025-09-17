@@ -9,8 +9,6 @@ exports[`Builder (style 2) > should build  1`] = `
         "id": "dev",
         "kind": "env",
         "style": {
-          "color": "primary",
-          "shape": "rectangle",
           "size": "lg",
         },
         "title": "dev",
@@ -18,18 +16,13 @@ exports[`Builder (style 2) > should build  1`] = `
       "dev.local": {
         "id": "dev.local",
         "kind": "node",
-        "style": {
-          "color": "primary",
-          "shape": "rectangle",
-        },
+        "style": {},
         "title": "local",
       },
       "prod": {
         "id": "prod",
         "kind": "env",
         "style": {
-          "color": "primary",
-          "shape": "rectangle",
           "size": "lg",
         },
         "title": "prod",
@@ -37,10 +30,7 @@ exports[`Builder (style 2) > should build  1`] = `
       "prod.eu": {
         "id": "prod.eu",
         "kind": "node",
-        "style": {
-          "color": "primary",
-          "shape": "rectangle",
-        },
+        "style": {},
         "title": "eu",
       },
       "prod.eu.ui": {
@@ -52,10 +42,8 @@ exports[`Builder (style 2) > should build  1`] = `
   },
   "elements": {
     "cloud": {
-      "color": "primary",
       "id": "cloud",
       "kind": "system",
-      "shape": "rectangle",
       "style": {
         "size": "lg",
         "textSize": "sm",
@@ -63,18 +51,14 @@ exports[`Builder (style 2) > should build  1`] = `
       "title": "cloud",
     },
     "cloud.ui": {
-      "color": "primary",
       "id": "cloud.ui",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "ui",
     },
     "customer": {
-      "color": "primary",
       "id": "customer",
       "kind": "actor",
-      "shape": "rectangle",
       "style": {},
       "tags": [
         "tag3",
@@ -122,12 +106,8 @@ exports[`Builder (style 2) > should build  1`] = `
       "tag1": {
         "color": "#FFF",
       },
-      "tag2": {
-        "color": "primary",
-      },
-      "tag3": {
-        "color": "primary",
-      },
+      "tag2": {},
+      "tag3": {},
     },
   },
   "views": {

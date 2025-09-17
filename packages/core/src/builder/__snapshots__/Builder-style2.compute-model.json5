@@ -6,10 +6,8 @@
   },
   "elements": {
     "cloud": {
-      "color": "primary",
       "id": "cloud",
       "kind": "system",
-      "shape": "rectangle",
       "style": {
         "size": "lg",
         "textSize": "sm",
@@ -17,26 +15,20 @@
       "title": "cloud",
     },
     "cloud.api": {
-      "color": "primary",
       "id": "cloud.api",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "api",
     },
     "cloud.ui": {
-      "color": "primary",
       "id": "cloud.ui",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "ui",
     },
     "customer": {
-      "color": "primary",
       "id": "customer",
       "kind": "actor",
-      "shape": "rectangle",
       "style": {},
       "tags": [
         "tag3",
@@ -111,12 +103,8 @@
       "tag1": {
         "color": "#FFF",
       },
-      "tag2": {
-        "color": "primary",
-      },
-      "tag3": {
-        "color": "primary",
-      },
+      "tag2": {},
+      "tag3": {},
     },
   },
   "views": {

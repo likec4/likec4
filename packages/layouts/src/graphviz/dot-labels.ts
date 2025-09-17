@@ -5,9 +5,8 @@ import {
   type ShapeSize,
   type SpacingSize,
   type TextSize,
-  DefaultRelationshipColor,
+  defaultStyles,
   defaultTheme,
-  defaultTheme as Theme,
   RichText,
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
@@ -185,7 +184,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 
 export const EDGE_LABEL_MAX_CHARS = 40
 export const EDGE_LABEL_MAX_LINES = 5
-const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
+const BGCOLOR = `BGCOLOR="${defaultTheme.colors[defaultStyles.relationship.color].relationships.labelBg}A0"`
 
 export function edgelabel({ label, technology }: ComputedEdge) {
   const lines = [] as string[]

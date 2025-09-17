@@ -1,8 +1,5 @@
 import {
-  DefaultRelationshipColor,
   defaultTheme,
-  defaultTheme as Theme,
-  DefaultThemeColor,
   ensureSizes,
   isThemeColor,
 } from '@likec4/core'
@@ -13,15 +10,16 @@ import type {
   ComputedEdge,
   ComputedNode,
   ComputedView,
+  DefaultStyleValues,
   DeploymentFqn,
   EdgeId,
   ElementThemeColorValues,
   Fqn,
   HexColor,
+  LikeC4ProjectTheme,
   NodeId,
   RelationshipLineType,
   RelationshipThemeColorValues,
-  Specification as LikeC4Specification,
   XYPoint,
 } from '@likec4/core/types'
 import {
@@ -69,7 +67,7 @@ import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } f
 
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
-const FontName = Theme.font
+const FontName = defaultTheme.font
 
 const logger = createLogger('dot')
 
@@ -124,8 +122,8 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   public readonly graphvizModel: RootGraphModel
 
   constructor(
-    protected view: V,
-    protected specification: LikeC4Specification<A>,
+    protected readonly view: V,
+    protected readonly likec4model: AnyLikeC4Model,
   ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
@@ -209,8 +207,26 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.postBuild(G)
   }
 
+  protected get $theme(): LikeC4ProjectTheme {
+    return this.likec4model.$styles.theme
+  }
+
+  protected get $defaults(): DefaultStyleValues {
+    return this.likec4model.$styles.defaults
+  }
+
   public get hasEdgesWithCompounds(): boolean {
     return this.edgesWithCompounds.size > 0
+  }
+
+  protected get defaultElementColors(): ElementThemeColorValues {
+    const color = this.$defaults.element.color
+    return this.$theme.colors[color].elements
+  }
+
+  protected get defaultRelationshipColors(): RelationshipThemeColorValues {
+    const color = this.$defaults.relationship.color
+    return this.$theme.colors[color].relationships
   }
 
   protected postBuild(_G: RootGraphModel): void {
@@ -297,24 +313,26 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   }
 
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
+    const colors = this.defaultElementColors
     node.apply({
       [_.fontname]: FontName,
       [_.shape]: 'rect',
-      [_.fillcolor]: defaultTheme.elements[DefaultThemeColor].fill,
-      [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast as HexColor,
-      [_.color]: defaultTheme.elements[DefaultThemeColor].stroke,
+      [_.fillcolor]: colors.fill,
+      [_.fontcolor]: colors.hiContrast as HexColor,
+      [_.color]: colors.stroke,
       [_.style]: 'filled',
       [_.penwidth]: 0,
     })
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
+    const colors = this.defaultRelationshipColors
     edge.apply({
       [_.arrowsize]: 0.75,
       [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
-      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor as HexColor,
+      [_.color]: colors.line ?? colors.lineColor,
+      [_.fontcolor]: (colors.label ?? colors.labelColor) as HexColor,
     })
   }
 
@@ -386,12 +404,12 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
       [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
 
-    const { width, height } = defaultTheme.sizes[size]
+    const { width, height } = this.likec4model.$styles.theme.sizes[size]
 
     node.attributes.set(_.width, pxToInch(width))
     node.attributes.set(_.height, pxToInch(height))
 
-    if (element.color !== DefaultThemeColor) {
+    if (colorValues.fill !== this.defaultElementColors.fill) {
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
         [_.fontcolor]: colorValues.hiContrast as HexColor,
@@ -650,14 +668,19 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.graphvizModel.attributes.graph.delete(_.margin)
     return this
   }
-  protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
-    return isThemeColor(color)
-      ? Theme.relationships[color]
-      : this.specification.customColors?.[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
+  protected getRelationshipColorValues(color: Color) {
+    const colorValues = isThemeColor(color)
+      ? this.$theme.colors[color].relationships
+      : this.likec4model.specification.customColors?.[color]?.relationships ?? this.defaultRelationshipColors
+    return {
+      line: colorValues.line ?? colorValues.lineColor,
+      label: (colorValues.label ?? colorValues.labelColor) as HexColor,
+      labelBg: colorValues.labelBg ?? colorValues.labelBgColor,
+    }
   }
   protected getElementColorValues(color: Color): ElementThemeColorValues {
     return isThemeColor(color)
-      ? Theme.elements[color]
-      : this.specification.customColors?.[color]?.elements ?? Theme.elements[DefaultThemeColor]
+      ? this.$theme.colors[color].elements
+      : this.likec4model.specification.customColors?.[color]?.elements ?? this.defaultElementColors
   }
 }

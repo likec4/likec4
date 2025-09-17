@@ -3,7 +3,7 @@ import { omitUndefined } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
-import { ast, parseMarkdownAsString, toRelationshipStyleExcludeDefaults } from '../../ast'
+import { ast, parseMarkdownAsString, toRelationshipStyle } from '../../ast'
 import { serverLogger } from '../../logger'
 import { type Base, removeIndent } from './Base'
 
@@ -57,7 +57,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           )
           c4Specification.relationships[kindName] = {
             ...bodyProps,
-            ...toRelationshipStyleExcludeDefaults(props, this.isValid),
+            ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
           }
         } catch (e) {
           logger.warn(loggable(e))

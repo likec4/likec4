@@ -1,9 +1,11 @@
 import { values } from 'remeda'
+import type { ReadonlyDeep } from 'type-fest'
 import {
   type Any,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
+  type LikeC4ProjectStylesConfig,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -90,6 +92,10 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
         this.#allTags.get(tag).add(el)
       }
     }
+  }
+
+  get $styles(): ReadonlyDeep<LikeC4ProjectStylesConfig> {
+    return this.$model.$styles
   }
 
   public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {

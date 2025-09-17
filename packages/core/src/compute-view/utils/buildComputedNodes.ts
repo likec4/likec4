@@ -1,13 +1,12 @@
 import type { Except } from 'type-fest'
 import type { ElementModel } from '../../model'
+import { defaultStyles } from '../../theme'
 import {
   type AnyAux,
   type aux,
   type ComputedNode,
   type scalar,
   type Unknown,
-  DefaultElementShape,
-  DefaultThemeColor,
   GroupElementKind,
   omitUndefined,
   preferSummary,
@@ -47,7 +46,7 @@ export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>):
     id: id as scalar.NodeId,
     modelRef: id,
     ...rest,
-    style: { ...style },
+    style: { ...el.style },
     color: el.color,
     shape: el.shape,
     description: preferSummary(el.$element),
@@ -137,8 +136,8 @@ export function buildComputedNodes<A extends AnyAux>(
         description: null,
         technology: null,
         level,
-        color: color ?? DefaultThemeColor,
-        shape: shape ?? DefaultElementShape,
+        color: color ?? defaultStyles.color,
+        shape: shape ?? defaultStyles.element.shape,
         tags: tags ?? [],
         children: [],
         inEdges: [],

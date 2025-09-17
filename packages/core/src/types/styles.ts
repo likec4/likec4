@@ -1,4 +1,4 @@
-import type { Tagged, TupleToUnion } from 'type-fest'
+import type { MergeExclusive, Simplify, Tagged, TupleToUnion } from 'type-fest'
 
 /**
  * For padding, margin, etc.
@@ -68,10 +68,10 @@ export type ThemeColor = typeof ThemeColors[number]
  * Backward compatibility alias
  * @deprecated Use {@link ThemeColor} instead
  */
-export type Color = ThemeColor | ColorLiteral
+export type Color = ThemeColor | ColorLiteral | CustomColor
 
 export function isThemeColor(color: string): color is ThemeColor {
-  return ThemeColors.includes(color as ThemeColor)
+  return ThemeColors.includes(color as any)
 }
 
 export interface ElementThemeColorValues {
@@ -87,11 +87,18 @@ export type ElementThemeColors = {
   [key in ThemeColor]: ElementThemeColorValues
 }
 
-export interface RelationshipThemeColorValues {
-  lineColor: ColorLiteral
-  labelBgColor: ColorLiteral
-  labelColor: ColorLiteral
-}
+export type RelationshipThemeColorValues = Simplify<
+  MergeExclusive<{
+    line: ColorLiteral
+    labelBg: ColorLiteral
+    label: ColorLiteral
+  }, {
+    // Backward compatibility
+    lineColor: ColorLiteral
+    labelBgColor: ColorLiteral
+    labelColor: ColorLiteral
+  }>
+>
 
 export interface ThemeColorValues {
   elements: ElementThemeColorValues
@@ -102,11 +109,46 @@ export type RelationshipThemeColors = {
   [key in ThemeColor]: RelationshipThemeColorValues
 }
 
+export interface DefaultStyleValues {
+  color: ThemeColor
+  size: ShapeSize
+  element: {
+    shape: ElementShape
+    opacity: number
+    border: BorderStyle
+    color: ThemeColor
+    size: ShapeSize
+    padding?: SpacingSize
+    text?: TextSize
+  }
+  group: {
+    color: ThemeColor
+    opacity: number
+    border: BorderStyle
+  }
+  relationship: {
+    color: ThemeColor
+    line: RelationshipLineType
+    arrow: RelationshipArrowType
+  }
+}
+
 export interface LikeC4Theme {
   font: 'Arial'
   shadow: ColorLiteral
+  /**
+   * @deprecated Use {@link colors} instead
+   */
   relationships: RelationshipThemeColors
+  /**
+   * @deprecated Use {@link colors} instead
+   */
   elements: ElementThemeColors
+
+  colors: {
+    [key in ThemeColor]: ThemeColorValues
+  }
+
   sizes: {
     [key in ShapeSize]: {
       width: number

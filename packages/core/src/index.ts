@@ -1,5 +1,6 @@
 export {
   computeColorValues,
+  defaultStyles,
   defaultTheme,
   ElementColors,
   RelationshipColors,

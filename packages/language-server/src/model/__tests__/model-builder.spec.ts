@@ -1237,9 +1237,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           stroke: '#e400e4',
         },
         relationships: {
-          labelBgColor: '#b100b2',
-          labelColor: '#ff64ff',
-          lineColor: '#fe37fe',
+          labelBg: '#b100b2',
+          label: '#ff64ff',
+          line: '#fe37fe',
         },
       },
       'custom-color2': {
@@ -1250,9 +1250,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           stroke: '#e3e300',
         },
         relationships: {
-          labelBgColor: '#adae00',
-          labelColor: '#ffff64',
-          lineColor: '#ffff38',
+          labelBg: '#adae00',
+          label: '#ffff64',
+          line: '#ffff38',
         },
       },
     })

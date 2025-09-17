@@ -115,12 +115,8 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     },
     relationships: {},
     tags: {
-      internal: {
-        color: 'primary',
-      },
-      external: {
-        color: 'primary',
-      },
+      internal: {},
+      external: {},
     },
     metadataKeys: [
       'key1',
@@ -132,7 +128,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'customer',
       kind: 'person',
       title: 'customer',
-      color: 'primary',
       shape: 'person',
       style: {},
     },
@@ -140,23 +135,18 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud',
       kind: 'system',
       title: 'cloud',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'cloud.frontend': {
       id: 'cloud.frontend',
       kind: 'component',
       title: 'frontend',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'cloud.frontend.dashboard': {
       id: 'cloud.frontend.dashboard',
       kind: 'webapp',
       title: 'dashboard',
-      color: 'primary',
       shape: 'browser',
       style: {},
     },
@@ -164,7 +154,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud.frontend.mobile',
       kind: 'mobile',
       title: 'mobile',
-      color: 'primary',
       shape: 'mobile',
       style: {},
     },
@@ -172,16 +161,12 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud.auth',
       kind: 'component',
       title: 'auth',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'cloud.backend': {
       id: 'cloud.backend',
       kind: 'component',
       title: 'backend',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
       metadata: {
         key1: 'value1',
@@ -194,23 +179,18 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'cloud.backend.api',
       kind: 'component',
       title: 'api',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'cloud.backend.graphql': {
       id: 'cloud.backend.graphql',
       kind: 'component',
       title: 'graphql',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'cloud.media': {
       id: 'cloud.media',
       kind: 'component',
       title: 'media',
-      color: 'primary',
       shape: 'storage',
       style: {},
       tags: [
@@ -221,15 +201,12 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'aws',
       kind: 'system',
       title: 'aws',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
     'aws.rds': {
       id: 'aws.rds',
       kind: 'component',
       title: 'rds',
-      color: 'primary',
       shape: 'storage',
       style: {},
     },
@@ -237,7 +214,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'aws.s3',
       kind: 'component',
       title: 's3',
-      color: 'primary',
       shape: 'storage',
       style: {},
       metadata: {
@@ -248,8 +224,6 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       id: 'email',
       kind: 'system',
       title: 'email',
-      color: 'primary',
-      shape: 'rectangle',
       style: {},
     },
   },
@@ -422,10 +396,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
         id: 'customer',
         kind: 'node',
         title: 'customer',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'customer.instance': {
         id: 'customer.instance',
@@ -435,28 +406,19 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
         id: 'prod',
         kind: 'env',
         title: 'prod',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'prod.eu': {
         id: 'prod.eu',
         kind: 'zone',
         title: 'eu',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'prod.eu.zone1': {
         id: 'prod.eu.zone1',
         kind: 'zone',
         title: 'zone1',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'prod.eu.zone1.ui': {
         id: 'prod.eu.zone1.ui',
@@ -470,10 +432,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
         id: 'prod.eu.zone2',
         kind: 'zone',
         title: 'zone2',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'prod.eu.zone2.ui': {
         id: 'prod.eu.zone2.ui',
@@ -495,10 +454,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
         id: 'prod.us',
         kind: 'zone',
         title: 'us',
-        style: {
-          color: 'primary',
-          shape: 'rectangle',
-        },
+        style: {},
       },
       'prod.us.db': {
         id: 'prod.us.db',
@@ -1046,10 +1002,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
           ],
           outEdges: [],
           deploymentRef: 'prod',
-          style: {
-            color: 'primary',
-            shape: 'rectangle',
-          },
+          style: {},
           depth: 1,
         },
         {

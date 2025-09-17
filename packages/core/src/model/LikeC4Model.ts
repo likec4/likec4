@@ -1,4 +1,7 @@
+import defu from 'defu'
 import { entries, hasAtLeast, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
+import type { ReadonlyDeep } from 'type-fest'
+import { defaultStyles, defaultTheme } from '../theme'
 import type {
   Any,
   Aux,
@@ -9,6 +12,7 @@ import type {
   LayoutedLikeC4ModelData,
   LikeC4ModelDump,
   LikeC4Project,
+  LikeC4ProjectStylesConfig,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -261,6 +265,24 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    */
   get asLayouted(): LikeC4Model.Layouted<A> {
     return this as any
+  }
+
+  /**
+   * Returns the styles configuration for the project.
+   */
+  get $styles(): ReadonlyDeep<LikeC4ProjectStylesConfig> {
+    return memoizeProp(
+      this,
+      'styles',
+      () =>
+        defu(
+          this.$data.project.styles as LikeC4ProjectStylesConfig,
+          {
+            theme: defaultTheme,
+            defaults: defaultStyles,
+          } as LikeC4ProjectStylesConfig,
+        ),
+    )
   }
 
   /**

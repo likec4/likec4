@@ -9,9 +9,6 @@ import {
   type Link,
   type ProjectId,
   type RichTextOrEmpty,
-  DefaultElementShape,
-  DefaultShapeSize,
-  DefaultThemeColor,
   preferDescription,
   preferSummary,
   RichText,
@@ -69,11 +66,11 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   }
 
   get shape(): C4ElementShape {
-    return this.$element.shape ?? DefaultElementShape
+    return this.$element.shape ?? this.$model.$styles.defaults.element.shape
   }
 
   get color(): Color {
-    return this.$element.color as Color ?? DefaultThemeColor
+    return this.$element.color as Color ?? this.$model.$styles.defaults.element.color
   }
 
   get icon(): IconUrl | null {
@@ -138,9 +135,11 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.parent === null
   }
 
-  get style(): SetRequired<ElementStyle, 'size'> {
+  get style(): SetRequired<ElementStyle, 'size' | 'border' | 'opacity'> {
     return {
-      size: DefaultShapeSize,
+      border: this.$model.$styles.defaults.element.border,
+      opacity: this.$model.$styles.defaults.element.opacity,
+      size: this.$model.$styles.defaults.element.size,
       ...this.$element.style,
     }
   }

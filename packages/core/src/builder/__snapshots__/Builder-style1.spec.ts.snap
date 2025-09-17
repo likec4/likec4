@@ -12,7 +12,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "color": "green",
       "id": "s1",
       "kind": "system",
-      "shape": "rectangle",
       "style": {
         "opacity": 10,
         "size": "lg",
@@ -20,7 +19,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "title": "s1",
     },
     "s1.c1": {
-      "color": "primary",
       "id": "s1.c1",
       "kind": "component",
       "shape": "browser",
@@ -33,7 +31,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "color": "green",
       "id": "s2",
       "kind": "system",
-      "shape": "rectangle",
       "style": {
         "opacity": 10,
         "size": "lg",
@@ -41,7 +38,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "title": "s2",
     },
     "s2.c1": {
-      "color": "primary",
       "id": "s2.c1",
       "kind": "component",
       "shape": "browser",
@@ -51,7 +47,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "title": "Component s2.1",
     },
     "s2.c1.c2": {
-      "color": "primary",
       "id": "s2.c1.c2",
       "kind": "component",
       "shape": "browser",
@@ -61,7 +56,6 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "title": "Component s2.1.2",
     },
     "s2.c1.c2.c3": {
-      "color": "primary",
       "id": "s2.c1.c2.c3",
       "kind": "component",
       "shape": "browser",
@@ -136,9 +130,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "tag1": {
         "color": "#FFF",
       },
-      "tag2": {
-        "color": "primary",
-      },
+      "tag2": {},
     },
   },
   "views": {},
@@ -154,26 +146,20 @@ exports[`Builder (style1) > should build view  1`] = `
   },
   "elements": {
     "c1": {
-      "color": "primary",
       "id": "c1",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c1",
     },
     "c2": {
-      "color": "primary",
       "id": "c2",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c2",
     },
     "c3": {
-      "color": "primary",
       "id": "c3",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c3",
     },
@@ -279,34 +265,26 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   },
   "elements": {
     "c1": {
-      "color": "primary",
       "id": "c1",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c1",
     },
     "c2": {
-      "color": "primary",
       "id": "c2",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c2",
     },
     "c2.c3": {
-      "color": "primary",
       "id": "c2.c3",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c3",
     },
     "c2.c3.c4": {
-      "color": "primary",
       "id": "c2.c3.c4",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "c4",
     },
