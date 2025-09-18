@@ -83,8 +83,8 @@ catalogs:
       version: 1.7.1
   hono:
     '@hono/node-server':
-      specifier: ^1.19.1
-      version: 1.19.1
+      specifier: ^1.19.2
+      version: 1.19.2
     hono:
       specifier: ^4.9.6
       version: 4.9.7
@@ -1083,7 +1083,7 @@ importers:
     devDependencies:
       '@hono/node-server':
         specifier: catalog:hono
-        version: 1.19.1(hono@4.9.7)
+        version: 1.19.2(hono@4.9.7)
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -3013,8 +3013,8 @@ packages:
   '@fontsource/ibm-plex-sans@5.2.6':
     resolution: {integrity: sha512-yclktpagJncROwdWHHEfPsrIfoo3uiIeDFchvmjNmTW/YMBfLYWJnUv19EAqPNhGizdtmcH9FjzOR2094Z2uPg==}
 
-  '@hono/node-server@1.19.1':
-    resolution: {integrity: sha512-h44e5s+ByUriaRIbeS/C74O8v90m0A95luyYQGMF7KEn96KkYMXO7bZAwombzTpjQTU4e0TkU8U1WBIXlwuwtA==}
+  '@hono/node-server@1.19.2':
+    resolution: {integrity: sha512-lndWsd9De/btN998Aiv6gkeMVV2h9Cc0AR0qwFTmxx/YFh/PbrjgoxTpHaNaRn6F4GAkPiVJwI0W0gQF4Wn8EA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -10683,7 +10683,7 @@ snapshots:
 
   '@fontsource/ibm-plex-sans@5.2.6': {}
 
-  '@hono/node-server@1.19.1(hono@4.9.7)':
+  '@hono/node-server@1.19.2(hono@4.9.7)':
     dependencies:
       hono: 4.9.7
 
