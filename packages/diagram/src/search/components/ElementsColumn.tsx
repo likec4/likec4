@@ -73,8 +73,8 @@ export const ElementsColumn = memo(() => {
         if (search.startsWith('#')) {
           return element.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
         }
-        return (element.title + ' ' + element.id + ' ' + (element.description ?? ''))
-          .toLocaleLowerCase().includes(search)
+        const value = element.title + ' ' + element.id + ' ' + element.summary.text
+        return value.toLocaleLowerCase().includes(search)
       })
     }
     const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
