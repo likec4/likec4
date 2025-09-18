@@ -1,3 +1,4 @@
+import { cx as clsx } from '@likec4/styles/css'
 import {
   type ElementProps,
   type UnstyledButtonProps,
@@ -6,7 +7,6 @@ import {
   Group,
   UnstyledButton,
 } from '@mantine/core'
-import clsx from 'clsx'
 
 export function ProjectButton({ project, navigateTo, className, ...props }:
   & {

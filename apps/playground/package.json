@@ -125,7 +125,6 @@
     "@xstate/react": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "clsx": "catalog:react",
     "date-fns": "catalog:utils",
     "fast-equals": "catalog:utils",
     "hono": "catalog:hono",

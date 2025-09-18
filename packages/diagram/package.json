@@ -78,7 +78,7 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.5",
+    "@dagrejs/dagre": "catalog:",
     "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
@@ -98,7 +98,7 @@
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-shadow": "^20.6.0",
+    "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
     "xstate": "catalog:xstate"

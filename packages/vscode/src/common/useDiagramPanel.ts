@@ -16,17 +16,17 @@ import {
   useViewTitle,
   watch,
 } from 'reactive-vscode'
-import * as v from 'valibot'
 import { type Webview, type WebviewPanel, Uri, ViewColumn, window } from 'vscode'
 import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
+import * as z from 'zod/v4'
 import { isProd } from '../const'
 import { logError, logger as rootLogger } from '../logger'
 import { computedModels } from '../state'
 import { useMessenger } from './useMessenger'
 
-const serializeStateSchema = v.looseObject({
-  viewId: v.pipe(v.string(), v.minLength(1)),
-  projectId: v.pipe(v.string(), v.minLength(1)),
+const serializeStateSchema = z.looseObject({
+  viewId: z.string().transform((v) => v as ViewId),
+  projectId: z.string().transform((v) => v as ProjectId),
 })
 
 export const ViewType = 'likec4-preview' as const
@@ -184,16 +184,16 @@ export const useDiagramPanel = createSingletonComposable(() => {
 
   function deserialize(_panel: WebviewPanel, serializeState: any) {
     try {
-      const parsedState = v.safeParse(serializeStateSchema, serializeState)
+      const parsedState = serializeStateSchema.safeParse(serializeState)
       if (!parsedState.success) {
-        logger.error('Invalid serialized state', { serializeState, issues: v.flatten(parsedState.issues) })
+        logger.error('Invalid serialized state', { serializeState, issues: z.flattenError(parsedState.error) })
         _panel.dispose()
         return
       }
       close()
       panel.value = _panel
-      panelState.viewId.value = parsedState.output.viewId as ViewId
-      panelState.projectId.value = parsedState.output.projectId as ProjectId
+      panelState.viewId.value = parsedState.data.viewId
+      panelState.projectId.value = parsedState.data.projectId
       ensurePanelScope()
       _panel.reveal(undefined, true)
     } catch (e) {

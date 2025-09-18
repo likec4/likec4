@@ -157,7 +157,7 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.5",
+    "@dagrejs/dagre": "catalog:",
     "@fontsource/ibm-plex-sans": "^5.2.7",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -187,7 +187,6 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.21",
-    "classnames": "^2.5.1",
     "clsx": "catalog:react",
     "conf": "^13.1.0",
     "defu": "^6.1.4",
