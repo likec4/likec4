@@ -96,7 +96,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
         })}
         style={{
           // position: 'absolute',
-          backgroundColor: defaultTheme.elements.gray.fill,
+          backgroundColor: defaultTheme.colors.gray.elements.stroke,
           opacity: isHovered ? 0.5 : 0.4,
           left: '50%',
           width: isHovered ? 3 : 2,

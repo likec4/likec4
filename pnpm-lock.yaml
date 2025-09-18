@@ -263,7 +263,7 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     zod:
-      specifier: 3.25.76
+      specifier: ^3.25.76
       version: 3.25.76
   vite:
     '@vitejs/plugin-react':
@@ -710,12 +710,6 @@ importers:
 
   packages/config:
     dependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -735,12 +729,21 @@ importers:
         specifier: catalog:utils
         version: 3.25.76
     devDependencies:
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.11
+      nano-spawn:
+        specifier: catalog:utils
+        version: 1.0.3
       tsx:
         specifier: 'catalog:'
         version: 4.20.5

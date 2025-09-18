@@ -1,7 +1,7 @@
 import { type LikeC4ProjectConfig, isLikeC4Config, validateProjectConfig } from '@likec4/config'
-import type { NonEmptyArray, NonEmptyReadonlyArray, ProjectId } from '@likec4/core'
+import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
+import type { scalar } from '@likec4/core/types'
 import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
-import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import {
   type Cancellation,
@@ -11,9 +11,8 @@ import {
   URI,
   WorkspaceCache,
 } from 'langium'
-import PQueue from 'p-queue'
 import picomatch from 'picomatch'
-import { hasAtLeast, isNullish, isTruthy, map, pickBy, pipe, prop, sortBy } from 'remeda'
+import { hasAtLeast, isNullish, map, pipe, prop, sortBy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
   joinRelativeURL,
@@ -48,7 +47,7 @@ export function ProjectFolder(folder: URI | string): ProjectFolder {
 }
 
 interface ProjectData {
-  id: ProjectId
+  id: scalar.ProjectId
   config: LikeC4ProjectConfig
   folder: ProjectFolder // URI.toString()
   folderUri: URI
@@ -56,9 +55,18 @@ interface ProjectData {
 }
 
 export interface Project {
-  id: ProjectId
+  id: scalar.ProjectId
   folderUri: URI
   config: LikeC4ProjectConfig
+}
+
+const DefaultProject = {
+  id: 'default' as scalar.ProjectId,
+  config: {
+    name: 'default',
+    exclude: ['**/node_modules/**'],
+  },
+  exclude: picomatch('**/node_modules/**', { dot: true }),
 }
 
 export class ProjectsManager {
@@ -66,48 +74,27 @@ export class ProjectsManager {
    * The global project ID used for all documents
    * that are not part of a specific project.
    */
-  static readonly DefaultProjectId = 'default' as ProjectId
-
-  private static DefaultProject = {
-    id: ProjectsManager.DefaultProjectId,
-    config: {
-      name: ProjectsManager.DefaultProjectId,
-      exclude: ['**/node_modules/**'],
-    },
-    exclude: picomatch('**/node_modules/**', { dot: true }),
-  }
+  static readonly DefaultProjectId = DefaultProject.id
 
   /**
    * Configured default project ID.
    * (it is used in CLI and Vite plugin)
    */
-  #defaultProjectId: ProjectId | undefined = undefined
+  #defaultProjectId: scalar.ProjectId | undefined = undefined
 
   /**
    * The mapping between project config files and project IDs.
    */
-  private projectIdToFolder = new BiMap<ProjectId, string>()
+  #projectIdToFolder = new BiMap<scalar.ProjectId, string>()
 
   /**
    * Registered projects.
    * Sorted descending by the number of segments in the folder path.
    * This ensures that the most specific project is used for a document.
    */
-  private _projects = [] as Array<ProjectData>
+  #projects = [] as Array<ProjectData>
 
-  private excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
-
-  private get defaultGlobalProject() {
-    // if (this.#defaultProjectId) {
-    //   return this.getProject(this.#defaultProjectId)
-    // }
-    return ProjectsManager.DefaultProject
-  }
-
-  private reloadProjectsLimiter = new PQueue({
-    concurrency: 1,
-    timeout: 20_000,
-  })
+  #excludedDocuments: WeakMap<LangiumDocument, boolean> = new WeakMap()
 
   constructor(protected services: LikeC4SharedServices) {
     logger.debug`created`
@@ -120,17 +107,17 @@ export class ProjectsManager {
    *  - the ID of the only project
    *  - undefined if there are multiple projects.
    */
-  get defaultProjectId(): ProjectId | undefined {
+  get defaultProjectId(): scalar.ProjectId | undefined {
     if (this.#defaultProjectId) {
       return this.#defaultProjectId
     }
-    if (this._projects.length > 1) {
+    if (this.#projects.length > 1) {
       return undefined
     }
-    return this._projects[0]?.id ?? ProjectsManager.DefaultProjectId
+    return this.#projects[0]?.id ?? ProjectsManager.DefaultProjectId
   }
 
-  set defaultProjectId(id: ProjectId | undefined) {
+  set defaultProjectId(id: string | scalar.ProjectId | undefined) {
     if (id === this.#defaultProjectId) {
       return
     }
@@ -139,16 +126,16 @@ export class ProjectsManager {
       this.#defaultProjectId = undefined
       return
     }
-    invariant(this._projects.find(p => p.id === id), `Project "${id}" not found`)
+    invariant(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
     logger.debug`set default project ID to ${id}`
-    this.#defaultProjectId = id
+    this.#defaultProjectId = id as scalar.ProjectId
   }
 
-  get all(): NonEmptyReadonlyArray<ProjectId> {
-    if (hasAtLeast(this._projects, 1)) {
-      const ids: NonEmptyArray<ProjectId> = [
-        ...map(this._projects, prop('id')),
-        ProjectsManager.DefaultProjectId,
+  get all(): NonEmptyReadonlyArray<scalar.ProjectId> {
+    if (hasAtLeast(this.#projects, 1)) {
+      const ids: NonEmptyArray<scalar.ProjectId> = [
+        ...map(this.#projects, prop('id')),
+        DefaultProject.id,
       ]
       // if default project is set, ensure it is first
       if (this.#defaultProjectId) {
@@ -160,12 +147,12 @@ export class ProjectsManager {
       }
       return ids
     }
-    return [ProjectsManager.DefaultProjectId]
+    return [DefaultProject.id]
   }
 
-  getProject(arg: ProjectId | LangiumDocument): Project {
+  getProject(arg: scalar.ProjectId | LangiumDocument): Project {
     const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId || this.belongsTo(arg))
-    if (id === ProjectsManager.DefaultProjectId) {
+    if (id === DefaultProject.id) {
       let folderUri
       try {
         folderUri = this.services.workspace.WorkspaceManager.workspaceUri
@@ -176,14 +163,14 @@ export class ProjectsManager {
       }
       return {
         id: ProjectsManager.DefaultProjectId,
-        config: this.defaultGlobalProject.config,
+        config: DefaultProject.config,
         folderUri,
       }
     }
     const {
       config,
       folderUri,
-    } = nonNullable(this._projects.find(p => p.id === id), `Project "${id}" not found`)
+    } = nonNullable(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
     return {
       id,
       folderUri,
@@ -196,22 +183,22 @@ export class ProjectsManager {
    * If no project ID is specified, returns default project ID
    * If there are multiple projects and default project is not set, throws an error
    */
-  ensureProjectId(projectId?: ProjectId | undefined): ProjectId {
+  ensureProjectId(projectId?: scalar.ProjectId | undefined): scalar.ProjectId {
     if (projectId === ProjectsManager.DefaultProjectId) {
       return this.defaultProjectId ?? ProjectsManager.DefaultProjectId
     }
     if (projectId) {
-      invariant(this.projectIdToFolder.has(projectId), `Project ID ${projectId} is not registered`)
+      invariant(this.#projectIdToFolder.has(projectId), `Project ID ${projectId} is not registered`)
       return projectId
     }
     return nonNullable(
       this.defaultProjectId,
-      () => `Specify exact project, known: [${[...this.projectIdToFolder.keys()].join(', ')}]`,
+      () => `Specify exact project, known: [${[...this.#projectIdToFolder.keys()].join(', ')}]`,
     )
   }
 
   hasMultipleProjects(): boolean {
-    return this._projects.length > 1
+    return this.#projects.length > 1
   }
 
   /**
@@ -223,10 +210,10 @@ export class ProjectsManager {
       const project = this.findProjectForDocument(docUriAsString)
       return project.exclude ? project.exclude(withoutProtocol(docUriAsString)) : false
     }
-    let isExcluded = this.excludedDocuments.get(document)
+    let isExcluded = this.#excludedDocuments.get(document)
     if (isExcluded === undefined) {
       isExcluded = this.checkIfExcluded(document.uri)
-      this.excludedDocuments.set(document, isExcluded)
+      this.#excludedDocuments.set(document, isExcluded)
     }
     return isExcluded
   }
@@ -240,7 +227,7 @@ export class ProjectsManager {
     const filename = parseFilename(entry.toString(), { strict: false })?.toLowerCase()
     const isConfigFile = !!filename && isLikeC4Config(filename)
     if (isConfigFile) {
-      if (this.defaultGlobalProject.exclude(entry.path)) {
+      if (DefaultProject.exclude(entry.path)) {
         logger.debug`exclude config file ${entry.path}`
         return false
       }
@@ -253,18 +240,15 @@ export class ProjectsManager {
    *
    * @param entry The file system entry to check
    */
-  async loadConfigFile(entry: FileSystemNode): Promise<ProjectData | undefined> {
-    if (entry.isDirectory) {
-      return undefined
-    }
-    if (this.isConfigFile(entry.uri)) {
+  async registerConfigFile(configFile: URI): Promise<ProjectData | undefined> {
+    if (this.isConfigFile(configFile)) {
       try {
-        return await this.registerProject(entry.uri)
+        return await this.registerProject(configFile)
       } catch (error) {
         this.services.lsp.Connection?.window.showErrorMessage(
-          `LikeC4: Failed to register project at ${entry.uri.toString()}\n\n${loggable(error)}`,
+          `LikeC4: Failed to register project at ${configFile.fsPath}`,
         )
-        logger.warn('Failed to register project at {uri}', { uri: entry.uri.toString(), error })
+        logger.warn('Failed to register project at {uri}', { uri: configFile.fsPath, error })
         return undefined
       }
     }
@@ -275,31 +259,44 @@ export class ProjectsManager {
    * Registers (or reloads) likec4 project by config file or config object.
    * If there is some project registered at same folder, it will be reloaded.
    */
-  async registerProject(opts: URI | { config: LikeC4ProjectConfig; folderUri: URI | string }): Promise<ProjectData> {
+  async registerProject(
+    opts: URI | { config: LikeC4ProjectConfig.Input; folderUri: URI | string },
+  ): Promise<ProjectData> {
     if (URI.isUri(opts)) {
       const configFile = opts
       const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
       const path = joinRelativeURL(configFile.path, '..')
       const folderUri = configFile.with({ path })
-      return await this.registerProject({ config, folderUri })
+      return await this._registerProject({ config, folderUri })
     }
-    const config = pickBy(validateProjectConfig(opts.config), isTruthy)
-    const { folderUri } = opts
-    const folder = ProjectFolder(folderUri)
+    const config = validateProjectConfig(opts.config)
+    return this._registerProject({ config, folderUri: opts.folderUri })
+  }
 
-    let project = this._projects.find(p => p.folder === folder)
+  /**
+   * Registers (or reloads) likec4 project by config file or config object.
+   * If there is some project registered at same folder, it will be reloaded.
+   */
+  private async _registerProject({
+    config,
+    folderUri,
+  }: {
+    config: LikeC4ProjectConfig
+    folderUri: URI | string
+  }): Promise<ProjectData> {
+    const folder = ProjectFolder(folderUri)
+    let project = this.#projects.find(p => p.folder === folder)
 
     if (project && deepEqual(project.config, config)) {
       return project
     }
 
-    // if project exists but config is different, we need to reset project IDs
-    let mustReset = !!project && !deepEqual(project.config, config)
+    let mustReset = false
 
-    let id: ProjectId
+    let id: scalar.ProjectId
 
     if (!project) {
-      if (this.projectIdToFolder.has(config.name as ProjectId)) {
+      if (this.#projectIdToFolder.has(config.name as scalar.ProjectId)) {
         logger.warn`Project "${config.name}" already exists, generating unique ID`
       }
       id = this.uniqueProjectId(config.name)
@@ -311,18 +308,20 @@ export class ProjectsManager {
       }
       // if there is any project within subfolder or parent folder
       // we need to reset assigned to documents project IDs
-      mustReset = this._projects.some(p => p.folder.startsWith(folder) || folder.startsWith(p.folder))
+      mustReset = this.#projects.some(p => p.folder.startsWith(folder) || folder.startsWith(p.folder))
 
-      this._projects = pipe(
-        [...this._projects, project],
+      this.#projects = pipe(
+        [...this.#projects, project],
         sortBy(
           [({ folder }) => withoutProtocol(folder).split('/').length, 'desc'],
         ),
       )
       logger.info`register project ${project.id} folder: ${folder}`
     } else {
+      // Project exists but configs are different (deepEqual check above)
+      mustReset = true
       if (project.config.name !== config.name) {
-        this.projectIdToFolder.delete(project.id)
+        this.#projectIdToFolder.delete(project.id)
         logger.info`unregister project ${project.id} folder: ${folder}`
         id = this.uniqueProjectId(config.name)
         project.id = id
@@ -335,12 +334,12 @@ export class ProjectsManager {
     }
 
     if (isNullish(config.exclude)) {
-      project.exclude = this.defaultGlobalProject.exclude
+      project.exclude = DefaultProject.exclude
     } else if (hasAtLeast(config.exclude, 1)) {
       project.exclude = picomatch(config.exclude, { dot: true })
     }
 
-    this.projectIdToFolder.set(project.id, folder)
+    this.#projectIdToFolder.set(project.id, folder)
 
     if (mustReset) {
       this.resetProjectIds()
@@ -349,32 +348,19 @@ export class ProjectsManager {
     return project
   }
 
-  belongsTo(document: LangiumDocument | URI | string): ProjectId {
+  belongsTo(document: LangiumDocument | URI | string): scalar.ProjectId {
     const documentUri = normalizeUri(document)
     return this.findProjectForDocument(documentUri).id
   }
 
-  async reloadProjects(token?: Cancellation.CancellationToken): Promise<void> {
+  async reloadProjects(): Promise<void> {
     const folders = this.services.workspace.WorkspaceManager.workspaceFolders
     if (!folders) {
       logger.warn('No workspace folders found')
       return
     }
-    if (this.reloadProjectsLimiter.size + this.reloadProjectsLimiter.pending > 0) {
-      logger.debug`reload projects is already queued`
-      return
-    }
-    // this task debounces reload projects
-    this.reloadProjectsLimiter.add(async () => {
-      await delay(100)
-    })
-
-    // this task does the actual reload
-    this.reloadProjectsLimiter.add(async () => {
-      if (token) {
-        await interruptAndCheck(token)
-      }
-      logger.debug`reload projects`
+    logger.debug`schedule reload projects`
+    await this.services.workspace.WorkspaceLock.write(async (cancelToken) => {
       const configFiles = [] as FileSystemNode[]
       for (const folder of folders) {
         try {
@@ -388,52 +374,58 @@ export class ProjectsManager {
           logger.error('Failed to scanProjectFiles, {folder}', { folder: folder.uri, error })
         }
       }
-      if (configFiles.length === 0 && this._projects.length !== 0) {
+      if (configFiles.length === 0 && this.#projects.length !== 0) {
         logger.warning('No config files found, but some projects were registered before')
       }
-      this._projects = []
-      this.projectIdToFolder.clear()
+
+      // debounce reload projects
+      await delay(150)
+      await interruptAndCheck(cancelToken)
+
+      logger.debug`start reload projects`
+      this.#projects = []
+      this.#projectIdToFolder.clear()
       for (const entry of configFiles) {
         try {
-          await this.loadConfigFile(entry)
+          await this.registerConfigFile(entry.uri)
         } catch (error) {
           logger.error('Failed to load config file {uri}', { uri: entry.uri.toString(), error })
         }
       }
       this.resetProjectIds()
-      await this.rebuidDocuments()
+      await this.rebuidDocuments(cancelToken)
     })
   }
 
-  protected uniqueProjectId(name: string): ProjectId {
-    let id = name as ProjectId
+  protected uniqueProjectId(name: string): scalar.ProjectId {
+    let id = name as scalar.ProjectId
     let i = 1
-    while (this.projectIdToFolder.has(id)) {
-      id = `${name}-${i++}` as ProjectId
+    while (this.#projectIdToFolder.has(id)) {
+      id = `${name}-${i++}` as scalar.ProjectId
     }
     return id
   }
 
   protected resetProjectIds(): void {
-    if (this.#defaultProjectId && !this.projectIdToFolder.has(this.#defaultProjectId)) {
+    if (this.#defaultProjectId && !this.#projectIdToFolder.has(this.#defaultProjectId)) {
       this.#defaultProjectId = undefined
     }
     this.mappingsToProject.clear()
-    this.excludedDocuments = new WeakMap()
+    this.#excludedDocuments = new WeakMap()
     this.services.workspace.LangiumDocuments.resetProjectIds()
   }
 
-  protected async rebuidDocuments(): Promise<void> {
+  protected async rebuidDocuments(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     const docs = this.services.workspace.LangiumDocuments.all.map(d => d.uri).toArray()
     logger.info('invalidate and rebuild all {docs} documents', { docs: docs.length })
-    await this.services.workspace.DocumentBuilder.update(docs, [])
+    await this.services.workspace.DocumentBuilder.update(docs, [], cancelToken)
   }
 
   protected findProjectForDocument(documentUri: string) {
     return this.mappingsToProject.get(documentUri, () => {
-      const project = this._projects.find(({ folder }) => documentUri.startsWith(folder))
+      const project = this.#projects.find(({ folder }) => documentUri.startsWith(folder))
       // If the document is not part of any project, assign it to the global project ID
-      return project ?? this.defaultGlobalProject
+      return project ?? DefaultProject
     })
   }
 

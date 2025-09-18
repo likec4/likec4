@@ -12,7 +12,7 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "generate": "tsx scripts/generate.mts",
+    "generate:schema": "tsx scripts/generate.mts",
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint:package": "pnpx publint ./package.tgz",
@@ -77,20 +77,20 @@
     "vscode-uri": "catalog:vscode"
   },
   "peerDependenciesMeta": {
-    "@likec4/core": {
-      "optional": true
-    },
     "vscode-uri": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
+    "nano-spawn": "catalog:utils",
     "vitest": "catalog:vitest"
   }
 }

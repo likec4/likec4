@@ -216,10 +216,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         const key = computedViewKey(projectId, v.id)
         const previous = this.previousViews[key]
         const view = previous && eq(v, previous) ? previous : v
+        this.previousViews[key] = view
         viewsCache.set(key, view)
         return [v.id, view] as const
       })
-      this.previousViews = { ...this.previousViews, ...views }
       return LikeC4Model.create({
         ...parsedModel.$data,
         [c4._stage]: 'computed',

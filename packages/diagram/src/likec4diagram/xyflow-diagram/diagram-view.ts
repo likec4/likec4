@@ -1,5 +1,4 @@
 import {
-  type BBox,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -7,6 +6,7 @@ import {
   type Fqn,
   type NodeId,
   type WhereOperator,
+  BBox,
   GroupElementKind,
   invariant,
   nonNullable,
@@ -14,6 +14,7 @@ import {
   RichText,
   whereOperatorAsPredicate,
 } from '@likec4/core'
+import { Position } from '@xyflow/system'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import type { Types } from '../types'
@@ -85,6 +86,7 @@ export function diagramToXY(opts: {
       x: node.position[0],
       y: node.position[1],
     }
+    const center = BBox.center(node)
     if (parent) {
       position.x -= parent.position[0]
       position.y -= parent.position[1]
@@ -106,6 +108,28 @@ export function diagramToXY(opts: {
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
+      handles: [
+        {
+          type: 'target',
+          position: Position.Top,
+          ...center,
+        },
+        {
+          type: 'target',
+          position: Position.Left,
+          ...center,
+        },
+        {
+          type: 'source',
+          position: Position.Right,
+          ...center,
+        },
+        {
+          type: 'source',
+          position: Position.Bottom,
+          ...center,
+        },
+      ],
       ...(parent && {
         parentId: ns + parent.id,
       }),

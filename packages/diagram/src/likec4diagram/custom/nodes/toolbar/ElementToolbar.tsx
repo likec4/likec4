@@ -1,4 +1,4 @@
-import { type ElementShape, ElementShapes } from '@likec4/core'
+import { type ElementShape, ElementShapes } from '@likec4/core/styles'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconCheck, IconSelector } from '@tabler/icons-react'
 import type { NodeProps } from '../../../../base/types'

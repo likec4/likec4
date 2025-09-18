@@ -44,7 +44,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const projects = this.services.workspace.ProjectsManager
     for (const entry of configFiles) {
       try {
-        await projects.loadConfigFile(entry)
+        await projects.registerConfigFile(entry.uri)
       } catch (error) {
         logWarnError(error)
       }

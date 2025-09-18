@@ -27,7 +27,6 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       abort: true,
       error: 'Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -',
     })
-    .transform((value) => value as ProjectId)
     .meta({ description: 'Project name, must be unique in the workspace' }),
   title: z.string()
     .nonempty('Project title cannot be empty if specified')
@@ -175,7 +174,7 @@ export interface GeneratorFn {
  * })
  * ```
  */
-export type LikeC4ProjectConfig = z.input<typeof LikeC4ProjectJsonConfigSchema> & {
+export type LikeC4ProjectConfig = z.infer<typeof LikeC4ProjectJsonConfigSchema> & {
   /**
    * Add custom generators to the project
    * @example
@@ -196,6 +195,12 @@ export type LikeC4ProjectConfig = z.input<typeof LikeC4ProjectJsonConfigSchema> 
    * ```
    */
   generators?: Record<string, GeneratorFn> | undefined
+}
+
+export namespace LikeC4ProjectConfig {
+  export type Input = z.input<typeof LikeC4ProjectJsonConfigSchema> & {
+    generators?: Record<string, GeneratorFn> | undefined
+  }
 }
 
 /**

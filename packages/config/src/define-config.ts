@@ -1,11 +1,12 @@
+import type { LikeC4ProjectStylesConfig, LikeC4ProjectTheme, ThemeColorValues } from '@likec4/core/types'
 import { type GeneratorFn, type LikeC4ProjectConfig, GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
 import {
+  type LikeC4ConfigThemeInput,
   type LikeC4StylesConfigInput,
-  type LikeC4ThemeConfigInput,
   type ThemeColorValuesInput,
+  LikeC4Config_Styles_Theme,
   LikeC4StylesConfigSchema,
   ThemeColorValuesSchema,
-  ThemeConfigSchema,
 } from './schema.theme'
 
 /**
@@ -80,8 +81,8 @@ export function defineGenerators<const G extends Record<string, GeneratorFn>>(ge
  *   }
  * })
  */
-export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S): S {
-  return LikeC4StylesConfigSchema.parse(styles) as unknown as S
+export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S): LikeC4ProjectStylesConfig {
+  return LikeC4StylesConfigSchema.parse(styles)
 }
 
 /**
@@ -95,8 +96,8 @@ export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S):
  * })
  * ```
  */
-export function defineTheme<const S extends LikeC4ThemeConfigInput>(theme: S): S {
-  return ThemeConfigSchema.parse(theme) as unknown as S
+export function defineTheme<const S extends LikeC4ConfigThemeInput>(theme: S): LikeC4ProjectTheme {
+  return LikeC4Config_Styles_Theme.parse(theme)
 }
 
 /**
@@ -110,6 +111,6 @@ export function defineTheme<const S extends LikeC4ThemeConfigInput>(theme: S): S
  * })
  * ```
  */
-export function defineThemeColor<const S extends ThemeColorValuesInput>(colors: S): S {
-  return ThemeColorValuesSchema.parse(colors) as unknown as S
+export function defineThemeColor<const S extends ThemeColorValuesInput>(colors: S): ThemeColorValues {
+  return ThemeColorValuesSchema.parse(colors)
 }

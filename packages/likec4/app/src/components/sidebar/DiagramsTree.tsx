@@ -68,22 +68,22 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   })
   tree.setHoveredNode = setHoveredNode
 
-  const relativePath = diagram?.relativePath ?? null
+  const sourcePath = diagram?.sourcePath ?? null
 
   useUpdateEffect(() => {
     tree.collapseAllNodes()
   }, [groupBy])
 
   useEffect(() => {
-    if (relativePath) {
-      const segments = relativePath.split('/')
+    if (sourcePath) {
+      const segments = sourcePath.split('/')
       let path = '@fs'
       for (const segment of segments) {
         path += `/${segment}`
         tree.expand(path)
       }
     }
-  }, [relativePath, groupBy])
+  }, [sourcePath, groupBy])
 
   useEffect(() => {
     if (viewId) {

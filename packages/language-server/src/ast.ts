@@ -343,7 +343,7 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
 }
 
 export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
-  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColor | undefined))
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.CustomColor | undefined))
 }
 
 export function toAutoLayout(

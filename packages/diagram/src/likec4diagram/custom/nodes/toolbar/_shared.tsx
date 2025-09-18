@@ -25,17 +25,17 @@ const {
   secondary,
   muted,
   ...otherColors
-} = defaultTheme.elements
+} = defaultTheme.colors
 
 export const themedColors = [
-  { key: 'primary', value: primary.fill },
-  { key: 'secondary', value: secondary.fill },
-  { key: 'muted', value: muted.fill },
+  { key: 'primary', value: primary.elements.fill },
+  { key: 'secondary', value: secondary.elements.fill },
+  { key: 'muted', value: muted.elements.fill },
 ] satisfies Array<{ key: ThemeColor; value: string }>
 
 export const colors = keys(otherColors).map(key => ({
   key,
-  value: defaultTheme.elements[key].fill,
+  value: defaultTheme.colors[key].elements.fill,
 }))
 
 export type ThemeColorKey = typeof themedColors[0]['key']

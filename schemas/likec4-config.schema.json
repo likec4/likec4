@@ -30,6 +30,276 @@
         "pattern": "^(?!\\/|[A-Za-z]:[\\\\\\/])(?!.*:\\/\\/).*$"
       }
     },
+    "styles": {
+      "description": "Styles configuration",
+      "type": "object",
+      "properties": {
+        "theme": {
+          "description": "Theme customization",
+          "type": "object",
+          "properties": {
+            "colors": {
+              "description": "Map of theme colors.",
+              "type": "object",
+              "propertyNames": {
+                "anyOf": [
+                  {
+                    "description": "Color name",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "not": {}
+                  }
+                ]
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "description": "Color value: hex, rgb or rgba",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "elements": {
+                        "anyOf": [
+                          {
+                            "description": "Color value: hex, rgb or rgba",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "description": "Element colors",
+                            "type": "object",
+                            "properties": {
+                              "fill": {
+                                "description": "Background color",
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "stroke": {
+                                "description": "Stroke color (border, paths above background)",
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "hiContrast": {
+                                "description": "High contrast text color (title)",
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "loContrast": {
+                                "description": "Low contrast text color (description)",
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "fill",
+                              "stroke",
+                              "hiContrast",
+                              "loContrast"
+                            ]
+                          }
+                        ]
+                      },
+                      "relationships": {
+                        "anyOf": [
+                          {
+                            "description": "Color value: hex, rgb or rgba",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "description": "Edge colors",
+                            "type": "object",
+                            "properties": {
+                              "line": {
+                                "description": "Line color",
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "label": {
+                                "description": "Label text color",
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "labelBg": {
+                                "description": "Label background color",
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "line",
+                              "label"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "elements",
+                      "relationships"
+                    ]
+                  }
+                ]
+              }
+            },
+            "sizes": {
+              "description": "Map of theme sizes.",
+              "type": "object",
+              "propertyNames": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "xs",
+                      "sm",
+                      "md",
+                      "lg",
+                      "xl"
+                    ]
+                  },
+                  {
+                    "not": {}
+                  }
+                ]
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "width": {
+                    "type": "number",
+                    "minimum": 100
+                  },
+                  "height": {
+                    "type": "number",
+                    "minimum": 100
+                  }
+                },
+                "required": [
+                  "width",
+                  "height"
+                ]
+              }
+            }
+          }
+        },
+        "defaults": {
+          "description": "Default style values for elements, groups and relationships",
+          "type": "object",
+          "properties": {
+            "color": {
+              "description": "Color name",
+              "type": "string",
+              "minLength": 1
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "border": {
+              "type": "string",
+              "enum": [
+                "solid",
+                "dashed",
+                "dotted",
+                "none"
+              ]
+            },
+            "size": {
+              "type": "string",
+              "enum": [
+                "xs",
+                "sm",
+                "md",
+                "lg",
+                "xl"
+              ]
+            },
+            "shape": {
+              "type": "string",
+              "enum": [
+                "rectangle",
+                "person",
+                "browser",
+                "mobile",
+                "cylinder",
+                "storage",
+                "queue"
+              ]
+            },
+            "group": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "description": "Color name",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "opacity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "border": {
+                  "type": "string",
+                  "enum": [
+                    "solid",
+                    "dashed",
+                    "dotted",
+                    "none"
+                  ]
+                }
+              }
+            },
+            "relationship": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "description": "Color name",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "string",
+                  "enum": [
+                    "dashed",
+                    "solid",
+                    "dotted"
+                  ]
+                },
+                "arrow": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "normal",
+                    "onormal",
+                    "dot",
+                    "odot",
+                    "diamond",
+                    "odiamond",
+                    "crow",
+                    "open",
+                    "vee"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "customCss": {
+          "description": "List of custom CSS files",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "exclude": {
       "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]",
       "type": "array",

@@ -66,20 +66,20 @@ async function dotCodegenAction(
     try {
       const dot = await languageServices.viewsService.layouter.dot({
         view,
-        specification: model.specification,
+        styles: model.$styles,
       })
-      let relativePath = view.relativePath ?? '.'
-      // remove file name from relative path
-      if (relativePath.includes('/')) {
-        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
-      } else {
-        relativePath = '.'
+      let relativePath = '.'
+      if (view.sourcePath) {
+        relativePath = dirname(view.sourcePath)
       }
-      if (relativePath !== '' && !createdDirs.has(relativePath)) {
-        await mkdir(resolve(outdir, relativePath), { recursive: true })
+      relativePath = resolve(outdir, relativePath)
+
+      if (!createdDirs.has(relativePath)) {
+        await mkdir(relativePath, { recursive: true })
         createdDirs.add(relativePath)
       }
-      const outfile = resolve(outdir, relativePath, view.id + '.dot')
+      const outfile = resolve(relativePath, view.id + '.dot')
+
       await writeFile(outfile, dot)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
@@ -129,18 +129,18 @@ async function multipleFilesCodegenAction(
   for (const vm of model.views()) {
     const view = vm.$view
     try {
-      let relativePath = view.relativePath ?? '.'
-      // remove file name from relative path
-      if (relativePath.includes('/')) {
-        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
-      } else {
-        relativePath = '.'
+      let relativePath = '.'
+      if (view.sourcePath) {
+        relativePath = dirname(view.sourcePath)
       }
-      if (relativePath !== '' && !createdDirs.has(relativePath)) {
-        await mkdir(resolve(outdir, relativePath), { recursive: true })
+      relativePath = resolve(outdir, relativePath)
+
+      if (!createdDirs.has(relativePath)) {
+        await mkdir(relativePath, { recursive: true })
         createdDirs.add(relativePath)
       }
-      const outfile = resolve(outdir, relativePath, view.id + ext)
+
+      const outfile = resolve(relativePath, view.id + ext)
       const generatedSource = generator(vm)
       await writeFile(outfile, generatedSource)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)

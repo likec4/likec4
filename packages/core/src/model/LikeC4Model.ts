@@ -276,11 +276,13 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
       () =>
         defu(
           this.$data.project.styles as LikeC4StyleConfig,
-          {
-            theme: {
-              colors: this.$data.specification.customColors,
-            },
-          },
+          this.$data.specification.customColors
+            ? {
+              theme: {
+                colors: this.$data.specification.customColors,
+              },
+            }
+            : undefined,
           defaultStyle,
         ),
     )

@@ -7,9 +7,14 @@ export type LikeC4ProjectTheme = PartialDeep<WritableDeep<LikeC4Theme>, {
   allowUndefinedInNonTupleArrays: false
 }>
 
+export type LikeC4ProjectStyleDefaults = PartialDeep<WritableDeep<LikeC4StyleDefaults>, {
+  recurseIntoArrays: false
+  allowUndefinedInNonTupleArrays: false
+}>
+
 export interface LikeC4ProjectStylesConfig {
-  theme?: LikeC4ProjectTheme | undefined
-  defaults?: PartialDeep<LikeC4StyleDefaults> | undefined
+  theme?: LikeC4ProjectTheme
+  defaults?: LikeC4ProjectStyleDefaults
 }
 
 /**

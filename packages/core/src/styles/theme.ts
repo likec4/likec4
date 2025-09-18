@@ -3,7 +3,7 @@ import { ElementColors } from './default-element-colors'
 import { RelationshipColors } from './default-relationship-colors'
 import { type LikeC4Theme, ThemeColors } from './types'
 
-export const defaultTheme: LikeC4Theme = {
+export const defaultTheme = {
   colors: fromKeys(ThemeColors, (key) => ({
     elements: ElementColors[key],
     relationships: RelationshipColors[key],
@@ -51,4 +51,4 @@ export const defaultTheme: LikeC4Theme = {
     lg: 23.04,
     xl: 27.65,
   },
-}
+} satisfies LikeC4Theme

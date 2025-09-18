@@ -22,7 +22,6 @@ import {
   Group,
   RemoveScroll,
   ScrollArea,
-  ScrollAreaAutosize,
   Stack,
   Tabs,
   TabsList,
@@ -626,25 +625,29 @@ function ElementMetata({
             </div>
             <div
               className={css({})}>
-              <ScrollAreaAutosize
+              <ScrollArea.Autosize
                 type="auto"
                 mah={200}
-                overscrollBehavior="none"
-                className={css({
-                  transitionProperty: 'all',
-                  transitionDuration: 'fast',
-                  transitionTimingFunction: 'inOut',
-                  rounded: 'sm',
-                  color: 'mantine.colors.gray[8]',
-                  _dark: {
-                    color: 'mantine.colors.dark[1]',
-                  },
-                  _groupHover: {
-                    transitionTimingFunction: 'out',
-                    color: 'mantine.colors.defaultColor',
-                    background: 'mantine.colors.defaultHover',
-                  },
-                })}>
+                classNames={{
+                  root: css({
+                    transitionProperty: 'all',
+                    transitionDuration: 'fast',
+                    transitionTimingFunction: 'inOut',
+                    rounded: 'sm',
+                    color: 'mantine.colors.gray[8]',
+                    _dark: {
+                      color: 'mantine.colors.dark[1]',
+                    },
+                    _groupHover: {
+                      transitionTimingFunction: 'out',
+                      color: 'mantine.colors.defaultColor',
+                      background: 'mantine.colors.defaultHover',
+                    },
+                  }),
+                  viewport: css({
+                    overscrollBehavior: 'none',
+                  }),
+                }}>
                 <div
                   className={css({
                     fontSize: 'sm',
@@ -655,7 +658,7 @@ function ElementMetata({
                   })}>
                   {value}
                 </div>
-              </ScrollAreaAutosize>
+              </ScrollArea.Autosize>
             </div>
           </div>
         ))}
