@@ -107,6 +107,10 @@
     "access": "public"
   },
   "dependencies": {
+    "@dagrejs/dagre": "catalog:",
+    "graphology": "catalog:",
+    "graphology-dag": "catalog:",
+    "graphology-types": "catalog:",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-to-string": "^4.0.0",
     "rehype-format": "5.0.1",
@@ -124,7 +128,6 @@
   "devDependencies": {
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
-    "@dagrejs/dagre": "1.1.5",
     "@likec4/tsconfig": "workspace:*",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
@@ -133,9 +136,6 @@
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
     "@types/node": "catalog:",
-    "graphology": "^0.25.4",
-    "graphology-dag": "^0.4.1",
-    "graphology-types": "^0.24.8",
     "chroma-js": "catalog:utils",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",

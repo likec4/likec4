@@ -1,7 +1,7 @@
+import { cx as clsx } from '@likec4/styles/css'
 import { Box, Card, CardSection, Center, Group, Image, Text, ThemeIcon } from '@mantine/core'
 import { IconLoader } from '@tabler/icons-react'
 import { type NodeProps, Handle, Position } from '@xyflow/react'
-import clsx from 'clsx'
 import { memo } from 'react'
 // import { usePreviewUrl } from 'likec4:previews'
 import * as css from './Nodes.css'
