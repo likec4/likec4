@@ -41,6 +41,6 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "wrangler": "catalog:"
+    "wrangler": "catalog:cloudflare"
   }
 }
