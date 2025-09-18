@@ -5,7 +5,7 @@ packages:
   - "!packages/create-likec4"
 
 catalog:
-  "@types/node": ~20.19.11
+  "@types/node": ~20.19.14
   playwright: 1.54.2
   tsx: 4.20.5
   turbo: 2.5.6
