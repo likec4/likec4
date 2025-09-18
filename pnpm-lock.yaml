@@ -245,7 +245,7 @@ catalogs:
       specifier: ^4.0.3
       version: 4.0.3
     remeda:
-      specifier: ^2.30.0
+      specifier: ^2.31.1
       version: 2.31.1
     safe-stringify:
       specifier: ^1.2.0
