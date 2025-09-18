@@ -21,7 +21,7 @@ import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
-import { RichText } from '@likec4/core/types'
+import { exact, RichText } from '@likec4/core/types'
 import {
   DefaultMap,
   ifind,
@@ -37,6 +37,7 @@ import {
   groupBy,
   map,
   mapToObj,
+  omit,
   only,
   pipe,
   prop,
@@ -534,10 +535,10 @@ export function layoutRelationshipsView(
         width: width,
         height: height,
       },
-      style: {
+      style: omit({
         ...(inheritFromNode ?? inheritFromNodeOrAncestor)?.style,
         ...element.$element.style,
-      },
+      }, ['color', 'shape', 'icon']),
       navigateTo,
       ...(children.length > 0 && { depth: nodeDepth(id) }),
       children,
@@ -584,7 +585,7 @@ export function layoutRelationshipsView(
       const navigateTo = only(unique(relations.flatMap(r => r.navigateTo?.id ? r.navigateTo.id : [])))
       // edge.points
       // const edge = g.edge(name)
-      acc.push({
+      acc.push(exact({
         id: name as EdgeId,
         sourceFqn,
         source: source as NodeId,
@@ -593,13 +594,16 @@ export function layoutRelationshipsView(
         target: target as NodeId,
         targetHandle,
         label: isMultiple ? `${relations.length} relationships` : label,
-        ...(navigateTo && { navigateTo }),
+        navigateTo,
+        color: onlyRelation?.color ?? 'gray',
         existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
-        line: onlyRelation?.$relationship.line ?? 'dashed',
+        line: onlyRelation?.line ?? 'dashed',
+        head: onlyRelation?.head,
+        tail: onlyRelation?.tail,
         relations: relations.map(r => r.id),
         parent: null,
-      })
+      }))
       return acc
     }, [] as LayoutRelationshipsViewResult.Edge[]),
   }

@@ -26,7 +26,6 @@ const selector = ({ context }: NavigationPanelActorSnapshot) => {
     description: view.description,
     tags: view.tags,
     links: view.links,
-    relativePath: view.$view.relativePath,
   }
 }
 
@@ -128,7 +127,6 @@ const ViewDetailsCardDropdown = ({
     description,
     tags,
     links,
-    relativePath,
   },
   onClose,
 }: { data: ViewDetailsCardData; onClose: () => void }) => {
@@ -168,7 +166,6 @@ const ViewDetailsCardDropdown = ({
         <Text component="div" fw={500} size="xl" lh={'sm'}>{title}</Text>
         <HStack alignItems={'flex-start'} mt="1">
           <ViewBadge label="id" value={id} />
-          {/* {relativePath && <ViewBadge label="source" value={relativePath} />} */}
           <HStack gap="xs" flexWrap="wrap">
             {tags.map((tag, i) => (
               <ElementTag

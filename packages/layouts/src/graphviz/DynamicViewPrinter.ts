@@ -59,7 +59,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
     }
 
-    let [head, tail] = [edge.head, edge.tail ?? 'none']
+    let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
 
     if (edge.dir === 'back') {
       e.attributes.apply({

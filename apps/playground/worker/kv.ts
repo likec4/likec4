@@ -159,6 +159,7 @@ function convertLegacyModel(
       elements: specification.elements as Record<string, Partial<ElementSpecification>>,
       deployments: specification.deployments as Record<string, Partial<ElementSpecification>>,
       tags: assignTagColors(specification.tags),
+      // @ts-ignore
       customColors: first(values(views))?.customColorDefinitions ?? {},
     },
     elements: mapValues(elements, ({ description, ...rest }): Element => ({

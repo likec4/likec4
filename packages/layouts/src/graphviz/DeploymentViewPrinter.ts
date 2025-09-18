@@ -110,7 +110,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<A, Compu
       })
     }
 
-    let [head, tail] = [edge.head, edge.tail ?? 'none']
+    let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
 
     if (head === 'none' && tail === 'none') {
       e.attributes.apply({

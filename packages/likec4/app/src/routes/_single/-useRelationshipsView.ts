@@ -432,6 +432,8 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
         relations: relations.map(r => r.id),
         parent: null,
         points,
+        color: 'gray',
+        line: 'dashed',
       })
     }),
   }

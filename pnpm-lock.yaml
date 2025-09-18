@@ -762,12 +762,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@mantine/colors-generator':
-        specifier: catalog:mantine
-        version: 8.2.8(chroma-js@3.1.2)
-      chroma-js:
-        specifier: catalog:utils
-        version: 3.1.2
       defu:
         specifier: catalog:utils
         version: 6.1.4
@@ -814,6 +808,9 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@mantine/colors-generator':
+        specifier: catalog:mantine
+        version: 8.2.8(chroma-js@3.1.2)
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.1
@@ -838,6 +835,9 @@ importers:
       '@types/unist':
         specifier: 3.0.3
         version: 3.0.3
+      chroma-js:
+        specifier: catalog:utils
+        version: 3.1.2
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)

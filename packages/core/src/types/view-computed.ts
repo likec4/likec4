@@ -1,4 +1,3 @@
-import type { Except } from 'type-fest'
 import type {
   Color,
   ElementShape,
@@ -22,7 +21,8 @@ import type {
 } from './view-common'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
-export type ComputedNodeStyle = Except<ElementStyle, 'icon' | 'shape' | 'color', { requireExactProps: true }>
+// export type ComputedNodeStyle = Except<ElementStyle, 'icon' | 'shape' | 'color', { requireExactProps: true }>
+export type ComputedNodeStyle = ElementStyle
 
 // dprint-ignore
 export interface ComputedNode<A extends AnyAux = AnyAux>
@@ -81,7 +81,7 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
   notes?: scalar.MarkdownOrString
   color: Color
   line: RelationshipLineType
-  head: RelationshipArrowType
+  head?: RelationshipArrowType
   tail?: RelationshipArrowType
   // Link to dynamic view
   navigateTo?: aux.StrictViewId<A> | null

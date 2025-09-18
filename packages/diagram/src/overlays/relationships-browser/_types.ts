@@ -5,6 +5,7 @@ import type {
   IconUrl,
   NonEmptyArray,
   RelationId,
+  RelationshipArrowType,
   RelationshipLineType,
   RichTextOrEmpty,
   ViewId,
@@ -90,10 +91,12 @@ export namespace RelationshipsBrowserTypes {
       sourceFqn: Fqn
       targetFqn: Fqn
       relations: NonEmptyArray<RelationId>
-      color: Color | undefined
+      color: Color
       label: string | null
       navigateTo: ViewId | null
       line: RelationshipLineType
+      head?: RelationshipArrowType
+      tail?: RelationshipArrowType
       existsInCurrentView: boolean
     }
   >

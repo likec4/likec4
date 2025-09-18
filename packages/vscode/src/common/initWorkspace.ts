@@ -1,4 +1,4 @@
-import { isLikeC4Config, validateProjectConfig } from '@likec4/config'
+import { isLikeC4Config, serializableLikeC4ProjectConfig, validateProjectConfig } from '@likec4/config'
 import { delay } from '@likec4/core/utils'
 import { joinRelativeURL } from 'ufo'
 import * as vscode from 'vscode'
@@ -63,7 +63,7 @@ async function findSources(rpc: Rpc) {
       logger.info`read project config ${cfgUri}`
       const bytes = await vscode.workspace.fs.readFile(uri)
       const decoder = new TextDecoder()
-      const config = validateProjectConfig(decoder.decode(bytes))
+      const config = serializableLikeC4ProjectConfig(validateProjectConfig(decoder.decode(bytes)))
       const folderUri = joinRelativeURL(cfgUri, '..')
       await rpc.registerProject({ folderUri, config })
     } catch (e) {

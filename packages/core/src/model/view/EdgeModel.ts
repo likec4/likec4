@@ -74,11 +74,11 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
   }
 
   get line(): RelationshipLineType {
-    return this.#edge.line
+    return this.#edge.line ?? this.view.$model.$styles.defaults.relationship.line
   }
 
   get head(): RelationshipArrowType {
-    return this.#edge.head
+    return this.#edge.head ?? this.view.$model.$styles.defaults.relationship.arrow
   }
 
   get tail(): RelationshipArrowType | undefined {
