@@ -3,7 +3,7 @@
   "version": "1.41.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.17.0",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.50.1",
+    "dprint": "^0.50.2",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",
