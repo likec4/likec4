@@ -73,9 +73,7 @@ describe('Summary field in deployment view', () => {
         ),
       )
       const { nodes: [node] } = t.computeView(t.$include('node'))
-      expect(node).toMatchObject({
-        description: null,
-      })
+      expect(node).not.toHaveProperty('description')
     })
   })
 
@@ -142,10 +140,8 @@ describe('Summary field in deployment view', () => {
         ),
       )
       const { nodes: [node] } = t.computeView(t.$include('test.el'))
-      expect(node).toMatchObject({
-        description: null,
-      })
       expect(node).not.toHaveProperty('summary')
+      expect(node).not.toHaveProperty('description')
     })
   })
 })

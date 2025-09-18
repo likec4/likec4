@@ -1,4 +1,4 @@
-import { type ThemeColor, defaultTheme } from '@likec4/core'
+import { type LikeC4Theme, type ThemeColor } from '@likec4/core'
 import {
   type PopoverProps,
   Button,
@@ -18,7 +18,9 @@ import {
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useState } from 'react'
-import { type ColorKey, type OnStyleChange, type ThemeColorKey, colors, themedColors } from './_shared'
+import { keys } from 'remeda'
+import { useLikeC4Styles } from '../../../../likec4model/useLikeC4Styles'
+import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './_shared'
 
 type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {
   elementColor: ThemeColor
@@ -36,6 +38,7 @@ export function ColorButton({
   onChange,
   ...props
 }: ColorButtonProps) {
+  const { theme } = useLikeC4Styles()
   return (
     <Popover
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
@@ -47,7 +50,7 @@ export function ColorButton({
       <PopoverTarget>
         <Button variant="subtle" color="gray" size="compact-xs" px={3}>
           <ColorSwatch
-            color={defaultTheme.elements[elementColor]?.fill}
+            color={theme.colors[elementColor].elements.fill}
             size={14}
             withShadow
             style={{ color: '#fff', cursor: 'pointer' }} />
@@ -55,6 +58,7 @@ export function ColorButton({
       </PopoverTarget>
       <PopoverDropdown p={'xs'}>
         <ColorSwatches
+          theme={theme}
           elementColor={elementColor}
           onColorPreview={onColorPreview}
           onChange={(color) => onChange({ color })} />
@@ -76,10 +80,12 @@ export function ColorButton({
 }
 
 export function ColorSwatches({
+  theme,
   elementColor,
   onColorPreview,
   onChange,
 }: {
+  theme: LikeC4Theme
   elementColor: ThemeColor
   onColorPreview: (color: ThemeColor | null) => void
   onChange: (color: ThemeColor) => void
@@ -92,28 +98,31 @@ export function ColorSwatches({
     }
     onChange(color)
   }
+
+  const otherColors = keys(theme.colors).filter(color => !SemanticColors.includes(color as ThemeColorKey))
+
   return (
     <Stack gap={2} onMouseLeave={() => onColorPreview(null)}>
       <TooltipGroup openDelay={1000} closeDelay={300}>
         <Flex maw={120} gap="6" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
-          {themedColors.map(({ key, value }) => (
+          {SemanticColors.map(color => (
             <MantineTooltip
-              key={key}
-              label={key}
+              key={color}
+              label={color}
               fz={'xs'}
               color="dark"
               offset={2}
               withinPortal={false}
               transitionProps={{ duration: 140, transition: 'slide-up' }}>
               <ColorSwatch
-                color={value}
+                color={theme.colors[color].elements.fill}
                 size={18}
                 withShadow
-                onMouseEnter={() => onColorPreview(key)}
-                onClick={changeColor(key)}
+                onMouseEnter={() => onColorPreview(color)}
+                onClick={changeColor(color)}
                 style={{ color: '#fff', cursor: 'pointer' }}
               >
-                {elementColor === key && <CheckIcon style={{ width: rem(10), height: rem(10) }} />}
+                {elementColor === color && <CheckIcon style={{ width: rem(10), height: rem(10) }} />}
               </ColorSwatch>
             </MantineTooltip>
           ))}
@@ -127,7 +136,7 @@ export function ColorSwatches({
           align="flex-start"
           direction="row"
           wrap="wrap">
-          {colors.map(({ key, value }) => (
+          {otherColors.map(key => (
             <MantineTooltip
               key={key}
               label={key}
@@ -136,7 +145,7 @@ export function ColorSwatches({
               offset={2}
               transitionProps={{ duration: 140, transition: 'slide-up' }}>
               <ColorSwatch
-                color={value}
+                color={theme.colors[key].elements.fill}
                 size={18}
                 onMouseEnter={() => onColorPreview(key)}
                 onClick={changeColor(key)}

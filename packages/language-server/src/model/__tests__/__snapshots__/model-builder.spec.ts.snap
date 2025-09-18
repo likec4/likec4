@@ -11,9 +11,9 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
     "client": {
       "id": "client",
       "kind": "user",
-      "shape": "person",
       "style": {
         "opacity": 40,
+        "shape": "person",
       },
       "title": "client",
     },
@@ -24,11 +24,11 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
       "title": "system",
     },
     "system.backend": {
-      "color": "secondary",
       "id": "system.backend",
       "kind": "component",
       "style": {
         "border": "dashed",
+        "color": "secondary",
       },
       "summary": {
         "txt": "Backend summary",
@@ -37,14 +37,15 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
       "title": "Backend",
     },
     "system.frontend": {
-      "color": "muted",
       "description": {
         "txt": "Frontend description",
       },
       "id": "system.frontend",
       "kind": "component",
-      "shape": "browser",
-      "style": {},
+      "style": {
+        "color": "muted",
+        "shape": "browser",
+      },
       "title": "frontend",
     },
   },
@@ -108,8 +109,11 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "client:system",
           "label": null,
+          "line": "dashed",
           "parent": null,
           "relations": [
             "vcxqbt",
@@ -118,14 +122,12 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "target": "system",
         },
       ],
-      "hash": "23b511a0eedab1b90ff7fc0685c2d10fedb76a14",
+      "hash": "2e2e4ed8d4798ca6fc8abd3879dbd155ea8f62fa",
       "id": "index",
-      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "client",
           "inEdges": [],
           "kind": "user",
@@ -138,15 +140,14 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "shape": "person",
           "style": {
             "opacity": 40,
+            "size": "md",
           },
           "tags": [],
-          "technology": null,
           "title": "client",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system",
           "inEdges": [
             "client:system",
@@ -157,13 +158,14 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "system",
         },
       ],
-      "tags": null,
       "title": "Landscape view",
     },
   },
@@ -270,8 +272,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "client:system.frontend",
           "label": "opens",
+          "line": "dashed",
           "parent": null,
           "relations": [
             "14imtre",
@@ -280,8 +285,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.frontend",
         },
         {
+          "color": "gray",
+          "head": "normal",
           "id": "system.frontend:system.backend",
           "label": "requests",
+          "line": "dashed",
           "parent": null,
           "relations": [
             "fubnyh",
@@ -290,14 +298,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend",
         },
       ],
-      "hash": "320f6738d894c82abc703e48378e7c5ca7d5de98",
+      "hash": "cc50cb17153f8633f5ac9c28062c95577d8ec1f2",
       "id": "frontend",
       "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "client",
           "inEdges": [],
           "kind": "user",
@@ -308,15 +315,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "client",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system.frontend",
           "inEdges": [
             "client:system.frontend",
@@ -329,15 +337,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "frontend",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system.backend",
           "inEdges": [
             "system.frontend:system.backend",
@@ -348,13 +357,15 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "backend",
         },
       ],
-      "relativePath": "2.c4",
+      "sourcePath": "src/2.c4",
       "tags": null,
       "title": "frontend",
       "viewOf": "system.frontend",
@@ -368,8 +379,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "client:system",
           "label": "opens",
+          "line": "dashed",
           "parent": null,
           "relations": [
             "14imtre",
@@ -378,14 +392,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system",
         },
       ],
-      "hash": "ad0856180cdcebf3b94f1dbc6bcb6c10f535f93a",
+      "hash": "f24544b6e8b2a0ffd1f33a52b1f3591d6594da38",
       "id": "index",
       "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "client",
           "inEdges": [],
           "kind": "user",
@@ -396,15 +409,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "client",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system",
           "inEdges": [
             "client:system",
@@ -415,13 +429,15 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "system",
         },
       ],
-      "relativePath": "2.c4",
+      "sourcePath": "src/2.c4",
       "tags": null,
       "title": "Index",
     },
@@ -434,8 +450,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "system.frontend:system.backend.api",
           "label": "requests",
+          "line": "dashed",
           "parent": null,
           "relations": [
             "fubnyh",
@@ -444,14 +463,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend.api",
         },
       ],
-      "hash": "3357c336f60b647545d01a58c7e29f22cd7efcc5",
+      "hash": "7be7535365a0a397d38c937d2216712d0ff67ac2",
       "id": "v1",
       "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system.frontend",
           "inEdges": [],
           "kind": "component",
@@ -463,9 +481,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "frontend",
         },
         {
@@ -474,7 +494,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "color": "primary",
           "depth": 1,
-          "description": null,
           "id": "system.backend",
           "inEdges": [
             "system.frontend:system.backend.api",
@@ -485,15 +504,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "backend",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "system.backend.api",
           "inEdges": [
             "system.frontend:system.backend.api",
@@ -504,13 +524,15 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "outEdges": [],
           "parent": "system.backend",
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "api",
         },
       ],
-      "relativePath": "2.c4",
+      "sourcePath": "src/2.c4",
       "tags": null,
       "title": "api",
       "viewOf": "system.backend.api",
@@ -596,9 +618,12 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "user1:user2",
           "kind": "async",
           "label": null,
+          "line": "dashed",
           "parent": null,
           "relations": [
             "1qlbaph",
@@ -610,14 +635,12 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "target": "user2",
         },
       ],
-      "hash": "51992c70273dcaefd599bc0cf0c835fa0851e464",
+      "hash": "7a0a8d7efad68cc4ce9203555d67ac69e00b16fe",
       "id": "index",
-      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user1",
           "inEdges": [],
           "kind": "person",
@@ -628,15 +651,16 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user1",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user2",
           "inEdges": [
             "user1:user2",
@@ -647,13 +671,14 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user2",
         },
       ],
-      "tags": null,
       "title": "Landscape view",
     },
   },
@@ -732,9 +757,12 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
       "description": null,
       "edges": [
         {
+          "color": "gray",
+          "head": "normal",
           "id": "user1:user2",
           "kind": "async",
           "label": "[Async]",
+          "line": "dashed",
           "parent": null,
           "relations": [
             "1qlbaph",
@@ -744,14 +772,12 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "technology": "Async",
         },
       ],
-      "hash": "638ee1898bb8217e3e9a6a65d4e64b80adccf227",
+      "hash": "2ab8b2821d405e630a8776243e2984d80c44c1d2",
       "id": "index",
-      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user1",
           "inEdges": [],
           "kind": "person",
@@ -762,15 +788,16 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user1",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user2",
           "inEdges": [
             "user1:user2",
@@ -781,13 +808,14 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user2",
         },
       ],
-      "tags": null,
       "title": "Landscape view",
     },
   },
@@ -877,14 +905,12 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "target": "user2",
         },
       ],
-      "hash": "15affa72053028a2ec824233302d4f9fc48ab25a",
+      "hash": "c8b3f6fe6c5083f2bfcc3002489a523a33c2b464",
       "id": "index",
-      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user1",
           "inEdges": [],
           "kind": "person",
@@ -895,15 +921,16 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           ],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user1",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "user2",
           "inEdges": [
             "user1:user2",
@@ -914,13 +941,14 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "outEdges": [],
           "parent": null,
           "shape": "rectangle",
-          "style": {},
+          "style": {
+            "opacity": 15,
+            "size": "md",
+          },
           "tags": [],
-          "technology": null,
           "title": "user2",
         },
       ],
-      "tags": null,
       "title": "Landscape view",
     },
   },

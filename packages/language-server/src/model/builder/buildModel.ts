@@ -2,18 +2,18 @@ import type * as c4 from '@likec4/core'
 import {
   type MultiMap,
   type ViewId,
-  computeColorValues,
   isDeploymentNode,
   isGlobalFqn,
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
-import { _stage, _type, FqnRef } from '@likec4/core/types'
+import { computeColorValues } from '@likec4/core/styles'
+import { _stage, _type, exact, FqnRef, isExtendsElementView } from '@likec4/core/types'
 import {
   compareNatural,
   parentFqn,
   sortByFqnHierarchically,
 } from '@likec4/core/utils'
-import type { LangiumDocument } from 'langium'
+import { type LangiumDocument, UriUtils } from 'langium'
 import {
   filter,
   flatMap,
@@ -35,7 +35,6 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger } from '../../logger'
-import { resolveRelativePaths } from '../../view-utils'
 import type { Project } from '../../workspace/ProjectsManager'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
@@ -199,6 +198,7 @@ export function buildModelData(
       return {
         ...omitBy(model, v => v === undefined),
         [_stage]: 'parsed',
+        sourcePath: UriUtils.relative(project.folderUri, docUri),
         docUri,
         description,
         title,
@@ -207,12 +207,8 @@ export function buildModelData(
     }
   }
 
-  const parsedViews = pipe(
-    docs,
-    flatMap(d => map(d.c4Views, toC4View(d))),
-    // Resolve relative paths and sort by
-    resolveRelativePaths,
-  )
+  const parsedViews = docs.flatMap(d => map(d.c4Views, toC4View(d)))
+
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
@@ -221,8 +217,6 @@ export function buildModelData(
       id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
-      tags: null,
-      links: null,
       rules: [
         {
           include: [
@@ -235,20 +229,23 @@ export function buildModelData(
     })
   }
 
-  const views = pipe(
+  let views = pipe(
     parsedViews,
     indexBy(prop('id')),
-    resolveRulesExtendedViews,
   )
+  if (parsedViews.some(isExtendsElementView)) {
+    views = resolveRulesExtendedViews(views)
+  }
 
   return {
     data: {
       [_stage]: 'parsed',
       projectId: project.id,
-      project: {
+      project: exact({
         id: project.id,
         title: project.config.title ?? project.config.name,
-      },
+        styles: project.config.styles,
+      }),
       specification: {
         tags: c4Specification.tags,
         elements: c4Specification.specs.elements,

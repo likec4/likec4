@@ -1,9 +1,3 @@
-import type * as aux from './_aux'
-import type { ExclusiveUnion } from './_common'
-import type { PredicateSelector } from './expression'
-import { FqnRef } from './fqnRef'
-import type { WhereOperator } from './operators'
-import type * as scalar from './scalar'
 import type {
   BorderStyle,
   Color,
@@ -11,7 +5,13 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
-} from './styles'
+} from '../styles/types'
+import type * as aux from './_aux'
+import type { ExclusiveUnion } from './_common'
+import type { PredicateSelector } from './expression'
+import { FqnRef } from './fqnRef'
+import type { WhereOperator } from './operators'
+import type * as scalar from './scalar'
 
 // Alias for bundle exports
 type AnyAux = aux.Any

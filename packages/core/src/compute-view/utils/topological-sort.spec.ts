@@ -1,6 +1,7 @@
 import { map, prop } from 'remeda'
 import type { TupleToUnion } from 'type-fest'
 import { describe, expect, it } from 'vitest'
+import { LikeC4Model } from '../../model'
 import type { ComputedEdge, EdgeId, scalar } from '../../types'
 import { type ComputedNodeSource, buildComputedNodes } from './buildComputedNodes'
 import { linkNodesWithEdges } from './link-nodes-with-edges'
@@ -17,6 +18,7 @@ describe('topologicalSort', () => {
     edges: Array<`${NoInfer<NodeId>} -> ${NoInfer<NodeId>}`> = [],
   ) {
     const nodesMap = buildComputedNodes(
+      LikeC4Model.EMPTY.$styles,
       nodes.map(id => ({ id, title: id }) as any as ComputedNodeSource),
     )
     const _edges = edges.map(s => {
@@ -28,6 +30,9 @@ describe('topologicalSort', () => {
         parent: null,
         label: null,
         relations: [],
+        color: 'primary',
+        line: 'solid',
+        head: 'normal',
       } as ComputedEdge
     })
     linkNodesWithEdges(nodesMap, _edges)

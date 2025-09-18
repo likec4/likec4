@@ -1,13 +1,8 @@
 import {
   type ComputedEdge,
   type ComputedNode,
-  type ElementThemeColorValues,
   type ShapeSize,
-  type SpacingSize,
-  type TextSize,
-  DefaultRelationshipColor,
-  defaultTheme,
-  defaultTheme as Theme,
+  LikeC4Styles,
   RichText,
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
@@ -72,9 +67,6 @@ export function nodeIcon() {
   return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
-function fontSize(textSize: TextSize) {
-  return Math.round(defaultTheme.textSizes[textSize])
-}
 function maxchars(size: ShapeSize) {
   switch (size) {
     case 'xs':
@@ -92,29 +84,26 @@ function maxchars(size: ShapeSize) {
 
 export function nodeLabel(
   node: ComputedNode,
-  colorValues: ElementThemeColorValues,
-  sizes: {
-    shape: ShapeSize
-    padding: SpacingSize
-    text: SpacingSize
-  },
+  styles: LikeC4Styles,
 ) {
-  const isSmOrXs = ['sm', 'xs'].includes(sizes.shape)
+  const { sizes: { size }, values } = styles.nodeSizes(node.style)
+  const colorValues = styles.colors(node.color).elements
+  const isSmOrXs = ['sm', 'xs'].includes(size)
   const hasIcon = isTruthy(node.icon)
   const lines = [
     wrapWithFont({
       text: node.title,
-      fontsize: fontSize(sizes.text),
-      maxchars: maxchars(sizes.shape),
+      fontsize: values.textSize,
+      maxchars: maxchars(size),
       maxLines: isSmOrXs ? 1 : 3,
     }),
   ]
-  if (sizes.shape !== 'xs') {
+  if (size !== 'xs') {
     if (isTruthy(node.technology?.trim())) {
       lines.push(
         wrapWithFont({
           text: node.technology,
-          fontsize: Math.ceil(fontSize(sizes.text) * 0.65),
+          fontsize: Math.ceil(values.textSize * 0.65),
           maxchars: hasIcon ? 35 : 45,
           maxLines: 1,
           color: colorValues.loContrast,
@@ -126,7 +115,7 @@ export function nodeLabel(
       lines.push(
         wrapWithFont({
           text: description,
-          fontsize: Math.ceil(fontSize(sizes.text) * 0.75),
+          fontsize: Math.ceil(values.textSize * 0.75),
           maxchars: hasIcon ? 35 : 45,
           maxLines: isSmOrXs ? 3 : 5,
           color: colorValues.loContrast,
@@ -146,7 +135,7 @@ export function nodeLabel(
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
         let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
 
-        if (['xs', 'sm'].includes(sizes.shape)) {
+        if (['xs', 'sm'].includes(size)) {
           leftwidth = 16
         }
 
@@ -185,7 +174,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 
 export const EDGE_LABEL_MAX_CHARS = 40
 export const EDGE_LABEL_MAX_LINES = 5
-const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
+const BGCOLOR = `BGCOLOR="${LikeC4Styles.DEFAULT.relationshipColors.labelBg}A0"`
 
 export function edgelabel({ label, technology }: ComputedEdge) {
   const lines = [] as string[]

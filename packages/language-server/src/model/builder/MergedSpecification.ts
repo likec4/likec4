@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef, omitUndefined } from '@likec4/core/types'
+import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
 import {
   isEmpty,
@@ -72,17 +72,7 @@ export class MergedSpecification {
   toModelElement = ({
     tags,
     links,
-    style: {
-      color,
-      shape,
-      icon,
-      opacity,
-      border,
-      size,
-      multiple,
-      padding,
-      textSize,
-    },
+    style,
     id,
     kind,
     title,
@@ -97,16 +87,7 @@ export class MergedSpecification {
         logger.warn`No kind '${kind}' found for ${id}`
         return null
       }
-      color ??= __kind.style.color
-      shape ??= __kind.style.shape
-      icon ??= __kind.style.icon
-      opacity ??= __kind.style.opacity
-      border ??= __kind.style.border
       technology ??= __kind.technology
-      multiple ??= __kind.style.multiple
-      size ??= __kind.style.size
-      padding ??= __kind.style.padding
-      textSize ??= __kind.style.textSize
       description ??= __kind.description
       summary ??= __kind.summary
       links ??= __kind.links
@@ -121,19 +102,12 @@ export class MergedSpecification {
           : __kind.tags
       }
 
-      return omitUndefined({
+      return exact({
         metadata: metadata && !isEmpty(metadata) ? metadata : undefined,
-        color,
-        notation: __kind?.notation,
-        shape,
-        icon,
-        style: omitUndefined({
-          border,
-          size,
-          padding,
-          textSize,
-          multiple,
-          opacity,
+        notation: __kind.notation,
+        style: exact({
+          ...__kind.style,
+          ...style,
         }) satisfies c4.ElementStyle,
         links,
         tags,
@@ -209,16 +183,14 @@ export class MergedSpecification {
         ...rest
       } = parsed
       title = title === nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
-      return omitUndefined({
+      return exact({
         ...__kind,
         ...rest,
         title,
-        style: omitUndefined({
-          border: 'dashed',
-          opacity: 10,
+        style: exact({
           ...__kind.style,
           ...style,
-        }) satisfies c4.DeploymentElementStyle,
+        }) satisfies c4.ElementStyle,
         id,
       })
     } catch (e) {

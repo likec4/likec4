@@ -17,3 +17,7 @@ export {
   useLikeC4Projects,
   useLikeC4ProjectsContext,
 } from './useLikeC4Project'
+
+export {
+  useLikeC4Styles,
+} from './useLikeC4Styles'

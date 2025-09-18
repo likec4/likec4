@@ -3,7 +3,7 @@ import {
   type aux,
   type ComputedView,
   type DiagramView,
-  type Specification,
+  type LikeC4Styles,
   isDeploymentView,
   isDynamicView,
   isElementView,
@@ -28,14 +28,14 @@ export interface GraphvizPort extends Disposable {
   dispose(): void
 }
 
-const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<A>) => {
+const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => {
   switch (true) {
     case isDynamicView(view):
-      return new DynamicViewPrinter(view, specification)
+      return new DynamicViewPrinter(view, styles)
     case isDeploymentView(view):
-      return new DeploymentViewPrinter(view, specification)
+      return new DeploymentViewPrinter(view, styles)
     case isElementView(view):
-      return new ElementViewPrinter(view, specification)
+      return new ElementViewPrinter(view, styles)
     default:
       nonexhaustive(view)
   }
@@ -43,7 +43,7 @@ const getPrinter = <A extends AnyAux>({ view, specification }: LayoutTaskParams<
 
 export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
-  specification: Specification<A>
+  styles: LikeC4Styles
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {

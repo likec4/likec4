@@ -1,5 +1,5 @@
 import type { AnyAux, ComputedDynamicView, ComputedEdge, HexColor } from '@likec4/core'
-import { DefaultArrowType, DefaultRelationshipColor, extractStep } from '@likec4/core'
+import { extractStep } from '@likec4/core'
 import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
@@ -26,11 +26,11 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    if (edge.color && edge.color !== DefaultRelationshipColor) {
-      const colorValues = this.getRelationshipColorValues(edge.color)
+    if (edge.color && edge.color !== this.$defaults.relationship.color) {
+      const colorValues = this.styles.colors(edge.color).relationships
       e.attributes.apply({
-        [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor as HexColor,
+        [_.color]: colorValues.line,
+        [_.fontcolor]: colorValues.label as HexColor,
       })
     }
 
@@ -59,7 +59,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
     }
 
-    let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
+    let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
 
     if (edge.dir === 'back') {
       e.attributes.apply({
@@ -97,9 +97,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       })
       return e
     }
-    if (head !== DefaultArrowType) {
-      e.attributes.set(_.arrowhead, toArrowType(head))
-    }
+    e.attributes.set(_.arrowhead, toArrowType(head))
 
     return e
   }

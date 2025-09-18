@@ -1,4 +1,4 @@
-import { filter, findLast, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import { filter, findLast, first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
 import { modelConnection } from '../../model'
 import type { AnyAux, aux, scalar } from '../../types'
@@ -14,15 +14,13 @@ import {
   type StepEdgeId,
   _stage,
   _type,
-  DefaultArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
+  exact,
   isDynamicViewParallelSteps,
   isViewRuleAutoLayout,
   isViewRulePredicate,
   stepEdgeId,
 } from '../../types'
-import { nonNullable } from '../../utils'
+import { compareRelations, nonNullable } from '../../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -74,6 +72,7 @@ class DynamicViewCompute<A extends AnyAux> {
       title: stepTitle,
       isBackward,
       navigateTo: stepNavigateTo,
+      notation, // omit
       ...step
     }: DynamicViewStep<A>,
     index: number,
@@ -97,7 +96,7 @@ class DynamicViewCompute<A extends AnyAux> {
 
     const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
 
-    this.steps.push({
+    this.steps.push(exact({
       id,
       ...step,
       source,
@@ -105,11 +104,11 @@ class DynamicViewCompute<A extends AnyAux> {
       title: stepTitle ?? title,
       relations: relations ?? [],
       isBackward: isBackward ?? false,
-      ...(navigateTo ? { navigateTo } : {}),
-      ...(tags ? { tags } : {}),
-      ...(color ? { color } : {}),
-      ...(line ? { line } : {}),
-    })
+      ...navigateTo && { navigateTo },
+      ...tags && { tags },
+      ...color && { color },
+      ...line && { line },
+    }))
   }
 
   compute(): ComputedDynamicView<A> {
@@ -153,8 +152,11 @@ class DynamicViewCompute<A extends AnyAux> {
     }
 
     const nodesMap = buildComputedNodes(
+      this.model.$styles,
       [...this.explicits].map(elementModelToNodeSource),
     )
+
+    const defaults = this.model.$styles.defaults.relationship
 
     const edges = this.steps.map(({ id, source, target, relations, title, description, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
@@ -167,9 +169,9 @@ class DynamicViewCompute<A extends AnyAux> {
         label: title,
         relations,
         description: description ? { txt: description } : null,
-        color: DefaultRelationshipColor,
-        line: DefaultLineStyle,
-        head: DefaultArrowType,
+        color: defaults.color,
+        line: defaults.line,
+        head: defaults.arrow,
         tags: tags ?? [],
         ...step,
       }
@@ -245,7 +247,9 @@ class DynamicViewCompute<A extends AnyAux> {
     color: Color | null
     line: RelationshipLineType | null
   } {
-    const relationships = findConnection(source, target, 'directed').flatMap(r => [...r.relations])
+    const relationships = findConnection(source, target, 'directed')
+      .flatMap(r => [...r.relations])
+      .sort(compareRelations)
     if (relationships.length === 0) {
       return {
         title: null,
@@ -259,14 +263,13 @@ class DynamicViewCompute<A extends AnyAux> {
     const alltags = pipe(
       relationships,
       flatMap(r => r.tags),
-      filter(isTruthy),
       unique(),
     ) as aux.Tags<A>
     const tags = hasAtLeast(alltags, 1) ? alltags : null
     const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
 
     // Most closest relation
-    const relation = only(relationships) || relationships.find(r => r.source === source && r.target === target)
+    const relation = first(relationships)
     const relationNavigateTo = relation?.$relationship.navigateTo ?? null
 
     const navigateTo = relationNavigateTo && relationNavigateTo !== this.view.id

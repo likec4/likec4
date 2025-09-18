@@ -4,10 +4,15 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": [
+        "dist/**",
         "schema.json"
-      ]
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

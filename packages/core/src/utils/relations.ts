@@ -2,10 +2,10 @@ import { commonAncestor, compareFqnHierarchically } from './fqn'
 
 export type RelationshipLike = {
   source: {
-    model: string
+    id: string
   }
   target: {
-    model: string
+    id: string
   }
 }
 
@@ -13,11 +13,11 @@ export type RelationPredicate = (rel: RelationshipLike) => boolean
 
 /**
  * Compares two relations hierarchically.
- * From the most general (implicit) to the most specific.
+ * From the most general (implicit) to the most specific (deepest in the tree)
  */
 export const compareRelations = <T extends RelationshipLike>(a: T, b: T): number => {
-  const parentA = commonAncestor(a.source.model, a.target.model)
-  const parentB = commonAncestor(b.source.model, b.target.model)
+  const parentA = commonAncestor(a.source.id, a.target.id)
+  const parentB = commonAncestor(b.source.id, b.target.id)
   if (parentA && !parentB) {
     return 1
   }
@@ -28,9 +28,9 @@ export const compareRelations = <T extends RelationshipLike>(a: T, b: T): number
   if (compareParents !== 0) {
     return compareParents
   }
-  const compareSource = compareFqnHierarchically(a.source.model, b.source.model)
+  const compareSource = compareFqnHierarchically(a.source.id, b.source.id)
   if (compareSource !== 0) {
     return compareSource
   }
-  return compareFqnHierarchically(a.target.model, b.target.model)
+  return compareFqnHierarchically(a.target.id, b.target.id)
 }

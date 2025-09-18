@@ -60,7 +60,7 @@ export async function takeScreenshot({
 
       let relativePath = '.'
       if (outputType === 'relative') {
-        relativePath = view.relativePath ?? '.'
+        relativePath = view.sourcePath ?? '.'
         if (relativePath.includes('/')) {
           relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
         } else {

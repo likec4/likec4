@@ -12,8 +12,9 @@ import type {
 } from '@likec4/core/types'
 import JSON5 from 'json5'
 import type { URI } from 'vscode-uri'
-import * as z from 'zod4'
+import * as z from 'zod/v4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
+import { LikeC4StylesConfigSchema } from './schema.theme'
 
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
@@ -26,7 +27,6 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       abort: true,
       error: 'Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -',
     })
-    .transform((value) => value as ProjectId)
     .meta({ description: 'Project name, must be unique in the workspace' }),
   title: z.string()
     .nonempty('Project title cannot be empty if specified')
@@ -37,6 +37,8 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .optional()
     .meta({ description: 'A person who has been involved in creating or maintaining this project' }),
   imageAliases: ImageAliasesSchema
+    .optional(),
+  styles: LikeC4StylesConfigSchema
     .optional(),
   exclude: z.array(z.string())
     .optional()
@@ -172,7 +174,7 @@ export interface GeneratorFn {
  * })
  * ```
  */
-export type LikeC4ProjectConfig = z.input<typeof LikeC4ProjectJsonConfigSchema> & {
+export type LikeC4ProjectConfig = z.infer<typeof LikeC4ProjectJsonConfigSchema> & {
   /**
    * Add custom generators to the project
    * @example
@@ -193,6 +195,12 @@ export type LikeC4ProjectConfig = z.input<typeof LikeC4ProjectJsonConfigSchema> 
    * ```
    */
   generators?: Record<string, GeneratorFn> | undefined
+}
+
+export namespace LikeC4ProjectConfig {
+  export type Input = z.input<typeof LikeC4ProjectJsonConfigSchema> & {
+    generators?: Record<string, GeneratorFn> | undefined
+  }
 }
 
 /**

@@ -8,6 +8,7 @@ import {
   type DiagramView,
   type LayoutedLikeC4ModelData,
   type ProjectId,
+  invariant,
   nonexhaustive,
 } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
@@ -41,17 +42,14 @@ export class Rpc extends ADisposable {
   }
 
   init() {
-    const modelBuilder = this.services.likec4.ModelBuilder
-    const modelLocator = this.services.likec4.ModelLocator
-    const modelEditor = this.services.likec4.ModelChanges
-    const views = this.services.likec4.Views
     const connection = this.services.shared.lsp.Connection
-    const projects = this.services.shared.workspace.ProjectsManager
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)
       return
     }
     logger.info(`[ServerRpc] init`)
+    const likec4Services = this.services.likec4
+    const projects = this.services.shared.workspace.ProjectsManager
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
@@ -74,7 +72,7 @@ export class Rpc extends ADisposable {
     let isFirstBuild = true
 
     this.onDispose(
-      modelBuilder.onModelParsed(() => notifyModelParsed.call()),
+      likec4Services.ModelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(FetchComputedModel.req, async ({ projectId, cleanCaches }, cancelToken) => {
         logger.debug`received request ${'fetchComputedModel'} for project ${projectId}`
         if (cleanCaches) {
@@ -84,22 +82,22 @@ export class Rpc extends ADisposable {
           const uris = docs.toArray().map(d => d.uri)
           await DocumentBuilder.update(uris, [], cancelToken)
         }
-        const likec4model = await modelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
+        const likec4model = await likec4Services.ModelBuilder.buildLikeC4Model(projectId as ProjectId, cancelToken)
         if (likec4model !== LikeC4Model.EMPTY) {
           return { model: likec4model.$model as ComputedLikeC4ModelData }
         }
         return { model: null }
       }),
       connection.onRequest(ComputeView.req, async ({ viewId, projectId }, cancelToken) => {
-        const view = await modelBuilder.computeView(viewId, projectId as ProjectId, cancelToken)
+        const view = await likec4Services.ModelBuilder.computeView(viewId, projectId as ProjectId, cancelToken)
         return { view }
       }),
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
-        const model = await modelBuilder.parseModel(projectId as ProjectId, cancelToken)
+        const model = await likec4Services.ModelBuilder.parseModel(projectId as ProjectId, cancelToken)
         if (model === null) {
           return { model: null }
         }
-        const diagrams = await views.diagrams(projectId as ProjectId, cancelToken)
+        const diagrams = await likec4Services.Views.diagrams(projectId as ProjectId, cancelToken)
         return {
           model: {
             ...model.$data,
@@ -110,11 +108,11 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(LayoutView.req, async ({ viewId, projectId }, cancelToken) => {
         logger.debug`received request ${'layoutView'} of ${viewId} from project ${projectId}`
-        const result = await views.layoutView(viewId, projectId as ProjectId, cancelToken)
+        const result = await likec4Services.Views.layoutView(viewId, projectId as ProjectId, cancelToken)
         return { result }
       }),
       connection.onRequest(ValidateLayout.Req, async ({ projectId }, cancelToken) => {
-        const layouts = await views.layoutAllViews(projectId as ProjectId, cancelToken)
+        const layouts = await likec4Services.Views.layoutAllViews(projectId as ProjectId, cancelToken)
 
         const result = reportLayoutDrift(layouts.map(l => l.diagram))
 
@@ -137,9 +135,9 @@ export class Rpc extends ADisposable {
           }),
         }
       }),
-      connection.onRequest(ReloadProjects.req, async (cancelToken) => {
+      connection.onRequest(ReloadProjects.req, async () => {
         logger.debug`received request ${'ReloadProjects'}`
-        await projects.reloadProjects(cancelToken)
+        await projects.reloadProjects()
         return
       }),
       connection.onRequest(RegisterProject.req, async (params) => {
@@ -150,7 +148,7 @@ export class Rpc extends ADisposable {
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`
         const promises = projects.all.map(async projectId => {
-          const computedViews = await views.computedViews(projectId, cancelToken)
+          const computedViews = await likec4Services.Views.computedViews(projectId, cancelToken)
           return pipe(
             computedViews,
             map(v => ({
@@ -218,25 +216,25 @@ export class Rpc extends ADisposable {
       connection.onRequest(Locate.Req, params => {
         switch (true) {
           case 'element' in params:
-            return modelLocator.locateElement(params.element, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
           case 'relation' in params:
-            return modelLocator.locateRelation(params.relation, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
           case 'view' in params:
-            return modelLocator.locateView(params.view, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateView(params.view, params.projectId as ProjectId)
           case 'deployment' in params:
-            return modelLocator.locateDeploymentElement(params.deployment, params.projectId as ProjectId)
+            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, params.projectId as ProjectId)
           default:
             nonexhaustive(params)
         }
       }),
       connection.onRequest(ChangeView.Req, async (request, _cancelToken) => {
         logger.debug`received request ${'changeView'} of ${request.viewId} from project ${request.projectId}`
-        return await modelEditor.applyChange(request)
+        return await likec4Services.ModelChanges.applyChange(request)
       }),
       connection.onRequest(FetchTelemetryMetrics.req, async (cancelToken) => {
         const projectsIds = [...projects.all]
         const promises = projectsIds.map(async projectId => {
-          const model = await modelBuilder.buildLikeC4Model(projectId, cancelToken)
+          const model = await likec4Services.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
           if (model === LikeC4Model.EMPTY) {
             return Promise.reject(new Error(`Model is empty`))
           }
@@ -277,7 +275,7 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(GetDocumentTags.req, async ({ documentUri }, cancelToken) => {
-        const tags = await modelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
+        const tags = await likec4Services.ModelLocator.locateDocumentTags(URI.parse(documentUri), cancelToken)
         return {
           tags,
         }
@@ -292,12 +290,14 @@ export class Rpc extends ADisposable {
         diagrams,
         filter(d => !!d.hasLayoutDrift),
         map(d => {
+          const loc = likec4Services.ModelLocator.locateView(d.id)
+          invariant(loc, `View ${d.id} not found`)
           return {
-            uri: modelLocator.locateView(d.id)!.uri,
+            uri: loc.uri,
             viewId: d.id,
             severity: DiagnosticSeverity.Warning,
             message: `Layout drift detected for view '${d.id}'`,
-            range: modelLocator.locateView(d.id)!.range,
+            range: loc.range,
           }
         }),
       )

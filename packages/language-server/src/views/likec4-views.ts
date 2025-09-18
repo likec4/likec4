@@ -1,10 +1,10 @@
 import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
-import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
+import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { type WorkspaceCache } from 'langium'
 import { values } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
-import { logError, logger as rootLogger, logWarnError } from '../logger'
+import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 import { performanceMark } from '../utils'
@@ -63,7 +63,12 @@ const viewsLogger = rootLogger.getChild('views')
 export class DefaultLikeC4Views implements LikeC4Views {
   private cache = new WeakMap<ComputedView, GraphvizOut>()
 
-  private viewsWithReportedErrors = new Set<ViewId>()
+  /**
+   * Set of viewIds with reported errors
+   * value is `${projectId}-${viewId}`
+   */
+  private viewsWithReportedErrors = new Set<string>()
+
   private ModelBuilder: LikeC4ModelBuilder
 
   constructor(private services: LikeC4Services) {
@@ -92,11 +97,12 @@ export class DefaultLikeC4Views implements LikeC4Views {
       return []
     }
     const m0 = performanceMark()
-    const logger = projectId ? viewsLogger.getChild(projectId) : viewsLogger
+    projectId ??= likeC4Model.project.id
+    const logger = viewsLogger.getChild(projectId)
     logger.debug`layoutAll: ${views.length} views`
 
     const tasks = [] as LayoutTaskParams[]
-    const specification = likeC4Model.$data.specification
+    const styles = likeC4Model.$styles
     const results = [] as GraphvizOut[]
     //
     for (const view of views) {
@@ -108,15 +114,14 @@ export class DefaultLikeC4Views implements LikeC4Views {
       }
       tasks.push({
         view,
-        specification,
+        styles,
       })
     }
     if (tasks.length > 0) {
       await this.layouter.batchLayout({
         batch: tasks,
         onSuccess: (task, result) => {
-          this.viewsWithReportedErrors.delete(task.view.id)
-          this.cache.set(task.view, result)
+          this.viewSucceed(task.view, projectId, result)
           results.push(result)
         },
         onError: (task, error) => {
@@ -140,7 +145,8 @@ export class DefaultLikeC4Views implements LikeC4Views {
   ): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
-    const logger = projectId ? viewsLogger.getChild(projectId) : viewsLogger
+    projectId ??= model.project.id
+    const logger = viewsLogger.getChild(projectId)
     if (!view) {
       logger.warn`layoutView ${viewId} not found`
       return null
@@ -148,25 +154,21 @@ export class DefaultLikeC4Views implements LikeC4Views {
     let cached = this.cache.get(view)
     if (cached) {
       logger.debug`layout ${viewId} from cache`
-      return await Promise.resolve(cached)
+      return await Promise.resolve().then(() => cached)
     }
     try {
       const m0 = performanceMark()
       const result = await this.layouter.layout({
         view,
-        specification: model.$data.specification,
+        styles: model.$styles,
       })
-      this.viewsWithReportedErrors.delete(viewId)
-      this.cache.set(view, result)
+      this.viewSucceed(view, projectId, result)
       logger.debug(`layout {viewId} ready in ${m0.pretty}`, { viewId })
       return result
     } catch (e) {
-      if (!this.viewsWithReportedErrors.has(viewId)) {
-        const errMessage = loggable(e)
-        this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${errMessage}`)
-        this.viewsWithReportedErrors.add(viewId)
-        logError(e)
-      }
+      const errMessage = loggable(e)
+      logger.warn(errMessage)
+      this.reportViewError(view, projectId, errMessage)
       return Promise.reject(e)
     }
   }
@@ -196,7 +198,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     const tasks = views.map(async view => {
       const { dot, svg } = await this.layouter.svg({
         view,
-        specification: likeC4Model.$data.specification,
+        styles: likeC4Model.$styles,
       })
       return {
         id: view.id,
@@ -222,6 +224,20 @@ export class DefaultLikeC4Views implements LikeC4Views {
    */
   async openView(viewId: ViewId, projectId: ProjectId): Promise<void> {
     await this.services.Rpc.openView({ viewId, projectId })
+  }
+
+  private reportViewError(view: ComputedView, projectId: ProjectId, error: string): void {
+    const key = `${projectId}-${view.id}`
+    if (!this.viewsWithReportedErrors.has(key)) {
+      this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${error}`)
+      this.viewsWithReportedErrors.add(key)
+    }
+  }
+
+  private viewSucceed(view: ComputedView, projectId: ProjectId, result: LayoutResult): void {
+    const key = `${projectId}-${view.id}`
+    this.viewsWithReportedErrors.delete(key)
+    this.cache.set(view, result)
   }
 
   // async overviewGraph(): Promise<OverviewGraph> {

@@ -5,34 +5,27 @@
       "prod": {
         "id": "prod",
         "kind": "env",
-        "style": {
-          "color": "primary",
-          "shape": "rectangle",
-        },
+        "style": {},
         "title": "prod",
       },
       "prod.eu": {
         "id": "prod.eu",
         "kind": "node",
-        "style": {
-          "color": "primary",
-          "shape": "rectangle",
-        },
+        "style": {},
         "title": "eu",
       },
       "prod.eu.ui": {
         "element": "cloud.ui",
         "id": "prod.eu.ui",
+        "style": {},
       },
     },
     "relations": {},
   },
   "elements": {
     "cloud": {
-      "color": "primary",
       "id": "cloud",
       "kind": "system",
-      "shape": "rectangle",
       "style": {},
       "tags": [
         "tag2",
@@ -40,18 +33,14 @@
       "title": "cloud",
     },
     "cloud.ui": {
-      "color": "primary",
       "id": "cloud.ui",
       "kind": "component",
-      "shape": "rectangle",
       "style": {},
       "title": "ui",
     },
     "customer": {
-      "color": "primary",
       "id": "customer",
       "kind": "actor",
-      "shape": "rectangle",
       "style": {},
       "tags": [
         "tag1",
@@ -101,12 +90,8 @@
       "like": {},
     },
     "tags": {
-      "tag1": {
-        "color": "primary",
-      },
-      "tag2": {
-        "color": "primary",
-      },
+      "tag1": {},
+      "tag2": {},
     },
   },
   "views": {},

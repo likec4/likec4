@@ -67,10 +67,10 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
     let relativePath
     switch (groupBy) {
       case 'by-files':
-        relativePath = view.$view.relativePath ?? ''
+        relativePath = view.$view.sourcePath ?? ''
         break
       case 'by-folders':
-        relativePath = dropFilename(view.$view.relativePath ?? '')
+        relativePath = dropFilename(view.$view.sourcePath ?? '')
         break
       case 'none':
         relativePath = ''

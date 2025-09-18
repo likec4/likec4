@@ -9,6 +9,7 @@
     "outDir": "lib/worker",
     "rootDir": ".",
     "types": [
+      "node",
       "vite/client"
     ]
   },

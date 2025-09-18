@@ -6,12 +6,10 @@ import {
   hasAtLeast,
   isArray,
   isFunction,
-  isNonNullish,
   isNullish,
   map,
   mapToObj,
   mapValues,
-  pickBy,
 } from 'remeda'
 import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
@@ -21,6 +19,8 @@ import type {
   aux,
   DeployedInstance,
   DeploymentFqn,
+  DeploymentNode,
+  ElementStyle,
   LikeC4Project,
   ParsedElementView,
   ParsedLikeC4ModelData,
@@ -28,11 +28,9 @@ import type {
   TagSpecification,
 } from '../types'
 import {
-  type Color,
   type DeploymentElement,
   type DeploymentRelation,
   type Element,
-  type ElementShape,
   type Fqn,
   type IconUrl,
   type LikeC4View,
@@ -44,8 +42,7 @@ import {
   type RelationId,
   _stage,
   _type,
-  DefaultElementShape,
-  DefaultThemeColor,
+  exact,
   FqnRef,
   isDeployedInstance,
   isElementView,
@@ -266,18 +263,15 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       elements: structuredClone(spec.elements),
       deployments: structuredClone(spec.deployments),
       relationships: structuredClone(spec.relationships),
-      tags: mapValues(spec.tags, (tagSpec) => ({
-        color: DefaultThemeColor,
-        ...tagSpec,
-      })),
+      tags: structuredClone(spec.tags),
       ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)
   }
 
-  const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
+  const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | undefined => {
     if (!links || !hasAtLeast(links, 1)) {
-      return null
+      return undefined
     }
     return map(links, l => (typeof l === 'string' ? { url: l } : l))
   }
@@ -301,15 +295,18 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
     const links = mapLinks(_links)
-    return [{
-      id: id as any,
-      title,
-      description: description ? { txt: description } : null,
-      tags,
-      links,
-      _stage: 'parsed',
-      ...props,
-    }, builder]
+    return [
+      exact({
+        id: id as any,
+        title,
+        description: description ? { txt: description } : null,
+        tags,
+        links,
+        _stage: 'parsed',
+        ...props,
+      }),
+      builder,
+    ]
   }
 
   const self: Builder<T> & Internals<T> = {
@@ -477,7 +474,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               { title: null, links: null },
             )
             const links = mapLinks(_links)
-            b.__addRelation({
+            b.__addRelation(exact({
               source: {
                 model: source,
               },
@@ -486,9 +483,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               },
               title,
               ...(description && { description: { txt: description } }),
-              ...(links && { links }),
+              links,
               ...props,
-            })
+            }))
             return b
           }
         },
@@ -496,23 +493,22 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           return <T extends AnyTypes>(b: ModelBuilder<T>) => {
             const {
               title = '',
-              links: _links = [],
+              links,
               description = null,
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
               { title: null, links: null },
             )
-            const links = mapLinks(_links)
-            b.__addSourcelessRelation({
+            b.__addSourcelessRelation(exact({
               target: {
                 model: target,
               },
               title,
               ...(description && { description: { txt: description } }),
-              ...(links && { links }),
+              links: mapLinks(links),
               ...props,
-            })
+            }))
             return b
           }
         },
@@ -525,8 +521,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           ): AddElement<Id> => {
             const add = (<T extends AnyTypes>(b: ModelBuilder<T>) => {
               const {
-                links: _links,
+                links,
                 icon: _icon,
+                color,
+                shape,
                 style,
                 title,
                 description,
@@ -534,33 +532,31 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-              const links = mapLinks(_links)
-
               const icon = _icon ?? specStyle?.icon
 
               const _id = b.__fqn(id)
 
-              b.__addElement({
+              b.__addElement(exact({
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
                 ...(description && { description: { txt: description } }),
                 ...(summary && { summary: { txt: summary } }),
-                color: specStyle?.color ?? DefaultThemeColor as Color,
-                shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                style: pickBy({
+                style: exact({
+                  icon: icon as IconUrl | undefined,
+                  color: color ?? specStyle?.color,
+                  shape: shape ?? specStyle?.shape,
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
                   size: specStyle?.size,
                   padding: specStyle?.padding,
                   textSize: specStyle?.textSize,
                   ...style,
-                }, isNonNullish),
-                ...(links && { links }),
-                ...icon && { icon: icon as IconUrl },
+                }) satisfies ElementStyle,
+                links: mapLinks(links),
                 ...spec,
                 ...props,
-              })
+              }))
               return b
             }) as AddElement<Id>
 
@@ -725,19 +721,31 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               title,
               description,
               summary,
+              icon,
+              color,
+              shape,
+              style,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
             const _id = b.__deploymentFqn(id)
             invariant(_elements.has(target), `Target element with id "${target}" not found`)
-            b.__addDeployment({
-              id: _id,
-              element: target as Fqn,
-              ...title && { title },
-              ...(summary && { summary: { txt: summary } }),
-              ...(description && { description: { txt: description } }),
-              ...links && { links: mapLinks(links) },
-              ...props,
-            } as DeployedInstance)
+            b.__addDeployment(
+              exact({
+                id: _id,
+                element: target as Fqn,
+                ...title && { title },
+                ...(summary && { summary: { txt: summary } }),
+                ...(description && { description: { txt: description } }),
+                style: exact({
+                  icon: icon as IconUrl | undefined,
+                  color,
+                  shape,
+                  ...style,
+                }) satisfies ElementStyle,
+                links: mapLinks(links),
+                ...props,
+              }) satisfies DeployedInstance,
+            )
             return b as any
           }
         },
@@ -750,7 +758,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            b.__addDeploymentRelation({
+            b.__addDeploymentRelation(exact({
               source: {
                 deployment: source as any,
               },
@@ -759,9 +767,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               },
               title,
               ...description && { description: { txt: description } },
-              ...links && { links: mapLinks(links) },
+              links: mapLinks(links),
               ...props,
-            })
+            }))
             return b
           }
         },
@@ -780,6 +788,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 title,
                 description,
                 summary,
+                color,
+                shape,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
@@ -787,29 +797,29 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const _id = b.__deploymentFqn(id)
 
-              b.__addDeployment({
-                id: _id,
-                kind: kind as any,
-                title: title ?? nameFromFqn(_id),
-                ...(description && { description: { txt: description } }),
-                ...(summary && { summary: { txt: summary } }),
-                style: {
-                  ...icon && { icon: icon as IconUrl },
-                  color: specStyle?.color ?? DefaultThemeColor as Color,
-                  shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
-                  ...pickBy({
+              b.__addDeployment(
+                exact({
+                  id: _id,
+                  kind: kind as any,
+                  title: title ?? nameFromFqn(_id),
+                  ...(description && { description: { txt: description } }),
+                  ...(summary && { summary: { txt: summary } }),
+                  style: exact({
+                    icon: icon as IconUrl | undefined,
+                    color: color ?? specStyle?.color,
+                    shape: shape ?? specStyle?.shape,
                     border: specStyle?.border,
                     opacity: specStyle?.opacity,
                     size: specStyle?.size,
                     padding: specStyle?.padding,
                     textSize: specStyle?.textSize,
                     ...style,
-                  }, isNonNullish),
-                },
-                ...links && { links: mapLinks(links) },
-                ...spec,
-                ...props,
-              })
+                  }) satisfies ElementStyle,
+                  links: mapLinks(links),
+                  ...spec,
+                  ...props,
+                }) satisfies DeploymentNode,
+              )
               return b
             }) as AddDeploymentNode<Id>
 

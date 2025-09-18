@@ -29,7 +29,6 @@ export * from './model-spec'
 export * from './operators'
 export * from './project'
 export * from './scalar'
-export * from './styles'
 export * from './view'
 export * from './view-changes'
 export * from './view-common'
@@ -40,5 +39,7 @@ export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 
 export * as scalar from './scalar'
+
+export type * from '../styles/types'
 
 export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'

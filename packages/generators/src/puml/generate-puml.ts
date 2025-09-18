@@ -1,13 +1,14 @@
 import type { aux, LikeC4ViewModel } from '@likec4/core/model'
 import {
+  type Color,
   type ComputedEdge,
   type ComputedNode,
-  type ElementThemeColorValues,
+  type ElementColorValues,
   type KeysOf,
   type NodeId,
   type ProcessedView,
-  type RelationshipThemeColorValues,
-  type ThemeColorValues,
+  type RelationshipColorValues,
+  type ThemeColor,
   RichText,
 } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
@@ -22,45 +23,14 @@ const nodeName = (node: ComputedNode): string => {
 }
 
 const pumlColor = (
-  color: string | undefined,
-  customColorProvider: (colorKey: string) => string | undefined,
+  color: Color | undefined,
+  customColorProvider: (colorKey: Color) => string | undefined,
   defaultColor: string = '#3b82f6',
 ) => {
-  switch (color) {
-    case 'blue':
-    case 'primary': {
-      return '#3b82f6'
-    }
-    case 'amber': {
-      return '#a35829'
-    }
-    case 'gray': {
-      return '#737373'
-    }
-    case 'green': {
-      return '#428a4f'
-    }
-    case 'indigo': {
-      return '#6366f1'
-    }
-    case 'slate':
-    case 'muted': {
-      return '#64748b'
-    }
-    case 'red': {
-      return '#ac4d39'
-    }
-    case 'sky':
-    case 'secondary': {
-      return '#0284c7'
-    }
-    case null:
-    case undefined: {
-      return defaultColor
-    }
-    default:
-      return customColorProvider(color) || color
+  if (color) {
+    return customColorProvider(color) ?? defaultColor
   }
+  return defaultColor
 }
 
 const pumlDirection = ({ autoLayout }: ProcessedView) => {
@@ -104,13 +74,14 @@ const escapeLabel = (label: string | null | undefined) => isNil(label) ? null : 
 
 export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const view = viewmodel.$view
-  const customColorDefinitions = viewmodel.$model.specification.customColors ?? {}
+  const colors = viewmodel.$model.$styles.theme.colors
   const { nodes, edges } = view
-  const customColors = new Map<string, ThemeColorValues>(Object.entries(customColorDefinitions))
-  const elemntColorProvider = (key: KeysOf<ElementThemeColorValues>) => (colorKey: string) =>
-    customColors.get(colorKey)?.elements[key]
-  const relationshipsColorProvider = (key: KeysOf<RelationshipThemeColorValues>) => (colorKey: string) =>
-    customColors.get(colorKey)?.relationships[key]
+
+  const elemntColorProvider = (key: KeysOf<ElementColorValues>) => (colorKey: Color) =>
+    colorKey in colors ? colors[colorKey as ThemeColor].elements[key] : undefined
+  const relationshipsColorProvider = (key: KeysOf<RelationshipColorValues>) => (colorKey: Color) =>
+    colorKey in colors ? colors[colorKey as ThemeColor].relationships[key] : undefined
+
   const names = new Map<NodeId, string>()
 
   const printHeader = () => {
@@ -150,9 +121,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
             .append('BackgroundColor ', pumlColor(node.color, elemntColorProvider('fill')), NL)
             .append(
               'FontColor ',
-              customColors.has(node.color)
-                ? pumlColor(node.color, elemntColorProvider('hiContrast'))
-                : '#FFFFFF',
+              pumlColor(node.color, elemntColorProvider('hiContrast'), '#FFFFFF'),
               NL,
             )
             .append('BorderColor ', pumlColor(node.color, elemntColorProvider('stroke')), NL),
@@ -218,7 +187,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
     const tech = escapeLabel(edge.technology) || ''
     const label = escapeLabel(edge.label) || ''
-    const color = pumlColor(edge.color, relationshipsColorProvider('lineColor'), '#777777')
+    const color = pumlColor(edge.color, relationshipsColorProvider('line'), '#777777')
 
     const colorTag = (color: string) => `<color:${color}>`
 

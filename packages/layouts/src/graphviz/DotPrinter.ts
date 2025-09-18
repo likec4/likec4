@@ -1,28 +1,19 @@
+import { type LikeC4Styles } from '@likec4/core/styles'
 import {
-  DefaultRelationshipColor,
-  defaultTheme,
-  defaultTheme as Theme,
-  DefaultThemeColor,
-  ensureSizes,
-  isThemeColor,
-} from '@likec4/core'
-import type {
-  AnyAux,
-  AnyFqn,
-  Color,
-  ComputedEdge,
-  ComputedNode,
-  ComputedView,
-  DeploymentFqn,
-  EdgeId,
-  ElementThemeColorValues,
-  Fqn,
-  HexColor,
-  NodeId,
-  RelationshipLineType,
-  RelationshipThemeColorValues,
-  Specification as LikeC4Specification,
-  XYPoint,
+  type AnyAux,
+  type AnyFqn,
+  type ComputedEdge,
+  type ComputedNode,
+  type ComputedView,
+  type DeploymentFqn,
+  type EdgeId,
+  type Fqn,
+  type HexColor,
+  type LikeC4StyleDefaults,
+  type NodeId,
+  type RelationshipColorValues,
+  type RelationshipLineType,
+  type XYPoint,
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
@@ -69,7 +60,7 @@ import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } f
 
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
-const FontName = Theme.font
+const FontName = 'Arial'
 
 const logger = createLogger('dot')
 
@@ -124,8 +115,8 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   public readonly graphvizModel: RootGraphModel
 
   constructor(
-    protected view: V,
-    protected specification: LikeC4Specification<A>,
+    protected readonly view: V,
+    protected readonly styles: LikeC4Styles,
   ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
@@ -209,8 +200,21 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.postBuild(G)
   }
 
+  protected get $defaults(): LikeC4StyleDefaults {
+    return this.styles.defaults
+  }
+
   public get hasEdgesWithCompounds(): boolean {
     return this.edgesWithCompounds.size > 0
+  }
+
+  protected get defaultRelationshipColors(): RelationshipColorValues {
+    const colorValues = this.styles.relationshipColors
+    return {
+      line: colorValues.line,
+      label: colorValues.label as HexColor,
+      labelBg: colorValues.labelBg,
+    }
   }
 
   protected postBuild(_G: RootGraphModel): void {
@@ -261,7 +265,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   }
 
   public print(): DotSource {
-    const G = this.graphvizModel
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',
@@ -297,24 +300,26 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   }
 
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
+    const colors = this.styles.elementColors
     node.apply({
       [_.fontname]: FontName,
       [_.shape]: 'rect',
-      [_.fillcolor]: defaultTheme.elements[DefaultThemeColor].fill,
-      [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast as HexColor,
-      [_.color]: defaultTheme.elements[DefaultThemeColor].stroke,
+      [_.fillcolor]: colors.fill,
+      [_.fontcolor]: colors.hiContrast as HexColor,
+      [_.color]: colors.stroke,
       [_.style]: 'filled',
       [_.penwidth]: 0,
     })
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
+    const colors = this.defaultRelationshipColors
     edge.apply({
       [_.arrowsize]: 0.75,
       [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
-      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor as HexColor,
+      [_.color]: colors.line,
+      [_.fontcolor]: colors.label as HexColor,
     })
   }
 
@@ -350,7 +355,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
-    const colorValues = this.getElementColorValues(compound.color)
+    const colorValues = this.styles.colors(compound.color).elements
     const textColor = compoundLabelColor(colorValues.loContrast)
     subgraph.apply({
       [_.likec4_id]: compound.id,
@@ -370,28 +375,20 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected elementToNode(element: ComputedNode, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
-    const colorValues = this.getElementColorValues(element.color)
-    const { size, textSize, padding: paddingSize } = ensureSizes(element.style)
-
-    const padding = defaultTheme.spacing[paddingSize]
+    const colorValues = this.styles.colors(element.color).elements
+    const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
 
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.label]: nodeLabel(element, colorValues, {
-        shape: size,
-        padding: paddingSize,
-        text: textSize,
-      }),
+      [_.label]: nodeLabel(element, this.styles),
       [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
-
-    const { width, height } = defaultTheme.sizes[size]
 
     node.attributes.set(_.width, pxToInch(width))
     node.attributes.set(_.height, pxToInch(height))
 
-    if (element.color !== DefaultThemeColor) {
+    if (!this.styles.isDefaultColor(element.color)) {
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
         [_.fontcolor]: colorValues.hiContrast as HexColor,
@@ -649,15 +646,5 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.graphvizModel.delete(_.packmode)
     this.graphvizModel.attributes.graph.delete(_.margin)
     return this
-  }
-  protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
-    return isThemeColor(color)
-      ? Theme.relationships[color]
-      : this.specification.customColors?.[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
-  }
-  protected getElementColorValues(color: Color): ElementThemeColorValues {
-    return isThemeColor(color)
-      ? Theme.elements[color]
-      : this.specification.customColors?.[color]?.elements ?? Theme.elements[DefaultThemeColor]
   }
 }

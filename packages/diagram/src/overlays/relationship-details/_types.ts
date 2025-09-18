@@ -4,6 +4,7 @@ import type {
   Fqn,
   IconUrl,
   RelationId,
+  RelationshipArrowType,
   RelationshipLineType,
   RichTextOrEmpty,
   ViewId,
@@ -75,11 +76,13 @@ export namespace RelationshipDetailsTypes {
   export type EdgeData = Simplify<
     Base.EdgeData & {
       relationId: RelationId
-      color: Color | undefined
+      color: Color
       label: string | null
       technology?: string | undefined
       navigateTo: ViewId | null
       line: RelationshipLineType
+      head?: RelationshipArrowType
+      tail?: RelationshipArrowType
       description: RichTextOrEmpty
     }
   >

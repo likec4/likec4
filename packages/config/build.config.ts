@@ -1,3 +1,4 @@
+import spawn from 'nano-spawn'
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
@@ -14,6 +15,12 @@ export default defineBuildConfig({
     inlineDependencies: true,
     output: {
       hoistTransitiveImports: false,
+    },
+  },
+
+  hooks: {
+    'build:done': async () => {
+      await spawn('tsx', ['scripts/generate.mts'])
     },
   },
 })

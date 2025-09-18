@@ -72,14 +72,14 @@ export const elementShapeRecipe = defineRecipe({
         multipleHtml: {
           position: 'absolute',
           content: '" "',
-          top: '[14px]',
-          left: '[14px]',
-          width: '[calc(100% - 6px)]',
-          height: '[calc(100% - 6px)]',
+          top: 16,
+          left: 16,
+          width: 'calc(100% - 6px)',
+          height: 'calc(100% - 6px)',
           backgroundColor: 'var(--likec4-palette-fill)',
-          borderRadius: '[6px]',
+          borderRadius: '6px',
           zIndex: -1,
-          filter: 'brightness(0.65)',
+          filter: 'brightness(0.5) !important',
           visibility: {
             base: 'visible',
             _smallZoom: 'hidden',
@@ -89,7 +89,7 @@ export const elementShapeRecipe = defineRecipe({
           },
           transition: 'fast',
           _whenHovered: {
-            transform: 'translate(-10px, -10px)',
+            transform: 'translate(-14px, -14px)',
           },
         },
         outline: {
@@ -147,11 +147,11 @@ export const elementShapeRecipe = defineRecipe({
             _shapeStorage: '50% 100%',
           },
           transform: {
-            base: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
-            _whenHovered: 'translate(2px, 2px) perspective(300px) translateZ(-8px)',
+            base: 'translate(14px, 14px) perspective(200px) translateZ(-4px)',
+            _whenHovered: 'translate(2px, 2px) perspective(200px) translateZ(-4px)',
           },
           transition: 'fast',
-          filter: 'brightness(0.65) !important',
+          filter: 'brightness(0.5) !important',
           stroke: 'none',
           display: {
             _smallZoom: 'none',

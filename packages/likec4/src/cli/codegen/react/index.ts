@@ -19,10 +19,15 @@ type HandlerParams = {
    */
   path: string
   useDotBin: boolean
+  /**
+   * Whether to use `@likec4/core` package in types
+   * @default false
+   */
+  useCorePackage: boolean
   outfile: string | undefined
 }
 
-export async function reactHandler({ path, useDotBin, outfile, project }: HandlerParams) {
+export async function reactHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
@@ -93,7 +98,7 @@ export async function reactHandler({ path, useDotBin, outfile, project }: Handle
   const model = await languageServices.layoutedModel(projectId)
 
   const dts = resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts'))
-  await writeFile(dts, generateReactTypes(model))
+  await writeFile(dts, generateReactTypes(model, { useCorePackage }))
 
   timer.stopAndLog()
 

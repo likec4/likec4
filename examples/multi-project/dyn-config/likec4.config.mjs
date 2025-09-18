@@ -5,4 +5,9 @@ export default defineConfig({
   name: 'dyn-config',
   title: 'Dynamic Config',
   generators,
+  styles: {
+    defaults: {
+      opacity: 10,
+    },
+  },
 })

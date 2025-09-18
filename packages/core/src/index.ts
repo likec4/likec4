@@ -1,9 +1,4 @@
-export {
-  computeColorValues,
-  defaultTheme,
-  ElementColors,
-  RelationshipColors,
-} from './theme'
+export { defaultTheme, LikeC4Styles } from './styles'
 
 export * from './types'
 

@@ -19,11 +19,11 @@ export async function layoutLikeC4Model<A extends aux.Any>(
   }
   invariant(model.isComputed(), 'Model is not computed')
   const layouter = new QueueGraphvizLayoter(options)
-  const specification = model.specification
+  const styles = model.$styles
   const layoutResult = await layouter.batchLayout({
     batch: [...model.asComputed.views()].map(view => ({
       view: view.$view,
-      specification,
+      styles,
     })),
   })
   return LikeC4Model.create({

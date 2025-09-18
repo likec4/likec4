@@ -1,4 +1,4 @@
-import type { Element, ViewId } from '@likec4/core'
+import { type Element, type ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
@@ -41,7 +41,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(elements).toMatchObject({
       customer: {
         kind: 'user',
-        shape: 'person',
+        style: {
+          shape: 'person',
+        },
         title: 'Customer',
       },
       system: {
@@ -50,13 +52,17 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       },
       spa: {
         kind: 'component',
-        shape: 'browser',
+        style: {
+          shape: 'browser',
+        },
         title: 'SPA',
       },
       mobile: {
         kind: 'component',
-        shape: 'mobile',
-        color: 'green',
+        style: {
+          shape: 'mobile',
+          color: 'green',
+        },
         title: 'Mobile',
       },
     })
@@ -110,18 +116,25 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       'client': {
         kind: 'user',
-        shape: 'person',
+        style: {
+          shape: 'person',
+        },
+        title: 'client',
       },
       'system.backend': {
-        color: 'secondary',
         title: 'Backend',
         technology: 'NodeJS',
         summary: { txt: 'Backend summary' },
+        style: {
+          color: 'secondary',
+        },
       },
       'system.frontend': {
-        color: 'muted',
-        shape: 'browser',
         description: { txt: 'Frontend description' },
+        style: {
+          color: 'muted',
+          shape: 'browser',
+        },
       },
     })
     expect(model.elements['client']).not.to.have.property('description')
@@ -247,19 +260,27 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'system',
-        icon: 'https://system1.png',
+        style: {
+          icon: 'https://system1.png',
+        },
       },
       system2: {
         kind: 'system',
-        icon: 'tech:react',
+        style: {
+          icon: 'tech:react',
+        },
       },
       system3: {
         kind: 'system',
-        icon: 'tech:astro',
+        style: {
+          icon: 'tech:astro',
+        },
       },
       component1: {
         kind: 'component',
-        icon: 'https://component.png',
+        style: {
+          icon: 'https://component.png',
+        },
       },
     })
   })
@@ -594,12 +615,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: [{ url: './samefolder.c4', relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4',
+      sourcePath: 'src/index.c4',
     })
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4',
+      sourcePath: 'src/subdir/doc2.c4',
     })
   })
 
@@ -690,18 +711,18 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: [{ relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4',
+      sourcePath: 'src/index.c4',
     })
     expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4',
+      sourcePath: 'src/subdir/doc2.c4',
     })
     expect(views['sys3']).toMatchObject({
       links: [{ relative: 'src/a/b/c/sys3/index.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
-      relativePath: 'a/b/c/doc3.c4',
+      sourcePath: 'src/a/b/c/doc3.c4',
     })
   })
 
@@ -1208,151 +1229,6 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         },
       },
     })
-  })
-
-  it('parses custom color definitions', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { errors, warnings } = await validate(`
-      specification {
-        color custom-color1 #FF00FF
-        color custom-color2 #FFFF00
-
-        element component {
-          style {
-            color custom-color2
-          }
-        }
-      }
-    `)
-    expect(errors).toEqual([])
-    expect(warnings).toEqual([])
-
-    const model = await buildModel()
-    expect(model.specification).toHaveProperty('customColors', {
-      'custom-color1': {
-        elements: {
-          fill: '#ff00ff',
-          hiContrast: '#ffffff',
-          loContrast: '#ffffff',
-          stroke: '#e400e4',
-        },
-        relationships: {
-          labelBgColor: '#b100b2',
-          labelColor: '#ff64ff',
-          lineColor: '#fe37fe',
-        },
-      },
-      'custom-color2': {
-        elements: {
-          fill: '#ffff00',
-          hiContrast: '#4d5c00',
-          loContrast: '#606e00',
-          stroke: '#e3e300',
-        },
-        relationships: {
-          labelBgColor: '#adae00',
-          labelColor: '#ffff64',
-          lineColor: '#ffff38',
-        },
-      },
-    })
-  })
-
-  it('allows custom colors in spec', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { errors, warnings } = await validate(`
-      specification {
-        element component {
-          style {
-            color custom-color1
-          }
-        }
-
-        relationship uses {
-          color custom-color1
-        }
-
-        color custom-color1 #FF00FF
-      }
-      model {
-        component sys1
-        component sys2
-        sys1 -[uses]-> sys2
-      }
-      views {
-        view {
-          include *
-        }
-      }
-    `)
-    expect(errors).toEqual([])
-    expect(warnings).toEqual([])
-    const model = await buildModel()
-    const indexView = model?.views['index' as ViewId]!
-    expect(indexView).toBeDefined()
-    expect(indexView.edges[0]?.color).toBe('custom-color1')
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
-    expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('custom-color1')
-  })
-
-  it('allows custom colors in relationships', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { errors, warnings } = await validate(`
-      specification {
-        element component
-
-        color custom-color1 #FF00FF
-      }
-      model {
-        component sys1
-        component sys2
-        sys1 -> sys2 {
-          style {
-            color custom-color1
-          }
-        }
-      }
-      views {
-        view {
-          include *
-        }
-      }
-    `)
-    expect(errors).toEqual([])
-    expect(warnings).toEqual([])
-    const model = await buildModel()
-    const indexView = model?.views['index' as ViewId]!
-    expect(indexView).toBeDefined()
-    expect(indexView.edges[0]?.color).toBe('custom-color1')
-  })
-
-  it('allows custom colors in include expressions of view', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { errors, warnings } = await validate(`
-      specification {
-        element component
-
-        color custom-color1 #FF00FF
-      }
-      model {
-        component sys1
-        component sys2
-        sys1 -> sys2
-      }
-      views {
-        view index {
-          include sys1 with {
-            color custom-color1
-          }
-        }
-      }
-    `)
-    expect(errors).toEqual([])
-    expect(warnings).toEqual([])
-    const model = await buildModel()
-    const indexView = model?.views['index' as ViewId]!
-    expect(indexView).toBeDefined()
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
   })
 
   it('includes both sides of inout relation', async ({ expect }) => {

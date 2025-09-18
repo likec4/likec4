@@ -75,8 +75,6 @@ export function topologicalSort<A extends AnyAux>(
   }
 
   const getNode = (id: string) => nonNullable(param.nodes.get(id))
-  // const nodeLevel = (id: string) => getNode(id).level + 1
-  //
 
   const g = new Graph({
     multi: true,
@@ -86,7 +84,7 @@ export function topologicalSort<A extends AnyAux>(
 
   const enrichedEdges = pipe(
     edges,
-    map((edge, __dirname) => {
+    map((edge) => {
       const source = getNode(edge.source),
         target = getNode(edge.target),
         parent = edge.parent ? getNode(edge.parent) : null
@@ -98,11 +96,6 @@ export function topologicalSort<A extends AnyAux>(
         target,
       })
     }),
-    // sortBy(
-    //   [prop('sourceIndex'), 'asc'],
-    //   // [prop('sourceInCount'), 'asc'],
-    //   // [prop('sourceLevel'), 'asc'],
-    // ),
   )
 
   const [edgesBetweenLeafs, edgesWithCompounds] = partition(

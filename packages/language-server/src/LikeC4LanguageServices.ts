@@ -89,15 +89,17 @@ export interface LikeC4LanguageServices {
  * Public Language Services
  */
 export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
-  public readonly views: LikeC4Views
   public readonly builder: LikeC4ModelBuilder
 
   public readonly projectsManager: ProjectsManager
 
   constructor(private services: LikeC4Services) {
-    this.views = services.likec4.Views
     this.builder = services.likec4.ModelBuilder
     this.projectsManager = services.shared.workspace.ProjectsManager
+  }
+
+  get views(): LikeC4Views {
+    return this.services.likec4.Views
   }
 
   get workspaceUri(): URI {

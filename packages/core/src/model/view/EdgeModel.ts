@@ -5,6 +5,7 @@ import {
   type ComputedEdge,
   type DiagramEdge,
   type IteratorLike,
+  type RelationshipArrowType,
   type RelationshipLineType,
   type RichTextOrEmpty,
   type scalar,
@@ -69,11 +70,19 @@ export class EdgeModel<A extends Any = Any, View extends $View<A> = $View<A>> im
   }
 
   get color(): Color {
-    return this.#edge.color ?? 'gray'
+    return this.#edge.color
   }
 
   get line(): RelationshipLineType {
-    return this.#edge.line ?? 'dashed'
+    return this.#edge.line ?? this.view.$model.$styles.defaults.relationship.line
+  }
+
+  get head(): RelationshipArrowType {
+    return this.#edge.head ?? this.view.$model.$styles.defaults.relationship.arrow
+  }
+
+  get tail(): RelationshipArrowType | undefined {
+    return this.#edge.tail
   }
 
   public isStep(): this is EdgeModel.StepEdge<A, View> {

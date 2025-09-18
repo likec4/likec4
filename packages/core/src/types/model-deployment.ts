@@ -3,14 +3,6 @@ import type * as aux from './_aux'
 import type { AnyAux, Unknown } from './_aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
-import type { Icon } from './scalar'
-import type { Color, ElementShape } from './styles'
-
-export interface DeploymentElementStyle extends ElementStyle {
-  readonly icon?: Icon
-  readonly shape?: ElementShape
-  readonly color?: Color
-}
 
 // dprint-ignore
 export interface DeploymentNode<A extends AnyAux = Unknown>
@@ -26,7 +18,7 @@ export interface DeploymentNode<A extends AnyAux = Unknown>
   readonly id: aux.StrictDeploymentFqn<A>
   readonly kind: aux.DeploymentKind<A>
   readonly title: string
-  readonly style: DeploymentElementStyle
+  readonly style: ElementStyle
 }
 
 // dprint-ignore
@@ -46,7 +38,7 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly id: aux.StrictDeploymentFqn<A>
   readonly element: aux.StrictFqn<A>
   readonly title?: string
-  readonly style?: DeploymentElementStyle
+  readonly style: ElementStyle
 }
 
 export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>

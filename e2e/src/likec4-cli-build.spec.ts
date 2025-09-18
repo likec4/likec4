@@ -1,6 +1,8 @@
 import { test } from 'vitest'
 import { $ } from 'zx'
 
+$.nothrow = false
+
 test.concurrent('LikeC4CLI - build should not fail', { timeout: 30000 }, async ({ expect }) => {
   await expect($`likec4 build src/likec4 -o test-results/build`).resolves.toBeTruthy()
 })

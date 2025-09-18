@@ -2,8 +2,10 @@ import { isEmpty, isNullish, omitBy } from 'remeda'
 import {
   type AnyAux,
   type ComputedNode,
+  type ComputedNodeStyle,
   type ElementViewRule,
   type ModelExpression,
+  exact,
   isGroupElementKind,
   isViewRuleGroup,
   isViewRulePredicate,
@@ -50,13 +52,22 @@ export function applyCustomElementProperties<A extends AnyAux>(
       description,
       ...rest
     } = omitBy(props, isNullish)
-    const notEmpty = !isEmpty(rest)
+    const style: ComputedNodeStyle = exact({
+      border,
+      opacity,
+      multiple,
+      padding,
+      size,
+      textSize,
+    })
+    const styleNotEmpty = !isEmpty(style)
+    const propsNotEmpty = !isEmpty(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
       if (isGroupElementKind(node) || !satisfies(node)) {
         return
       }
-      if (notEmpty) {
+      if (propsNotEmpty) {
         node = {
           ...node,
           isCustomized: true,
@@ -70,33 +81,13 @@ export function applyCustomElementProperties<A extends AnyAux>(
           description,
         }
       }
-
-      let styleOverride: ComputedNode['style'] | undefined
-      if (border !== undefined) {
-        styleOverride = { border }
-      }
-      if (opacity !== undefined) {
-        styleOverride = { ...styleOverride, opacity }
-      }
-      if (multiple !== undefined) {
-        styleOverride = { ...styleOverride, multiple }
-      }
-      if (padding !== undefined) {
-        styleOverride = { ...styleOverride, padding }
-      }
-      if (size !== undefined) {
-        styleOverride = { ...styleOverride, size }
-      }
-      if (textSize !== undefined) {
-        styleOverride = { ...styleOverride, textSize }
-      }
-      if (styleOverride) {
+      if (styleNotEmpty) {
         node = {
           ...node,
           isCustomized: true,
           style: {
             ...node.style,
-            ...styleOverride,
+            ...style,
           },
         }
       }

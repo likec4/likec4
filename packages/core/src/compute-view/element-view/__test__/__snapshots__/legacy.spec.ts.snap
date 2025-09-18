@@ -10,8 +10,11 @@ exports[`compute-element-view > view of cloud 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
+      "head": "normal",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -20,8 +23,11 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "support:cloud.frontend",
       "label": "manages",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "support:cloud.frontend.supportPanel",
@@ -30,9 +36,12 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "cloud.frontend:cloud.backend",
       "kind": "graphlql",
       "label": "requests",
+      "line": "dashed",
       "parent": "cloud",
       "relations": [
         "cloud.frontend:cloud.backend",
@@ -48,8 +57,11 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "cloud.backend",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "cloud.backend:email",
       "label": "schedule",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "cloud.backend:email",
@@ -61,8 +73,11 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "email",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "cloud.backend:amazon",
       "label": "uploads",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "cloud.backend.storage:amazon.s3",
@@ -76,7 +91,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "9fd9f3070cb9c4a1b0e0bccccae5eaa71659a5e0",
+  "hash": "31d44928cf5357b5106cce52d171689c26ccca9a",
   "id": "index",
   "links": null,
   "nodes": [
@@ -97,7 +112,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       ],
       "parent": null,
       "shape": "person",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "customer",
@@ -119,7 +137,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       ],
       "parent": null,
       "shape": "person",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "support",
@@ -147,7 +168,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       ],
       "parent": null,
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [
         "next",
         "old",
@@ -173,7 +197,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       ],
       "parent": "cloud",
       "shape": "browser",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "frontend",
@@ -196,7 +223,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       ],
       "parent": "cloud",
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "backend",
@@ -216,7 +246,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "email",
@@ -237,7 +270,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [
         "aws",
       ],
@@ -261,8 +297,11 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
   "description": null,
   "edges": [
     {
+      "color": "gray",
+      "head": "normal",
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -271,8 +310,11 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.frontend.dashboard",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "support:cloud.frontend.supportPanel",
       "label": "manages",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "support:cloud.frontend.supportPanel",
@@ -281,6 +323,8 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.frontend.supportPanel",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "cloud.frontend.dashboard:cloud.backend",
       "kind": "graphlql",
       "label": "requests",
@@ -296,6 +340,8 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
     {
+      "color": "gray",
+      "head": "normal",
       "id": "cloud.frontend.supportPanel:cloud.backend",
       "kind": "graphlql",
       "label": "fetches",
@@ -312,7 +358,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "2e4803c2ec35d8983615b6b12843abc4092f4fbb",
+  "hash": "ab0c1f3a6b4ad420705e253bf5cdd3b3734ed987",
   "id": "index",
   "links": null,
   "nodes": [
@@ -333,7 +379,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "parent": null,
       "shape": "person",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "customer",
@@ -355,7 +404,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "parent": null,
       "shape": "person",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "support",
@@ -383,7 +435,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "parent": null,
       "shape": "browser",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "frontend",
@@ -406,7 +461,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "parent": "cloud.frontend",
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [
         "next",
       ],
@@ -430,7 +488,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "parent": "cloud.frontend",
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [
         "old",
       ],
@@ -453,7 +514,10 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "opacity": 15,
+        "size": "md",
+      },
       "tags": [],
       "technology": null,
       "title": "backend",

@@ -9,9 +9,7 @@ import {
   type Link,
   type ProjectId,
   type RichTextOrEmpty,
-  DefaultElementShape,
-  DefaultShapeSize,
-  DefaultThemeColor,
+  exact,
   preferDescription,
   preferSummary,
   RichText,
@@ -69,15 +67,15 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   }
 
   get shape(): C4ElementShape {
-    return this.$element.shape ?? DefaultElementShape
+    return this.style.shape
   }
 
   get color(): Color {
-    return this.$element.color as Color ?? DefaultThemeColor
+    return this.style.color
   }
 
   get icon(): IconUrl | null {
-    return this.$element.icon ?? null
+    return this.style.icon ?? null
   }
 
   /**
@@ -138,11 +136,18 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.parent === null
   }
 
-  get style(): SetRequired<ElementStyle, 'size'> {
-    return {
-      size: DefaultShapeSize,
-      ...this.$element.style,
-    }
+  get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size'> {
+    return memoizeProp(this, 'style', () =>
+      exact({
+        shape: this.$model.$styles.defaults.shape,
+        color: this.$model.$styles.defaults.color,
+        border: this.$model.$styles.defaults.border,
+        opacity: this.$model.$styles.defaults.opacity,
+        size: this.$model.$styles.defaults.size,
+        padding: this.$model.$styles.defaults.padding,
+        textSize: this.$model.$styles.defaults.text,
+        ...this.$element.style,
+      }))
   }
 
   public isAncestorOf(another: ElementModel<A>): boolean {

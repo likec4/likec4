@@ -1,11 +1,9 @@
 import { isEmpty, isTruthy } from 'remeda'
-import type { AnyAux, Color, IteratorLike, Link, scalar } from '../types'
+import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
   type RichTextOrEmpty,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
   FqnRef,
   RichText,
 } from '../types'
@@ -35,6 +33,8 @@ export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTag
   readonly links: ReadonlyArray<Link>
   readonly color: Color
   readonly line: RelationshipLineType
+  readonly head: RelationshipArrowType
+  readonly tail: RelationshipArrowType | undefined
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
   views(): ViewsIterator<A>
@@ -103,11 +103,19 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
   }
 
   get color(): Color {
-    return this.$relationship.color ?? DefaultRelationshipColor
+    return this.$relationship.color ?? this.model.$styles.defaults.relationship.color
   }
 
   get line(): RelationshipLineType {
-    return this.$relationship.line ?? DefaultLineStyle
+    return this.$relationship.line ?? this.model.$styles.defaults.relationship.line
+  }
+
+  get head(): RelationshipArrowType {
+    return this.$relationship.head ?? this.model.$styles.defaults.relationship.arrow
+  }
+
+  get tail(): RelationshipArrowType | undefined {
+    return this.$relationship.tail
   }
 
   /**

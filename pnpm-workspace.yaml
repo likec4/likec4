@@ -114,7 +114,7 @@ catalogs:
     type-fest: ^4.41.0
     ufo: 1.6.1
     valibot: ^1.1.0
-    zod: 3.25.76
+    zod: ^3.25.76
   vite:
     "@vitejs/plugin-react": ^4.7.0
     rollup: ^4.44.0
@@ -141,9 +141,6 @@ catalogs:
   xyflow:
     "@xyflow/react": 12.8.4
     "@xyflow/system": 0.0.68
-  zod4:
-    zod: ^4.0.17
-    zod4: npm:zod@^4.0.17
 
 onlyBuiltDependencies:
   - dprint

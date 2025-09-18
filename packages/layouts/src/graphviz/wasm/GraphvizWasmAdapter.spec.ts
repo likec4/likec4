@@ -7,17 +7,17 @@ import {
   computedIndexView,
   issue577_fail,
   issue577_valid,
-  parsedModel,
+  parsedModel as likec4model,
 } from '../__fixtures__'
 import { GraphvizLayouter } from '../GraphvizLayoter'
 import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
 
-async function dotLayout(computedView: ComputedView) {
+async function dotLayout(view: ComputedView) {
   const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
-  return (await graphviz.layout({
-    specification: parsedModel.specification,
-    view: computedView,
-  })).diagram
+  return await graphviz.layout({
+    view,
+    styles: likec4model.$styles,
+  }).then(({ diagram }) => diagram)
 }
 
 describe('GraphvizWasmAdapter:', () => {

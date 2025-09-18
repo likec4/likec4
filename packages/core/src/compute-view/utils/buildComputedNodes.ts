@@ -1,15 +1,15 @@
+import { omit } from 'remeda'
 import type { Except } from 'type-fest'
 import type { ElementModel } from '../../model'
 import {
   type AnyAux,
   type aux,
   type ComputedNode,
+  type LikeC4StylesConfig,
   type scalar,
   type Unknown,
-  DefaultElementShape,
-  DefaultThemeColor,
+  exact,
   GroupElementKind,
-  omitUndefined,
   preferSummary,
 } from '../../types'
 import { nonNullable } from '../../utils'
@@ -38,24 +38,26 @@ export type ComputedNodeSource<A extends AnyAux = Unknown> = Except<
 export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>): ComputedNodeSource<A> {
   const {
     id,
-    summary, // omit
-    style,
-    metadata, // omit
+    title,
     ...rest
-  } = el.$element
-  return omitUndefined({
+  } = omit(el.$element, ['summary', 'description', 'metadata', 'style', 'tags'])
+  const { color, icon, shape, ...style } = el.style
+  return exact({
     id: id as scalar.NodeId,
+    title,
     modelRef: id,
-    ...rest,
-    style: { ...style },
-    color: el.color,
-    shape: el.shape,
+    shape,
+    color,
+    icon,
+    style,
     description: preferSummary(el.$element),
     tags: [...el.tags],
+    ...rest,
   })
 }
 
 export function buildComputedNodes<A extends AnyAux>(
+  { defaults }: LikeC4StylesConfig,
   elements: ReadonlyArray<ComputedNodeSource<A>>,
   groups?: ReadonlyArray<NodesGroup<A>>,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
@@ -72,9 +74,7 @@ export function buildComputedNodes<A extends AnyAux>(
       parent,
       kind: GroupElementKind,
       title: viewRule.title ?? '',
-      description: null,
-      technology: null,
-      color: viewRule.color ?? 'muted',
+      color: viewRule.color ?? defaults.group?.color ?? defaults.color,
       shape: 'rectangle',
       children: [],
       inEdges: [],
@@ -82,14 +82,14 @@ export function buildComputedNodes<A extends AnyAux>(
       level: 0,
       depth: 0,
       tags: [],
-      style: {
-        border: viewRule.border ?? 'dashed',
-        opacity: viewRule.opacity ?? 0,
-        size: viewRule.size ?? 'md',
-        multiple: viewRule.multiple ?? false,
-        padding: viewRule.padding ?? 'md',
-        textSize: viewRule.textSize ?? 'md',
-      },
+      style: exact({
+        border: viewRule.border ?? defaults.group?.border ?? defaults.border,
+        opacity: viewRule.opacity ?? defaults.group?.opacity ?? defaults.opacity,
+        size: viewRule.size,
+        multiple: viewRule.multiple,
+        padding: viewRule.padding,
+        textSize: viewRule.textSize,
+      }),
     })
     for (const e of elements) {
       elementToGroup.set(e.id, id)
@@ -99,7 +99,7 @@ export function buildComputedNodes<A extends AnyAux>(
   // Ensure that parent nodes are created before child nodes
   Array.from(elements)
     .sort(compareByFqnHierarchically)
-    .forEach(({ id, style, kind, title, color, shape, tags, notation, ...el }) => {
+    .forEach(({ id, ...el }) => {
       let parent = parentFqn(id)
       let level = 0
       let parentNd: ComputedNode<A> | undefined
@@ -129,26 +129,15 @@ export function buildComputedNodes<A extends AnyAux>(
         parentNd.children.push(id)
         level = parentNd.level + 1
       }
-      const node: ComputedNode<A> = {
+      const node: ComputedNode<A> = exact({
         id,
         parent,
-        kind,
-        title,
-        description: null,
-        technology: null,
         level,
-        color: color ?? DefaultThemeColor,
-        shape: shape ?? DefaultElementShape,
-        tags: tags ?? [],
         children: [],
         inEdges: [],
         outEdges: [],
-        ...notation && { notation },
         ...el,
-        style: {
-          ...style,
-        },
-      }
+      })
       nodesMap.set(id, node)
     })
 

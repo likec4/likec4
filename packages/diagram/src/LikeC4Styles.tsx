@@ -1,14 +1,12 @@
 import {
-  type CustomColorDefinitions,
+  type LikeC4StylesConfig,
   type ThemeColorValues,
-  defaultTheme,
-  ThemeColors,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
 import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
-import { useLikeC4Specification } from './likec4model'
+import { useLikeC4Styles } from './likec4model'
 
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
 
@@ -46,23 +44,24 @@ ${whenDark} ${selector} {
 }
 
 function toStyle(rootSelector: string, name: string, colors: ThemeColorValues): string {
+  const { elements, relationships } = colors
   const selector = `:where(${rootSelector} [data-likec4-color=${name}])`
   return [
     `
 ${selector} {
-  --likec4-palette-fill: ${colors.elements.fill};
-  --likec4-palette-stroke: ${colors.elements.stroke};
-  --likec4-palette-hiContrast: ${colors.elements.hiContrast};
-  --likec4-palette-loContrast: ${colors.elements.loContrast};
-  --likec4-palette-relation-stroke: ${colors.relationships.lineColor};
-  --likec4-palette-relation-label: ${colors.relationships.labelColor};
-  --likec4-palette-relation-label-bg: ${colors.relationships.labelBgColor};
+  --likec4-palette-fill: ${elements.fill};
+  --likec4-palette-stroke: ${elements.stroke};
+  --likec4-palette-hiContrast: ${elements.hiContrast};
+  --likec4-palette-loContrast: ${elements.loContrast};
+  --likec4-palette-relation-stroke: ${relationships.line};
+  --likec4-palette-relation-label: ${relationships.label};
+  --likec4-palette-relation-label-bg: ${relationships.labelBg};
 }
 ${whenLight} ${selector} {
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(colors.relationships.lineColor, 'black', 85))};
+  --likec4-palette-relation-stroke-selected: ${toRgba(mix(relationships.line, 'black', 85))};
 }
 ${whenDark} ${selector} {
-  --likec4-palette-relation-stroke-selected: ${toRgba(mix(colors.relationships.lineColor, 'white', 70))};
+  --likec4-palette-relation-stroke-selected: ${toRgba(mix(relationships.line, 'white', 70))};
 }
 
   `.trim(),
@@ -70,68 +69,52 @@ ${whenDark} ${selector} {
   ].join('\n')
 }
 
-function generateCustomColorStyles(customColors: CustomColorDefinitions, rootSelector: string) {
+function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StylesConfig['theme']) {
   return pipe(
-    entries(customColors),
-    map(([name, color]) => toStyle(rootSelector, name, color)),
+    theme.colors,
+    entries(),
+    map(([color, values]) => toStyle(rootSelector, color, values)),
     join('\n'),
   )
 }
 
-function generateBuiltInColorStyles(rootSelector: string) {
-  return pipe(
-    ThemeColors,
-    map((color) =>
-      toStyle(rootSelector, color, {
-        elements: defaultTheme.elements[color],
-        relationships: defaultTheme.relationships[color],
-      })
-    ),
-    join('\n'),
-  )
-}
-
-export function LikeC4Styles({ id }: { id: string }) {
+export const LikeC4Styles = memo<{ id: string }>(({ id }) => {
   const rootSelector = `#${id}`
   const nonce = useMantineStyleNonce()?.()
+  const { theme } = useLikeC4Styles()
 
-  const { customColors } = useLikeC4Specification()
-  const customColorsStyles = customColors ? generateCustomColorStyles(customColors, rootSelector) : ''
-
-  const builtInColors = generateBuiltInColorStyles(rootSelector)
+  // const colorsStyles = useMemo(() => generateBuiltInColorStyles(rootSelector, theme), [rootSelector, theme])
+  const colorsStyles = generateBuiltInColorStyles(rootSelector, theme)
 
   return (
-    <MemoizedStyles
-      id={id}
-      nonce={nonce}
-      customColorsStyles={customColorsStyles}
-      builtInColors={builtInColors} />
+    <style
+      type="text/css"
+      data-likec4-colors={id}
+      dangerouslySetInnerHTML={{ __html: colorsStyles }}
+      nonce={nonce} />
   )
-}
+
+  // return (
+  //   <MemoizedStyles
+  //     id={id}
+  //     nonce={nonce}
+  //     colorsStyles={colorsStyles} />
+  // )
+})
 
 /**
- * @internal This gives a performance boost during development
+ * @internal Memoized styles gives a performance boost during development
  */
 const MemoizedStyles = memo<{
   id: string
   nonce: string | undefined
-  customColorsStyles: string
-  builtInColors: string
+  colorsStyles: string
 }>((
-  { id, nonce, customColorsStyles, builtInColors },
+  { id, nonce, colorsStyles },
 ) => (
-  <>
-    <style
-      type="text/css"
-      data-likec4-colors={id}
-      dangerouslySetInnerHTML={{ __html: builtInColors }}
-      nonce={nonce} />
-    {customColorsStyles && (
-      <style
-        type="text/css"
-        data-likec4-custom-colors={id}
-        dangerouslySetInnerHTML={{ __html: customColorsStyles }}
-        nonce={nonce} />
-    )}
-  </>
+  <style
+    type="text/css"
+    data-likec4-colors={id}
+    dangerouslySetInnerHTML={{ __html: colorsStyles }}
+    nonce={nonce} />
 ))

@@ -121,14 +121,18 @@ export const fakeElements = {
     id: 'customer',
     kind: 'actor',
     title: 'customer',
-    shape: 'person',
+    style: {
+      shape: 'person',
+    },
   }),
   'support': el({
     id: 'support',
     kind: 'actor',
     title: 'Support Engineer',
     description: 'Support engineers are responsible for supporting customers',
-    shape: 'person',
+    style: {
+      shape: 'person',
+    },
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
@@ -139,7 +143,9 @@ export const fakeElements = {
     id: 'cloud.frontend',
     kind: 'component',
     title: 'Frontend',
-    shape: 'browser',
+    style: {
+      shape: 'browser',
+    },
   }),
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
@@ -152,7 +158,9 @@ export const fakeElements = {
     kind: 'component',
     title: 'Backend Storage',
     description: 'The backend storage is a component that stores data.',
-    shape: 'storage',
+    style: {
+      shape: 'storage',
+    },
   }),
   'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',

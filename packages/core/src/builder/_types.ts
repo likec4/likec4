@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, IsNever, Tagged, TupleToUnion } from 'type-fest'
+import type { IfNever, IsLiteral, IsNever, PartialDeep, Tagged, TupleToUnion } from 'type-fest'
 import type {
   AnyAux,
   Aux,
@@ -7,6 +7,7 @@ import type {
   ElementSpecification as ElementKindSpecification,
   Expression,
   KeysOf,
+  LikeC4ProjectStylesConfig,
   NonEmptyArray,
   RelationshipArrowType,
   RelationshipLineType,
@@ -49,6 +50,7 @@ export type BuilderSpecification = {
 export type BuilderProjectSpecification = {
   id: string
   title?: string
+  styles?: PartialDeep<LikeC4ProjectStylesConfig>
 }
 
 export type Metadata<MetadataKey extends string> = IsNever<MetadataKey> extends true ? never :

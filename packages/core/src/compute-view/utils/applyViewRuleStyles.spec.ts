@@ -79,6 +79,7 @@ describe('applyViewRuleStyles', () => {
           icon: 'aws:lambda' as IconUrl,
           border: 'dashed',
           shape: 'browser',
+          multiple: true,
           opacity: 30,
         },
       }),
@@ -94,6 +95,7 @@ describe('applyViewRuleStyles', () => {
         style: {
           border: 'dashed',
           opacity: 30,
+          multiple: true,
         },
       },
       nodes[1],

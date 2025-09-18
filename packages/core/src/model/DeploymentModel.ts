@@ -1,4 +1,5 @@
 import { values } from 'remeda'
+import type { LikeC4Styles } from '../styles/LikeC4Styles'
 import {
   type Any,
   type DeploymentElement,
@@ -90,6 +91,10 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
         this.#allTags.get(tag).add(el)
       }
     }
+  }
+
+  get $styles(): LikeC4Styles {
+    return this.$model.$styles
   }
 
   public element(el: DeploymentOrFqn<A>): DeploymentElementModel<A> {

@@ -49,7 +49,7 @@ export function computeDeploymentView<M extends AnyAux>(
 ): ComputedDeploymentView<M> {
   const memory = processPredicates(likec4model.deployment, rules)
 
-  const nodesMap = buildNodes<M>(memory)
+  const nodesMap = buildNodes(likec4model, memory)
 
   const computedEdges = toComputedEdges(memory.connections as unknown as DeploymentConnectionModel<M>[])
 

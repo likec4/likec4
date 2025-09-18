@@ -263,7 +263,7 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     zod:
-      specifier: 3.25.76
+      specifier: ^3.25.76
       version: 3.25.76
   vite:
     '@vitejs/plugin-react':
@@ -312,10 +312,6 @@ catalogs:
     '@xyflow/system':
       specifier: 0.0.68
       version: 0.0.68
-  zod4:
-    zod4:
-      specifier: npm:zod@^4.0.17
-      version: 4.0.17
 
 overrides:
   esbuild: 0.25.9
@@ -714,12 +710,6 @@ importers:
 
   packages/config:
     dependencies:
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -735,13 +725,25 @@ importers:
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
+      zod:
+        specifier: catalog:utils
+        version: 3.25.76
     devDependencies:
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.11
+      nano-spawn:
+        specifier: catalog:utils
+        version: 1.0.3
       tsx:
         specifier: 'catalog:'
         version: 4.20.5
@@ -757,18 +759,9 @@ importers:
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
-      zod4:
-        specifier: catalog:zod4
-        version: zod@4.0.17
 
   packages/core:
     dependencies:
-      '@mantine/colors-generator':
-        specifier: catalog:mantine
-        version: 8.2.8(chroma-js@3.1.2)
-      chroma-js:
-        specifier: catalog:utils
-        version: 3.1.2
       defu:
         specifier: catalog:utils
         version: 6.1.4
@@ -815,6 +808,9 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@mantine/colors-generator':
+        specifier: catalog:mantine
+        version: 8.2.8(chroma-js@3.1.2)
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.1
@@ -839,6 +835,9 @@ importers:
       '@types/unist':
         specifier: 3.0.3
         version: 3.0.3
+      chroma-js:
+        specifier: catalog:utils
+        version: 3.1.2
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
@@ -9084,9 +9083,6 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
-  zod@4.0.17:
-    resolution: {integrity: sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -18002,8 +17998,6 @@ snapshots:
   zod@3.22.3: {}
 
   zod@3.25.76: {}
-
-  zod@4.0.17: {}
 
   zustand@4.5.7(@types/react@19.1.12)(react@19.1.1):
     dependencies:

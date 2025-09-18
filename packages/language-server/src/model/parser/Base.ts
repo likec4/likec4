@@ -1,11 +1,11 @@
 import type * as c4 from '@likec4/core'
 import {
   type MarkdownOrString,
+  exact,
   GlobalFqn,
   isNonEmptyArray,
   nonexhaustive,
   nonNullable,
-  omitUndefined,
 } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
@@ -305,9 +305,9 @@ export class BaseParser {
       return {} as ParsedElementStyle
     }
     if (isArray(elementProps)) {
-      const style = this.parseStyleProps(elementProps?.find(ast.isElementStyleProperty)?.props)
+      const style = this.parseStyleProps(elementProps.find(ast.isElementStyleProperty)?.props)
       // Property on element has higher priority than from style
-      const iconProp = this.parseIconProperty(elementProps?.find(ast.isIconProperty))
+      const iconProp = this.parseIconProperty(elementProps.find(ast.isIconProperty))
       if (iconProp) {
         style.icon = iconProp
       }
@@ -382,7 +382,7 @@ export class BaseParser {
           nonexhaustive(prop)
       }
     }
-    return result
+    return exact(result)
   }
 
   /**
@@ -424,7 +424,7 @@ export class BaseParser {
     const technology = toSingleLine(override?.technology) ??
       removeIndent(parseMarkdownAsString(props.technology))
 
-    return omitUndefined({
+    return exact({
       title,
       summary,
       description,

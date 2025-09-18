@@ -1,11 +1,11 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
-import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
+import { type LikeC4LanguageServices, type LikeC4Views, type ProjectsManager } from '@likec4/language-server'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { hasAtLeast, indexBy, prop } from 'remeda'
+import { indexBy, map, prop } from 'remeda'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
@@ -201,22 +201,8 @@ ${k.red('Please specify a project folder')}
     return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel(projectId)
   }
 
-  async projects(): Promise<NonEmptyArray<ProjectId>> {
-    const defaultId = this.langium.shared.workspace.ProjectsManager.defaultProjectId
-    if (defaultId) {
-      return [defaultId]
-    }
-    const projects = await Promise.allSettled(
-      this.langium.shared.workspace.ProjectsManager.all.map(async projectId => {
-        const model = await this.langium.likec4.ModelBuilder.parseModel(projectId)
-        return model ? projectId : undefined
-      }),
-    )
-    const validProjects = projects.filter(p => p.status === 'fulfilled').flatMap(p => p.value ?? [])
-    if (hasAtLeast(validProjects, 1)) {
-      return validProjects
-    }
-    return ['default' as ProjectId]
+  projects(): NonEmptyArray<ProjectId> {
+    return map(this.langium.likec4.LanguageServices.projects(), prop('id'))
   }
 
   /**

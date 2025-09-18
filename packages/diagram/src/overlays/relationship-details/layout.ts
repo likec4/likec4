@@ -1,22 +1,22 @@
 import {
   treeFromElements,
 } from '@likec4/core/compute-view/relationships'
-import type {
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
-  EdgeId,
-  Fqn,
-  IconUrl,
-  NodeId,
-  NonEmptyArray,
-  Point,
-  RelationId,
-  RichTextOrEmpty,
+import {
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  type EdgeId,
+  type Fqn,
+  type IconUrl,
+  type NodeId,
+  type NonEmptyArray,
+  type Point,
+  type RelationId,
+  type RichTextOrEmpty,
+  exact,
 } from '@likec4/core/types'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { RichText } from '@likec4/core'
 import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
@@ -28,6 +28,7 @@ import {
   find,
   map,
   mapToObj,
+  omit,
   pipe,
   prop,
   reduce,
@@ -396,7 +397,7 @@ export function layoutRelationshipDetails(
       : null
     const inheritFromNodeOrAncestor = inheritFromNode ?? (scopedAncestor && scope?.findNodeWithElement(scopedAncestor))
 
-    return {
+    return exact({
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
       x: position.x,
@@ -419,10 +420,10 @@ export function layoutRelationshipDetails(
         width: width,
         height: height,
       },
-      style: {
+      style: omit({
         ...(inheritFromNode ?? inheritFromNodeOrAncestor)?.style,
         ...element.$element.style,
-      },
+      }, ['shape', 'color', 'icon']),
       navigateTo,
       ...(children.length > 0 && { depth: nodeDepth(id) }),
       children,
@@ -433,7 +434,7 @@ export function layoutRelationshipDetails(
         in: sortedPorts(id, 'in', inPorts),
         out: sortedPorts(id, 'out', outPorts),
       },
-    }
+    })
   })
 
   return {

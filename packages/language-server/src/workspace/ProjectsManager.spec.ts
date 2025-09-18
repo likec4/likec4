@@ -1,3 +1,4 @@
+import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import { describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
@@ -52,17 +53,20 @@ describe.concurrent('ProjectsManager', () => {
     it('should load config file', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
 
-      const config = {
+      const config: LikeC4ProjectJsonConfig = {
         name: 'test-project',
+        styles: {
+          defaults: {
+            color: 'red',
+          },
+        },
       }
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
-      const project = await projectsManager.loadConfigFile({
-        isFile: true,
-        isDirectory: false,
-        uri: URI.parse('file:///test/workspace/src/test-project/.likec4rc'),
-      })
+      const project = await projectsManager.registerConfigFile(
+        URI.parse('file:///test/workspace/src/test-project/.likec4rc'),
+      )
 
       expect(projectsManager.all).toEqual(['test-project', 'default'])
       expect(project?.config).toEqual(config)
@@ -74,11 +78,9 @@ describe.concurrent('ProjectsManager', () => {
       const fs = services.shared.workspace.FileSystemProvider
       vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'))
 
-      const project = await projectsManager.loadConfigFile({
-        isFile: true,
-        isDirectory: false,
-        uri: URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
-      })
+      const project = await projectsManager.registerConfigFile(
+        URI.parse('file:///test/workspace/node_modules/test-project/.likec4rc'),
+      )
 
       expect(project).toBeUndefined()
     })

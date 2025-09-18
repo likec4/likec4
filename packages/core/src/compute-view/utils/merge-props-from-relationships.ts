@@ -1,15 +1,15 @@
 import { isDeepEqual, isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
-import type {
-  AnyAux,
-  aux,
-  Color,
-  DeploymentRelationship,
-  Link,
-  NonEmptyArray,
-  Relationship,
-  RelationshipArrowType,
-  RelationshipLineType,
-  scalar,
+import {
+  type AnyAux,
+  type aux,
+  type Color,
+  type DeploymentRelationship,
+  type NonEmptyArray,
+  type Relationship,
+  type RelationshipArrowType,
+  type RelationshipLineType,
+  type scalar,
+  exact,
 } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 
@@ -62,7 +62,6 @@ export type MergedRelationshipProps<A extends AnyAux> = {
   tail?: RelationshipArrowType
   navigateTo?: aux.StrictViewId<A>
   tags?: NonEmptyArray<aux.Tag<A>>
-  links?: NonEmptyArray<Link>
 }
 
 /**
@@ -102,14 +101,11 @@ export function mergePropsFromRelationships<A extends AnyAux>(
         if (isTruthy(r.tail) && !acc.tail.includes(r.tail)) {
           acc.tail.push(r.tail)
         }
-        if (isTruthy(r.navigateTo) && !acc.navigateTo.includes(r.navigateTo)) {
-          acc.navigateTo.push(r.navigateTo)
+        if (isTruthy(r.navigateTo) && !acc.navigateTo.includes(r.navigateTo as aux.StrictViewId<A>)) {
+          acc.navigateTo.push(r.navigateTo as aux.StrictViewId<A>)
         }
         if (r.tags) {
           acc.tags.push(...r.tags)
-        }
-        if (r.links) {
-          acc.links.push(...r.links)
         }
         return acc
       },
@@ -122,9 +118,8 @@ export function mergePropsFromRelationships<A extends AnyAux>(
         tail: [] as RelationshipArrowType[],
         color: [] as Color[],
         tags: [] as aux.Tag<A>[],
-        links: [] as Link[],
         line: [] as RelationshipLineType[],
-        navigateTo: [] as aux.ViewId<A>[],
+        navigateTo: [] as aux.StrictViewId<A>[],
       },
     ),
   )
@@ -133,23 +128,19 @@ export function mergePropsFromRelationships<A extends AnyAux>(
   let title = only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : null)
 
   const tags = unique(allprops.tags)
-  let merged = pickBy(
-    {
-      // If there is no title, but there is technology, use technology as title
-      title: title ?? (technology ? `[${technology}]` : null),
-      description: only(allprops.description),
-      technology,
-      kind: only(allprops.kind),
-      head: only(allprops.head),
-      tail: only(allprops.tail),
-      color: only(allprops.color),
-      line: only(allprops.line),
-      navigateTo: only(allprops.navigateTo),
-      ...isNonEmptyArray(allprops.links) && { links: allprops.links },
-      ...isNonEmptyArray(tags) && { tags },
-    },
-    isTruthy,
-  )
+  let merged: MergedRelationshipProps<A> = exact({
+    // If there is no title, but there is technology, use technology as title
+    title: title ?? (technology ? `[${technology}]` : null),
+    description: only(allprops.description),
+    technology,
+    kind: only(allprops.kind),
+    head: only(allprops.head),
+    tail: only(allprops.tail),
+    color: only(allprops.color),
+    line: only(allprops.line),
+    navigateTo: only(allprops.navigateTo),
+    ...isNonEmptyArray(tags) && { tags },
+  })
 
   if (prefer) {
     return {

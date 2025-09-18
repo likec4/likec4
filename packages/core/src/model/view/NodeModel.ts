@@ -3,9 +3,9 @@ import {
   type Any,
   type Color,
   type ComputedNode,
+  type ComputedNodeStyle,
   type DiagramNode,
   type ElementShape as C4ElementShape,
-  type ElementStyle,
   type ExtractOnStage,
   type IconUrl,
   type IteratorLike,
@@ -94,7 +94,7 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.#node.navigateTo ? this.$view.$model.view(this.#node.navigateTo) : null
   }
 
-  get style(): ElementStyle {
+  get style(): ComputedNodeStyle {
     return this.#node.style
   }
 

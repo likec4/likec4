@@ -1,4 +1,5 @@
 import { entries, hasAtLeast, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
+import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
   Any,
   Aux,
@@ -9,6 +10,7 @@ import type {
   LayoutedLikeC4ModelData,
   LikeC4ModelDump,
   LikeC4Project,
+  LikeC4StylesConfig,
   ModelGlobals,
   ParsedLikeC4ModelData,
   Relationship,
@@ -261,6 +263,27 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    */
   get asLayouted(): LikeC4Model.Layouted<A> {
     return this as any
+  }
+
+  /**
+   * Returns the styles configuration for the project.
+   */
+  get $styles(): LikeC4Styles {
+    return memoizeProp(
+      this,
+      'styles',
+      () =>
+        LikeC4Styles.from(
+          this.$data.project.styles as LikeC4StylesConfig,
+          this.$data.specification.customColors
+            ? {
+              theme: {
+                colors: this.$data.specification.customColors,
+              },
+            }
+            : undefined,
+        ),
+    )
   }
 
   /**

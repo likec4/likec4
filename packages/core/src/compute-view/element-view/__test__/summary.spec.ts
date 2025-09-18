@@ -63,9 +63,8 @@ describe('Summary field', () => {
       ),
     )
     const { nodes: [node] } = t.computeView($include('el3'))
-    expect(node).toMatchObject({
-      description: null,
-    })
+    expect(node).not.toHaveProperty('summary')
+    expect(node).not.toHaveProperty('description')
   })
 
   it('computed from description field defined in spec', () => {

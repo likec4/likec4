@@ -74,12 +74,12 @@
         "default": "./dist/model/index.mjs"
       }
     },
-    "./utils": {
-      "sources": "./src/utils/index.ts",
+    "./styles": {
+      "sources": "./src/styles/index.ts",
       "default": {
-        "types": "./dist/utils/index.d.mts",
-        "import": "./dist/utils/index.mjs",
-        "default": "./dist/utils/index.mjs"
+        "types": "./dist/styles/index.d.mts",
+        "import": "./dist/styles/index.mjs",
+        "default": "./dist/styles/index.mjs"
       }
     },
     "./types": {
@@ -88,6 +88,14 @@
         "types": "./dist/types/index.d.mts",
         "import": "./dist/types/index.mjs",
         "default": "./dist/types/index.mjs"
+      }
+    },
+    "./utils": {
+      "sources": "./src/utils/index.ts",
+      "default": {
+        "types": "./dist/utils/index.d.mts",
+        "import": "./dist/utils/index.mjs",
+        "default": "./dist/utils/index.mjs"
       }
     },
     "./src": "./src/index.ts",
@@ -110,12 +118,11 @@
     "remark-rehype": "11.1.2",
     "type-fest": "catalog:utils",
     "unified": "11.0.5",
-    "chroma-js": "catalog:utils",
     "remeda": "catalog:utils",
-    "defu": "catalog:utils",
-    "@mantine/colors-generator": "catalog:mantine"
+    "defu": "catalog:utils"
   },
   "devDependencies": {
+    "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
     "@dagrejs/dagre": "1.1.5",
     "@likec4/tsconfig": "workspace:*",
@@ -129,6 +136,7 @@
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
+    "chroma-js": "catalog:utils",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",

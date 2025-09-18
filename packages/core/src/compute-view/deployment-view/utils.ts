@@ -1,4 +1,4 @@
-import { hasAtLeast, unique } from 'remeda'
+import { hasAtLeast, omit, unique } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -6,6 +6,7 @@ import type {
   DeploymentNodeModel,
   ElementModel,
   LikeC4DeploymentModel,
+  LikeC4Model,
 } from '../../model'
 import { deploymentConnection } from '../../model'
 import {
@@ -16,12 +17,9 @@ import {
   type DeploymentViewRule,
   type scalar,
   type Unknown,
-  DefaultArrowType,
-  DefaultElementShape,
-  DefaultThemeColor,
+  exact,
   FqnExpr,
   isViewRuleStyle,
-  omitUndefined,
   preferSummary,
 } from '../../types'
 import { invariant, nameFromFqn, nonexhaustive, parentFqn } from '../../utils'
@@ -154,12 +152,15 @@ export function toNodeSource<A extends AnyAux>(
       description,
       summary,
       metadata,
-      style,
+      style: {
+        icon,
+        shape,
+        color,
+      },
       element,
       tags: _tags, // omit
       ...$node
     } = el.$node
-    let icon = style.icon
     let tags = [...el.tags]
     // let description
     // If there is only one instance
@@ -171,23 +172,25 @@ export function toNodeSource<A extends AnyAux>(
         title = onlyOneInstance.title
       }
       icon ??= onlyOneInstance.style.icon
+      color ??= onlyOneInstance.style.color
+      shape ??= onlyOneInstance.style.shape
       summary ??= instanceSummary(onlyOneInstance)
     }
 
-    return omitUndefined({
+    return exact({
       id: id as scalar.NodeId,
       deploymentRef: id,
       title,
       ...$node,
-      color: style.color ?? onlyOneInstance?.color ?? DefaultThemeColor,
-      shape: style.shape ?? DefaultElementShape,
+      color: color ?? el.color,
+      shape: shape ?? el.shape,
       ...(onlyOneInstance && {
         modelRef: onlyOneInstance.element.id,
       }),
       icon,
       description: summary,
       tags,
-      style,
+      style: omit(el.style, ['icon', 'shape', 'color']),
     })
   }
   invariant(el.isInstance(), 'Expected Instance')
@@ -206,7 +209,7 @@ export function toNodeSource<A extends AnyAux>(
 
   const technology = el.technology ?? undefined
 
-  return omitUndefined({
+  return exact({
     id: el.id as scalar.NodeId,
     kind: 'instance' as unknown as aux.DeploymentKind<A>,
     title: el.title,
@@ -236,29 +239,37 @@ export function toComputedEdges<A extends AnyAux>(
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
+    const defaults = e.source.$model.$styles.defaults
+
     const source = e.source.id as scalar.NodeId
     const target = e.target.id as scalar.NodeId
 
     const {
       title,
+      color = defaults.relationship.color,
+      line = defaults.relationship.line,
+      head = defaults.relationship.arrow,
       ...props
     } = mergePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
 
-    const edge: ComputedEdge<A> = {
+    const edge: ComputedEdge<A> = exact({
       id: e.id,
       parent: e.boundary?.id as scalar.NodeId ?? null,
       source,
       target,
       label: title ?? null,
       relations: relations.map((r) => r.id),
+      color,
+      line,
+      head,
       ...props,
-    }
+    })
 
     // If exists same edge but in opposite direction
     const existing = acc.find(e => e.source === target && e.target === source)
     if (existing && edge.label === existing.label) {
       existing.dir = 'both'
-      const head = existing.head ?? edge.head ?? DefaultArrowType
+      const head = existing.head ?? edge.head ?? e.source.$model.$styles.defaults.relationship.arrow
       existing.head ??= head
       existing.tail ??= head
 
@@ -277,9 +288,10 @@ export function toComputedEdges<A extends AnyAux>(
 }
 
 export function buildNodes<A extends AnyAux = Unknown>(
+  model: LikeC4Model<A>,
   memory: Memory,
 ): ReadonlyMap<aux.NodeId, ComputedNode<A>> {
-  return buildComputedNodes([...memory.final].map(toNodeSource))
+  return buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource))
 }
 
 export function applyDeploymentViewRuleStyles<A extends AnyAux>(

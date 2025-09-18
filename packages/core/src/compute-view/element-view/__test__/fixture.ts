@@ -153,20 +153,26 @@ export const fakeElements = {
     title: 'customer',
     description: { txt: 'fufll description' },
     summary: { txt: 'short description' },
-    shape: 'person',
+    style: {
+      shape: 'person',
+    },
   }),
   'support': el({
     id: 'support',
     kind: 'actor',
     title: 'support',
-    shape: 'person',
+    style: {
+      shape: 'person',
+    },
     description: { txt: 'description' },
   }),
   'cloud': el({
     id: 'cloud',
     kind: 'system',
     title: 'cloud',
-    icon: 'none',
+    style: {
+      icon: 'none',
+    },
     tags: ['next', 'old'],
   }),
   'cloud.backend': el({
@@ -178,12 +184,16 @@ export const fakeElements = {
     id: 'cloud.frontend',
     kind: 'container',
     title: 'frontend',
-    shape: 'browser',
+    style: {
+      shape: 'browser',
+    },
   }),
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
-    icon: 'tech:graphql' as IconUrl,
+    style: {
+      icon: 'tech:graphql' as IconUrl,
+    },
     title: 'graphql',
   }),
   'email': el({
@@ -201,7 +211,9 @@ export const fakeElements = {
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard',
-    icon: 'tech:react' as IconUrl,
+    style: {
+      icon: 'tech:react' as IconUrl,
+    },
     tags: ['next'],
   }),
   'cloud.frontend.supportPanel': el({
@@ -214,15 +226,19 @@ export const fakeElements = {
     id: 'amazon',
     kind: 'system',
     title: 'amazon',
-    icon: 'tech:aws' as IconUrl,
+    style: {
+      icon: 'tech:aws' as IconUrl,
+    },
     tags: ['aws'],
   }),
   'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 's3',
-    shape: 'storage',
-    icon: 'aws:s3' as IconUrl,
+    style: {
+      shape: 'storage',
+      icon: 'aws:s3' as IconUrl,
+    },
     tags: ['aws', 'storage'],
   }),
 } satisfies Record<string, Element>

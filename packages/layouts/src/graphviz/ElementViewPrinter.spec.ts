@@ -10,7 +10,7 @@ import {
 import { ElementViewPrinter } from './ElementViewPrinter'
 
 function print(view: ComputedElementView) {
-  return new ElementViewPrinter(view, parsedModel.specification).print()
+  return new ElementViewPrinter(view, parsedModel.$styles).print()
 }
 
 describe('ElementViewPrinter', () => {

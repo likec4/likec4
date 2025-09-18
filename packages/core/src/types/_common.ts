@@ -97,6 +97,6 @@ type ExactObject<T, InputType = unknown> =
  *
  * See {@link Exact} for more details (this version is non-deep)
  */
-export function omitUndefined<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
+export function exact<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
   return omitBy(a, v => v === undefined) as Expected
 }

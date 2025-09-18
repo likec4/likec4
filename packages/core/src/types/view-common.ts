@@ -108,14 +108,10 @@ export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTa
   readonly title: string | null
   readonly description: scalar.MarkdownOrString | null
   /**
-   * For all views we find common ancestor path.
-   * This is used to generate relative paths, i.e.:
-   * - "/home/project/index.c4" becomes "index.c4"
-   * - "/home/project/subdir/views.c4" becomes "subdir/views.c4"
-   *
+   * Source file containing this view, relative to the project root.
    * Undefined if the view is auto-generated.
    */
-  readonly relativePath?: string | undefined
+  readonly sourcePath?: string | undefined
 }
 
 export interface BaseParsedViewProperties<A extends AnyAux> extends BaseViewProperties<A> {

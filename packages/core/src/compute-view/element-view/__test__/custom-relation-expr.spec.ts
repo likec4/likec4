@@ -37,6 +37,7 @@ describe('custom-relation-expr', () => {
         "isCustomized": true,
         "kind": "graphlql",
         "label": "requests",
+        "line": "dashed",
         "parent": "cloud",
         "relations": [
           "cloud.frontend:cloud.backend",
@@ -144,9 +145,11 @@ describe('custom-relation-expr', () => {
     expect(edge1).toMatchInlineSnapshot(`
       {
         "color": "red",
+        "head": "normal",
         "id": "cloud.backend:amazon.s3",
         "isCustomized": true,
         "label": "custom label",
+        "line": "dashed",
         "parent": null,
         "relations": [
           "cloud.backend.storage:amazon.s3",
