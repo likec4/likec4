@@ -84,7 +84,7 @@
   "sideEffects": false,
   "type": "module",
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.11.6",
+    "@cloudflare/vite-plugin": "catalog:cloudflare",
     "@codingame/monaco-vscode-editor-api": "16.1.1",
     "@codingame/monaco-vscode-editor-service-override": "16.1.1",
     "@codingame/monaco-vscode-files-service-override": "16.1.1",
@@ -94,8 +94,8 @@
     "@codingame/monaco-vscode-theme-defaults-default-extension": "16.1.1",
     "@codingame/monaco-vscode-theme-service-override": "16.1.1",
     "@codingame/monaco-vscode-views-service-override": "16.1.1",
-    "@hono/oauth-providers": "^0.8.5",
-    "@hono/valibot-validator": "^0.5.3",
+    "@hono/oauth-providers": "catalog:hono",
+    "@hono/valibot-validator": "catalog:hono",
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "likec4-core-legacy": "npm:@likec4/core@1.31.0",
@@ -162,7 +162,7 @@
     "vscode-textmate": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "wireit": "catalog:",
-    "wrangler": "catalog:",
+    "wrangler": "catalog:cloudflare",
     "xstate": "catalog:xstate",
     "import-meta-resolve": "^4.1.0"
   }

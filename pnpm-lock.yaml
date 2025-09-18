@@ -42,6 +42,13 @@ catalogs:
     starlight-package-managers:
       specifier: ^0.11.0
       version: 0.11.0
+  cloudflare:
+    '@cloudflare/vite-plugin':
+      specifier: 1.11.7
+      version: 1.11.7
+    wrangler:
+      specifier: 4.38.0
+      version: 4.38.0
   css:
     '@pandacss/dev':
       specifier: ^1.3.1
@@ -2257,11 +2264,11 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/vite-plugin@1.11.6':
-    resolution: {integrity: sha512-+xvFYZoxqlIUfXALk+T+jUtvXAylGicpYjrGVS2Z8cSEM5mLl+R5CbLG9kmWDLP2AoVAH5yJalpk7SQ3larLqg==}
+  '@cloudflare/vite-plugin@1.11.7':
+    resolution: {integrity: sha512-8CN3B/TTeOJmfququLvBIUdE8Fh6O+6afI2u/AsUYyAiPddEcVF5w3B1OSSn2v+b/uBJX0s3SrGbJ1TXFPT7MA==}
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0
-      wrangler: ^4.31.0
+      wrangler: ^4.32.0
 
   '@cloudflare/workerd-darwin-64@1.20250816.0':
     resolution: {integrity: sha512-yN1Rga4ufTdrJPCP4gEqfB47i1lWi3teY5IoeQbUuKnjnCtm4pZvXur526JzCmaw60Jx+AEWf5tizdwRd5hHBQ==}
@@ -6565,8 +6572,8 @@ packages:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
 
-  miniflare@4.20250816.0:
-    resolution: {integrity: sha512-HuakGvmsU8aC60wsHP7Su+BgJFly1GmKbmbR/nqIz0Xlk6wcd/pp3vZ7jtbT3unf+aeBOlEO/CzcUb8xFsJLdA==}
+  miniflare@4.20250816.1:
+    resolution: {integrity: sha512-2X8yMy5wWw0dF1pNU4kztzZgp0jWv2KMqAOOb2FeQ/b11yck4aczmYHi7UYD3uyOgtj8WFhwG/KdRWAaATTtRA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -9504,7 +9511,7 @@ snapshots:
       '@mjackson/node-fetch-server': 0.6.1
       '@rollup/plugin-replace': 6.0.2(rollup@4.44.0)
       get-port: 7.1.0
-      miniflare: 4.20250816.0
+      miniflare: 4.20250816.1
       picocolors: 1.1.1
       tinyglobby: 0.2.14
       unenv: 2.0.0-rc.19
@@ -15165,7 +15172,7 @@ snapshots:
 
   min-indent@1.0.1: {}
 
-  miniflare@4.20250816.0:
+  miniflare@4.20250816.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       acorn: 8.14.0
@@ -15174,7 +15181,7 @@ snapshots:
       glob-to-regexp: 0.4.1
       sharp: 0.34.3
       stoppable: 1.1.0
-      undici: 7.13.0
+      undici: 7.14.0
       workerd: 1.20250816.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
