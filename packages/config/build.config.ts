@@ -20,7 +20,7 @@ export default defineBuildConfig({
 
   hooks: {
     'build:done': async () => {
-      await spawn('pnpm', ['generate:schema'])
+      await spawn('tsx', ['scripts/generate.mts'])
     },
   },
 })
