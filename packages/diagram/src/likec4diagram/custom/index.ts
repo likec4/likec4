@@ -11,14 +11,14 @@ import {
   ViewGroupNode,
 } from './nodes'
 
-export const BuiltinNodes = {
+export const BuiltinNodes: Required<CustomNodes> = {
   element: ElementNode,
   deployment: DeploymentNode,
   compoundElement: CompoundElementNode,
   compoundDeployment: CompoundDeploymentNode,
   viewGroup: ViewGroupNode,
   sequenceActor: SequenceActorNode,
-} satisfies Required<CustomNodes>
+}
 
 export { SequenceParallelArea } from './nodes/SequenceActorNode'
 
