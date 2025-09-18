@@ -41,7 +41,7 @@ catalogs:
     postcss: 8.5.6
   cloudflare:
     "@cloudflare/vite-plugin": "1.11.7"
-    wrangler: "4.38.0"
+    wrangler: "~4.35.0"
   esbuild:
     esbuild: 0.25.9
     esbuild-node-externals: 1.18.0

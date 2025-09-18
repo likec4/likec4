@@ -42,7 +42,7 @@
               "description": "Map of theme colors.",
               "type": "object",
               "propertyNames": {
-                "description": "Color name",
+                "description": "Theme color name (must be added to the theme)",
                 "type": "string",
                 "minLength": 1
               },
@@ -186,11 +186,12 @@
           "type": "object",
           "properties": {
             "color": {
-              "description": "Color name",
+              "description": "Theme color name (must be added to the theme)",
               "type": "string",
               "minLength": 1
             },
             "opacity": {
+              "description": "Opacity 0%-100%",
               "type": "number",
               "minimum": 0,
               "maximum": 100
@@ -230,11 +231,12 @@
               "type": "object",
               "properties": {
                 "color": {
-                  "description": "Color name",
+                  "description": "Theme color name (must be added to the theme)",
                   "type": "string",
                   "minLength": 1
                 },
                 "opacity": {
+                  "description": "Opacity 0%-100%",
                   "type": "number",
                   "minimum": 0,
                   "maximum": 100
@@ -254,11 +256,12 @@
               "type": "object",
               "properties": {
                 "color": {
-                  "description": "Color name",
+                  "description": "Theme color name (must be added to the theme)",
                   "type": "string",
                   "minLength": 1
                 },
                 "line": {
+                  "description": "Default line type for relationships",
                   "type": "string",
                   "enum": [
                     "dashed",
