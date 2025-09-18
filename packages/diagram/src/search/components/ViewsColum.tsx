@@ -43,7 +43,7 @@ export const ViewsColumn = memo(() => {
         if (search.startsWith('#')) {
           return view.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
         }
-        return `${view.title} ${view.$view.description}`.toLocaleLowerCase().includes(search)
+        return `${view.id} ${view.title} ${view.description.text}`.toLocaleLowerCase().includes(search)
       })
     }
   }
