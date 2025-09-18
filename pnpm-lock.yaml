@@ -1354,8 +1354,8 @@ importers:
         specifier: 1.1.5
         version: 1.1.5
       '@fontsource/ibm-plex-sans':
-        specifier: ^5.2.6
-        version: 5.2.6
+        specifier: ^5.2.7
+        version: 5.2.8
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -1824,8 +1824,8 @@ importers:
   packages/vscode-preview:
     devDependencies:
       '@fontsource-variable/ibm-plex-sans':
-        specifier: ^5.2.6
-        version: 5.2.6
+        specifier: ^5.2.7
+        version: 5.2.8
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -3007,11 +3007,11 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@fontsource-variable/ibm-plex-sans@5.2.6':
-    resolution: {integrity: sha512-hnuya7tsdaEiub463GFrhKDnmViTFKkJb9S+H+Fk6sMnr5dL/5DlAxeCZyXMK8WfjHktDiaEOIWPRZBQVKV0dw==}
+  '@fontsource-variable/ibm-plex-sans@5.2.8':
+    resolution: {integrity: sha512-n5PF2iFa0CZT0QYTPzxvZ39opC9LnU0zdoRccoADbs+Dtsd+lbXOZF7RNuIPHcQX1dKjF63sxnRImQIB5eD0Ag==}
 
-  '@fontsource/ibm-plex-sans@5.2.6':
-    resolution: {integrity: sha512-yclktpagJncROwdWHHEfPsrIfoo3uiIeDFchvmjNmTW/YMBfLYWJnUv19EAqPNhGizdtmcH9FjzOR2094Z2uPg==}
+  '@fontsource/ibm-plex-sans@5.2.8':
+    resolution: {integrity: sha512-eztSXjDhPhcpxNIiGTgMebdLP9qS4rWkysuE1V7c+DjOR0qiezaiDaTwQE7bTnG5HxAY/8M43XKDvs3cYq6ZYQ==}
 
   '@hono/node-server@1.19.2':
     resolution: {integrity: sha512-lndWsd9De/btN998Aiv6gkeMVV2h9Cc0AR0qwFTmxx/YFh/PbrjgoxTpHaNaRn6F4GAkPiVJwI0W0gQF4Wn8EA==}
@@ -10679,9 +10679,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@fontsource-variable/ibm-plex-sans@5.2.6': {}
+  '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@fontsource/ibm-plex-sans@5.2.6': {}
+  '@fontsource/ibm-plex-sans@5.2.8': {}
 
   '@hono/node-server@1.19.2(hono@4.9.7)':
     dependencies:

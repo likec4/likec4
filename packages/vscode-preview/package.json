@@ -17,7 +17,7 @@
     "clean": "pnpm rimraf dist lib"
   },
   "devDependencies": {
-    "@fontsource-variable/ibm-plex-sans": "^5.2.6",
+    "@fontsource-variable/ibm-plex-sans": "^5.2.7",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
