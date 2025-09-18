@@ -5,6 +5,7 @@ import {
   type AnyAux,
   type aux,
   type ComputedNode,
+  type LikeC4StyleConfig,
   type scalar,
   type Unknown,
   exact,
@@ -56,6 +57,7 @@ export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>):
 }
 
 export function buildComputedNodes<A extends AnyAux>(
+  { defaults }: LikeC4StyleConfig,
   elements: ReadonlyArray<ComputedNodeSource<A>>,
   groups?: ReadonlyArray<NodesGroup<A>>,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
@@ -72,9 +74,7 @@ export function buildComputedNodes<A extends AnyAux>(
       parent,
       kind: GroupElementKind,
       title: viewRule.title ?? '',
-      description: null,
-      technology: null,
-      color: viewRule.color ?? 'gray',
+      color: viewRule.color ?? defaults.group?.color ?? defaults.color,
       shape: 'rectangle',
       children: [],
       inEdges: [],
@@ -83,9 +83,9 @@ export function buildComputedNodes<A extends AnyAux>(
       depth: 0,
       tags: [],
       style: exact({
-        border: viewRule.border ?? 'dashed',
-        opacity: viewRule.opacity ?? 20,
-        size: viewRule.size ?? 'md',
+        border: viewRule.border ?? defaults.group?.border ?? defaults.border,
+        opacity: viewRule.opacity ?? defaults.group?.opacity ?? defaults.opacity,
+        size: viewRule.size,
         multiple: viewRule.multiple,
         padding: viewRule.padding,
         textSize: viewRule.textSize,
@@ -132,8 +132,6 @@ export function buildComputedNodes<A extends AnyAux>(
       const node: ComputedNode<A> = exact({
         id,
         parent,
-        description: null,
-        technology: null,
         level,
         children: [],
         inEdges: [],

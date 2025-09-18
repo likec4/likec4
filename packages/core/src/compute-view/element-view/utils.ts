@@ -1,5 +1,5 @@
 import { filter, hasAtLeast, only } from 'remeda'
-import type { ConnectionModel } from '../../model'
+import type { ConnectionModel, LikeC4Model } from '../../model'
 import {
   type AnyAux,
   type ComputedEdge,
@@ -65,9 +65,11 @@ export function toComputedEdges<A extends AnyAux>(
 }
 
 export function buildNodes<A extends AnyAux>(
+  model: LikeC4Model<A>,
   memory: Memory,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
   return buildComputedNodes(
+    model.$styles,
     [...memory.final].map(elementModelToNodeSource),
     memory.groups,
   )

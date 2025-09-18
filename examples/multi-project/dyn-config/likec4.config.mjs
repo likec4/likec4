@@ -7,9 +7,7 @@ export default defineConfig({
   generators,
   styles: {
     defaults: {
-      color: 'amber',
-      opacity: 60,
-      size: 'sm',
+      opacity: 10,
     },
   },
 })

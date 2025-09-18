@@ -1,6 +1,8 @@
-import { type LikeC4Project, type LikeC4ProjectStylesConfig, type ProjectId } from '@likec4/core/types'
-import { deepEqual } from 'fast-equals'
-import { useContext, useEffect, useState } from 'react'
+import {
+  type LikeC4Project,
+  type ProjectId,
+} from '@likec4/core/types'
+import { useContext } from 'react'
 import { LikeC4ModelContext } from './LikeC4ModelContext'
 import { LikeC4ProjectsContext } from './LikeC4ProjectsContext'
 
@@ -59,20 +61,4 @@ export function useLikeC4ProjectId(): ProjectId {
     throw new Error('No LikeC4ModelContext found')
   }
   return ctx.projectId as ProjectId
-}
-
-export function useLikeC4ProjectStyles(): LikeC4ProjectStylesConfig {
-  const model = useContext(LikeC4ModelContext)
-  if (!model) {
-    throw new Error('No LikeC4ModelContext found')
-  }
-  const $styles = model.$styles
-
-  const [styles, setStyles] = useState($styles)
-
-  useEffect(() => {
-    setStyles(current => deepEqual(current, $styles) ? current : $styles)
-  }, [$styles])
-
-  return styles
 }

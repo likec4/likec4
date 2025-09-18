@@ -1,4 +1,4 @@
-import { hasAtLeast, unique } from 'remeda'
+import { hasAtLeast, omit, unique } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentConnectionModel,
@@ -6,6 +6,7 @@ import type {
   DeploymentNodeModel,
   ElementModel,
   LikeC4DeploymentModel,
+  LikeC4Model,
 } from '../../model'
 import { deploymentConnection } from '../../model'
 import {
@@ -155,7 +156,6 @@ export function toNodeSource<A extends AnyAux>(
         icon,
         shape,
         color,
-        ...style
       },
       element,
       tags: _tags, // omit
@@ -190,7 +190,7 @@ export function toNodeSource<A extends AnyAux>(
       icon,
       description: summary,
       tags,
-      style,
+      style: omit(el.style, ['icon', 'shape', 'color']),
     })
   }
   invariant(el.isInstance(), 'Expected Instance')
@@ -239,11 +239,16 @@ export function toComputedEdges<A extends AnyAux>(
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
+    const defaults = e.source.$model.$styles.defaults
+
     const source = e.source.id as scalar.NodeId
     const target = e.target.id as scalar.NodeId
 
     const {
       title,
+      color = defaults.relationship.color,
+      line = defaults.relationship.line,
+      head = defaults.relationship.arrow,
       ...props
     } = mergePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
 
@@ -254,6 +259,9 @@ export function toComputedEdges<A extends AnyAux>(
       target,
       label: title ?? null,
       relations: relations.map((r) => r.id),
+      color,
+      line,
+      head,
       ...props,
     })
 
@@ -280,9 +288,10 @@ export function toComputedEdges<A extends AnyAux>(
 }
 
 export function buildNodes<A extends AnyAux = Unknown>(
+  model: LikeC4Model<A>,
   memory: Memory,
 ): ReadonlyMap<aux.NodeId, ComputedNode<A>> {
-  return buildComputedNodes([...memory.final].map(toNodeSource))
+  return buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource))
 }
 
 export function applyDeploymentViewRuleStyles<A extends AnyAux>(

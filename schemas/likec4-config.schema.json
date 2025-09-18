@@ -31,7 +31,7 @@
       }
     },
     "styles": {
-      "description": "Styles configuration",
+      "description": "Project styles configuration",
       "type": "object",
       "properties": {
         "theme": {
@@ -42,18 +42,12 @@
               "description": "Map of theme colors.",
               "type": "object",
               "propertyNames": {
-                "anyOf": [
-                  {
-                    "description": "Color name",
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  {
-                    "not": {}
-                  }
-                ]
+                "description": "Color name",
+                "type": "string",
+                "minLength": 1
               },
               "additionalProperties": {
+                "description": "Theme color or color values",
                 "anyOf": [
                   {
                     "description": "Color value: hex, rgb or rgba",

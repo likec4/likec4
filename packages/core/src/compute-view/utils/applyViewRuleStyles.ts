@@ -1,4 +1,4 @@
-import { anyPass, filter, forEach, isDefined, isNot, pipe } from 'remeda'
+import { anyPass, filter, forEach, isDefined, isEmpty, isNot, pipe } from 'remeda'
 import {
   type AnyAux,
   type AnyViewRuleStyle,
@@ -16,42 +16,25 @@ export function applyViewRuleStyle<A extends AnyAux>(
   predicates: Predicate<ComputedNode<A>>[],
   nodes: ComputedNode<A>[],
 ): void {
+  const { shape, color, icon, ...rest } = rule.style
+  const nonEmptyStyle = !isEmpty(rest)
   pipe(
     nodes,
     filter(isNot(isGroupElementKind)),
     filter(anyPass(predicates)),
     forEach(n => {
-      n.shape = rule.style.shape ?? n.shape
-      n.color = rule.style.color ?? n.color
-      if (isDefined(rule.style.icon)) {
-        n.icon = rule.style.icon
+      n.shape = shape ?? n.shape
+      n.color = color ?? n.color
+      if (isDefined(icon)) {
+        n.icon = icon
       }
       if (isDefined(rule.notation)) {
         n.notation = rule.notation
       }
-      let styleOverride: ComputedNode['style'] | undefined
-      if (isDefined(rule.style.border)) {
-        styleOverride = { border: rule.style.border }
-      }
-      if (isDefined(rule.style.opacity)) {
-        styleOverride = { ...styleOverride, opacity: rule.style.opacity }
-      }
-      if (isDefined(rule.style.multiple)) {
-        styleOverride = { ...styleOverride, multiple: rule.style.multiple }
-      }
-      if (isDefined(rule.style.padding)) {
-        styleOverride = { ...styleOverride, padding: rule.style.padding }
-      }
-      if (isDefined(rule.style.size)) {
-        styleOverride = { ...styleOverride, size: rule.style.size }
-      }
-      if (isDefined(rule.style.textSize)) {
-        styleOverride = { ...styleOverride, textSize: rule.style.textSize }
-      }
-      if (styleOverride) {
+      if (nonEmptyStyle) {
         n.style = {
           ...n.style,
-          ...styleOverride,
+          ...rest,
         }
       }
     }),

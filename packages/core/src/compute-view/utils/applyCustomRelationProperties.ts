@@ -18,12 +18,14 @@ export function applyCustomRelationProperties<A extends AnyAux>(
       customRelation: {
         expr,
         title,
-        description,
-        notes,
+        description: _description,
+        notes: _notes,
         ...customprops
       },
     } of rules
   ) {
+    const description = _description ? { description: { txt: _description } } : {}
+    const notes = _notes ? { notes: { txt: _notes } } : {}
     const props = omitBy(customprops, isNullish)
     const satisfies = relationExpressionToPredicates(expr)
     edges.forEach((edge, i) => {
@@ -46,8 +48,8 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         edges[i] = {
           ...edge,
           ...props,
-          ...description && { description: { txt: description } },
-          ...notes && { notes: { txt: notes } },
+          ...description,
+          ...notes,
           label: title ?? edge.label,
           isCustomized: true,
         }

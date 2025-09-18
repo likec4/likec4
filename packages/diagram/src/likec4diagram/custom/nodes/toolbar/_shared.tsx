@@ -3,15 +3,14 @@ import {
   type Fqn,
   type NodeId,
   type ThemeColor,
+  type ThemeColors,
   type ViewChange,
-  defaultTheme,
   invariant,
 } from '@likec4/core'
 import { ActionIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
 import { useState } from 'react'
-import { keys } from 'remeda'
 import type { MergeExclusive } from 'type-fest'
 import type { NodeProps } from '../../../../base'
 import { useDiagramEventHandlers } from '../../../../context'
@@ -20,26 +19,32 @@ import type { Types } from '../../../types'
 
 export type OnStyleChange = (style: ViewChange.ChangeElementStyle['style']) => void
 
-const {
-  primary,
-  secondary,
-  muted,
-  ...otherColors
-} = defaultTheme.colors
+export const SemanticColors = [
+  'primary',
+  'secondary',
+  'muted',
+] as const
 
-export const themedColors = [
-  { key: 'primary', value: primary.elements.fill },
-  { key: 'secondary', value: secondary.elements.fill },
-  { key: 'muted', value: muted.elements.fill },
-] satisfies Array<{ key: ThemeColor; value: string }>
+// const {
+//   primary,
+//   secondary,
+//   muted,
+//   ...otherColors
+// } = defaultTheme.colors
 
-export const colors = keys(otherColors).map(key => ({
-  key,
-  value: defaultTheme.colors[key].elements.fill,
-}))
+// export const themedColors = [
+//   { key: 'primary', value: primary.elements.fill },
+//   { key: 'secondary', value: secondary.elements.fill },
+//   { key: 'muted', value: muted.elements.fill },
+// ] satisfies Array<{ key: ThemeColor; value: string }>
 
-export type ThemeColorKey = typeof themedColors[0]['key']
-export type ColorKey = typeof colors[0]['key']
+// export const colors = keys(otherColors).map(key => ({
+//   key,
+//   value: defaultTheme.colors[key].elements.fill,
+// }))
+
+export type ThemeColorKey = typeof SemanticColors[number]
+export type ColorKey = Exclude<ThemeColor, ThemeColorKey>
 
 export const Tooltip = MantineTooltip.withProps({
   color: 'dark',

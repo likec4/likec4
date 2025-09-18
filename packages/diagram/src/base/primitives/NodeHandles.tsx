@@ -4,11 +4,12 @@ import type { CSSProperties } from 'react'
 const style: CSSProperties = {
   top: '50%',
   left: '50%',
-  visibility: 'hidden',
   right: 'unset',
   bottom: 'unset',
-  width: 1,
-  height: 1,
+  visibility: 'hidden',
+  width: 5,
+  height: 5,
+  transform: 'translate(-50%, -50%)',
 }
 
 /**

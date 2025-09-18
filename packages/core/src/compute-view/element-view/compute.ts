@@ -201,7 +201,7 @@ export function computeElementView<A extends AnyAux>(
   }
   memory = assignElementsToGroups(memory)
 
-  const nodesMap = buildNodes<A>(memory)
+  const nodesMap = buildNodes(likec4model, memory)
 
   const computedEdges = toComputedEdges(memory.connections as unknown as readonly ConnectionModel<A>[])
 

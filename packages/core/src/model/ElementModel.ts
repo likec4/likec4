@@ -136,7 +136,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
     return this.parent === null
   }
 
-  get style(): SetRequired<ElementStyle, 'shape' | 'color'> {
+  get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size' | 'border' | 'opacity'> {
     return memoizeProp(this, 'style', () =>
       exact({
         shape: this.$model.$styles.defaults.shape,

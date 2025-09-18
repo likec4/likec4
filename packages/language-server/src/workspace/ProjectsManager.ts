@@ -267,24 +267,21 @@ export class ProjectsManager {
       const config = await this.services.workspace.FileSystemProvider.loadProjectConfig(configFile)
       const path = joinRelativeURL(configFile.path, '..')
       const folderUri = configFile.with({ path })
-      return await this._registerProject({ config, folderUri })
+      return this._registerProject({ config, folderUri })
     }
-    const config = validateProjectConfig(opts.config)
-    return this._registerProject({ config, folderUri: opts.folderUri })
+    return this._registerProject(opts)
   }
 
   /**
    * Registers (or reloads) likec4 project by config file or config object.
    * If there is some project registered at same folder, it will be reloaded.
    */
-  private async _registerProject({
-    config,
-    folderUri,
-  }: {
-    config: LikeC4ProjectConfig
+  private _registerProject(opts: {
+    config: LikeC4ProjectConfig | LikeC4ProjectConfig.Input
     folderUri: URI | string
-  }): Promise<ProjectData> {
-    const folder = ProjectFolder(folderUri)
+  }): ProjectData {
+    const config = validateProjectConfig(opts.config)
+    const folder = ProjectFolder(opts.folderUri)
     let project = this.#projects.find(p => p.folder === folder)
 
     if (project && deepEqual(project.config, config)) {

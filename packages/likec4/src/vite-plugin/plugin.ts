@@ -1,7 +1,7 @@
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { relative } from 'node:path'
-import { isDeepEqual } from 'remeda'
+import { isDeepEqual, map, pick } from 'remeda'
 import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
 import { LikeC4 } from '../LikeC4'
@@ -181,7 +181,8 @@ export function LikeC4VitePlugin({
     },
 
     configureServer(server) {
-      let _projects = likec4.projects()
+      const readProjects = () => map(likec4.projects(), pick(['id', 'title']))
+      let _projects = readProjects()
 
       const reloadModule = async (id: string) => {
         const md = server.moduleGraph.getModuleById(id)
@@ -214,7 +215,7 @@ export function LikeC4VitePlugin({
           })
           return
         }
-        const _updated = likec4.projects()
+        const _updated = readProjects()
         if (!isDeepEqual(_updated, _projects)) {
           _projects = _updated
           await reloadModule(projectsModule.virtualId)

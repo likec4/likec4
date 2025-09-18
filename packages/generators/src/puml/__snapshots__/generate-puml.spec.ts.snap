@@ -18,38 +18,38 @@ skinparam {
 
 skinparam rectangle<<Amazon>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<Customer>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<Support>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudBackendGraphql>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudBackendStorage>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudFrontendAdminPanel>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudFrontendDashboard>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 rectangle "==amazon" <<Amazon>> as Amazon
 rectangle "cloud" <<Cloud>> as Cloud {
@@ -99,28 +99,28 @@ skinparam {
 
 skinparam rectangle<<Amazon>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<Customer>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<Support>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudBackend>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<CloudFrontend>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 rectangle "==amazon" <<Amazon>> as Amazon
 rectangle "cloud" <<Cloud>> as Cloud {
@@ -160,18 +160,18 @@ skinparam {
 
 skinparam rectangle<<Client>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<SystemBackend>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 skinparam rectangle<<SystemFrontend>>{
   BackgroundColor #3b82f6
-  FontColor #FFFFFF
-  BorderColor #3b82f6
+  FontColor #eff6ff
+  BorderColor #2563eb
 }
 rectangle "==client" <<Client>> as Client
 rectangle "==backend" <<SystemBackend>> as SystemBackend

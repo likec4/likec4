@@ -155,7 +155,6 @@
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "customer",
           "inEdges": [],
           "kind": "actor",
@@ -174,13 +173,11 @@
           "tags": [
             "tag3",
           ],
-          "technology": null,
           "title": "customer",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "cloud.ui",
           "inEdges": [
             "1r2spnx",
@@ -199,13 +196,11 @@
             "size": "md",
           },
           "tags": [],
-          "technology": null,
           "title": "ui",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "cloud.api",
           "inEdges": [
             "9r1z3i",
@@ -222,7 +217,6 @@
             "size": "md",
           },
           "tags": [],
-          "technology": null,
           "title": "api",
         },
       ],
@@ -261,7 +255,6 @@
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "customer",
           "inEdges": [],
           "kind": "actor",
@@ -280,13 +273,11 @@
           "tags": [
             "tag3",
           ],
-          "technology": null,
           "title": "customer",
         },
         {
           "children": [],
           "color": "primary",
-          "description": null,
           "id": "cloud",
           "inEdges": [
             "kzb1r3",
@@ -304,7 +295,6 @@
             "textSize": "sm",
           },
           "tags": [],
-          "technology": null,
           "title": "cloud",
         },
       ],

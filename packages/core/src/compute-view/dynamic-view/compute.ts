@@ -152,6 +152,7 @@ class DynamicViewCompute<A extends AnyAux> {
     }
 
     const nodesMap = buildComputedNodes(
+      this.model.$styles,
       [...this.explicits].map(elementModelToNodeSource),
     )
 

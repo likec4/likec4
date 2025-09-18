@@ -132,32 +132,38 @@ digraph {
     likec4_id = "7dqxgw";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
   "client" -> "ui_1" [
     likec4_id = "7drqs3";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
   "ui" -> "api" [
     likec4_id = "1tp0394";
     style = "dashed";
     weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
   "ui_1" -> "api_1" [
     likec4_id = "ugfmg";
     style = "dashed";
     weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
   "api" -> "db" [
     likec4_id = "1ll2ewe";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
   "api_1" -> "db" [
     likec4_id = "yziy5";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
   ];
 }

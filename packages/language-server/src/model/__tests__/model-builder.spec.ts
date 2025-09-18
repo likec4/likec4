@@ -1,6 +1,5 @@
 import { type Element, type ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
-import { ThemeColors } from '@likec4/core/styles'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
@@ -616,12 +615,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: [{ url: './samefolder.c4', relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4',
+      sourcePath: 'src/index.c4',
     })
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4',
+      sourcePath: 'src/subdir/doc2.c4',
     })
   })
 
@@ -712,18 +711,18 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: [{ relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4',
+      sourcePath: 'src/index.c4',
     })
     expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4',
+      sourcePath: 'src/subdir/doc2.c4',
     })
     expect(views['sys3']).toMatchObject({
       links: [{ relative: 'src/a/b/c/sys3/index.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
-      relativePath: 'a/b/c/doc3.c4',
+      sourcePath: 'src/a/b/c/doc3.c4',
     })
   })
 
