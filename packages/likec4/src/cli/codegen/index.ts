@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
-import { outdir, path, project, useDotBin, webcomponentPrefix } from '../options'
+import { outdir, path, project, useCorePackage, useDotBin, webcomponentPrefix } from '../options'
 import { customHandler } from './custom'
 import { legacyHandler } from './handler'
 import { modelHandler } from './model'
@@ -33,13 +33,15 @@ const codegenCmd = (yargs: yargs.Argv) => {
                   normalize: true,
                   coerce: resolve,
                 })
-                .option('use-dot', useDotBin),
+                .option('use-dot', useDotBin)
+                .option('use-core-package', useCorePackage),
             async args => {
               await reactHandler({
                 project: args.project,
                 useDotBin: args.useDotBin,
                 path: args.path,
                 outfile: args.outfile,
+                useCorePackage: args.useCorePackage,
               })
             },
           )
@@ -89,11 +91,13 @@ const codegenCmd = (yargs: yargs.Argv) => {
                   normalize: true,
                   coerce: resolve,
                 })
-                .option('use-dot', useDotBin),
+                .option('use-dot', useDotBin)
+                .option('use-core-package', useCorePackage),
             handler: async args => {
               await modelHandler({
                 path: args.path,
                 useDotBin: args.useDotBin,
+                useCorePackage: args.useCorePackage,
                 outfile: args.outfile,
                 project: args.project,
               })

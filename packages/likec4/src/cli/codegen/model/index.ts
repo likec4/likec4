@@ -15,11 +15,16 @@ type HandlerParams = {
    * The directory where c4 files are located.
    */
   path: string
+  /**
+   * Whether to use `@likec4/core` package in types
+   * @default false
+   */
+  useCorePackage: boolean
   useDotBin: boolean
   outfile: string | undefined
 }
 
-export async function modelHandler({ path, useDotBin, outfile, project }: HandlerParams) {
+export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   await using languageServices = await LikeC4.fromWorkspace(path, {
@@ -74,7 +79,7 @@ export async function modelHandler({ path, useDotBin, outfile, project }: Handle
 
   await mkdir(outDir, { recursive: true })
 
-  await writeFile(outfilepath, generateLikeC4Model(model), {
+  await writeFile(outfilepath, generateLikeC4Model(model, { useCorePackage }), {
     encoding: 'utf-8',
   })
 

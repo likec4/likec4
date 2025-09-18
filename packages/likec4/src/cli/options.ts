@@ -20,6 +20,13 @@ export const useDotBin = {
   default: isInsideContainer(),
 } as const satisfies Options
 
+export const useCorePackage = {
+  boolean: true,
+  type: 'boolean',
+  desc: 'use `@likec4/core` package in types',
+  default: false,
+} as const satisfies Options
+
 export const useHashHistory = {
   boolean: true,
   type: 'boolean',
