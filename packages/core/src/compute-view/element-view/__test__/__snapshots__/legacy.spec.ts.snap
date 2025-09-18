@@ -113,7 +113,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "person",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -139,7 +138,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "person",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -171,7 +169,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -201,7 +198,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": "cloud",
       "shape": "browser",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -228,7 +224,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": "cloud",
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -252,7 +247,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -277,7 +271,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -387,7 +380,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": null,
       "shape": "person",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -413,7 +405,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": null,
       "shape": "person",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -445,7 +436,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": null,
       "shape": "browser",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -472,7 +462,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": "cloud.frontend",
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -500,7 +489,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": "cloud.frontend",
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },
@@ -527,7 +515,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {
-        "border": "dashed",
         "opacity": 15,
         "size": "md",
       },

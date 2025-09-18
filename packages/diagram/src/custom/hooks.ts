@@ -47,6 +47,10 @@ export {
   useLikeC4ProjectsContext,
 } from '../likec4model/useLikeC4Project'
 
+export {
+  useLikeC4Styles,
+} from '../likec4model/useLikeC4Styles'
+
 export { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 export { useSetState } from '../hooks/useSetState'
 export { useUpdateEffect } from '../hooks/useUpdateEffect'

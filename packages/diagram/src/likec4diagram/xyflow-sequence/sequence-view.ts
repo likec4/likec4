@@ -8,7 +8,9 @@ import {
   RichText,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
+import { type NodeHandle } from '@xyflow/system'
 import { hasAtLeast } from 'remeda'
+import { toXYFlowPosition } from '../../utils/xyflow'
 import type { Types } from '../types'
 import type { Step } from './_types'
 import {
@@ -26,7 +28,9 @@ type Port = {
   position: 'left' | 'right' | 'top' | 'bottom'
 }
 
-export function sequenceViewToXY(view: LayoutedDynamicView): {
+export function sequenceViewToXY(
+  view: LayoutedDynamicView,
+): {
   bounds: BBox
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
@@ -182,7 +186,7 @@ export function sequenceViewToXY(view: LayoutedDynamicView): {
         labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',
-        line: edge.line ?? 'solid',
+        line: edge.line ?? 'dashed',
         dir: 'forward',
         head: 'normal',
         tail: 'none',
@@ -291,6 +295,31 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
   view: LayoutedDynamicView
 }): Types.SequenceActorNode {
   const { x, y, width, height } = layout.getActorBox(actor)
+
+  const { ports: portsData, handles } = ports.reduce((acc, p) => {
+    const bbox = layout.getPortCenter(p.step, p.type)
+    acc.ports.push({
+      id: p.step.id + '_' + p.type,
+      cx: bbox.cx - x,
+      cy: bbox.cy - y,
+      height: bbox.height,
+      type: p.type,
+      position: p.position,
+    })
+    acc.handles.push({
+      position: toXYFlowPosition(p.position),
+      x: bbox.cx - x - 3,
+      y: bbox.cy - y,
+      width: 5,
+      height: bbox.height,
+      type: p.type,
+    })
+    return acc
+  }, {
+    ports: [] as Types.SequenceActorNodePort[],
+    handles: [] as NodeHandle[],
+  })
+
   return {
     id: actor.id,
     type: 'seq-actor',
@@ -313,17 +342,7 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
       description: RichText.from(actor.description),
       viewHeight: bounds.height,
       viewId: view.id,
-      ports: ports.map((p): Types.SequenceActorNodePort => {
-        const bbox = layout.getPortCenter(p.step, p.type)
-        return ({
-          id: p.step.id + '_' + p.type,
-          cx: bbox.cx - x,
-          cy: bbox.cy - y,
-          height: bbox.height,
-          type: p.type,
-          position: p.position,
-        })
-      }),
+      ports: portsData,
     },
     deletable: false,
     selectable: true,
@@ -333,5 +352,6 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
     initialWidth: width,
     height,
     initialHeight: height,
+    handles,
   }
 }

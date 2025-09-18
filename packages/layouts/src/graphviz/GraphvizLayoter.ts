@@ -3,7 +3,7 @@ import {
   type aux,
   type ComputedView,
   type DiagramView,
-  type LikeC4StyleConfig,
+  type LikeC4Styles,
   isDeploymentView,
   isDynamicView,
   isElementView,
@@ -43,7 +43,7 @@ const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => 
 
 export type LayoutTaskParams<A extends aux.Any = aux.Any> = {
   view: ComputedView<A>
-  styles: LikeC4StyleConfig
+  styles: LikeC4Styles
 }
 
 export type LayoutResult<A extends aux.Any = aux.Any> = {

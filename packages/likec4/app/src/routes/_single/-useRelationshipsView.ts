@@ -1,4 +1,13 @@
-import type { DiagramNode, DiagramView, EdgeId, Fqn, NodeId, Point, ViewId } from '@likec4/core'
+import {
+  type DiagramNode,
+  type DiagramView,
+  type EdgeId,
+  type Fqn,
+  type NodeId,
+  type Point,
+  type ViewId,
+  exact,
+} from '@likec4/core'
 import { computeRelationshipsView } from '@likec4/core/compute-view/relationships'
 import { useMemo } from 'react'
 
@@ -372,7 +381,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
 
     const navigateTo = element.defaultView?.id ?? null
 
-    return {
+    const { icon, shape, color, ...style } = element.style
+
+    return exact({
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
       position: [position.x, position.y],
@@ -383,8 +394,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       technology: element.technology,
       tags: element.tags,
       links: null,
-      color: element.color,
-      shape: element.shape,
+      color,
+      shape,
+      icon,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -394,9 +406,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
         width: width,
         height: height,
       },
-      style: {
-        ...element.$element.style,
-      },
+      style,
       navigateTo,
       inEdges: [],
       outEdges: [],
@@ -404,7 +414,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       children,
       width,
       height,
-    }
+    })
   })
 
   return {

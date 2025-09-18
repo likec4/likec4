@@ -166,7 +166,6 @@
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -191,7 +190,6 @@
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -212,7 +210,6 @@
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -266,7 +263,6 @@
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -289,7 +285,6 @@
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "lg",
             "textSize": "sm",

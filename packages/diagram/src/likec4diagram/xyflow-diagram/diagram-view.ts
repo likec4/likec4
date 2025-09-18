@@ -14,9 +14,9 @@ import {
   RichText,
   whereOperatorAsPredicate,
 } from '@likec4/core'
-import { Position } from '@xyflow/system'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
+import { createXYFlowNodeNandles } from '../../utils/xyflow'
 import type { Types } from '../types'
 
 export function diagramToXY(opts: {
@@ -108,28 +108,7 @@ export function diagramToXY(opts: {
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
-      handles: [
-        {
-          type: 'target',
-          position: Position.Top,
-          ...center,
-        },
-        {
-          type: 'target',
-          position: Position.Left,
-          ...center,
-        },
-        {
-          type: 'source',
-          position: Position.Right,
-          ...center,
-        },
-        {
-          type: 'source',
-          position: Position.Bottom,
-          ...center,
-        },
-      ],
+      handles: createXYFlowNodeNandles(node),
       ...(parent && {
         parentId: ns + parent.id,
       }),

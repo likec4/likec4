@@ -1,5 +1,5 @@
 import {
-  type LikeC4StyleConfig,
+  type LikeC4StylesConfig,
   type ThemeColorValues,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
@@ -69,7 +69,7 @@ ${whenDark} ${selector} {
   ].join('\n')
 }
 
-function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StyleConfig['theme']) {
+function generateBuiltInColorStyles(rootSelector: string, theme: LikeC4StylesConfig['theme']) {
   return pipe(
     theme.colors,
     entries(),

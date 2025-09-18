@@ -5,7 +5,6 @@ export const styleDefaults: LikeC4StyleDefaults = {
   size: 'md',
   opacity: 15,
   shape: 'rectangle',
-  border: 'dashed',
   group: {
     opacity: 15,
     border: 'dashed',

@@ -1,23 +1,19 @@
-import { type LikeC4StyleConfig, type ThemeColor } from '@likec4/core/styles'
+import { type LikeC4Styles } from '@likec4/core/styles'
 import {
   type AnyAux,
   type AnyFqn,
-  type Color,
   type ComputedEdge,
   type ComputedNode,
   type ComputedView,
   type DeploymentFqn,
   type EdgeId,
-  type ElementColorValues,
   type Fqn,
   type HexColor,
   type LikeC4StyleDefaults,
-  type LikeC4Theme,
   type NodeId,
   type RelationshipColorValues,
   type RelationshipLineType,
   type XYPoint,
-  ensureSizes,
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
@@ -120,7 +116,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
 
   constructor(
     protected readonly view: V,
-    protected readonly $styles: LikeC4StyleConfig,
+    protected readonly styles: LikeC4Styles,
   ) {
     this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
     this.edgesWithCompounds = new Set(
@@ -204,26 +200,16 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.postBuild(G)
   }
 
-  protected get $theme(): LikeC4Theme {
-    return this.$styles.theme
-  }
-
   protected get $defaults(): LikeC4StyleDefaults {
-    return this.$styles.defaults
+    return this.styles.defaults
   }
 
   public get hasEdgesWithCompounds(): boolean {
     return this.edgesWithCompounds.size > 0
   }
 
-  protected get defaultElementColors(): ElementColorValues {
-    const color = this.$defaults.color
-    return this.$theme.colors[color].elements
-  }
-
   protected get defaultRelationshipColors(): RelationshipColorValues {
-    const color = this.$defaults.relationship.color
-    const colorValues = this.$theme.colors[color].relationships
+    const colorValues = this.styles.relationshipColors
     return {
       line: colorValues.line,
       label: colorValues.label as HexColor,
@@ -279,7 +265,6 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   }
 
   public print(): DotSource {
-    const G = this.graphvizModel
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',
@@ -315,7 +300,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   }
 
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
-    const colors = this.defaultElementColors
+    const colors = this.styles.elementColors
     node.apply({
       [_.fontname]: FontName,
       [_.shape]: 'rect',
@@ -370,7 +355,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
-    const colorValues = this.getElementColorValues(compound.color)
+    const colorValues = this.styles.colors(compound.color).elements
     const textColor = compoundLabelColor(colorValues.loContrast)
     subgraph.apply({
       [_.likec4_id]: compound.id,
@@ -390,28 +375,20 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected elementToNode(element: ComputedNode, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
-    const colorValues = this.getElementColorValues(element.color)
-    const { size, textSize, padding: paddingSize } = ensureSizes(element.style)
-
-    const padding = this.$theme.spacing[paddingSize]
+    const colorValues = this.styles.colors(element.color).elements
+    const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
 
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.label]: nodeLabel(element, colorValues, {
-        shape: size,
-        padding: paddingSize,
-        text: textSize,
-      }),
+      [_.label]: nodeLabel(element, this.styles),
       [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
-
-    const { width, height } = this.$theme.sizes[size]
 
     node.attributes.set(_.width, pxToInch(width))
     node.attributes.set(_.height, pxToInch(height))
 
-    if (colorValues.fill !== this.defaultElementColors.fill) {
+    if (!this.styles.isDefaultColor(element.color)) {
       node.attributes.apply({
         [_.fillcolor]: colorValues.fill,
         [_.fontcolor]: colorValues.hiContrast as HexColor,
@@ -669,22 +646,5 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
     this.graphvizModel.delete(_.packmode)
     this.graphvizModel.attributes.graph.delete(_.margin)
     return this
-  }
-  protected getRelationshipColorValues(color: Color) {
-    const colorValues = this.$theme.colors[color as ThemeColor]?.relationships ?? this.defaultRelationshipColors
-    return {
-      line: colorValues.line,
-      label: colorValues.label as HexColor,
-      labelBg: colorValues.labelBg,
-    }
-  }
-  protected getElementColorValues(color: Color): ElementColorValues {
-    const colorValues = this.$theme.colors[color as ThemeColor]?.elements ?? this.defaultElementColors
-    return {
-      fill: colorValues.fill,
-      stroke: colorValues.stroke,
-      hiContrast: colorValues.hiContrast as HexColor,
-      loContrast: colorValues.loContrast as HexColor,
-    }
   }
 }

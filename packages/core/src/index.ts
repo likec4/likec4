@@ -1,4 +1,4 @@
-export { defaultStyle, defaultTheme } from './styles'
+export { defaultTheme, LikeC4Styles } from './styles'
 
 export * from './types'
 

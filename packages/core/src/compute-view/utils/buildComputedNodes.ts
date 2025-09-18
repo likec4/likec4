@@ -5,7 +5,7 @@ import {
   type AnyAux,
   type aux,
   type ComputedNode,
-  type LikeC4StyleConfig,
+  type LikeC4StylesConfig,
   type scalar,
   type Unknown,
   exact,
@@ -57,7 +57,7 @@ export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>):
 }
 
 export function buildComputedNodes<A extends AnyAux>(
-  { defaults }: LikeC4StyleConfig,
+  { defaults }: LikeC4StylesConfig,
   elements: ReadonlyArray<ComputedNodeSource<A>>,
   groups?: ReadonlyArray<NodesGroup<A>>,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {

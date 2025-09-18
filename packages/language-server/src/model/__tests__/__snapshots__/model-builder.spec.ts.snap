@@ -139,7 +139,6 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "parent": null,
           "shape": "person",
           "style": {
-            "border": "dashed",
             "opacity": 40,
             "size": "md",
           },
@@ -160,7 +159,6 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -318,7 +316,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -341,7 +338,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -362,7 +358,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -415,7 +410,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -436,7 +430,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -489,7 +482,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -513,7 +505,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -534,7 +525,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "parent": "system.backend",
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -662,7 +652,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -683,7 +672,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -801,7 +789,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -822,7 +809,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -936,7 +922,6 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },
@@ -957,7 +942,6 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "parent": null,
           "shape": "rectangle",
           "style": {
-            "border": "dashed",
             "opacity": 15,
             "size": "md",
           },

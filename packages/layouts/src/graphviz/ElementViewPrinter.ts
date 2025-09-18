@@ -1,4 +1,4 @@
-import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
+import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn, HexColor } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
@@ -127,10 +127,10 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
       )
     }
     if (edge.color && edge.color !== this.$defaults.relationship.color) {
-      const colorValues = this.getRelationshipColorValues(edge.color)
+      const colorValues = this.styles.colors(edge.color).relationships
       e.attributes.apply({
         [_.color]: colorValues.line,
-        [_.fontcolor]: colorValues.label,
+        [_.fontcolor]: colorValues.label as HexColor,
       })
     }
 

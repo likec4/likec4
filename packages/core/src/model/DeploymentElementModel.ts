@@ -46,7 +46,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   abstract readonly $node: DeploymentElement<A>
   abstract readonly tags: aux.Tags<A>
 
-  get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size' | 'border' | 'opacity'> {
+  get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size'> {
     return memoizeProp(this, 'style', () =>
       exact({
         shape: this.$model.$styles.defaults.shape,
@@ -396,7 +396,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return nonNullable(this.$model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  override get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size' | 'border' | 'opacity'> {
+  override get style(): SetRequired<ElementStyle, 'shape' | 'color' | 'size'> {
     return memoizeProp(this, 'style', () =>
       exact({
         shape: this.$model.$styles.defaults.shape,

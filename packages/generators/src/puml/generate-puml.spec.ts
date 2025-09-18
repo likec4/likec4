@@ -1,4 +1,4 @@
-import { defaultStyle } from '@likec4/core'
+import { LikeC4Styles } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { expect, test, vi } from 'vitest'
@@ -10,7 +10,7 @@ const mockViewModel = vi.fn(function($view: ProcessedView) {
     $view,
     $model: {
       specification: {},
-      $styles: defaultStyle,
+      $styles: LikeC4Styles.DEFAULT,
     },
   } as unknown as LikeC4ViewModel<aux.Unknown>
 })

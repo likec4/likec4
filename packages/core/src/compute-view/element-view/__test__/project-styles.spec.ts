@@ -53,7 +53,6 @@ describe('computed nodes and edges inherit project styles', () => {
     expect(elnode.style).toMatchInlineSnapshot(
       `
       {
-        "border": "dashed",
         "opacity": 15,
         "size": "lg",
       }
@@ -66,7 +65,6 @@ describe('computed nodes and edges inherit project styles', () => {
     expect(queuenode.style).toMatchInlineSnapshot(
       `
       {
-        "border": "dashed",
         "opacity": 15,
         "size": "lg",
       }

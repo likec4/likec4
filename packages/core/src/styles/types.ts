@@ -103,20 +103,20 @@ export interface ThemeColorValues {
 export interface LikeC4StyleDefaults {
   readonly color: ThemeColor
   readonly size: ShapeSize
-  readonly opacity: number
   readonly shape: ElementShape
-  readonly border: BorderStyle
+  readonly opacity?: number
+  readonly border?: BorderStyle
   readonly padding?: SpacingSize
   readonly text?: TextSize
   /**
    * Default style values for groups
    * If not specified, the default values for elements are used
    */
-  readonly group?: Partial<{
-    readonly color: ThemeColor
-    readonly opacity: number
-    readonly border: BorderStyle
-  }>
+  readonly group?: {
+    readonly color?: ThemeColor
+    readonly opacity?: number
+    readonly border?: BorderStyle
+  }
   readonly relationship: {
     readonly color: ThemeColor
     readonly line: RelationshipLineType
@@ -136,7 +136,7 @@ export interface LikeC4Theme {
   readonly textSizes: Readonly<Record<TextSize, number>>
 }
 
-export interface LikeC4StyleConfig {
+export interface LikeC4StylesConfig {
   readonly theme: LikeC4Theme
   readonly defaults: LikeC4StyleDefaults
 }

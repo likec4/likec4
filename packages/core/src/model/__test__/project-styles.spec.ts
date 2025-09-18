@@ -51,7 +51,6 @@ describe('Project styles', () => {
     expect(m.element('el').color).toBe('red')
     expect(m.element('el').style).toMatchInlineSnapshot(`
       {
-        "border": "dashed",
         "color": "red",
         "opacity": 15,
         "shape": "browser",
@@ -62,7 +61,6 @@ describe('Project styles', () => {
     expect(m.element('queue').color).toBe('green')
     expect(m.element('queue').style).toMatchInlineSnapshot(`
       {
-        "border": "dashed",
         "color": "green",
         "opacity": 15,
         "shape": "queue",

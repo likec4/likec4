@@ -1,9 +1,9 @@
-import type { DiagramEdge, NonEmptyArray, Point } from '@likec4/core'
+import { type DiagramEdge, type NonEmptyArray, type Point, BBox } from '@likec4/core'
 import { invariant } from '@likec4/core/utils'
-import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
+import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
+import { type NodeHandle, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
-import { hasAtLeast, isArray } from 'remeda'
+import { flatMap, hasAtLeast, isArray } from 'remeda'
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
@@ -102,4 +102,47 @@ export function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   invariant(points.length === 0, 'all points should be consumed')
 
   return path
+}
+
+export function toXYFlowPosition(position: 'left' | 'right' | 'top' | 'bottom'): Position {
+  switch (position) {
+    case 'left':
+      return Position.Left
+    case 'right':
+      return Position.Right
+    case 'top':
+      return Position.Top
+    case 'bottom':
+      return Position.Bottom
+  }
+}
+
+export function createXYFlowNodeNandles(bbox: BBox): NodeHandle[] {
+  const center = BBox.center(bbox)
+  return flatMap(['source', 'target'] as const, type => [
+    {
+      type,
+      position: Position.Top,
+      x: center.x,
+      y: bbox.y,
+    },
+    {
+      type,
+      position: Position.Left,
+      x: bbox.x,
+      y: center.y,
+    },
+    {
+      type,
+      position: Position.Right,
+      x: bbox.x + bbox.width,
+      y: center.y,
+    },
+    {
+      type,
+      position: Position.Bottom,
+      x: center.x,
+      y: bbox.y + bbox.height,
+    },
+  ])
 }

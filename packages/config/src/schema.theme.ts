@@ -22,18 +22,24 @@ const opacity = z
   .number()
   .min(0, 'Opacity must be between 0 and 100')
   .max(100, 'Opacity must be between 0 and 100')
+  .meta({ description: 'Opacity 0%-100%' })
+
 const shape = z.enum(ElementShapes)
+
 const border = z.enum(BorderStyles)
+
 const size = z.enum(Sizes)
 
 const arrow = z.enum(RelationshipArrowTypes)
-const line = z.enum(['dashed', 'solid', 'dotted'])
+const line = z
+  .enum(['dashed', 'solid', 'dotted'])
+  .meta({ description: 'Default line type for relationships' })
 
 const color = z
   .string()
   .nonempty('Color name cannot be empty')
   .transform(value => value as ThemeColor)
-  .meta({ description: 'Color name' })
+  .meta({ description: 'Theme color name (must be added to the theme)' })
 
 const colorValue = z
   .string()
@@ -179,14 +185,5 @@ function normalizeDefaults(
     ...rest,
     relationship: relationship && exact(relationship) as LikeC4ProjectStyleDefaults['relationship'],
     group: group && exact(group) as LikeC4ProjectStyleDefaults['group'],
-  })
-}
-
-function normalizeTheme(theme?: z.infer<typeof LikeC4Config_Styles_Theme>): LikeC4ProjectTheme | undefined {
-  if (!theme) {
-    return undefined
-  }
-  return exact({
-    ...theme,
   })
 }

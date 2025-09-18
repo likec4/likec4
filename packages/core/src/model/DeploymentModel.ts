@@ -1,12 +1,10 @@
 import { values } from 'remeda'
-import type { ReadonlyDeep } from 'type-fest'
+import type { LikeC4Styles } from '../styles/LikeC4Styles'
 import {
   type Any,
   type DeploymentElement,
   type DeploymentRelationship,
   type IteratorLike,
-  type LikeC4ProjectStylesConfig,
-  type LikeC4StyleConfig,
   FqnRef,
   isDeploymentNode,
 } from '../types'
@@ -95,7 +93,7 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
     }
   }
 
-  get $styles(): LikeC4StyleConfig {
+  get $styles(): LikeC4Styles {
     return this.$model.$styles
   }
 

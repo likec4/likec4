@@ -233,7 +233,7 @@ export const sharesKV = (c: HonoContext) => {
    * This is used to check if a share is valid before reading it.
    * @param shareId The ID of the share to check.
    */
-  async function readMetadata(shareId: string) {
+  async function readMetadata(shareId: string): Promise<Metadata> {
     const data = await c.env.KV.getWithMetadata<Metadata>(`share:${shareId}`, 'stream')
     if (!data.value) {
       return throwShareNotFound(c, shareId)

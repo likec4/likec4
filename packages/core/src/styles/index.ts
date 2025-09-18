@@ -1,14 +1,7 @@
-import { styleDefaults } from './defaults'
-import { defaultTheme } from './theme'
-import type { LikeC4StyleConfig } from './types'
-
-export const defaultStyle: LikeC4StyleConfig = {
-  theme: defaultTheme,
-  defaults: styleDefaults,
-}
-
-export { defaultTheme }
+export { defaultTheme } from './theme'
 
 export { computeColorValues } from './compute-color-values'
 
 export * from './types'
+
+export { defaultStyle, LikeC4Styles } from './LikeC4Styles'
