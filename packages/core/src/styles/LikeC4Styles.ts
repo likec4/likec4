@@ -25,6 +25,16 @@ export const defaultStyle: LikeC4StylesConfig = {
   defaults: styleDefaults,
 }
 
+/**
+ * Styles of a LikeC4 project
+ *
+ * Accepts an array of LikeC4ProjectStylesConfig objects as a parameter
+ * and constructs a LikeC4Styles merged with the default styles.
+ *
+ * The class provides methods to get the default element colors, relationship
+ * colors, group colors, font size in pixels, padding in pixels, and to compute
+ * the ThemeColorValues from a given color.
+ */
 export class LikeC4Styles {
   public readonly theme: LikeC4Theme
   public readonly defaults: LikeC4StyleDefaults
@@ -119,6 +129,24 @@ export class LikeC4Styles {
     return color in this.theme.colors
   }
 
+  /**
+   * Calculate sizes and values based on the node styles
+   *
+   * @example
+   * ```typescript
+   * const { sizes, values } = styles.nodeSizes(node.style)
+   *
+   * // sizes
+   * sizes.size     // enum Size
+   * sizes.padding  // enum SpacingSize
+   * sizes.textSize // enum TextSize
+   *
+   * // values
+   * values.sizes    // { width: number, height: number }
+   * values.padding  // number
+   * values.textSize // number
+   * ```
+   */
   nodeSizes(nodestyles: ComputedNodeStyle) {
     const sizes = ensureSizes(nodestyles, this.defaults.size)
     return {
