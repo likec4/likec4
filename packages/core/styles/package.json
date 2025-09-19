@@ -1,4 +1,0 @@
-{
-  "types": "../dist/styles/index.d.mts",
-  "module": "../dist/styles/index.mjs"
-}
