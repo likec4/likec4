@@ -16,7 +16,6 @@ export {
   DeployedInstanceModel,
   deploymentConnection,
   DeploymentConnectionModel,
-  type DeploymentElementModel,
   DeploymentNodeModel,
   DeploymentRelationModel,
   differenceConnections,
@@ -51,6 +50,11 @@ export {
   RelationshipModel,
   sortConnectionsByBoundaryHierarchy,
   sortDeepestFirst,
+} from '@likec4/core/model'
+
+export type {
+  DeploymentElementModel,
+  DeploymentRelationEndpoint,
 } from '@likec4/core/model'
 
 export type * from '@likec4/core/types'

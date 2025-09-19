@@ -1,9 +1,9 @@
-import {
-  type AnyAux,
-  type ComputedDeploymentView,
-  type ComputedEdge,
-  type ComputedNode,
-  type HexColor,
+import type {
+  AnyAux,
+  ComputedDeploymentView,
+  ComputedEdge,
+  ComputedNode,
+  HexColor,
 } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'

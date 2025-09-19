@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "verbatimModuleSyntax": true,
+    "outDir": "./dist"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/__*",
+    "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
+  ]
+}

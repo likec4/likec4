@@ -784,21 +784,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@dagrejs/dagre':
-        specifier: 'catalog:'
-        version: 1.1.5
-      defu:
-        specifier: catalog:utils
-        version: 6.1.4
-      graphology:
-        specifier: 'catalog:'
-        version: 0.25.4(graphology-types@0.24.8)
-      graphology-dag:
-        specifier: 'catalog:'
-        version: 0.4.1(graphology-types@0.24.8)
-      graphology-types:
-        specifier: 'catalog:'
-        version: 0.24.8
       mdast-util-from-markdown:
         specifier: ^2.0.2
         version: 2.0.2
@@ -826,9 +811,6 @@ importers:
       remark-rehype:
         specifier: 11.1.2
         version: 11.1.2
-      remeda:
-        specifier: catalog:utils
-        version: 2.31.1
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -836,6 +818,9 @@ importers:
         specifier: 11.0.5
         version: 11.0.5
     devDependencies:
+      '@dagrejs/dagre':
+        specifier: 'catalog:'
+        version: 1.1.5
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -869,9 +854,21 @@ importers:
       chroma-js:
         specifier: catalog:utils
         version: 3.1.2
+      defu:
+        specifier: catalog:utils
+        version: 6.1.4
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
+      graphology:
+        specifier: 'catalog:'
+        version: 0.25.4(graphology-types@0.24.8)
+      graphology-dag:
+        specifier: 'catalog:'
+        version: 0.4.1(graphology-types@0.24.8)
+      graphology-types:
+        specifier: 'catalog:'
+        version: 0.24.8
       mnemonist:
         specifier: 0.40.3
         version: 0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a)
@@ -884,6 +881,9 @@ importers:
       obliterator:
         specifier: ^2.0.5
         version: 2.0.5
+      remeda:
+        specifier: catalog:utils
+        version: 2.31.1
       turbo:
         specifier: 2.5.6
         version: 2.5.6
