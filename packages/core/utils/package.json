@@ -1,4 +1,0 @@
-{
-  "types": "../dist/utils/index.d.mts",
-  "module": "../dist/utils/index.mjs"
-}
