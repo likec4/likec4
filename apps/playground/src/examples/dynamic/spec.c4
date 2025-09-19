@@ -1,0 +1,46 @@
+specification {
+  element actor {
+    notation "Person, Customer"
+    style {
+      shape person
+    }
+  }
+  element system {
+    notation "Software system"
+    style {
+      opacity 35%
+      border none
+    }
+  }
+  element component {
+    style {
+      color secondary
+      opacity 35%
+      border none
+    }
+  }
+  element storage {
+    notation "Data storage"
+    style {
+      color secondary
+      opacity 35%
+      shape storage
+      border none
+    }
+  }
+  element database {
+    notation "Relational Database"
+    style {
+      color secondary
+      shape storage
+    }
+  }
+  element redis {
+    notation "Redis"
+    style {
+      color secondary
+      icon tech:redis
+      shape storage
+    }
+  }
+}

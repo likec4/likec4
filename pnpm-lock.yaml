@@ -90,6 +90,9 @@ catalogs:
     wireit:
       specifier: 0.14.12
       version: 0.14.12
+    zx:
+      specifier: 8.8.1
+      version: 8.8.1
   esbuild:
     esbuild-node-externals:
       specifier: 1.18.0
@@ -1072,9 +1075,6 @@ importers:
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
-      execa:
-        specifier: ^9.5.3
-        version: 9.6.0
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
@@ -1093,6 +1093,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
 
   packages/language-server:
     dependencies:
@@ -9117,6 +9120,11 @@ packages:
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
+
+  zx@8.8.1:
+    resolution: {integrity: sha512-qvsKBnvWHstHKCluKPlEgI/D3+mdiQyMoSSeFR8IX/aXzWIas5A297KxKgPJhuPXdrR6ma0Jzx43+GQ/8sqbrw==}
+    engines: {node: '>= 12.17.0'}
+    hasBin: true
 
   zx@8.8.1-lite:
     resolution: {integrity: sha512-VZoD1Z60JSTW+dDPAF4WxP78whYYSo5G9gZIKHPisk9Jz05Gaa6GgqpgeR9YNquYP5Kw/IwrqTsAVE9f9Q4HRA==}
@@ -18029,5 +18037,7 @@ snapshots:
       react: 19.1.1
 
   zwitch@2.0.4: {}
+
+  zx@8.8.1: {}
 
   zx@8.8.1-lite: {}

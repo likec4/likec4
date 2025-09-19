@@ -1,55 +1,3 @@
-export const DynamicViewExample = {
-  currentFilename: 'dynamic.c4',
-  files: {
-    ['specs.c4']: `
-specification {
-  element actor {
-    notation "Person, Customer"
-    style {
-      shape person
-    }
-  }
-  element system {
-    notation "Software system"
-    style {
-      opacity 35%
-      border none
-    }
-  }
-  element component {
-    style {
-      color secondary
-      opacity 35%
-      border none
-    }
-  }
-  element storage {
-    notation "Data storage"
-    style {
-      color secondary
-      opacity 35%
-      shape storage
-      border none
-    }
-  }
-  element database {
-    notation "Relational Database"
-    style {
-      color secondary
-      shape storage
-    }
-  }
-  element redis {
-    notation "Redis"
-    style {
-      color secondary
-      icon tech:redis
-      shape storage
-    }
-  }
-}\
-`.trimStart(),
-    ['dynamic.c4']: `
 model {
   customer = actor 'Customer' {
     description 'Customer of Cloud System'
@@ -105,7 +53,7 @@ model {
       }
     }
 
-    storage  = storage 'Data Stores' {
+    storage = storage 'Data Stores' {
       description 'Provides access to data'
 
       db = database 'Persistent Data' {
@@ -177,57 +125,6 @@ views {
     }
   }
 
-  view customer of customer {
-    include
-      customer,
-      cloud,
-      ui
-
-    style cloud {
-      opacity 40%
-      color secondary
-    }
-    style cloud.* {
-      color secondary
-    }
-  }
-
-  view cloud of cloud {
-    include *
-    autoLayout LeftRight
-  }
-
-  view ui of ui {
-    include
-      *,
-      backend._,
-    exclude
-      api -> auth
-  }
-
-  view backend of backend {
-    include
-      cloud,
-      *,
-      backend.* -> storage with {
-        title ''
-      }
-
-    style cloud, backend {
-      opacity 40%
-      color muted
-    }
-    style backend._ {
-      color green
-    }
-  }
-
-  view storage of storage {
-    include
-      *,
-      backend._
-  }
-
   dynamic view authTokenUpdateFlow {
     title 'Use Cases / Story 1.2 - Auth token update'
     customer -> web 'interacts'
@@ -272,7 +169,4 @@ views {
       opacity 40%
     }
   }
-}
-`.trimStart(),
-  },
 }
