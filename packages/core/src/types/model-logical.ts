@@ -1,4 +1,4 @@
-import { defaultStyle } from '../styles'
+import { defaultStyle } from '../styles/LikeC4Styles'
 import type {
   BorderStyle,
   Color,
