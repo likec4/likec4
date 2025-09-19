@@ -7,8 +7,9 @@ import { type PropsWithChildren, useMemo, useRef } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../context/DiagramFeatures'
-import { useOnDiagramEvent } from '../custom'
 import { DiagramActorContextProvider } from '../hooks/safeContext'
+import { useOnDiagramEvent } from '../hooks/useDiagram'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import { convertToXYFlow } from '../likec4diagram/convert-to-xyflow'
 import type { Types } from '../likec4diagram/types'
@@ -106,6 +107,11 @@ export function DiagramActorProvider({
       ...update,
     })
   }, [actorRef, update])
+
+  useUpdateEffect(() => {
+    if (!_defaultVariant) return
+    actorRef.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
+  }, [_defaultVariant])
 
   return (
     <DiagramActorContextProvider value={actorRef}>

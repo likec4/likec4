@@ -1,4 +1,3 @@
-import { defaultTheme } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import type { NodeProps } from '@xyflow/react'
@@ -9,12 +8,12 @@ import { type Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { ElementDetailsButtonWithHandler } from './nodes'
 
-const positionMap: Record<Types.SequenceActorNodePort['position'], Position> = {
+const positionMap = {
   left: Position.Left,
   right: Position.Right,
   top: Position.Top,
   bottom: Position.Bottom,
-}
+} as const
 
 const ActorStepPort = ({
   data,
@@ -84,6 +83,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
   return (
     <>
       <Box
+        data-likec4-color={'gray'}
         className={css({
           position: 'absolute',
           rounded: 'xs',
@@ -95,9 +95,8 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
           // transform: 'translate',
         })}
         style={{
-          // position: 'absolute',
-          backgroundColor: defaultTheme.colors.gray.elements.stroke,
-          opacity: isHovered ? 0.5 : 0.4,
+          backgroundColor: 'var(--likec4-palette-stroke)',
+          opacity: isHovered ? 0.6 : 0.4,
           left: '50%',
           width: isHovered ? 3 : 2,
           height: viewHeight - positionAbsoluteY,
