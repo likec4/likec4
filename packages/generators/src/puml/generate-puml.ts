@@ -1,16 +1,17 @@
-import type { aux, LikeC4ViewModel } from '@likec4/core/model'
-import {
-  type Color,
-  type ComputedEdge,
-  type ComputedNode,
-  type ElementColorValues,
-  type KeysOf,
-  type NodeId,
-  type ProcessedView,
-  type RelationshipColorValues,
-  type ThemeColor,
-  RichText,
+import type { LikeC4ViewModel } from '@likec4/core/model'
+import type {
+  aux,
+  Color,
+  ComputedEdge,
+  ComputedNode,
+  ElementColorValues,
+  KeysOf,
+  NodeId,
+  ProcessedView,
+  RelationshipColorValues,
+  ThemeColor,
 } from '@likec4/core/types'
+import { RichText } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
 

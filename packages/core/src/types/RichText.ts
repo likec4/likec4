@@ -1,3 +1,4 @@
+import type { ElementModel } from '../model/ElementModel'
 import { markdownToHtml, markdownToText, memoizeProp, nonexhaustive } from '../utils'
 import type { MarkdownOrString } from './scalar'
 
