@@ -5,7 +5,7 @@
     "composite": true,
     "types": [
       "node"
-    ]
+    ],
   },
   "include": [
     "src"

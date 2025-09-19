@@ -1,7 +1,6 @@
-export { defaultTheme } from './theme'
-
 export { computeColorValues } from './compute-color-values'
+export { defaultTheme } from './theme'
 
 export * from './types'
 
-export { defaultStyle, LikeC4Styles } from './LikeC4Styles'
+export { LikeC4Styles } from './LikeC4Styles'

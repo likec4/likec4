@@ -20,6 +20,8 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/layouts"
   },
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -46,7 +48,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "unbuild",
+    "build": "tsc -p ./tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",

@@ -1,19 +1,19 @@
-import { type LikeC4Styles } from '@likec4/core/styles'
-import {
-  type AnyAux,
-  type AnyFqn,
-  type ComputedEdge,
-  type ComputedNode,
-  type ComputedView,
-  type DeploymentFqn,
-  type EdgeId,
-  type Fqn,
-  type HexColor,
-  type LikeC4StyleDefaults,
-  type NodeId,
-  type RelationshipColorValues,
-  type RelationshipLineType,
-  type XYPoint,
+import type { LikeC4Styles } from '@likec4/core/styles'
+import type {
+  AnyAux,
+  AnyFqn,
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  DeploymentFqn,
+  EdgeId,
+  Fqn,
+  HexColor,
+  LikeC4StyleDefaults,
+  NodeId,
+  RelationshipColorValues,
+  RelationshipLineType,
+  XYPoint,
 } from '@likec4/core/types'
 import {
   compareFqnHierarchically,
