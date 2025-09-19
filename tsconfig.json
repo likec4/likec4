@@ -44,6 +44,9 @@
     },
     {
       "path": "./styled-system/styles/"
+    },
+    {
+      "path": "./devops/"
     }
   ]
 }

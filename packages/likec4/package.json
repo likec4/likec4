@@ -26,6 +26,8 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
   "bin": "./bin/likec4.mjs",
+  "types": "./dist/index.d.mts",
+  "module": "./dist/index.mjs",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -110,6 +112,7 @@
     "build": "echo \"use pnpm turbo run build\" || true",
     "generate:app": "tsr generate && panda codegen",
     "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
+    "prepack": "likec4ops export-submodules",
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
@@ -160,6 +163,7 @@
   "devDependencies": {
     "@dagrejs/dagre": "catalog:",
     "@fontsource/ibm-plex-sans": "^5.2.7",
+    "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",

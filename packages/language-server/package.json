@@ -9,6 +9,7 @@
   "files": [
     "bin",
     "dist",
+    "**/package.json",
     "!**/__mocks__/",
     "!**/__tests__/",
     "!**/*.spec.*",
@@ -85,6 +86,7 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
+    "prepack": "likec4ops export-submodules",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
     "pregenerate": "rm -f src/generated/* || true",
@@ -113,6 +115,7 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@msgpack/msgpack": "^3.1.2",
     "@smithy/util-base64": "^4.0.0",
