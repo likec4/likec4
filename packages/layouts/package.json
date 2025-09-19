@@ -33,6 +33,15 @@
         "default": "./dist/index.js"
       }
     },
+
+    "./sequence": {
+      "sources": "./src/sequence/index.ts",
+      "default": {
+        "types": "./dist/sequence/index.d.ts",
+        "import": "./dist/sequence/index.js",
+        "default": "./dist/sequence/index.js"
+      }
+    },
     "./graphviz/binary": {
       "sources": "./src/graphviz/binary/index.ts",
       "default": {
@@ -61,6 +70,7 @@
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@lume/kiwi": "catalog:utils",
     "fast-equals": "catalog:utils",
     "graphology": "catalog:",
     "graphology-types": "catalog:",

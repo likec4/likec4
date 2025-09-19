@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { ensureReact } from '../ensure-react'
-import { outdir, path, useDotBin } from '../options'
+import { path, useDotBin } from '../options'
 import { handler as jsonHandler } from './json/handler'
 import { pngHandler } from './png/handler'
 
@@ -23,18 +23,44 @@ const exportCmd = (yargs: yargs.Argv) => {
             describe: 'export views to PNG',
             builder: yargs =>
               yargs
-                .option('output', outdir)
-                .option('theme', {
-                  choices: ['light', 'dark'] as const,
-                  desc: 'color-scheme to use, default is light',
-                })
-                .option('flat', {
-                  boolean: true,
-                  type: 'boolean',
-                  desc: 'flatten all images in output directory ignoring sources structure',
-                })
-                .option('use-dot', useDotBin)
                 .options({
+                  'output': {
+                    alias: ['o', 'outdir'],
+                    type: 'string',
+                    desc: 'output directory, if not specified, images are saved next to sources',
+                    normalize: true,
+                    nargs: 1,
+                    coerce: resolve,
+                  },
+                  'theme': {
+                    choices: ['light', 'dark'] as const,
+                    desc: 'color-scheme to use, defaults to light',
+                    conflicts: ['dark', 'light'],
+                    nargs: 1,
+                  },
+                  'dark': {
+                    type: 'boolean',
+                    desc: 'use dark theme, shortcut for --theme=dark',
+                    conflicts: ['theme', 'light'],
+                  },
+                  'light': {
+                    type: 'boolean',
+                    desc: 'use light theme, shortcut for --theme=light',
+                    conflicts: ['theme', 'dark'],
+                  },
+                  'use-dot': useDotBin,
+                  'seq': {
+                    boolean: true,
+                    alias: ['sequence'],
+                    type: 'boolean',
+                    desc: 'use sequence layout for dynamic views',
+                  },
+                  'flat': {
+                    alias: ['flatten'],
+                    boolean: true,
+                    type: 'boolean',
+                    desc: 'flatten all images in output directory ignoring sources structure',
+                  },
                   'filter': {
                     alias: 'f',
                     array: true,
@@ -50,20 +76,23 @@ const exportCmd = (yargs: yargs.Argv) => {
                     type: 'number',
                     alias: 't',
                     desc: 'timeout for playwright (in seconds)',
-                    default: 10,
+                    default: 15,
+                    nargs: 1,
                   },
                   'max-attempts': {
                     type: 'number',
                     desc: 'max attempts to export failing view, 1 means no retry',
                     default: 3,
+                    nargs: 1,
                   },
                   'server-url': {
                     type: 'string',
                     desc: 'use this url instead of starting new likec4 server',
+                    nargs: 1,
                   },
                   'chromium-sandbox': {
                     boolean: true,
-                    desc: 'enable/disable chromium sandbox\nsee Playwright docs',
+                    desc: 'enable chromium sandbox (see Playwright docs)',
                     default: false,
                   },
                 })
@@ -76,23 +105,28 @@ const exportCmd = (yargs: yargs.Argv) => {
 
   ${k.green('$0 export png -f "team1*" -f "team2*" --flat -o ./png src/likec4')}
     ${k.gray('Export views matching team1* or team2* only')}
+
+  ${k.green('$0 export png -f "use-case*" --sequence src/likec4')}
+    ${k.gray('Export views matching use-case* using sequence layout')}
 `),
             handler: async args => {
               // args.
               invariant(args.timeout >= 1, 'timeout must be >= 1')
               invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
               await ensureReact()
+              const theme = args.theme ?? (args.dark ? 'dark' : 'light')
               await pngHandler({
                 path: args.path,
-                useDotBin: args.useDotBin,
+                useDotBin: args['use-dot'],
                 output: args.output,
                 timeoutMs: args.timeout * 1000,
                 maxAttempts: args.maxAttempts,
                 ignore: args.ignore === true,
                 outputType: args.flat ? 'flat' : 'relative',
                 serverUrl: args.serverUrl,
-                theme: args.theme ?? 'light',
+                theme,
                 filter: args.filter,
+                sequence: args.seq,
                 chromiumSandbox: args['chromium-sandbox'],
               })
             },

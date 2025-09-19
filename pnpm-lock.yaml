@@ -1265,6 +1265,9 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      '@lume/kiwi':
+        specifier: catalog:utils
+        version: 0.4.4
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2

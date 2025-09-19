@@ -12,6 +12,7 @@ import { ElementActions } from './ElementActions'
 
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
+import type { FC } from 'react'
 import type { NodeProps } from '../../../base'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
@@ -31,7 +32,7 @@ const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTyp
   )
 }
 
-export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
+export const ElementNode: FC<NodeProps<RelationshipDetailsTypes.ElementNodeData, 'element'>> = customNode((props) => {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
@@ -45,15 +46,17 @@ export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>(
   )
 })
 
-export const CompoundNode = customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
-  return (
-    <CompoundNodeContainer nodeProps={props}>
-      <ElementDetailsButtonWithHandler {...props} />
-      <CompoundTitle {...props} />
-      <CompoundPorts {...props} />
-    </CompoundNodeContainer>
-  )
-})
+export const CompoundNode: FC<NodeProps<RelationshipDetailsTypes.CompoundNodeData, 'compound'>> = customNode(
+  (props) => {
+    return (
+      <CompoundNodeContainer nodeProps={props}>
+        <ElementDetailsButtonWithHandler {...props} />
+        <CompoundTitle {...props} />
+        <CompoundPorts {...props} />
+      </CompoundNodeContainer>
+    )
+  },
+)
 
 type ElementPortsProps = NodeProps<
   Pick<
