@@ -19,6 +19,7 @@ export type StaticLikeC4DiagramProps<A extends Any> = Pick<
   | 'initialHeight'
   | 'renderIcon'
   | 'renderNodes'
+  | 'dynamicViewVariant'
   | 'where'
 >
 

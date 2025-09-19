@@ -55,6 +55,7 @@ export function ExportPage() {
   const {
     padding = 20,
     download = false,
+    dynamic,
   } = useSearch({
     strict: false,
   })
@@ -121,14 +122,19 @@ export function ExportPage() {
         background: 'transparent',
         overflow: 'hidden',
       }}
-      style={{
-        marginRight: 'auto',
-        marginBottom: 'auto',
-        minWidth: width,
-        width: width,
-        minHeight: height,
-        height: height,
-      }}>
+      style={dynamic !== 'sequence'
+        ? {
+          marginRight: 'auto',
+          marginBottom: 'auto',
+          minWidth: width,
+          width: width,
+          minHeight: height,
+          height: height,
+        }
+        : {
+          width: '100%',
+          height: '100%',
+        }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <StaticLikeC4Diagram
         view={diagram}
@@ -136,6 +142,7 @@ export function ExportPage() {
         fitViewPadding={0}
         background={'transparent'}
         reduceGraphics={false}
+        dynamicViewVariant={dynamic}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />
     </Box>

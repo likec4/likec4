@@ -9,8 +9,9 @@ import type {
   RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
+import type { FC } from 'react'
 import type { Simplify } from 'type-fest'
-import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
+import type { Base, NodeProps, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipDetailsTypes {
   export type Column = 'sources' | 'targets'
@@ -70,6 +71,11 @@ export namespace RelationshipDetailsTypes {
 
   export type Node = ElementNode | CompoundNode
   export type NodeData = Node['data']
+
+  export type NodeComponents = {
+    element: FC<NodeProps<ElementNodeData, 'element'>>
+    compound: FC<NodeProps<CompoundNodeData, 'compound'>>
+  }
 
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 

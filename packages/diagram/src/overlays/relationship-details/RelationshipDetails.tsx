@@ -31,9 +31,7 @@ import { SelectEdge } from './SelectEdge'
 const nodeTypes = {
   element: ElementNode,
   compound: CompoundNode,
-} satisfies {
-  [key in RelationshipDetailsTypes.Node['type']]: any
-}
+} satisfies RelationshipDetailsTypes.NodeComponents
 
 export const edgeTypes = {
   relationship: RelationshipEdge,

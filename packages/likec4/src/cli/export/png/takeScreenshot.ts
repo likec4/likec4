@@ -1,10 +1,12 @@
 /// <reference lib="DOM" />
-import type { DiagramView, NonEmptyArray } from '@likec4/core'
+import type { DiagramView, DynamicViewDisplayVariant, NonEmptyArray } from '@likec4/core'
+import { calcSequenceLayout } from '@likec4/layouts/sequence'
 import { relative, resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { BrowserContext, Page } from 'playwright'
 import { clamp, isTruthy } from 'remeda'
 import k from 'tinyrainbow'
+import { withQuery } from 'ufo'
 import type { ViteLogger } from '../../../logger'
 
 type TakeScreenshotParams = {
@@ -14,6 +16,7 @@ type TakeScreenshotParams = {
   logger: ViteLogger
   timeout: number
   maxAttempts: number
+  dynamicVariant?: DynamicViewDisplayVariant
   outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
 }
@@ -25,6 +28,7 @@ export async function takeScreenshot({
   logger,
   timeout,
   maxAttempts,
+  dynamicVariant,
   outputType,
   theme,
 }: TakeScreenshotParams) {
@@ -71,14 +75,22 @@ export async function takeScreenshot({
 
       page ??= await browserContext.newPage()
 
-      // @see https://github.com/likec4/likec4/issues/1857
-      const extraPadding = 16
-      await page.setViewportSize({
-        width: view.bounds.width + padding * 2 + extraPadding,
-        height: view.bounds.height + padding * 2 + extraPadding,
-      })
+      let bounds = view.bounds
+      if (dynamicVariant === 'sequence' && view._type === 'dynamic') {
+        bounds = calcSequenceLayout(view).bounds
+      }
 
-      await page.goto(url + `?padding=${padding}&theme=${theme}`)
+      // @see https://github.com/likec4/likec4/issues/1857
+      const extraPadding = 20
+      await page.setViewportSize({
+        width: bounds.width + padding * 2 + extraPadding,
+        height: bounds.height + padding * 2 + extraPadding,
+      })
+      await page.goto(withQuery(url, {
+        padding,
+        theme,
+        dynamic: dynamicVariant,
+      }))
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
 
