@@ -1,6 +1,6 @@
-import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
+import { LikeC4Diagram, useDiagramContext, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { pageTitle as defaultPageTitle } from '../const'
 import { useCurrentDiagram } from '../hooks'
@@ -9,7 +9,7 @@ export function ViewReact() {
   const navigate = useNavigate()
   const view = useCurrentDiagram()
   const model = useLikeC4Model()
-  const { dynamicVariant } = useSearch({
+  const { dynamic } = useSearch({
     from: '__root__',
   })
 
@@ -53,7 +53,7 @@ export function ViewReact() {
       showNavigationButtons
       enableFocusMode
       enableDynamicViewWalkthrough
-      dynamicViewVariant={dynamicVariant}
+      dynamicViewVariant={dynamic}
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
@@ -68,6 +68,27 @@ export function ViewReact() {
           to: '/',
         })
       }}
-    />
+    >
+      <DiagramListener />
+    </LikeC4Diagram>
   )
+}
+
+function DiagramListener() {
+  const router = useRouter()
+  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
+
+  useUpdateEffect(() => {
+    const search = router.latestLocation.search.dynamic ?? 'diagram'
+    if (search !== dynamicViewVariant) {
+      router.buildAndCommitLocation({
+        search: (current?: any) => ({
+          ...current,
+          dynamic: dynamicViewVariant,
+        }),
+      })
+    }
+  }, [dynamicViewVariant])
+
+  return null
 }
