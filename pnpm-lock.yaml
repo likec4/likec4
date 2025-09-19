@@ -733,6 +733,46 @@ importers:
         specifier: catalog:xstate
         version: 5.20.2
 
+  devops:
+    dependencies:
+      citty:
+        specifier: catalog:utils
+        version: 0.1.6
+      indent-string:
+        specifier: catalog:utils
+        version: 5.0.0
+      parse-gitignore:
+        specifier: ^2.0.0
+        version: 2.0.0
+      remeda:
+        specifier: catalog:utils
+        version: 2.31.1
+      std-env:
+        specifier: catalog:utils
+        version: 3.9.0
+      tsx:
+        specifier: 'catalog:'
+        version: 4.20.5
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
+    devDependencies:
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.11
+      '@types/parse-gitignore':
+        specifier: ^1.0.2
+        version: 1.0.2
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.2
+
   packages/config:
     dependencies:
       bundle-require:
@@ -757,6 +797,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -824,6 +867,9 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.5
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1115,6 +1161,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
@@ -1311,6 +1360,9 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1381,6 +1433,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
@@ -2001,7 +2056,14 @@ importers:
         version: 3.5.0(typescript@5.9.2)
 
   styled-system/styles:
+    dependencies:
+      react:
+        specifier: 19.1.1
+        version: 19.1.1
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../preset
@@ -3973,6 +4035,9 @@ packages:
   '@types/fontkit@2.0.8':
     resolution: {integrity: sha512-wN+8bYxIpJf+5oZdrdtaX04qUuWHcKxcDEgRS9Qm9ZClSHjzEn13SxUC+5eRM+4yXIeTYk8mTzLAWGF64847ew==}
 
+  '@types/fs-extra@11.0.4':
+    resolution: {integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==}
+
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -3981,6 +4046,9 @@ packages:
 
   '@types/js-yaml@4.0.9':
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
+
+  '@types/jsonfile@6.1.4':
+    resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -4017,6 +4085,9 @@ packages:
 
   '@types/object-hash@3.0.6':
     resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
+
+  '@types/parse-gitignore@1.0.2':
+    resolution: {integrity: sha512-AQwj+lNTWI7y1kkMe8qLByiToXoXs/du70qGFIHJZaJUVrF5jB8QzvWmLyR1VWYqRagpY8ABrqAjs7uHsJnVBQ==}
 
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
@@ -6985,6 +7056,10 @@ packages:
     resolution: {integrity: sha512-kgBf6avCbO3Cn6+RnzRGLkUsv4ZVqv/VfAYkRsyBcgkshNvVBkRn1FEZcW0Jb+npXQWm2vHPnnOqFteZxRRGNw==}
     engines: {node: '>=0.10.0'}
     hasBin: true
+
+  parse-gitignore@2.0.0:
+    resolution: {integrity: sha512-RmVuCHWsfu0QPNW+mraxh/xjQVw/lhUCUru8Zni3Ctq3AoMhpDTq0OVdKS6iesd6Kqb7viCV3isAL43dciOSog==}
+    engines: {node: '>=14'}
 
   parse-json@4.0.0:
     resolution: {integrity: sha512-aOIos8bujGN93/8Ox/jPLh7RwVnPEysynVFE+fQZyg6jKELEHwzgKdLRFHUgXJL6kylijVSBC4BvN9OmsB48Rw==}
@@ -11869,6 +11944,11 @@ snapshots:
     dependencies:
       '@types/node': 22.15.31
 
+  '@types/fs-extra@11.0.4':
+    dependencies:
+      '@types/jsonfile': 6.1.4
+      '@types/node': 22.15.31
+
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -11879,6 +11959,10 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/js-yaml@4.0.9': {}
+
+  '@types/jsonfile@6.1.4':
+    dependencies:
+      '@types/node': 22.15.31
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -11911,6 +11995,10 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/object-hash@3.0.6': {}
+
+  '@types/parse-gitignore@1.0.2':
+    dependencies:
+      '@types/node': 22.15.31
 
   '@types/picomatch@3.0.2': {}
 
@@ -15648,6 +15736,8 @@ snapshots:
       is-hexadecimal: 2.0.1
 
   parse-github-url@1.0.2: {}
+
+  parse-gitignore@2.0.0: {}
 
   parse-json@4.0.0:
     dependencies:

@@ -9,6 +9,7 @@
   "files": [
     "dist",
     "src",
+    "**/package.json",
     "!**/__fixtures__/*",
     "!**/__snapshots__/*",
     "!**/*.spec.*",
@@ -63,6 +64,7 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "pnpm rimraf dist lib",
+    "prepack": "likec4ops export-submodules",
     "pack": "pnpm pack",
     "postpack": "cp likec4-layouts-$npm_package_version.tgz package.tgz || true"
   },
@@ -89,6 +91,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "turbo": "catalog:",

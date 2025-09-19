@@ -19,13 +19,14 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "pnpm rimraf dist lib",
+    "prepack": "likec4ops export-submodules",
     "pack": "pnpm pack",
     "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
   "files": [
     "dist",
     "src",
-    "*/package.json",
+    "**/package.json",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
     "!**/__test__/*",
@@ -128,6 +129,7 @@
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
     "@types/mdast": "4.0.4",

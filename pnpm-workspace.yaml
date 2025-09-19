@@ -1,5 +1,6 @@
 packages:
   - apps/*
+  - devops/
   - styled-system/*
   - packages/*
   - "!packages/create-likec4"

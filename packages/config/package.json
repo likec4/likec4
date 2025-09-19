@@ -16,6 +16,7 @@
     "build": "unbuild",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "pnpm rimraf dist lib",
+    "prepack": "likec4ops export-submodules",
     "pack": "pnpm pack",
     "postpack": "cp likec4-config-$npm_package_version.tgz package.tgz || true"
   },
@@ -23,6 +24,7 @@
     "dist",
     "src",
     "schema.json",
+    "**/package.json",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
     "!**/__*/*",
@@ -84,6 +86,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
