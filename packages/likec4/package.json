@@ -122,6 +122,7 @@
     "dev:docs:index-page": "pnpm cli:serve ../../apps/docs/src/components/index-page",
     "dev:docs:theme": "pnpm cli:serve ../../apps/docs/src/components/likec4-theme",
     "dev:playground:deployment": "pnpm cli:serve ../../apps/playground/src/examples/deployment",
+    "dev:playground:dynamic": "pnpm cli:serve ../../apps/playground/src/examples/dynamic",
     "dev:template": "pnpm cli:serve ../create-likec4/template",
     "dev:e2e": "pnpm cli:serve ../../e2e/src",
     "dev:example-cloud": "pnpm cli:serve ../../examples/cloud-system",

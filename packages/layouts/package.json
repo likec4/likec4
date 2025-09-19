@@ -48,7 +48,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "tsc -p ./tsconfig.build.json",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",

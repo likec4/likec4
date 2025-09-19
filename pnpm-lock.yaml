@@ -90,6 +90,9 @@ catalogs:
     wireit:
       specifier: 0.14.12
       version: 0.14.12
+    zx:
+      specifier: 8.8.1
+      version: 8.8.1
     wrangler:
       specifier: 4.38.0
       version: 4.38.0
@@ -1069,9 +1072,6 @@ importers:
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
-      execa:
-        specifier: ^9.5.3
-        version: 9.6.0
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
@@ -1090,6 +1090,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
 
   packages/language-server:
     dependencies:
