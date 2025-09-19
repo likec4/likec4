@@ -149,8 +149,8 @@ catalogs:
     "@xstate/react": ^5.0.5
     xstate: ^5.20.2
   xyflow:
-    "@xyflow/react": 12.8.5
-    "@xyflow/system": 0.0.69
+    "@xyflow/react": 12.8.4
+    "@xyflow/system": 0.0.68
 
 onlyBuiltDependencies:
   - dprint
