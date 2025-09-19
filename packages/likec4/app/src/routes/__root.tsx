@@ -39,7 +39,7 @@ const asDynamicVariant = (v: unknown): 'diagram' | 'sequence' => {
 
 export type SearchParams = {
   theme?: 'light' | 'dark' | 'auto'
-  dynamicVariant?: 'diagram' | 'sequence'
+  dynamic?: 'diagram' | 'sequence'
   padding?: number
 }
 
@@ -61,8 +61,8 @@ export const Route = createRootRouteWithContext<Context>()({
       ...isTruthy(search.theme) && {
         theme: asTheme(search.theme),
       },
-      ...isTruthy(search.dynamicVariant) && {
-        dynamicVariant: asDynamicVariant(search.dynamicVariant),
+      ...isTruthy(search.dynamic) && {
+        dynamic: asDynamicVariant(search.dynamic),
       },
     }
   },
@@ -71,7 +71,7 @@ export const Route = createRootRouteWithContext<Context>()({
       stripSearchParams({
         padding: 20,
         theme: 'auto',
-        dynamicVariant: 'diagram',
+        dynamic: 'diagram',
       }),
     ],
   },
