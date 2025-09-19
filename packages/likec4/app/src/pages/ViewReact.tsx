@@ -1,6 +1,6 @@
 import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { pageTitle as defaultPageTitle } from '../const'
 import { useCurrentDiagram } from '../hooks'
@@ -9,6 +9,9 @@ export function ViewReact() {
   const navigate = useNavigate()
   const view = useCurrentDiagram()
   const model = useLikeC4Model()
+  const { dynamicVariant } = useSearch({
+    from: '__root__',
+  })
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     navigate({
@@ -50,6 +53,7 @@ export function ViewReact() {
       showNavigationButtons
       enableFocusMode
       enableDynamicViewWalkthrough
+      dynamicViewVariant={dynamicVariant}
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser

@@ -11,9 +11,10 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
-import type { AnyAux, LikeC4Model } from '../../../model'
+import type { LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import {
+  type AnyAux,
   type ComputedDeploymentView,
   type DeploymentViewRule,
   type ParsedDeploymentView as DeploymentView,
