@@ -17,6 +17,8 @@
     "noEmit": true,
     /* Linting */
     "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noPropertyAccessFromIndexSignature": false,
     "types": [
       "node",
       "fs-extra"
