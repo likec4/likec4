@@ -303,7 +303,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   /**
    * Override node renderers
    */
-  renderNodes?: CustomNodes | undefined
+  renderNodes?: CustomNodes<A> | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges

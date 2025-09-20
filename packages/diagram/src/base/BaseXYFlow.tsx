@@ -1,4 +1,5 @@
 import { cx } from '@likec4/styles/css'
+import { useMantineColorScheme } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
@@ -45,36 +46,42 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
   >
 >
 
-export const BaseXYFlow = <
+export function BaseXYFlow<
   NodeType extends Base.Node,
   EdgeType extends Base.Edge,
->({
-  nodes,
-  edges,
-  onEdgesChange,
-  onNodesChange,
-  className,
-  pannable = true,
-  zoomable = true,
-  nodesSelectable = true,
-  nodesDraggable = false,
-  background = 'dots',
-  children,
-  colorMode = 'system',
-  fitViewPadding = 0,
-  fitView = true,
-  zoomOnDoubleClick = false,
-  onViewportResize,
-  onMoveEnd,
-  onNodeMouseEnter,
-  onNodeMouseLeave,
-  onEdgeMouseEnter,
-  onEdgeMouseLeave,
-  ...props
-}: BaseXYFlowProps<NodeType, EdgeType>) => {
+>(
+  {
+    nodes,
+    edges,
+    onEdgesChange,
+    onNodesChange,
+    className,
+    pannable = true,
+    zoomable = true,
+    nodesSelectable = true,
+    nodesDraggable = false,
+    background = 'dots',
+    children,
+    colorMode,
+    fitViewPadding = 0,
+    fitView = true,
+    zoomOnDoubleClick = false,
+    onViewportResize,
+    onMoveEnd,
+    onNodeMouseEnter,
+    onNodeMouseLeave,
+    onEdgeMouseEnter,
+    onEdgeMouseLeave,
+    ...props
+  }: BaseXYFlowProps<NodeType, EdgeType>,
+) {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
   const xystore = useXYStoreApi()
+  const { colorScheme } = useMantineColorScheme()
+  if (!colorMode) {
+    colorMode = colorScheme === 'auto' ? 'system' : colorScheme
+  }
 
   return (
     <ReactFlow<NodeType, EdgeType>
@@ -132,8 +139,7 @@ export const BaseXYFlow = <
          * https://github.com/xyflow/xyflow/issues/3282
          * https://github.com/likec4/likec4/issues/734
          */
-        const roundedX = roundDpr(x),
-          roundedY = roundDpr(y)
+        const roundedX = roundDpr(x), roundedY = roundDpr(y)
         if (x !== roundedX || y !== roundedY) {
           xystore.setState({ transform: [roundedX, roundedY, zoom] })
         }

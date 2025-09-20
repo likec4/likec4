@@ -1,9 +1,4 @@
 # Built output
-dist/
-likec4lib/
-browser-worker/
-browser/
-protocol/
 *.tgz
 
 

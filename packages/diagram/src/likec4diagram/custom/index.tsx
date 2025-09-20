@@ -1,4 +1,3 @@
-import type { CustomNodes } from '../../custom/customNodes'
 import type { Types } from '../types'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { SequenceStepEdge } from './edges/SequenceStepEdge'
@@ -11,7 +10,7 @@ import {
   ViewGroupNode,
 } from './nodes'
 
-export const BuiltinNodes: Required<CustomNodes> = {
+export const BuiltinNodes = {
   element: ElementNode,
   deployment: DeploymentNode,
   compoundElement: CompoundElementNode,

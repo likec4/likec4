@@ -74,7 +74,6 @@ function ReactLikeC4Inner<A extends t.aux.Any>({
   keepAspectRatio = true,
   showNotations = true,
   onNavigateTo,
-  background = 'transparent',
   style,
   mantineTheme,
   styleNonce,
@@ -116,7 +115,6 @@ function ReactLikeC4Inner<A extends t.aux.Any>({
           view={view as any}
           showNotations={showNotations && hasNotations}
           onNavigateTo={onNavigateTo as any}
-          background={background}
           enableElementTags={false}
           {...props}
         />

@@ -1417,6 +1417,12 @@ importers:
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
+      fdir:
+        specifier: catalog:utils
+        version: 6.4.0(picomatch@4.0.3)
+      picomatch:
+        specifier: catalog:utils
+        version: 4.0.3
       playwright:
         specifier: 'catalog:'
         version: 1.54.2
@@ -1550,9 +1556,6 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
-      fdir:
-        specifier: catalog:utils
-        version: 6.4.0(picomatch@4.0.3)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1598,9 +1601,6 @@ importers:
       package-up:
         specifier: catalog:utils
         version: 5.0.0
-      picomatch:
-        specifier: catalog:utils
-        version: 4.0.3
       postcss:
         specifier: catalog:css
         version: 8.5.6
