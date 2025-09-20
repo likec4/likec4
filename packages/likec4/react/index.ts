@@ -8,6 +8,9 @@ export {
 export type {
   ChangeEvent,
   CustomNodes,
+  DiagramActorEvent,
+  DiagramApi,
+  DiagramContext,
   ElementIconRenderer,
   EnabledFeatures,
   LikeC4BrowserProps,
@@ -33,5 +36,6 @@ export {
   useCurrentViewModel,
   useEnabledFeatures,
   useLikeC4Model,
+  useLikeC4Styles,
   useLikeC4ViewModel,
 } from '@likec4/diagram/bundle'

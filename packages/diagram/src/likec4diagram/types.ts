@@ -9,7 +9,8 @@ import type {
   RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
-import type { XYPosition } from '@xyflow/system'
+import type { NodeProps as XYNodeProps, XYPosition } from '@xyflow/system'
+import type { FunctionComponent } from 'react'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
 
@@ -23,7 +24,7 @@ type NonOptional<T extends object> = Simplify<
 >
 
 export namespace Types {
-  export type LeafNodeData =
+  export type LeafNodeData = Simplify<
     & Base.NodeData
     & NonOptional<
       Pick<
@@ -50,6 +51,7 @@ export namespace Types {
       isMultiple?: boolean | undefined
       icon: string | null
     }
+  >
 
   /**
    * Represents element from logical model
@@ -68,7 +70,7 @@ export namespace Types {
   /**
    * Represents element from deployment model
    */
-  export type DeploymentElementNodeData =
+  export type DeploymentElementNodeData = Simplify<
     & LeafNodeData
     & {
       navigateTo: ViewId | null
@@ -76,6 +78,7 @@ export namespace Types {
       // If set - this node refers to a model element
       modelFqn: Fqn | null
     }
+  >
 
   export type SequenceActorNodePort = {
     id: string
@@ -103,7 +106,7 @@ export namespace Types {
     }
   >
 
-  export type CompoundNodeData =
+  export type CompoundNodeData = Simplify<
     & Base.NodeData
     & NonOptional<
       Pick<
@@ -125,33 +128,41 @@ export namespace Types {
       depth: number
       icon?: IconUrl
     }
+  >
 
-  export type CompoundElementNodeData = CompoundNodeData & {
-    modelFqn: Fqn
-    deploymentFqn?: never
-    /**
-     * If set - this node has navigation to another view and diagram has handler for this
-     */
-    navigateTo: ViewId | null
-  }
+  export type CompoundElementNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      modelFqn: Fqn
+      deploymentFqn?: never
+      /**
+       * If set - this node has navigation to another view and diagram has handler for this
+       */
+      navigateTo: ViewId | null
+    }
+  >
 
-  export type CompoundDeploymentNodeData = CompoundNodeData & {
-    deploymentFqn: DeploymentFqn
-    /**
-     * If set - this node refers to a model element
-     */
-    modelFqn: Fqn | null
-    /**
-     * If set - this node has navigation to another view and diagram has handler for this
-     */
-    navigateTo: ViewId | null
-  }
+  export type CompoundDeploymentNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      deploymentFqn: DeploymentFqn
+      /**
+       * If set - this node refers to a model element
+       */
+      modelFqn: Fqn | null
+      /**
+       * If set - this node has navigation to another view and diagram has handler for this
+       */
+      navigateTo: ViewId | null
+    }
+  >
 
-  export type ViewGroupNodeData = CompoundNodeData & {
-    isViewGroup: true
-  }
-
-  // export type CompoundNode = ReactFlowNode<CompoundNodeData, 'compound'>
+  export type ViewGroupNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      isViewGroup: true
+    }
+  >
 
   export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
   export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
@@ -181,6 +192,16 @@ export namespace Types {
     SequenceActorNodeData: SequenceActorNodeData
     SequenceParallelAreaData: SequenceParallelAreaData
   }>
+
+  export type NodeProps = {
+    element: XYNodeProps<ElementNode>
+    deployment: XYNodeProps<DeploymentElementNode>
+    'compound-element': XYNodeProps<CompoundElementNode>
+    'compound-deployment': XYNodeProps<CompoundDeploymentNode>
+    'view-group': XYNodeProps<ViewGroupNode>
+    'seq-actor': XYNodeProps<SequenceActorNode>
+    'seq-parallel': XYNodeProps<SequenceParallelArea>
+  }
 
   export type RelationshipEdgeData = Simplify<
     & Base.EdgeData
@@ -237,4 +258,10 @@ export namespace Types {
 
   export type Edge = RelationshipEdge | SequenceStepEdge
   export type EdgeData = RelationshipEdgeData | SequenceStepEdgeData
+
+  export type Components = {
+    [key in keyof NodeProps]: FunctionComponent<NodeProps[key]>
+  }
+
+  export type Component<T extends keyof NodeProps> = FunctionComponent<NodeProps[T]>
 }

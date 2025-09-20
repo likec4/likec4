@@ -1,6 +1,5 @@
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import type { NodeProps } from '@xyflow/react'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import { ElementNodeContainer, ElementShape, ElementTitle } from '../../../base/primitives'
@@ -69,7 +68,7 @@ const ActorStepPort = ({
   )
 }
 
-export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
+export function SequenceActorNode(props: Types.NodeProps['seq-actor']) {
   const data = props.data
   const {
     positionAbsoluteY,
@@ -143,7 +142,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
   )
 }
 
-export function SequenceParallelArea(props: NodeProps<Types.SequenceActorNode>) {
+export function SequenceParallelArea(props: Types.NodeProps['seq-parallel']) {
   return (
     <Box
       data-likec4-color={props.data.color}

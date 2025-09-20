@@ -1,19 +1,23 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
+import type { NodeModel } from '@likec4/core/model'
+import type { aux } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
-import type { OnMove, OnMoveEnd } from '@xyflow/system'
+import type { NodeProps as ReactFlowNodeProps, OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren } from 'react'
+import { type FC, type PropsWithChildren } from 'react'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
+import { customNode } from '../base/primitives/customNode'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
+import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 import type { DiagramContext } from '../state/types'
-import { BuiltinNodes as defaultNodeTypes, edgeTypes, SequenceParallelArea } from './custom'
+import { BuiltinNodes, edgeTypes, SequenceParallelArea } from './custom'
 import { DiagramUI } from './DiagramUI'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -47,6 +51,46 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport ?? null, b.viewport ?? null)
+
+type Any = aux.Any
+type Unknown = aux.UnknownLayouted
+
+// type NP = {
+//   id: string
+//   type: string
+//   data: {
+//     id: NodeId
+//     viewId: string
+//   }
+// }
+interface CustomDiagramNodeProps<A extends Any, P extends ReactFlowNodeProps<any>> {
+  nodeProps: P
+  nodeModel: NodeModel<A>
+}
+
+function customDiagramNode<P extends CustomDiagramNodeProps<any, any>>(
+  Node: FC<P>,
+): FC<P['nodeProps']> {
+  return customNode((props: P['nodeProps']) => {
+    // @ts-ignore because dts-bundler fails to infer types
+    const viewId = props.data.viewId
+    const viewModel = useLikeC4ViewModel(viewId)
+    if (!viewModel) {
+      console.error(`View "${viewId}" not found, requested by customNode "${props.data.id}"`, { props })
+      return null
+    }
+    const model = viewModel.findNode(props.data.id)
+    if (!model) {
+      console.error(
+        `Node "${props.id}" not found in view "${viewId}", requested by customNode "${props.data.id}"`,
+        { props },
+      )
+      return null
+    }
+    // @ts-ignore because dts-bundler fails to infer types
+    return <Node nodeProps={props} nodeModel={model} />
+  })
+}
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<
@@ -120,12 +164,16 @@ export function LikeC4DiagramXYFlow({
     nodeTypes = useCustomCompareMemo(
       () => {
         return {
-          element: renderNodes?.element ?? defaultNodeTypes.element,
-          deployment: renderNodes?.deployment ?? defaultNodeTypes.deployment,
-          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes.compoundElement,
-          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes.compoundDeployment,
-          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes.viewGroup,
-          'seq-actor': renderNodes?.sequenceActor ?? defaultNodeTypes.sequenceActor,
+          element: renderNodes?.element ? customDiagramNode(renderNodes.element) : BuiltinNodes.element,
+          deployment: renderNodes?.deployment ? customDiagramNode(renderNodes.deployment) : BuiltinNodes.deployment,
+          'compound-element': renderNodes?.compoundElement
+            ? customDiagramNode(renderNodes.compoundElement)
+            : BuiltinNodes.compoundElement,
+          'compound-deployment': renderNodes?.compoundDeployment
+            ? customDiagramNode(renderNodes.compoundDeployment)
+            : BuiltinNodes.compoundDeployment,
+          'view-group': renderNodes?.viewGroup ? customDiagramNode(renderNodes.viewGroup) : BuiltinNodes.viewGroup,
+          'seq-actor': BuiltinNodes.sequenceActor,
           'seq-parallel': SequenceParallelArea,
         } satisfies Record<Types.Node['type'], any>
       },

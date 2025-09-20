@@ -1,8 +1,8 @@
+import type { NodeProps as ReactFlowNodeProps } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
-import type { NodeProps } from '../types'
 
-export function nodePropsEqual<P extends NodeProps<any, any>>(prev: P, next: P) {
+function nodePropsEqual<P extends ReactFlowNodeProps<any>>(prev: P, next: P) {
   return (
     prev.id === next.id
     && eq(prev.selected ?? false, next.selected ?? false)
@@ -17,12 +17,12 @@ export function nodePropsEqual<P extends NodeProps<any, any>>(prev: P, next: P) 
   )
 }
 
-export function customNode<P extends Record<string, unknown> = {}, NodeType extends string = string>(
-  Node: FunctionComponent<NodeProps<P, NodeType>>,
-): FunctionComponent<NodeProps<P, NodeType>> {
+export function customNode<P extends ReactFlowNodeProps<any>>(
+  Node: FunctionComponent<P>,
+): FunctionComponent<P> {
   const NodeComponent = memo(
     Node,
-    (prev, next) => nodePropsEqual(prev as NodeProps, next as NodeProps),
+    nodePropsEqual,
   )
   NodeComponent.displayName = 'Node'
   return NodeComponent

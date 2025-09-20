@@ -145,6 +145,8 @@
     "@likec4/core": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-require": "catalog:utils",
+    "fdir": "catalog:utils",
+    "picomatch": "catalog:utils",
     "esbuild": "catalog:esbuild",
     "boxen": "^8.0.1",
     "playwright": "catalog:",
@@ -197,7 +199,7 @@
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "fdir": "catalog:utils",
+
     "get-port": "^7.1.0",
     "html-to-image": "1.11.11",
     "is-inside-container": "^1.0.0",
@@ -213,7 +215,7 @@
     "p-limit": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
-    "picomatch": "catalog:utils",
+
     "postcss": "catalog:css",
     "pretty-ms": "^9.2.0",
     "react": "catalog:react",
