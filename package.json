@@ -36,6 +36,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
+    "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.2",
     "execa": "^9.6.0",

@@ -1,4 +1,5 @@
 {
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "target": "esnext",
     "lib": [

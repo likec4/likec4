@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 import { resolve } from 'node:path'
 import { $, chalk, echo, fs, path } from 'zx'
-import { loadPrepackGitignore } from './export-submodules.ts'
+import { loadPrepackGitignore } from './prepack.ts'
 
 export default defineCommand({
   meta: {
