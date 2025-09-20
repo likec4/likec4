@@ -33,13 +33,15 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "./dist/index.d.ts",
+    "module": "./dist/index.js"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
-    "clean": "pnpm rimraf dist lib",
+    "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
@@ -51,6 +53,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",

@@ -18,12 +18,19 @@
     "dist",
     "bundle",
     "src",
+    "**/package.json",
     "panda.buildinfo.json",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
   ],
   "sideEffects": false,
   "type": "module",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "./dist/index.d.ts",
+    "module": "./dist/index.js"
+  },
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -71,10 +78,11 @@
     "build:dist": "vite build -m production",
     "build:bundle": "vite build -m bundle",
     "build": "echo \"use pnpm turbo run build\" || true",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
-    "clean": "pnpm rimraf --glob dist lib bundle *.tgz",
+    "clean": "likec4ops clean",
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
@@ -105,16 +113,25 @@
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
+    "@types/react": "^18.x || ^19.x",
+    "@types/react-dom": "^18.x || ^19.x",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
     "@pandacss/dev": {
       "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "catalog:react",

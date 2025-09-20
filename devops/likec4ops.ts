@@ -2,22 +2,25 @@
 
 import { defineCommand, runMain } from 'citty'
 import clean from './commands/clean.ts'
-import exportSubmodules from './commands/export-submodules.ts'
+import prepack from './commands/prepack.ts'
 
 const main = defineCommand({
   meta: {
     name: 'likec4ops',
     description: 'LikeC4 Ops CLI',
   },
-  // setup() {
-  //   console.log('Setup')
-  // },
+  setup() {
+    process.on('unhandledRejection', (reason) => {
+      console.error('Unhandled Rejection reason:', reason)
+      process.exit(1)
+    })
+  },
   // cleanup() {
   //   console.log('Cleanup')
   // },
   subCommands: {
     clean,
-    'export-submodules': exportSubmodules,
+    prepack,
   },
 })
 
