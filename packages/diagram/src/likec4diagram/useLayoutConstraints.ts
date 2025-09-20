@@ -2,13 +2,13 @@ import { type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
 import { type InternalNode as RFInternalNode, type NodeChange, type OnNodeDrag, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
-import { filter, hasAtLeast, isNullish, map, pipe } from 'remeda'
+import { filter, hasAtLeast, map, pipe } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 // import { type XYStoreApi } from '../hooks/useXYFlow'
 import { useDiagram } from '../hooks/useDiagram'
 import type { Types } from './types'
 
-type InternalNode = RFInternalNode<Types.Node>
+type InternalNode = RFInternalNode<Types.AnyNode>
 
 abstract class Rect {
   static readonly LeftPadding = 40

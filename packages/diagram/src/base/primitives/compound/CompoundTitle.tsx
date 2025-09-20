@@ -1,25 +1,22 @@
-import type { DiagramNode } from '@likec4/core/types'
+import type { Color, ComputedNodeStyle, NodeId } from '@likec4/core/types'
 import { Text } from '@mantine/core'
 import { IconRenderer } from '../../../context'
-import type { NodeProps } from '../../types'
 
-type Data = Pick<
-  DiagramNode,
-  | 'color'
-  | 'title'
-  | 'icon'
-  | 'style'
->
+type RequiredData = {
+  id: NodeId
+  title: string
+  color: Color
+  style: ComputedNodeStyle
+  icon?: string | null
+}
 
-type CompoundTitleProps = NodeProps<Data>
+type CompoundTitleProps = {
+  data: RequiredData
+}
 
-export function CompoundTitle({ id, data }: CompoundTitleProps) {
+export function CompoundTitle({ data }: CompoundTitleProps) {
   const elementIcon = IconRenderer({
-    element: {
-      id,
-      title: data.title,
-      icon: data.icon,
-    },
+    element: data,
     className: 'likec4-compound-icon',
   })
 

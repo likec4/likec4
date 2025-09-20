@@ -3,7 +3,6 @@ import {
   type Fqn,
   type NodeId,
   type ThemeColor,
-  type ThemeColors,
   type ViewChange,
   invariant,
 } from '@likec4/core'
@@ -12,7 +11,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
 import { useState } from 'react'
 import type { MergeExclusive } from 'type-fest'
-import type { NodeProps } from '../../../../base'
+import type { BaseNodeProps } from '../../../../base'
 import { useDiagramEventHandlers } from '../../../../context'
 import { useDiagram } from '../../../../hooks/useDiagram'
 import type { Types } from '../../../types'
@@ -59,7 +58,7 @@ export const Tooltip = MantineTooltip.withProps({
 
 export function useHandlers(
   target: Fqn | DeploymentFqn,
-  props: NodeProps<Types.NodeData>,
+  props: Types.NodeProps,
 ) {
   const { onChange: triggerOnChange } = useDiagramEventHandlers()
   const diagram = useDiagram()
@@ -69,13 +68,13 @@ export function useHandlers(
     if (color === null) {
       invariant(originalColor, 'originalColor is null')
       setOriginalColor(null)
-      diagram.updateNodeData(props.id as NodeId, {
+      diagram.updateNodeData(props.data.id, {
         color: originalColor,
       })
       return
     }
     setOriginalColor(value => value ?? props.data.color as ThemeColor)
-    diagram.updateNodeData(props.id as NodeId, {
+    diagram.updateNodeData(props.data.id, {
       color,
     })
   })
@@ -89,7 +88,7 @@ export function useHandlers(
       },
     })
     const { shape, color, ...style } = change
-    diagram.updateNodeData(props.id as NodeId, {
+    diagram.updateNodeData(props.data.id, {
       ...(shape && { shape }),
       ...(color && { color }),
       style,

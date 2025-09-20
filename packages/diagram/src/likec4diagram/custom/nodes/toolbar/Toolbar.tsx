@@ -3,14 +3,13 @@ import { Box, Group, Paper, Stack, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import type { ReactNode } from 'react'
-import type { NodeProps } from '../../../../base/types'
+import type { BaseNodeProps } from '../../../../base/types'
 import { useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
-import type { Types } from '../../../types'
 import * as styles from './styles.css'
 
 export type ToolbarProps = Omit<NodeToolbarProps, 'title'> & {
-  nodeProps: NodeProps<Types.NodeData>
+  nodeProps: BaseNodeProps
   title: ReactNode
 }
 

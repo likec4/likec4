@@ -131,7 +131,7 @@ export function diagramToXY(opts: {
       viewId: view.id,
       id: node.id,
       title: node.title,
-      technology: node.technology,
+      technology: node.technology ?? null,
       description: RichText.from(node.description),
       height: node.height,
       width: node.width,

@@ -11,7 +11,7 @@ import { useTagSpecification } from '../../../context/TagStylesContext'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useCurrentZoom } from '../../../hooks/useXYFlow'
 import { stopPropagation } from '../../../utils/xyflow'
-import type { NodeProps } from '../../types'
+import type { BaseNodeProps, BaseNodePropsWithData } from '../../types'
 
 export type ElementTagProps = {
   tag: string
@@ -48,7 +48,7 @@ type Data = {
   tags: readonly string[] | null | undefined
   width: number
 }
-type ElementTagsProps = NodeProps<Data>
+type ElementTagsProps = BaseNodePropsWithData<Data>
 
 const propsAreEqual = (prev: ElementTagsProps, next: ElementTagsProps) => {
   return (

@@ -1,4 +1,3 @@
-import type { Types } from '../types'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { SequenceStepEdge } from './edges/SequenceStepEdge'
 import {
@@ -7,21 +6,21 @@ import {
   DeploymentNode,
   ElementNode,
   SequenceActorNode,
+  SequenceParallelArea,
   ViewGroupNode,
 } from './nodes'
 
 export const BuiltinNodes = {
-  element: ElementNode,
-  deployment: DeploymentNode,
-  compoundElement: CompoundElementNode,
-  compoundDeployment: CompoundDeploymentNode,
-  viewGroup: ViewGroupNode,
-  sequenceActor: SequenceActorNode,
+  ElementNode,
+  DeploymentNode,
+  CompoundElementNode,
+  CompoundDeploymentNode,
+  ViewGroupNode,
+  SequenceActorNode,
+  SequenceParallelArea,
 }
 
-export { SequenceParallelArea } from './nodes/SequenceActorNode'
-
-export const edgeTypes = {
-  relationship: RelationshipEdge,
-  'seq-step': SequenceStepEdge,
-} satisfies { [key in Types.Edge['type']]: any }
+export const BuiltinEdges = {
+  RelationshipEdge,
+  SequenceStepEdge,
+}

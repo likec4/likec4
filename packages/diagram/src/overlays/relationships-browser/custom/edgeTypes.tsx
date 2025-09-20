@@ -14,7 +14,7 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { useRelationshipsBrowser } from '../hooks'
 
-export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
+export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeProps>((props) => {
   const browser = useRelationshipsBrowser()
   const { enableNavigateTo } = useEnabledFeatures()
   const {

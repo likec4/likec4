@@ -1,15 +1,15 @@
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
-import type { EdgeProps } from '../types'
+import type { BaseEdgeProps } from '../types'
 
 // If points are within 3px, consider them the same
 const isSame = (a: number, b: number) => {
   return Math.abs(a - b) < 2.5
 }
 
-export const edgePropsEqual = <P extends EdgeProps<any>>(
-  prev: P,
-  next: P,
+export const edgePropsEqual = <P extends BaseEdgeProps>(
+  prev: Readonly<P>,
+  next: Readonly<P>,
 ) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
@@ -27,8 +27,8 @@ export const edgePropsEqual = <P extends EdgeProps<any>>(
   && eq(prev.data, next.data)
 )
 
-export function customEdge<P extends Record<string, unknown> = {}>(
-  Edge: FunctionComponent<EdgeProps<P>>,
-): FunctionComponent<EdgeProps<P>> {
+export function customEdge<P extends BaseEdgeProps>(
+  Edge: FunctionComponent<P>,
+): FunctionComponent<P> {
   return memo(Edge, edgePropsEqual)
 }

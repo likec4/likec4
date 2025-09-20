@@ -1,10 +1,48 @@
 import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@likec4/core/model'
-import type { aux } from '@likec4/core/types'
+import type { aux, NodeId, ViewId } from '@likec4/core/types'
 import type { FC, FunctionComponent } from 'react'
+import type { BaseNodePropsWithData } from '../base/types'
 import type { Types } from '../likec4diagram/types'
+import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 
 type Any = aux.Any
 type Unknown = aux.UnknownLayouted
+
+type RequiredNodeProps = BaseNodePropsWithData<{
+  id: NodeId
+  viewId: ViewId
+}>
+
+interface CustomDiagramNodeProps<
+  P extends RequiredNodeProps,
+> {
+  nodeProps: P
+  nodeModel: NodeModel
+}
+
+function customDiagramNode<
+  NP extends RequiredNodeProps,
+>(
+  Node: FunctionComponent<CustomDiagramNodeProps<NP>>,
+): FunctionComponent<NP> {
+  return ((props: NP) => {
+    const viewId = props.data.viewId
+    const viewModel = useLikeC4ViewModel(viewId)
+    if (!viewModel) {
+      console.error(`View "${viewId}" not found, requested by customNode "${props.data.id}"`, { props })
+      return null
+    }
+    const model = viewModel.findNode(props.data.id)
+    if (!model) {
+      console.error(
+        `Node "${props.id}" not found in view "${viewId}", requested by customNode "${props.data.id}"`,
+        { props },
+      )
+      return null
+    }
+    return <Node nodeProps={props} nodeModel={model} />
+  })
+}
 
 /**
  * Node that will be used to render the element from the model.
@@ -61,11 +99,11 @@ type Unknown = aux.UnknownLayouted
  */
 export function elementNode<A extends Any = Unknown>(
   component: FC<CustomElementNodeProps<A>>,
-): FC<CustomElementNodeProps<A>> {
-  return component
+): Types.NodeRenderer<'element'> {
+  return customDiagramNode(component as any)
 }
 export type CustomElementNodeProps<A extends Any> = {
-  nodeProps: Types.NodeProps['element']
+  nodeProps: Types.NodeProps<'element'>
   nodeModel: NodeModel.WithElement<A>
 }
 
@@ -119,11 +157,11 @@ export type CustomElementNodeProps<A extends Any> = {
  */
 export function deploymentNode<A extends Any = Unknown>(
   component: FC<CustomDeploymentNodeProps<A>>,
-): FC<CustomDeploymentNodeProps<A>> {
-  return component
+): Types.NodeRenderer<'deployment'> {
+  return customDiagramNode(component as any)
 }
 export type CustomDeploymentNodeProps<A extends Any> = {
-  nodeProps: Types.NodeProps['deployment']
+  nodeProps: Types.NodeProps<'deployment'>
   nodeModel: NodeModel.WithDeploymentElement<A>
 }
 
@@ -167,11 +205,11 @@ export type CustomDeploymentNodeProps<A extends Any> = {
  */
 export function compoundElementNode<A extends Any = Unknown>(
   component: FC<CustomCompoundElementNodeProps<A>>,
-): FC<CustomCompoundElementNodeProps<A>> {
-  return component
+): Types.NodeRenderer<'compound-element'> {
+  return customDiagramNode(component as any)
 }
 export type CustomCompoundElementNodeProps<A extends Any = Unknown> = {
-  nodeProps: Types.NodeProps['compound-element']
+  nodeProps: Types.NodeProps<'compound-element'>
   nodeModel: NodeModel.WithElement<A>
 }
 
@@ -209,11 +247,11 @@ export type CustomCompoundElementNodeProps<A extends Any = Unknown> = {
  */
 export function compoundDeploymentNode<A extends Any = Unknown>(
   component: FC<CustomCompoundDeploymentNodeProps<A>>,
-): FC<CustomCompoundDeploymentNodeProps<A>> {
-  return component
+): Types.NodeRenderer<'compound-deployment'> {
+  return customDiagramNode(component as any)
 }
 export type CustomCompoundDeploymentNodeProps<A extends Any = Unknown> = {
-  nodeProps: Types.NodeProps['compound-deployment']
+  nodeProps: Types.NodeProps<'compound-deployment'>
   nodeModel: NodeModel.WithDeploymentElement<A>
 }
 
@@ -244,11 +282,11 @@ export type CustomCompoundDeploymentNodeProps<A extends Any = Unknown> = {
  */
 export function viewGroupNode<A extends Any = Unknown>(
   component: FC<CustomViewGroupNodeProps<A>>,
-): FC<CustomViewGroupNodeProps<A>> {
-  return component
+): Types.NodeRenderer<'view-group'> {
+  return customDiagramNode(component as any)
 }
 export type CustomViewGroupNodeProps<A extends Any = Unknown> = {
-  nodeProps: Types.NodeProps['view-group']
+  nodeProps: Types.NodeProps<'view-group'>
   nodeModel: NodeModel.IsGroup<A>
 }
 
@@ -260,11 +298,10 @@ export type CustomViewGroupNodeProps<A extends Any = Unknown> = {
 //   nodeModel: NodeModel.WithElement<A>
 // }
 
-export interface CustomNodes<A extends Any = Unknown> {
-  element?: FunctionComponent<CustomElementNodeProps<A>>
-  deployment?: FunctionComponent<CustomDeploymentNodeProps<A>>
-  compoundElement?: FunctionComponent<CustomCompoundElementNodeProps<A>>
-  compoundDeployment?: FunctionComponent<CustomCompoundDeploymentNodeProps<A>>
-  viewGroup?: FunctionComponent<CustomViewGroupNodeProps<A>>
-  // sequenceActor?: FunctionComponent<CustomSequenceActorNodeProps<A>>
-}
+// export interface CustomNodes<A extends Any = Unknown> {
+//   element?: FunctionComponent<CustomElementNodeProps<A>>
+//   deployment?: FunctionComponent<CustomDeploymentNodeProps<A>>
+//   compoundElement?: FunctionComponent<CustomCompoundElementNodeProps<A>>
+//   compoundDeployment?: FunctionComponent<CustomCompoundDeploymentNodeProps<A>>
+//   viewGroup?: FunctionComponent<CustomViewGroupNodeProps<A>>
+// }

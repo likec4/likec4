@@ -11,7 +11,7 @@ import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeData>((props) => {
+export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeProps>((props) => {
   const { enableNavigateTo } = useEnabledFeatures()
   const {
     sourceX,

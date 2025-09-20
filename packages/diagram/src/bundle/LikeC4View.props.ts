@@ -1,12 +1,12 @@
 import type * as t from '@likec4/core/types'
 import type { CSSProperties } from 'react'
 import type {
-  CustomNodes,
   ElementIconRenderer,
   OverrideReactFlowProps,
   PaddingWithUnit,
   ViewPadding,
 } from '../LikeC4Diagram.props'
+import type { Types } from '../likec4diagram/types'
 
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
@@ -171,7 +171,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
    * Override node renderers
    */
-  renderNodes?: CustomNodes | undefined
+  renderNodes?: Types.NodeRenderers | undefined
 
   /**
    * Render custom icon for a node

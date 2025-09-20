@@ -42,6 +42,7 @@ import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
 import { MarkdownBlock } from '../../base/primitives'
 import { ElementTag } from '../../base/primitives/element/ElementTags'
 import { Link } from '../../components/Link'
+import { PortalToRootContainer } from '../../components/PortalToRootContainer'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
@@ -221,305 +222,307 @@ export function ElementDetailsCard({
   }, 220)
 
   return (
-    <m.dialog
-      ref={ref}
-      className={cx(styles.dialog, RemoveScroll.classNames.fullWidth)}
-      layout
-      initial={{
-        [styles.backdropBlur]: '0px',
-        [styles.backdropOpacity]: '5%',
-      }}
-      animate={{
-        [styles.backdropBlur]: '3px',
-        [styles.backdropOpacity]: '60%',
-      }}
-      exit={{
-        [styles.backdropBlur]: '0px',
-        [styles.backdropOpacity]: '0%',
-        transition: {
-          duration: 0.1,
-        },
-      }}
-      onClick={e => {
-        e.stopPropagation()
-        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          ref.current?.close()
-        }
-      }}
-      onDoubleClick={stopPropagation}
-      onPointerDown={stopPropagation}
-      onClose={e => {
-        e.stopPropagation()
-        close()
-      }}
-    >
-      <RemoveScroll forwardProps removeScrollBar={false}>
-        <m.div
-          layout
-          layoutRoot
-          drag
-          dragControls={controls}
-          dragElastic={0}
-          dragMomentum={false}
-          dragListener={false}
-          data-likec4-color={nodeModel?.color ?? elementModel.color}
-          className={styles.card}
-          initial={{
-            top,
-            left,
-            width: _width,
-            height: _height,
-            opacity: 0,
-            originX,
-            originY,
-            scale: Math.max(fromScale, 0.65),
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          exit={{
-            opacity: 0,
-            scale: 0.9,
-            translateY: -10,
-            transition: {
-              duration: 0.1,
-            },
-          }}
-          style={{
-            width,
-            height,
-          }}>
-          <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
-            <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
-              <HStack alignItems="start" gap={'sm'} style={{ cursor: 'default' }} flexWrap="nowrap">
-                {elementIcon}
-                <div>
-                  <Text
-                    component={'div'}
-                    className={styles.title}>
-                    {elementModel.title}
-                  </Text>
-                  {notation && (
-                    <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                      {notation}
-                    </Text>
-                  )}
-                </div>
-              </HStack>
-              <CloseButton
-                size={'lg'}
-                onClick={e => {
-                  e.stopPropagation()
-                  close()
-                }} />
-            </HStack>
-            <HStack alignItems="baseline" gap={'sm'} flexWrap="nowrap">
-              <div>
-                <SmallLabel>kind</SmallLabel>
-                <Badge
-                  radius={'sm'}
-                  size="sm"
-                  fw={600}
-                  color="gray"
-                  style={{
-                    cursor: 'pointer',
-                  }}
-                  onClick={e => {
-                    e.stopPropagation()
-                    diagram.openSearch(`kind:${elementModel.kind}`)
-                  }}
-                >
-                  {elementModel.kind}
-                </Badge>
-              </div>
-              <div style={{ flex: 1 }}>
-                <SmallLabel>tags</SmallLabel>
-                <Flex gap={4} flex={1} mt={6} wrap="wrap">
-                  {elementModel.tags.map((tag) => (
-                    <ElementTag
-                      key={tag}
-                      tag={tag}
-                      cursor="pointer"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.openSearch(`#${tag}`)
-                      }}
-                    />
-                  ))}
-                  {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
-                </Flex>
-              </div>
-              <ActionIconGroup
-                style={{
-                  alignSelf: 'flex-start',
-                }}>
-                {defaultLink && (
-                  <ActionIcon
-                    component="a"
-                    href={defaultLink.url}
-                    target="_blank"
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                  >
-                    <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
-                  </ActionIcon>
-                )}
-                <IfEnabled feature="Vscode">
-                  <Tooltip label="Open source">
-                    <ActionIcon
-                      size="lg"
-                      variant="default"
-                      radius="sm"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.openSource({
-                          element: elementModel.id,
-                        })
-                      }}>
-                      <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
-                    </ActionIcon>
-                  </Tooltip>
-                </IfEnabled>
-                {defaultView && (
-                  <Tooltip label="Open default view">
-                    <ActionIcon
-                      size="lg"
-                      variant="default"
-                      radius="sm"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.navigateTo(defaultView.id, fromNode ?? undefined)
-                      }}>
-                      <IconZoomScan style={{ width: '70%' }} />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </ActionIconGroup>
-            </HStack>
-          </div>
-          <Tabs
-            value={activeTab}
-            onChange={v => setActiveTab(v as any)}
-            variant="none"
-            classNames={{
-              root: styles.tabsRoot,
-              list: styles.tabsList,
-              tab: styles.tabsTab,
-              panel: styles.tabsPanel,
-            }}>
-            <TabsList>
-              {TABS.map(tab => (
-                <TabsTab key={tab} value={tab}>
-                  {tab}
-                </TabsTab>
-              ))}
-            </TabsList>
-
-            <TabsPanel value="Properties">
-              <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
-                <Box className={styles.propertiesGrid} pt={'xs'}>
-                  {elementModel.hasSummary && (
-                    <>
-                      <PropertyLabel>summary</PropertyLabel>
-                      <MarkdownBlock value={elementModel.summary} />
-                    </>
-                  )}
-                  <>
-                    <PropertyLabel>description</PropertyLabel>
-                    <MarkdownBlock
-                      value={elementModel.description}
-                      emptyText="no description"
-                    />
-                  </>
-                  {elementModel.technology && (
-                    <ElementProperty title="technology">
-                      {elementModel.technology}
-                    </ElementProperty>
-                  )}
-                  {elementModel.links.length > 0 && (
-                    <>
-                      <PropertyLabel>links</PropertyLabel>
-                      <HStack gap={'xs'} flexWrap="wrap">
-                        {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
-                      </HStack>
-                    </>
-                  )}
-                  {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
-                </Box>
-              </ScrollArea>
-            </TabsPanel>
-
-            <TabsPanel value="Relationships">
-              <DiagramFeatures
-                overrides={{
-                  enableRelationshipBrowser: false,
-                  enableNavigateTo: false,
-                }}>
-                {opened && activeTab === 'Relationships' && (
-                  <TabPanelRelationships
-                    element={elementModel}
-                    node={nodeModel ?? null} />
-                )}
-              </DiagramFeatures>
-            </TabsPanel>
-
-            <TabsPanel value="Views">
-              <ScrollArea scrollbars="y" type="auto">
-                <Stack gap={'lg'}>
-                  {viewsOf.length > 0 && (
-                    <Box>
-                      <Divider label="views of the element (scoped)" />
-                      <Stack gap={'sm'}>
-                        {viewsOf.map((view) => (
-                          <ViewButton
-                            key={view.id}
-                            view={view}
-                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                        ))}
-                      </Stack>
-                    </Box>
-                  )}
-                  {otherViews.length > 0 && (
-                    <Box>
-                      <Divider label="views including this element" />
-                      <Stack gap={'sm'}>
-                        {otherViews.map((view) => (
-                          <ViewButton
-                            key={view.id}
-                            view={view}
-                            onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                        ))}
-                      </Stack>
-                    </Box>
-                  )}
-                </Stack>
-              </ScrollArea>
-            </TabsPanel>
-
-            <TabsPanel value="Structure">
-              <ScrollArea scrollbars="y" type="auto">
-                <TabPanelStructure element={elementModel} />
-              </ScrollArea>
-            </TabsPanel>
-
-            <TabsPanel value="Deployments">
-              <ScrollArea scrollbars="y" type="auto">
-                <TabPanelDeployments elementFqn={elementModel.id} />
-              </ScrollArea>
-            </TabsPanel>
-          </Tabs>
+    <PortalToRootContainer>
+      <m.dialog
+        ref={ref}
+        className={cx(styles.dialog, RemoveScroll.classNames.fullWidth)}
+        layout
+        initial={{
+          [styles.backdropBlur]: '0px',
+          [styles.backdropOpacity]: '5%',
+        }}
+        animate={{
+          [styles.backdropBlur]: '3px',
+          [styles.backdropOpacity]: '60%',
+        }}
+        exit={{
+          [styles.backdropBlur]: '0px',
+          [styles.backdropOpacity]: '0%',
+          transition: {
+            duration: 0.1,
+          },
+        }}
+        onClick={e => {
+          e.stopPropagation()
+          if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+            ref.current?.close()
+          }
+        }}
+        onDoubleClick={stopPropagation}
+        onPointerDown={stopPropagation}
+        onClose={e => {
+          e.stopPropagation()
+          close()
+        }}
+      >
+        <RemoveScroll forwardProps removeScrollBar={false}>
           <m.div
-            className={styles.resizeHandle}
+            layout
+            layoutRoot
             drag
+            dragControls={controls}
             dragElastic={0}
             dragMomentum={false}
-            onDrag={handleDrag}
-            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
-        </m.div>
-      </RemoveScroll>
-    </m.dialog>
+            dragListener={false}
+            data-likec4-color={nodeModel?.color ?? elementModel.color}
+            className={styles.card}
+            initial={{
+              top,
+              left,
+              width: _width,
+              height: _height,
+              opacity: 0,
+              originX,
+              originY,
+              scale: Math.max(fromScale, 0.65),
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.9,
+              translateY: -10,
+              transition: {
+                duration: 0.1,
+              },
+            }}
+            style={{
+              width,
+              height,
+            }}>
+            <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
+              <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
+                <HStack alignItems="start" gap={'sm'} style={{ cursor: 'default' }} flexWrap="nowrap">
+                  {elementIcon}
+                  <div>
+                    <Text
+                      component={'div'}
+                      className={styles.title}>
+                      {elementModel.title}
+                    </Text>
+                    {notation && (
+                      <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                        {notation}
+                      </Text>
+                    )}
+                  </div>
+                </HStack>
+                <CloseButton
+                  size={'lg'}
+                  onClick={e => {
+                    e.stopPropagation()
+                    close()
+                  }} />
+              </HStack>
+              <HStack alignItems="baseline" gap={'sm'} flexWrap="nowrap">
+                <div>
+                  <SmallLabel>kind</SmallLabel>
+                  <Badge
+                    radius={'sm'}
+                    size="sm"
+                    fw={600}
+                    color="gray"
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                    onClick={e => {
+                      e.stopPropagation()
+                      diagram.openSearch(`kind:${elementModel.kind}`)
+                    }}
+                  >
+                    {elementModel.kind}
+                  </Badge>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <SmallLabel>tags</SmallLabel>
+                  <Flex gap={4} flex={1} mt={6} wrap="wrap">
+                    {elementModel.tags.map((tag) => (
+                      <ElementTag
+                        key={tag}
+                        tag={tag}
+                        cursor="pointer"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagram.openSearch(`#${tag}`)
+                        }}
+                      />
+                    ))}
+                    {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                  </Flex>
+                </div>
+                <ActionIconGroup
+                  style={{
+                    alignSelf: 'flex-start',
+                  }}>
+                  {defaultLink && (
+                    <ActionIcon
+                      component="a"
+                      href={defaultLink.url}
+                      target="_blank"
+                      size="lg"
+                      variant="default"
+                      radius="sm"
+                    >
+                      <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
+                    </ActionIcon>
+                  )}
+                  <IfEnabled feature="Vscode">
+                    <Tooltip label="Open source">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagram.openSource({
+                            element: elementModel.id,
+                          })
+                        }}>
+                        <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </IfEnabled>
+                  {defaultView && (
+                    <Tooltip label="Open default view">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagram.navigateTo(defaultView.id, fromNode ?? undefined)
+                        }}>
+                        <IconZoomScan style={{ width: '70%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </ActionIconGroup>
+              </HStack>
+            </div>
+            <Tabs
+              value={activeTab}
+              onChange={v => setActiveTab(v as any)}
+              variant="none"
+              classNames={{
+                root: styles.tabsRoot,
+                list: styles.tabsList,
+                tab: styles.tabsTab,
+                panel: styles.tabsPanel,
+              }}>
+              <TabsList>
+                {TABS.map(tab => (
+                  <TabsTab key={tab} value={tab}>
+                    {tab}
+                  </TabsTab>
+                ))}
+              </TabsList>
+
+              <TabsPanel value="Properties">
+                <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
+                  <Box className={styles.propertiesGrid} pt={'xs'}>
+                    {elementModel.hasSummary && (
+                      <>
+                        <PropertyLabel>summary</PropertyLabel>
+                        <MarkdownBlock value={elementModel.summary} />
+                      </>
+                    )}
+                    <>
+                      <PropertyLabel>description</PropertyLabel>
+                      <MarkdownBlock
+                        value={elementModel.description}
+                        emptyText="no description"
+                      />
+                    </>
+                    {elementModel.technology && (
+                      <ElementProperty title="technology">
+                        {elementModel.technology}
+                      </ElementProperty>
+                    )}
+                    {elementModel.links.length > 0 && (
+                      <>
+                        <PropertyLabel>links</PropertyLabel>
+                        <HStack gap={'xs'} flexWrap="wrap">
+                          {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
+                        </HStack>
+                      </>
+                    )}
+                    {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
+                  </Box>
+                </ScrollArea>
+              </TabsPanel>
+
+              <TabsPanel value="Relationships">
+                <DiagramFeatures
+                  overrides={{
+                    enableRelationshipBrowser: false,
+                    enableNavigateTo: false,
+                  }}>
+                  {opened && activeTab === 'Relationships' && (
+                    <TabPanelRelationships
+                      element={elementModel}
+                      node={nodeModel ?? null} />
+                  )}
+                </DiagramFeatures>
+              </TabsPanel>
+
+              <TabsPanel value="Views">
+                <ScrollArea scrollbars="y" type="auto">
+                  <Stack gap={'lg'}>
+                    {viewsOf.length > 0 && (
+                      <Box>
+                        <Divider label="views of the element (scoped)" />
+                        <Stack gap={'sm'}>
+                          {viewsOf.map((view) => (
+                            <ViewButton
+                              key={view.id}
+                              view={view}
+                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                    {otherViews.length > 0 && (
+                      <Box>
+                        <Divider label="views including this element" />
+                        <Stack gap={'sm'}>
+                          {otherViews.map((view) => (
+                            <ViewButton
+                              key={view.id}
+                              view={view}
+                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                  </Stack>
+                </ScrollArea>
+              </TabsPanel>
+
+              <TabsPanel value="Structure">
+                <ScrollArea scrollbars="y" type="auto">
+                  <TabPanelStructure element={elementModel} />
+                </ScrollArea>
+              </TabsPanel>
+
+              <TabsPanel value="Deployments">
+                <ScrollArea scrollbars="y" type="auto">
+                  <TabPanelDeployments elementFqn={elementModel.id} />
+                </ScrollArea>
+              </TabsPanel>
+            </Tabs>
+            <m.div
+              className={styles.resizeHandle}
+              drag
+              dragElastic={0}
+              dragMomentum={false}
+              onDrag={handleDrag}
+              dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
+          </m.div>
+        </RemoveScroll>
+      </m.dialog>
+    </PortalToRootContainer>
   )
 }
 

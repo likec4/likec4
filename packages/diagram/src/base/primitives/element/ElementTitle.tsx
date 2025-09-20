@@ -1,41 +1,31 @@
-import { type DiagramNode, type RichTextOrEmpty, ensureSizes } from '@likec4/core/types'
+import type { ComputedNodeStyle, NodeId } from '@likec4/core'
+import { type Color, type RichTextOrEmpty, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { elementNodeData, elementNodeIcon as elementIconRecipe } from '@likec4/styles/recipes'
 import { Text } from '@mantine/core'
 import { isEmpty, isNumber, isTruthy } from 'remeda'
-import type { Simplify } from 'type-fest'
 import { IconRenderer } from '../../../context/IconRenderer'
-import type { NodeProps, NonOptional } from '../../types'
 import { MarkdownBlock } from '../MarkdownBlock'
 
-type Data = Simplify<
-  & NonOptional<
-    Pick<
-      DiagramNode,
-      | 'title'
-      | 'technology'
-      | 'color'
-      | 'style'
-    >
-  >
-  & {
-    description?: RichTextOrEmpty
-    icon?: string | null
-  }
->
+type RequiredData = {
+  id: NodeId
+  title: string
+  technology?: string | null | undefined
+  color: Color
+  style: ComputedNodeStyle
+  description?: RichTextOrEmpty
+  icon?: string | null
+}
 
-type ElementTitleProps = NodeProps<Data> & {
+type ElementTitleProps = {
+  data: RequiredData
   iconSize?: number
 }
 
-export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
+export function ElementTitle({ data, iconSize }: ElementTitleProps) {
   const elementIcon = IconRenderer({
-    element: {
-      id,
-      title: data.title,
-      icon: data.icon,
-    },
+    element: data,
     className: elementIconRecipe(),
   })
   const classes = elementNodeData({

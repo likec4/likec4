@@ -1,10 +1,8 @@
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import { type PropsWithChildren, createContext, createRef, useContext, useEffect, useRef } from 'react'
-import { usePanningAtom } from './ReduceGraphics'
-import { TagStylesProvider } from './TagStylesContext'
-
-const RootContainerContext = createContext(createRef<HTMLDivElement>())
+import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import { usePanningAtom } from '../context/ReduceGraphics'
+import { RootContainerContext } from '../context/RootContainerContext'
 
 export function RootContainer({
   id,
@@ -25,6 +23,8 @@ export function RootContainer({
     })
   }, [$isPanning])
 
+  const ctx = useMemo(() => ({ id, ref }), [id, ref.current])
+
   return (
     <Box
       id={id}
@@ -33,22 +33,9 @@ export function RootContainer({
       {...reduceGraphics && {
         ['data-likec4-reduced-graphics']: true,
       }}>
-      <TagStylesProvider rootSelector={`#${id}`}>
-        <RootContainerContext.Provider value={ref}>
-          {children}
-        </RootContainerContext.Provider>
-      </TagStylesProvider>
+      <RootContainerContext.Provider value={ctx}>
+        {children}
+      </RootContainerContext.Provider>
     </Box>
   )
-}
-
-export function useRootContainerRef() {
-  return useContext(RootContainerContext)
-}
-
-/**
- * NOTE: Non-reactive
- */
-export function useRootContainer() {
-  return useContext(RootContainerContext).current
 }

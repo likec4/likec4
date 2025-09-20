@@ -8,7 +8,7 @@ import {
   RichText,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
-import { type NodeHandle } from '@xyflow/system'
+import type { NodeHandle } from '@xyflow/system'
 import { hasAtLeast } from 'remeda'
 import { roundDpr } from '../../utils/roundDpr'
 import { toXYFlowPosition } from '../../utils/xyflow'
@@ -340,7 +340,7 @@ function toSeqActorNode({ actor, ports: _ports, bounds, layout, view }: {
       style: actor.style,
       tags: actor.tags,
       modelFqn: actor.modelRef ?? null,
-      technology: actor.technology,
+      technology: actor.technology ?? null,
       description: RichText.from(actor.description),
       viewHeight: bounds.height,
       viewId: view.id,

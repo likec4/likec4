@@ -1,11 +1,10 @@
 import { getSmoothStepPath } from '@xyflow/system'
-import type { EdgeProps } from '../../../base'
 import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base/primitives'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
 const LABEL_OFFSET = 16
-export function SequenceStepEdge(props: EdgeProps<Types.SequenceStepEdgeData>) {
+export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
   const diagram = useDiagram()
   const { navigateTo } = props.data
   const isSelfLoop = props.source === props.target

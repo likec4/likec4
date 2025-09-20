@@ -7,7 +7,6 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { Fragment } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
@@ -16,9 +15,10 @@ import { roundDpr } from '../utils/roundDpr'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
+import type { BaseEdge, BaseNode } from './types'
 import { Base } from './types'
 
-export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Edge> = Simplify<
+export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge> = Simplify<
   & {
     pannable?: boolean
     zoomable?: boolean
@@ -47,8 +47,8 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
 >
 
 export function BaseXYFlow<
-  NodeType extends Base.Node,
-  EdgeType extends Base.Edge,
+  NodeType extends BaseNode,
+  EdgeType extends BaseEdge,
 >(
   {
     nodes,
@@ -201,10 +201,8 @@ export function BaseXYFlow<
       onEdgeDoubleClick={stopPropagation}
       {...props}
     >
-      <Fragment key="_internals">
-        {isBgWithPattern && <Background background={background} />}
-        {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
-      </Fragment>
+      {isBgWithPattern && <Background background={background} />}
+      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
       {children}
     </ReactFlow>
   )

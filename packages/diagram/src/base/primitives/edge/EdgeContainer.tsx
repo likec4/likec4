@@ -3,7 +3,7 @@ import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type PropsWithChildren } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import type { EdgeProps } from '../../types'
+import type { BaseEdgePropsWithData } from '../../types'
 import * as styles from './edge.css'
 
 type Data = UndefinedOnPartialDeep<
@@ -15,7 +15,7 @@ type Data = UndefinedOnPartialDeep<
 >
 
 type EdgeContainerProps = PropsWithChildren<
-  EdgeProps<Data> & {
+  BaseEdgePropsWithData<Data> & {
     component?: 'g' | 'svg' | undefined
     className?: string | undefined
   }

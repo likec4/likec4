@@ -4,7 +4,7 @@ import { compoundNode } from '@likec4/styles/recipes'
 import { type HTMLMotionProps, m } from 'motion/react'
 import { type PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
-import type { NodeProps } from '../../types'
+import type { BaseNode, BaseNodeProps } from '../../types'
 // import * as styles from './CompoundNodeContainer.css'
 
 export type RequiredData = {
@@ -16,7 +16,7 @@ export type RequiredData = {
 type CompoundNodeContainerProps =
   & Omit<HTMLMotionProps<'div'>, 'children'>
   & PropsWithChildren<{
-    nodeProps: NodeProps<RequiredData>
+    nodeProps: BaseNodeProps<BaseNode<RequiredData>>
   }>
 
 export function CompoundNodeContainer({

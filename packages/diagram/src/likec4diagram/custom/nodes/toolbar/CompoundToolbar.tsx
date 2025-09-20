@@ -1,7 +1,6 @@
 import { type BorderStyle } from '@likec4/core'
 import { Box, SegmentedControl } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import type { NodeProps } from '../../../../base/types'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import type { Types } from '../../../types'
 import type { OnStyleChange } from './_shared'
@@ -9,8 +8,7 @@ import { BrowseRelationshipsButton, GoToSourceButton, useHandlers } from './_sha
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
 
-type CompoundElementToolbarProps = NodeProps<Types.CompoundElementNodeData>
-export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
+export function CompoundElementToolbar(props: Types.NodeProps<'compound-element'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {
@@ -44,8 +42,7 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
   )
 }
 
-type CompoundDeploymentToolbarProps = NodeProps<Types.CompoundDeploymentNodeData>
-export function CompoundDeploymentToolbar(props: CompoundDeploymentToolbarProps) {
+export function CompoundDeploymentToolbar(props: Types.NodeProps<'compound-deployment'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {

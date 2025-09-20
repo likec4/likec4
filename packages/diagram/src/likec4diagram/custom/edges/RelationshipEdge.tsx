@@ -33,7 +33,7 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+export const RelationshipEdge = customEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
