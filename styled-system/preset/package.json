@@ -15,7 +15,7 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-style-preset-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "likec4ops clean"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -46,6 +46,7 @@
     "@radix-ui/colors": "^3.0.0",
     "pandacss-preset-radix-colors": "^0.2.0",
     "@likec4/core": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",

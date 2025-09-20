@@ -1024,6 +1024,9 @@ importers:
         specifier: catalog:xstate
         version: 5.20.2
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1094,6 +1097,9 @@ importers:
         specifier: catalog:utils
         version: 2.31.1
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1677,6 +1683,9 @@ importers:
         specifier: catalog:utils
         version: 0.12.2
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1720,6 +1729,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
@@ -1906,6 +1918,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
@@ -2018,6 +2033,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig

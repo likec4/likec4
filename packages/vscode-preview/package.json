@@ -14,12 +14,13 @@
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "likec4ops clean"
   },
   "devDependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.2.7",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",

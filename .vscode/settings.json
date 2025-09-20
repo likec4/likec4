@@ -54,15 +54,10 @@
     "packages/*/node_modules": true,
     "packages/*/styled-system": true,
     "packages/*/lib": true,
-    // "packages/*/core/*/package.json": true,
-    // "packages/*/config/*/package.json": true,
-    // "packages/*/likec4/*/package.json": true,
-    // "packages/*/language-server/*/package.json": true,
     "apps/*/lib": true,
     "apps/*/styled-system": true,
     "styled-system/*/node_modules": true,
-    "styled-system/*/lib": true,
-    // "styled-system/styles/*/package.json": true,
+    "styled-system/*/lib": true
   },
   "json.schemas": [
     {

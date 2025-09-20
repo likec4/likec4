@@ -21,8 +21,6 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/layouts"
   },
-  "types": "./dist/index.d.ts",
-  "module": "./dist/index.js",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -54,7 +52,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "./dist/index.d.ts",
+    "module": "./dist/index.js"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
@@ -63,8 +63,8 @@
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "pnpm rimraf dist lib",
-    "prepack": "likec4ops export-submodules",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-layouts-$npm_package_version.tgz package.tgz || true"
   },
