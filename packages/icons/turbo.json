@@ -6,6 +6,7 @@
       "dependsOn": [],
       "outputs": [
         "*/*.js",
+        "*/*.d.ts",
         "all.js",
         "all.d.ts"
       ]
