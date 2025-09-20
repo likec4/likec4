@@ -28,15 +28,13 @@ import {
 import { layoutRelationshipDetails } from './layout'
 import { SelectEdge } from './SelectEdge'
 
-const nodeTypes = {
+const nodeTypes: Types.NodeRenderers = {
   element: ElementNode,
   compound: CompoundNode,
-} satisfies RelationshipDetailsTypes.NodeComponents
+}
 
 export const edgeTypes = {
   relationship: RelationshipEdge,
-} satisfies {
-  [key in RelationshipDetailsTypes.Edge['type']]: any
 }
 
 export type RelationshipDetailsProps = {

@@ -14,7 +14,10 @@ import {
   MarkdownBlock,
 } from '../base/primitives'
 
-export const Primitives = {
+import { Base as BaseOps } from '../base/types'
+
+export const Base = {
+  ...BaseOps,
   CompoundActionButton,
   CompoundDetailsButton,
   CompoundNodeContainer,
@@ -36,7 +39,7 @@ export {
   IconRendererProvider,
 } from '../context/IconRenderer'
 
-import {
+export {
   CompoundActions,
   CompoundDeploymentNode,
   CompoundDeploymentToolbar,
@@ -50,27 +53,11 @@ import {
   ElementDetailsButtonWithHandler,
   ElementNode,
   ElementToolbar,
+  SequenceActorNode,
+  SequenceParallelArea,
   Toolbar,
   ViewGroupNode,
 } from '../likec4diagram/custom/nodes'
-
-export const Default = {
-  CompoundActions,
-  CompoundDeploymentNode,
-  CompoundDeploymentToolbar,
-  CompoundDetailsButtonWithHandler,
-  CompoundElementNode,
-  CompoundElementToolbar,
-  DeploymentElementActions,
-  DeploymentElementToolbar,
-  DeploymentNode,
-  ElementActions,
-  ElementDetailsButtonWithHandler,
-  ElementNode,
-  ElementToolbar,
-  Toolbar,
-  ViewGroupNode,
-} as const
 
 export {
   IfEnabled,
@@ -79,7 +66,7 @@ export {
   IfReadOnly,
 } from '../context/DiagramFeatures'
 
-export {
-  Overlay,
-  type OverlayProps,
-} from '../overlays/overlay/Overlay'
+export { Overlay } from '../overlays/overlay/Overlay'
+export type { OverlayProps } from '../overlays/overlay/Overlay'
+
+export { PortalToRootContainer } from '../components/PortalToRootContainer'

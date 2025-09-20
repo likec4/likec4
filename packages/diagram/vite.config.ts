@@ -108,14 +108,10 @@ const defaultConfig = defineConfig({
     dts({
       staticImport: true,
       tsconfigPath: 'tsconfig.src.json',
-      insertTypesEntry: true,
       compilerOptions: {
         customConditions: [],
         noCheck: true,
         declarationMap: false,
-        noImplicitAny: false,
-        noImplicitOverride: false,
-        noPropertyAccessFromIndexSignature: false,
       },
     }),
     {
@@ -177,6 +173,7 @@ const bundleConfig = defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
+        /@xyflow\/\.*/,
         /@likec4\/core.*/,
         '@emotion/is-prop-valid', // dev-only import from motion
       ],

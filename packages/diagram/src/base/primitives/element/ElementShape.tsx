@@ -181,9 +181,8 @@ type Data = {
 // type ElementShapePrimitiveProps = NodeProps<Data> & {
 type ElementShapePrimitiveProps = {
   data: Data
-  width?: number
-  height?: number
-  // isMultiple?: boolean | undefined
+  width?: number | undefined
+  height?: number | undefined
   /**
    * @default true
    */

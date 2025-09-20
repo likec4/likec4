@@ -1,9 +1,9 @@
 import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { isDefined, omit } from 'remeda'
-import type { Base } from './types'
+import type { BaseNode } from './types'
 
-function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
+function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
   return updated.map((update) => {
     const existing = current.find(n => n.id === update.id)
     if (existing && eq(existing.type, update.type)) {
@@ -32,9 +32,9 @@ function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
   })
 }
 
-export function updateNodes<N extends Base.Node>(current: N[], update: N[]): N[]
-export function updateNodes<N extends Base.Node>(update: N[]): (current: N[]) => N[]
-export function updateNodes<N extends Base.Node>(current: N[], update?: N[]) {
+export function updateNodes<N extends BaseNode>(current: N[], update: N[]): N[]
+export function updateNodes<N extends BaseNode>(update: N[]): (current: N[]) => N[]
+export function updateNodes<N extends BaseNode>(current: N[], update?: N[]) {
   if (isDefined(update)) {
     return _update(current, update)
   }

@@ -10,7 +10,7 @@ import {
   type EdgeChange,
   type NodeChange,
   type ReactFlowInstance,
-  type useStoreApi,
+  type ReactFlowState,
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
@@ -37,8 +37,11 @@ import type { RelationshipDetailsTypes } from './_types'
 import type { LayoutResult } from './layout'
 import { layoutResultToXYFlow } from './layout-to-xyflow'
 
-type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>
-type XYStoreApi = ReturnType<typeof useStoreApi<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>>
+type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.AnyNode, RelationshipDetailsTypes.Edge>
+type XYStoreState = ReactFlowState<RelationshipDetailsTypes.AnyNode, RelationshipDetailsTypes.Edge>
+type XYStoreApi = {
+  getState: () => XYStoreState
+}
 
 export type Input = ExclusiveUnion<{
   Edge: {
@@ -117,7 +120,7 @@ export type Events =
   | { type: 'navigate.to'; params: { edgeId: EdgeId; viewId?: ViewId } | { source: Fqn; target: Fqn; viewId?: ViewId } }
   | { type: 'close' }
 
-export const relationshipDetailsLogic = setup({
+const _relationshipDetailsLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -390,8 +393,9 @@ export const relationshipDetailsLogic = setup({
   },
 })
 
-export interface RelationshipDetailsLogic extends ActorLogicFrom<typeof relationshipDetailsLogic> {
+export interface RelationshipDetailsLogic extends ActorLogicFrom<typeof _relationshipDetailsLogic> {
 }
+export const relationshipDetailsLogic: RelationshipDetailsLogic = _relationshipDetailsLogic
 export interface RelationshipDetailsActorRef extends ActorRefFromLogic<RelationshipDetailsLogic> {
 }
-export type RelationshipDetailsSnapshot = SnapshotFrom<RelationshipDetailsActorRef>
+export type RelationshipDetailsSnapshot = SnapshotFrom<RelationshipDetailsLogic>

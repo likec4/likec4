@@ -5,9 +5,11 @@ import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
-import type { NodeProps } from '../../types'
+import type { BaseNodeData } from '../../types'
 
-type ElementActionButtonsProps = NodeProps & {
+type ElementActionButtonsProps = {
+  selected?: boolean
+  data: BaseNodeData
   buttons: ElementActionButtons.Item[]
 }
 

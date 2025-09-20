@@ -1,7 +1,9 @@
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Handle } from '@xyflow/react'
-import { Position } from '@xyflow/system'
+import { Position } from '@xyflow/react'
+import { isTruthy } from 'remeda'
+import type { SetNonNullable } from 'type-fest'
 import { ElementNodeContainer, ElementShape, ElementTitle } from '../../../base/primitives'
 import { type Types } from '../../types'
 import { ElementActions } from './ElementActions'
@@ -68,7 +70,10 @@ const ActorStepPort = ({
   )
 }
 
-export function SequenceActorNode(props: Types.NodeProps['seq-actor']) {
+const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is SetNonNullable<D, 'modelFqn'> =>
+  isTruthy(data.modelFqn)
+
+export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
   const data = props.data
   const {
     positionAbsoluteY,
@@ -130,10 +135,10 @@ export function SequenceActorNode(props: Types.NodeProps['seq-actor']) {
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
         <ElementTitle {...props} />
-        {data.modelFqn && (
+        {hasModelFqn(data) && (
           <>
-            <ElementActions {...props} data={data as Types.ElementNodeData} />
-            <ElementDetailsButtonWithHandler {...props} data={data as Types.ElementNodeData} />
+            <ElementActions {...props} data={data} />
+            <ElementDetailsButtonWithHandler {...props} data={data} />
           </>
         )}
       </ElementNodeContainer>
@@ -142,7 +147,7 @@ export function SequenceActorNode(props: Types.NodeProps['seq-actor']) {
   )
 }
 
-export function SequenceParallelArea(props: Types.NodeProps['seq-parallel']) {
+export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
   return (
     <Box
       data-likec4-color={props.data.color}

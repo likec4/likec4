@@ -6,9 +6,11 @@ import { useId } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { stopPropagation } from '../../../utils/xyflow'
-import type { NodeProps } from '../../types'
+import type { BaseNodeData } from '../../types'
 
-type ElementDetailsButtonProps = NodeProps & {
+type ElementDetailsButtonProps = {
+  selected?: boolean
+  data: BaseNodeData
   icon?: React.ReactNode
   onClick: (e: React.MouseEvent) => void
 }

@@ -1,11 +1,10 @@
 import type { NodeId } from '@likec4/core'
 import { CompoundActionButton } from '../../../base/primitives'
-import type { NodeProps } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
-type CompoundActionsProps = NodeProps<Types.CompoundElementNodeData | Types.CompoundDeploymentNodeData>
+type CompoundActionsProps = Types.NodeProps<'compound-deployment' | 'compound-element'>
 
 export const CompoundActions = (props: CompoundActionsProps) => {
   const { enableNavigateTo } = useEnabledFeatures()

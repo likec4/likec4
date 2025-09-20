@@ -1,18 +1,20 @@
 export type {
   ChangeEvent,
-  CustomNodes,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   LikeC4ColorScheme,
   LikeC4DiagramEventHandlers,
+  NodeRenderers,
   OnCanvasClick,
   OnChange,
   OnEdgeClick,
   OnNavigateTo,
   OnNodeClick,
   OpenSourceParams,
+  OverrideReactFlowProps,
   PaddingUnit,
   PaddingWithUnit,
+  ViewPadding,
   WhereOperator,
 } from '../LikeC4Diagram.props'
 export { LikeC4View } from './LikeC4View'

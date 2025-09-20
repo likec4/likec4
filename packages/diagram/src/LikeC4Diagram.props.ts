@@ -7,11 +7,11 @@ import type {
   ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
-import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
+import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
-import type { CustomNodes } from './custom/customNodes'
+import type { Types } from './likec4diagram/types'
 
 type Any = t.aux.Any
 type ViewId<A> = t.aux.ViewId<A>
@@ -20,7 +20,9 @@ type RelationId = t.aux.RelationId
 type DeploymentFqn<A> = t.aux.DeploymentFqn<A>
 type StrictViewId<A> = t.aux.StrictViewId<A>
 
-export type { CustomNodes, WhereOperator }
+export type NodeRenderers = Types.NodeRenderers
+
+export type { WhereOperator }
 
 export type DiagramNodeWithNavigate<A extends Any> = SetRequired<DiagramNode<A>, 'navigateTo'>
 
@@ -65,7 +67,7 @@ export type OnChange = (event: ChangeEvent) => void
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export type OverrideReactFlowProps = Pick<
-  XYFlowProps,
+  ReactFlowProps<Types.AnyNode, Types.AnyEdge>,
   | 'paneClickDistance'
   | 'nodeClickDistance'
   | 'selectionKeyCode'
@@ -303,7 +305,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   /**
    * Override node renderers
    */
-  renderNodes?: CustomNodes<A> | undefined
+  renderNodes?: Partial<NodeRenderers> | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges

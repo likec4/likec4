@@ -1,5 +1,4 @@
 import { type NodeId } from '@likec4/core'
-import type { NodeProps } from '../../../base'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
@@ -20,7 +19,7 @@ import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/Com
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
 export function ElementDetailsButtonWithHandler(
-  props: NodeProps<Types.ElementNodeData | Types.DeploymentElementNodeData>,
+  props: Pick<Types.NodeProps<'element' | 'deployment'>, 'id' | 'data'>,
 ) {
   const { enableElementDetails } = useEnabledFeatures()
   const diagram = useDiagram()
@@ -39,7 +38,7 @@ export function ElementDetailsButtonWithHandler(
 }
 
 export function CompoundDetailsButtonWithHandler(
-  props: NodeProps<Types.CompoundElementNodeData | Types.CompoundDeploymentNodeData>,
+  props: Types.NodeProps<'compound-deployment' | 'compound-element'>,
 ) {
   const { enableElementDetails } = useEnabledFeatures()
   const diagram = useDiagram()
@@ -57,7 +56,7 @@ export function CompoundDetailsButtonWithHandler(
   )
 }
 
-export const ElementNode: Types.Components['element'] = (props) => {
+export function ElementNode(props: Types.NodeProps<'element'>) {
   const { enableElementTags, enableReadOnly } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
@@ -71,9 +70,8 @@ export const ElementNode: Types.Components['element'] = (props) => {
     </ElementNodeContainer>
   )
 }
-ElementNode.displayName = 'ElementNode'
 
-export const DeploymentNode: Types.Components['deployment'] = (props) => {
+export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
   const { enableElementTags, enableReadOnly } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
@@ -87,9 +85,8 @@ export const DeploymentNode: Types.Components['deployment'] = (props) => {
     </ElementNodeContainer>
   )
 }
-DeploymentNode.displayName = 'DeploymentNode'
 
-export const CompoundElementNode: Types.Components['compound-element'] = (props) => {
+export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) {
   const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
   return (
     <CompoundNodeContainer nodeProps={props}>
@@ -101,9 +98,8 @@ export const CompoundElementNode: Types.Components['compound-element'] = (props)
     </CompoundNodeContainer>
   )
 }
-CompoundElementNode.displayName = 'CompoundElementNode'
 
-export const CompoundDeploymentNode: Types.Components['compound-deployment'] = (props) => {
+export function CompoundDeploymentNode(props: Types.NodeProps<'compound-deployment'>) {
   const { enableElementDetails, enableReadOnly } = useEnabledFeatures()
   return (
     <CompoundNodeContainer nodeProps={props}>
@@ -115,12 +111,12 @@ export const CompoundDeploymentNode: Types.Components['compound-deployment'] = (
     </CompoundNodeContainer>
   )
 }
-CompoundDeploymentNode.displayName = 'CompoundDeploymentNode'
 
-export const ViewGroupNode: Types.Components['view-group'] = (props) => (
-  <CompoundNodeContainer nodeProps={props}>
-    <CompoundTitle {...props} />
-    <DefaultHandles />
-  </CompoundNodeContainer>
-)
-ViewGroupNode.displayName = 'ViewGroupNode'
+export function ViewGroupNode(props: Types.NodeProps<'view-group'>) {
+  return (
+    <CompoundNodeContainer nodeProps={props}>
+      <CompoundTitle {...props} />
+      <DefaultHandles />
+    </CompoundNodeContainer>
+  )
+}

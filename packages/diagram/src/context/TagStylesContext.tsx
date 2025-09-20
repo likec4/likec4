@@ -1,8 +1,7 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
-import { useDeepCompareMemo } from '@react-hookz/web'
-import { type PropsWithChildren, createContext, useContext } from 'react'
-import { entries, flatMap, join, pipe } from 'remeda'
+import { type PropsWithChildren, createContext, memo, useContext } from 'react'
+import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../likec4model/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
@@ -51,40 +50,37 @@ const generateColorVars = (spec: TagSpecification) => {
   `
 }
 
+function generateStylesheet(tags: Record<string, TagSpecification> | undefined, rootSelector: string) {
+  if (!tags || isEmpty(tags)) {
+    return ''
+  }
+  return pipe(
+    entries(tags),
+    flatMap(([tag, spec]) => [
+      `:is(${rootSelector} [data-likec4-tag="${tag}"]) {`,
+      generateColorVars(spec),
+      '}',
+    ]),
+    join('\n'),
+  )
+}
+
 export function TagStylesProvider({ children, rootSelector }: PropsWithChildren<{ rootSelector: string }>) {
   const tags = useLikeC4Specification().tags
-  const { specs, stylesheet } = useDeepCompareMemo(() => {
-    if (!tags) {
-      return { specs: {}, stylesheet: '' }
-    }
-    return {
-      specs: tags,
-      stylesheet: pipe(
-        entries(tags),
-        flatMap(([tag, spec]) => [
-          `:is(${rootSelector} [data-likec4-tag="${tag}"]) {`,
-          generateColorVars(spec),
-          '}',
-        ]),
-        join('\n'),
-      ),
-    }
-  }, [tags, rootSelector])
+  const stylesheet = generateStylesheet(tags, rootSelector)
 
   return (
-    <TagStylesContext.Provider value={specs}>
+    <TagStylesContext.Provider value={tags}>
       {stylesheet !== '' && <TagStylesheet stylesheet={stylesheet} />}
       {children}
     </TagStylesContext.Provider>
   )
 }
 
-function TagStylesheet({ stylesheet }: { stylesheet: string }) {
+const TagStylesheet = memo<{ stylesheet: string }>(({ stylesheet }) => {
   const nonce = useMantineStyleNonce()?.()
-  return (
-    <style data-likec4-tag-stylesheet type="text/css" dangerouslySetInnerHTML={{ __html: stylesheet }} nonce={nonce} />
-  )
-}
+  return <style data-likec4-tags type="text/css" dangerouslySetInnerHTML={{ __html: stylesheet }} nonce={nonce} />
+})
 
 export function useTagSpecifications() {
   return useContext(TagStylesContext)

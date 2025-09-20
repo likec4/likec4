@@ -6,7 +6,7 @@ import {
   ScrollAreaAutosize,
 } from '@mantine/core'
 import { isNonNull, isTruthy } from 'remeda'
-import { MarkdownBlock } from '../../custom'
+import { MarkdownBlock } from '../../base/primitives'
 import { useDiagramContext } from '../../hooks/useDiagram'
 import type { DiagramContext } from '../../state/types'
 

@@ -2,18 +2,20 @@ import type { Any } from '@likec4/core/types'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { type PropsWithChildren, useRef } from 'react'
 import { FitViewPaddings } from './base'
+import { RootContainer } from './components/RootContainer'
 import {
   DiagramEventHandlers,
   DiagramFeatures,
   EnsureMantine,
   FramerMotionConfig,
   IconRendererProvider,
-  RootContainer,
 } from './context'
 import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
 import { ReduceGraphicsContext } from './context/ReduceGraphics'
+import { TagStylesProvider } from './context/TagStylesContext'
 import { useId } from './hooks/useId'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
@@ -132,37 +134,40 @@ export function LikeC4Diagram<A extends Any = Any>({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
-                <LikeC4Styles id={id} />
-                <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
-                  <XYFlowProvider
-                    fitView={fitView}
-                    {...initialRef.current}
-                  >
-                    <DiagramActorProvider
-                      view={view}
-                      zoomable={zoomable}
-                      pannable={pannable}
-                      fitViewPadding={fitViewPadding}
-                      nodesSelectable={nodesSelectable}
-                      where={where ?? null}
-                      dynamicViewVariant={dynamicViewVariant}
+              <LikeC4Styles id={id} />
+              <TagStylesProvider rootSelector={`#${id}`}>
+                <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
+                  <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
+                    <XYFlowProvider
+                      fitView={fitView}
+                      {...initialRef.current}
                     >
-                      <ControlsCustomLayoutProvider value={renderControls ?? null}>
-                        <LikeC4DiagramXYFlow
-                          nodesDraggable={nodesDraggable}
-                          nodesSelectable={nodesSelectable}
-                          background={background}
-                          reactFlowProps={reactFlowProps}
-                          renderNodes={renderNodes}
-                        >
-                          {children}
-                        </LikeC4DiagramXYFlow>
-                      </ControlsCustomLayoutProvider>
-                    </DiagramActorProvider>
-                  </XYFlowProvider>
-                </RootContainer>
-              </ReduceGraphicsContext>
+                      <DiagramActorProvider
+                        view={view}
+                        zoomable={zoomable}
+                        pannable={pannable}
+                        fitViewPadding={fitViewPadding}
+                        nodesSelectable={nodesSelectable}
+                        where={where ?? null}
+                        dynamicViewVariant={dynamicViewVariant}
+                      >
+                        <ControlsCustomLayoutProvider value={renderControls ?? null}>
+                          <LikeC4DiagramXYFlow
+                            nodesDraggable={nodesDraggable}
+                            nodesSelectable={nodesSelectable}
+                            background={background}
+                            reactFlowProps={reactFlowProps}
+                            renderNodes={renderNodes}
+                          >
+                            {children}
+                          </LikeC4DiagramXYFlow>
+                          <LikeC4DiagramUI />
+                        </ControlsCustomLayoutProvider>
+                      </DiagramActorProvider>
+                    </XYFlowProvider>
+                  </RootContainer>
+                </ReduceGraphicsContext>
+              </TagStylesProvider>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>

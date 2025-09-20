@@ -23,23 +23,17 @@ export {
   useDiagramContext,
   useOnDiagramEvent,
 } from '../hooks/useDiagram'
-export {
-  useXYFlow,
-  useXYInternalNode,
-  useXYStore,
-  useXYStoreApi,
-  type XYFlowInstance,
-  type XYStoreApi,
-} from '../hooks/useXYFlow'
 
 export {
   useCurrentViewModel,
 } from '../likec4model/useCurrentViewModel'
+
 export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,
 } from '../likec4model/useLikeC4Model'
+
 export {
   useHasProjects,
   useLikeC4ProjectId,

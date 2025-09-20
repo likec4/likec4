@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useRootContainer } from '../context'
+import { useRootContainerElement } from '../context'
 
 export function useMantinePortalProps():
   | {
@@ -12,6 +12,6 @@ export function useMantinePortalProps():
     portalProps?: never
   }
 {
-  const target = useRootContainer()
+  const target = useRootContainerElement()
   return useMemo(() => target ? { portalProps: { target }, withinPortal: true } : { withinPortal: false }, [target])
 }

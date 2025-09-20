@@ -6,6 +6,7 @@ import { useFocusTrap, useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import { m, useReducedMotionConfig } from 'motion/react'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import { PortalToRootContainer } from '../../components/PortalToRootContainer'
 import { stopPropagation } from '../../utils'
 import { backdropBlur, backdropOpacity, level as cssVarLevel, overlay as overlayCVA } from './Overlay.css'
 
@@ -79,91 +80,93 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     targetBackdropOpacity = `${backdrop.opacity * 100}%`
   }
   return (
-    <m.dialog
-      ref={useMergedRef(
-        dialogRef,
-        focusTrapRef,
-        ref,
-      )}
-      className={cx(
-        classes?.dialog,
-        className,
-        styles.dialog,
-        fullscreen && RemoveScroll.classNames.fullWidth,
-      )}
-      layout
-      style={{
-        // @ts-ignore
-        [cssVarLevel]: overlayLevel,
-      }}
-      {...motionNotReduced
-        ? ({
-          initial: {
-            [backdropBlur]: '0px',
-            [backdropOpacity]: '0%',
-            scale: 0.95,
-            originY: 0,
-            translateY: -20,
-            opacity: 0,
-          },
-          animate: {
-            [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
-            [backdropOpacity]: targetBackdropOpacity,
-            scale: 1,
-            opacity: 1,
-            translateY: 0,
-            transition: {
-              delay: 0.075,
-            },
-          },
-          exit: {
-            opacity: 0,
-            scale: 0.98,
-            translateY: -20,
-            transition: {
-              duration: 0.1,
-            },
-            [backdropBlur]: '0px',
-            [backdropOpacity]: '0%',
-          },
-        })
-        : {
-          initial: {
-            [backdropBlur]: '8px',
-            [backdropOpacity]: targetBackdropOpacity,
-          },
+    <PortalToRootContainer>
+      <m.dialog
+        ref={useMergedRef(
+          dialogRef,
+          focusTrapRef,
+          ref,
+        )}
+        className={cx(
+          classes?.dialog,
+          className,
+          styles.dialog,
+          fullscreen && RemoveScroll.classNames.fullWidth,
+        )}
+        layout
+        style={{
+          // @ts-ignore
+          [cssVarLevel]: overlayLevel,
         }}
-      onClick={e => {
-        e.stopPropagation()
-        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          dialogRef.current?.close()
-          return
-        }
-      }}
-      onCancel={e => {
-        e.preventDefault()
-        e.stopPropagation()
-        close()
-      }}
-      onDoubleClick={stopPropagation}
-      onPointerDown={stopPropagation}
-      onClose={e => {
-        e.stopPropagation()
-        close()
-      }}
-      {...rest}
-    >
-      <RemoveScroll forwardProps>
-        <div
-          className={cx(
-            classes?.body,
-            styles.body,
-            'overlay-body',
-          )}>
-          {opened && <>{children}</>}
-        </div>
-      </RemoveScroll>
-    </m.dialog>
+        {...motionNotReduced
+          ? ({
+            initial: {
+              [backdropBlur]: '0px',
+              [backdropOpacity]: '0%',
+              scale: 0.95,
+              originY: 0,
+              translateY: -20,
+              opacity: 0,
+            },
+            animate: {
+              [backdropBlur]: overlayLevel > 0 ? '4px' : '8px',
+              [backdropOpacity]: targetBackdropOpacity,
+              scale: 1,
+              opacity: 1,
+              translateY: 0,
+              transition: {
+                delay: 0.075,
+              },
+            },
+            exit: {
+              opacity: 0,
+              scale: 0.98,
+              translateY: -20,
+              transition: {
+                duration: 0.1,
+              },
+              [backdropBlur]: '0px',
+              [backdropOpacity]: '0%',
+            },
+          })
+          : {
+            initial: {
+              [backdropBlur]: '8px',
+              [backdropOpacity]: targetBackdropOpacity,
+            },
+          }}
+        onClick={e => {
+          e.stopPropagation()
+          if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+            dialogRef.current?.close()
+            return
+          }
+        }}
+        onCancel={e => {
+          e.preventDefault()
+          e.stopPropagation()
+          close()
+        }}
+        onDoubleClick={stopPropagation}
+        onPointerDown={stopPropagation}
+        onClose={e => {
+          e.stopPropagation()
+          close()
+        }}
+        {...rest}
+      >
+        <RemoveScroll forwardProps>
+          <div
+            className={cx(
+              classes?.body,
+              styles.body,
+              'overlay-body',
+            )}>
+            {opened && <>{children}</>}
+          </div>
+        </RemoveScroll>
+      </m.dialog>
+    </PortalToRootContainer>
   )
 })
 Overlay.displayName = 'Overlay'

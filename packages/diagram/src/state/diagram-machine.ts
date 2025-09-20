@@ -20,11 +20,9 @@ import type {
   XYPoint,
 } from '@likec4/core/types'
 import {
-  type ReactFlowInstance,
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
-  useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import type { MouseEvent } from 'react'
@@ -53,6 +51,7 @@ import {
 import { MinZoom } from '../base/const'
 import { Base } from '../base/types'
 import { type EnabledFeatures, type FeatureName, AllDisabled } from '../context/DiagramFeatures'
+import type { XYFlowInstance, XYStoreApi } from '../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPadding } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
 import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
@@ -76,8 +75,6 @@ import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import { activeSequenceBounds, findDiagramEdge, findDiagramNode, focusedBounds, typedSystem } from './utils'
-
-export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
 export interface NavigationHistory {
   history: ReadonlyArray<{
@@ -133,7 +130,7 @@ export interface Context extends Input {
     nodeRectScreen?: Rect | null
   }
   viewportBeforeFocus: null | Viewport
-  xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
+  xyflow: XYFlowInstance | null
 
   syncLayoutActorRef: null | ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
@@ -147,7 +144,7 @@ export interface Context extends Input {
 
 export type Events =
   | HotKeyEvent
-  | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }
+  | { type: 'xyflow.init'; instance: XYFlowInstance }
   | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
   | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }

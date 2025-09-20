@@ -30,10 +30,10 @@ import {
   useState,
 } from 'react'
 import { clamp, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
+import { MarkdownBlock } from '../../base/primitives'
 import { Link } from '../../components/Link'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { MarkdownBlock } from '../../custom'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { useLikeC4Model } from '../../likec4model'

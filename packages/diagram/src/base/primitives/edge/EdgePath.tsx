@@ -2,7 +2,7 @@ import type { DiagramEdge } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import type { EdgeProps } from '../../types'
+import type { BaseEdgePropsWithData } from '../../types'
 import { cssEdgePath, edgePathBg, markerContext } from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
@@ -17,7 +17,7 @@ type Data = UndefinedOnPartialDeep<
 >
 
 type EdgePathProps = {
-  edgeProps: EdgeProps<Data>
+  edgeProps: BaseEdgePropsWithData<Data>
   svgPath: string
   strokeWidth?: number
   onEdgePointerDown?: PointerEventHandler<SVGGElement> | undefined

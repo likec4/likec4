@@ -9,29 +9,27 @@ import type {
   RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
-import type { NodeProps as XYNodeProps, XYPosition } from '@xyflow/system'
+import type { XYPosition } from '@xyflow/system'
 import type { FunctionComponent } from 'react'
-import type { OptionalKeysOf, Simplify } from 'type-fest'
-import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
-
-type NonOptional<T extends object> = Simplify<
-  & {
-    [P in Exclude<keyof T, OptionalKeysOf<T>>]: T[P]
-  }
-  & {
-    [P in OptionalKeysOf<T>]-?: T[P] | undefined
-  }
->
+import type { Simplify } from 'type-fest'
+import type {
+  BaseEdge,
+  BaseEdgeData,
+  BaseEdgeProps,
+  BaseNode,
+  BaseNodeData,
+  BaseNodeProps,
+  NonOptional,
+} from '../base/types'
 
 export namespace Types {
   export type LeafNodeData = Simplify<
-    & Base.NodeData
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
         | 'id'
         | 'title'
-        | 'technology'
         | 'color'
         | 'shape'
         | 'width'
@@ -43,6 +41,7 @@ export namespace Types {
       >
     >
     & {
+      technology: string | null
       description: RichTextOrEmpty
       /**
        * View this node belongs to
@@ -107,7 +106,7 @@ export namespace Types {
   >
 
   export type CompoundNodeData = Simplify<
-    & Base.NodeData
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -164,17 +163,17 @@ export namespace Types {
     }
   >
 
-  export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
-  export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
+  export type ElementNode = BaseNode<ElementNodeData, 'element'>
+  export type DeploymentElementNode = BaseNode<DeploymentElementNodeData, 'deployment'>
 
-  export type SequenceActorNode = ReactFlowNode<SequenceActorNodeData, 'seq-actor'>
-  export type SequenceParallelArea = ReactFlowNode<SequenceParallelAreaData, 'seq-parallel'>
+  export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
+  export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
 
-  export type CompoundElementNode = ReactFlowNode<CompoundElementNodeData, 'compound-element'>
-  export type CompoundDeploymentNode = ReactFlowNode<CompoundDeploymentNodeData, 'compound-deployment'>
-  export type ViewGroupNode = ReactFlowNode<ViewGroupNodeData, 'view-group'>
+  export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
+  export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
+  export type ViewGroupNode = BaseNode<ViewGroupNodeData, 'view-group'>
 
-  export type Node =
+  export type AnyNode =
     | ElementNode
     | DeploymentElementNode
     | CompoundElementNode
@@ -182,6 +181,8 @@ export namespace Types {
     | ViewGroupNode
     | SequenceActorNode
     | SequenceParallelArea
+
+  export type NodeType = AnyNode['type']
 
   export type NodeData = ExclusiveUnion<{
     ElementNodeData: ElementNodeData
@@ -193,18 +194,21 @@ export namespace Types {
     SequenceParallelAreaData: SequenceParallelAreaData
   }>
 
-  export type NodeProps = {
-    element: XYNodeProps<ElementNode>
-    deployment: XYNodeProps<DeploymentElementNode>
-    'compound-element': XYNodeProps<CompoundElementNode>
-    'compound-deployment': XYNodeProps<CompoundDeploymentNode>
-    'view-group': XYNodeProps<ViewGroupNode>
-    'seq-actor': XYNodeProps<SequenceActorNode>
-    'seq-parallel': XYNodeProps<SequenceParallelArea>
-  }
+  export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
+  export type NodeProps<Type extends NodeType = NodeType> = BaseNodeProps<Node<Type>>
+
+  // export type NodeProps = {
+  //   element: NodeProps<ElementNode>
+  //   deployment: XYNodeProps<DeploymentElementNode>
+  //   'compound-element': XYNodeProps<CompoundElementNode>
+  //   'compound-deployment': XYNodeProps<CompoundDeploymentNode>
+  //   'view-group': XYNodeProps<ViewGroupNode>
+  //   'seq-actor': XYNodeProps<SequenceActorNode>
+  //   'seq-parallel': XYNodeProps<SequenceParallelArea>
+  // }
 
   export type RelationshipEdgeData = Simplify<
-    & Base.EdgeData
+    & BaseEdgeData
     & NonOptional<
       Pick<
         DiagramEdge,
@@ -229,7 +233,7 @@ export namespace Types {
   >
 
   export type SequenceStepEdgeData = Simplify<
-    & Base.EdgeData
+    & BaseEdgeData
     & NonOptional<
       Pick<
         DiagramEdge,
@@ -253,15 +257,27 @@ export namespace Types {
     }
   >
 
-  export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
-  export type SequenceStepEdge = ReactFlowEdge<SequenceStepEdgeData, 'seq-step'>
+  export type RelationshipEdge = BaseEdge<RelationshipEdgeData, 'relationship'>
+  export type SequenceStepEdge = BaseEdge<SequenceStepEdgeData, 'seq-step'>
 
-  export type Edge = RelationshipEdge | SequenceStepEdge
-  export type EdgeData = RelationshipEdgeData | SequenceStepEdgeData
+  export type AnyEdge = RelationshipEdge | SequenceStepEdge
+  export type EdgeType = AnyEdge['type']
 
-  export type Components = {
-    [key in keyof NodeProps]: FunctionComponent<NodeProps[key]>
+  export type Edge<Type extends EdgeType = EdgeType> = Extract<AnyEdge, { type: Type }>
+  export type EdgeProps<Type extends EdgeType = EdgeType> = BaseEdgeProps<Edge<Type>>
+
+  export type EdgeData = ExclusiveUnion<{
+    RelationshipEdgeData: RelationshipEdgeData
+    SequenceStepEdgeData: SequenceStepEdgeData
+  }>
+
+  export type NodeRenderer<T extends NodeType> = FunctionComponent<NodeProps<T>>
+  export type NodeRenderers = {
+    [T in NodeType]: NodeRenderer<T>
   }
 
-  export type Component<T extends keyof NodeProps> = FunctionComponent<NodeProps[T]>
+  export type EdgeRenderer<T extends EdgeType> = FunctionComponent<EdgeProps<T>>
+  export type EdgeRenderers = {
+    [T in EdgeType]: EdgeRenderer<T>
+  }
 }

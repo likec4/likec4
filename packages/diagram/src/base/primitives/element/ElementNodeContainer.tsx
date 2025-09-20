@@ -8,7 +8,7 @@ import { cx } from '@likec4/styles/css'
 import type { MotionNodeLayoutOptions } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type CSSProperties, type ReactNode, forwardRef } from 'react'
-import type { NodeProps } from '../../types'
+import type { BaseNode, BaseNodeProps, BaseNodePropsWithData } from '../../types'
 import * as styles from './ElementNodeContainer.css'
 
 export type RequiredData = {
@@ -19,7 +19,7 @@ export type RequiredData = {
 
 export type ElementNodeContainerProps =
   & {
-    nodeProps: NodeProps<RequiredData>
+    nodeProps: BaseNodePropsWithData<RequiredData>
     children?: ReactNode | undefined
     className?: string | undefined
     style?: CSSProperties | undefined

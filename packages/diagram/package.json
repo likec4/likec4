@@ -100,7 +100,6 @@
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "khroma": "catalog:utils",
     "motion": "catalog:react",

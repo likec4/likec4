@@ -6,7 +6,7 @@ import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { useXYStore } from '../../../hooks'
 import { ZIndexes } from '../../const'
-import type { EdgeProps } from '../../types'
+import type { BaseEdgePropsWithData } from '../../types'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -26,7 +26,7 @@ type EdgeLabelContainerProps = HTMLAttributes<HTMLDivElement> & {
     translate?: string | undefined
   } | undefined
 
-  edgeProps: EdgeProps<Data>
+  edgeProps: BaseEdgePropsWithData<Data>
 }
 
 const toCssVarValue = (value: number | string | undefined) => {

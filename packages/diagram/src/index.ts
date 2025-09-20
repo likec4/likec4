@@ -26,13 +26,13 @@ export * from './custom/hooks'
 
 export type {
   ChangeEvent,
-  CustomNodes,
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   ElementIconRendererProps,
   LikeC4ColorScheme,
   LikeC4DiagramEventHandlers,
   LikeC4DiagramProperties,
+  NodeRenderers,
   OnCanvasClick,
   OnChange,
   OnEdgeClick,
