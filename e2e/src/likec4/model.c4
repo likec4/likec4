@@ -123,12 +123,13 @@ views {
 
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
-    customer -> ui.dashboard 'opens' {
+    customer -> ui.mobile 'opens' {
       notes '
         Customer opens dashboard in Browser
       '
+      color green
     }
-    ui.dashboard -> cloud.graphql {
+    ui.mobile -> cloud.myAccount {
       title '
         requests data over rest
         for dashboard
@@ -138,23 +139,45 @@ views {
         Multi line
       '
     }
-    ui.dashboard <- cloud.graphql 'returns' {
+
+    cloud.myAccount -> next.backend
+
+    next.backend -> amazon.pg {
+      color amber
+      title 'selects user data'
+      technology 'SQL'
+    }
+    next.backend <- amazon.pg {
+      color amber
+    }
+
+    next.backend -> next.backend
+
+    next.backend -> cloud.myAccount
+
+    ui.mobile <- cloud.myAccount 'returns' {
       technology 'unknown'
       navigateTo cloud-to-amazon
     }
 
-    ui.mobile -> cloud.graphql 'requests'
-    ui.mobile <- cloud.graphql
 
-    include cloud
+    include cloud.ui, cloud.next, amazon
 
     autoLayout TopBottom
-    style * {
-      color secondary
+
+
+    style customer {
+      color green
+      icon none
     }
-    style cloud {
-      opacity 40%
+
+    style amazon.* {
+      color amber
+    }
+    style cloud.ui, cloud.next {
+      opacity 20%
       color muted
+      border solid
     }
   }
 
