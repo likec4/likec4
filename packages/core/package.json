@@ -33,8 +33,6 @@
     "!**/__snapshots__/*",
     "!**/*.map"
   ],
-  "types": "./dist/index.d.mts",
-  "module": "./dist/index.mjs",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -108,7 +106,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "dependencies": {
     "mdast-util-from-markdown": "^2.0.2",

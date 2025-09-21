@@ -30,8 +30,8 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "type": "module",
-  "types": "./dist/types/index.d.ts",
-  "module": "./dist/types/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "module": "dist/types/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": {

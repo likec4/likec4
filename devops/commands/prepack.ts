@@ -64,6 +64,14 @@ function resolveExports(exports: PackageJson.Exports): null | SubModuleExport {
   }
 }
 
+function cutPrefix(submodule: SubModuleExport): SubModuleExport {
+  const cut = (v: string) => v.startsWith('./') ? v.slice(2) : v
+  return {
+    types: cut(submodule.types),
+    ...(submodule.module && { module: cut(submodule.module) }),
+  }
+}
+
 export async function loadPrepackGitignore(): Promise<{ gitignore: GitignoreState; prepackIgnored: string[] }> {
   let gitignore: GitignoreState
   if (fs.existsSync('.gitignore')) {
@@ -154,9 +162,11 @@ export default defineCommand({
       echo(chalk.dim('  types:  ') + resolved.types)
       echo(chalk.dim('  module: ') + resolved.module)
 
-      if (!hasSubObject(packageJson.publishConfig ?? {}, resolved)) {
+      const cutted = cutPrefix(resolved)
+
+      if (!hasSubObject(packageJson.publishConfig ?? {}, cutted)) {
         echo(chalk.red.dim('  not in publishConfig'))
-        if (!hasSubObject(packageJson, resolved)) {
+        if (!hasSubObject(packageJson, cutted)) {
           echo(chalk.red('  not in package.json'))
           process.exit(1)
         } else {
