@@ -9,7 +9,7 @@ import type {
 } from '@likec4/core/types'
 import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { SetRequired } from 'type-fest'
+import type { CamelCasedProperties, SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 import type { Types } from './likec4diagram/types'
 
@@ -20,7 +20,7 @@ type RelationId = t.aux.RelationId
 type DeploymentFqn<A> = t.aux.DeploymentFqn<A>
 type StrictViewId<A> = t.aux.StrictViewId<A>
 
-export type NodeRenderers = Types.NodeRenderers
+export type NodeRenderers = Partial<CamelCasedProperties<Types.NodeRenderers>>
 
 export type { WhereOperator }
 
@@ -305,7 +305,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   /**
    * Override node renderers
    */
-  renderNodes?: Partial<NodeRenderers> | undefined
+  renderNodes?: NodeRenderers | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges
