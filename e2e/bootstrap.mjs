@@ -3,6 +3,7 @@
 import 'zx/globals'
 
 import { LikeC4 } from 'likec4'
+import { calcSequenceLayout } from 'likec4/model'
 
 echo(chalk.greenBright('\n-------- Generate React component --------'))
 await $({ stdio: 'inherit' })`likec4 codegen react ./src`
@@ -44,11 +45,12 @@ test('${view.id} - compare snapshots', async ({ page }) => {
   echo(`Generated tests/${view.id}-gen.spec.ts`)
 
   if (view.isDynamicView()) {
+    const { bounds } = calcSequenceLayout(view.$view)
     const content = `
 import { test, expect } from "@playwright/test";
 
 test('${view.id} - sequence - compare snapshots', async ({ page }) => {
-  await page.setViewportSize({ width: ${view.$view.bounds.width + 40}, height: ${view.$view.bounds.height + 40} });
+  await page.setViewportSize({ width: ${bounds.width + 40}, height: ${bounds.height + 40} });
   await page.goto('/export/${encodeURIComponent(view.id)}?padding=20&dynamic=sequence');
   await page.waitForSelector('.react-flow.initialized')
   await expect(page.getByTestId('export-page')).toHaveScreenshot('${view.id}-sequence.png', {
