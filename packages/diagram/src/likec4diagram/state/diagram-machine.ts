@@ -1413,7 +1413,6 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView; xyn
 /**
  * Here is a trick to reduce inference types
  */
-type InferredDiagramMachine = typeof _diagramMachine
-export interface DiagramMachine extends InferredDiagramMachine {}
-export const diagramMachine: DiagramMachine = _diagramMachine
-export interface DiagramMachineLogic extends ActorLogicFrom<DiagramMachine> {}
+type InferredDiagramMachine = ActorLogicFrom<typeof _diagramMachine>
+export interface DiagramMachineLogic extends InferredDiagramMachine {}
+export const diagramMachine: DiagramMachineLogic = _diagramMachine

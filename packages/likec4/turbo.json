@@ -57,7 +57,7 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "__app__/**"

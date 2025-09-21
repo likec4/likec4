@@ -36,12 +36,10 @@ export async function bundleReact() {
     build: {
       emptyOutDir: false,
       outDir,
-      chunkSizeWarningLimit: 2000,
+      target: 'esnext',
       cssCodeSplit: true,
-      cssMinify: true,
       minify: true,
       sourcemap: false,
-      assetsInlineLimit: 2_000_000,
       lib: {
         entry: {
           index: 'react/index.ts',

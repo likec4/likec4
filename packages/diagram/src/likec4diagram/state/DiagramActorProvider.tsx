@@ -15,7 +15,7 @@ import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPadding } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
-import { type DiagramMachine, diagramMachine } from './diagram-machine'
+import { type DiagramMachineLogic, diagramMachine } from './diagram-machine'
 import { syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import type { DiagramActorRef, DiagramActorSnapshot } from './types'
 
@@ -44,7 +44,7 @@ export function DiagramActorProvider({
   const { handlersRef } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const machineRef = useRef<DiagramMachine | null>(null)
+  const machineRef = useRef<DiagramMachineLogic | null>(null)
   if (!machineRef.current) {
     machineRef.current = diagramMachine.provide({
       actors: {
