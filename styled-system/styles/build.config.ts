@@ -18,6 +18,7 @@ export default defineBuildConfig({
   hooks: {
     async 'build:before'(ctx) {
       await spawn('pnpm', ['generate'])
+      // mock entry file for module resolution
       if (!existsSync('dist/types/index.mjs')) {
         try {
           await writeFile('dist/types/index.mjs', 'export {}')
