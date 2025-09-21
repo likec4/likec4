@@ -4,9 +4,6 @@
   "include": [],
   "references": [
     {
-      "path": "./apps/playground/"
-    },
-    {
       "path": "./packages/config/",
     },
     {
@@ -44,9 +41,6 @@
     },
     {
       "path": "./styled-system/styles/"
-    },
-    {
-      "path": "./devops/"
     }
   ]
 }
