@@ -17,7 +17,10 @@ export default defineBuildConfig({
   },
   hooks: {
     async 'build:before'(ctx) {
-      await spawn('pnpm', ['generate'])
+      await spawn('panda', ['codegen'], {
+        stdio: 'inherit',
+        preferLocal: true,
+      })
       // mock entry file for module resolution
       if (!existsSync('dist/types/index.mjs')) {
         try {

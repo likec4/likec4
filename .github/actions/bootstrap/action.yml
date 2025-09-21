@@ -20,7 +20,7 @@ runs:
       with:
         cache-prefix: turbo_cache_
 
-    - run: pnpm install
+    - run: pnpm install --prefer-offline
       shell: sh
       env:
         HUSKY: "0"
