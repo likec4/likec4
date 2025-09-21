@@ -4,6 +4,7 @@ react/**
 !react/tsconfig.json
 !react/*.ts
 react/*.d.ts
+!react/package.json
 icons/**
 dev/export/**
 dev/dist/**
@@ -16,6 +17,5 @@ vite-plugin-modules.d.ts
 config/package.json
 model/builder/package.json
 model/package.json
-react/package.json
 vite-plugin/package.json
 icons/all/package.json

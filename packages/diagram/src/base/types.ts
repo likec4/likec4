@@ -45,24 +45,26 @@ export type BaseNode<
   'type' | 'initialWidth' | 'initialHeight'
 >
 
-export type BaseEdge<
+export interface BaseEdge<
   Data extends Record<string, unknown> = Record<string, unknown>,
   EdgeType extends string = string,
-> = SetRequired<
-  Edge<Data & BaseEdgeData, EdgeType>,
-  'type' | 'data'
->
+> extends
+  SetRequired<
+    Edge<Data & BaseEdgeData, EdgeType>,
+    'type' | 'data'
+  >
+{}
 
 /**
  * ReactFlow Base Node properties with BaseNodeData at least
  */
-export type BaseNodeProps<N extends BaseNode = BaseNode> = NodeProps<N>
+export interface BaseNodeProps<N extends BaseNode = BaseNode> extends NodeProps<N> {}
 export type BaseNodePropsWithData<Data extends Record<string, unknown>> = BaseNodeProps<BaseNode<Data>>
 
 /**
  * ReactFlow Base Edge properties with BaseEdgeData at least
  */
-export type BaseEdgeProps<E extends BaseEdge = BaseEdge> = EdgeProps<E>
+export interface BaseEdgeProps<E extends BaseEdge = BaseEdge> extends EdgeProps<E> {}
 export type BaseEdgePropsWithData<Data extends Record<string, unknown>> = BaseEdgeProps<BaseEdge<Data>>
 
 type WithDimmed = { data: { dimmed?: Base.Dimmed } }

@@ -6,7 +6,7 @@ import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
 import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
-import { useLikeC4Styles } from './likec4model'
+import { useLikeC4Styles } from './hooks/useLikeC4Styles'
 
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
 

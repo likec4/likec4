@@ -1,16 +1,14 @@
 export {
+  LikeC4Diagram,
   LikeC4ModelProvider,
   LikeC4ProjectsProvider,
   LikeC4View,
   ReactLikeC4,
-  ViewNotFound,
-} from '@likec4/diagram/bundle'
+  ShadowRoot,
+} from '@likec4/diagram'
+
 export type {
   ChangeEvent,
-  CustomNodes,
-  DiagramActorEvent,
-  DiagramApi,
-  DiagramContext,
   ElementIconRenderer,
   EnabledFeatures,
   LikeC4BrowserProps,
@@ -19,6 +17,7 @@ export type {
   LikeC4ModelProviderProps,
   LikeC4ProjectsProviderProps,
   LikeC4ViewProps,
+  NodeRenderers,
   OnCanvasClick,
   OnChange,
   OnEdgeClick,
@@ -34,8 +33,22 @@ export type {
 export {
   useCurrentViewId,
   useCurrentViewModel,
+  useDiagram,
+  useDiagramContext,
   useEnabledFeatures,
   useLikeC4Model,
+  useLikeC4ProjectId,
+  useLikeC4Projects,
+  useLikeC4Specification,
   useLikeC4Styles,
   useLikeC4ViewModel,
-} from '@likec4/diagram/bundle'
+  useOnDiagramEvent,
+  useUpdateEffect,
+} from '@likec4/diagram'
+
+export {
+  type base,
+  builtins,
+  custom,
+  primitives,
+} from '@likec4/diagram'

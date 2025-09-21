@@ -4,6 +4,16 @@
     "//"
   ],
   "tasks": {
+    "build:bundle": {
+      "dependsOn": [
+        "@likec4/core#build",
+        "@likec4/styles#build"
+      ],
+      "outputs": [
+        "bundle/**"
+      ],
+      "outputLogs": "new-only"
+    },
     "build:dist": {
       "dependsOn": [
         "@likec4/core#build",
@@ -13,16 +23,6 @@
         "dist/**",
         "*.css",
         "panda.buildinfo.json"
-      ],
-      "outputLogs": "new-only"
-    },
-    "build:bundle": {
-      "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/styles#build"
-      ],
-      "outputs": [
-        "bundle/**"
       ],
       "outputLogs": "new-only"
     },

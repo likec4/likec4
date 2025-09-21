@@ -30,16 +30,16 @@ import {
   useState,
 } from 'react'
 import { clamp, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
-import { MarkdownBlock } from '../../base/primitives'
+import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
+import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { useLikeC4Model } from '../../likec4model'
-import type { DiagramContext } from '../../state/types'
-import { findDiagramEdge, findDiagramNode } from '../../state/utils'
 import { roundDpr } from '../../utils'
+import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
 import * as styles from './styles.css'
 
@@ -496,7 +496,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <MarkdownBlock value={r.description} fontSize={'sm'} />
+            <Markdown value={r.description} fontSize={'sm'} />
           </Box>
         </>
       )}

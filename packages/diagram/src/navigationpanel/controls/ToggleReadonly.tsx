@@ -3,8 +3,8 @@ import { hstack } from '@likec4/styles/patterns'
 import { UnstyledButton } from '@mantine/core'
 import { IconLock, IconLockOpen2 } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
+import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
-import type { DiagramContext } from '../../state/types'
 
 const selector = (state: DiagramContext) => ({
   visible: state.features.enableReadOnly !== true,

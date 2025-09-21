@@ -16,19 +16,21 @@ import { type DependencyList, useCallback, useEffect, useMemo, useRef } from 're
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
-import type { Types } from '../likec4diagram/types'
-import type { AlignmentMode } from '../state/aligners'
+import type { AlignmentMode } from '../likec4diagram/state/aligners'
 import type {
   DiagramActorEvent,
   DiagramActorRef,
   DiagramActorSnapshot,
   DiagramContext,
   DiagramEmittedEvents,
-} from '../state/types'
-import { findDiagramEdge, findDiagramNode } from '../state/utils'
+} from '../likec4diagram/state/types'
+import { findDiagramEdge, findDiagramNode } from '../likec4diagram/state/utils'
+import type { Types } from '../likec4diagram/types'
 import { useDiagramActorRef } from './safeContext'
 
 export { useDiagramActorRef }
+
+export type { DiagramContext }
 
 export interface DiagramApi {
   readonly actor: DiagramActorRef

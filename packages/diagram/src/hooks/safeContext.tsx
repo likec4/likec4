@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
-import type { DiagramActorRef } from '../state/types'
+import type { DiagramActorRef } from '../likec4diagram/state/types'
 
 /**
- * To improve experience with HMR, we use `createSafeContext` as a boundary for hoooks
+ * To improve experience with HMR, we move context to separate files and use as a boundary for hoooks
  */
 const DiagramActorSafeContext = createContext<DiagramActorRef>(null as any)
 DiagramActorSafeContext.displayName = 'DiagramActorSafeContext'

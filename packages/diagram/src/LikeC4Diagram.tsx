@@ -17,15 +17,21 @@ import { useId } from './hooks/useId'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
+import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
-import { DiagramActorProvider } from './state/DiagramActorProvider'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
   & LikeC4DiagramProperties<A>
   & LikeC4DiagramEventHandlers<A>
 >
 
+/**
+ * Low-level component to display LikeC4 view
+ * Expects CSS to be injected
+ *
+ * Use {@link ReactLikeC4} or {@link LikeC4View} for ready-to-use component
+ */
 export function LikeC4Diagram<A extends Any = Any>({
   onCanvasClick,
   onCanvasContextMenu,

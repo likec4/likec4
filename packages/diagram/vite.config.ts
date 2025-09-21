@@ -36,7 +36,7 @@ const defaultConfig = defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   resolve: {
-    conditions: ['sources'],
+    // conditions: ['sources'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
@@ -72,9 +72,6 @@ const defaultConfig = defineConfig({
     rollupOptions: {
       input: [
         'src/index.ts',
-        'src/bundle/index.ts',
-        'src/bundle/custom.ts',
-        'src/custom/index.ts',
         'src/styles.css',
         'src/styles-font.css',
         'src/styles-min.css',
@@ -130,6 +127,7 @@ const bundleConfig = defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
+  logLevel: 'info',
   resolve: {
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
@@ -152,8 +150,7 @@ const bundleConfig = defineConfig({
     target: 'esnext',
     lib: {
       entry: {
-        index: 'src/bundle/index.ts',
-        custom: 'src/bundle/custom.ts',
+        index: 'src/index.ts',
       },
       formats: ['es'],
       fileName(_format, entryName) {
@@ -173,7 +170,6 @@ const bundleConfig = defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
-        /@xyflow\/\.*/,
         /@likec4\/core.*/,
         '@emotion/is-prop-valid', // dev-only import from motion
       ],
@@ -189,6 +185,28 @@ const bundleConfig = defineConfig({
   },
   plugins: [
     react(),
+    // dts({
+    //   staticImport: true,
+    //   tsconfigPath: 'tsconfig.src.json',
+    //   rollupTypes: true,
+    //   outDir: 'dist',
+    //   strictOutput: false,
+    //   bundledPackages: [
+    //     '@react-hookz/web',
+    //   ],
+    //   compilerOptions: {
+    //     customConditions: [],
+    //     noCheck: true,
+    //     declarationMap: false,
+    //   },
+    //   afterBuild(emittedFiles) {
+    //     for (let [file, content] of emittedFiles) {
+    //       file = path.relative(path.resolve('dist'), file)
+    //       const to = path.resolve('bundle', file)
+    //       writeFileSync(to, content)
+    //     }
+    //   },
+    // }),
   ],
 })
 

@@ -7,13 +7,15 @@ import { useEffect, useState } from 'react'
 
 import type { DiagramView } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
-import { MarkdownBlock } from '@likec4/diagram/custom'
+import { primitives } from '@likec4/diagram'
 import { Box, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { randomInteger } from 'remeda'
 import { pageTitle } from '../../const'
 import { useLikeC4Views } from '../../hooks'
 import * as css from './index.css'
+
+const Markdown = primitives.Markdown
 
 export const Route = createFileRoute('/_single/single-index')({
   component: RouteComponent,
@@ -73,7 +75,7 @@ function ViewCard({ view }: { view: DiagramView }) {
         <Text fw={500}>{view.title ?? view.id}</Text>
       </Group>
 
-      <MarkdownBlock
+      <Markdown
         value={RichText.from(view.description)}
         textScale={0.75}
         emptyText="No description"

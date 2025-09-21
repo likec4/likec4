@@ -1,5 +1,5 @@
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
-import { ElementActionButtons } from '../../../base/primitives'
+import { ElementActionButtons } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { useDiagram } from '../../../hooks/useDiagram'

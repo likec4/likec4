@@ -1,7 +1,7 @@
-import { LikeC4Model } from '@likec4/core/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import type { aux } from '@likec4/core/types'
 import { type PropsWithChildren } from 'react'
-import { LikeC4ModelContext } from './likec4model/LikeC4ModelContext'
+import { LikeC4ModelContext } from './context/LikeC4ModelContext'
 
 export interface LikeC4ModelProviderProps<A extends aux.Any = aux.Unknown> {
   likec4model: LikeC4Model<A>

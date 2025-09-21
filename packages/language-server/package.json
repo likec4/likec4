@@ -90,7 +90,7 @@
     "dev": "run-p \"watch:*\"",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf dist contrib lib src/generated src/generated-lib",
+    "clean": "likec4ops clean contrib src/generated src/generated-lib",
     "test": "vitest run --no-isolate",
     "test-dbg": "vitest run --no-isolate -t formating",
     "vitest:ui": "vitest --no-isolate --ui",

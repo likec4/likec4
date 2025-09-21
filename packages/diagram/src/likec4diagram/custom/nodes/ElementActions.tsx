@@ -1,7 +1,7 @@
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
-import { ElementActionButtons } from '../../../base/primitives'
+import { ElementActionButtons } from '../../../base-primitives'
 import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'

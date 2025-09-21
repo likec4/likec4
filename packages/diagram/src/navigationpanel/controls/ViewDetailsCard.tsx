@@ -11,7 +11,7 @@ import {
 import { IconId, IconLink } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { useState } from 'react'
-import { ElementTag, MarkdownBlock } from '../../base/primitives'
+import { ElementTag, Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
@@ -194,7 +194,7 @@ const ViewDetailsCardDropdown = ({
       {description.nonEmpty && (
         <section>
           <SectionHeader>Description</SectionHeader>
-          <MarkdownBlock
+          <Markdown
             value={description}
             fontSize="sm"
             emptyText="No description"

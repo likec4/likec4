@@ -1,5 +1,5 @@
 import { getSmoothStepPath } from '@xyflow/system'
-import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base/primitives'
+import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base-primitives'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
