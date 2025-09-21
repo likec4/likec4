@@ -72,6 +72,8 @@ const defaultConfig = defineConfig({
     rollupOptions: {
       input: [
         'src/index.ts',
+        'src/custom/index.ts',
+        'src/hooks/index.ts',
         'src/styles.css',
         'src/styles-font.css',
         'src/styles-min.css',
