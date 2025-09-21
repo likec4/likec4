@@ -8,13 +8,14 @@ import { deepEqual, shallowEqual } from 'fast-equals'
 import type { PropsWithChildren } from 'react'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
+import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import type { DiagramContext } from './state/types'
 import type { Types } from './types'
@@ -26,13 +27,27 @@ const edgeTypes = {
 }
 
 const builtinNodes = {
-  element: BuiltinNodes.ElementNode,
-  deployment: BuiltinNodes.DeploymentNode,
-  'compound-element': BuiltinNodes.CompoundElementNode,
-  'compound-deployment': BuiltinNodes.CompoundDeploymentNode,
-  'view-group': BuiltinNodes.ViewGroupNode,
-  'seq-actor': BuiltinNodes.SequenceActorNode,
-  'seq-parallel': BuiltinNodes.SequenceParallelArea,
+  element: memoNode(BuiltinNodes.ElementNode),
+  deployment: memoNode(BuiltinNodes.DeploymentNode),
+  'compound-element': memoNode(BuiltinNodes.CompoundElementNode),
+  'compound-deployment': memoNode(BuiltinNodes.CompoundDeploymentNode),
+  'view-group': memoNode(BuiltinNodes.ViewGroupNode),
+  'seq-actor': memoNode(BuiltinNodes.SequenceActorNode),
+  'seq-parallel': memoNode(BuiltinNodes.SequenceParallelArea),
+}
+function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
+  if (!nodeTypes || isEmpty(nodeTypes)) {
+    return builtinNodes
+  }
+  return {
+    element: nodeTypes.element ?? builtinNodes.element,
+    deployment: nodeTypes.deployment ?? builtinNodes.deployment,
+    'compound-element': nodeTypes.compoundElement ?? builtinNodes['compound-element'],
+    'compound-deployment': nodeTypes.compoundDeployment ?? builtinNodes['compound-deployment'],
+    'view-group': nodeTypes.viewGroup ?? builtinNodes['view-group'],
+    'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
+    'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
+  }
 }
 
 const selectXYProps = (ctx: DiagramContext) => ({
@@ -67,15 +82,6 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
 
 type Any = aux.Any
 type Unknown = aux.UnknownLayouted
-
-// type NP = {
-//   id: string
-//   type: string
-//   data: {
-//     id: NodeId
-//     viewId: string
-//   }
-// }
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<
@@ -147,19 +153,7 @@ export function LikeC4DiagramXYFlow({
       diagram.send({ type: 'xyflow.resized' })
     }),
     nodeTypes = useCustomCompareMemo(
-      (): Types.NodeRenderers => {
-        return renderNodes && !isEmpty(renderNodes)
-          ? {
-            element: renderNodes.element ?? BuiltinNodes.ElementNode,
-            deployment: renderNodes.deployment ?? BuiltinNodes.DeploymentNode,
-            'compound-element': renderNodes.compoundElement ?? BuiltinNodes.CompoundElementNode,
-            'compound-deployment': renderNodes.compoundDeployment ?? BuiltinNodes.CompoundDeploymentNode,
-            'view-group': renderNodes.viewGroup ?? BuiltinNodes.ViewGroupNode,
-            'seq-actor': renderNodes.seqActor ?? BuiltinNodes.SequenceActorNode,
-            'seq-parallel': renderNodes.seqParallel ?? BuiltinNodes.SequenceParallelArea,
-          }
-          : builtinNodes
-      },
+      () => prepareNodeTypes(renderNodes),
       [renderNodes],
       depsShallowEqual,
     )

@@ -16,7 +16,6 @@ import {
 } from '@likec4/core'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import { createXYFlowNodeNandles } from '../../utils/xyflow'
 import type { Types } from '../types'
 
 export function diagramToXY(opts: {
@@ -108,7 +107,6 @@ export function diagramToXY(opts: {
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
-      handles: createXYFlowNodeNandles(node),
       ...(parent && {
         parentId: ns + parent.id,
       }),

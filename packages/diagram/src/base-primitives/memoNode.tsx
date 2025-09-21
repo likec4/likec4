@@ -17,13 +17,23 @@ function nodePropsEqual<P extends BaseNodeProps>(prev: Readonly<P>, next: Readon
   )
 }
 
+const isMemoized = Symbol.for('isMemoized')
 export function memoNode<P extends BaseNodeProps>(
   Node: FunctionComponent<P>,
 ): FunctionComponent<P> {
+  if (Node.hasOwnProperty(isMemoized)) {
+    return Node
+  }
   const NodeComponent = memo(
     Node,
     nodePropsEqual,
   )
   NodeComponent.displayName = 'Node'
+  // To avoid memoizing the same node multiple times
+  Object.defineProperty(NodeComponent, isMemoized, {
+    enumerable: false,
+    writable: false,
+    value: true,
+  })
   return NodeComponent
 }
