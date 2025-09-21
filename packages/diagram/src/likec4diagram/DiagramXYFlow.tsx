@@ -6,12 +6,14 @@ import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { PropsWithChildren } from 'react'
+import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
+import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import type { DiagramContext } from './state/types'
@@ -23,7 +25,7 @@ const edgeTypes = {
   'seq-step': BuiltinEdges.SequenceStepEdge,
 }
 
-const builtinNodeTypes = {
+const builtinNodes = {
   element: BuiltinNodes.ElementNode,
   deployment: BuiltinNodes.DeploymentNode,
   'compound-element': BuiltinNodes.CompoundElementNode,
@@ -146,15 +148,20 @@ export function LikeC4DiagramXYFlow({
     }),
     nodeTypes = useCustomCompareMemo(
       (): Types.NodeRenderers => {
-        return renderNodes
+        return renderNodes && !isEmpty(renderNodes)
           ? {
-            ...builtinNodeTypes,
-            ...renderNodes,
+            element: renderNodes.element ?? BuiltinNodes.ElementNode,
+            deployment: renderNodes.deployment ?? BuiltinNodes.DeploymentNode,
+            'compound-element': renderNodes.compoundElement ?? BuiltinNodes.CompoundElementNode,
+            'compound-deployment': renderNodes.compoundDeployment ?? BuiltinNodes.CompoundDeploymentNode,
+            'view-group': renderNodes.viewGroup ?? BuiltinNodes.ViewGroupNode,
+            'seq-actor': renderNodes.seqActor ?? BuiltinNodes.SequenceActorNode,
+            'seq-parallel': renderNodes.seqParallel ?? BuiltinNodes.SequenceParallelArea,
           }
-          : builtinNodeTypes
+          : builtinNodes
       },
       [renderNodes],
-      shallowEqual,
+      depsShallowEqual,
     )
 
   useUpdateEffect(() => {
