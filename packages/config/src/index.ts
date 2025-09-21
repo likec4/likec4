@@ -3,6 +3,7 @@ export type {
   GeneratorFnContext,
   GeneratorFnParams,
   LikeC4ProjectConfig,
+  LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
 } from './schema'
 

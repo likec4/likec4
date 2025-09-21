@@ -69,7 +69,8 @@
     "bundle-require": "catalog:utils",
     "defu": "catalog:utils",
     "json5": "catalog:utils",
-    "zod": "catalog:utils"
+    "zod": "catalog:utils",
+    "type-fest": "catalog:utils"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",

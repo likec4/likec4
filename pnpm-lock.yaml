@@ -793,6 +793,9 @@ importers:
       json5:
         specifier: catalog:utils
         version: 2.2.3
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
