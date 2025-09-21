@@ -9,7 +9,7 @@ import {
   ElementShape,
   ElementTags,
   ElementTitle,
-} from '../../../base/primitives'
+} from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
@@ -56,6 +56,9 @@ export function CompoundDetailsButtonWithHandler(
   )
 }
 
+/**
+ * Renders an element node.
+ */
 export function ElementNode(props: Types.NodeProps<'element'>) {
   const { enableElementTags, enableReadOnly } = useEnabledFeatures()
   return (

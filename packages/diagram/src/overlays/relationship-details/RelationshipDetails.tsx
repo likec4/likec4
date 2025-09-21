@@ -10,7 +10,7 @@ import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useMemo, useRef } from 'react'
 import { find, isTruthy } from 'remeda'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 import {

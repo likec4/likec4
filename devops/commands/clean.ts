@@ -9,25 +9,20 @@ export default defineCommand({
     description: 'Clean workspace',
   },
   args: {
-    cwd: {
-      type: 'string',
-      description: 'change working directory',
-      required: false,
-    },
+    // cwd: {
+    //   type: 'string',
+    //   description: 'change working directory',
+    //   required: false,
+    // },
   },
   async run({ args }) {
     process.env.FORCE_COLOR = '1'
+
     $.preferLocal = true
     $.verbose = true
+    $.cwd = process.cwd()
 
     echo(chalk.green('⚙️ cleaning workspace...'))
-
-    if (args.cwd && args.cwd !== '.') {
-      $.cwd = resolve('.', args.cwd)
-    } else {
-      $.cwd = resolve('.')
-    }
-    echo(`  ${chalk.gray('cwd')} ${$.cwd}`)
 
     const toclean = [
       'lib',
@@ -37,6 +32,7 @@ export default defineCommand({
       'node_modules/.cache',
       'node_modules/.vite',
       'tsconfig.tsbuildinfo',
+      ...args._,
     ]
 
     for (const subj of toclean) {
@@ -48,7 +44,7 @@ export default defineCommand({
     }
 
     // Clean tgz
-    for (const file of fs.readdirSync('.')) {
+    for (const file of fs.readdirSync($.cwd)) {
       if (file.endsWith('.tgz')) {
         echo(`${chalk.gray('rm')} ${chalk.dim(file)}`)
         await fs.rm(file, { force: true })

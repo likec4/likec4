@@ -23,7 +23,7 @@ import { IconLayoutDashboard } from '@tabler/icons-react'
 import { forwardRef, useState } from 'react'
 import { useDiagramEventHandlers } from '../../../context'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
-import type { DiagramContext } from '../../../state/types'
+import type { DiagramContext } from '../../state/types'
 import { ActionIcon, Tooltip } from './_shared'
 import * as css from './styles.css'
 

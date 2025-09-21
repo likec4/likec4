@@ -3,7 +3,6 @@ import { hstack } from '@likec4/styles/patterns'
 import {
   Popover,
   PopoverTarget,
-  Portal,
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
@@ -11,9 +10,9 @@ import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
 import { useDiagramActorRef } from '../hooks/safeContext'
+import { useCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
-import { useCurrentViewModel } from '../likec4model/useCurrentViewModel'
 import { type NavigationPanelActorRef, navigationPanelActorLogic } from './actor'
 import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
@@ -25,7 +24,6 @@ import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 export const NavigationPanel = memo(() => {
   const diagramActor = useDiagramActorRef()
   const viewModel = useCurrentViewModel()
-  const { portalProps } = useMantinePortalProps()
 
   const actorRef = useActorRef(
     navigationPanelActorLogic,
@@ -49,39 +47,36 @@ export const NavigationPanel = memo(() => {
   }, [viewModel])
 
   return (
-    <Portal {...portalProps}>
-      <VStack
-        className="react-flow__panel"
-        css={{
-          alignItems: 'flex-start',
-          pointerEvents: 'none',
-
-          top: '0',
-          left: '0',
-          margin: '0',
-          width: '100%',
-          gap: 'xxs',
+    <VStack
+      css={{
+        alignItems: 'flex-start',
+        pointerEvents: 'none',
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        margin: '0',
+        width: '100%',
+        gap: 'xxs',
+        maxWidth: [
+          'calc(100vw)',
+          'calc(100cqw)',
+        ],
+        '@/sm': {
+          margin: 'xs',
+          gap: 'xs',
+          width: 'max-content',
           maxWidth: [
-            'calc(100vw)',
-            'calc(100cqw)',
+            'calc(100vw - 2 * {spacing.md})',
+            'calc(100cqw - 2 * {spacing.md})',
           ],
-          '@/sm': {
-            margin: 'xs',
-            gap: 'xs',
-            width: 'max-content',
-            maxWidth: [
-              'calc(100vw - 2 * {spacing.md})',
-              'calc(100cqw - 2 * {spacing.md})',
-            ],
-          },
-        }}>
-        <NavigationPanelActorContextProvider value={actorRef}>
-          <NavigationPanelImpl actor={actorRef} />
-          <EditorPanel />
-          <WalkthroughPanel />
-        </NavigationPanelActorContextProvider>
-      </VStack>
-    </Portal>
+        },
+      }}>
+      <NavigationPanelActorContextProvider value={actorRef}>
+        <NavigationPanelImpl actor={actorRef} />
+        <EditorPanel />
+        <WalkthroughPanel />
+      </NavigationPanelActorContextProvider>
+    </VStack>
   )
 })
 NavigationPanel.displayName = 'NavigationPanel'

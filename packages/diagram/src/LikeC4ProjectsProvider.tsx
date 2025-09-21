@@ -3,7 +3,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useContext } from 'react'
-import { LikeC4ProjectsContext } from './likec4model/LikeC4ProjectsContext'
+import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 
 export interface LikeC4ProjectsProviderProps {
   /**

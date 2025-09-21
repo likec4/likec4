@@ -1,13 +1,13 @@
 import {
   CompoundNodeContainer,
   CompoundTitle,
-  customNode,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
   ElementTitle,
-} from '../../../base/primitives'
+  memoNode,
+} from '../../../base-primitives'
 import { ElementActions } from './ElementActions'
 
 import { Handle } from '@xyflow/react'
@@ -31,7 +31,7 @@ const ElementDetailsButtonWithHandler = (props: BaseNodePropsWithData<Relationsh
   )
 }
 
-export const ElementNode = customNode<RelationshipDetailsTypes.NodeProps<'element'>>((props) => {
+export const ElementNode = memoNode<RelationshipDetailsTypes.NodeProps<'element'>>((props) => {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
@@ -45,7 +45,7 @@ export const ElementNode = customNode<RelationshipDetailsTypes.NodeProps<'elemen
   )
 })
 
-export const CompoundNode = customNode<RelationshipDetailsTypes.NodeProps<'compound'>>(
+export const CompoundNode = memoNode<RelationshipDetailsTypes.NodeProps<'compound'>>(
   (props) => {
     return (
       <CompoundNodeContainer nodeProps={props}>

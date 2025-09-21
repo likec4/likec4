@@ -2,7 +2,10 @@ import { defineRecipe } from '@pandacss/dev'
 
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
-  jsx: ['MarkdownBlock'],
+  jsx: [
+    'MarkdownBlock',
+    'Markdown',
+  ],
   description: 'Block with Markdown content',
   base: {
     '--text-fz': '1rem',

@@ -17,7 +17,6 @@
   "files": [
     "dist",
     "bundle",
-    "src",
     "**/package.json",
     "panda.buildinfo.json",
     "!**/*.spec.*",
@@ -40,6 +39,14 @@
         "default": "./dist/index.js"
       }
     },
+    "./hooks": {
+      "sources": "./src/hooks/index.ts",
+      "default": {
+        "types": "./dist/hooks/index.d.ts",
+        "import": "./dist/hooks/index.js",
+        "default": "./dist/hooks/index.js"
+      }
+    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -48,18 +55,10 @@
         "default": "./dist/custom/index.js"
       }
     },
-    "./bundle/custom": {
-      "sources": "./src/bundle/custom.ts",
-      "default": {
-        "types": "./dist/bundle/custom.d.ts",
-        "import": "./bundle/custom.js",
-        "default": "./bundle/custom.js"
-      }
-    },
     "./bundle": {
-      "sources": "./src/bundle/index.ts",
+      "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/bundle/index.d.ts",
+        "types": "./dist/index.d.ts",
         "import": "./bundle/index.js",
         "default": "./bundle/index.js"
       }
@@ -69,9 +68,7 @@
     "./styles-font.css": "./dist/styles-font.css",
     "./styles-xyflow.css": "./dist/styles-xyflow.css",
     "./styles.css": "./dist/styles.css",
-    "./package.json": "./package.json",
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*"
+    "./package.json": "./package.json"
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",

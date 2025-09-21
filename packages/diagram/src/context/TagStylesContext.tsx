@@ -2,7 +2,7 @@ import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
-import { useLikeC4Specification } from '../likec4model/useLikeC4Model'
+import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 

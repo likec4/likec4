@@ -2,8 +2,8 @@ import type { DeployedInstanceModel, DeploymentNodeModel, NodeModel } from '@lik
 import type { aux, NodeId, ViewId } from '@likec4/core/types'
 import type { FC, FunctionComponent } from 'react'
 import type { BaseNodePropsWithData } from '../base/types'
+import { useLikeC4ViewModel } from '../hooks/useLikeC4Model'
 import type { Types } from '../likec4diagram/types'
-import { useLikeC4ViewModel } from '../likec4model/useLikeC4Model'
 
 type Any = aux.Any
 type Unknown = aux.UnknownLayouted

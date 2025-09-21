@@ -3,11 +3,11 @@ import { Button, Card, CardSection, Group, Spoiler, Stack, Text } from '@mantine
 import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
-import { MarkdownBlock } from '../../../base/primitives'
+import { Markdown } from '../../../base-primitives'
 import { Link } from '../../../components/Link'
+import { useOptionalCurrentViewModel } from '../../../hooks/useCurrentViewModel'
 import { useDiagramContext } from '../../../hooks/useDiagram'
-import { useOptionalCurrentViewModel } from '../../../likec4model/useCurrentViewModel'
-import type { DiagramContext } from '../../../state/types'
+import type { DiagramContext } from '../../state/types'
 import * as styles from './DiagramTitlePanel.css'
 
 function selector(context: DiagramContext) {
@@ -142,7 +142,7 @@ export function DiagramTitlePanel() {
                         hide
                       </Button>
                     }>
-                    <MarkdownBlock
+                    <Markdown
                       className={styles.description}
                       textScale={0.9}
                       value={view.description} />

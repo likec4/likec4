@@ -46,7 +46,7 @@ import {
   tap,
   unique,
 } from 'remeda'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipsBrowserTypes } from './_types'
 
 /**

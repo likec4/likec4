@@ -9,7 +9,7 @@ import {
   ElementShape,
   ElementTags,
   ElementTitle,
-} from '../../../base/primitives'
+} from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'

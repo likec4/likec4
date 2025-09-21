@@ -112,22 +112,18 @@ export default defineCommand({
     description: 'Create folders with "package.json"s, for compatibility with different Module Resolution strategies',
   },
   args: {
-    cwd: {
-      type: 'string',
-      description: 'change working directory',
-      required: false,
-    },
+    // cwd: {
+    //   type: 'string',
+    //   description: 'change working directory',
+    //   required: false,
+    // },
   },
   async run({ args }) {
     process.env.FORCE_COLOR = '1'
     $.preferLocal = true
     $.verbose = true
 
-    if (args.cwd && args.cwd !== '.') {
-      $.cwd = path.resolve('.', args.cwd)
-    } else {
-      $.cwd = process.cwd()
-    }
+    $.cwd = process.cwd()
 
     echo(chalk.green('⚙️ cwd') + ` ${$.cwd}`)
     echo(chalk.green('read package.json'))
@@ -210,6 +206,8 @@ export default defineCommand({
       // Try to read the existing package.json
       if (fs.existsSync(submodulePackageJson) && !prepackIgnored.includes(submodulePackageJson)) {
         echo(chalk.red('  package.json exists, but not in .gitignore'))
+        echo(chalk.red('  Skip it and continue, you can change it manually\n'))
+        continue
       }
 
       await fs.mkdirp(submoduleName)

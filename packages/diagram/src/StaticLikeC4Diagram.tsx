@@ -23,6 +23,12 @@ export type StaticLikeC4DiagramProps<A extends Any> = Pick<
   | 'where'
 >
 
+/**
+ * StaticLikeC4Diagram is a component that renders a LikeC4 diagram in a static way.
+ * (Export/Embed)
+ *
+ * @internal
+ */
 export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
   view,
   fitView = true,
