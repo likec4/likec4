@@ -27,8 +27,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.ts",
-    "module": "./dist/index.js"
+    "types": "dist/index.d.ts",
+    "module": "dist/index.js"
   },
   "exports": {
     ".": {

@@ -74,8 +74,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.ts",
-    "module": "./dist/index.mjs"
+    "types": "dist/index.d.ts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",

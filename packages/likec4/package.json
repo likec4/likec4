@@ -98,8 +98,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.mts",
-    "module": "./dist/index.mjs"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
