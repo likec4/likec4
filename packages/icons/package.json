@@ -12,8 +12,8 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
-  "types": "all.d.ts",
-  "module": "all.js",
+  "types": "./all.d.ts",
+  "module": "./all.js",
   "sideEffects": false,
   "exports": {
     ".": {
