@@ -12,20 +12,19 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
-  "types": "./tech/index.d.ts",
-  "module": "./tech/index.js",
+  "types": "all.d.ts",
+  "module": "all.js",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./tech/index.d.ts",
-      "default": "./tech/index.js"
+      "types": "./all.d.ts",
+      "default": "./all.js"
     },
     "./all": {
       "types": "./all.d.ts",
       "default": "./all.js"
     },
     "./aws": {
-      "types": "./aws/index.d.ts",
       "default": "./aws/index.js"
     },
     "./aws/*": {
@@ -33,7 +32,6 @@
       "default": "./aws/*.js"
     },
     "./tech": {
-      "types": "./tech/index.d.ts",
       "default": "./tech/index.js"
     },
     "./tech/*": {
@@ -41,7 +39,6 @@
       "default": "./tech/*.js"
     },
     "./gcp": {
-      "types": "./gcp/index.d.ts",
       "default": "./gcp/index.js"
     },
     "./gcp/*": {
@@ -49,7 +46,6 @@
       "default": "./gcp/*.js"
     },
     "./azure": {
-      "types": "./azure/index.d.ts",
       "default": "./azure/index.js"
     },
     "./azure/*": {
@@ -67,7 +63,9 @@
   },
   "scripts": {
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
+    "clean": "likec4ops clean aws azure gcp tech .tmp",
     "generate": "pnpm node scripts/generate.mjs",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz"
@@ -79,6 +77,7 @@
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@likec4/devops": "workspace:*",
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:utils",
     "picomatch": "catalog:utils",

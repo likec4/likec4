@@ -1118,6 +1118,9 @@ importers:
 
   packages/icons:
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@types/react':
         specifier: 19.1.13
         version: 19.1.13
