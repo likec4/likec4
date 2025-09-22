@@ -28,6 +28,7 @@
     "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "release": "shipjs prepare",
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
+    "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",

@@ -2,6 +2,11 @@
   // This file is used by VSCode task runner
   "files": [],
   "include": [],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "./node_modules/**/*",
+  ],
   "references": [
     {
       "path": "./packages/config/",

@@ -60,7 +60,6 @@ function RouteComponent() {
         pannable
         controls={false}
         fitViewPadding={'32px'}
-        showDiagramTitle
         showNavigationButtons
         enableFocusMode
         enableDynamicViewWalkthrough

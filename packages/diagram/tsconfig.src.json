@@ -3,6 +3,9 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "tsBuildInfoFile": "lib/.tsbuildinfo",
+    "customConditions": [
+      "sources"
+    ],
     "composite": true,
     "rootDir": "src",
     "types": [
@@ -18,6 +21,9 @@
   "references": [
     {
       "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../../styled-system/styles/tsconfig.json"
     }
   ]
 }

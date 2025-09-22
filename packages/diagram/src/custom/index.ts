@@ -50,7 +50,7 @@ export {
 export { Overlay } from '../overlays/overlay/Overlay'
 export type { OverlayProps } from '../overlays/overlay/Overlay'
 
-export { PortalDiagramContainer } from '../components/PortalDiagramContainer'
+export { PortalToContainer } from '../components/PortalToContainer'
 
 export { ShadowRoot } from '../shadowroot/ShadowRoot'
 

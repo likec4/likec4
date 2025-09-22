@@ -15,5 +15,15 @@
   },
   "include": [
     "*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "dist"
+  ],
+  "references": [
+    {
+      "path": "../preset/tsconfig.json"
+    }
   ]
 }
