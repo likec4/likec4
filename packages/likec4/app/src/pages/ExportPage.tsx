@@ -3,6 +3,7 @@ import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useSearch } from '@tanstack/react-router'
+import { toBlob } from 'html-to-image'
 import { useEffect, useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
 
@@ -13,7 +14,6 @@ async function downloadAsPng({
   pngFilename: string
   viewport: HTMLElement
 }) {
-  const { toBlob } = await import('html-to-image')
   try {
     const blob = await toBlob(viewport, {
       backgroundColor: 'transparent',
