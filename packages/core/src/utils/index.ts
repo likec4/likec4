@@ -32,9 +32,11 @@ export {
 export { getOrCreate } from './getOrCreate'
 
 export {
+  hasProp,
   isNonEmptyArray,
   isString,
 } from './guards'
+
 export {
   ifilter,
   ifind,
