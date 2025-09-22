@@ -2,13 +2,13 @@
 import { type LikeC4ViewId, LikeC4View } from 'likec4:react/likec4-theme'
 interface Props {
   viewId: LikeC4ViewId
-  fitViewPadding?: number
+  fitViewPadding?: string
   interactive?: boolean
 }
 const {
   viewId,
   interactive = true,
-  fitViewPadding = 0.05,
+  fitViewPadding = '8px',
 } = Astro.props
 ---
 
@@ -16,15 +16,15 @@ const {
   className="likec4-theme-view"
   viewId={viewId}
   fitViewPadding={fitViewPadding}
-  enableElementDetails={false}
-  browser={interactive ? {
-    enableFocusMode: false,
-    enableElementDetails: false,
-    enableRelationshipDetails: false,
-    enableRelationshipBrowser: false,
-    enableSearch: false,
-    showDiagramTitle: false,
-  } : false}
+  browser={interactive
+    ? {
+      enableFocusMode: false,
+      enableElementDetails: false,
+      enableRelationshipDetails: false,
+      enableRelationshipBrowser: false,
+      enableSearch: false,
+    }
+    : false}
   client:only="react"
 >
 </LikeC4View>

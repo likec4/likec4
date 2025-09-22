@@ -1,10 +1,10 @@
-import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedCallback } from '@react-hookz/web'
 import { useSearch } from '@tanstack/react-router'
 import { toBlob } from 'html-to-image'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
 
 async function downloadAsPng({
@@ -68,30 +68,15 @@ export function ExportPage() {
 
   useTransparentBackground()
 
-  useEffect(
-    () => {
-      if (!viewportRef.current) {
-        return
-      }
-      const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
-      viewports.forEach((el) => {
-        el.style.transform = 'translate(' + padding + 'px, ' + padding + 'px)'
-      })
-    },
-  )
-
-  useDebouncedEffect(
+  const downloadDiagram = useDebouncedCallback(
     () => {
       const viewport = viewportRef.current
-      if (!download || !viewport || !diagram) {
+      if (!download || !viewport || !diagram || downloadedRef.current) {
         return
       }
       const loadingOverlay = loadingOverlayRef.current
       if (loadingOverlay) {
         loadingOverlay.style.display = 'none'
-      }
-      if (downloadedRef.current) {
-        return
       }
       downloadedRef.current = true
       downloadAsPng({
@@ -136,15 +121,34 @@ export function ExportPage() {
           height: '100%',
         }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
-      <StaticLikeC4Diagram
+      <LikeC4Diagram
         view={diagram}
-        fitView={false}
-        fitViewPadding={0}
+        fitView
+        fitViewPadding={`${padding}px`}
         background={'transparent'}
         reduceGraphics={false}
         dynamicViewVariant={dynamic}
-        initialWidth={diagram.bounds.width}
-        initialHeight={diagram.bounds.height} />
+        initialWidth={width}
+        initialHeight={height}
+        readonly
+        className={'likec4-static-view'}
+        pannable={false}
+        zoomable={false}
+        controls={false}
+        showNotations={false}
+        enableElementDetails={false}
+        enableRelationshipDetails={false}
+        enableRelationshipBrowser={false}
+        enableDynamicViewWalkthrough={false}
+        enableFocusMode={false}
+        enableSearch={false}
+        nodesSelectable={false}
+        nodesDraggable={false}
+        enableElementTags={false}
+        onInitialized={() => {
+          download && downloadDiagram()
+        }}
+      />
     </Box>
   )
 }
