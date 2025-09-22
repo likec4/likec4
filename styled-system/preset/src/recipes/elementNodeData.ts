@@ -4,7 +4,7 @@ import { iconSize } from '../const'
 const parts = defineParts({
   root: { selector: '&' },
   icon: { selector: '& [data-likec4-icon]' },
-  content: { selector: '& [data-likec4-node-content]' },
+  content: { selector: '& .likec4-element-node-content' },
   title: { selector: '& [data-likec4-node-title]' },
   description: { selector: '& [data-likec4-node-description]' },
   technology: { selector: '& [data-likec4-node-technology]' },
@@ -82,7 +82,7 @@ export const elementNodeData = defineRecipe({
         [textAlign]: 'left',
         gap: '4',
 
-        '& [data-likec4-node-content]': {
+        '& .likec4-element-node-content': {
           minWidth: `calc(50% + var(${iconSize}))`,
           alignItems: 'flex-start',
         },
@@ -131,7 +131,7 @@ export const elementNodeData = defineRecipe({
       flexWrap: 'nowrap',
       overflow: 'hidden',
       gap: '2',
-      '&:has([data-likec4-node-description], [data-likec4-node-technology])': {
+      '&:has([data-likec4-node-description]):has([data-likec4-node-technology])': {
         gap: '1.5',
       },
     },

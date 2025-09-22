@@ -63,8 +63,11 @@ const Content = forwardRef<HTMLDivElement, DetailedHTMLProps<HTMLAttributes<HTML
 ) => (
   <div
     {...props}
+    className={cx(
+      className,
+      'likec4-element-node-content',
+    )}
     ref={ref}
-    data-likec4-node-content=""
   />
 ))
 
