@@ -1,6 +1,9 @@
 {
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
+    "customConditions": [
+      "sources"
+    ],
     "lib": [
       "DOM",
       "DOM.Iterable",

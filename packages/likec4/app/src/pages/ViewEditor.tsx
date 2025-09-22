@@ -34,7 +34,7 @@ export function ViewEditor() {
       readonly={false}
       zoomable
       pannable
-      controls="next"
+      controls
       nodesDraggable
       experimentalEdgeEditing
       fitViewPadding={{

@@ -42,7 +42,7 @@ export function ViewReact() {
       readonly
       zoomable
       pannable
-      controls="next"
+      controls
       fitViewPadding={{
         top: '70px',
         bottom: '16px',
@@ -86,6 +86,7 @@ function DiagramListener() {
           ...current,
           dynamic: dynamicViewVariant,
         }),
+        viewTransition: false,
       })
     }
   }, [dynamicViewVariant])

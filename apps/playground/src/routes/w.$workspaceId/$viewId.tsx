@@ -93,7 +93,7 @@ function WorkspaceDiagramPage() {
           <LikeC4Diagram
             view={_diagram}
             readonly={false}
-            controls="next"
+            controls
             fitView
             fitViewPadding={{
               top: '70px',
