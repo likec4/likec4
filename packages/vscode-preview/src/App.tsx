@@ -82,7 +82,7 @@ function Initialized() {
             right: '10px',
           }}
           readonly={false}
-          controls="next"
+          controls
           nodesDraggable={nodesDraggable}
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode
