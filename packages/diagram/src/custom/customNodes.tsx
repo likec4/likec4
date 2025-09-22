@@ -60,7 +60,7 @@ function customDiagramNode<
  *   elementNode,
  *   ElementNodeContainer,
  *   ElementShape,
- *   ElementTitle,
+ *   ElementData,
  *   ElementActions,
  *   ElementDetailsButtonWithHandler,
  *   IfEnabled,
@@ -73,7 +73,7 @@ function customDiagramNode<
  * const CustomElementNode = elementNode(({ nodeProps, nodeModel }) => (
  *   <ElementNodeContainer nodeProps={nodeProps}>
  *     <ElementShape {...nodeProps} />
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <IfEnabled feature="ElementTags">
  *       <ElementTags {...nodeProps} />
  *     </IfEnabled>
@@ -124,7 +124,7 @@ export type ElementNodeProps<A extends Any> = {
  *   deploymentNode,
  *   ElementNodeContainer,
  *   ElementShape,
- *   ElementTitle,
+ *   ElementData,
  *   DeploymentElementActions,
  *   ElementDetailsButtonWithHandler,
  *   IfNotReadOnly,
@@ -135,7 +135,7 @@ export type ElementNodeProps<A extends Any> = {
  * const CustomDeploymentNode = deploymentNode(({ nodeProps, nodeModel }) => (
  *   <ElementNodeContainer nodeProps={nodeProps}>
  *     <ElementShape {...nodeProps} />
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <DeploymentElementActions
  *       {...nodeProps}
  *       extraButtons={[

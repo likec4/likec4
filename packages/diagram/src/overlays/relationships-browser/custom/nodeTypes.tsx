@@ -4,11 +4,11 @@ import {
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
+  ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
-  ElementTitle,
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
@@ -36,7 +36,7 @@ export function ElementNode(props: RelationshipsBrowserTypes.NodeProps<'element'
   return (
     <ElementNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />

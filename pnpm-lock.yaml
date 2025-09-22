@@ -1411,12 +1411,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.7.0(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
-      '@xyflow/react':
-        specifier: catalog:xyflow
-        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@xyflow/system':
-        specifier: catalog:xyflow
-        version: 0.0.68
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1532,6 +1526,12 @@ importers:
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
+      '@xyflow/react':
+        specifier: catalog:xyflow
+        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@xyflow/system':
+        specifier: catalog:xyflow
+        version: 0.0.68
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)

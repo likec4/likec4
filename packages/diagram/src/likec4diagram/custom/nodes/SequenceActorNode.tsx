@@ -3,7 +3,7 @@ import { Box } from '@likec4/styles/jsx'
 import { Handle, Position } from '@xyflow/react'
 import { isTruthy } from 'remeda'
 import type { SetNonNullable } from 'type-fest'
-import { ElementNodeContainer, ElementShape, ElementTitle } from '../../../base-primitives'
+import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
 import { type Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { ElementDetailsButtonWithHandler } from './nodes'
@@ -133,7 +133,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
       }
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
-        <ElementTitle {...props} />
+        <ElementData {...props} />
         {hasModelFqn(data) && (
           <>
             <ElementActions {...props} data={data} />

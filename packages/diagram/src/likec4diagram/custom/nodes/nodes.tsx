@@ -4,11 +4,11 @@ import {
   CompoundNodeContainer,
   CompoundTitle,
   DefaultHandles,
+  ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
-  ElementTitle,
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
@@ -64,7 +64,7 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementActions {...props} />
       <ElementDetailsButtonWithHandler {...props} />
@@ -79,7 +79,7 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <DeploymentElementActions {...props} />
       <ElementDetailsButtonWithHandler {...props} />

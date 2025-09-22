@@ -1,11 +1,29 @@
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
+import { IconBolt } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import type { BaseNodeData } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
+
+const container = hstack({
+  position: 'absolute',
+  zIndex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  _smallZoom: {
+    display: 'none',
+  },
+})
+
+const actionButtons = hstack({
+  gap: '1.5',
+  justifyContent: 'center',
+  alignItems: 'center',
+})
 
 type ElementActionButtonsProps = {
   selected?: boolean
@@ -13,29 +31,31 @@ type ElementActionButtonsProps = {
   buttons: ElementActionButtons.Item[]
 }
 
-const container = css({
-  position: 'absolute',
-  zIndex: 1,
-  top: `[calc(100% - 30px)]`,
-  transform: 'translateX(-50%)',
-  left: `[50%]`,
-  width: 'auto',
-  minHeight: '30px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  _smallZoom: {
-    display: 'none',
-  },
-  // zIndex: 10,
-})
-
-const actionButtons = css({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-})
-
+/**
+ * Center-Bottom bar with action buttons. Intended to be used inside "leaf" nodes.
+ *
+ * @param selected - Whether the node is selected
+ * @param data - Node data
+ * @param buttons - Action buttons
+ *
+ * @example
+ * ```tsx
+ * <ElementActionButtons
+ *   {...nodeProps}
+ *   Buttons={[
+ *     {
+ *       key: 'action1',
+ *       icon: <IconZoomScan />,
+ *       onClick: (e) => {
+ *         e.stopPropagation()
+ *         console.log('action1 clicked')
+ *       },
+ *     },
+ *     //...
+ *   ]}
+ * />
+ * ```
+ */
 export function ElementActionButtons({
   selected = false,
   data: {
@@ -48,14 +68,21 @@ export function ElementActionButtons({
     return null
   }
   return (
-    <Box className={container}>
+    <Box
+      className={container}
+      style={{
+        top: `calc(100% - 30px)`,
+        transform: 'translateX(-50%)',
+        left: `50%`,
+        width: 'auto',
+        minHeight: 30,
+      }}>
       <m.div
         layoutRoot
         key={`${id}-action-buttons`}
         initial={false}
         style={{
           originY: 0,
-          gap: 6,
         }}
         animate={{
           opacity: (isHovered || selected) ? 1 : 0.75,
@@ -80,7 +107,7 @@ export function ElementActionButtons({
             // Otherwise node receives click event and is selected
             onDoubleClick={stopPropagation}
           >
-            {button.icon}
+            {button.icon || <IconBolt />}
           </ActionIcon>
         ))}
       </m.div>
@@ -91,7 +118,7 @@ export function ElementActionButtons({
 export namespace ElementActionButtons {
   export type Item = {
     key?: string
-    icon: React.ReactNode
+    icon?: React.ReactNode
     onClick: (e: React.MouseEvent) => void
   }
 }

@@ -1,11 +1,11 @@
 import {
   CompoundNodeContainer,
   CompoundTitle,
+  ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
-  ElementTitle,
   memoNode,
 } from '../../../base-primitives'
 import { ElementActions } from './ElementActions'
@@ -36,7 +36,7 @@ export const ElementNode = memoNode<RelationshipDetailsTypes.NodeProps<'element'
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />

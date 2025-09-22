@@ -130,7 +130,7 @@
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
     "dev:examples": "pnpm cli:serve ../../examples",
     "cli": "tsx --conditions=sources src/cli/index.ts",
-    "cli:serve": "BUNDLE_REQUIRE_PRESERVE=1 tsx watch --conditions=sources --exclude=\"./../../examples/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
+    "cli:serve": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
     "cli:build": "pnpm cli build -o dev/dist dev",
     "cli:preview": "pnpm cli preview -o dev/dist dev",
     "cli:export": "pnpm cli export png -o dev/export dev",
@@ -152,8 +152,6 @@
     "std-env": "catalog:utils",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
@@ -189,6 +187,8 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.33",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.21",
     "clsx": "catalog:react",
     "conf": "^13.1.0",
