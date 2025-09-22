@@ -16,7 +16,10 @@
     },
   },
   "include": [
-    "./react/**/*.ts",
+    "react/*.ts",
+  ],
+  "exclude": [
+    "**/*.d.ts",
   ],
   "references": [
     {
