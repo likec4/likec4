@@ -3,13 +3,14 @@ import { useCustomCompareEffect, useRafEffect } from '@react-hookz/web'
 import { useActorRef, useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, useMemo, useRef } from 'react'
+import { type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import type { Subscription } from 'xstate'
 import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { CurrentViewModelContext } from '../../context/LikeC4ModelContext'
 import { DiagramActorContextProvider } from '../../hooks/safeContext'
-import { useOnDiagramEvent } from '../../hooks/useDiagram'
+import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPadding } from '../../LikeC4Diagram.props'
@@ -154,13 +155,40 @@ function CurrentViewModelProvider({ children, actorRef }: PropsWithChildren<{ ac
 }
 
 function DiagramActorEventListener({ actorRef }: { actorRef: DiagramActorRef }) {
+  const diagram = useDiagram()
+
   const {
     onNavigateTo,
     onOpenSource,
+    handlersRef,
   } = useDiagramEventHandlers()
 
   useOnDiagramEvent('openSource', ({ params }) => onOpenSource?.(params))
   useOnDiagramEvent('navigateTo', ({ viewId }) => onNavigateTo?.(viewId))
+
+  const wasEmitted = useRef(false)
+
+  useEffect(() => {
+    if (wasEmitted.current) return
+
+    let subscription: Subscription | null = actorRef.on(
+      'initialized',
+      ({ instance: xyflow }) => {
+        try {
+          handlersRef.current.onInitialized?.({ diagram, xyflow })
+        } catch (error) {
+          console.error(error)
+        }
+        wasEmitted.current = true
+        subscription?.unsubscribe()
+        subscription = null
+      },
+    )
+
+    return () => {
+      subscription?.unsubscribe()
+    }
+  }, [actorRef, diagram])
 
   return null
 }

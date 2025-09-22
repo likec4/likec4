@@ -189,6 +189,7 @@ export type Events =
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
 export type EmittedEvents =
+  | { type: 'initialized'; instance: XYFlowInstance }
   | { type: 'navigateTo'; viewId: ViewId }
   | { type: 'openSource'; params: OpenSourceParams }
   | { type: 'paneClick' }
@@ -686,6 +687,13 @@ const _diagramMachine = setup({
         xyedge: event.edge,
       }
     }),
+    'emit: initialized': emit(({ context }) => {
+      invariant(context.xyflow, 'XYFlow instance not found')
+      return {
+        type: 'initialized',
+        instance: context.xyflow,
+      }
+    }),
     'assign: dynamicViewVariant': assign(({ event }) => {
       assertEvent(event, 'switch.dynamicViewVariant')
       return {
@@ -772,6 +780,7 @@ const _diagramMachine = setup({
             },
           })),
           'startSyncLayout',
+          'emit: initialized',
         ],
         target: 'ready',
       }, {

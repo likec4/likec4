@@ -11,6 +11,8 @@ import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { CamelCasedProperties, SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
+import type { DiagramApi } from './hooks/useDiagram'
+import type { XYFlowInstance } from './hooks/useXYFlow'
 import type { Types } from './likec4diagram/types'
 
 type Any = t.aux.Any
@@ -342,4 +344,6 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
   onBurgerMenuClick?: null | undefined | (() => void)
 
   onOpenSource?: null | undefined | ((params: OpenSourceParams<A>) => void)
+
+  onInitialized?: null | undefined | ((params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void)
 }

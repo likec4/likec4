@@ -93,7 +93,7 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   fitViewPadding?: ViewPadding | undefined
 
   /**
-   * Show back/forward navigation buttons
+   * Show back/forward navigation buttons in controls panel
    * @default false
    */
   showNavigationButtons?: undefined | boolean
@@ -137,17 +137,17 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   enableElementTags?: boolean | undefined
 
   /**
-   * Experimental feature to browse relationships
-   *
-   * @default enableElementDetails
-   */
-  enableRelationshipBrowser?: boolean | undefined
-
-  /**
    * Display dropdown with details on relationship's label click
-   * @default enableRelationshipBrowser
+   * @default false
    */
   enableRelationshipDetails?: boolean | undefined
+
+  /**
+   * Allow popup to browse relationships
+   *
+   * @default enableRelationshipDetails
+   */
+  enableRelationshipBrowser?: boolean | undefined
 
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
@@ -313,10 +313,10 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   showNavigationButtons = false,
   showNotations,
   enableFocusMode = false,
-  enableDynamicViewWalkthrough = enableFocusMode,
+  enableDynamicViewWalkthrough = false,
   enableElementDetails = false,
-  enableRelationshipBrowser = enableElementDetails,
-  enableRelationshipDetails = enableRelationshipBrowser,
+  enableRelationshipDetails = false,
+  enableRelationshipBrowser = enableRelationshipDetails,
   reduceGraphics = 'auto',
   mantineTheme,
   styleNonce,

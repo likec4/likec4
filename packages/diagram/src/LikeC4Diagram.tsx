@@ -44,6 +44,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onNodeContextMenu,
   onOpenSource,
   onBurgerMenuClick,
+  onInitialized,
   view,
   className,
   readonly = true,
@@ -137,6 +138,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 onNodeContextMenu,
                 onOpenSource,
                 onBurgerMenuClick,
+                onInitialized,
               }}>
               <LikeC4Styles id={id} />
               <TagStylesProvider rootSelector={`#${id}`}>

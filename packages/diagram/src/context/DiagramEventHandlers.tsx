@@ -1,43 +1,48 @@
 import type { aux } from '@likec4/core/types'
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
-import { isFunction, mapToObj } from 'remeda'
+import { isFunction, keys, mapToObj } from 'remeda'
 import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type RequiredOrNull<T> = {
   [P in keyof T]-?: NonNullable<T[P]> | null
 }
 
-const HandlerNames = [
-  'onBurgerMenuClick',
-  'onNavigateTo',
-  'onOpenSource',
-  'onCanvasClick',
-  'onCanvasContextMenu',
-  'onEdgeClick',
-  'onEdgeContextMenu',
-  'onNodeClick',
-  'onNodeContextMenu',
-  'onChange',
-  'onCanvasDblClick',
-] as const
+const defaultHandlers: Required<LikeC4DiagramEventHandlers> = {
+  onChange: null,
+  onNavigateTo: null,
+  onNodeClick: null,
+  onNodeContextMenu: null,
+  onCanvasContextMenu: null,
+  onEdgeClick: null,
+  onEdgeContextMenu: null,
+  onCanvasClick: null,
+  onCanvasDblClick: null,
+  onBurgerMenuClick: null,
+  onOpenSource: null,
+  onInitialized: null,
+}
 
-export type DiagramEventHandlersContext = RequiredOrNull<LikeC4DiagramEventHandlers<aux.Any>> & {
-  handlersRef: RefObject<LikeC4DiagramEventHandlers<aux.Any>>
+const HandlerNames = keys(defaultHandlers)
+
+export type DiagramEventHandlersContext = RequiredOrNull<LikeC4DiagramEventHandlers> & {
+  handlersRef: RefObject<Required<LikeC4DiagramEventHandlers>>
 }
 
 const DiagramEventHandlersReactContext = createContext<DiagramEventHandlersContext>({
   ...mapToObj(HandlerNames, (name) => [name, null]),
   handlersRef: {
-    current: {},
+    current: defaultHandlers,
   },
 })
 
 export function DiagramEventHandlers<A extends aux.Any>({
   handlers,
   children,
-}: PropsWithChildren<{ handlers: LikeC4DiagramEventHandlers<A> }>) {
-  const handlersRef = useSyncedRef(handlers)
+}: PropsWithChildren<{ handlers: Required<LikeC4DiagramEventHandlers<A>> }>) {
+  const handlersRef = useSyncedRef(
+    handlers as Required<LikeC4DiagramEventHandlers>,
+  )
 
   const deps = HandlerNames.map((name) => isFunction(handlers[name]))
 
