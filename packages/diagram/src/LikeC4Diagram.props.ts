@@ -39,33 +39,6 @@ export type ElementIconRendererProps = {
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
-export type OnNavigateTo<A extends Any = Any> = (
-  to: ViewId<A>,
-  // These fields present if navigateTo triggered by a node click
-  event?: ReactMouseEvent,
-  element?: DiagramNodeWithNavigate<A>,
-) => void
-
-export type OnNodeClick<A extends Any = Any> = (
-  node: DiagramNode<A>,
-  event: ReactMouseEvent,
-) => void
-
-export type OnEdgeClick<A extends Any = Any> = (
-  edge: DiagramEdge<A>,
-  event: ReactMouseEvent,
-) => void
-
-/**
- * On pane/canvas click (not on any node or edge)
- */
-export type OnCanvasClick = (event: ReactMouseEvent) => void
-
-export type ChangeEvent = {
-  change: ViewChange
-}
-export type OnChange = (event: ChangeEvent) => void
-
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export type OverrideReactFlowProps = Pick<
@@ -329,6 +302,40 @@ export type OpenSourceParams<A extends Any = Any> =
     view: StrictViewId<A>
   }
 
+/**
+ * "Go to source" action
+ */
+export type OnOpenSource<A extends Any = Any> = (params: OpenSourceParams<A>) => void
+
+export type OnNavigateTo<A extends Any = Any> = (
+  to: ViewId<A>,
+  // These fields present if navigateTo triggered by a node click
+  event?: ReactMouseEvent,
+  element?: DiagramNodeWithNavigate<A>,
+) => void
+
+export type OnNodeClick<A extends Any = Any> = (
+  node: DiagramNode<A>,
+  event: ReactMouseEvent,
+) => void
+
+export type OnEdgeClick<A extends Any = Any> = (
+  edge: DiagramEdge<A>,
+  event: ReactMouseEvent,
+) => void
+
+/**
+ * On pane/canvas click (not on any node or edge)
+ */
+export type OnCanvasClick = (event: ReactMouseEvent) => void
+
+export type ChangeEvent = {
+  change: ViewChange
+}
+export type OnChange = (event: ChangeEvent) => void
+
+export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
+
 export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
@@ -343,7 +350,7 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
   // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
 
-  onOpenSource?: null | undefined | ((params: OpenSourceParams<A>) => void)
+  onOpenSource?: OnOpenSource<A> | null | undefined
 
-  onInitialized?: null | undefined | ((params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void)
+  onInitialized?: OnInitialized | null | undefined
 }

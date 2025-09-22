@@ -6,8 +6,7 @@
   "tasks": {
     "build:bundle": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "bundle/**"
@@ -16,8 +15,7 @@
     },
     "build:dist": {
       "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "dist/**",

@@ -6,6 +6,23 @@ export {
   type LikeC4DiagramProps,
 } from './LikeC4Diagram'
 
+export type {
+  ElementIconRenderer,
+  ElementIconRendererProps,
+  LikeC4ColorScheme,
+  NodeRenderers,
+  OnCanvasClick,
+  OnChange,
+  OnEdgeClick,
+  OnInitialized,
+  OnNavigateTo,
+  OnNodeClick,
+  OnOpenSource,
+  PaddingWithUnit,
+  ViewPadding,
+  WhereOperator,
+} from './LikeC4Diagram.props'
+
 export {
   LikeC4ModelProvider,
   type LikeC4ModelProviderProps,
@@ -42,12 +59,6 @@ export {
 export { useLikeC4Styles } from './hooks/useLikeC4Styles'
 
 export { useUpdateEffect } from './hooks/useUpdateEffect'
-
-export type {
-  ElementIconRenderer,
-  ElementIconRendererProps,
-  NodeRenderers,
-} from './LikeC4Diagram.props'
 
 export type { Types } from './likec4diagram/types'
 

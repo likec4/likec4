@@ -31,6 +31,7 @@ export type {
   OpenSourceParams,
   PaddingUnit,
   PaddingWithUnit,
+  ViewPadding,
   WhereOperator,
 } from '../LikeC4Diagram.props'
 

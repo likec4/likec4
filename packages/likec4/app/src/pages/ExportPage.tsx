@@ -102,10 +102,14 @@ export function ExportPage() {
       ref={viewportRef}
       data-testid="export-page"
       css={{
+        position: 'fixed',
+        top: '0',
+        left: '0',
         padding: '0',
         margin: '0',
         background: 'transparent',
         overflow: 'hidden',
+        zIndex: 2,
       }}
       style={dynamic !== 'sequence'
         ? {
@@ -123,13 +127,15 @@ export function ExportPage() {
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <LikeC4Diagram
         view={diagram}
-        fitView
-        fitViewPadding={`${padding}px`}
+        fitView={false}
+        fitViewPadding={0}
         background={'transparent'}
         reduceGraphics={false}
         dynamicViewVariant={dynamic}
-        initialWidth={width}
-        initialHeight={height}
+        // {...(dynamic !== 'sequence' && {
+        //   initialWidth: width,
+        //   initialHeight: height,
+        // })}
         readonly
         className={'likec4-static-view'}
         pannable={false}
@@ -146,6 +152,14 @@ export function ExportPage() {
         nodesDraggable={false}
         enableElementTags={false}
         onInitialized={() => {
+          if (!viewportRef.current) {
+            console.error('viewportRef.current is null')
+            return
+          }
+          const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
+          viewports.forEach((el) => {
+            el.style.transform = 'translate(' + padding + 'px, ' + padding + 'px)'
+          })
           download && downloadDiagram()
         }}
       />
