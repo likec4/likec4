@@ -1,5 +1,4 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
-import type { aux } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
@@ -79,9 +78,6 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport ?? null, b.viewport ?? null)
-
-type Any = aux.Any
-type Unknown = aux.UnknownLayouted
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<

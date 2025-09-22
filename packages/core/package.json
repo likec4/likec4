@@ -25,7 +25,6 @@
   },
   "files": [
     "dist",
-    "src",
     "**/package.json",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
@@ -100,8 +99,6 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {

@@ -1,43 +1,48 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type CSSProperties } from 'react'
+import type { Except } from 'type-fest'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
-import { type LikeC4DiagramProps, LikeC4Diagram } from './LikeC4Diagram'
+import { LikeC4Diagram } from './LikeC4Diagram'
+import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import type { LikeC4View } from './LikeC4View'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
 
-export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> = Omit<LikeC4DiagramProps<A>, 'view'> & {
-  viewId: t.aux.ViewId<A>
+export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
+  & {
+    viewId: t.aux.ViewId<A>
 
-  /**
-   * Keep aspect ratio of the diagram
-   *
-   * @default false
-   */
-  keepAspectRatio?: boolean | undefined
+    /**
+     * Keep aspect ratio of the diagram
+     *
+     * @default false
+     */
+    keepAspectRatio?: boolean | undefined
 
-  /**
-   * By default determined by the user's system preferences.
-   */
-  colorScheme?: 'light' | 'dark' | undefined
+    /**
+     * By default determined by the user's system preferences.
+     */
+    colorScheme?: 'light' | 'dark' | undefined
 
-  /**
-   * LikeC4 views are using 'IBM Plex Sans' font.
-   * By default, component injects the CSS to document head.
-   * Set to false if you want to handle the font yourself.
-   *
-   * @default true
-   */
-  injectFontCss?: boolean | undefined
+    /**
+     * LikeC4 views are using 'IBM Plex Sans' font.
+     * By default, component injects the CSS to document head.
+     * Set to false if you want to handle the font yourself.
+     *
+     * @default true
+     */
+    injectFontCss?: boolean | undefined
 
-  style?: CSSProperties | undefined
+    style?: CSSProperties | undefined
 
-  mantineTheme?: any
+    mantineTheme?: any
 
-  /** Function to generate nonce attribute added to all generated `<style />` tags */
-  styleNonce?: string | (() => string) | undefined
-}
+    /** Function to generate nonce attribute added to all generated `<style />` tags */
+    styleNonce?: string | (() => string) | undefined
+  }
+  & Except<LikeC4DiagramProperties<A>, 'view', { requireExactProps: true }>
+  & LikeC4DiagramEventHandlers<A>
 
 /**
  * Ready-to-use component to display embedded LikeC4 view, same as {@link LikeC4View}
@@ -47,6 +52,14 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> = Omit
  */
 export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   viewId,
+  className,
+  colorScheme,
+  injectFontCss = true,
+  keepAspectRatio,
+  showNotations,
+  style,
+  mantineTheme,
+  styleNonce,
   ...props
 }: ReactLikeC4Props<A>) {
   const likec4model = useOptionalLikeC4Model()
@@ -58,13 +71,13 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
       </ErrorMessage>
     )
   }
-  const view = likec4model.findView(viewId)
+  const view = likec4model.findView(viewId)?.$view
 
   if (!view) {
     return <ViewNotFound viewId={viewId} />
   }
 
-  if (!view.isDiagram()) {
+  if (view._stage !== 'layouted') {
     return (
       <ErrorMessage>
         LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
@@ -72,24 +85,6 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
     )
   }
 
-  return <ReactLikeC4Inner view={view.$view} {...props} />
-}
-
-type ReactLikeC4InnerProps<A extends t.aux.Any> = Omit<ReactLikeC4Props<A>, 'viewId'> & {
-  view: t.DiagramView<A>
-}
-function ReactLikeC4Inner<A extends t.aux.Any>({
-  className,
-  view,
-  colorScheme,
-  injectFontCss = true,
-  keepAspectRatio,
-  showNotations,
-  style,
-  mantineTheme,
-  styleNonce,
-  ...props
-}: ReactLikeC4InnerProps<A>) {
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
   showNotations ??= hasNotations
@@ -107,11 +102,10 @@ function ReactLikeC4Inner<A extends t.aux.Any>({
       )}
       style={style}>
       <LikeC4Diagram
-        view={view as any}
+        view={view}
         showNotations={showNotations}
         {...props}
       />
     </ShadowRoot>
   )
 }
-ReactLikeC4.displayName = 'ReactLikeC4'

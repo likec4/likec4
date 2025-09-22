@@ -1,15 +1,15 @@
 import type * as t from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { ActionIcon, Box } from '@mantine/core'
-import { shallowEqual, useCallbackRef } from '@mantine/hooks'
+import { useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import type { CSSProperties } from 'react'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { FramerMotionConfig } from './context/FramerMotionConfig'
-import { useLikeC4Model, useOptionalLikeC4Model } from './hooks/useLikeC4Model'
+import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type {
   ElementIconRenderer,
@@ -91,13 +91,6 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    * @see {@link ViewPadding}
    */
   fitViewPadding?: ViewPadding | undefined
-
-  /**
-   * Display diagram title / description
-   *
-   * @default false
-   */
-  showDiagramTitle?: boolean | undefined
 
   /**
    * Show back/forward navigation buttons
@@ -214,13 +207,6 @@ export interface LikeC4BrowserProps {
   controls?: boolean | undefined
 
   /**
-   * Display diagram title / description
-   *
-   * @default true
-   */
-  showDiagramTitle?: boolean | undefined
-
-  /**
    * Show back/forward navigation buttons
    * @default true
    */
@@ -315,40 +301,6 @@ const cssInteractive = css({
  */
 export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   viewId,
-  ...props
-}: LikeC4ViewProps<A>) {
-  const likec4model = useOptionalLikeC4Model()
-
-  if (!likec4model) {
-    return (
-      <ErrorMessage>
-        LikeC4Model not found. Make sure you provided LikeC4ModelProvider.
-      </ErrorMessage>
-    )
-  }
-
-  const view = likec4model.findView(viewId)
-
-  if (!view) {
-    return <ViewNotFound viewId={viewId} />
-  }
-
-  if (!view.isDiagram()) {
-    return (
-      <ErrorMessage>
-        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
-      </ErrorMessage>
-    )
-  }
-
-  return <LikeC4ViewInner view={view.$view} {...props} />
-}
-
-type LikeC4ViewInnerProps<A extends t.aux.Any> = Omit<LikeC4ViewProps<A>, 'viewId'> & {
-  view: t.DiagramView<A>
-}
-const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
-  view,
   className,
   pannable = false,
   zoomable = false,
@@ -358,7 +310,6 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
   controls = false,
   background = 'transparent',
   browser = true,
-  showDiagramTitle = false,
   showNavigationButtons = false,
   showNotations,
   enableFocusMode = false,
@@ -370,16 +321,37 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
   mantineTheme,
   styleNonce,
   style,
-  reactFlowProps = {},
+  reactFlowProps,
   renderNodes,
   ...props
-}) => {
-  const likec4model = useLikeC4Model()
+}: LikeC4ViewProps<A>) {
+  const likec4model = useOptionalLikeC4Model()
   const [browserViewId, onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
-
   const onNavigateToThisView = useCallbackRef(() => {
-    onNavigateTo(view.id)
+    onNavigateTo(viewId)
   })
+
+  if (!likec4model) {
+    return (
+      <ErrorMessage>
+        LikeC4Model not found. Make sure you provided LikeC4ModelProvider.
+      </ErrorMessage>
+    )
+  }
+
+  const view = likec4model.findView(viewId)?.$view
+
+  if (!view) {
+    return <ViewNotFound viewId={viewId} />
+  }
+
+  if (view._stage !== 'layouted') {
+    return (
+      <ErrorMessage>
+        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+      </ErrorMessage>
+    )
+  }
 
   const browserView = browserViewId ? likec4model.findView(browserViewId)?.$view : null
 
@@ -443,6 +415,8 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
           <Overlay openDelay={0} onClose={() => onNavigateTo(null)}>
             <LikeC4Diagram
               view={browserView}
+              pannable
+              zoomable
               background="dots"
               onNavigateTo={onNavigateTo}
               showNavigationButtons
@@ -478,5 +452,4 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
       </FramerMotionConfig>
     </ShadowRoot>
   )
-}, shallowEqual)
-LikeC4ViewInner.displayName = 'LikeC4ViewInner'
+}
