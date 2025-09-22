@@ -49,7 +49,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   readonly = true,
   controls = !readonly,
   fitView = true,
-  fitViewPadding = controls === 'next' ? FitViewPaddings.withControls : FitViewPaddings.default,
+  fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
   background = 'dots',

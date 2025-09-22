@@ -208,11 +208,10 @@ export interface LikeC4BrowserProps {
 
   /**
    * Show/hide panel with top left controls,
-   * - `next` - show navigation panel (Experimental)
    *
-   * @default `next`
+   * @default true
    */
-  controls?: boolean | 'next' | undefined
+  controls?: boolean | undefined
 
   /**
    * Display diagram title / description
@@ -455,7 +454,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
               enableRelationshipDetails
               enableSearch
               enableElementTags
-              controls="next"
+              controls
               readonly
               fitView
               {...props}

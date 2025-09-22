@@ -136,12 +136,11 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
    */
   readonly?: boolean | undefined
   /**
-   * Show/hide panel with top left controls,
-   * - `next` - Experimental navigation panel
+   * Show/hide panel with top left controls
    *
    * @default true if not readonly
    */
-  controls?: boolean | 'next' | undefined
+  controls?: boolean | undefined
   /**
    * If set, initial viewport will show all nodes & edges
    * @default true

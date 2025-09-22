@@ -9,14 +9,12 @@ import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { RelationshipPopover } from './relationship-popover/RelationshipPopover'
-import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
+import { NotationPanel } from './ui'
 
 export const LikeC4DiagramUI = memo(() => {
   const {
     enableControls,
-    enableViewTitle,
     enableNotations,
-    enableDynamicViewWalkthrough,
     enableSearch,
     enableRelationshipDetails,
   } = useEnabledFeatures()
@@ -26,21 +24,13 @@ export const LikeC4DiagramUI = memo(() => {
 
   return (
     <ErrorBoundary onReset={rerender}>
-      {enableControls === 'next'
-        ? (
-          <EnsureCurrentViewModel>
-            <NavigationPanel />
-          </EnsureCurrentViewModel>
-        )
-        : <Controls />}
+      {enableControls && (
+        <EnsureCurrentViewModel>
+          <NavigationPanel />
+        </EnsureCurrentViewModel>
+      )}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
-      {enableControls === true && (
-        <>
-          {enableViewTitle && <DiagramTitlePanel />}
-          {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
-        </>
-      )}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
       {enableRelationshipDetails && <RelationshipPopover />}
     </ErrorBoundary>
