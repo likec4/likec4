@@ -1,11 +1,11 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import { $, fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
 
 const rewriteRootSelector: PostcssPlugin = {
@@ -36,11 +36,10 @@ const defaultConfig = defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   resolve: {
-    // conditions: ['sources'],
+    conditions: ['sources'],
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
-      '@likec4/core': resolve('../core/src'),
     },
   },
   css: {
@@ -58,6 +57,7 @@ const defaultConfig = defineConfig({
     tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
   },
   build: {
+    outDir: 'dist',
     emptyOutDir: true,
     cssCodeSplit: true,
     cssMinify: true,
@@ -74,7 +74,6 @@ const defaultConfig = defineConfig({
       input: [
         'src/index.ts',
         'src/custom/index.ts',
-        'src/hooks/index.ts',
         'src/styles.css',
         'src/styles-font.css',
         'src/styles-min.css',
@@ -116,11 +115,28 @@ const defaultConfig = defineConfig({
     }),
     {
       name: 'ship-panda',
-      async buildEnd(err) {
+      async closeBundle(err) {
+        if (err) {
+          this.warn('skipped')
+          return
+        }
         this.info('shipping panda')
-        spawnSync('pnpm', ['panda', 'ship', '--outfile', './panda.buildinfo.json'], {
-          stdio: 'inherit',
-        })
+        await $({ stdio: 'inherit' })`pnpm panda ship --outfile ./panda.buildinfo.json`
+      },
+    },
+    {
+      name: 'move-stylesheets',
+      async closeBundle(err) {
+        if (err) {
+          this.warn('skipped')
+          return
+        }
+        for (const file of fs.readdirSync(resolve('dist'))) {
+          if (file.endsWith('.css')) {
+            this.info(`move ${file}`)
+            await fs.move(resolve('dist', file), resolve(file), { overwrite: true })
+          }
+        }
       },
     },
   ],
@@ -135,7 +151,6 @@ const bundleConfig = defineConfig({
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       'react-dom/server': resolve('src/bundle/react-dom-server-mock.ts'),
-      '@likec4/core': resolve('../core/src'),
     },
   },
   mode: 'production',

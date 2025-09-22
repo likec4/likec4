@@ -107,11 +107,8 @@ function relativeExports(
   }
 }
 
-function existCheck(path: string) {
-  if (fs.existsSync(path)) {
-    return 'exists'
-  }
-  return '❌ missing'
+function existLabel(exists: boolean) {
+  return exists ? chalk.dim('exists') : chalk.red('❌ missing')
 }
 
 export default defineCommand({
@@ -189,13 +186,14 @@ export default defineCommand({
       }
       const resolved = resolveExports(exports)
       if (!resolved) {
-        echo(chalk.red('skip invalid export') + ' ' + chalk.dim(key))
+        echo(chalk.cyan('skip'.padEnd(7)) + ' ' + chalk.dim(key))
+        echo(chalk.red(' ↳ invalid export, missing types or module'))
         continue
       }
       const submoduleName = key.slice(2)
       if (path.dirname(resolved.types) === $.cwd) {
         echo(chalk.cyan('skip'.padEnd(7)) + ' ' + chalk.dim(submoduleName))
-        echo(chalk.dim('  Submodule is in the current directory\n'))
+        echo(chalk.dim(' ↳ Submodule is in the current directory'))
         continue
       }
       const submodule = relativeExports(path.resolve(key), resolved)
@@ -205,12 +203,21 @@ export default defineCommand({
 
       const maxLength = Math.max(submodule.types.length, submodule.module?.length ?? 0) + 1
 
-      echo(chalk.dim('  types:  ') + submodule.types.padEnd(maxLength) + chalk.dim(existCheck(resolved.types)))
+      const typesExists = fs.existsSync(resolved.types)
+      echo(chalk.dim('  types:  ') + submodule.types.padEnd(maxLength) + existLabel(typesExists))
 
+      let moduleExists
       if (resolved.module && submodule.module) {
-        echo(chalk.dim('  module: ') + submodule.module.padEnd(maxLength) + chalk.dim(existCheck(resolved.module)))
+        moduleExists = fs.existsSync(resolved.module)
+        echo(chalk.dim('  module: ') + submodule.module.padEnd(maxLength) + existLabel(moduleExists))
       } else {
+        moduleExists = true
         echo(chalk.dim('  module: ') + chalk.red('undefined'))
+      }
+
+      if (!typesExists || !moduleExists) {
+        echo(chalk.red('  Fix missing files'))
+        process.exit(1)
       }
 
       // Try to read the existing package.json

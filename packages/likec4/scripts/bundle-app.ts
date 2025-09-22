@@ -72,6 +72,7 @@ export async function bundleApp() {
           './app/src/fonts.css',
           './app/src/style.css',
         ],
+        treeshake: 'recommended',
         output: {
           chunkFileNames: '[name].js',
           manualChunks: (id) => {

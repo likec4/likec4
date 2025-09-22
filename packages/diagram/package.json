@@ -18,6 +18,7 @@
     "dist",
     "bundle",
     "**/package.json",
+    "*.css",
     "panda.buildinfo.json",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
@@ -39,14 +40,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./hooks": {
-      "sources": "./src/hooks/index.ts",
-      "default": {
-        "types": "./dist/hooks/index.d.ts",
-        "import": "./dist/hooks/index.js",
-        "default": "./dist/hooks/index.js"
-      }
-    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -64,10 +57,10 @@
       }
     },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
-    "./styles-min.css": "./dist/styles-min.css",
-    "./styles-font.css": "./dist/styles-font.css",
-    "./styles-xyflow.css": "./dist/styles-xyflow.css",
-    "./styles.css": "./dist/styles.css",
+    "./styles-min.css": "./styles-min.css",
+    "./styles-font.css": "./styles-font.css",
+    "./styles-xyflow.css": "./styles-xyflow.css",
+    "./styles.css": "./styles.css",
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -144,6 +137,7 @@
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zx": "catalog:"
   }
 }

@@ -1084,6 +1084,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
 
   packages/generators:
     dependencies:
