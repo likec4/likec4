@@ -50,7 +50,6 @@ export function StaticLikeC4Diagram<A extends Any = UnknownLayouted>({
       zoomable={false}
       controls={false}
       background={background}
-      showDiagramTitle={false}
       showNotations={false}
       enableElementDetails={false}
       enableRelationshipDetails={enableRelationshipDetails}

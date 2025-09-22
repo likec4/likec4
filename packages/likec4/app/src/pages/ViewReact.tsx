@@ -49,8 +49,8 @@ export function ViewReact() {
         left: '16px',
         right: '16px',
       }}
-      showDiagramTitle
       showNavigationButtons
+      enableSearch
       enableFocusMode
       enableDynamicViewWalkthrough
       dynamicViewVariant={dynamic}

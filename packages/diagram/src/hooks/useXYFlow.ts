@@ -1,5 +1,6 @@
 import { useCallbackRef } from '@mantine/hooks'
 import {
+  type InternalNode,
   type ReactFlowInstance,
   type ReactFlowState,
   useInternalNode,
@@ -35,7 +36,10 @@ export type XYStoreApi = {
   setState: (state: Partial<XYStoreState> | ((state: XYStoreState) => Partial<XYStoreState>)) => void
 }
 
-export const useXYInternalNode = useInternalNode<Types.AnyNode>
+export type XYInternalNode = InternalNode<Types.AnyNode>
+export function useXYInternalNode(id: string): XYInternalNode | undefined {
+  return useInternalNode<Types.AnyNode>(id)
+}
 
 const selectCurrentZoom = (state: ReactFlowState) => Math.round(state.transform[2] * 100) / 100
 export function useCurrentZoom(): number {

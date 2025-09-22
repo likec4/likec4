@@ -260,7 +260,7 @@ export interface LikeC4BrowserProps {
   /**
    * Experimental feature to browse relationships
    *
-   * @default enableElementDetails
+   * @default true
    */
   enableRelationshipBrowser?: boolean | undefined
 
@@ -412,7 +412,6 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps<t.aux.UnknownLayouted>>(({
           background={background}
           fitView={true}
           fitViewPadding={FitViewPaddings.default}
-          showDiagramTitle={showDiagramTitle}
           showNotations={showNotations}
           enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
           showNavigationButtons={showNavigationButtons}

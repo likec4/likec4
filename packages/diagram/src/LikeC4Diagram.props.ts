@@ -202,12 +202,6 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   background?: 'transparent' | 'solid' | 'dots' | 'lines' | 'cross' | undefined
 
   /**
-   * Display webview with diagram title / description
-   * @default true
-   */
-  showDiagramTitle?: boolean | undefined
-
-  /**
    * Show back/forward history navigation buttons
    * @default true if `onNavigateTo` is set
    */

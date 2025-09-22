@@ -10,11 +10,13 @@ export const MiniMap: TXYMiniMap = XYMiniMap
 export type MiniMapNodes = XYMiniMapNodes<Types.AnyNode>
 
 export {
+  ControlButton,
   Controls,
   MiniMapNode,
   type MiniMapNodeProps,
   NodeToolbar,
   type NodeToolbarProps,
   Panel,
+  Position,
   ViewportPortal,
 } from '@xyflow/react'

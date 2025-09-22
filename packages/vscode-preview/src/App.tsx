@@ -94,7 +94,6 @@ function Initialized() {
           showNavigationButtons
           showNotations
           enableRelationshipDetails
-          showDiagramTitle={false}
           renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId

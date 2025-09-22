@@ -16,7 +16,6 @@ const FeatureNames = [
   'Notations',
   'DynamicViewWalkthrough',
   'EdgeEditing',
-  'ViewTitle',
   'FitView',
   /**
    * Running in VSCode

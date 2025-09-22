@@ -43,9 +43,9 @@ export function ViewEditor() {
         left: '50px',
         right: '10px',
       }}
-      showDiagramTitle
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}
+      enableSearch
       enableDynamicViewWalkthrough
       enableFocusMode
       enableElementDetails
