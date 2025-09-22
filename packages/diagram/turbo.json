@@ -4,8 +4,9 @@
     "//"
   ],
   "tasks": {
-    "build:bundle": {
+    "build-bundle": {
       "dependsOn": [
+        "@likec4/core#build",
         "@likec4/styles#generate"
       ],
       "outputs": [
@@ -13,8 +14,9 @@
       ],
       "outputLogs": "new-only"
     },
-    "build:dist": {
+    "build-dist": {
       "dependsOn": [
+        "@likec4/core#build",
         "@likec4/styles#generate"
       ],
       "outputs": [
@@ -26,8 +28,8 @@
     },
     "build": {
       "dependsOn": [
-        "build:dist",
-        "build:bundle"
+        "build-dist",
+        "build-bundle"
       ],
       "outputs": [],
       "outputLogs": "new-only"
