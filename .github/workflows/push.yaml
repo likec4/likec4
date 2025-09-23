@@ -2,6 +2,9 @@ name: push
 
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
   push:
     tags-ignore:
       - "**"
