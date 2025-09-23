@@ -40,6 +40,8 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
 
     /** Function to generate nonce attribute added to all generated `<style />` tags */
     styleNonce?: string | (() => string) | undefined
+
+    children?: React.ReactNode | undefined
   }
   & Except<LikeC4DiagramProperties<A>, 'view', { requireExactProps: true }>
   & LikeC4DiagramEventHandlers<A>

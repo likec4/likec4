@@ -184,6 +184,11 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
+
+  /**
+   * Children to render inside the diagram (not inside the browser overlay)
+   */
+  children?: React.ReactNode | undefined
 }
 
 export interface LikeC4BrowserProps {
@@ -283,6 +288,11 @@ export interface LikeC4BrowserProps {
    * Override some react flow props
    */
   reactFlowProps?: OverrideReactFlowProps | undefined
+
+  /**
+   * Children to render inside the browser overlay
+   */
+  children?: React.ReactNode | undefined
 }
 
 const cssInteractive = css({
@@ -296,6 +306,8 @@ const cssInteractive = css({
 /**
  * Ready-to-use component to display embedded LikeC4 view,
  * OnClick allows to browse the model.
+ *
+ * {@link ReactLikeC4} gives you more control.
  *
  * Component is wrapped in ShadowRoot to isolate styles.
  */
@@ -323,6 +335,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   style,
   reactFlowProps,
   renderNodes,
+  children,
   ...props
 }: LikeC4ViewProps<A>) {
   const likec4model = useOptionalLikeC4Model()
@@ -409,6 +422,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
           }}
           reactFlowProps={reactFlowProps}
           renderNodes={renderNodes}
+          children={children}
           {...props}
         />
         {browserView && (

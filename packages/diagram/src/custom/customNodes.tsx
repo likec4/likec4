@@ -102,7 +102,7 @@ export function elementNode<A extends Any = Unknown>(
 ): Types.NodeRenderer<'element'> {
   return customDiagramNode(component as any)
 }
-export type ElementNodeProps<A extends Any> = {
+export type ElementNodeProps<A extends Any = Unknown> = {
   nodeProps: Types.NodeProps<'element'>
   nodeModel: NodeModel.WithElement<A>
 }
@@ -160,7 +160,7 @@ export function deploymentNode<A extends Any = Unknown>(
 ): Types.NodeRenderer<'deployment'> {
   return customDiagramNode(component as any)
 }
-export type DeploymentNodeProps<A extends Any> = {
+export type DeploymentNodeProps<A extends Any = Unknown> = {
   nodeProps: Types.NodeProps<'deployment'>
   nodeModel: NodeModel.WithDeploymentElement<A>
 }
@@ -290,18 +290,12 @@ export type ViewGroupNodeProps<A extends Any = Unknown> = {
   nodeModel: NodeModel.IsGroup<A>
 }
 
-// export function sequenceActorNode<A extends Any = Unknown>(component: FC<SequenceActorNodeProps<A>>): Types.Components['seq-actor'] {
-//   return customDiagramNode(component)
-// }
-// export type SequenceActorNodeProps<A extends Any = Unknown> = {
-//   nodeProps: Types.NodeProps['seq-actor']
-//   nodeModel: NodeModel.WithElement<A>
-// }
-
-// export interface CustomNodes<A extends Any = Unknown> {
-//   element?: FunctionComponent<CustomElementNodeProps<A>>
-//   deployment?: FunctionComponent<CustomDeploymentNodeProps<A>>
-//   compoundElement?: FunctionComponent<CustomCompoundElementNodeProps<A>>
-//   compoundDeployment?: FunctionComponent<CustomCompoundDeploymentNodeProps<A>>
-//   viewGroup?: FunctionComponent<CustomViewGroupNodeProps<A>>
-// }
+export function sequenceActorNode<A extends Any = Unknown>(
+  component: FC<SequenceActorNodeProps<A>>,
+): Types.NodeRenderer<'seq-actor'> {
+  return customDiagramNode(component as any)
+}
+export type SequenceActorNodeProps<A extends Any = Unknown> = {
+  nodeProps: Types.NodeProps<'seq-actor'>
+  nodeModel: NodeModel.WithElement<A>
+}

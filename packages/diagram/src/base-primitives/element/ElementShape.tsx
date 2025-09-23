@@ -1,6 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
 import type { ComputedNodeStyle, ElementShape } from '@likec4/core/types'
-import { Box } from '@likec4/styles/jsx'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
 import { roundDpr } from '../../utils'
 
@@ -179,14 +178,14 @@ function ShapeSvgOutline({ shape, w, h }: ShapeSvgProps) {
 
 function ShapeHtml({ multiple, withOutLine }: { multiple: boolean; withOutLine: boolean }) {
   return (
-    <Box
+    <div
       className={elementShapeRecipe({
         shapetype: 'html',
       })}
     >
       {multiple && <div className={'likec4-shape-multiple'} />}
       {withOutLine && <div className={'likec4-shape-outline'} />}
-    </Box>
+    </div>
   )
 }
 

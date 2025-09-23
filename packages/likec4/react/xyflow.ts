@@ -10,6 +10,7 @@ export const MiniMap: TXYMiniMap = XYMiniMap
 export type MiniMapNodes = XYMiniMapNodes<Types.AnyNode>
 
 export {
+  type Align,
   ControlButton,
   Controls,
   MiniMapNode,

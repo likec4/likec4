@@ -1,9 +1,4 @@
-import {
-  type Color,
-  type ElementShape,
-  type ElementStyle,
-  ensureSizes,
-} from '@likec4/core/types'
+import { type Color, type ElementShape, type ElementStyle, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { MotionNodeLayoutOptions } from 'motion/react'
 import * as m from 'motion/react-m'
@@ -11,7 +6,7 @@ import { type CSSProperties, type PropsWithChildren, forwardRef } from 'react'
 import type { BaseNodePropsWithData } from '../../base/types'
 import * as styles from './ElementNodeContainer.css'
 
-export type RequiredData = {
+type RequiredData = {
   color: Color
   shape: ElementShape
   style?: ElementStyle
