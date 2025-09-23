@@ -14,6 +14,11 @@
     "**/package.json",
     "!build.config.ts"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "styled-system/styles"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
