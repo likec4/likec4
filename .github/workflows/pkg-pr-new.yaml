@@ -2,6 +2,7 @@ name: pkg-pr-new
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 env:
   NODE_ENV: production
@@ -26,4 +27,9 @@ jobs:
 
       - name: publish
         run: |
-          pnpx pkg-pr-new publish --pnpm --comment=off './packages/core' './packages/diagram' './packages/language-server' './packages/likec4' './styled-system/styles'
+          pnpx pkg-pr-new publish --pnpm --comment=update \
+            './packages/core' \
+            './packages/diagram' \
+            './packages/language-server' \
+            './packages/likec4' \
+            './styled-system/styles'

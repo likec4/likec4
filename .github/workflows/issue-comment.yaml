@@ -1,4 +1,4 @@
-name: preview comment
+name: issue comment
 
 on:
   issue_comment:
@@ -8,24 +8,27 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  deployments: write
+  pull-requests: write
+
 env:
   NODE_ENV: production
   FORCE_COLOR: 1
   DO_NOT_TRACK: "1"
 
 jobs:
-  preview-playground:
-    name: deploy playground preview
-    if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground')) }}
+  check-write-access:
+    name: check access
+    if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request }}
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-      id-token: write
-      issues: write
-      deployments: write
-      pull-requests: write
+    outputs:
+      ref: ${{ steps.refs.outputs.head_ref }}
     steps:
-      - name: "Check if user has write access"
+      - name: Check if user has write access
         uses: "lannonbr/repo-permission-check-action@2.0.2"
         with:
           permission: "write"
@@ -38,11 +41,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.refs.outputs.head_ref }}
-          fetch-depth: 0
-
+  preview-playground:
+    needs: check-write-access
+    name: deploy playground preview
+    if: ${{ contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground') }}
+    runs-on: ubuntu-24.04-arm
+    env:
+      PR_REF: ${{ needs.check-write-access.outputs.ref }}
+    steps:
       - name: start deployment
         uses: bobheadxi/deployments@v1
         id: deployment
@@ -50,7 +56,12 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: playground-preview
-          ref: ${{ steps.refs.outputs.head_ref }}
+          ref: ${{ env.PR_REF }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PR_REF }}
+          fetch-depth: 0
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -95,34 +106,13 @@ jobs:
           env: ${{ steps.deployment.outputs.env }}
 
   preview-docs:
+    needs: check-write-access
     name: deploy docs preview
-    if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
+    if: ${{ contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs') }}
     runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-      id-token: write
-      issues: write
-      deployments: write
-      pull-requests: write
+    env:
+      PR_REF: ${{ needs.check-write-access.outputs.ref }}
     steps:
-      - name: "Check if user has write access"
-        uses: "lannonbr/repo-permission-check-action@2.0.2"
-        with:
-          permission: "write"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: resolve pr refs
-        id: refs
-        uses: eficode/resolve-pr-refs@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.refs.outputs.head_ref }}
-          fetch-depth: 0
-
       - name: start deployment
         uses: bobheadxi/deployments@v1
         id: deployment
@@ -130,7 +120,12 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: docs-preview
-          ref: ${{ steps.refs.outputs.head_ref }}
+          ref: ${{ env.PR_REF }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PR_REF }}
+          fetch-depth: 0
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -174,3 +169,10 @@ jobs:
           env: ${{ steps.deployment.outputs.env }}
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
           env_url: ${{ steps.cloudflare.outputs.deployment-url }}
+
+  pkg-pr:
+    needs: check-write-access
+    name: create pkg
+    if: ${{ github.event.comment.body == '/pkg' }}
+    uses: ./.github/workflows/pkg-pr-new.yaml
+    secrets: inherit
