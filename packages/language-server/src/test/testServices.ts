@@ -103,7 +103,7 @@ export function createTestServices(options?: {
   }
 
   const format = async (input: string | LikeC4LangiumDocument, uri?: string) => {
-    const document = typeof input === 'string' ? await parse(input, uri) : input
+    const document = typeof input === 'string' ? await parse(stripIndent(input), uri) : input
     await documentBuilder.build([document], { validation: true })
 
     const edits = await formatter?.formatDocument(
