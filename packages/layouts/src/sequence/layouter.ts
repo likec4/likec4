@@ -456,7 +456,7 @@ export class SequenceViewLayouter {
   private newVar(initialValue?: number) {
     const v = new kiwi.Variable()
     this.#solver.addEditVariable(v, kiwi.Strength.weak)
-    if (initialValue) {
+    if (typeof initialValue === 'number') {
       this.#solver.suggestValue(v, initialValue)
       this.constraint(v, '>=', 0, kiwi.Strength.strong)
     }
