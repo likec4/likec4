@@ -10,7 +10,7 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewDisplayVariant, dynamicViewStep } from './dynamic-view'
+import { dynamicViewDisplayVariant, dynamicViewStepChain, dynamicViewStepSingle } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImported, checkImportsFromPoject } from './imports'
@@ -65,7 +65,8 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isFqnExpr,
   ast.isRelationExpr,
   ast.isDynamicViewParallelSteps,
-  ast.isDynamicViewStep,
+  ast.isDynamicStepChain,
+  ast.isDynamicStepSingle,
   ast.isDeploymentViewRule,
   ast.isDeploymentViewRulePredicate,
   ast.isExpressionV2,
@@ -157,7 +158,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalPredicateGroup: checkGlobalPredicate(services),
     GlobalDynamicPredicateGroup: checkGlobalPredicate(services),
     GlobalStyleId: checkGlobalStyleId(services),
-    DynamicViewStep: dynamicViewStep(services),
+    DynamicStepSingle: dynamicViewStepSingle(services),
+    DynamicStepChain: dynamicViewStepChain(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

@@ -202,7 +202,7 @@ describe('dynamic-view', () => {
     const { nodeIds, edgeIds, nodes, edges } = compute([
       $step('cloud.backend -> amazon', {
         line: 'dotted',
-        description: 'uploads1',
+        description: { txt: 'uploads1' },
         head: 'open',
         tail: 'odot',
         color: 'red',

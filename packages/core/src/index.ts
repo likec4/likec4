@@ -13,6 +13,7 @@ export {
   BiMap,
   DefaultMap,
   DefaultWeakMap,
+  hasProp,
   invariant,
   isAncestor,
   isDescendantOf,

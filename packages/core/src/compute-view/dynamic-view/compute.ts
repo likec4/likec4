@@ -1,4 +1,4 @@
-import { filter, findLast, first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import { findLast, first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
 import { modelConnection } from '../../model'
 import type { AnyAux, aux, scalar } from '../../types'
@@ -20,7 +20,7 @@ import {
   isViewRulePredicate,
   stepEdgeId,
 } from '../../types'
-import { compareRelations, nonNullable } from '../../utils'
+import { compareRelations, isNonEmptyArray, nonNullable } from '../../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -39,8 +39,9 @@ namespace DynamicViewCompute {
     id: StepEdgeId
     source: Element<A>
     target: Element<A>
-    title: string | null
-    description?: string
+    title?: string
+    kind?: aux.RelationKind<A>
+    description?: scalar.MarkdownOrString
     technology?: string
     // Notes for walkthrough
     notes?: scalar.MarkdownOrString
@@ -72,7 +73,7 @@ class DynamicViewCompute<A extends AnyAux> {
       title: stepTitle,
       isBackward,
       navigateTo: stepNavigateTo,
-      notation, // omit
+      notation, // omit]
       ...step
     }: DynamicViewStep<A>,
     index: number,
@@ -88,26 +89,22 @@ class DynamicViewCompute<A extends AnyAux> {
     const {
       title,
       relations,
-      tags,
       navigateTo: derivedNavigateTo,
-      color,
-      line,
+      ...derived
     } = this.findRelations(source, target)
 
     const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
 
     this.steps.push(exact({
       id,
-      ...step,
       source,
       target,
       title: stepTitle ?? title,
       relations: relations ?? [],
       isBackward: isBackward ?? false,
       ...navigateTo && { navigateTo },
-      ...tags && { tags },
-      ...color && { color },
-      ...line && { line },
+      ...derived,
+      ...step,
     }))
   }
 
@@ -158,7 +155,7 @@ class DynamicViewCompute<A extends AnyAux> {
 
     const defaults = this.model.$styles.defaults.relationship
 
-    const edges = this.steps.map(({ id, source, target, relations, title, description, isBackward, tags, ...step }) => {
+    const edges = this.steps.map(({ id, source, target, relations, title, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
@@ -166,9 +163,8 @@ class DynamicViewCompute<A extends AnyAux> {
         parent: commonAncestor(source.id, target.id) as scalar.NodeId | null,
         source: sourceNode.id,
         target: targetNode.id,
-        label: title,
+        label: title ?? null,
         relations,
-        description: description ? { txt: description } : null,
         color: defaults.color,
         line: defaults.line,
         head: defaults.arrow,
@@ -240,48 +236,53 @@ class DynamicViewCompute<A extends AnyAux> {
   }
 
   private findRelations(source: Element<A>, target: Element<A>): {
-    title: string | null
-    tags: aux.Tags<A> | null
-    relations: NonEmptyArray<aux.RelationId> | null
-    navigateTo: aux.StrictViewId<A> | null
-    color: Color | null
-    line: RelationshipLineType | null
+    title?: string
+    kind?: aux.RelationKind<A>
+    tags?: aux.Tags<A>
+    relations?: NonEmptyArray<aux.RelationId>
+    navigateTo?: aux.StrictViewId<A>
+    color?: Color
+    line?: RelationshipLineType
   } {
     const relationships = findConnection(source, target, 'directed')
       .flatMap(r => [...r.relations])
       .sort(compareRelations)
-    if (relationships.length === 0) {
-      return {
-        title: null,
-        tags: null,
-        relations: null,
-        navigateTo: null,
-        color: null,
-        line: null,
-      }
+    if (!isNonEmptyArray(relationships)) {
+      return {}
+    }
+    if (relationships.length === 1) {
+      const relation = first(relationships)
+      return exact({
+        title: relation.title ?? undefined,
+        tags: relation.tags,
+        relations: [relation.id],
+        navigateTo: relation.navigateTo?.id,
+        color: relation.$relationship.color,
+        line: relation.$relationship.line,
+      })
     }
     const alltags = pipe(
       relationships,
       flatMap(r => r.tags),
       unique(),
     ) as aux.Tags<A>
-    const tags = hasAtLeast(alltags, 1) ? alltags : null
-    const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
+    const tags = hasAtLeast(alltags, 1) ? alltags : undefined
+    const relations = map(relationships, r => r.id)
 
     // Most closest relation
     const relation = first(relationships)
-    const relationNavigateTo = relation?.$relationship.navigateTo ?? null
-
-    const navigateTo = relationNavigateTo && relationNavigateTo !== this.view.id
-      ? relationNavigateTo as aux.StrictViewId<A>
-      : pipe(
+    let navigateTo = relation.navigateTo?.id
+    if (navigateTo === this.view.id) {
+      navigateTo = undefined
+    }
+    if (!navigateTo) {
+      navigateTo = pipe(
         relationships,
-        map(r => r.$relationship.navigateTo as aux.StrictViewId<A>),
-        filter(isTruthy),
-        filter(v => v !== this.view.id),
+        flatMap(r => r.navigateTo && r.navigateTo.id !== this.view.id ? r.navigateTo.id : []),
         unique(),
         only(),
       )
+    }
 
     const commonProperties = pipe(
       relationships,
@@ -289,22 +290,25 @@ class DynamicViewCompute<A extends AnyAux> {
         isTruthy(title) && acc.title.add(title)
         isTruthy(r.color) && acc.color.add(r.color)
         isTruthy(r.line) && acc.line.add(r.line)
+        isTruthy(r.kind) && acc.kind.add(r.kind)
         return acc
       }, {
+        kind: new Set<aux.RelationKind<A>>(),
         color: new Set<Color>(),
         line: new Set<RelationshipLineType>(),
         title: new Set<string>(),
       }),
     )
 
-    return {
-      tags,
+    return exact({
+      tags: tags ?? undefined,
       relations,
-      navigateTo: navigateTo ?? null,
-      title: only([...commonProperties.title]) ?? null,
-      color: only([...commonProperties.color]) ?? null,
-      line: only([...commonProperties.line]) ?? null,
-    }
+      navigateTo,
+      kind: only([...commonProperties.kind]),
+      title: only([...commonProperties.title]),
+      color: only([...commonProperties.color]),
+      line: only([...commonProperties.line]),
+    })
   }
 }
 export function computeDynamicView<M extends AnyAux>(

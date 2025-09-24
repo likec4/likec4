@@ -19,7 +19,8 @@ export interface DynamicViewStep<A extends AnyAux = AnyAux> {
   readonly source: aux.StrictFqn<A>
   readonly target: aux.StrictFqn<A>
   readonly title: string | null
-  readonly description?: string
+  readonly kind?: aux.RelationKind<A>
+  readonly description?: MarkdownOrString
   readonly technology?: string
   readonly notation?: string
   // Notes for walkthrough

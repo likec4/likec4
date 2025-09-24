@@ -158,9 +158,9 @@ export const LikeC4StylesConfigSchema = z
   .object({
     theme: LikeC4Config_Styles_Theme,
     defaults: LikeC4Config_Styles_Defaults,
-    customCss: z
-      .array(z.string())
-      .meta({ description: 'List of custom CSS files' }),
+    // customCss: z
+    //   .array(z.string())
+    //   .meta({ description: 'List of custom CSS files' }),
   })
   .partial()
   .meta({ description: 'Project styles configuration' })

@@ -1,7 +1,8 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { filter, find, isArray, isDefined, isEmpty, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
-import type { Writable } from 'type-fest'
+import { loggable } from '@likec4/log'
+import { filter, find, isDefined, isEmpty, isNonNullish, isTruthy, last, mapToObj, pipe } from 'remeda'
+import type { Except, Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
   type ParsedAstElementView,
@@ -11,7 +12,7 @@ import {
   toColor,
   ViewOps,
 } from '../../ast'
-import { logger, logWarnError } from '../../logger'
+import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -23,6 +24,8 @@ export type WithViewsParser = ReturnType<typeof ViewsParser>
 
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
+const logger = mainLogger.getChild('ViewsParser')
+
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
@@ -32,7 +35,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           try {
             return isValid(s) ? this.parseViewRuleStyleOrGlobalRef(s) : []
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
             return []
           }
         })
@@ -63,7 +66,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               view.title = folder + ' / ' + (view.title || view.id)
             }
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
           }
         }
       }
@@ -125,7 +128,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             try {
               return this.isValid(n) ? this.parseElementViewRule(n) : []
             } catch (e) {
-              logWarnError(e)
+              logger.warn(loggable(e))
               return []
             }
           }),
@@ -176,7 +179,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             exprs.unshift(expr)
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
         if (!prev) {
           break
@@ -221,7 +224,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
           nonexhaustive(rule)
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
       return {
@@ -301,7 +304,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             try {
               return isValid(n) ? this.parseDynamicViewRule(n) : []
             } catch (e) {
-              logWarnError(e)
+              logger.warn(loggable(e))
               return []
             }
           }, [] as Array<c4.DynamicViewRule>),
@@ -312,11 +315,11 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               if (ast.isDynamicViewParallelSteps(n)) {
                 acc.push(this.parseDynamicParallelSteps(n))
               } else {
-                acc.push(this.parseDynamicStep(n))
+                acc.push(...this.parseDynamicStep(n))
               }
             }
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
           }
           return acc
         }, [] as c4.DynamicViewStepOrParallel[]),
@@ -352,7 +355,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             }
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
         iter = iter.prev
       }
@@ -361,40 +364,72 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicViewParallelSteps {
       return {
-        __parallel: node.steps.map(step => this.parseDynamicStep(step)),
+        __parallel: node.steps.flatMap(step => this.parseDynamicStep(step)),
       }
     }
 
-    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
+    /**
+     * @returns non-empty array in case of step chain A -> B -> C
+     */
+    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep[] {
+      try {
+        if (ast.isDynamicStepSingle(node)) {
+          return this.isValid(node) ? [this.parseDynamicStepSingle(node)] : []
+        }
+        const previousSteps = this.parseDynamicStep(node.source)
+        if (!isNonEmptyArray(previousSteps)) {
+          return []
+        }
+        let baseStep = {
+          ...this.parseAbstractDynamicStep(node),
+          source: last(previousSteps).target,
+        }
+        return [...previousSteps, baseStep]
+      } catch (e) {
+        logger.warn(loggable(e))
+        return []
+      }
+    }
+
+    parseDynamicStepSingle(node: ast.DynamicStepSingle): c4.DynamicViewStep {
       const sourceEl = elementRef(node.source)
       if (!sourceEl) {
         throw new Error('Invalid reference to source')
       }
-      const targetEl = elementRef(node.target)
-      if (!targetEl) {
-        throw new Error('Invalid reference to target')
+      let baseStep = {
+        ...this.parseAbstractDynamicStep(node),
+        source: this.resolveFqn(sourceEl),
       }
-      let source = this.resolveFqn(sourceEl)
-      let target = this.resolveFqn(targetEl)
-      const title = removeIndent(node.title) ?? null
 
-      let step: Writable<c4.DynamicViewStep> = {
-        source,
-        target,
-        title,
-      }
       if (node.isBackward) {
-        step = {
-          source: target,
-          target: source,
-          title,
+        baseStep = {
+          ...baseStep,
+          source: baseStep.target,
+          target: baseStep.source,
           isBackward: true,
         }
       }
-      if (!isArray(node.custom?.props)) {
-        return step
+      return baseStep
+    }
+
+    parseAbstractDynamicStep(
+      astnode: ast.AbstractDynamicStep,
+    ): Writable<Except<c4.DynamicViewStep, 'source', { requireExactProps: true }>> {
+      const step = {} as Writable<Omit<c4.DynamicViewStep, 'source'>>
+
+      const targetEl = elementRef(astnode.target)
+      if (!targetEl) {
+        throw new Error('Invalid reference to target')
       }
-      for (const prop of node.custom.props) {
+      step.target = this.resolveFqn(targetEl)
+      step.title = removeIndent(astnode.title) ?? null
+
+      const kind = astnode.kind?.ref?.name ?? astnode.dotKind?.kind.ref?.name
+      if (kind) {
+        step.kind = kind as c4.RelationshipKind
+      }
+
+      for (const prop of astnode.custom?.props ?? []) {
         try {
           switch (true) {
             case ast.isRelationNavigateToProperty(prop): {
@@ -407,7 +442,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             case ast.isRelationStringProperty(prop):
             case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
-                step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
+                if (prop.key === 'description') {
+                  const value = this.parseMarkdownOrString(prop.value)
+                  if (value) {
+                    step.description = value
+                  }
+                } else {
+                  step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
+                }
               }
               break
             }
@@ -441,7 +483,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
         }
         catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
       return step
