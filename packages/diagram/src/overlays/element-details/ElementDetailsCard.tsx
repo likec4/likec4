@@ -8,7 +8,7 @@ import {
   type scalar,
   type ViewId,
 } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
 import {
   type TextProps,
@@ -594,15 +594,38 @@ function ElementMetata({
 }: {
   value: NonNullable<Element['metadata']>
 }) {
+  const metadataEntries = entries(metadata).sort(([a], [b]) => a.localeCompare(b))
+
+  // Check if any metadata entry has expandable content (arrays or multiline strings)
+  const hasExpandableContent = metadataEntries.some(([, value]) => {
+    const elements = Array.isArray(value)
+      ? value
+      : typeof value === 'string' && value.includes('\n')
+      ? value.split('\n').map(s => s.trim()).filter(Boolean)
+      : [value]
+    return elements.length > 1
+  })
+
   return (
-    <>
-      <Group justify="space-between" align="baseline">
-        <PropertyLabel>metadata</PropertyLabel>
-        <MetadataExpandAllButton />
-      </Group>
-      <Stack gap="sm">
-        {entries(metadata).map(([key, value]) => <MetadataValue key={key} label={key} value={value} />)}
-      </Stack>
-    </>
+    <MetadataProvider>
+      <>
+        <Stack gap="xs" style={{ justifySelf: 'end', textAlign: 'right' }}>
+          <PropertyLabel>metadata</PropertyLabel>
+          {hasExpandableContent && <MetadataExpandAllButton />}
+        </Stack>
+        <Box
+          className={css({
+            display: 'grid',
+            gridTemplateColumns: 'min-content 1fr',
+            gridAutoRows: 'min-content',
+            gap: `[12px 16px]`,
+            alignItems: 'baseline',
+            justifyItems: 'stretch',
+          })}
+        >
+          {metadataEntries.map(([key, value]) => <MetadataValue key={key} label={key} value={value} />)}
+        </Box>
+      </>
+    </MetadataProvider>
   )
 }
