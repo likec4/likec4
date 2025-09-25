@@ -231,6 +231,12 @@ describe.concurrent('LikeC4', () => {
           ],
           "folder": "projectA",
         },
+        "projectB": {
+          "documents": [
+            "architecture.c4",
+          ],
+          "folder": "projectB",
+        },
       }
     `)
   })
