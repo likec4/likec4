@@ -93,9 +93,6 @@ catalogs:
     zx:
       specifier: 8.8.1
       version: 8.8.1
-    wrangler:
-      specifier: 4.38.0
-      version: 4.38.0
   esbuild:
     esbuild-node-externals:
       specifier: 1.18.0
@@ -107,6 +104,12 @@ catalogs:
     '@hono/node-server':
       specifier: ^1.19.3
       version: 1.19.4
+    '@hono/oauth-providers':
+      specifier: ^0.8.5
+      version: 0.8.5
+    '@hono/valibot-validator':
+      specifier: ^0.5.3
+      version: 0.5.3
     hono:
       specifier: ^4.9.8
       version: 4.9.8
@@ -487,14 +490,14 @@ importers:
         specifier: catalog:vite
         version: 6.3.6(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
       wrangler:
-        specifier: 'catalog:'
-        version: 4.38.0
+        specifier: catalog:cloudflare
+        version: 4.35.0
 
   apps/playground:
     dependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.11.6
-        version: 1.11.6(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250917.0)(wrangler@4.38.0)
+        specifier: catalog:cloudflare
+        version: 1.11.7(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250906.0)(wrangler@4.35.0)
       '@codingame/monaco-vscode-editor-api':
         specifier: 16.1.1
         version: 16.1.1
@@ -523,10 +526,10 @@ importers:
         specifier: 16.1.1
         version: 16.1.1
       '@hono/oauth-providers':
-        specifier: ^0.8.5
+        specifier: catalog:hono
         version: 0.8.5(hono@4.9.8)
       '@hono/valibot-validator':
-        specifier: ^0.5.3
+        specifier: catalog:hono
         version: 0.5.3(hono@4.9.8)(valibot@1.1.0(typescript@5.9.2))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
@@ -730,8 +733,8 @@ importers:
         specifier: 'catalog:'
         version: 0.14.12
       wrangler:
-        specifier: 'catalog:'
-        version: 4.38.0
+        specifier: catalog:cloudflare
+        version: 4.35.0
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
@@ -1604,6 +1607,9 @@ importers:
       package-up:
         specifier: catalog:utils
         version: 5.0.0
+      picomatch:
+        specifier: catalog:utils
+        version: 4.0.3
       postcss:
         specifier: catalog:css
         version: 8.5.6
@@ -8476,10 +8482,6 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@7.13.0:
-    resolution: {integrity: sha512-l+zSMssRqrzDcb3fjMkjjLGmuiiK2pMIcV++mJaAc9vhjSGpvM7h43QgP+OAMb1GImHmbPyG2tBXeuyG5iY4gA==}
-    engines: {node: '>=20.18.1'}
-
   undici@7.14.0:
     resolution: {integrity: sha512-Vqs8HTzjpQXZeXdpsfChQTlafcMQaaIwnGwLam1wudSSjlJeQ3bw1j+TLPePgrCnCpUXx7Ba5Pdpf5OBih62NQ==}
     engines: {node: '>=20.18.1'}
@@ -9228,6 +9230,11 @@ packages:
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
+  zx@8.8.1:
+    resolution: {integrity: sha512-qvsKBnvWHstHKCluKPlEgI/D3+mdiQyMoSSeFR8IX/aXzWIas5A297KxKgPJhuPXdrR6ma0Jzx43+GQ/8sqbrw==}
+    engines: {node: '>= 12.17.0'}
+    hasBin: true
+
   zx@8.8.3-lite:
     resolution: {integrity: sha512-wHSv6VgxLZoKUIkzcZ2GGKITgD7G25mzWzhPsVgXGLYyeTPzs3Bk0KCILPD54Nr41SG69NmrRD0G4FBglV13Ww==}
     engines: {node: '>= 12.17.0'}
@@ -9613,7 +9620,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20250906.0
 
-  '@cloudflare/vite-plugin@1.11.6(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250917.0)(wrangler@4.38.0)':
+  '@cloudflare/vite-plugin@1.11.7(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250906.0)(wrangler@4.35.0)':
     dependencies:
       '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250906.0)
       '@mjackson/node-fetch-server': 0.6.1
@@ -17322,8 +17329,6 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici@7.13.0: {}
-
   undici@7.14.0: {}
 
   unenv@2.0.0-rc.19:
@@ -18156,5 +18161,7 @@ snapshots:
       react: 19.1.1
 
   zwitch@2.0.4: {}
+
+  zx@8.8.1: {}
 
   zx@8.8.3-lite: {}

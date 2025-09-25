@@ -45,10 +45,34 @@ describe.concurrent('formating', () => {
 
             tag tag1
             color custom #123456
-            deploymentNode node {
-            }
+            deploymentNode node {}
           }"
       `),
+    )
+    it(
+      'formats styles in specification rules',
+      async ({ expect }) =>
+        expect(
+          await format`
+          specification{
+          element     el {  style  { color    red    }   }
+
+          
+          element     el2
+          { style  { color    blue    }
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element el { style { color red } }
+
+
+            element el2 {
+              style { color blue }
+            }
+          }"
+        `),
     )
   })
 
@@ -692,7 +716,7 @@ describe.concurrent('formating', () => {
           await format`
           views {
             view {
-              include    *  with{ }
+              include    *  with{   }
               include * where tag = #test    with    {}
               include -> *  with{ }
               include -> * where tag = #test    with    {}
@@ -702,14 +726,10 @@ describe.concurrent('formating', () => {
           "
           views {
             view {
-              include * with {
-              }
-              include * where tag = #test with {
-              }
-              include -> * with {
-              }
-              include -> * where tag = #test with {
-              }
+              include * with { }
+              include * where tag = #test with {}
+              include -> * with { }
+              include -> * where tag = #test with {}
             }
           }"
         `),
@@ -774,10 +794,8 @@ describe.concurrent('formating', () => {
                 color red
                 border solid
                 opacity 10%
-                include * with {
-                }
-                include * where tag = #test with {
-                }
+                include * with { }
+                include * where tag = #test with {}
                 group 'nested-group' {
                 }
               }
@@ -792,6 +810,104 @@ describe.concurrent('formating', () => {
           }"
         `),
     )
+
+    it('formats chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {dynamic
+        view index {
+        A ->  B {    title   'ab...'   }    -> C    'cd...'
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              A -> B { title 'ab...' } -> C 'cd...'
+            }
+          }"
+        `))
+
+    it('formats multiline chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        AAA ->  BBB { line solid
+        } -[uses]->
+          CCC    'cd...' {
+        color red
+        title 'text'
+        }
+             .uses DDD 
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              AAA
+                -> BBB {
+                  line solid
+                }
+                -[uses]-> CCC 'cd...' {
+                  color red
+                  title 'text'
+                }
+                .uses DDD
+            }
+          }"
+        `))
+
+    it('formats multiline and parallel chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        AAA ->  BBB { line solid
+        } ->
+          CCC    'cd...' {
+        color red
+        title 'text'
+        }
+        
+           parallel {
+        
+        PA
+        -> PB { }
+        
+        -> PC { }
+
+
+        // Should be single line
+        PD -> PE { } -> PF
+        }
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              AAA
+                -> BBB {
+                  line solid
+                }
+                -> CCC 'cd...' {
+                  color red
+                  title 'text'
+                }
+
+              parallel {
+
+                PA
+                  -> PB { }
+
+                  -> PC { }
+
+
+                // Should be single line
+                PD -> PE { } -> PF
+              }
+            }
+          }"
+        `))
   })
 
   describe('common formatting', () => {
