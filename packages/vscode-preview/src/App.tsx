@@ -77,9 +77,9 @@ function Initialized() {
           view={view}
           fitViewPadding={{
             top: '70px',
-            bottom: '10px',
+            bottom: '30px',
             left: '60px',
-            right: '10px',
+            right: '30px',
           }}
           readonly={false}
           controls
