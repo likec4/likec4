@@ -12,7 +12,6 @@ interface MetadataValueProps {
   value: string | string[]
 }
 
-// Helper component for truncated single-line display
 function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: boolean }) {
   const [isTruncated, setIsTruncated] = useState(false)
   const textRef = useRef<HTMLDivElement>(null)
@@ -43,8 +42,8 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
           overflow: isExpanded ? 'visible' : 'hidden',
           textOverflow: isExpanded ? 'unset' : 'ellipsis',
           wordBreak: isExpanded ? 'break-word' : 'normal',
-          minWidth: 0, // Allow shrinking
-          width: '100%', // Take full available width
+          minWidth: 0,
+          width: '100%',
         })}
       >
         {value}
@@ -53,7 +52,6 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
   )
 }
 
-// Enhanced multi-value display component with inline display when collapsed
 function MultiValueDisplay({
   values,
   isExpanded,
@@ -64,7 +62,6 @@ function MultiValueDisplay({
   onToggle: () => void
 }) {
   if (isExpanded) {
-    // Expanded: Show each value with separator markers, no borders
     return (
       <Stack gap="xs">
         {values.map((value, index) => (
@@ -98,7 +95,6 @@ function MultiValueDisplay({
     )
   }
 
-  // Collapsed: Show all values inline with visual separators to distinguish elements
   return (
     <Box
       className={css({
@@ -126,9 +122,9 @@ function MultiValueDisplay({
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              maxWidth: 'min(200px, 100%)', // Responsive max width
-              minWidth: '60px', // Minimum readable width
-              flex: '0 1 auto', // Allow shrinking
+              maxWidth: 'min(200px, 100%)',
+              minWidth: '60px',
+              flex: '0 1 auto',
               userSelect: 'all',
               _dark: {
                 backgroundColor: 'mantine.colors.dark[9]',
@@ -136,7 +132,7 @@ function MultiValueDisplay({
                 borderColor: 'mantine.colors.dark[4]',
               },
             })}
-            title={value} // Tooltip for full value on hover
+            title={value}
           >
             {value}
           </Text>
@@ -146,7 +142,7 @@ function MultiValueDisplay({
                 fontSize: 'xs',
                 color: 'mantine.colors.gray[5]',
                 fontWeight: 500,
-                flexShrink: 0, // Don't shrink the separator
+                flexShrink: 0,
                 _dark: {
                   color: 'mantine.colors.dark[3]',
                 },
@@ -161,35 +157,7 @@ function MultiValueDisplay({
   )
 }
 
-/**
- * Enhanced Metadata Value Component
- *
- * Features:
- * - Works within metadata sub-grid (2-column: min-content 1fr)
- * - Left-aligned key labels within the metadata section
- * - Key labels themselves are clickable expand/collapse buttons for multi-value entries
- * - Labels never truncate (whiteSpace: nowrap) to ensure full visibility
- * - Alphabetical ordering of metadata keys for consistent display
- * - Collapsed state shows each value as distinct visual badges with bullet separators
- * - Expanded state shows each value in separate bordered containers
- * - Responsive text truncation with ellipsis and tooltips for values
- * - Global expand/collapse all functionality with smart individual override
- * - Individual buttons work independently when global is off, or override global when clicked
- * - Remembers expand state in localStorage
- * - Support for both single values and arrays
- * - Automatic line splitting for multiline strings
- *
- * Example usage:
- * ```tsx
- * <MetadataProvider>
- *   <MetadataValue label="version" value="1.2.3" />
- *   <MetadataValue label="environments" value={["dev", "staging", "prod"]} />
- *   <MetadataValue label="config" value={`line1\nline2\nline3`} />
- * </MetadataProvider>
- * ```
- */
 export function MetadataValue({ label, value }: MetadataValueProps) {
-  // Handle both string and string[] types consistently
   const elements = Array.isArray(value)
     ? value
     : typeof value === 'string' && value.includes('\n')
@@ -205,7 +173,6 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
 
   return (
     <>
-      {/* Left-aligned Key Label within metadata sub-grid */}
       {hasMultipleElements
         ? (
           <UnstyledButton
@@ -222,7 +189,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               gap: 'xs',
               padding: '[4px 8px]',
               borderRadius: 'sm',
-              whiteSpace: 'nowrap', // Never cut off
+              whiteSpace: 'nowrap',
               transition: 'all 150ms ease',
               _hover: {
                 backgroundColor: 'mantine.colors.gray[1]',
@@ -268,20 +235,19 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               justifySelf: 'end',
               textAlign: 'right',
               userSelect: 'none',
-              whiteSpace: 'nowrap', // Never cut off
+              whiteSpace: 'nowrap',
               padding: '[4px 8px]',
-              fontWeight: 700, // Make label bold
+              fontWeight: 700,
             })}
           >
             {label}:
           </Text>
         )}
 
-      {/* Value Display */}
       <Box
         className={css({
-          justifySelf: 'stretch', // Take full width of the value column
-          alignSelf: 'start', // Align to the start of the grid cell
+          justifySelf: 'stretch',
+          alignSelf: 'start',
         })}
       >
         {hasMultipleElements
