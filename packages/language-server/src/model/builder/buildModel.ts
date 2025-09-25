@@ -93,7 +93,7 @@ export function buildModelData(
           logger.debug`No parent found for ${el.id}`
           return acc
         }
-        acc[el.id] = elementExtends.applyExtended<c4.Element>(el)
+        acc[el.id] = elementExtends.applyExtended(el)
         scanMetadataKeys(acc[el.id])
         return acc
       },
@@ -141,7 +141,7 @@ export function buildModelData(
           logger.debug`No parent found for deployment element ${el.id}`
           return acc
         }
-        acc[el.id] = isDeploymentNode(el) ? deploymentExtends.applyExtended<c4.DeploymentNode>(el) : el
+        acc[el.id] = isDeploymentNode(el) ? deploymentExtends.applyExtended(el) : el
         scanMetadataKeys(acc[el.id])
         return acc
       },

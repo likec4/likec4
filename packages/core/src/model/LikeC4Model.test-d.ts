@@ -242,10 +242,10 @@ test('LikeC4Model.create: should have all types', () => {
 
   const e = parsed.element('cloud.backend.api')
   expectTypeOf(e.getMetadata).parameter(0).toEqualTypeOf<'key1' | 'key2' | undefined>()
-  expectTypeOf(e.getMetadata('key1')).toEqualTypeOf<string | undefined>()
+  expectTypeOf(e.getMetadata('key1')).toEqualTypeOf<string | string[] | undefined>()
   expectTypeOf(e.getMetadata()).toEqualTypeOf<{
-    key1?: string
-    key2?: string
+    key1?: string | string[]
+    key2?: string | string[]
   }>()
 
   expectTypeOf(parsed.Aux.ElementId).toEqualTypeOf<Elements>()

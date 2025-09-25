@@ -38,7 +38,7 @@ test('Builder types - style 2', () => {
             component('api'),
             component('db', {
               metadata: {
-                key1: 'value1',
+                key1: ['value1'],
               },
             }),
           ),

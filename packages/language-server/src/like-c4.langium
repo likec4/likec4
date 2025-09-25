@@ -238,7 +238,15 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=IdTerminal ':'? value=MarkdownOrString ';'?
+  key=IdTerminal ':'? value=MetadataValue ';'?
+;
+
+MetadataValue:
+  MarkdownOrString | MetadataArray
+;
+
+MetadataArray:
+  '[' values+=(MarkdownOrString) (',' values+=(MarkdownOrString))* ']'
 ;
 
 // Views -------------------------------------
