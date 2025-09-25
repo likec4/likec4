@@ -1,12 +1,11 @@
 import { findLast, first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
 import { modelConnection } from '../../model'
-import type { AnyAux, aux, scalar } from '../../types'
+import type { AnyAux, aux, DynamicStep, scalar } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
-  type DynamicViewStep,
   type NonEmptyArray,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
@@ -15,7 +14,8 @@ import {
   _stage,
   _type,
   exact,
-  isDynamicViewParallelSteps,
+  isDynamicStepsParallel,
+  isDynamicStepsSeries,
   isViewRuleAutoLayout,
   isViewRulePredicate,
   stepEdgeId,
@@ -75,7 +75,7 @@ class DynamicViewCompute<A extends AnyAux> {
       navigateTo: stepNavigateTo,
       notation, // omit]
       ...step
-    }: DynamicViewStep<A>,
+    }: DynamicStep<A>,
     index: number,
     parent?: number,
   ) {
@@ -102,7 +102,7 @@ class DynamicViewCompute<A extends AnyAux> {
       title: stepTitle ?? title,
       relations: relations ?? [],
       isBackward: isBackward ?? false,
-      ...navigateTo && { navigateTo },
+      navigateTo,
       ...derived,
       ...step,
     }))
@@ -118,19 +118,18 @@ class DynamicViewCompute<A extends AnyAux> {
 
     let stepNum = 1
     for (const step of viewSteps) {
-      if (isDynamicViewParallelSteps(step)) {
-        if (step.__parallel.length === 0) {
-          continue
+      if (isDynamicStepsParallel(step)) {
+        const steps = flatMap(step.__parallel, s => isDynamicStepsSeries(s) ? s.__series : s)
+        for (let i = 0; i < steps.length; i++) {
+          this.addStep(steps[i]!, i + 1, stepNum)
         }
-        if (step.__parallel.length === 1) {
-          this.addStep(step.__parallel[0]!, stepNum)
-        } else {
-          step.__parallel.forEach((s, i) => this.addStep(s, i + 1, stepNum))
-        }
-      } else {
-        this.addStep(step, stepNum)
+        stepNum++
+        continue
       }
-      stepNum++
+      const steps = isDynamicStepsSeries(step) ? step.__series : [step]
+      for (let i = 0; i < steps.length; i++) {
+        this.addStep(steps[i]!, stepNum++)
+      }
     }
 
     const rules = resolveGlobalRulesInDynamicView(_rules, this.model.globals)
@@ -251,12 +250,12 @@ class DynamicViewCompute<A extends AnyAux> {
       return {}
     }
     if (relationships.length === 1) {
-      const relation = first(relationships)
+      const relation = relationships[0]
       return exact({
         title: relation.title ?? undefined,
         tags: relation.tags,
         relations: [relation.id],
-        navigateTo: relation.navigateTo?.id,
+        navigateTo: relation.$relationship.navigateTo,
         color: relation.$relationship.color,
         line: relation.$relationship.line,
       })
@@ -271,14 +270,16 @@ class DynamicViewCompute<A extends AnyAux> {
 
     // Most closest relation
     const relation = first(relationships)
-    let navigateTo = relation.navigateTo?.id
+    let navigateTo = relation.$relationship.navigateTo
     if (navigateTo === this.view.id) {
       navigateTo = undefined
     }
     if (!navigateTo) {
       navigateTo = pipe(
         relationships,
-        flatMap(r => r.navigateTo && r.navigateTo.id !== this.view.id ? r.navigateTo.id : []),
+        flatMap(r =>
+          r.$relationship.navigateTo && r.$relationship.navigateTo !== this.view.id ? r.$relationship.navigateTo : []
+        ),
         unique(),
         only(),
       )

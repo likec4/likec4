@@ -108,7 +108,7 @@ export interface AbstractRelationship<A extends AnyAux>
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   // Link to dynamic view
-  readonly navigateTo?: aux.ViewId<A>
+  readonly navigateTo?: aux.StrictViewId<A>
 }
 
 /**

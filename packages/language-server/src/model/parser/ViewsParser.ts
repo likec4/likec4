@@ -315,14 +315,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               if (ast.isDynamicViewParallelSteps(n)) {
                 acc.push(this.parseDynamicParallelSteps(n))
               } else {
-                acc.push(...this.parseDynamicStep(n))
+                acc.push(this.parseDynamicStep(n))
               }
             }
           } catch (e) {
             logger.warn(loggable(e))
           }
           return acc
-        }, [] as c4.DynamicViewStepOrParallel[]),
+        }, [] as c4.DynamicViewStep[]),
         ...(manualLayout && { manualLayout }),
       }
     }
@@ -362,36 +362,79 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return { include }
     }
 
-    parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicViewParallelSteps {
+    parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
+      const parallelId = pathInsideDynamicView(node)
+      const __parallel = node.steps.map(step => this.parseDynamicStep(step))
+      invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
       return {
-        __parallel: node.steps.flatMap(step => this.parseDynamicStep(step)),
+        parallelId,
+        __parallel,
       }
     }
 
     /**
      * @returns non-empty array in case of step chain A -> B -> C
      */
-    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep[] {
-      try {
-        if (ast.isDynamicStepSingle(node)) {
-          return this.isValid(node) ? [this.parseDynamicStepSingle(node)] : []
-        }
-        const previousSteps = this.parseDynamicStep(node.source)
-        if (!isNonEmptyArray(previousSteps)) {
-          return []
-        }
-        let baseStep = {
-          ...this.parseAbstractDynamicStep(node),
-          source: last(previousSteps).target,
-        }
-        return [...previousSteps, baseStep]
-      } catch (e) {
-        logger.warn(loggable(e))
-        return []
+    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicStep | c4.DynamicStepsSeries {
+      if (ast.isDynamicStepSingle(node)) {
+        invariant(this.isValid(node))
+        return this.parseDynamicStepSingle(node)
+      }
+      const __series = this.recursiveParseDynamicStepChain(node)
+      invariant(isNonEmptyArray(__series), 'Dynamic step chain must have at least one step')
+      return {
+        seriesId: pathInsideDynamicView(node),
+        __series,
       }
     }
 
-    parseDynamicStepSingle(node: ast.DynamicStepSingle): c4.DynamicViewStep {
+    recursiveParseDynamicStepChain(
+      node: ast.DynamicStepChain,
+      callstack?: Array<[source: c4.Fqn, target: c4.Fqn]>,
+    ): c4.DynamicStep[] {
+      if (ast.isDynamicStepSingle(node.source)) {
+        if (!this.isValid(node.source)) {
+          return []
+        }
+        const previous = this.parseDynamicStepSingle(node.source)
+        const thisStep = {
+          ...this.parseAbstractDynamicStep(node),
+          source: previous.target,
+        }
+        // if target is the same as source of previous step, then it is a backward step
+        // A -> B -> A
+        if (thisStep.target === previous.source) {
+          thisStep.isBackward = true
+        } else if (callstack) {
+          callstack.push([previous.source, previous.target])
+          callstack.push([thisStep.source, thisStep.target])
+        }
+        return [previous, thisStep]
+      }
+
+      callstack ??= []
+      const allprevious = this.recursiveParseDynamicStepChain(node.source, callstack)
+      if (!isNonEmptyArray(allprevious)) {
+        return []
+      }
+      invariant(this.isValid(node))
+
+      const previous = last(allprevious)
+      const thisStep = {
+        ...this.parseAbstractDynamicStep(node),
+        source: previous.target,
+      }
+      const index = callstack.findIndex(([source, target]) => source === thisStep.target && target === thisStep.source)
+      if (index !== -1) {
+        thisStep.isBackward = true
+        callstack.splice(index, callstack.length - index)
+      } else {
+        callstack.push([thisStep.source, thisStep.target])
+      }
+      return [...allprevious, thisStep]
+    }
+
+    parseDynamicStepSingle(node: ast.DynamicStepSingle): c4.DynamicStep {
       const sourceEl = elementRef(node.source)
       if (!sourceEl) {
         throw new Error('Invalid reference to source')
@@ -414,15 +457,19 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseAbstractDynamicStep(
       astnode: ast.AbstractDynamicStep,
-    ): Writable<Except<c4.DynamicViewStep, 'source', { requireExactProps: true }>> {
-      const step = {} as Writable<Omit<c4.DynamicViewStep, 'source'>>
+    ): Writable<Except<c4.DynamicStep, 'source', { requireExactProps: true }>> {
+      const step = {} as Writable<Omit<c4.DynamicStep, 'source'>>
 
       const targetEl = elementRef(astnode.target)
       if (!targetEl) {
         throw new Error('Invalid reference to target')
       }
       step.target = this.resolveFqn(targetEl)
-      step.title = removeIndent(astnode.title) ?? null
+
+      const title = removeIndent(astnode.title)
+      if (title) {
+        step.title = title
+      }
 
       const kind = astnode.kind?.ref?.name ?? astnode.dotKind?.kind.ref?.name
       if (kind) {
@@ -489,4 +536,15 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return step
     }
   }
+}
+
+function pathInsideDynamicView(_node: ast.DynamicStepChain | ast.DynamicViewParallelSteps): string {
+  let node: ast.DynamicStepChain | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
+  let path = []
+  while (!ast.isDynamicViewBody(node)) {
+    path.unshift(`/${node.$containerProperty ?? '__invalid__'}@${node.$containerIndex ?? 0}`)
+    node = node.$container
+  }
+
+  return path.join('')
 }

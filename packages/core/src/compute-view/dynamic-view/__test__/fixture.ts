@@ -1,8 +1,8 @@
 import { partition } from 'remeda'
 import type {
+  DynamicStep,
   DynamicViewIncludeRule,
   DynamicViewRule,
-  DynamicViewStep,
   ElementViewPredicate,
   Fqn,
   ParsedDynamicView as DynamicView,
@@ -22,9 +22,9 @@ const emptyView = {
 }
 
 type StepExpr = `${FakeElementIds} ${'->' | '<-'} ${FakeElementIds}`
-type StepProps = Omit<DynamicViewStep, 'source' | 'target' | 'isBackward'>
+type StepProps = Omit<DynamicStep, 'source' | 'target' | 'isBackward'>
 
-export function $step(expr: StepExpr, props?: string | Partial<StepProps>): DynamicViewStep {
+export function $step(expr: StepExpr, props?: string | Partial<StepProps>): DynamicStep {
   const title = typeof props === 'string' ? props : props?.title
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
@@ -49,9 +49,9 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
 }
 
 export function compute(
-  stepsAndRules: (DynamicViewStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
+  stepsAndRules: (DynamicStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
 ) {
-  const [steps, rules] = partition(stepsAndRules, (s): s is DynamicViewStep => 'source' in s)
+  const [steps, rules] = partition(stepsAndRules, (s): s is DynamicStep => 'source' in s)
   let view = computeDynamicView(
     fakeModel,
     {

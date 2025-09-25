@@ -287,13 +287,6 @@
               }
             }
           }
-        },
-        "customCss": {
-          "description": "List of custom CSS files",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
