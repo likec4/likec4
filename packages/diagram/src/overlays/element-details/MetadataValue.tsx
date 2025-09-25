@@ -1,75 +1,10 @@
 import { css } from '@likec4/styles/css'
 import { Box, Flex, ScrollAreaAutosize, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core'
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
-
-// Global context for expand/collapse all state
-const MetadataExpandContext = createContext<
-  {
-    isGloballyExpanded: boolean
-    setGloballyExpanded: (expanded: boolean) => void
-  } | null
->(null)
+import { useEffect, useRef, useState } from 'react'
 
 export function MetadataProvider({ children }: { children: React.ReactNode }) {
-  const [isGloballyExpanded, setIsGloballyExpanded] = useState(() => {
-    // Remember preference from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('metadata-expanded')
-      return saved ? JSON.parse(saved) : false
-    }
-    return false
-  })
-
-  const setGloballyExpanded = (expanded: boolean) => {
-    setIsGloballyExpanded(expanded)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('metadata-expanded', JSON.stringify(expanded))
-    }
-  }
-
-  return (
-    <MetadataExpandContext.Provider value={{ isGloballyExpanded, setGloballyExpanded }}>
-      {children}
-    </MetadataExpandContext.Provider>
-  )
-}
-
-export function MetadataExpandAllButton() {
-  const context = useContext(MetadataExpandContext)
-  if (!context) return null
-
-  const { isGloballyExpanded, setGloballyExpanded } = context
-
-  return (
-    <Tooltip label={isGloballyExpanded ? 'Collapse all metadata values' : 'Expand all metadata values'}>
-      <UnstyledButton
-        onClick={() => setGloballyExpanded(!isGloballyExpanded)}
-        className={css({
-          fontSize: 'xs',
-          color: 'mantine.colors.primary[6]',
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'xxs',
-          padding: 'xs',
-          borderRadius: 'md',
-          transition: 'all 150ms ease',
-          _hover: {
-            backgroundColor: 'mantine.colors.primary[0]',
-            color: 'mantine.colors.primary[7]',
-            _dark: {
-              backgroundColor: 'mantine.colors.primary[9]',
-              color: 'mantine.colors.primary[4]',
-            },
-          },
-        })}
-      >
-        {isGloballyExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
-        {isGloballyExpanded ? 'Collapse all' : 'Expand all'}
-      </UnstyledButton>
-    </Tooltip>
-  )
+  return <>{children}</>
 }
 
 interface MetadataValueProps {
@@ -129,34 +64,35 @@ function MultiValueDisplay({
   onToggle: () => void
 }) {
   if (isExpanded) {
-    // Expanded: Show each value in its own bordered container
+    // Expanded: Show each value with separator markers, no borders
     return (
       <Stack gap="xs">
         {values.map((value, index) => (
-          <Box
-            key={index}
-            className={css({
-              borderRadius: 'sm',
-              border: '1px solid',
-              borderColor: 'mantine.colors.gray[3]',
-              backgroundColor: 'mantine.colors.white',
-              transition: 'all 150ms ease',
-              _dark: {
-                borderColor: 'mantine.colors.dark[4]',
-                backgroundColor: 'mantine.colors.dark[9]',
-              },
-              _hover: {
-                borderColor: 'mantine.colors.gray[4]',
-                backgroundColor: 'mantine.colors.gray[1]',
+          <Flex key={index} align="center" gap="xs">
+            <Text
+              className={css({
+                fontSize: 'xs',
+                color: 'mantine.colors.gray[5]',
+                fontWeight: 500,
+                flexShrink: 0,
                 _dark: {
-                  backgroundColor: 'mantine.colors.dark[7]',
-                  borderColor: 'mantine.colors.dark[3]',
+                  color: 'mantine.colors.dark[3]',
                 },
-              },
-            })}
-          >
-            <TruncatedValue value={value} isExpanded={true} />
-          </Box>
+              })}
+            >
+              •
+            </Text>
+            <Box
+              className={css({
+                minHeight: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                flex: 1,
+              })}
+            >
+              <TruncatedValue value={value} isExpanded={true} />
+            </Box>
+          </Flex>
         ))}
       </Stack>
     )
@@ -261,21 +197,10 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
     : [value]
 
   const hasMultipleElements = elements.length > 1
-  const [isLocallyExpanded, setIsLocallyExpanded] = useState(false)
-  const context = useContext(MetadataExpandContext)
-
-  // Global state overrides local state when set, otherwise use local state
-  const isExpanded = context?.isGloballyExpanded || isLocallyExpanded
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const handleToggle = () => {
-    // If global expand is active, first turn it off, then set local state
-    if (context?.isGloballyExpanded) {
-      context.setGloballyExpanded(false)
-      setIsLocallyExpanded(true) // Keep this item expanded
-    } else {
-      // Toggle local state when global is not active
-      setIsLocallyExpanded(!isLocallyExpanded)
-    }
+    setIsExpanded(!isExpanded)
   }
 
   return (
@@ -375,7 +300,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
                 alignItems: 'center',
               })}
             >
-              <TruncatedValue value={elements[0]} isExpanded={isExpanded} />
+              <TruncatedValue value={elements[0] || ''} isExpanded={isExpanded} />
             </Box>
           )}
       </Box>

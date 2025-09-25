@@ -50,7 +50,7 @@ import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
-import { MetadataExpandAllButton, MetadataProvider, MetadataValue } from './MetadataValue'
+import { MetadataProvider, MetadataValue } from './MetadataValue'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
@@ -596,23 +596,10 @@ function ElementMetata({
 }) {
   const metadataEntries = entries(metadata).sort(([a], [b]) => a.localeCompare(b))
 
-  // Check if any metadata entry has expandable content (arrays or multiline strings)
-  const hasExpandableContent = metadataEntries.some(([, value]) => {
-    const elements = Array.isArray(value)
-      ? value
-      : typeof value === 'string' && value.includes('\n')
-      ? value.split('\n').map(s => s.trim()).filter(Boolean)
-      : [value]
-    return elements.length > 1
-  })
-
   return (
     <MetadataProvider>
       <>
-        <Stack gap="xs" style={{ justifySelf: 'end', textAlign: 'right' }}>
-          <PropertyLabel>metadata</PropertyLabel>
-          {hasExpandableContent && <MetadataExpandAllButton />}
-        </Stack>
+        <PropertyLabel style={{ justifySelf: 'end', textAlign: 'right' }}>metadata</PropertyLabel>
         <Box
           className={css({
             display: 'grid',
