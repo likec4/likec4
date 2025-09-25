@@ -53,6 +53,7 @@ namespace DynamicViewCompute {
     isBackward: boolean
     navigateTo?: aux.StrictViewId<A>
     tags?: aux.Tags<A>
+    astPath: string
   }
 }
 

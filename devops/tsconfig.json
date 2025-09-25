@@ -26,6 +26,6 @@
   },
   "include": [
     "likec4ops.ts",
-    "commands"
+    "commands/**/*"
   ]
 }

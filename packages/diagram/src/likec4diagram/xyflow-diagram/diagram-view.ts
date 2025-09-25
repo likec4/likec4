@@ -263,6 +263,7 @@ export function diagramToXY(opts: {
         dir: edge.dir ?? 'forward',
         head: edge.head ?? 'normal',
         tail: edge.tail ?? 'none',
+        astPath: edge.astPath,
       },
       interactionWidth: 20,
     })

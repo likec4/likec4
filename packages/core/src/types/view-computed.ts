@@ -91,6 +91,12 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
    */
   isCustomized?: boolean
   /**
+   * Path to the AST node relative to the view body ast
+   * Available only in dynamic views
+   * @internal
+   */
+  astPath?: string
+  /**
    * For layouting purposes
    * @default 'forward'
    */

@@ -223,6 +223,7 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
+        | 'astPath'
       >
     >
     & {
@@ -247,6 +248,7 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
+        | 'astPath'
       >
     >
     & {

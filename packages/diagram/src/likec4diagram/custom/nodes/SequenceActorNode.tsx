@@ -35,20 +35,15 @@ const ActorStepPort = ({
             _whenHovered: '7px',
             _whenSelected: '7px',
           },
-          // pointerEvents: 'none',
           transition: 'fast',
           translateX: '-1/2',
           translateY: '-1/2',
           translate: 'auto',
-          // transform: 'translate',
         })}
         style={{
           top: p.cy,
           left: p.cx,
           height: p.height,
-          // transform: p.type === 'source' ? 'translate(-50%, -16px)' : 'translate(-50%, -50%)',
-          // transform: 'translate(-50%, -50%)',
-          // zIndex: p.type === 'source' ? 1 : 0,
         }}
       />
       <Handle
@@ -95,7 +90,6 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
           transition: 'fast',
           translateX: '-1/2',
           translate: 'auto',
-          // transform: 'translate',
         })}
         style={{
           backgroundColor: 'var(--likec4-palette-stroke)',
@@ -105,32 +99,8 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
           height: viewHeight - positionAbsoluteY,
           zIndex: -1,
           pointerEvents: 'none',
-          // top: p.y,
-          // left: p.width / 2,
-          // height: p.type === 'source' ? 48 : 32,
-          // transform: p.type === 'source' ? 'translate(-50%, -16px)' : 'translate(-50%, -50%)',
-          // transform: 'translate(-50%, -50%)',
-          // zIndex: p.type === 'source' ? 1 : 0,
         }}
       />
-      {
-        /* <div
-        // css={{
-        //   backgroundColor: 'var(--likec4-palette-fill)',
-        // }}
-        style={{
-          position: 'absolute',
-          backgroundColor: defaultTheme.elements.gray.fill,
-          opacity: 0.5,
-          top: 8,
-          left: 'calc(50% - 1px)',
-          width: 2,
-          height: viewHeight - positionAbsoluteY,
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}>
-      </div> */
-      }
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
         <ElementData {...props} />

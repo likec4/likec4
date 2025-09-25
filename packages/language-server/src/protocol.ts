@@ -213,20 +213,40 @@ export namespace BuildDocuments {
  */
 export namespace Locate {
   export type Params =
+    /**
+     * Locate an element by its fqn
+     */
     | {
       element: Fqn
       projectId?: string | undefined
       property?: string
     }
+    /**
+     * Locate a relation by its id
+     */
     | {
       projectId?: string | undefined
       relation: RelationId
     }
+    /**
+     * Locate a deployment by its fqn
+     */
     | {
       deployment: DeploymentFqn
       projectId?: string | undefined
       property?: string
     }
+    /**
+     * Locate a step in a dynamic view by its astPath
+     */
+    | {
+      view: ViewId
+      astPath: string
+      projectId?: string | undefined
+    }
+    /**
+     * Locate a view by its id
+     */
     | {
       view: ViewId
       projectId?: string | undefined

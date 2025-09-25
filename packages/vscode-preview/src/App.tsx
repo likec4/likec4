@@ -111,6 +111,10 @@ function Initialized() {
             event.preventDefault()
           }}
           onEdgeClick={(edge) => {
+            if (view._type === 'dynamic' && edge.astPath) {
+              extensionApi.locate({ view: view.id, astPath: edge.astPath })
+              return
+            }
             const relationId = only(edge.relations)
             if (relationId) {
               extensionApi.locate({ relation: relationId })

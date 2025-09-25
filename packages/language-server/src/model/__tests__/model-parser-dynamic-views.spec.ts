@@ -45,6 +45,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     expect(view.steps).toMatchInlineSnapshot(`
       [
         {
+          "astPath": "/steps@0",
           "color": "red",
           "description": {
             "md": "# Markdown",
@@ -82,14 +83,17 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
         {
           "__series": [
             {
+              "astPath": "/steps@0/source/source",
               "source": "A",
               "target": "B",
             },
             {
+              "astPath": "/steps@0/source",
               "source": "B",
               "target": "C",
             },
             {
+              "astPath": "/steps@0",
               "source": "C",
               "target": "D",
             },
@@ -101,10 +105,12 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
             {
               "__series": [
                 {
+                  "astPath": "/steps@1/steps@0/source",
                   "source": "A",
                   "target": "C",
                 },
                 {
+                  "astPath": "/steps@1/steps@0",
                   "source": "C",
                   "target": "B",
                 },
@@ -112,16 +118,19 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
               "seriesId": "/steps@1/steps@0",
             },
             {
+              "astPath": "/steps@1/steps@1",
               "source": "B",
               "target": "D",
             },
             {
               "__series": [
                 {
+                  "astPath": "/steps@1/steps@2/source",
                   "source": "A",
                   "target": "D",
                 },
                 {
+                  "astPath": "/steps@1/steps@2",
                   "source": "D",
                   "target": "C",
                 },
@@ -201,11 +210,13 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
         {
           "__series": [
             {
+              "astPath": "/steps@0/source",
               "source": "A",
               "target": "B",
               "title": "title 1",
             },
             {
+              "astPath": "/steps@0",
               "source": "B",
               "target": "C",
               "title": "title 2",
@@ -237,12 +248,14 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
         {
           "__series": [
             {
+              "astPath": "/steps@0/source",
               "color": "red",
               "source": "A",
               "target": "B",
               "title": "title 1",
             },
             {
+              "astPath": "/steps@0",
               "source": "B",
               "target": "C",
               "title": "title 2",
@@ -270,11 +283,13 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
         {
           "__series": [
             {
+              "astPath": "/steps@0/source",
               "kind": "uses",
               "source": "A",
               "target": "B",
             },
             {
+              "astPath": "/steps@0",
               "kind": "uses",
               "source": "B",
               "target": "C",

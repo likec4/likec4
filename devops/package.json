@@ -4,7 +4,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -b"
   },
   "bin": {
     "likec4ops": "./likec4ops.ts"

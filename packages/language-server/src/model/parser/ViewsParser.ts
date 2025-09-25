@@ -1,7 +1,7 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { loggable } from '@likec4/log'
-import { filter, find, isDefined, isEmpty, isNonNullish, isTruthy, last, mapToObj, pipe } from 'remeda'
+import { filter, find, isDefined, isEmpty, isNonNullish, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
 import type { Except, Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
@@ -458,13 +458,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     parseAbstractDynamicStep(
       astnode: ast.AbstractDynamicStep,
     ): Writable<Except<c4.DynamicStep, 'source', { requireExactProps: true }>> {
-      const step = {} as Writable<Omit<c4.DynamicStep, 'source'>>
-
       const targetEl = elementRef(astnode.target)
       if (!targetEl) {
         throw new Error('Invalid reference to target')
       }
-      step.target = this.resolveFqn(targetEl)
+      const step: Writable<Omit<c4.DynamicStep, 'source'>> = {
+        target: this.resolveFqn(targetEl),
+        astPath: pathInsideDynamicView(astnode),
+      }
 
       const title = removeIndent(astnode.title)
       if (title) {
@@ -538,11 +539,18 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
   }
 }
 
-function pathInsideDynamicView(_node: ast.DynamicStepChain | ast.DynamicViewParallelSteps): string {
-  let node: ast.DynamicStepChain | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
+function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps): string {
+  let node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
   let path = []
   while (!ast.isDynamicViewBody(node)) {
-    path.unshift(`/${node.$containerProperty ?? '__invalid__'}@${node.$containerIndex ?? 0}`)
+    if (isNumber(node.$containerIndex)) {
+      path.unshift(
+        `@${node.$containerIndex}`,
+      )
+    }
+    path.unshift(
+      `/${node.$containerProperty ?? '__invalid__'}`,
+    )
     node = node.$container
   }
 

@@ -301,6 +301,10 @@ export type OpenSourceParams<A extends Any = Any> =
   | {
     view: StrictViewId<A>
   }
+  | { // Dynamic view step
+    view: StrictViewId<A>
+    astPath: string
+  }
 
 /**
  * "Go to source" action

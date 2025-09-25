@@ -133,6 +133,13 @@ function WorkspaceDiagramPage() {
               })
             }}
             onEdgeClick={(edge, event) => {
+              if (_diagram._type === 'dynamic' && edge.astPath) {
+                playground.openSources({
+                  view: _diagram.id,
+                  astPath: edge.astPath,
+                })
+                return
+              }
               const relationId = only(edge.relations)
               if (relationId) {
                 playground.openSources({

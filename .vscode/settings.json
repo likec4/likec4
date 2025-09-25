@@ -56,6 +56,7 @@
     "packages/*/lib": true,
     "apps/*/lib": true,
     "apps/*/styled-system": true,
+    "devops/lib": true,
     "styled-system/*/node_modules": true,
     "styled-system/*/lib": true
   },

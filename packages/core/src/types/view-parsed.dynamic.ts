@@ -32,6 +32,12 @@ export interface DynamicStep<A extends AnyAux = AnyAux> {
 
   // Link to dynamic view
   readonly navigateTo?: aux.StrictViewId<A>
+
+  /**
+   * Path to the AST node relative to the view body ast
+   * Used to locate the step in the source code
+   */
+  readonly astPath: string
 }
 
 export interface DynamicStepsSeries<A extends AnyAux = AnyAux> {

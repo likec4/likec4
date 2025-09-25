@@ -276,11 +276,6 @@ const _diagramMachine = setup({
       type: 'navigateTo',
       viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
     })),
-
-    'trigger:OpenSource': emit((_, _params: OpenSourceParams) => ({
-      type: 'openSource',
-      params: _params,
-    })),
     'assign lastClickedNode': assign(({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return {
@@ -694,6 +689,10 @@ const _diagramMachine = setup({
         instance: context.xyflow,
       }
     }),
+    'emit: openSource': emit((_, _params: OpenSourceParams) => ({
+      type: 'openSource',
+      params: _params,
+    })),
     'assign: dynamicViewVariant': assign(({ event }) => {
       assertEvent(event, 'switch.dynamicViewVariant')
       return {
@@ -861,7 +860,7 @@ const _diagramMachine = setup({
         },
         'open.source': {
           actions: {
-            type: 'trigger:OpenSource',
+            type: 'emit: openSource',
             params: prop('event'),
           },
         },
@@ -993,7 +992,7 @@ const _diagramMachine = setup({
               actions: [
                 'reset lastClickedNode',
                 'xyflow:fitDiagram',
-                { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
+                { type: 'emit: openSource', params: ({ context }) => ({ view: context.view.id }) },
               ],
             },
             'focus.node': {

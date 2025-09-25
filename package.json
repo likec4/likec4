@@ -3,14 +3,14 @@
   "version": "1.41.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.17.0",
+  "packageManager": "pnpm@10.17.1",
   "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": "~20.19.3 || ~22.18.0 || ~24.5.0 || ~24.7.0"
+    "node": "~20.19.3 || ~22.19.0 || ~24.7.0"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",

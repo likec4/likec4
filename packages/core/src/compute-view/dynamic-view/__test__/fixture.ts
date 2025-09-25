@@ -31,6 +31,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
     return {
       source: source as Fqn,
       target: target as Fqn,
+      astPath: '',
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
     }
@@ -40,6 +41,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
     return {
       source: source as Fqn,
       target: target as Fqn,
+      astPath: '',
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
       isBackward: true,
