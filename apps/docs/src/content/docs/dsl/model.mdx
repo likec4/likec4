@@ -338,6 +338,40 @@ model {
 }
 ```
 
+### Metadata Properties Behavior
+
+**Alphabetic Ordering**: Metadata properties are automatically sorted alphabetically when displayed in element details, regardless of the order they are defined in the DSL. This ensures consistent presentation across all elements.
+
+**Property Duplications**: When the same property name is defined multiple times within a metadata block, all values are collected into an array, preserving their order of definition:
+
+```likec4 copy
+model {
+  service = component 'Payment Service' {
+    metadata {
+      version '1.0.0'               // First value
+      version '2.0.0'               // Second value  
+      // Result: version: ['1.0.0', '2.0.0']
+      
+      owner ['team-a', 'team-b']    // First: array values
+      owner 'team-c'                // Second: single value
+      // Result: owner: ['team-a', 'team-b', 'team-c']
+      
+      tags 'primary'                // First: single value
+      tags ['backend', 'critical']  // Second: array values  
+      // Result: tags: ['primary', 'backend', 'critical']
+      
+      ports ['8080', '9090']        // First: array values
+      ports ['3000', '4000']        // Second: array values
+      // Result: ports: ['8080', '9090', '3000', '4000']
+    }
+  }
+}
+```
+
+This behavior applies to **all duplicate keys**. 
+
+All metadata properties are displayed alphabetically, regardless of definition order.
+
 ## Structure
 
 Any element is a container and can contain other elements.  
