@@ -42,6 +42,7 @@
         'pnpm',
         'semver',
         'terser',
+        'caniuse-lite',
         '@fontsource-variable/**',
         '@fontsource/**',
       ]
