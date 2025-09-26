@@ -339,8 +339,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
     return this.$data.specification
   }
 
-  get globals(): ModelGlobals {
-    return memoizeProp(this, Symbol.for('globals'), (): ModelGlobals => ({
+  get globals(): ModelGlobals<A> {
+    return memoizeProp(this, Symbol.for('globals'), (): ModelGlobals<A> => ({
       predicates: {
         ...this.$data.globals?.predicates,
       },

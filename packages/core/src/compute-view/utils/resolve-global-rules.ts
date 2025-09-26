@@ -37,7 +37,7 @@ export function resolveGlobalRules<A extends AnyAux>(
   nonexhaustive(view)
 }
 
-type ViewRuleGlobal = ViewRuleGlobalPredicateRef | ViewRuleGlobalStyle
+export type ViewRuleGlobal = ViewRuleGlobalPredicateRef | ViewRuleGlobalStyle
 
 export function resolveGlobalRulesInElementView<M extends AnyAux>(
   rules: ElementViewRule<M>[],

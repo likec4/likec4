@@ -397,6 +397,12 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           return []
         }
         const previous = this.parseDynamicStepSingle(node.source)
+
+        // Head of the chain cannot be backward
+        if (previous.isBackward) {
+          return []
+        }
+
         const thisStep = {
           ...this.parseAbstractDynamicStep(node),
           source: previous.target,
@@ -414,10 +420,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       callstack ??= []
       const allprevious = this.recursiveParseDynamicStepChain(node.source, callstack)
-      if (!isNonEmptyArray(allprevious)) {
+      if (!isNonEmptyArray(allprevious) || !this.isValid(node)) {
         return []
       }
-      invariant(this.isValid(node))
 
       const previous = last(allprevious)
       const thisStep = {
@@ -491,7 +496,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
                 if (prop.key === 'description') {
-                  const value = this.parseMarkdownOrString(prop.value)
+                  const value = removeIndent(prop.value)
                   if (value) {
                     step.description = value
                   }
