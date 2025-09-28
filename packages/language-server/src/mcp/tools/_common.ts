@@ -22,7 +22,7 @@ export const locationSchema = z.object({
 }).nullable()
 
 export const projectIdSchema = z.string()
-  .refine((v): v is ProjectId => true)
+  .refine((_v): _v is ProjectId => true)
   .optional()
   .default(ProjectsManager.DefaultProjectId)
   .describe('Project id (optional, will use "default" if not specified)')
@@ -55,7 +55,7 @@ export const mkLocate = (
       }
       : null
   } catch (e) {
-    logger.debug(`Failed to locate ${params}`, { error: e })
+    logger.debug(`Failed to locate {params}`, { error: e, params })
     return null
   }
 }

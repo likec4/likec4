@@ -1,4 +1,4 @@
-import type { Fqn, ProjectId } from '@likec4/core'
+import type { ProjectId } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -29,24 +29,24 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
   })
 }
 
-export const checkImported = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
-  const fqnIndex = services.likec4.FqnIndex
-  // const projects = services.shared.workspace.ProjectsManager
-  return tryOrLog((el, accept) => {
-    // const doc = getDocument(el)
-    // const importFromProject = el.$container.project as ProjectId
-    // if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
-    //   accept('error', 'Invalid import', {
-    //     node: el,
-    //   })
-    //   return
-    // }
-    // const fqn = fqnIndex.byFqn(importFromProject, el.element.$refText as Fqn).head()
-    // if (!fqn) {
-    //   accept('error', `Imported element not found in project "${importFromProject}"`, {
-    //     node: el,
-    //   })
-    //   return
-    // }
-  })
-}
+// export const checkImported = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
+//   const fqnIndex = services.likec4.FqnIndex
+//   const projects = services.shared.workspace.ProjectsManager
+//   return tryOrLog((el, accept) => {
+//     const doc = getDocument(el)
+//     const importFromProject = el.$container.project as ProjectId
+//     if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
+//       accept('error', 'Invalid import', {
+//         node: el,
+//       })
+//       return
+//     }
+//     const fqn = fqnIndex.byFqn(importFromProject, el.element.$refText as Fqn).head()
+//     if (!fqn) {
+//       accept('error', `Imported element not found in project "${importFromProject}"`, {
+//         node: el,
+//       })
+//       return
+//     }
+//   })
+// }

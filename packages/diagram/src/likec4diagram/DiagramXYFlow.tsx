@@ -4,19 +4,50 @@ import { useCallbackRef, useDebouncedCallback, useTimeout } from '@mantine/hooks
 import { useCustomCompareMemo } from '@react-hookz/web'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
+import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
+import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
+import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
-import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
-import type { DiagramContext } from '../state/types'
-import { BuiltinNodes as defaultNodeTypes, edgeTypes, SequenceParallelArea } from './custom'
-import { DiagramUI } from './DiagramUI'
+import { depsShallowEqual } from '../hooks/useUpdateEffect'
+import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
+import { BuiltinEdges, BuiltinNodes } from './custom'
+import type { DiagramContext } from './state/types'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
+
+const edgeTypes = {
+  relationship: BuiltinEdges.RelationshipEdge,
+  'seq-step': BuiltinEdges.SequenceStepEdge,
+}
+
+const builtinNodes = {
+  element: memoNode(BuiltinNodes.ElementNode),
+  deployment: memoNode(BuiltinNodes.DeploymentNode),
+  'compound-element': memoNode(BuiltinNodes.CompoundElementNode),
+  'compound-deployment': memoNode(BuiltinNodes.CompoundDeploymentNode),
+  'view-group': memoNode(BuiltinNodes.ViewGroupNode),
+  'seq-actor': memoNode(BuiltinNodes.SequenceActorNode),
+  'seq-parallel': memoNode(BuiltinNodes.SequenceParallelArea),
+}
+function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
+  if (!nodeTypes || isEmpty(nodeTypes)) {
+    return builtinNodes
+  }
+  return {
+    element: nodeTypes.element ?? builtinNodes.element,
+    deployment: nodeTypes.deployment ?? builtinNodes.deployment,
+    'compound-element': nodeTypes.compoundElement ?? builtinNodes['compound-element'],
+    'compound-deployment': nodeTypes.compoundDeployment ?? builtinNodes['compound-deployment'],
+    'view-group': nodeTypes.viewGroup ?? builtinNodes['view-group'],
+    'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
+    'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
+  }
+}
 
 const selectXYProps = (ctx: DiagramContext) => ({
   initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
@@ -118,19 +149,9 @@ export function LikeC4DiagramXYFlow({
       diagram.send({ type: 'xyflow.resized' })
     }),
     nodeTypes = useCustomCompareMemo(
-      () => {
-        return {
-          element: renderNodes?.element ?? defaultNodeTypes.element,
-          deployment: renderNodes?.deployment ?? defaultNodeTypes.deployment,
-          'compound-element': renderNodes?.compoundElement ?? defaultNodeTypes.compoundElement,
-          'compound-deployment': renderNodes?.compoundDeployment ?? defaultNodeTypes.compoundDeployment,
-          'view-group': renderNodes?.viewGroup ?? defaultNodeTypes.viewGroup,
-          'seq-actor': renderNodes?.sequenceActor ?? defaultNodeTypes.sequenceActor,
-          'seq-parallel': SequenceParallelArea,
-        } satisfies Record<Types.Node['type'], any>
-      },
+      () => prepareNodeTypes(renderNodes),
       [renderNodes],
-      shallowEqual,
+      depsShallowEqual,
     )
 
   useUpdateEffect(() => {
@@ -138,103 +159,98 @@ export function LikeC4DiagramXYFlow({
   }, [nodeTypes])
 
   return (
-    <>
-      <BaseXYFlow<Types.Node, Types.Edge>
-        nodes={nodes}
-        edges={edges}
-        className={cx(initialized ? 'initialized' : 'not-initialized')}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onNodesChange={useCallbackRef((changes) => {
-          diagram.send({ type: 'xyflow.applyNodeChanges', changes })
-        })}
-        onEdgesChange={useCallbackRef((changes) => {
-          diagram.send({ type: 'xyflow.applyEdgeChanges', changes })
-        })}
-        background={initialized ? background : 'transparent'}
-        // Fitview is handled in onInit
-        fitView={false}
-        onNodeClick={useCallbackRef((e, node) => {
-          e.stopPropagation()
-          diagram.send({ type: 'xyflow.nodeClick', node })
-          onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
-        })}
-        onEdgeClick={useCallbackRef((e, edge) => {
-          e.stopPropagation()
-          diagram.send({ type: 'xyflow.edgeClick', edge })
-          onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
-        })}
-        onPaneClick={useCallbackRef((e) => {
-          e.stopPropagation()
-          diagram.send({ type: 'xyflow.paneClick' })
-          onCanvasClick?.(e as any)
-        })}
-        onDoubleClick={useCallbackRef(e => {
-          e.stopPropagation()
-          e.preventDefault()
-          diagram.send({ type: 'xyflow.paneDblClick' })
-          onCanvasDblClick?.(e as any)
-        })}
-        onNodeMouseEnter={useCallbackRef((_event, node) => {
-          _event.stopPropagation()
-          if (!node.data.hovered) {
-            diagram.send({ type: 'xyflow.nodeMouseEnter', node })
-          }
-        })}
-        onNodeMouseLeave={useCallbackRef((_event, node) => {
-          _event.stopPropagation()
-          if (node.data.hovered) {
-            diagram.send({ type: 'xyflow.nodeMouseLeave', node })
-          }
-        })}
-        onEdgeMouseEnter={useCallbackRef((event, edge) => {
-          event.stopPropagation()
-          if (!edge.data.hovered) {
-            diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
-          }
-        })}
-        onEdgeMouseLeave={useCallbackRef((event, edge) => {
-          event.stopPropagation()
-          if (edge.data.hovered) {
-            diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
-          }
-        })}
-        {...props.pannable && {
-          onMove,
-        }}
-        onMoveEnd={onMoveEnd}
-        onInit={useCallbackRef((instance) => {
-          diagram.send({ type: 'xyflow.init', instance })
-        })}
-        onNodeContextMenu={useCallbackRef((event, node) => {
-          const diagramNode = nonNullable(
-            diagram.findDiagramNode(node.id as NodeId),
-            `diagramNode ${node.id} not found`,
-          )
-          onNodeContextMenu?.(diagramNode, event)
-        })}
-        onEdgeContextMenu={useCallbackRef((event, edge) => {
-          const diagramEdge = nonNullable(
-            diagram.findDiagramEdge(edge.id as EdgeId),
-            `diagramEdge ${edge.id} not found`,
-          )
-          onEdgeContextMenu?.(diagramEdge, event)
-        })}
-        onPaneContextMenu={useCallbackRef((event) => {
-          onCanvasContextMenu?.(event as any)
-        })}
-        {...enableFitView && {
-          onViewportResize,
-        }}
-        nodesDraggable={notReadOnly && nodesDraggable}
-        nodesSelectable={nodesSelectable}
-        edgesFocusable={false}
-        {...(notReadOnly && nodesDraggable && layoutConstraints)}
-        {...props}
-        {...reactFlowProps}>
-        {children}
-      </BaseXYFlow>
-      <DiagramUI key={'DiagramUI'} />
-    </>
+    <BaseXYFlow<Types.AnyNode, Types.AnyEdge>
+      nodes={nodes}
+      edges={edges}
+      className={cx(initialized ? 'initialized' : 'not-initialized')}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      onNodesChange={useCallbackRef((changes) => {
+        diagram.send({ type: 'xyflow.applyNodeChanges', changes })
+      })}
+      onEdgesChange={useCallbackRef((changes) => {
+        diagram.send({ type: 'xyflow.applyEdgeChanges', changes })
+      })}
+      background={initialized ? background : 'transparent'}
+      // Fitview is handled in onInit
+      fitView={false}
+      onNodeClick={useCallbackRef((e, node) => {
+        e.stopPropagation()
+        diagram.send({ type: 'xyflow.nodeClick', node })
+        onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
+      })}
+      onEdgeClick={useCallbackRef((e, edge) => {
+        e.stopPropagation()
+        diagram.send({ type: 'xyflow.edgeClick', edge })
+        onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
+      })}
+      onPaneClick={useCallbackRef((e) => {
+        e.stopPropagation()
+        diagram.send({ type: 'xyflow.paneClick' })
+        onCanvasClick?.(e as any)
+      })}
+      onDoubleClick={useCallbackRef(e => {
+        e.stopPropagation()
+        e.preventDefault()
+        diagram.send({ type: 'xyflow.paneDblClick' })
+        onCanvasDblClick?.(e as any)
+      })}
+      onNodeMouseEnter={useCallbackRef((_event, node) => {
+        _event.stopPropagation()
+        if (!node.data.hovered) {
+          diagram.send({ type: 'xyflow.nodeMouseEnter', node })
+        }
+      })}
+      onNodeMouseLeave={useCallbackRef((_event, node) => {
+        _event.stopPropagation()
+        if (node.data.hovered) {
+          diagram.send({ type: 'xyflow.nodeMouseLeave', node })
+        }
+      })}
+      onEdgeMouseEnter={useCallbackRef((event, edge) => {
+        event.stopPropagation()
+        if (!edge.data.hovered) {
+          diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
+        }
+      })}
+      onEdgeMouseLeave={useCallbackRef((event, edge) => {
+        event.stopPropagation()
+        if (edge.data.hovered) {
+          diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
+        }
+      })}
+      onMove={onMove}
+      onMoveEnd={onMoveEnd}
+      onInit={useCallbackRef((instance) => {
+        diagram.send({ type: 'xyflow.init', instance })
+      })}
+      onNodeContextMenu={useCallbackRef((event, node) => {
+        const diagramNode = nonNullable(
+          diagram.findDiagramNode(node.id as NodeId),
+          `diagramNode ${node.id} not found`,
+        )
+        onNodeContextMenu?.(diagramNode, event)
+      })}
+      onEdgeContextMenu={useCallbackRef((event, edge) => {
+        const diagramEdge = nonNullable(
+          diagram.findDiagramEdge(edge.id as EdgeId),
+          `diagramEdge ${edge.id} not found`,
+        )
+        onEdgeContextMenu?.(diagramEdge, event)
+      })}
+      onPaneContextMenu={useCallbackRef((event) => {
+        onCanvasContextMenu?.(event as any)
+      })}
+      {...enableFitView && {
+        onViewportResize,
+      }}
+      nodesDraggable={notReadOnly && nodesDraggable}
+      nodesSelectable={nodesSelectable}
+      edgesFocusable={false}
+      {...(notReadOnly && nodesDraggable && layoutConstraints)}
+      {...props}
+      {...reactFlowProps}>
+      {children}
+    </BaseXYFlow>
   )
 }

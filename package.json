@@ -1,20 +1,22 @@
 {
   "name": "root",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.17.0",
+  "packageManager": "pnpm@10.18.1",
   "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": "~20.19.3 || ~22.18.0 || ~24.5.0 || ~24.7.0"
+    "node": "^20.19.0 || >=22.18.0"
   },
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix-suggestions",
     "build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
@@ -25,9 +27,11 @@
     "ci:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "ci:build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "ci:test": "vitest run --no-isolate",
+    "ci:lint": "oxlint --type-aware --format=github --quiet",
     "vscode:typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",
     "release": "shipjs prepare",
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
+    "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
@@ -36,6 +40,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
+    "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "^0.50.2",
     "execa": "^9.6.0",
@@ -43,6 +48,8 @@
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
     "npm-run-all2": "^8.0.4",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "rimraf": "^6.0.1",
     "shipjs": "^0.27.0",
     "tsx": "catalog:",

@@ -24,13 +24,13 @@ import {
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import {
-  type $ModelData,
-  type DeploymentOrFqn,
-  type ElementOrFqn,
-  type IncomingFilter,
-  type OutgoingFilter,
-  type RelationOrId,
+import type {
+  $ModelData,
+  DeploymentOrFqn,
+  ElementOrFqn,
+  IncomingFilter,
+  OutgoingFilter,
+  RelationOrId,
 } from './types'
 import { getId } from './utils'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
@@ -272,7 +272,7 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
   public *ancestors(element: DeploymentOrFqn<A>): DeploymentNodesIterator<A> {
     let id = getId(element)
     let parent
-    while (parent = this.#parents.get(id)) {
+    while ((parent = this.#parents.get(id))) {
       yield parent
       id = parent.id
     }

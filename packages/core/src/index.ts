@@ -1,4 +1,10 @@
-export { defaultTheme, LikeC4Styles } from './styles'
+export { LikeC4Styles } from './styles'
+export type {
+  LikeC4StyleDefaults,
+  LikeC4StylesConfig,
+  LikeC4Theme,
+  ThemeColorValues,
+} from './styles'
 
 export * from './types'
 
@@ -7,6 +13,7 @@ export {
   BiMap,
   DefaultMap,
   DefaultWeakMap,
+  hasProp,
   invariant,
   isAncestor,
   isDescendantOf,

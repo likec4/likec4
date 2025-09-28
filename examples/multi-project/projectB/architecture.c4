@@ -1,0 +1,142 @@
+specification {
+  element boundary {
+    style {
+      color muted
+      opacity 10%
+    }
+  }
+  element person {
+    style {
+      textSize lg
+      shape person
+    }
+  }
+  element worker
+  element agent
+  element component
+
+  element database {
+    style {
+      color secondary
+      shape storage
+    }
+  }
+}
+
+model {
+  user = person 'User'
+
+  cloudflare = boundary {
+
+
+    builder = agent 'Case Builder Agent' {
+      description 'Cloudflare ChatAgent'
+    }
+
+    sqlite = database 'Agent storage' {
+      icon tech:sqlite
+      style {
+
+      }
+      description '
+      Current snapshot os the Case
+    '
+    }
+
+    worker = worker 'Simulations App' {
+      description 'Cloudflare worker'
+    }
+
+
+    r2 = database 'File Storage' {
+      icon aws:simple-storage-service
+      description 'Cloudflare R2'
+    }
+  }
+
+
+
+  supabase = database 'Supabase' {
+    icon https://knhgkaawjfqqwmsgmxns.supabase.co/storage/v1/object/public/avatars/mcp/735c4hh883w.webp
+    style {
+      color green
+    }
+    description 'Persitent storage'
+  }
+
+
+
+  user -> worker "manages all cases" {
+    technology 'REST'
+  }
+  user -> builder "creates specific case" {
+    technology 'Websocket'
+
+  }
+
+  worker -> supabase
+  worker -> r2
+  builder -> sqlite
+  builder -> r2
+}
+
+views {
+
+  style cloudflare._ {
+    color amber
+  }
+  style element.kind == worker, element.kind == agent {
+    icon tech:cloudflare-workers
+  }
+
+  view index {
+    include *, cloudflare.*
+    autoLayout LeftRight
+  }
+
+  dynamic view use-case-01 {
+    title 'Use Case 01 - Create Case'
+
+    user -> worker '
+      Creates new case
+
+      POST /api/case-builder
+    '
+
+    worker -> worker 'Authorizes & validates'
+    parallel {
+      worker -> builder 'Creates new agent'
+      worker -> supabase 'Inserts draft'
+    }
+    user <- worker '
+      responds with
+      connection details
+      to agent'
+
+    user -> user '
+      navigates to
+      edit page
+    '
+
+    user -> builder 'Sends messages' {
+      color amber
+      line dotted
+    }
+    builder -> sqlite 'Updates internal storage' {
+      color amber
+      line dotted
+    }
+    user <- builder 'Replies with JSON' {
+      color amber
+      line dotted
+    }
+
+
+    user -> worker 'Saves'
+    worker -> builder 'Requests latest state'
+    worker -> supabase 'Updates records'
+    worker -> builder 'Stops'
+
+
+  }
+}

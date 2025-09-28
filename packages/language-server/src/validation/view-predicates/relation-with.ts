@@ -1,4 +1,4 @@
-import { type ValidationCheck, AstUtils } from 'langium'
+import type { ValidationCheck } from 'langium'
 import { ast, getViewRulePredicateContainer } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'

@@ -3,6 +3,7 @@ import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { type AstNode, AstUtils } from 'langium'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
+import type { Except } from 'type-fest'
 import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
 import { serverLogger } from '../../logger'
 import { projectIdFrom } from '../../utils'
@@ -292,49 +293,57 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       astNode: ast.RelationExprWith,
     ): c4.RelationExpr.Custom {
       const expr = this.parseRelationExprOrWhere(astNode.subject)
-      const props = astNode.custom?.props ?? []
+      const customProps = this.parseCustomRelationProperties(astNode.custom)
+      return {
+        customRelation: {
+          ...customProps,
+          expr,
+        },
+      }
+    }
+
+    parseCustomRelationProperties(
+      custom: ast.CustomRelationProperties | undefined,
+    ): Except<c4.RelationExpr.Custom['customRelation'], 'expr'> {
+      const props = custom?.props ?? []
       return props.reduce(
         (acc, prop) => {
           if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
             const value = isTruthy(prop.value) ? removeIndent(parseMarkdownAsString(prop.value)) : undefined
             if (value) {
-              acc.customRelation[prop.key] = value
+              acc[prop.key] = value
             }
             return acc
           }
           if (ast.isArrowProperty(prop)) {
             if (isTruthy(prop.value)) {
-              acc.customRelation[prop.key] = prop.value
+              acc[prop.key] = prop.value
             }
             return acc
           }
           if (ast.isColorProperty(prop)) {
             const value = toColor(prop)
             if (isTruthy(value)) {
-              acc.customRelation[prop.key] = value
+              acc[prop.key] = value
             }
             return acc
           }
           if (ast.isLineProperty(prop)) {
             if (isTruthy(prop.value)) {
-              acc.customRelation[prop.key] = prop.value
+              acc[prop.key] = prop.value
             }
             return acc
           }
           if (ast.isRelationNavigateToProperty(prop)) {
             const viewId = prop.value.view.ref?.name
             if (isTruthy(viewId)) {
-              acc.customRelation.navigateTo = viewId as c4.ViewId
+              acc[prop.key] = viewId as c4.ViewId
             }
             return acc
           }
           nonexhaustive(prop)
         },
-        {
-          customRelation: {
-            expr,
-          },
-        } as c4.RelationExpr.Custom,
+        {} as Except<c4.RelationExpr.Custom['customRelation'], 'expr'>,
       )
     }
 

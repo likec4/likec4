@@ -16,7 +16,7 @@ export const projectId = ${JSON.stringify(id)}
 export const singleProjectModule = {
   id: 'likec4:single-project',
   virtualId: 'likec4:plugin/single-project.js',
-  async load({ likec4, logger, projects, assetsDir }) {
+  async load({ logger, projects }) {
     const project = first(projects)
     logger.info(k.dim('generating likec4:single-project for') + ' ' + project.id)
     return code(project.id)

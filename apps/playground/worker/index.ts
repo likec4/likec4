@@ -1,4 +1,3 @@
-import { type aux } from '@likec4/core/types'
 import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
 import { proxy } from 'hono/proxy'

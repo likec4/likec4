@@ -17,7 +17,7 @@ import {
 } from '../types'
 import * as aux from '../types/_aux'
 import { commonAncestor, hierarchyLevel, ihead, isAncestor, memoizeProp, nameFromFqn, sortNaturalByFqn } from '../utils'
-import { type DeployedInstancesIterator } from './DeploymentElementModel'
+import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'

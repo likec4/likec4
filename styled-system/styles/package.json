@@ -2,34 +2,46 @@
   "name": "@likec4/styles",
   "description": "Shared PandaCSS preset and generated styles, used in LikeC4",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
-  "type": "module",
-  "sideEffects": false,
   "files": [
     "dist",
     "*.mts",
     "*.mjs",
     "*.ts",
+    "**/package.json",
     "!build.config.ts"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "styled-system/styles"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build": "unbuild",
-    "generate": "panda codegen",
+    "generate": "unbuild",
     "emit-pkg": "panda emit-pkg --base dist",
-    "clean": "pnpm rimraf dist lib",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-styles-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz"
   },
+  "type": "module",
+  "types": "dist/types/index.d.ts",
+  "module": "dist/types/index.mjs",
+  "sideEffects": false,
   "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.mjs"
+    },
     "./css": {
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.mjs"
@@ -39,7 +51,8 @@
       "default": "./dist/tokens/index.mjs"
     },
     "./types": {
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.mjs"
     },
     "./patterns": {
       "types": "./dist/patterns/index.d.ts",
@@ -69,11 +82,22 @@
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css"
+    "@pandacss/types": "catalog:css",
+    "react": "^18.x || ^19.x",
+    "@types/react": "^18.x || ^19.x"
+  },
+  "peerDependenciesMeta": {
+    "@pandacss/types": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@likec4/style-preset": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@pandabox/panda-plugins": "^0.0.8",
     "@pandabox/utils": "^0.0.5",
     "@pandabox/unplugin": "^0.2.2",

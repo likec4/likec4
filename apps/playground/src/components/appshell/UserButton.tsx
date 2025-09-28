@@ -42,7 +42,7 @@ export function UserButton() {
       component="a"
       href="/auth/github"
       color="gray"
-      onClick={(e) => {
+      onClick={() => {
         setLoading(true)
         window.sessionStorage.setItem('location-before-auth', window.location.pathname)
       }}

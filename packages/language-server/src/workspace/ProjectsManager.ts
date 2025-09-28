@@ -1,4 +1,9 @@
-import { type LikeC4ProjectConfig, isLikeC4Config, validateProjectConfig } from '@likec4/config'
+import {
+  type LikeC4ProjectConfig,
+  type LikeC4ProjectConfigInput,
+  isLikeC4Config,
+  validateProjectConfig,
+} from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
 import type { scalar } from '@likec4/core/types'
 import { BiMap, delay, invariant, memoizeProp, nonNullable } from '@likec4/core/utils'
@@ -260,7 +265,7 @@ export class ProjectsManager {
    * If there is some project registered at same folder, it will be reloaded.
    */
   async registerProject(
-    opts: URI | { config: LikeC4ProjectConfig.Input; folderUri: URI | string },
+    opts: URI | { config: LikeC4ProjectConfigInput; folderUri: URI | string },
   ): Promise<ProjectData> {
     if (URI.isUri(opts)) {
       const configFile = opts
@@ -277,7 +282,7 @@ export class ProjectsManager {
    * If there is some project registered at same folder, it will be reloaded.
    */
   private _registerProject(opts: {
-    config: LikeC4ProjectConfig | LikeC4ProjectConfig.Input
+    config: LikeC4ProjectConfig | LikeC4ProjectConfigInput
     folderUri: URI | string
   }): ProjectData {
     const config = validateProjectConfig(opts.config)

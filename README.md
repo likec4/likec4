@@ -42,10 +42,7 @@ And result:
 Template repository - [likec4/template](https://github.com/likec4/template)\
 Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/index)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
-
-> StackBlitz does not support extensions, so no validation, syntax highlighting and etc.\
-> You can try with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4) and suggested extension.
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
 
 Check [Tutorial](https://likec4.dev/tutorial/) - for a quick overview of LikeC4.
 

@@ -203,7 +203,7 @@ describe('Builder (style1)', () => {
     )
 
     expect(() => {
-      const raw = withmodel.with(
+      withmodel.with(
         $d.deployment(
           $d.instanceOf('a.b.c'),
         ),

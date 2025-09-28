@@ -12,7 +12,7 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
   let base = router.basepath.endsWith('/') ? router.basepath : `${router.basepath}/`
   const url = new URL(
     `${base}likec4-views.js`,
-    window.location.href
+    window.location.href,
   )
   const href = url.href
 
@@ -21,7 +21,11 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
 `.trim()
 
   const htmlCode = `
-  <${ComponentName.View} view-id="${encodeURIComponent(diagram.id)}"></${ComponentName.View}>
+<${ComponentName.View}
+   view-id="${encodeURIComponent(diagram.id)}"
+   browser="true"
+   dynamic-variant="sequence">
+</${ComponentName.View}>
 `.trim()
 
   const webcomponentPreview = router.buildLocation(
@@ -30,13 +34,13 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
         to: '/webcomponent/$',
         params: { _splat: '/' },
         hash: diagram.id,
-        search: true
+        search: true,
       }
       : {
         to: '/webcomponent/$',
         params: { _splat: diagram.id },
-        search: true
-      }
+        search: true,
+      },
   )
 
   return (

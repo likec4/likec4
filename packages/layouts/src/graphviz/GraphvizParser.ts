@@ -1,11 +1,14 @@
-import type {
-  BBox as LabelBBox,
-  ComputedEdge,
-  ComputedView,
-  DiagramEdge,
-  DiagramView,
-  EdgeId,
-  Point,
+import {
+  type _type,
+  type Any,
+  type BBox as LabelBBox,
+  type ComputedEdge,
+  type ComputedView,
+  type DiagramEdge,
+  type EdgeId,
+  type LayoutedView,
+  type Point,
+  _stage,
 } from '@likec4/core'
 import { invariant } from '@likec4/core/utils'
 import { logger } from '@likec4/log'
@@ -162,7 +165,10 @@ function parseGraphvizEdge(
   }
 }
 
-export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: ComputedView): DiagramView {
+export function parseGraphvizJson<A extends Any, V extends ComputedView<A>>(
+  graphvizJson: GraphvizJson,
+  computedView: V,
+): Extract<LayoutedView<A>, { _type: V['_type'] }> {
   const page = parseBB(graphvizJson.bb)
   const {
     nodes: computedNodes,
@@ -172,12 +178,30 @@ export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: Comp
     ...view
   } = computedView
 
-  const diagram: DiagramView = {
-    ...view,
-    _stage: 'layouted',
-    bounds: page,
-    nodes: [],
-    edges: [],
+  let diagram: Extract<LayoutedView<A>, { [_type]: V['_type'] }>
+  if (view._type === 'dynamic') {
+    diagram = {
+      ...view,
+      sequenceLayout: {
+        actors: [],
+        compounds: [],
+        parallelAreas: [],
+        steps: [],
+        bounds: page,
+      },
+      [_stage]: 'layouted',
+      bounds: page,
+      nodes: [],
+      edges: [],
+    }
+  } else {
+    diagram = {
+      ...view,
+      [_stage]: 'layouted',
+      bounds: page,
+      nodes: [],
+      edges: [],
+    }
   }
 
   const graphvizObjects = graphvizJson.objects ?? []
@@ -193,7 +217,6 @@ export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: Comp
         ...computed,
         x,
         y,
-        position,
         width,
         height,
         labelBBox: parseLabelBbox(obj._ldraw_, position) ?? { x, y, width, height },

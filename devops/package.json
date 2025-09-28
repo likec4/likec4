@@ -1,0 +1,32 @@
+{
+  "name": "@likec4/devops",
+  "version": "1.42.0",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "bin": {
+    "likec4ops": "./likec4ops.ts"
+  },
+  "exports": {
+    ".": "./likec4ops.ts"
+  },
+  "dependencies": {
+    "parse-gitignore": "^2.0.0",
+    "citty": "catalog:utils",
+    "remeda": "catalog:utils",
+    "std-env": "catalog:utils",
+    "indent-string": "catalog:utils",
+    "tsx": "catalog:",
+    "zx": "catalog:"
+  },
+  "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
+    "@types/parse-gitignore": "^1.0.2",
+    "type-fest": "catalog:utils",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

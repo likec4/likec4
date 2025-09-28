@@ -1,6 +1,6 @@
 {
   "name": "@likec4/icons",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -12,29 +12,42 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
+  "types": "all.d.ts",
+  "module": "all.js",
   "sideEffects": false,
   "exports": {
-    ".": "./tech/index.js",
+    ".": {
+      "types": "./all.d.ts",
+      "default": "./all.js"
+    },
     "./all": {
       "types": "./all.d.ts",
       "default": "./all.js"
     },
-    "./aws": "./aws/index.js",
+    "./aws": {
+      "default": "./aws/index.js"
+    },
     "./aws/*": {
       "types": "./icon.d.ts",
       "default": "./aws/*.js"
     },
-    "./tech": "./tech/index.js",
+    "./tech": {
+      "default": "./tech/index.js"
+    },
     "./tech/*": {
       "types": "./icon.d.ts",
       "default": "./tech/*.js"
     },
-    "./gcp": "./gcp/index.js",
+    "./gcp": {
+      "default": "./gcp/index.js"
+    },
     "./gcp/*": {
       "types": "./icon.d.ts",
       "default": "./gcp/*.js"
     },
-    "./azure": "./azure/index.js",
+    "./azure": {
+      "default": "./azure/index.js"
+    },
     "./azure/*": {
       "types": "./icon.d.ts",
       "default": "./azure/*.js"
@@ -50,7 +63,10 @@
   },
   "scripts": {
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
+    "clean": "likec4ops clean aws azure gcp tech .tmp",
+    "postclean": "pnpm run update-icons",
     "generate": "pnpm node scripts/generate.mjs",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz"
@@ -62,13 +78,14 @@
   "devDependencies": {
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@likec4/devops": "workspace:*",
     "esbuild": "catalog:esbuild",
-    "execa": "^9.5.3",
     "fdir": "catalog:utils",
     "picomatch": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "typescript": "catalog:",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zx": "catalog:"
   }
 }

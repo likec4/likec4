@@ -1,4 +1,4 @@
-import { type LikeC4Theme, type ThemeColor } from '@likec4/core'
+import type { LikeC4Theme, ThemeColor } from '@likec4/core'
 import {
   type PopoverProps,
   Button,
@@ -19,7 +19,7 @@ import {
 import { useUpdateEffect } from '@react-hookz/web'
 import { useState } from 'react'
 import { keys } from 'remeda'
-import { useLikeC4Styles } from '../../../../likec4model/useLikeC4Styles'
+import { useLikeC4Styles } from '../../../../hooks/useLikeC4Styles'
 import { type ColorKey, type OnStyleChange, type ThemeColorKey, SemanticColors } from './_shared'
 
 type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {

@@ -10,27 +10,26 @@ import type {
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
-import type { OptionalKeysOf, Simplify } from 'type-fest'
-import type { Base, ReactFlowEdge, ReactFlowNode } from '../base/types'
-
-type NonOptional<T extends object> = Simplify<
-  & {
-    [P in Exclude<keyof T, OptionalKeysOf<T>>]: T[P]
-  }
-  & {
-    [P in OptionalKeysOf<T>]-?: T[P] | undefined
-  }
->
+import type { FunctionComponent } from 'react'
+import type { Simplify } from 'type-fest'
+import type {
+  BaseEdge,
+  BaseEdgeData,
+  BaseEdgeProps,
+  BaseNode,
+  BaseNodeData,
+  BaseNodeProps,
+  NonOptional,
+} from '../base/types'
 
 export namespace Types {
-  export type LeafNodeData =
-    & Base.NodeData
+  export type LeafNodeData = Simplify<
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
         | 'id'
         | 'title'
-        | 'technology'
         | 'color'
         | 'shape'
         | 'width'
@@ -38,10 +37,12 @@ export namespace Types {
         | 'height'
         | 'style'
         | 'tags'
-        | 'position'
+        | 'x'
+        | 'y'
       >
     >
     & {
+      technology: string | null
       description: RichTextOrEmpty
       /**
        * View this node belongs to
@@ -50,6 +51,7 @@ export namespace Types {
       isMultiple?: boolean | undefined
       icon: string | null
     }
+  >
 
   /**
    * Represents element from logical model
@@ -68,7 +70,7 @@ export namespace Types {
   /**
    * Represents element from deployment model
    */
-  export type DeploymentElementNodeData =
+  export type DeploymentElementNodeData = Simplify<
     & LeafNodeData
     & {
       navigateTo: ViewId | null
@@ -76,6 +78,7 @@ export namespace Types {
       // If set - this node refers to a model element
       modelFqn: Fqn | null
     }
+  >
 
   export type SequenceActorNodePort = {
     id: string
@@ -103,8 +106,8 @@ export namespace Types {
     }
   >
 
-  export type CompoundNodeData =
-    & Base.NodeData
+  export type CompoundNodeData = Simplify<
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
@@ -114,7 +117,8 @@ export namespace Types {
         | 'shape'
         | 'style'
         | 'tags'
-        | 'position'
+        | 'x'
+        | 'y'
       >
     >
     & {
@@ -125,45 +129,53 @@ export namespace Types {
       depth: number
       icon?: IconUrl
     }
+  >
 
-  export type CompoundElementNodeData = CompoundNodeData & {
-    modelFqn: Fqn
-    deploymentFqn?: never
-    /**
-     * If set - this node has navigation to another view and diagram has handler for this
-     */
-    navigateTo: ViewId | null
-  }
+  export type CompoundElementNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      modelFqn: Fqn
+      deploymentFqn?: never
+      /**
+       * If set - this node has navigation to another view and diagram has handler for this
+       */
+      navigateTo: ViewId | null
+    }
+  >
 
-  export type CompoundDeploymentNodeData = CompoundNodeData & {
-    deploymentFqn: DeploymentFqn
-    /**
-     * If set - this node refers to a model element
-     */
-    modelFqn: Fqn | null
-    /**
-     * If set - this node has navigation to another view and diagram has handler for this
-     */
-    navigateTo: ViewId | null
-  }
+  export type CompoundDeploymentNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      deploymentFqn: DeploymentFqn
+      /**
+       * If set - this node refers to a model element
+       */
+      modelFqn: Fqn | null
+      /**
+       * If set - this node has navigation to another view and diagram has handler for this
+       */
+      navigateTo: ViewId | null
+    }
+  >
 
-  export type ViewGroupNodeData = CompoundNodeData & {
-    isViewGroup: true
-  }
+  export type ViewGroupNodeData = Simplify<
+    & CompoundNodeData
+    & {
+      isViewGroup: true
+    }
+  >
 
-  // export type CompoundNode = ReactFlowNode<CompoundNodeData, 'compound'>
+  export type ElementNode = BaseNode<ElementNodeData, 'element'>
+  export type DeploymentElementNode = BaseNode<DeploymentElementNodeData, 'deployment'>
 
-  export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
-  export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
+  export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
+  export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
 
-  export type SequenceActorNode = ReactFlowNode<SequenceActorNodeData, 'seq-actor'>
-  export type SequenceParallelArea = ReactFlowNode<SequenceParallelAreaData, 'seq-parallel'>
+  export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
+  export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
+  export type ViewGroupNode = BaseNode<ViewGroupNodeData, 'view-group'>
 
-  export type CompoundElementNode = ReactFlowNode<CompoundElementNodeData, 'compound-element'>
-  export type CompoundDeploymentNode = ReactFlowNode<CompoundDeploymentNodeData, 'compound-deployment'>
-  export type ViewGroupNode = ReactFlowNode<ViewGroupNodeData, 'view-group'>
-
-  export type Node =
+  export type AnyNode =
     | ElementNode
     | DeploymentElementNode
     | CompoundElementNode
@@ -171,6 +183,8 @@ export namespace Types {
     | ViewGroupNode
     | SequenceActorNode
     | SequenceParallelArea
+
+  export type NodeType = AnyNode['type']
 
   export type NodeData = ExclusiveUnion<{
     ElementNodeData: ElementNodeData
@@ -182,8 +196,21 @@ export namespace Types {
     SequenceParallelAreaData: SequenceParallelAreaData
   }>
 
+  export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
+  export type NodeProps<Type extends NodeType = NodeType> = BaseNodeProps<Node<Type>>
+
+  // export type NodeProps = {
+  //   element: NodeProps<ElementNode>
+  //   deployment: XYNodeProps<DeploymentElementNode>
+  //   'compound-element': XYNodeProps<CompoundElementNode>
+  //   'compound-deployment': XYNodeProps<CompoundDeploymentNode>
+  //   'view-group': XYNodeProps<ViewGroupNode>
+  //   'seq-actor': XYNodeProps<SequenceActorNode>
+  //   'seq-parallel': XYNodeProps<SequenceParallelArea>
+  // }
+
   export type RelationshipEdgeData = Simplify<
-    & Base.EdgeData
+    & BaseEdgeData
     & NonOptional<
       Pick<
         DiagramEdge,
@@ -198,6 +225,7 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
+        | 'astPath'
       >
     >
     & {
@@ -208,7 +236,7 @@ export namespace Types {
   >
 
   export type SequenceStepEdgeData = Simplify<
-    & Base.EdgeData
+    & BaseEdgeData
     & NonOptional<
       Pick<
         DiagramEdge,
@@ -222,6 +250,7 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
+        | 'astPath'
       >
     >
     & {
@@ -232,9 +261,27 @@ export namespace Types {
     }
   >
 
-  export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
-  export type SequenceStepEdge = ReactFlowEdge<SequenceStepEdgeData, 'seq-step'>
+  export type RelationshipEdge = BaseEdge<RelationshipEdgeData, 'relationship'>
+  export type SequenceStepEdge = BaseEdge<SequenceStepEdgeData, 'seq-step'>
 
-  export type Edge = RelationshipEdge | SequenceStepEdge
-  export type EdgeData = RelationshipEdgeData | SequenceStepEdgeData
+  export type AnyEdge = RelationshipEdge | SequenceStepEdge
+  export type EdgeType = AnyEdge['type']
+
+  export type Edge<Type extends EdgeType = EdgeType> = Extract<AnyEdge, { type: Type }>
+  export type EdgeProps<Type extends EdgeType = EdgeType> = BaseEdgeProps<Edge<Type>>
+
+  export type EdgeData = ExclusiveUnion<{
+    RelationshipEdgeData: RelationshipEdgeData
+    SequenceStepEdgeData: SequenceStepEdgeData
+  }>
+
+  export type NodeRenderer<T extends NodeType> = FunctionComponent<NodeProps<T>>
+  export type NodeRenderers = {
+    [T in NodeType]: NodeRenderer<T>
+  }
+
+  export type EdgeRenderer<T extends EdgeType> = FunctionComponent<EdgeProps<T>>
+  export type EdgeRenderers = {
+    [T in EdgeType]: EdgeRenderer<T>
+  }
 }

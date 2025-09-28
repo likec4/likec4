@@ -1,12 +1,12 @@
-import {
-  type LikeC4StylesConfig,
-  type ThemeColorValues,
+import type {
+  LikeC4StylesConfig,
+  ThemeColorValues,
 } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
 import { mix, scale, toHex, toRgba } from 'khroma'
 import { memo } from 'react'
 import { entries, join, map, pipe, range } from 'remeda'
-import { useLikeC4Styles } from './likec4model'
+import { useLikeC4Styles } from './hooks/useLikeC4Styles'
 
 const scheme = (scheme: 'dark' | 'light') => `[data-mantine-color-scheme="${scheme}"]`
 
@@ -105,16 +105,16 @@ export const LikeC4Styles = memo<{ id: string }>(({ id }) => {
 /**
  * @internal Memoized styles gives a performance boost during development
  */
-const MemoizedStyles = memo<{
-  id: string
-  nonce: string | undefined
-  colorsStyles: string
-}>((
-  { id, nonce, colorsStyles },
-) => (
-  <style
-    type="text/css"
-    data-likec4-colors={id}
-    dangerouslySetInnerHTML={{ __html: colorsStyles }}
-    nonce={nonce} />
-))
+// const MemoizedStyles = memo<{
+//   id: string
+//   nonce: string | undefined
+//   colorsStyles: string
+// }>((
+//   { id, nonce, colorsStyles },
+// ) => (
+//   <style
+//     type="text/css"
+//     data-likec4-colors={id}
+//     dangerouslySetInnerHTML={{ __html: colorsStyles }}
+//     nonce={nonce} />
+// ))

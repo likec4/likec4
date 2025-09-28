@@ -62,27 +62,3 @@ views 'Domain 1 / Subdomain' {
   }
 }
 ```
-
-:::caution
-This feature is enabled by default in the UI, except for library usage.
-
-```tsx
-// To enable this feature:
-<LikeC4Diagram
-  controls="next"
-/>
-
-// To disable this feature:
-<LikeC4Diagram
-  controls={true} // or controls={false}
-/>
-
-// For bundled version:
-<LikeC4View
-  viewId="index"
-  browser={{
-    controls: "next"
-  }}
-/>
-```
-:::

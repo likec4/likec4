@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -18,13 +18,14 @@
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "pnpm rimraf dist lib",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
   "files": [
     "dist",
-    "src",
+    "**/package.json",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
     "!**/__test__/*",
@@ -90,6 +91,14 @@
         "default": "./dist/types/index.mjs"
       }
     },
+    "./utils/graphology": {
+      "sources": "./src/utils/graphology/index.ts",
+      "default": {
+        "types": "./dist/utils/graphology/index.d.mts",
+        "import": "./dist/utils/graphology/index.mjs",
+        "default": "./dist/utils/graphology/index.mjs"
+      }
+    },
     "./utils": {
       "sources": "./src/utils/index.ts",
       "default": {
@@ -98,15 +107,19 @@
         "default": "./dist/utils/index.mjs"
       }
     },
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "dependencies": {
+    "type-fest": "catalog:utils"
+  },
+  "devDependencies": {
+    "unified": "11.0.5",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-to-string": "^4.0.0",
     "rehype-format": "5.0.1",
@@ -116,32 +129,30 @@
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
-    "type-fest": "catalog:utils",
-    "unified": "11.0.5",
-    "remeda": "catalog:utils",
-    "defu": "catalog:utils"
-  },
-  "devDependencies": {
+    "@dagrejs/dagre": "catalog:",
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
-    "@dagrejs/dagre": "1.1.5",
-    "@likec4/tsconfig": "workspace:*",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
     "@types/mdast": "4.0.4",
     "@types/natural-compare-lite": "catalog:utils",
+    "@types/node": "catalog:",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
-    "@types/node": "catalog:",
-    "graphology": "^0.25.4",
-    "graphology-dag": "^0.4.1",
-    "graphology-types": "^0.24.8",
     "chroma-js": "catalog:utils",
+    "defu": "catalog:utils",
+    "fdir": "catalog:utils",
+    "graphology": "catalog:",
+    "graphology-dag": "catalog:",
+    "graphology-types": "catalog:",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
-    "fdir": "catalog:utils",
+    "oxlint": "catalog:",
+    "remeda": "catalog:utils",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",

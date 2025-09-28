@@ -30,8 +30,6 @@ const {
     deploymentView,
     $rules,
     $include,
-    $exclude,
-    $style,
   },
 } = Builder.forSpecification({
   elements: {

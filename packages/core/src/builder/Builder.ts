@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-base-to-string, typescript/no-misused-spread
 import defu from 'defu'
 import {
   entries,
@@ -201,7 +202,7 @@ interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>
 type Op<T> = (b: T) => T
 
 function ensureObj<T>(value: string[] | Record<string, Partial<T>>): Record<string, Partial<T>> {
-  return isArray(value) ? fromKeys(value, v => ({})) : value
+  return isArray(value) ? fromKeys(value, _ => ({})) : value
 }
 
 function validateSpec({ tags, elements, deployments, relationships, ...specification }: BuilderSpecification) {
@@ -264,7 +265,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       deployments: structuredClone(spec.deployments),
       relationships: structuredClone(spec.relationships),
       tags: structuredClone(spec.tags),
-      ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
+      ...(spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)
   }
@@ -341,9 +342,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     },
     __addRelation(relation) {
       const sourceEl = _elements.get(FqnRef.flatten(relation.source))
-      invariant(sourceEl, `Element with id "${relation.source}" not found`)
+      invariant(sourceEl, `Element with id "${relation.source.model}" not found`)
       const targetEl = _elements.get(FqnRef.flatten(relation.target))
-      invariant(targetEl, `Element with id "${relation.target}" not found`)
+      invariant(targetEl, `Element with id "${relation.target.model}" not found`)
       invariant(
         !isSameHierarchy(sourceEl, targetEl),
         'Cannot create relationship between elements in the same hierarchy',

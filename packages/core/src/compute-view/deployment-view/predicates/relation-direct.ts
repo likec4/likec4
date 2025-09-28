@@ -38,13 +38,13 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   return siblings
 }
 
-const resolveWildcard = (model: LikeC4DeploymentModel<AnyAux>, nonWildcard: FqnExpr.DeploymentRef) => {
-  const sources = resolveElements(model, nonWildcard)
-  return sources.map(source => {
-    const targets = resolveAscendingSiblings(source)
-    return [source, targets] as const
-  })
-}
+// const resolveWildcard = (model: LikeC4DeploymentModel<AnyAux>, nonWildcard: FqnExpr.DeploymentRef) => {
+//   const sources = resolveElements(model, nonWildcard)
+//   return sources.map(source => {
+//     const targets = resolveAscendingSiblings(source)
+//     return [source, targets] as const
+//   })
+// }
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   include: ({ expr: { source, target, isBidirectional = false }, model, stage, where }) => {

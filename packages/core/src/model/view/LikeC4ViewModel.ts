@@ -13,11 +13,11 @@ import type * as aux from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
-import {
-  type $View,
-  type EdgeOrId,
-  type NodeOrId,
-  type WithTags,
+import type {
+  $View,
+  EdgeOrId,
+  NodeOrId,
+  WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'

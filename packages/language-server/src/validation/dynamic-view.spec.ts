@@ -103,6 +103,26 @@ describe.concurrent('DynamicView Checks', () => {
       expect(errors).toEqual(['Invalid parent-child relationship'])
     })
 
+    it('should report invalid step: A <- B -> C', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component A
+        component B
+        component C
+      }
+      views {
+        dynamic view index {
+          A <- B -> C
+        }
+      }
+    `)
+      expect(errors).toEqual(['Invalid chain after backward step'])
+    })
+
     it('should not report self-reference (loop)', async ({ expect }) => {
       const { validate } = createTestServices()
       const { errors } = await validate(`

@@ -15,7 +15,7 @@ import { projectIdFrom } from '../utils'
 import type { ProjectsManager } from '../workspace'
 import { MergedSpecification } from './builder/MergedSpecification'
 import type { DeploymentsIndex } from './deployments-index'
-import { type FqnIndex } from './fqn-index'
+import type { FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
@@ -122,9 +122,10 @@ export class LikeC4ModelLocator {
         continue
       }
 
-      let targetNode = node.title ? findNodeForProperty(node.$cstNode, 'title') : undefined
-      targetNode ??= node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
+      let targetNode = node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
+      targetNode ??= node.dotKind ? findNodeForProperty(node.$cstNode, 'dotKind') : undefined
       targetNode ??= findNodeForKeyword(node.$cstNode, '->')
+      targetNode ??= findNodeForProperty(node.$cstNode, 'title')
       targetNode ??= findNodeForProperty(node.$cstNode, 'target')
       targetNode ??= node.$cstNode
 
@@ -134,7 +135,10 @@ export class LikeC4ModelLocator {
 
       return {
         uri: doc.uri.toString(),
-        range: targetNode.range,
+        range: {
+          start: targetNode.range.start,
+          end: targetNode.range.start,
+        },
       }
     }
     return null
@@ -242,6 +246,46 @@ export class LikeC4ModelLocator {
     } catch (e) {
       logger.warn(loggable(e))
       return []
+    }
+  }
+
+  public locateDynamicViewStep(params: {
+    view: c4.ViewId
+    astPath: string
+    projectId?: c4.ProjectId | undefined
+  }): Location | null {
+    const { doc, viewAst } = this.locateViewAst(params.view, params.projectId) ?? {}
+    if (!doc || !viewAst) {
+      return null
+    }
+    if (!ast.isDynamicView(viewAst) || !viewAst.body) {
+      logger.warn(`View ${params.view} is not a dynamic view`)
+      return null
+    }
+    const astPath = this.services.workspace.AstNodeLocator.getAstNodePath(viewAst.body) + params.astPath
+    const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, astPath)
+    if (!node || !ast.isDynamicViewStep(node)) {
+      logger.warn(`Failed to locate dynamic view step ${astPath} in view ${params.view}`)
+      return null
+    }
+
+    let targetNode = node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
+    targetNode ??= node.dotKind ? findNodeForProperty(node.$cstNode, 'dotKind') : undefined
+    targetNode ??= findNodeForKeyword(node.$cstNode, '->')
+    targetNode ??= findNodeForKeyword(node.$cstNode, '<-')
+    targetNode ??= findNodeForProperty(node.$cstNode, 'title')
+    targetNode ??= findNodeForProperty(node.$cstNode, 'target')
+    targetNode ??= node.$cstNode
+
+    if (!targetNode) {
+      return null
+    }
+    return {
+      uri: doc.uri.toString(),
+      range: {
+        start: targetNode.range.start,
+        end: targetNode.range.start,
+      },
     }
   }
 }

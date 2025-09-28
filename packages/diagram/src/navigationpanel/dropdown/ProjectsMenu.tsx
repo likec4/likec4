@@ -2,7 +2,7 @@ import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { type ButtonProps, Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
-import { useLikeC4ProjectId, useLikeC4ProjectsContext } from '../../likec4model/useLikeC4Project'
+import { useLikeC4ProjectId, useLikeC4ProjectsContext } from '../../hooks/useLikeC4Project'
 
 export function ProjectsMenu(props: ButtonProps) {
   const { projects, onProjectChange } = useLikeC4ProjectsContext()

@@ -1,7 +1,6 @@
-import { allPass, anyPass, pipe, prop, reduce } from 'remeda'
+import { pipe, prop, reduce } from 'remeda'
 import type { RelationshipModel } from '../../model'
 import {
-  Connection,
   ConnectionModel,
   differenceConnections,
   findDeepestNestedConnection,
@@ -25,18 +24,18 @@ export function allRelationshipsFrom(connections: Iterable<ConnectionModel>): Se
   return relations
 }
 
-function isInOutToDescendant(id: string): (c: ConnectionModel) => boolean {
-  return anyPass([
-    allPass([
-      Connection.isOutgoing(id),
-      c => c.source.id !== id,
-    ]),
-    allPass([
-      Connection.isIncoming(id),
-      c => c.target.id !== id,
-    ]),
-  ])
-}
+// function isInOutToDescendant(id: string): (c: ConnectionModel) => boolean {
+//   return anyPass([
+//     allPass([
+//       Connection.isOutgoing(id),
+//       c => c.source.id !== id,
+//     ]),
+//     allPass([
+//       Connection.isIncoming(id),
+//       c => c.target.id !== id,
+//     ]),
+//   ])
+// }
 
 export function findRedundantConnections<A extends AnyAux>(
   connections: Iterable<ConnectionModel<A>>,

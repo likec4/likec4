@@ -2,6 +2,7 @@ import type {
   ComputedLikeC4ModelData,
   DeploymentFqn,
   DiagramView,
+  ExclusiveUnion,
   Fqn,
   ProjectId,
   RelationId,
@@ -36,6 +37,12 @@ export const GetLastClickedNode: RequestType<never, { element: Fqn | null; deplo
   method: 'get-last-clicked-node',
 }
 
+export const ReadLocalIcon: RequestType</* uri */ string, {
+  base64data: string | null
+}> = {
+  method: 'read-local-icon',
+}
+
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
@@ -43,28 +50,21 @@ export const WebviewMsgs = {
   OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>,
 }
 
-export type LocateParams =
-  | {
+export type LocateParams = ExclusiveUnion<{
+  Element: {
     element: Fqn
-    deployment?: never
-    relation?: never
-    view?: never
   }
-  | {
+  Relation: {
     relation: RelationId
-    deployment?: never
-    element?: never
-    view?: never
   }
-  | {
+  DynamicViewStep: {
     view: ViewId
-    deployment?: never
-    relation?: never
-    element?: never
+    astPath: string
   }
-  | {
+  View: {
+    view: ViewId
+  }
+  Deployment: {
     deployment: DeploymentFqn
-    view?: never
-    relation?: never
-    element?: never
   }
+}>

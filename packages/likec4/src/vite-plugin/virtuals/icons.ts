@@ -68,7 +68,7 @@ export const projectIconsModule = {
 export const iconsModule = {
   id: 'likec4:icons',
   virtualId: 'likec4:plugin/icons.jsx',
-  async load({ likec4, projects, logger }) {
+  async load({ projects, logger }) {
     logger.info(k.dim(`generating likec4:icons`))
 
     const {

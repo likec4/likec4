@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { type DependencyList, createContext, useContext, useMemo } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type {
   NavigationPanelActorContext,
   NavigationPanelActorEvent,
@@ -25,7 +25,6 @@ export const useNavigationActorRef = (): NavigationPanelActorRef => {
 export function useNavigationActorSnapshot<T = unknown>(
   selector: (context: NavigationPanelActorSnapshot) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-  deps?: DependencyList,
 ): T {
   const actorRef = useNavigationActorRef()
   return useXstateSelector(actorRef, selector, compare)
@@ -34,9 +33,8 @@ export function useNavigationActorSnapshot<T = unknown>(
 export function useNavigationActorContext<T = unknown>(
   selector: (context: NavigationPanelActorContext) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-  deps?: DependencyList,
 ): T {
-  return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare, deps)
+  return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare)
 }
 
 export interface NavigationActor {

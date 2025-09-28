@@ -1,11 +1,11 @@
 import pandacss from '@likec4/styles/postcss'
 import react from '@vitejs/plugin-react'
-import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import { $, fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
 
 const rewriteRootSelector: PostcssPlugin = {
@@ -57,6 +57,7 @@ const defaultConfig = defineConfig({
     tsconfigRaw: readFileSync('tsconfig.src.json', 'utf-8'),
   },
   build: {
+    outDir: 'dist',
     emptyOutDir: true,
     cssCodeSplit: true,
     cssMinify: true,
@@ -72,8 +73,6 @@ const defaultConfig = defineConfig({
     rollupOptions: {
       input: [
         'src/index.ts',
-        'src/bundle/index.ts',
-        'src/bundle/custom.ts',
         'src/custom/index.ts',
         'src/styles.css',
         'src/styles-font.css',
@@ -108,23 +107,43 @@ const defaultConfig = defineConfig({
     dts({
       staticImport: true,
       tsconfigPath: 'tsconfig.src.json',
-      insertTypesEntry: true,
       compilerOptions: {
         customConditions: [],
         noCheck: true,
         declarationMap: false,
-        noImplicitAny: false,
-        noImplicitOverride: false,
-        noPropertyAccessFromIndexSignature: false,
       },
     }),
     {
       name: 'ship-panda',
-      async buildEnd(err) {
+      async closeBundle(err) {
+        if (err) {
+          this.warn('skipped')
+          return
+        }
         this.info('shipping panda')
-        spawnSync('pnpm', ['panda', 'ship', '--outfile', './panda.buildinfo.json'], {
-          stdio: 'inherit',
-        })
+        await $({ stdio: 'inherit' })`pnpm panda ship --outfile ./panda.buildinfo.json`
+      },
+    },
+    {
+      name: 'move-stylesheets',
+      async closeBundle(err) {
+        if (err) {
+          this.warn('skipped')
+          return
+        }
+        for (const file of fs.readdirSync(resolve('dist'))) {
+          if (file.endsWith('.css')) {
+            const sourcePath = resolve('dist', file)
+            const content = await fs.readFile(sourcePath, 'utf-8')
+            if (content.includes(':where(:host')) {
+              // validate result of styles build, should be ":where(:root,:host)" as
+              // expected by shadowroot styles
+              throw new Error(`Found ":where(:host" in ${file}, should be ":where(:root,:host)"`)
+            }
+            this.info(`move ${file}`)
+            await fs.move(sourcePath, resolve(file), { overwrite: true })
+          }
+        }
       },
     },
   ],
@@ -134,6 +153,7 @@ const bundleConfig = defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
+  logLevel: 'info',
   resolve: {
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
@@ -156,8 +176,7 @@ const bundleConfig = defineConfig({
     target: 'esnext',
     lib: {
       entry: {
-        index: 'src/bundle/index.ts',
-        custom: 'src/bundle/custom.ts',
+        index: 'src/index.ts',
       },
       formats: ['es'],
       fileName(_format, entryName) {
@@ -192,6 +211,28 @@ const bundleConfig = defineConfig({
   },
   plugins: [
     react(),
+    // dts({
+    //   staticImport: true,
+    //   tsconfigPath: 'tsconfig.src.json',
+    //   rollupTypes: true,
+    //   outDir: 'dist',
+    //   strictOutput: false,
+    //   bundledPackages: [
+    //     '@react-hookz/web',
+    //   ],
+    //   compilerOptions: {
+    //     customConditions: [],
+    //     noCheck: true,
+    //     declarationMap: false,
+    //   },
+    //   afterBuild(emittedFiles) {
+    //     for (let [file, content] of emittedFiles) {
+    //       file = path.relative(path.resolve('dist'), file)
+    //       const to = path.resolve('bundle', file)
+    //       writeFileSync(to, content)
+    //     }
+    //   },
+    // }),
   ],
 })
 

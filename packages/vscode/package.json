@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -300,7 +300,6 @@
     "turbo": "catalog:",
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
-    "valibot": "catalog:utils",
     "vscode-ext-gen": "^1.0.2",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",
@@ -311,6 +310,7 @@
     "ufo": "catalog:utils",
     "playwright": "catalog:",
     "vscode-uri": "catalog:vscode",
+    "zod": "catalog:utils",
     "zx": "lite"
   }
 }

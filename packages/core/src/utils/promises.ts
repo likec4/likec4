@@ -22,3 +22,7 @@ export function delay(...args: number[]): Promise<string> {
 export function promiseNextTick(): Promise<void> {
   return Promise.resolve().then(() => void 0)
 }
+
+export function onNextTick(fn: () => Promise<void> | void): void {
+  void Promise.resolve().then(fn)
+}

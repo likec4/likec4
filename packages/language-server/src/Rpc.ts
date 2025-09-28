@@ -219,6 +219,12 @@ export class Rpc extends ADisposable {
             return likec4Services.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
           case 'relation' in params:
             return likec4Services.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
+          case 'astPath' in params:
+            return likec4Services.ModelLocator.locateDynamicViewStep({
+              view: params.view,
+              astPath: params.astPath,
+              projectId: params.projectId as ProjectId,
+            })
           case 'view' in params:
             return likec4Services.ModelLocator.locateView(params.view, params.projectId as ProjectId)
           case 'deployment' in params:

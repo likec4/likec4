@@ -7,13 +7,11 @@ describe.concurrent('formating', () => {
       'formats import rules',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-import   sys1   from    'another project'
-import   {sys2    ,      sys3   ,
-sys4    }   from    'another project'
-`,
-          ),
+          await format`
+          import   sys1   from    'another project'
+          import   {sys2    ,      sys3   ,
+          sys4    }   from    'another project'
+          `,
         ).toMatchInlineSnapshot(`
           "
           import sys1 from 'another project'
@@ -28,33 +26,53 @@ sys4    }   from    'another project'
       'formats specification rules',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-specification{
-  element     el
+          await format`
+          specification{
+            element     el
 
-  relationship     rel
+            relationship     rel
 
-  tag   tag1
-  color    custom      #123456
-  deploymentNode    node{}
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
-        "
-        specification {
-          element el
+            tag   tag1
+            color    custom      #123456
+            deploymentNode    node{}
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element el
 
-          relationship rel
+            relationship rel
 
-          tag tag1
-          color custom #123456
-          deploymentNode node {
+            tag tag1
+            color custom #123456
+            deploymentNode node {}
+          }"
+      `),
+    )
+    it(
+      'formats styles in specification rules',
+      async ({ expect }) =>
+        expect(
+          await format`
+          specification{
+          element     el {  style  { color    red    }   }
+
+          
+          element     el2
+          { style  { color    blue    }
           }
-        }"
-      `,
-        ),
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element el { style { color red } }
+
+
+            element el2 {
+              style { color blue }
+            }
+          }"
+        `),
     )
   })
 
@@ -63,22 +81,19 @@ specification{
       'formats syles and styleGroups',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  global{
-  style    global-style    *,   some{
-  color red
-  notation 'some description'
-  }
-  styleGroup    global-style-group{
-  style    *,other   {
-  opacity 20%
-  }
-  }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          global{
+          style    global-style    *,   some{
+          color red
+          notation 'some description'
+          }
+          styleGroup    global-style-group{
+          style    *,other   {
+          opacity 20%
+          }
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           global {
             style global-style *, some {
@@ -91,26 +106,23 @@ specification{
               }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats predicate groups',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  global{
-  predicateGroup    global-predicate-group{
-  include    *  ,   some.*
-  include *->*
-  }
-  dynamicPredicateGroup    global-dynamic-predicate-group{
-  include    *  ,   some.*
-  }
-  }`,
-          ),
+          await format`
+          global{
+          predicateGroup    global-predicate-group{
+          include    *  ,   some.*
+          include *->*
+          }
+          dynamicPredicateGroup    global-dynamic-predicate-group{
+          include    *  ,   some.*
+          }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           global {
@@ -131,17 +143,14 @@ specification{
       'formats element',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-model {
-  system    sys1
-  system    sys2   'title'  'description'   'tech'   'tag1, tag2'
-  sys3=   system
-  sys4 = system       'title'  'description'   'tech'   'tag1, tag2'
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+        model {
+          system    sys1
+          system    sys2   'title'  'description'   'tech'   'tag1, tag2'
+          sys3=   system
+          sys4 = system       'title'  'description'   'tech'   'tag1, tag2'
+        }`,
+        ).toMatchInlineSnapshot(`
         "
         model {
           system sys1
@@ -149,28 +158,25 @@ model {
           sys3 = system
           sys4 = system 'title' 'description' 'tech' 'tag1, tag2'
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'formats element extend',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-model {
-  extend    sys1.sys2   {
-    #tag1   ,   #tag2
-    link   http://example.com    'extended link'
-    metadata    {
-      prop1    'some'
-      prop2'other'
-      prop3  :    'another'   ;
-    }
-  }
-}`,
-          ),
+          await format`
+          model {
+            extend    sys1.sys2   {
+              #tag1   ,   #tag2
+              link   http://example.com    'extended link'
+              metadata    {
+                prop1    'some'
+                prop2'other'
+                prop3  :    'another'   ;
+              }
+            }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           model {
@@ -191,27 +197,24 @@ model {
       'formats metadata',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
-    system sys1 {
-      metadata {
-        prop1    'some'
-        prop2'other'
-        prop3  :    'another'   ;
-      }
-    }
-    sys1 -> sys2 {
-      metadata {
-        prop1    'some'
-        prop2'other'
-        prop3  :    'another'   ;
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            system sys1 {
+              metadata {
+                prop1    'some'
+                prop2'other'
+                prop3  :    'another'   ;
+              }
+            }
+            sys1 -> sys2 {
+              metadata {
+                prop1    'some'
+                prop2'other'
+                prop3  :    'another'   ;
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
             system sys1 {
@@ -229,25 +232,21 @@ model {
               }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'separates element kind and name with space',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element el
-  }
-  model {
-    el     sys1 'test'
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element el
+          }
+          model {
+            el     sys1 'test'
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element el
@@ -255,8 +254,7 @@ model {
           model {
             el sys1 'test'
           }"
-        `,
-        ),
+        `),
     )
   })
 
@@ -265,18 +263,16 @@ model {
       'formats node declarations',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  deployment{
-  node   zone1    {
-  instanceOf test
-  }
-  node   zone2    'zone2'    {
-  cluster=node{
-  }
-  }
-  }`,
-          ),
+          await format`
+          deployment{
+          node   zone1    {
+          instanceOf test
+          }
+          node   zone2    'zone2'    {
+          cluster=node{
+          }
+          }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           deployment {
@@ -295,24 +291,22 @@ model {
       'formats deployment extends',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  deployment{
-  extend   zone1    {
-  #tag1 ,  #tag2
-  link   http://example.com    'extended link'
-  metadata    {
-  prop1    'some'
-  prop2'other'
-  prop3  :    'another'   ;
-  }
+          await format`
+          deployment{
+          extend   zone1    {
+          #tag1 ,  #tag2
+          link   http://example.com    'extended link'
+          metadata    {
+          prop1    'some'
+          prop2'other'
+          prop3  :    'another'   ;
+          }
 
-  instanceOf    test
-  cluster=node{
-  }
-  }
-  }`,
-          ),
+          instanceOf    test
+          cluster=node{
+          }
+          }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           deployment {
@@ -337,18 +331,16 @@ model {
       'formats instance declarations',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  deployment{
-  node   zone1    {
-  instanceOf    test
-  instanceOf test2{
-  title    'test2'
-  }
-  testInst=   instanceOf    test
-  }
-  }`,
-          ),
+          await format`
+          deployment{
+          node   zone1    {
+          instanceOf    test
+          instanceOf test2{
+          title    'test2'
+          }
+          testInst=   instanceOf    test
+          }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           deployment {
@@ -367,37 +359,34 @@ model {
       'surrounds arrows with space',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element component
-    relationship http
-    deploymentNode node
-    tag tag1
-  }
-  model {
-    component system1
-  }
-  deployment {
-    node zone1 {
-      instance1 = instanceOf system1
-    }
-    node zone2 {
-      node cluster {
-        instance2 = instanceOf system1
+          await format`
+          specification {
+            element component
+            relationship http
+            deploymentNode node
+            tag tag1
+          }
+          model {
+            component system1
+          }
+          deployment {
+            node zone1 {
+              instance1 = instanceOf system1
+            }
+            node zone2 {
+              node cluster {
+                instance2 = instanceOf system1
 
-        zone2.cluster.instance2   ->     zone1.instance1
-        zone2.cluster.instance2   ->zone1.instance1
-        zone2.cluster.instance2   -[   http   ]->   zone1.instance1
-        zone2.cluster.instance2  .http   zone1.instance1   'title'  'REST'  #tag1
-      }
-    }
-    zone1.instance1    ->zone2.cluster.instance2   {
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+                zone2.cluster.instance2   ->     zone1.instance1
+                zone2.cluster.instance2   ->zone1.instance1
+                zone2.cluster.instance2   -[   http   ]->   zone1.instance1
+                zone2.cluster.instance2  .http   zone1.instance1   'title'  'REST'  #tag1
+              }
+            }
+            zone1.instance1    ->zone2.cluster.instance2   {
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element component
@@ -425,8 +414,7 @@ model {
             zone1.instance1 -> zone2.cluster.instance2 {
             }
           }"
-        `,
-        ),
+        `),
     )
   })
 
@@ -435,43 +423,41 @@ model {
       'formats include/exclude expressions',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element el
-    deploymentNode node
-  }
-  model {
-    el test
-    el test1
-    el test2
-    el test3
-  }
-  deployment {
-    node prod {
-      instanceOf test
-      instanceOf test1
-      instanceOf test2
-      instanceOf test3
-    }
-  }
-  views {
-    view index {
-      include      test , test.*
-      include      test1
-      , test2.*, test3
-      include *   ,    * -> *  ,  * ->
-      exclude * ,   * -> *, * ->
-    }
-    deployment   view    prod  {
-      include     test  , test.*
-      include      test1
-      , test2.*, test3
-      include *   ,    * -> *  ,  * ->
-      exclude * ,   * -> *, * ->
-    }
-  }`,
-          ),
+          await format`
+          specification {
+            element el
+            deploymentNode node
+          }
+          model {
+            el test
+            el test1
+            el test2
+            el test3
+          }
+          deployment {
+            node prod {
+              instanceOf test
+              instanceOf test1
+              instanceOf test2
+              instanceOf test3
+            }
+          }
+          views {
+            view index {
+              include      test , test.*
+              include      test1
+              , test2.*, test3
+              include *   ,    * -> *  ,  * ->
+              exclude * ,   * -> *, * ->
+            }
+            deployment   view    prod  {
+              include     test  , test.*
+              include      test1
+              , test2.*, test3
+              include *   ,    * -> *  ,  * ->
+              exclude * ,   * -> *, * ->
+            }
+          }`,
         ).toMatchInlineSnapshot(`
           "
           specification {
@@ -517,55 +503,52 @@ model {
 
     it('formats relation predicates', async ({ expect }) => {
       expect(
-        await format(`
-views {
-  deployment view index {
-    include    ->   test
-    include ->   test   ->
-    include test   <->
-    include test   -[  http  ]->
-    include test   .http
-    include test   ->
-    include test   ->  test2
-  }
-}
-`),
+        await format`
+        views {
+          deployment view index {
+            include    ->   test
+            include ->   test   ->
+            include test   <->
+            include test   -[  http  ]->
+            include test   .http
+            include test   ->
+            include test   ->  test2
+          }
+        }
+        `,
       ).toMatchInlineSnapshot(`
-  "
-  views {
-    deployment view index {
-      include -> test
-      include -> test ->
-      include test <->
-      include test -[http]->
-      include test .http
-      include test ->
-      include test -> test2
-    }
-  }
-  "
-`)
+        "
+        views {
+          deployment view index {
+            include -> test
+            include -> test ->
+            include test <->
+            include test -[http]->
+            include test .http
+            include test ->
+            include test -> test2
+          }
+        }
+        "
+      `)
     })
 
     it(
       'formats where expression',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-views {
-  view index {
-    include * where    tag==#tag1
-       or(tag!=#tag1   and   kind    is   not    kind1)
-    and   not  tag   is   #tag1
-    include *->* where    tag==#tag2
-       or(tag!=#tag2   and   kind    is   not    kind2)
-    and   not  tag is   #tag2
-  }
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view index {
+              include * where    tag==#tag1
+                 or(tag!=#tag1   and   kind    is   not    kind1)
+              and   not  tag   is   #tag1
+              include *->* where    tag==#tag2
+                 or(tag!=#tag2   and   kind    is   not    kind2)
+              and   not  tag is   #tag2
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         views {
           view index {
@@ -575,29 +558,25 @@ views {
               * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'formats where expression v2',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-views {
-  deployment view index {
-    include * where    tag==#tag1
-       or(tag!=#tag1   and   kind    is   not    kind1)
-    and   not  tag   is   #tag1
-    include *->* where    tag==#tag2
-       or(tag!=#tag2   and   kind    is   not    kind2)
-    and   not  tag is   #tag2
-  }
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            deployment view index {
+              include * where    tag==#tag1
+                 or(tag!=#tag1   and   kind    is   not    kind1)
+              and   not  tag   is   #tag1
+              include *->* where    tag==#tag2
+                 or(tag!=#tag2   and   kind    is   not    kind2)
+              and   not  tag is   #tag2
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         views {
           deployment view index {
@@ -607,27 +586,23 @@ views {
               * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'formats global style references',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-  view {
-  global    style     global-style
-  }
-  dynamic view view-dynamic {
-  global    style     global-style
-  }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+          view {
+          global    style     global-style
+          }
+          dynamic view view-dynamic {
+          global    style     global-style
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -637,27 +612,23 @@ views {
               global style global-style
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats global predicate references',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-  view {
-  global    predicate     global-predicate
-  }
-  dynamic view view-dynamic {
-  global    predicate     global-predicate
-  }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+          view {
+          global    predicate     global-predicate
+          }
+          dynamic view view-dynamic {
+          global    predicate     global-predicate
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -667,29 +638,25 @@ views {
               global predicate global-predicate
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats styles',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view {
-      style   *  ,sys1   ,   sys2 {
-      }
-    }
-    deployment view prod {
-      style   *  ,sys1   ,   sys2 {
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view {
+              style   *  ,sys1   ,   sys2 {
+              }
+            }
+            deployment view prod {
+              style   *  ,sys1   ,   sys2 {
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -701,33 +668,29 @@ views {
               }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats view declarations',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view    index{
-    }
-    view{
-    }
-    view  view1  of   el1  {
-    }
-    view  view2  extends   baseView  {
-    }
-    dynamic     view  view3  {
-    }
-    deployment     view  view4  {
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view    index{
+            }
+            view{
+            }
+            view  view1  of   el1  {
+            }
+            view  view2  extends   baseView  {
+            }
+            dynamic     view  view3  {
+            }
+            deployment     view  view4  {
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view index {
@@ -743,61 +706,49 @@ views {
             deployment view view4 {
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats with predicates',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view {
-      include    *  with{ }
-      include * where tag = #test    with    {}
-      include -> *  with{ }
-      include -> * where tag = #test    with    {}
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view {
+              include    *  with{   }
+              include * where tag = #test    with    {}
+              include -> *  with{ }
+              include -> * where tag = #test    with    {}
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
-              include * with {
-              }
-              include * where tag = #test with {
-              }
-              include -> * with {
-              }
-              include -> * where tag = #test with {
-              }
+              include * with { }
+              include * where tag = #test with {}
+              include -> * with { }
+              include -> * where tag = #test with {}
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats autolayout property',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view {
-      autoLayout     TopBottom
-    }
-    view {
-      autoLayout     TopBottom   123   321
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view {
+              autoLayout     TopBottom
+            }
+            view {
+              autoLayout     TopBottom   123   321
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -807,39 +758,35 @@ views {
               autoLayout TopBottom 123 321
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats groups',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view {
-  group   "group1"{
-  color    red
-  border    solid
-  opacity   10%
-  include    *  with{ }
-  include * where tag = #test    with    {}
-  group   "nested-group"{
-  }
-  }
-    }
-  view {
-  group   "group3"{
-  color  :    red ;
-  border  :    solid ;
-  opacity  :   10% ;
-  }
-  }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view {
+          group   "group1"{
+          color    red
+          border    solid
+          opacity   10%
+          include    *  with{ }
+          include * where tag = #test    with    {}
+          group   "nested-group"{
+          }
+          }
+            }
+          view {
+          group   "group3"{
+          color  :    red ;
+          border  :    solid ;
+          opacity  :   10% ;
+          }
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -847,10 +794,8 @@ views {
                 color red
                 border solid
                 opacity 10%
-                include * with {
-                }
-                include * where tag = #test with {
-                }
+                include * with { }
+                include * where tag = #test with {}
                 group 'nested-group' {
                 }
               }
@@ -863,9 +808,106 @@ views {
               }
             }
           }"
-        `,
-        ),
+        `),
     )
+
+    it('formats chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {dynamic
+        view index {
+        A ->  B {    title   'ab...'   }    -> C    'cd...'
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              A -> B { title 'ab...' } -> C 'cd...'
+            }
+          }"
+        `))
+
+    it('formats multiline chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        AAA ->  BBB { line solid
+        } -[uses]->
+          CCC    'cd...' {
+        color red
+        title 'text'
+        }
+             .uses DDD 
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              AAA
+                -> BBB {
+                  line solid
+                }
+                -[uses]-> CCC 'cd...' {
+                  color red
+                  title 'text'
+                }
+                .uses DDD
+            }
+          }"
+        `))
+
+    it('formats multiline and parallel chained dynamic steps', async ({ expect }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        AAA ->  BBB { line solid
+        } ->
+          CCC    'cd...' {
+        color red
+        title 'text'
+        }
+        
+           parallel {
+        
+        PA
+        -> PB { }
+        
+        -> PC { }
+
+
+        // Should be single line
+        PD -> PE { } -> PF
+        }
+        }
+        }`).resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+              AAA
+                -> BBB {
+                  line solid
+                }
+                -> CCC 'cd...' {
+                  color red
+                  title 'text'
+                }
+
+              parallel {
+
+                PA
+                  -> PB { }
+
+                  -> PC { }
+
+
+                // Should be single line
+                PD -> PE { } -> PF
+              }
+            }
+          }"
+        `))
   })
 
   describe('common formatting', () => {
@@ -873,27 +915,24 @@ views {
       'indents',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-views {
-view index {
-include *
-style user {
-color red
-}
-}
-dynamic view dynamic-view-1 {
-parallel {
-sys1 -> sys2
-}
-par {
-sys2 -> sys3
-}
-}
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+          view index {
+          include *
+          style user {
+          color red
+          }
+          }
+          dynamic view dynamic-view-1 {
+          parallel {
+          sys1 -> sys2
+          }
+          par {
+          sys2 -> sys3
+          }
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         views {
           view index {
@@ -911,57 +950,49 @@ sys2 -> sys3
             }
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'prepends open braces with space',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-views{
-  view index   {
-    include *
-  }
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views{
+            view index   {
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         views {
           view index {
             include *
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'handles comments',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-        // comment
-        // comment2
-        // comment3
-  element el
-  tag tag1
-  }
-  model {
-          // comment
-    el sys1 'test' {
-    // comment
-  #tag1
-  }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+                // comment
+                // comment2
+                // comment3
+          element el
+          tag tag1
+          }
+          model {
+                  // comment
+            el sys1 'test' {
+            // comment
+          #tag1
+          }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             // comment
@@ -977,52 +1008,44 @@ views{
               #tag1
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats tags',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-model {
-  system sys1 {
-    #tag1    #tag2,   #tag3,#tag4, #tag5     #tag6
-  }
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            system sys1 {
+              #tag1    #tag2,   #tag3,#tag4, #tag5     #tag6
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         model {
           system sys1 {
             #tag1 #tag2, #tag3, #tag4, #tag5 #tag6
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'puts tags on a new line',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-specification {
-  element el
-  tag tag1
-  tag tag2
-}
-model {
-  el sys1 'test' {           #tag1, #tag2
-  }
-}`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element el
+            tag tag1
+            tag tag2
+          }
+          model {
+            el sys1 'test' {           #tag1, #tag2
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
         "
         specification {
           element el
@@ -1034,26 +1057,22 @@ model {
             #tag1, #tag2
           }
         }"
-      `,
-        ),
+      `),
     )
 
     it(
       'formats link property',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
-    system sys1 {
-      link   http://example.com
-      link      http://example.com    'title'
-      link  :   http://example.com   'title'   ;
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            system sys1 {
+              link   http://example.com
+              link      http://example.com    'title'
+              link  :   http://example.com   'title'   ;
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
             system sys1 {
@@ -1062,27 +1081,23 @@ model {
               link: http://example.com 'title';
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats navigateTo property',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  views {
-    view {
-      include
-        * with {
-          navigateTo    viewB
-        }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          views {
+            view {
+              include
+                * with {
+                  navigateTo    viewB
+                }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           views {
             view {
@@ -1092,84 +1107,80 @@ model {
                 }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats style leaf properties',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element system {
-      style {
-        color primary
-        opacity   30%
-        icon    aws:person
-        shape   queue
-        border     solid
-        multiple     true
-        size     xs
-        padding     small
-        textSize     md
-      }
-    }
-    relationship rel1 {
-      color    primary
-      line  solid
-      head    normal
-      tail  normal
-    }
-  }
-  model {
-    system sys1 {
-      style {
-        color    primary
-        opacity   30%
-        icon    aws:person
-        shape   queue
-        border     solid
-      }
-    }
-    sys1 -> sys2 {
-      style {
-        color     primary
-        line  solid
-        head    normal
-        tail  normal
-      }
-    }
-  }
-  views {
-    view {
-      include * with {
-        color       primary
-        opacity   30%
-        icon    aws:person
-        shape   queue
-        border     solid
-      }
-      include * -> * with {
-        color     primary
-        line  solid
-        head    normal
-        tail  normal
-        notes   'test'
-      }
-      style * {
-        color     primary
-        opacity   30%
-        icon    aws:person
-        shape   queue
-        border     solid
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element system {
+              style {
+                color primary
+                opacity   30%
+                icon    aws:person
+                shape   queue
+                border     solid
+                multiple     true
+                size     xs
+                padding     small
+                textSize     md
+              }
+            }
+            relationship rel1 {
+              color    primary
+              line  solid
+              head    normal
+              tail  normal
+            }
+          }
+          model {
+            system sys1 {
+              style {
+                color    primary
+                opacity   30%
+                icon    aws:person
+                shape   queue
+                border     solid
+              }
+            }
+            sys1 -> sys2 {
+              style {
+                color     primary
+                line  solid
+                head    normal
+                tail  normal
+              }
+            }
+          }
+          views {
+            view {
+              include * with {
+                color       primary
+                opacity   30%
+                icon    aws:person
+                shape   queue
+                border     solid
+              }
+              include * -> * with {
+                color     primary
+                line  solid
+                head    normal
+                tail  normal
+                notes   'test'
+              }
+              style * {
+                color     primary
+                opacity   30%
+                icon    aws:person
+                shape   queue
+                border     solid
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element system {
@@ -1238,63 +1249,59 @@ model {
               }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats leaf properties with colon',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element system {
-      notation  :    'test'   ;
-      technology  :  'test'   ;
-    }
-    relationship rel1 {
-      notation  :    'test'   ;
-      technology  :  'test'   ;
-    }
-  }
-  model {
-    system sys1 {
-      title  :    'test'   ;
-      description  :'test'   ;
-      technology  :   'test'   ;
-    }
-    system sys1 {
-      title: 'test';
-    }
-    sys1 -> sys2 {
-      title  :'test'   ;
-      description  :    'test'   ;
-      technology  :    'test'   ;
-    }
-  }
-  views {
-    view {
-      title  :'test'   ;
-      description  :   'test'   ;
-      include * with {
-        notation  :   'test'   ;
-        title  :     'test'   ;
-        description  :    'test'   ;
-        technology  :'test'   ;
-      }
-      include * -> * with {
-        notation  :'test'   ;
-        notes    :    'test'   ;
-        title  :'test'   ;
-        description  :    'test'   ;
-        technology  :    'test'   ;
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element system {
+              notation  :    'test'   ;
+              technology  :  'test'   ;
+            }
+            relationship rel1 {
+              notation  :    'test'   ;
+              technology  :  'test'   ;
+            }
+          }
+          model {
+            system sys1 {
+              title  :    'test'   ;
+              description  :'test'   ;
+              technology  :   'test'   ;
+            }
+            system sys1 {
+              title: 'test';
+            }
+            sys1 -> sys2 {
+              title  :'test'   ;
+              description  :    'test'   ;
+              technology  :    'test'   ;
+            }
+          }
+          views {
+            view {
+              title  :'test'   ;
+              description  :   'test'   ;
+              include * with {
+                notation  :   'test'   ;
+                title  :     'test'   ;
+                description  :    'test'   ;
+                technology  :'test'   ;
+              }
+              include * -> * with {
+                notation  :'test'   ;
+                notes    :    'test'   ;
+                title  :'test'   ;
+                description  :    'test'   ;
+                technology  :    'test'   ;
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element system {
@@ -1342,79 +1349,75 @@ model {
                 }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats style leaf properties with colon',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element system {
-      style {
-        color  : primary   ;
-        opacity  :   30%   ;
-        icon  :    aws:person   ;
-        shape  :   queue   ;
-        border  :     solid   ;
-      }
-    }
-    relationship rel1 {
-      color  :    primary   ;
-      line  :  solid   ;
-      head  :    normal   ;
-      tail  :  normal   ;
-    }
-  }
-  model {
-    system sys1 {
-      style {
-        color  :    primary   ;
-        opacity  :   30%   ;
-        icon  :    aws:person   ;
-        shape  :   queue   ;
-        border  :     solid   ;
-      }
-    }
-    sys1 -> sys2 {
-      style {
-        color  :     primary   ;
-        line  :  solid   ;
-        head  :    normal   ;
-        tail  :  normal   ;
-      }
-    }
-  }
-  views {
-    view {
-      include * with {
-        color  :       primary   ;
-        opacity  :   30%   ;
-        icon  :    aws:person   ;
-        shape  :   queue   ;
-        border  :     solid   ;
-      }
-      include * -> * with {
-        color  :     primary   ;
-        line  :  solid   ;
-        head  :    normal   ;
-        tail  :  normal   ;
-      }
-      style * {
-        color  :     primary   ;
-        opacity  :   30%   ;
-        icon  :    aws:person   ;
-        shape  :   queue   ;
-        border  :     solid   ;
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element system {
+              style {
+                color  : primary   ;
+                opacity  :   30%   ;
+                icon  :    aws:person   ;
+                shape  :   queue   ;
+                border  :     solid   ;
+              }
+            }
+            relationship rel1 {
+              color  :    primary   ;
+              line  :  solid   ;
+              head  :    normal   ;
+              tail  :  normal   ;
+            }
+          }
+          model {
+            system sys1 {
+              style {
+                color  :    primary   ;
+                opacity  :   30%   ;
+                icon  :    aws:person   ;
+                shape  :   queue   ;
+                border  :     solid   ;
+              }
+            }
+            sys1 -> sys2 {
+              style {
+                color  :     primary   ;
+                line  :  solid   ;
+                head  :    normal   ;
+                tail  :  normal   ;
+              }
+            }
+          }
+          views {
+            view {
+              include * with {
+                color  :       primary   ;
+                opacity  :   30%   ;
+                icon  :    aws:person   ;
+                shape  :   queue   ;
+                border  :     solid   ;
+              }
+              include * -> * with {
+                color  :     primary   ;
+                line  :  solid   ;
+                head  :    normal   ;
+                tail  :  normal   ;
+              }
+              style * {
+                color  :     primary   ;
+                opacity  :   30%   ;
+                icon  :    aws:person   ;
+                shape  :   queue   ;
+                border  :     solid   ;
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element system {
@@ -1478,59 +1481,55 @@ model {
               }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'formats leaf properties',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element system {
-      notation    'test'
-      technology  'test'
-    }
-    relationship rel1 {
-      notation    'test'
-      technology  'test'
-    }
-  }
-  model {
-    system sys1 {
-      title    'test'
-      description'test'
-      technology   'test'
-    }
-    sys1 -> sys2 {
-      title'test'
-      description    'test'
-      technology    'test'
-    }
-  }
-  views {
-    view {
-      title'test'
-      description   'test'
-      include * with {
-        notation   'test'
-        title     'test'
-        description    'test'
-        technology'test'
-      }
-      include * -> * with {
-        notation'test'
-        title'test'
-        description    'test'
-        technology    'test'
-      }
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element system {
+              notation    'test'
+              technology  'test'
+            }
+            relationship rel1 {
+              notation    'test'
+              technology  'test'
+            }
+          }
+          model {
+            system sys1 {
+              title    'test'
+              description'test'
+              technology   'test'
+            }
+            sys1 -> sys2 {
+              title'test'
+              description    'test'
+              technology    'test'
+            }
+          }
+          views {
+            view {
+              title'test'
+              description   'test'
+              include * with {
+                notation   'test'
+                title     'test'
+                description    'test'
+                technology'test'
+              }
+              include * -> * with {
+                notation'test'
+                title'test'
+                description    'test'
+                technology    'test'
+              }
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element system {
@@ -1574,27 +1573,23 @@ model {
                 }
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'prepends props with space',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
-    component user'some title''description'
-  }
-  views {
-    view index {
-      include *
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            component user'some title''description'
+          }
+          views {
+            view index {
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
             component user 'some title' 'description'
@@ -1604,26 +1599,22 @@ model {
               include *
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'prepends properties with new line',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element component
-  }
-  model {
-    component user {     title 'some title';    description 'description';
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          specification {
+            element component
+          }
+          model {
+            component user {     title 'some title';    description 'description';
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           specification {
             element component
@@ -1634,64 +1625,61 @@ model {
               description 'description';
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'surrounds arrows with space',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  specification {
-    element component
-    relationship http
-    tag tag1
-  }
-  model {
-    component system1 {
-      component module1 {
-          component lib1
-      }
+          await format`
+          specification {
+            element component
+            relationship http
+            tag tag1
+          }
+          model {
+            component system1 {
+              component module1 {
+                  component lib1
+              }
 
-      ->   system2
-      .http    system2
-    }
-    component system2 {
-      component module1 {
-          component lib1
-      }
-    }
-    system2   ->   system1
-    system2   -[   http   ]->   system1
+              ->   system2
+              .http    system2
+            }
+            component system2 {
+              component module1 {
+                  component lib1
+              }
+            }
+            system2   ->   system1
+            system2   -[   http   ]->   system1
 
-    system2.module1   ->     system1.module1
-    system2.module1.lib1   ->system1.module1.lib1
-    system2.module1   -[   http   ]->   system1.module1
-    system2.module1  .http   system1.module1   'title'  'http'    #tag1
-  }
-  views {
-    view index {
-      include system1<->*
-      include *->, ->*
-      include system1.module1<->*
-      include ->    system1.module1   ->
-    }
+            system2.module1   ->     system1.module1
+            system2.module1.lib1   ->system1.module1.lib1
+            system2.module1   -[   http   ]->   system1.module1
+            system2.module1  .http   system1.module1   'title'  'http'    #tag1
+          }
+          views {
+            view index {
+              include system1<->*
+              include *->, ->*
+              include system1.module1<->*
+              include ->    system1.module1   ->
+            }
 
-    dynamic view some {
-      system2   ->   system1
-      system2   -[   http   ]->   system1
+            dynamic view some {
+              system2   ->   system1
+              system2   -[   http   ]->   system1
 
-      system2.module1   ->     system1.module1
-      system2.module1.lib1   ->system1.module1.lib1
-      system2.module1   -[   http   ]->   system1.module1
-      system2.module1  .http   system1.module1   'title'
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+              system2.module1   ->     system1.module1
+              system2.module1.lib1   ->system1.module1.lib1
+              system2.module1   -[   http   ]->   system1.module1
+              system2.module1  .http   system1.module1   'title'
+            }
+          }`,
+        )
+          .toMatchInlineSnapshot(`
           "
           specification {
             element component
@@ -1738,31 +1726,27 @@ model {
               system2.module1 .http system1.module1 'title'
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'preserves empty lines',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
+          await format`
+          model {
 
-    system sys1
+            system sys1
 
-    system sys2 {
+            system sys2 {
 
-      description 'some'
+              description 'some'
 
-      metadata
-    }
+              metadata
+            }
 
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
 
@@ -1776,31 +1760,27 @@ model {
             }
 
           }"
-        `,
-        ),
+        `),
     )
 
     it(
       'normalize quotes',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
-    component user "some title" "description"
-    component user2 {
-      description "some"
-    }
-  }
-  views {
-    view index {
-      description """markdown"""
-      include *
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            component user "some title" "description"
+            component user2 {
+              description "some"
+            }
+          }
+          views {
+            view index {
+              description """markdown"""
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
             component user 'some title' 'description'
@@ -1814,34 +1794,29 @@ model {
               include *
             }
           }"
-        `,
-        ),
+        `),
     )
-
     it(
       'keeps internal quotes',
       async ({ expect }) =>
         expect(
-          await format(
-            `
-  model {
-    component user1 "escaped double quote \\""
-    component user2 "single quoute '"
-    component user3 "escaped single quoute \\'"
-    component user4 "single quoute with leading backslash \\\\'"
-    component user5 "\\\\'"
-    component user6 "" {
-      description """ ' """
-    }
-  }
-  views {
-    view index {
-      include *
-    }
-  }`,
-          ),
-        ).toMatchInlineSnapshot(
-          `
+          await format`
+          model {
+            component user1 "escaped double quote \\""
+            component user2 "single quoute '"
+            component user3 "escaped single quoute \\'"
+            component user4 "single quoute with leading backslash \\\\'"
+            component user5 "\\\\'"
+            component user6 "" {
+              description """ ' """
+            }
+          }
+          views {
+            view index {
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
           "
           model {
             component user1 'escaped double quote \\"'
@@ -1858,8 +1833,7 @@ model {
               include *
             }
           }"
-        `,
-        ),
+        `),
     )
 
     it('is idempotent', async ({ expect }) => {
@@ -2029,13 +2003,7 @@ model {
   })
 })
 
-async function format(source: string) {
-  const { format, validate } = createTestServices()
-
-  // const validationResult = await validate(source)
-  // if(validationResult.errors.length > 0 || validationResult.warnings.length > 0) {
-  //   return validationResult.warnings.join('\n')
-  // }
-
-  return await format(source)
+async function format(source: TemplateStringsArray | string) {
+  const { format } = createTestServices()
+  return await format(typeof source === 'string' ? source : source.join(''))
 }

@@ -11,7 +11,7 @@ export class NoopLikeC4MCPServer implements LikeC4MCPServer {
   get port(): number {
     return NaN
   }
-  start(port: number) {
+  start() {
     return Promise.resolve()
   }
   stop() {

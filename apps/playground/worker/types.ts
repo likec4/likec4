@@ -1,10 +1,11 @@
-import type { aux, LayoutedLikeC4ModelData } from '@likec4/core/types'
+/// <reference path="../worker-configuration.d.ts" />
+import type { LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { formatISO } from 'date-fns'
-import { type Context } from 'hono'
+import type { Context } from 'hono'
 import type { Session } from 'hono-sessions'
 import { createFactory } from 'hono/factory'
 import type { Tagged } from 'type-fest'
-import * as v from 'valibot'
+import * as z from 'zod/v4'
 
 export const factory = createFactory<HonoEnv>()
 
@@ -34,25 +35,23 @@ export type HonoEnv = {
 
 export type HonoContext = Context<HonoEnv>
 
-const nonEmptyString = v.pipe(
-  v.string(),
-  v.nonEmpty('The string should contain at least one character.'),
-)
+const nonEmptyString = z.string().nonempty('The string should contain at least one character.')
 
-export type LocalWorkspace = v.InferOutput<typeof LocalWorkspaceSchema>
-export const LocalWorkspaceSchema = v.object({
+export type LocalWorkspace = z.infer<typeof LocalWorkspaceSchema>
+export const LocalWorkspaceSchema = z.object({
   workspaceId: nonEmptyString,
-  title: v.string(),
+  title: z.string(),
   activeFilename: nonEmptyString,
-  files: v.record(nonEmptyString, v.string()),
+  files: z.record(nonEmptyString, z.string()),
 })
 
-export type ExpiresValue = v.InferOutput<typeof ExpiresValueSchema>
-export const ExpiresValueSchema = v.union([
-  v.literal('D1'),
-  v.literal('D7'),
-  v.literal('M1'),
-  v.literal('M3'),
+export type ExpiresValue = z.infer<typeof ExpiresValueSchema>
+export const ExpiresValueSchema = z.literal([
+  'D1',
+  'D7',
+  'M1',
+  'M3',
+  'M6',
 ])
 
 // export type AccessValue = v.InferOutput<typeof AccessValueSchema>
@@ -62,30 +61,25 @@ export const ExpiresValueSchema = v.union([
 //   v.literal('github:org'),
 // ])
 
-export type ShareOptions = v.InferOutput<typeof ShareOptionsSchema>
-export const ShareOptionsSchema = v.variant('access', [
-  v.object({
-    access: v.literal('pincode'),
+export type ShareOptions = z.infer<typeof ShareOptionsSchema>
+export const ShareOptionsSchema = z.discriminatedUnion('access', [
+  z.object({
+    access: z.literal('pincode'),
     expires: ExpiresValueSchema,
-    forkable: v.boolean(),
-    pincode: v.pipe(
-      v.string(),
-      v.minLength(4, 'The pincode should be at least 4 characters long.'),
-      v.maxLength(4, 'The pincode should be at most 4 characters long.'),
-    ),
+    forkable: z.boolean(),
+    pincode: z.string()
+      .min(4, 'The pincode should be at least 4 characters long.')
+      .max(4, 'The pincode should be at most 4 characters long.'),
   }),
-  v.object({
-    access: v.union([
-      v.literal('any'),
-      v.literal('github:org'),
-      v.literal('github:team'),
+  z.object({
+    access: z.literal([
+      'any',
+      'github:org',
+      'github:team',
     ]),
     expires: ExpiresValueSchema,
-    forkable: v.boolean(),
+    forkable: z.boolean(),
   }),
-  // v.literal('any'),
-  // v.literal('password'),
-  // v.literal('github:org'),
 ])
 export type AccessValue = ShareOptions['access']
 

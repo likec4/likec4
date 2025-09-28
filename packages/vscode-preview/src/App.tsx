@@ -1,9 +1,9 @@
 import type { scalar } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
-import { IconRenderer } from '@likec4/icons/all'
 import { Button } from '@mantine/core'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from './App.css'
+import { IconRenderer } from './IconRenderer'
 import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
 import {
   setLastClickedNode,
@@ -77,12 +77,12 @@ function Initialized() {
           view={view}
           fitViewPadding={{
             top: '70px',
-            bottom: '10px',
+            bottom: '30px',
             left: '60px',
-            right: '10px',
+            right: '30px',
           }}
           readonly={false}
-          controls="next"
+          controls
           nodesDraggable={nodesDraggable}
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode
@@ -94,7 +94,6 @@ function Initialized() {
           showNavigationButtons
           showNotations
           enableRelationshipDetails
-          showDiagramTitle={false}
           renderIcon={IconRenderer}
           onNavigateTo={(_to, event) => {
             const to = _to as scalar.ViewId
@@ -112,6 +111,10 @@ function Initialized() {
             event.preventDefault()
           }}
           onEdgeClick={(edge) => {
+            if (view._type === 'dynamic' && edge.astPath) {
+              extensionApi.locate({ view: view.id, astPath: edge.astPath })
+              return
+            }
             const relationId = only(edge.relations)
             if (relationId) {
               extensionApi.locate({ relation: relationId })

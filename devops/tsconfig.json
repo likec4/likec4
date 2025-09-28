@@ -1,0 +1,31 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": [
+      "esnext",
+    ],
+    "module": "NodeNext",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "allowJs": true,
+    /* Bundler mode */
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    /* Linting */
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "types": [
+      "node",
+      "fs-extra"
+    ]
+  },
+  "include": [
+    "likec4ops.ts",
+    "commands/**/*"
+  ]
+}

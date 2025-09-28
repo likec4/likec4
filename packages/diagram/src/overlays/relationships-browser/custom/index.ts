@@ -1,2 +1,3 @@
 export { RelationshipEdge } from './edgeTypes'
-export { CompoundNode, ElementNode, EmptyNode } from './nodeTypes'
+export { EmptyNode } from './EmptyNode'
+export { CompoundNode, ElementNode } from './nodeTypes'

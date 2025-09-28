@@ -1,4 +1,4 @@
-import { type ComputedNode, type NodeNotation as ElementNotationData } from '@likec4/core'
+import type { ComputedNode, NodeNotation as ElementNotationData } from '@likec4/core'
 import { cx, cx as clsx } from '@likec4/styles/css'
 import {
   ActionIcon,
@@ -22,11 +22,11 @@ import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/i
 import { AnimatePresence, m } from 'motion/react'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
-import { ElementShape } from '../../../base/primitives'
+import { ElementShape } from '../../../base-primitives'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
-import type { DiagramContext } from '../../../state/types'
+import type { DiagramContext } from '../../state/types'
 import * as styles from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
@@ -149,7 +149,7 @@ export const NotationPanel = memo(() => {
             translateX: '100%',
             opacity: 0.6,
           }}
-          className={clsx('react-flow__panel', styles.container)}>
+          className={styles.container}>
           <Tooltip label="View has no notations" color="orange" {...portalProps}>
             <ThemeIcon
               size={'lg'}
@@ -171,7 +171,7 @@ export const NotationPanel = memo(() => {
             translateX: '100%',
             opacity: 0.6,
           }}
-          className={clsx('react-flow__panel', styles.container)}
+          className={styles.container}
         >
           <Tooltip label="Show notation" color="dark" fz={'xs'} {...portalProps}>
             <ActionIcon

@@ -56,19 +56,18 @@ export class Memory extends AbstractMemory<Ctx> {
   }
 
   diff(state: Memory) {
-    const current = this
     return {
       added: {
-        elements: toArray(differenceSet(state.elements, current.elements)),
-        explicits: toArray(differenceSet(state.explicits, current.explicits)),
-        final: toArray(differenceSet(state.final, current.final)),
-        connections: toArray(differenceConnections(state.connections, current.connections)),
+        elements: toArray(differenceSet(state.elements, this.elements)),
+        explicits: toArray(differenceSet(state.explicits, this.explicits)),
+        final: toArray(differenceSet(state.final, this.final)),
+        connections: toArray(differenceConnections(state.connections, this.connections)),
       },
       removed: {
-        elements: toArray(differenceSet(current.elements, state.elements)),
-        explicits: toArray(differenceSet(current.explicits, state.explicits)),
-        final: toArray(differenceSet(current.final, state.final)),
-        connections: differenceConnections(current.connections, state.connections),
+        elements: toArray(differenceSet(this.elements, state.elements)),
+        explicits: toArray(differenceSet(this.explicits, state.explicits)),
+        final: toArray(differenceSet(this.final, state.final)),
+        connections: differenceConnections(this.connections, state.connections),
       },
     }
   }

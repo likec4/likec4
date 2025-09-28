@@ -15,8 +15,8 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const { nodes: viewNodes } = this.view
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [_sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
+    const [_targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
@@ -43,19 +43,13 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     const label = stepEdgeLabel(step, labelText)
     e.attributes.set(_.label, label)
 
-    const weight = this.graphology.getEdgeAttribute(edge.id, 'weight')
-
-    if (edge.source !== edge.target && weight > 1) {
-      e.attributes.set(_.weight, weight)
-    }
-
     // IF we already have "seen" the target node in previous steps
     // We don't want constraints to be applied
     const sourceIdx = viewNodes.findIndex(n => n.id === sourceFqn)
     const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
     if (targetIdx < sourceIdx && edge.dir !== 'back') {
       e.attributes.apply({
-        [_.constraint]: false,
+        [_.minlen]: 0,
       })
     }
 
@@ -64,14 +58,12 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
     if (edge.dir === 'back') {
       e.attributes.apply({
         [_.arrowtail]: toArrowType(head),
-        [_.minlen]: 0,
         [_.dir]: 'back',
       })
       if (tail !== 'none') {
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
-          // [_.constraint]: false,
-          [_.dir]: 'both',
+          [_.minlen]: 0,
         })
       }
       return e
@@ -82,8 +74,6 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
         [_.dir]: 'both',
-        // [_.constraint]: false,
-        // [_.minlen]: 1
       })
       return e
     }

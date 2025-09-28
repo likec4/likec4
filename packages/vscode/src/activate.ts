@@ -136,7 +136,7 @@ function activateLc() {
   // const preview = useDiagramPreview()
   useCommand(commands.restart, () => {
     sendTelemetryAboutCommand(commands.restart)
-    restartServer()
+    void restartServer()
   })
   useCommand(commands.openPreview, async (viewId?: ViewId, projectId = 'default' as ProjectId) => {
     sendTelemetryAboutCommand(commands.openPreview)
@@ -265,15 +265,15 @@ function activateLc() {
   const fsWatcher = useFsWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
   fsWatcher.onDidChange((uri) => {
     logger.debug(`Config file changed: ${uri}`)
-    rpc.reloadProjects()
+    void rpc.reloadProjects()
   })
   fsWatcher.onDidCreate((uri) => {
     logger.debug(`Config file created: ${uri}`)
-    rpc.reloadProjects()
+    void rpc.reloadProjects()
   })
   fsWatcher.onDidDelete((uri) => {
     logger.debug(`Config file deleted: ${uri}`)
-    rpc.reloadProjects()
+    void rpc.reloadProjects()
   })
 }
 
@@ -299,7 +299,7 @@ function createWebviewPanelSerializer(onActivate: () => void) {
     const { stop } = watch([deserializePanel, deserializeState], ([panel, state]) => {
       if (!panel) return
       preview.deserialize(panel, state)
-      nextTick(() => {
+      void nextTick(() => {
         stop()
       })
     }, {

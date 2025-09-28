@@ -7,7 +7,7 @@ import {
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import type { RelationshipDetailsTypes } from './_types'
-import { type LayoutResult } from './layout'
+import type { LayoutResult } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 export function layoutResultToXYFlow(
@@ -35,7 +35,6 @@ export function layoutResultToXYFlow(
     },
     [] as TraverseItem[],
   ))
-  const ns = ''
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
 
   let next: TraverseItem | undefined
@@ -49,15 +48,15 @@ export function layoutResultToXYFlow(
     }
 
     const position = {
-      x: node.position[0],
-      y: node.position[1],
+      x: node.x,
+      y: node.y,
     }
     if (parent) {
-      position.x -= parent.position[0]
-      position.y -= parent.position[1]
+      position.x -= parent.x
+      position.y -= parent.y
     }
 
-    const id = ns + node.id
+    const id = node.id
 
     const base = {
       id,
@@ -74,7 +73,7 @@ export function layoutResultToXYFlow(
       initialWidth: node.width,
       initialHeight: node.height,
       ...(parent && {
-        parentId: ns + parent.id,
+        parentId: parent.id,
       }),
     } satisfies Omit<RelationshipDetailsTypes.Node, 'data' | 'type'>
 
@@ -88,6 +87,7 @@ export function layoutResultToXYFlow(
             ...base,
             type: 'compound',
             data: {
+              id,
               column: node.column,
               title: node.title,
               color: node.color,
@@ -108,6 +108,7 @@ export function layoutResultToXYFlow(
             ...base,
             type: 'element' as const,
             data: {
+              id,
               column: node.column,
               fqn,
               title: node.title,
@@ -142,12 +143,12 @@ export function layoutResultToXYFlow(
       ...edge
     } of layout.edges
   ) {
-    const id = ns + edge.id
+    const id = edge.id
     xyedges.push({
       id,
       type: 'relationship',
-      source: ns + source,
-      target: ns + target,
+      source,
+      target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
       // selectable: selectable,

@@ -3,7 +3,7 @@ import prettyMs from 'pretty-ms'
 export function now() {
   try {
     return performance.now()
-  } catch (e) {
+  } catch {
     return Date.now()
   }
 }

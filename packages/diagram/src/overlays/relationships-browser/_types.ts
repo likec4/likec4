@@ -1,6 +1,7 @@
 import type {
   Color,
   DiagramNode,
+  ExclusiveUnion,
   Fqn,
   IconUrl,
   NonEmptyArray,
@@ -10,8 +11,17 @@ import type {
   RichTextOrEmpty,
   ViewId,
 } from '@likec4/core/types'
+import type { FunctionComponent } from 'react'
 import type { Simplify } from 'type-fest'
-import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
+import type {
+  BaseEdge,
+  BaseEdgeData,
+  BaseEdgeProps,
+  BaseNode,
+  BaseNodeData,
+  BaseNodeProps,
+  NonOptional,
+} from '../../base/types'
 
 export namespace RelationshipsBrowserTypes {
   export type Column = 'incomers' | 'subjects' | 'outgoers'
@@ -25,10 +35,11 @@ export namespace RelationshipsBrowserTypes {
   }
 
   export type ElementNodeData = Simplify<
-    & Base.NodeData
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
+        | 'id'
         | 'title'
         | 'technology'
         | 'color'
@@ -51,10 +62,11 @@ export namespace RelationshipsBrowserTypes {
   >
 
   export type CompoundNodeData = Simplify<
-    & Base.NodeData
+    & BaseNodeData
     & NonOptional<
       Pick<
         DiagramNode,
+        | 'id'
         | 'title'
         | 'color'
         | 'shape'
@@ -71,23 +83,35 @@ export namespace RelationshipsBrowserTypes {
     }
   >
 
-  export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
-
-  export type CompoundNode = ReactFlowNode<CompoundNodeData, 'compound'>
-
   // export type NonEmptyNode = ElementNode | CompoundNode
 
-  export type EmptyNodeData = Base.NodeData & { column: Column }
+  export type EmptyNodeData = BaseNodeData & { column: Column }
 
-  export type EmptyNode = ReactFlowNode<EmptyNodeData, 'empty'>
+  export type ElementNode = BaseNode<ElementNodeData, 'element'>
+  export type CompoundNode = BaseNode<CompoundNodeData, 'compound'>
+  export type EmptyNode = BaseNode<EmptyNodeData, 'empty'>
 
-  export type Node = ElementNode | CompoundNode | EmptyNode
-  export type NodeData = Node['data']
+  export type AnyNode = ElementNode | CompoundNode | EmptyNode
+
+  export type NodeType = AnyNode['type']
+  export type Node<T extends NodeType = NodeType> = Extract<AnyNode, { type: T }>
+  export type NodeProps<T extends NodeType = NodeType> = BaseNodeProps<Node<T>>
+
+  export type NodeData = ExclusiveUnion<{
+    ElementNodeData: ElementNodeData
+    CompoundNodeData: CompoundNodeData
+    EmptyNodeData: EmptyNodeData
+  }>
+
+  export type NodeRenderer<T extends NodeType = NodeType> = FunctionComponent<NodeProps<T>>
+  export type NodeRenderers = {
+    [T in NodeType]: NodeRenderer<T>
+  }
 
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
   export type EdgeData = Simplify<
-    Base.EdgeData & {
+    BaseEdgeData & {
       sourceFqn: Fqn
       targetFqn: Fqn
       relations: NonEmptyArray<RelationId>
@@ -101,5 +125,6 @@ export namespace RelationshipsBrowserTypes {
     }
   >
 
-  export type Edge = ReactFlowEdge<EdgeData, 'relationship'>
+  export type Edge = BaseEdge<EdgeData, 'relationship'>
+  export type EdgeProps = BaseEdgeProps<Edge>
 }

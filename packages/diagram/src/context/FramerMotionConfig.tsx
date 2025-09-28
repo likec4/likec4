@@ -1,6 +1,6 @@
 import { useMantineStyleNonce } from '@mantine/core'
 import { domMax, LazyMotion, MotionConfig } from 'motion/react'
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const FramerMotionConfig = ({
   reducedMotion = 'user',

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -9,6 +9,7 @@
   "files": [
     "bin",
     "dist",
+    "**/package.json",
     "!**/__mocks__/",
     "!**/__tests__/",
     "!**/*.spec.*",
@@ -20,7 +21,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=20.19.4"
+    "node": "^20.19.0 || >=22.18.0"
   },
   "engineStrict": true,
   "type": "module",
@@ -31,17 +32,9 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
-      "node": {
-        "sources": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      },
       "default": {
-        "sources": "./src/browser.ts",
-        "types": "./dist/browser.d.ts",
-        "import": "./dist/browser.mjs",
-        "default": "./dist/browser.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
       }
     },
     "./likec4lib": {
@@ -80,11 +73,14 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/index.d.ts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-language-server-$npm_package_version.tgz package.tgz || true",
     "pregenerate": "rm -f src/generated/* || true",
@@ -92,9 +88,10 @@
     "watch:ts": "tsc --watch",
     "generate": "langium generate && tsx scripts/generate-icons.ts",
     "dev": "run-p \"watch:*\"",
-    "lint": "run -T eslint src/ --fix",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf dist contrib lib src/generated src/generated-lib",
+    "clean": "likec4ops clean contrib src/generated src/generated-lib",
     "test": "vitest run --no-isolate",
     "test-dbg": "vitest run --no-isolate -t formating",
     "vitest:ui": "vitest --no-isolate --ui",
@@ -113,17 +110,16 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@msgpack/msgpack": "^3.1.2",
     "@smithy/util-base64": "^4.0.0",
-    "@types/chroma-js": "catalog:utils",
     "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:utils",
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
     "chokidar": "catalog:utils",
-    "chroma-js": "catalog:utils",
     "defu": "catalog:utils",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
@@ -135,6 +131,7 @@
     "langium": "catalog:langium",
     "langium-cli": "catalog:langium",
     "natural-compare-lite": "catalog:utils",
+    "oxlint": "catalog:",
     "p-debounce": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",

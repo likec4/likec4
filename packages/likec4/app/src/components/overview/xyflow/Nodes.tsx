@@ -1,7 +1,7 @@
+import { cx as clsx } from '@likec4/styles/css'
 import { Group, Paper, Text, ThemeIcon } from '@mantine/core'
 import { IconFileFilled, IconFolderFilled } from '@tabler/icons-react'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
-import clsx from 'clsx'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import { memo } from 'react'
 import { isNullish } from 'remeda'
 import * as css from './Nodes.css'
@@ -12,7 +12,6 @@ type FolderXYNodeProps = NodeProps<FolderXYNode>
 export const FolderNode = /* @__PURE__ */ memo(function FolderNode({
   data,
   parentId,
-  id
 }: FolderXYNodeProps) {
   const isTopLevel = isNullish(parentId)
   return (
@@ -27,7 +26,7 @@ export const FolderNode = /* @__PURE__ */ memo(function FolderNode({
         className={clsx(
           css.folderNode,
           isTopLevel ? css.toplevelNode : css.nestedNode,
-          data.dimmed && css.dimmed
+          data.dimmed && css.dimmed,
         )}>
         <Group gap={8}>
           <ThemeIcon size={24} variant="transparent" color="dark.4">
@@ -47,7 +46,6 @@ type FileXYNodeProps = NodeProps<FileXYNode>
 export const FileNode = /* @__PURE__ */ memo(function FileNode({
   data,
   parentId,
-  id
 }: FileXYNodeProps) {
   const isTopLevel = isNullish(parentId)
   return (
@@ -62,7 +60,7 @@ export const FileNode = /* @__PURE__ */ memo(function FileNode({
         className={clsx(
           css.fileNode,
           isTopLevel ? css.toplevelNode : css.nestedNode,
-          data.dimmed && css.dimmed
+          data.dimmed && css.dimmed,
         )}>
         <Group gap={8}>
           <ThemeIcon size={24} variant="transparent" color="dark.3">

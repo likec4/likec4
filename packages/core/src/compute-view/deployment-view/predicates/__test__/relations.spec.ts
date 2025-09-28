@@ -30,7 +30,7 @@ describe('RelationPredicate', () => {
       )
     )
 
-  const { $include, $exclude } = TestHelper
+  const { $include } = TestHelper
 
   describe('include', () => {
     describe('* -> *', () => {

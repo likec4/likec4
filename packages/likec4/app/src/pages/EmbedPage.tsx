@@ -1,9 +1,12 @@
-import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { getViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
 import { useCurrentDiagram, useTransparentBackground } from '../hooks'
 
 export function EmbedPage() {
-  const { padding = 20 } = useSearch({
+  const {
+    padding = 20,
+    dynamic,
+  } = useSearch({
     strict: false,
   })
   const diagram = useCurrentDiagram()
@@ -14,6 +17,8 @@ export function EmbedPage() {
     return <div>Loading...</div>
   }
 
+  const bounds = getViewBounds(diagram, dynamic)
+
   return (
     <div
       style={{
@@ -23,9 +28,9 @@ export function EmbedPage() {
         boxSizing: 'border-box',
         padding,
         transform: 'translateX(-50%)',
-        aspectRatio: `${diagram.bounds.width + padding * 2} / ${diagram.bounds.height + padding * 2}`,
+        aspectRatio: `${bounds.width + padding * 2} / ${bounds.height + padding * 2}`,
         width: '100vw',
-        maxWidth: diagram.bounds.width + padding * 2,
+        maxWidth: bounds.width + padding * 2,
         height: 'auto',
         maxHeight: '100vh',
       }}
@@ -35,8 +40,9 @@ export function EmbedPage() {
         fitView={true}
         background={'transparent'}
         fitViewPadding={0}
-        initialWidth={diagram.bounds.width}
-        initialHeight={diagram.bounds.height} />
+        dynamicViewVariant={dynamic}
+        initialWidth={bounds.width}
+        initialHeight={bounds.height} />
     </div>
   )
 }

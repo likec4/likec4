@@ -62,9 +62,9 @@ export function sortDeepestFirst<C extends ConnectionElemId>(
   const sorted = [] as C[]
   const unsorted = connections.slice()
   let next
-  while (next = unsorted.shift()) {
+  while ((next = unsorted.shift())) {
     let deepest
-    while (deepest = findDeepestNestedConnection(unsorted, next)) {
+    while ((deepest = findDeepestNestedConnection(unsorted, next))) {
       const index = unsorted.indexOf(deepest)
       sorted.push(unsorted.splice(index, 1)[0]!)
     }

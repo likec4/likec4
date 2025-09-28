@@ -112,7 +112,7 @@ export type Tag<T = string> = Tagged<T, 'Tag'>
 
 export type GlobalFqn<Id = string> = Tagged<Fqn<Id>, 'GlobalFqn'>
 export function GlobalFqn<A>(projectId: A | ProjectId<A>, name: string): GlobalFqn<A> {
-  invariant(isTruthy(projectId), 'Project ID must start with @')
+  invariant(typeof projectId === 'string' && projectId != '')
   return '@' + projectId + '.' + name as any
 }
 

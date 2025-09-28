@@ -2,6 +2,9 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
+  "oxc.enable": true,
+  "oxc.typeAware": true,
+  "oxc.lint.run": "onSave",
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
@@ -25,6 +28,7 @@
   },
   "[mdx]": {
     "editor.defaultFormatter": "dprint.dprint",
+    "files.trimTrailingWhitespace": false,
   },
   "[css]": {
     "editor.defaultFormatter": "dprint.dprint",
@@ -56,6 +60,7 @@
     "packages/*/lib": true,
     "apps/*/lib": true,
     "apps/*/styled-system": true,
+    "devops/lib": true,
     "styled-system/*/node_modules": true,
     "styled-system/*/lib": true
   },

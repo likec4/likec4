@@ -134,6 +134,7 @@ export const playgroundMachine = setup({
     events: {} as PlaygroundEvents,
     input: {} as PlaygroundInput,
     emitted: {} as PlaygroundEmitted,
+    tags: '' as 'sharing',
   },
   actors: {
     'call-share-api': fromPromise(async ({ input }: WithInput<Api.Share.Payload>) => {
@@ -451,6 +452,7 @@ export const playgroundMachine = setup({
       },
     },
     'sharing': {
+      tags: 'sharing',
       initial: 'wait-layouted-data',
       states: {
         'wait-layouted-data': {

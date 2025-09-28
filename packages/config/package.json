@@ -1,6 +1,6 @@
 {
   "name": "@likec4/config",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -15,7 +15,8 @@
     "typecheck": "tsc -b --verbose",
     "build": "unbuild",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf dist lib",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-config-$npm_package_version.tgz package.tgz || true"
   },
@@ -23,6 +24,7 @@
     "dist",
     "src",
     "schema.json",
+    "**/package.json",
     "!**/*.spec.ts",
     "!**/*.test-d.ts",
     "!**/__*/*",
@@ -60,19 +62,20 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.mts",
-    "module": "./dist/index.mjs"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "dependencies": {
     "bundle-require": "catalog:utils",
     "defu": "catalog:utils",
     "json5": "catalog:utils",
-    "zod": "catalog:utils"
+    "zod": "catalog:utils",
+    "type-fest": "catalog:utils"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "esbuild": "^0.25.9",
+    "esbuild": "^0.25.10",
     "vscode-uri": "catalog:vscode"
   },
   "peerDependenciesMeta": {
@@ -84,7 +87,9 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
+    "remeda": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

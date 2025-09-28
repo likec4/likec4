@@ -1,0 +1,104 @@
+specification {
+  element component
+}
+
+model {
+  a = component "A" {
+    -> b
+    -> r
+    -> h
+    -> f
+  }
+
+  b = component "B"
+
+  c = component "C" {
+    -> d
+  }
+
+  d = component "D" {
+    -> h
+  }
+
+  e = component "E" {
+    -> h
+    -> a
+  }
+
+  f = component "F"
+
+  g = component "G" {
+    -> h
+  }
+
+  h = component "H" {
+    -> i
+    -> j
+    -> k
+    -> l
+    -> f
+    -> a
+  }
+
+  i = component "I" {
+    -> j
+    -> t
+    -> k
+  }
+
+  j = component "J" {
+    -> i
+    -> l
+    -> a
+    -> k
+  }
+
+  k = component "K" {
+    -> j
+  }
+
+  l = component "L" {
+    -> j
+    -> h
+  }
+
+  m = component "M" {
+    -> i
+    -> n
+  }
+
+  n = component "N" {
+    -> i
+  }
+
+  o = component "O"
+
+  p = component "P" {
+    -> j
+  }
+
+  q = component "Q" {
+    -> u
+  }
+
+  r = component "R" {
+    -> s
+    -> g
+  }
+
+  s = component "S" {
+    -> u
+  }
+
+  t = component "T" {
+    -> o
+  }
+
+  u = component "U"
+}
+
+views {
+  view index {
+    include *
+  }
+}

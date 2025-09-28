@@ -15,13 +15,13 @@ import type {
   Tag,
   TagSpecification,
 } from '@likec4/core/types'
-import { compareNatural, nonNullable } from '@likec4/core/utils'
+import { compareNatural, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { addDays, addMonths, getUnixTime, startOfMinute } from 'date-fns'
 import { HTTPException } from 'hono/http-exception'
 import type { LayoutedLikeC4ModelData as LayoutedLikeC4ModelDataLegacy } from 'likec4-core-legacy/types'
 import { nanoid } from 'nanoid'
 import { first, map, mapValues, pipe, prop, pullObject, sort, values } from 'remeda'
-import * as v from 'valibot'
+import * as z from 'zod/v4'
 import { readUserSession } from './auth'
 import {
   type GithubLogin,
@@ -40,13 +40,20 @@ type Metadata = {
   userSession: UserSession | null
 }
 
-type ModelSchema = v.InferOutput<typeof ModelSchema>
-const RecordAny = v.record(v.string(), v.any())
-const ModelSchema = v.object({
-  _stage: v.literal('layouted'),
-  projectId: v.optional(v.string()),
-  specification: v.object({
-    tags: v.optional(RecordAny),
+const RecordAny = z.record(z.string(), z.any())
+const ModelSchema = z.object({
+  _stage: z.literal('layouted'),
+  projectId: z.string().optional().default('default'),
+  project: z
+    .object({
+      id: z.string(),
+      title: z.string(),
+      styles: z.any(),
+    })
+    .partial()
+    .optional(),
+  specification: z.looseObject({
+    tags: z.optional(RecordAny),
     elements: RecordAny,
     deployments: RecordAny,
     relationships: RecordAny,
@@ -55,14 +62,15 @@ const ModelSchema = v.object({
   relations: RecordAny,
   globals: RecordAny,
   views: RecordAny,
-  deployments: v.object({
+  deployments: z.object({
     elements: RecordAny,
     relations: RecordAny,
   }),
 })
+type ModelSchema = z.infer<typeof ModelSchema>
 
-export type SharePlaygroundReqSchema = v.InferOutput<typeof SharePlaygroundReqSchema>
-export const SharePlaygroundReqSchema = v.object({
+export type SharePlaygroundReqSchema = z.infer<typeof SharePlaygroundReqSchema>
+export const SharePlaygroundReqSchema = z.object({
   localWorkspace: LocalWorkspaceSchema,
   model: ModelSchema,
   shareOptions: ShareOptionsSchema,
@@ -176,18 +184,22 @@ function convertLegacyModel(
         ...convertDescription(description),
       })),
     },
-    relations: mapValues(relations, ({ id, source, target, color, description, ...rest }): Relationship => ({
-      ...rest,
-      ...convertDescription(description),
-      id: id as unknown as scalar.RelationId,
-      ...(color && { color: color as any }),
-      source: {
-        model: source,
-      },
-      target: {
-        model: target,
-      },
-    })),
+    relations: mapValues(
+      relations,
+      ({ id, source, target, color, description, navigateTo, ...rest }): Relationship => ({
+        ...rest,
+        ...convertDescription(description),
+        id: id as unknown as scalar.RelationId,
+        ...(color && { color: color as any }),
+        ...(navigateTo && { navigateTo: navigateTo as any }),
+        source: {
+          model: source,
+        },
+        target: {
+          model: target,
+        },
+      }),
+    ),
     views: mapValues(views, ({ __, id, description, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
       ...rest,
       description: description ? { txt: description } : null,
@@ -288,7 +300,14 @@ export const sharesKV = (c: HonoContext) => {
       return {
         value: {
           ...value,
-          model,
+          model: {
+            ...model,
+            projectId: model.projectId ?? 'default',
+            project: {
+              ...model.project,
+              id: model.project?.id ?? model.projectId ?? 'default',
+            },
+          },
         },
         metadata,
       }
@@ -321,6 +340,11 @@ export const sharesKV = (c: HonoContext) => {
       case 'M3':
         expiresAtDate = addMonths(now, 3)
         break
+      case 'M6':
+        expiresAtDate = addMonths(now, 6)
+        break
+      default:
+        nonexhaustive(shareOptions.expires)
     }
     const createdAt = ISODatetime(now)
     const expiresAt = ISODatetime(expiresAtDate)

@@ -1,9 +1,23 @@
-import { $ } from 'execa'
 import { fdir } from 'fdir'
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import * as path from 'path'
+import { $ } from 'zx'
 
+$.stdio = 'inherit'
+$.preferLocal = true
+
+process.on('unhandledRejection', (err) => {
+  console.error(err)
+  process.exit(1)
+})
+
+process.on('uncaughtException', (err) => {
+  console.error(err)
+  process.exit(1)
+})
+
+console.info('Cleaning up...')
 await rm('.tmp/src', { force: true, recursive: true })
 await mkdir('.tmp/src', { recursive: true })
 

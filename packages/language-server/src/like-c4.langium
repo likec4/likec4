@@ -364,12 +364,46 @@ DynamicViewParallelSteps:
   '}'
 ;
 
-DynamicViewStep:
-  source=ElementRef
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
+fragment DynamicViewStepTarget:
   target=ElementRef
   title=String?
   custom=CustomRelationProperties?
+;
+
+interface AbstractDynamicStep {
+  kind?: @RelationshipKind;
+  dotKind?: RelationKindDotRef;
+  target: ElementRef;
+  title?: string;
+  custom?: CustomRelationProperties;
+}
+
+interface DynamicStepSingle extends AbstractDynamicStep {
+  source: ElementRef;
+  isBackward?: boolean;
+}
+
+interface DynamicStepChain extends AbstractDynamicStep {
+  source: DynamicStepSingle | DynamicStepChain;
+}
+
+type DynamicViewStep = DynamicStepSingle | DynamicStepChain;
+
+DynamicViewStep returns DynamicViewStep:
+  DynamicStepChain;
+
+DynamicStepChain returns DynamicStepSingle:
+  DynamicStepSingle
+  ({DynamicStepChain.source=current}
+    ('->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
+    DynamicViewStepTarget
+  )*
+;
+
+DynamicStepSingle returns DynamicStepSingle:
+  source=ElementRef
+  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
+  DynamicViewStepTarget
 ;
 
 ViewRulePredicate:

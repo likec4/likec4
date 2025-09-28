@@ -1,7 +1,7 @@
 import type { DynamicViewDisplayVariant, LayoutedView, WhereOperator } from '@likec4/core/types'
 import type { Types } from './types'
 import { diagramToXY } from './xyflow-diagram/diagram-view'
-import { sequenceViewToXY } from './xyflow-sequence/sequence-view'
+import { sequenceLayoutToXY } from './xyflow-sequence/sequence-layout'
 
 type ConvertToXYFlowInput = {
   view: LayoutedView
@@ -19,7 +19,7 @@ export function convertToXYFlow({ dynamicViewVariant, ...params }: ConvertToXYFl
   const isDynamic = view._type === 'dynamic'
 
   const { bounds, xynodes, xyedges } = isDynamic && dynamicViewVariant === 'sequence'
-    ? sequenceViewToXY(view)
+    ? sequenceLayoutToXY(view)
     : diagramToXY(params)
 
   if (isDynamic && view.variant !== dynamicViewVariant) {

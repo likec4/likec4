@@ -1,21 +1,19 @@
 import { getBezierPath } from '@xyflow/system'
 import {
-  customEdge,
   EdgeActionButton,
   EdgeContainer,
   EdgeLabel,
   EdgeLabelContainer,
   EdgePath,
-} from '../../../base/primitives'
+  memoEdge,
+} from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-export const RelationshipEdge = customEdge<RelationshipDetailsTypes.EdgeData>((props) => {
+export const RelationshipEdge = memoEdge<RelationshipDetailsTypes.EdgeProps>((props) => {
   const { enableNavigateTo } = useEnabledFeatures()
   const {
-    sourceX,
-    targetY,
     data: { navigateTo },
   } = props
   const [svgPath, labelX, labelY] = getBezierPath(props)

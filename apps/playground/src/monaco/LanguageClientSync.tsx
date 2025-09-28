@@ -1,6 +1,6 @@
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
+import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import { type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import {
@@ -275,7 +275,7 @@ export function LanguageClientSync({ config, wrapper }: {
   useEffect(() => {
     if (playgroundState !== 'ready') return
     const editor = nonNullable(wrapper.getEditor(), 'editor is not ready')
-    const listener = editor.onDidChangeModelContent((contents) => {
+    const listener = editor.onDidChangeModelContent((_contents) => {
       const activeModel = nonNullable(editor.getModel(), 'active model is not ready')
       const filename = activeModel.uri.path.slice(1)
       playground.send({

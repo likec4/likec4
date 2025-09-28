@@ -10,8 +10,8 @@ import type { AnyAux } from './_aux'
 import type { _stage, _type } from './const'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
-import {
-  type Icon,
+import type {
+  Icon,
 } from './scalar'
 import type {
   BaseViewProperties,
@@ -90,6 +90,12 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
    * If this edge is derived from custom relationship predicate
    */
   isCustomized?: boolean
+  /**
+   * Path to the AST node relative to the view body ast
+   * Available only in dynamic views
+   * @internal
+   */
+  astPath?: string
   /**
    * For layouting purposes
    * @default 'forward'

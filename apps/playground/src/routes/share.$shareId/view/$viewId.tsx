@@ -1,15 +1,12 @@
 import type { LocalWorkspace } from '#worker/types'
 import { IconRenderer } from '$components/IconRenderer'
-import { Logo } from '$components/Logo'
 import { useWorkspaces } from '$hooks/useWorkspaces'
 import type { DiagramView } from '@likec4/core'
-import { type ControlsCustomLayout, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
-import { css } from '@likec4/styles/css'
-import { Box, HStack, VStack } from '@likec4/styles/jsx'
-import { Alert, Button, Container, UnstyledButton } from '@mantine/core'
+import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
+import { Box, HStack } from '@likec4/styles/jsx'
+import { Alert, Button, Container } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import * as m from 'motion/react-m'
 
 export const Route = createFileRoute('/share/$shareId/view/$viewId')({
   component: RouteComponent,
@@ -30,7 +27,7 @@ function RouteComponent() {
   const sharedPlayground = Route.parentRoute.useLoaderData()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       params: { viewId },
       search: true,
@@ -58,9 +55,13 @@ function RouteComponent() {
         readonly
         zoomable
         pannable
-        controls={false}
-        fitViewPadding={'32px'}
-        showDiagramTitle
+        controls
+        fitViewPadding={{
+          top: 70,
+          bottom: 32,
+          left: 32,
+          right: 32,
+        }}
         showNavigationButtons
         enableFocusMode
         enableDynamicViewWalkthrough
@@ -69,64 +70,18 @@ function RouteComponent() {
         enableRelationshipBrowser
         experimentalEdgeEditing={false}
         enableElementTags
+        enableSearch
         showNotations={hasNotations}
         nodesDraggable={false}
         nodesSelectable
         renderIcon={IconRenderer}
-        renderControls={ControlsLayout}
         onNavigateTo={onNavigateTo}
-        onBurgerMenuClick={() => ({})}
       >
         {sharedPlayground.forkable && <ForkPlaygroundWorkspace workspace={sharedPlayground.localWorkspace} />}
       </LikeC4Diagram>
     </>
   )
 }
-
-const ControlsLayout: ControlsCustomLayout = ({
-  actionsGroup,
-  navigationButtons,
-  burgerMenu,
-  search,
-}) => (
-  <m.div
-    initial={{
-      opacity: 0.05,
-      translateY: '-50%',
-    }}
-    animate={{
-      opacity: 1,
-      translateY: 0,
-    }}
-    exit={{
-      opacity: 0.05,
-      translateY: '-50%',
-    }}
-    className="react-flow__panel top left"
-  >
-    <VStack gap="lg">
-      <HStack gap="md">
-        {/* {burgerMenu} */}
-        <UnstyledButton
-          component="a"
-          href="https://likec4.dev/"
-          target="_blank"
-          className={css({
-            px: 'sm',
-          })}>
-          <Logo width={100} />
-        </UnstyledButton>
-        <HStack gap="xxs">
-          {navigationButtons}
-        </HStack>
-        <Box w={250} maxW={300}>
-          {search}
-        </Box>
-      </HStack>
-      {actionsGroup}
-    </VStack>
-  </m.div>
-)
 
 const ForkPlaygroundWorkspace = ({ workspace: { workspaceId: _id, ...workspace } }: { workspace: LocalWorkspace }) => {
   const { shareId } = Route.useParams()

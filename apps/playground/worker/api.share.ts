@@ -1,13 +1,13 @@
-import { vValidator } from '@hono/valibot-validator'
+import { zValidator } from '@hono/zod-validator'
 import { defaultTheme } from '@likec4/core/styles'
-import { type TagSpecification } from '@likec4/core/types'
+import type { TagSpecification } from '@likec4/core/types'
 import { isArray, mapToObj } from 'remeda'
-import * as v from 'valibot'
+import * as z from 'zod/v4'
 import { SharePlaygroundReqSchema, sharesKV } from './kv'
 import { type SharedPlayground, factory } from './types'
 
-const CheckPincodeSchema = v.strictObject({
-  pincode: v.string(),
+const CheckPincodeSchema = z.object({
+  pincode: z.string(),
 })
 
 export const apiShareRoute = factory.createApp()
@@ -34,10 +34,10 @@ export const apiShareRoute = factory.createApp()
   })
   .post(
     '/:shareId/check-pincode',
-    vValidator('json', CheckPincodeSchema, (result, c) => {
-      if (!result.success) {
-        console.warn('check-pincode validation failed', result.issues)
-        return c.json(result.issues, 400) as never
+    zValidator('json', CheckPincodeSchema, (result, c) => {
+      if (result.success === false) {
+        console.warn('check-pincode validation failed', z.prettifyError(result.error))
+        return c.json(z.flattenError(result.error), 400) as never
       }
     }),
     async c => {
@@ -58,10 +58,10 @@ export const apiShareRoute = factory.createApp()
   )
   .post(
     '/',
-    vValidator('json', SharePlaygroundReqSchema, (result, c) => {
-      if (!result.success) {
-        console.warn('create share validation failed', result.issues)
-        return c.json(result.issues, 400) as never
+    zValidator('json', SharePlaygroundReqSchema, (result, c) => {
+      if (result.success === false) {
+        console.warn('create share validation failed', z.prettifyError(result.error))
+        return c.json(z.flattenError(result.error), 400) as never
       }
     }),
     async c => {

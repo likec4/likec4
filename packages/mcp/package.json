@@ -2,7 +2,7 @@
   "name": "@likec4/mcp",
   "description": "Model Context Protocol server for LikeC4",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -29,7 +29,7 @@
     "typecheck": "tsc -b --verbose",
     "build": "wireit",
     "inspector": "wireit",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "likec4ops clean"
   },
   "wireit": {
     "build": {
@@ -62,6 +62,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
     "@types/node": "catalog:",
     "citty": "catalog:utils",

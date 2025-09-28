@@ -6,6 +6,9 @@
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
+    "customConditions": [
+      "sources"
+    ],
     "lib": [
       "dom",
       "dom.iterable",

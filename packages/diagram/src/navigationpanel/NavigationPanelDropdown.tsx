@@ -17,8 +17,10 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useThrottledCallback, useUncontrolled } from '@mantine/hooks'
+import { useMountEffect } from '@react-hookz/web'
 import {
   IconChevronRight,
+  IconDirectionSignFilled,
   IconFolderFilled,
   IconSearch,
   IconStack2,
@@ -27,11 +29,11 @@ import {
 } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { deepEqual } from 'fast-equals'
-import type { ComponentPropsWithoutRef, KeyboardEventHandler } from 'react'
+import { type ComponentPropsWithoutRef, type KeyboardEventHandler, useRef } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useOnDiagramEvent } from '../custom'
-import { useLikeC4Model } from '../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { NavigationPanelActorContext } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
 import { useNavigationActor, useNavigationActorContext, useNavigationActorRef } from './hooks'
@@ -99,7 +101,7 @@ export function NavigationPanelDropdown() {
         }
       </HStack>
       <ScrollAreaAutosize
-        scrollbars="xy"
+        scrollbars="x"
         type="auto"
         offsetScrollbars="present"
         classNames={{
@@ -109,6 +111,11 @@ export function NavigationPanelDropdown() {
               'calc(100cqw - 50px)',
             ],
           }),
+        }}
+        styles={{
+          viewport: {
+            overscrollBehavior: 'none',
+          },
         }}
       >
         {hasSearchQuery
@@ -157,7 +164,7 @@ function SearchResults({ searchQuery }: { searchQuery: string }) {
           'calc(100cqh - 200px)',
         ],
       })}>
-      <VStack gap="[1px]">
+      <VStack gap="0.5">
         {found.map(v => (
           <FoundedView
             key={v.id}
@@ -326,7 +333,7 @@ const ViewTypeIcon = {
       className={viewTypeIconCss} />
   ),
   deployment: <IconStack2 size={16} stroke={1.5} className={viewTypeIconCss} />,
-  dynamic: <IconStack2 size={16} stroke={1.5} className={viewTypeIconCss} />,
+  dynamic: <IconDirectionSignFilled size={18} className={viewTypeIconCss} />,
 }
 
 const ColumnScrollArea = ScrollAreaAutosize.withProps({
@@ -405,13 +412,18 @@ function FolderColumns() {
     <HStack gap="xs" alignItems="stretch">
       {columns.flatMap((column, i) => [
         i > 0 && <Divider orientation="vertical" key={'divider' + i} />,
-        <FolderColumn key={column.folderPath} data={column} />,
+        <FolderColumn
+          key={column.folderPath}
+          data={column}
+          isLast={i == columns.length - 1}
+        />,
       ])}
     </HStack>
   )
 }
 
-function FolderColumn({ data }: { data: FolderColumnData }) {
+function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
   const actor = useNavigationActorRef()
 
   const onItemClicked = (item: ColumnItem) => (e: React.MouseEvent) => {
@@ -423,10 +435,19 @@ function FolderColumn({ data }: { data: FolderColumnData }) {
     }
   }
 
+  useMountEffect(() => {
+    if (isLast && ref.current) {
+      ref.current.scrollIntoView({
+        inline: 'nearest',
+        behavior: 'smooth',
+      })
+    }
+  })
+
   return (
-    <Box mb={'1'}>
+    <Box mb={'1'} ref={ref}>
       <ColumnScrollArea>
-        <VStack gap="[1px]">
+        <VStack gap="0.5">
           {data.items.map((item, i) => (
             <FolderColumnItem
               key={`${data.folderPath}/${item.type}/${i}`}

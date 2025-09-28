@@ -102,8 +102,8 @@ async function runCustomGenerator({
               nonexhaustive(target)
           }
           if (!location) {
-            logger.error`Cannot locate ${target}`
-            throw new Error(`Cannot locate ${target}`)
+            logger.error(`Cannot locate ${target.id}`, { target })
+            throw new Error(`Cannot locate ${target.id}`)
           }
           const document = URI.parse(location.uri)
           return {

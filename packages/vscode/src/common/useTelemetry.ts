@@ -86,7 +86,7 @@ function activateTelemetry(rpc: Rpc, telemetry: TelemetryReporter) {
 
   // send telemetry every 1 hour
   const interval = setInterval(() => {
-    sendTelemetryMetrics()
+    void sendTelemetryMetrics()
   }, 60 * Minute)
 
   tryOnScopeDispose(() => {

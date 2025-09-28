@@ -1,4 +1,4 @@
-import { type NonEmptyArray, type Point } from '@likec4/core'
+import type { NonEmptyArray, Point } from '@likec4/core'
 import { type EdgeProps, BaseEdge } from '@xyflow/react'
 import type { OverviewXYEdge } from './types'
 

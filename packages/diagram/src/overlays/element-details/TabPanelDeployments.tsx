@@ -4,7 +4,7 @@ import { Alert, Box, Button, Group, Menu, rem, Text, ThemeIcon, Tree, useTree } 
 import { IconInfoCircle, IconTarget, IconZoomScan } from '@tabler/icons-react'
 import { type ReactNode, memo, useEffect, useMemo } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { stopPropagation } from '../../utils'
 import * as css from './TabPanelDeployments.css'
 

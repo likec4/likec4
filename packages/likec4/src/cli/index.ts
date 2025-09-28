@@ -79,7 +79,7 @@ async function main() {
       'Commands:': k.bold('Commands:'),
       'Examples:': k.bold('Examples:'),
     })
-    .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
+    .wrap(clamp(stdout.columns - 10, { min: 80, max: 150 }))
     .middleware((args) => {
       if (args.verbose) {
         configureLogger({

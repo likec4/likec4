@@ -21,6 +21,7 @@ export const Route = createFileRoute('/_single/view/$viewId/d2')({
         source: d2Source(viewId),
       }
     } catch (error) {
+      console.error(error)
       throw notFound()
     }
   },

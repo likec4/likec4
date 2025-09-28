@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -17,13 +17,20 @@
   "files": [
     "dist",
     "bundle",
-    "src",
+    "**/package.json",
+    "*.css",
     "panda.buildinfo.json",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
   ],
   "sideEffects": false,
   "type": "module",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.ts",
+    "module": "dist/index.js"
+  },
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -41,44 +48,37 @@
         "default": "./dist/custom/index.js"
       }
     },
-    "./bundle/custom": {
-      "sources": "./src/bundle/custom.ts",
-      "default": {
-        "types": "./dist/bundle/custom.d.ts",
-        "import": "./bundle/custom.js",
-        "default": "./bundle/custom.js"
-      }
-    },
     "./bundle": {
-      "sources": "./src/bundle/index.ts",
+      "sources": "./src/index.ts",
       "default": {
-        "types": "./dist/bundle/index.d.ts",
+        "types": "./dist/index.d.ts",
         "import": "./bundle/index.js",
         "default": "./bundle/index.js"
       }
     },
     "./panda.buildinfo.json": "./panda.buildinfo.json",
-    "./styles-min.css": "./dist/styles-min.css",
-    "./styles-font.css": "./dist/styles-font.css",
-    "./styles-xyflow.css": "./dist/styles-xyflow.css",
-    "./styles.css": "./dist/styles.css",
-    "./package.json": "./package.json",
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*"
+    "./styles-min.css": "./styles-min.css",
+    "./styles-font.css": "./styles-font.css",
+    "./styles-xyflow.css": "./styles-xyflow.css",
+    "./styles.css": "./styles.css",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
-    "build:dist": "vite build -m production",
-    "build:bundle": "vite build -m bundle",
+    "build-dist": "vite build -m production",
+    "build-bundle": "vite build -m bundle",
     "build": "echo \"use pnpm turbo run build\" || true",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
-    "clean": "pnpm rimraf --glob dist lib bundle *.tgz",
+    "clean": "likec4ops clean",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.5",
+    "@dagrejs/dagre": "catalog:",
     "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
     "@likec4/styles": "workspace:*",
@@ -92,29 +92,37 @@
     "@xyflow/system": "catalog:xyflow",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "khroma": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react-error-boundary": "catalog:react",
-    "react-shadow": "^20.6.0",
+    "react-shadow": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:utils",
     "xstate": "catalog:xstate"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
+    "@types/react": "^18.x || ^19.x",
+    "@types/react-dom": "^18.x || ^19.x",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
   },
   "peerDependenciesMeta": {
     "@pandacss/dev": {
       "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@pandacss/dev": "catalog:css",
     "@statelyai/inspect": "^0.4.0",
     "@tabler/icons-react": "catalog:react",
@@ -124,6 +132,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
+    "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",
@@ -131,6 +140,7 @@
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zx": "catalog:"
   }
 }

@@ -10,7 +10,7 @@ import {
   raise,
   setup,
 } from 'xstate'
-import type { CurrentViewModel } from '../likec4model/LikeC4ModelContext'
+import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
 
 export interface NavigationPanelActorInput {
   viewModel: CurrentViewModel

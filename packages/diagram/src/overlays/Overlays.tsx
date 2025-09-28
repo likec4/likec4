@@ -11,7 +11,7 @@ import { DiagramFeatures } from '../context'
 import { useXYStore } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
 import { Overlay } from './overlay/Overlay'
-import { type OverlaysActorRef, type OverlaysActorSnapshot } from './overlaysActor'
+import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
 import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
 

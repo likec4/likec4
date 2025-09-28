@@ -10,7 +10,7 @@ runs:
         NODE_ENV: development
 
     - name: 🛠️ Setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version-file: .tool-versions
         cache: "pnpm"
@@ -20,7 +20,7 @@ runs:
       with:
         cache-prefix: turbo_cache_
 
-    - run: pnpm install
+    - run: pnpm install --prefer-offline
       shell: sh
       env:
         HUSKY: "0"

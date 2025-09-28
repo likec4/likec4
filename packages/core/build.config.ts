@@ -18,6 +18,7 @@ export default defineBuildConfig({
     'src/types/expression.ts',
     'src/types/fqnRef.ts',
     'src/utils/iterable/index.ts',
+    'src/utils/graphology/index.ts',
     'src/utils/index.ts',
   ],
   clean: true,

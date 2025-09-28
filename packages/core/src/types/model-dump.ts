@@ -1,7 +1,6 @@
 import type * as aux from './_aux'
 import type { KeysOf } from './_common'
 import type { _stage } from './const'
-import type { ParsedLikeC4ModelData } from './model-data'
 
 /**
  * JSON representation of {@link Specification}
@@ -69,7 +68,7 @@ export type ProjectDump = {
 }
 
 export type AuxFromDump<D> = D extends LikeC4ModelDump ? aux.Aux<
-    D[_stage] extends infer S extends string & 'computed' | 'layouted' ? S : 'computed' | 'layouted' | 'parsed',
+    D[_stage] extends infer S extends 'computed' | 'layouted' ? S : 'computed' | 'layouted' | 'parsed',
     KeysOf<D['elements']>,
     KeysOf<D['deployments']['elements']>,
     KeysOf<D['views']>,

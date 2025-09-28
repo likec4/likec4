@@ -1,14 +1,12 @@
-import type { NodeId } from '@likec4/core/types'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
-import { ElementActionButtons } from '../../../base/primitives'
-import type { NodeProps } from '../../../base/types'
+import type { SimplifyDeep } from 'type-fest'
+import { ElementActionButtons } from '../../../base-primitives'
+import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
-
-type RequiredData = Pick<Types.ElementNodeData, 'modelFqn' | 'navigateTo'>
 
 type WithExtraButtons = {
   /**
@@ -33,8 +31,38 @@ type WithExtraButtons = {
   extraButtons?: ElementActionButtons.Item[]
 }
 
-export type ElementActionsProps = NodeProps<RequiredData> & WithExtraButtons
+export type ElementActionsProps =
+  & SimplifyDeep<{
+    selected?: boolean
+    data: Pick<Types.ElementNodeData, 'id' | 'modelFqn' | 'navigateTo'> & BaseNodeData
+  }>
+  & WithExtraButtons
 
+/**
+ * Center-Bottom action bar, includes zoom-in and browse relationships actions, if the features are enabled.
+ * Intended to be used with model elements.
+ *
+ * Use generic {@link ElementActionButtons} for custom action buttons.
+ *
+ * @param extraButtons - Add extra action buttons
+ *
+ * @example
+ * ```tsx
+ * <ElementActions
+ *   extraButtons={[
+ *     {
+ *       key: 'extra',
+ *       icon: <IconZoomScan />,
+ *       onClick: (e) => {
+ *         e.stopPropagation()
+ *         console.log('extra action clicked')
+ *       },
+ *       },
+ *     },
+ *   ]}
+ * />
+ * ```
+ */
 export const ElementActions = ({
   extraButtons,
   ...props
@@ -51,7 +79,7 @@ export const ElementActions = ({
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
-          diagram.navigateTo(navigateTo, props.id as NodeId)
+          diagram.navigateTo(navigateTo, props.data.id)
         },
       })
     }
@@ -66,7 +94,7 @@ export const ElementActions = ({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.id])
+  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.data.id])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]
@@ -76,14 +104,45 @@ export const ElementActions = ({
   return <ElementActionButtons {...props} buttons={buttons} />
 }
 
-export type DeploymentElementActionsProps = NodeProps<Types.DeploymentElementNodeData> & WithExtraButtons
+export type DeploymentElementActionsProps =
+  & SimplifyDeep<{
+    selected?: boolean
+    data: Pick<Types.DeploymentElementNodeData, 'id' | 'modelFqn' | 'navigateTo'> & BaseNodeData
+  }>
+  & WithExtraButtons
+
+/**
+ * Center-Bottom action bar, includes zoom-in and browse relationships actions, if the features are enabled.
+ * Intended to be used with deployment elements.
+ *
+ * Use generic {@link ElementActionButtons} for custom action buttons.
+ *
+ * @param extraButtons - Add extra action buttons
+ *
+ * @example
+ * ```tsx
+ * <DeploymentElementActions
+ *   extraButtons={[
+ *     {
+ *       key: 'extra',
+ *       icon: <IconZoomScan />,
+ *       onClick: (e) => {
+ *         e.stopPropagation()
+ *         console.log('extra action clicked')
+ *       },
+ *       },
+ *     },
+ *   ]}
+ * />
+ * ```
+ */
 export const DeploymentElementActions = ({
   extraButtons,
   ...props
 }: DeploymentElementActionsProps) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeatures()
   const diagram = useDiagram()
-  const { navigateTo, modelFqn } = props.data
+  const { id, navigateTo, modelFqn } = props.data
 
   let buttons = useMemo(() => {
     const buttons = [] as ElementActionButtons.Item[]
@@ -94,7 +153,7 @@ export const DeploymentElementActions = ({
         icon: <IconZoomScan />,
         onClick: (e) => {
           e.stopPropagation()
-          diagram.navigateTo(navigateTo, props.id as NodeId)
+          diagram.navigateTo(navigateTo, id)
         },
       })
     }
@@ -109,7 +168,7 @@ export const DeploymentElementActions = ({
       })
     }
     return buttons
-  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, props.id])
+  }, [enableNavigateTo, enableRelationshipBrowser, diagram, modelFqn, navigateTo, id])
 
   if (extraButtons && hasAtLeast(extraButtons, 1)) {
     buttons = [...buttons, ...extraButtons]

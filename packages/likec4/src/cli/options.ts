@@ -36,8 +36,9 @@ export const useHashHistory = {
 export const outdir = {
   alias: 'o',
   type: 'string',
-  desc: '<directory> output directory',
+  desc: 'output directory',
   normalize: true,
+  nargs: 1,
   coerce: resolve,
 } as const satisfies Options
 
@@ -46,6 +47,7 @@ export const webcomponentPrefix = {
   type: 'string',
   desc: 'prefix for Webcomponents, e.g "c4" generates <c4-view ../>',
   default: 'likec4',
+  nargs: 1,
 } as const satisfies Options
 
 export const title = {
@@ -53,12 +55,14 @@ export const title = {
   type: 'string',
   desc: 'base title of the app pages (default is "LikeC4")',
   default: 'LikeC4',
+  nargs: 1,
 } as const satisfies Options
 
 export const base = {
   alias: ['base-url'],
   type: 'string',
   desc: 'base url the app is being served from, e.g. "/" or "/pages/"',
+  nargs: 1,
 } as const satisfies Options
 
 export const useOverview = {
@@ -81,10 +85,12 @@ export const listen = {
     ? 'listen 0.0.0.0 by default in container'
     : 'ip address of the network interface to listen on',
   default: isInsideContainer() ? '0.0.0.0' : 'localhost',
+  nargs: 1,
 } as const satisfies Options
 
 export const project = {
   alias: 'p',
   type: 'string',
   desc: 'LikeC4 project, name eg. "my-project" or path to the project folder',
+  nargs: 1,
 } as const satisfies Options

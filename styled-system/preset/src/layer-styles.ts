@@ -20,21 +20,16 @@ export const layerStyles = defineLayerStyles({
         paddingBlock: '1',
         paddingInline: 'xs',
         borderRadius: '0',
-        backgroundColor: {
-          base: 'likec4.panel.bg',
-          _reduceGraphicsOnPan: 'likec4.panel.bg.whenPanning',
-        },
+        backgroundColor: 'likec4.panel.bg',
         border: '1px solid {colors.likec4.panel.border}',
         '@/sm': {
           boxShadow: 'lg',
           borderRadius: 'md',
           padding: '2xs',
-          backdropFilter: 'blur(10px)',
         },
         _whenPanning: {
           boxShadow: 'none',
           borderRadius: '0',
-          backdropFilter: 'none',
         },
       },
     },

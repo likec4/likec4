@@ -1,6 +1,4 @@
-import { type Config, defineSemanticTokens } from '@pandacss/dev'
-
-type ExtendableTheme = NonNullable<Config['theme']>
+import { defineSemanticTokens } from '@pandacss/dev'
 
 export const semanticTokens = defineSemanticTokens({
   colors: {
@@ -8,7 +6,7 @@ export const semanticTokens = defineSemanticTokens({
       background: {
         DEFAULT: {
           description: 'Background color',
-          value: '{colors.mantine.colors.body}',
+          value: 'var(--mantine-color-body)',
         },
         pattern: {
           description: 'Background pattern color',
@@ -42,13 +40,6 @@ export const semanticTokens = defineSemanticTokens({
           DEFAULT: {
             description: 'LikeC4 panel background color',
             value: {
-              base: `{colors.mantine.colors.body/90}`,
-              _dark: `{colors.mantine.colors.dark[6]/80}`,
-            },
-          },
-          whenPanning: {
-            description: 'LikeC4 panel background color when panning',
-            value: {
               base: `{colors.mantine.colors.body}`,
               _dark: `{colors.mantine.colors.dark[6]}`,
             },
@@ -65,15 +56,15 @@ export const semanticTokens = defineSemanticTokens({
           text: {
             DEFAULT: {
               description: 'LikeC4 action icon text color',
-              value: '{colors.mantine.colors.text/70}',
+              value: 'color-mix(in srgb, var(--mantine-color-text) 80%, transparent)',
             },
             hover: {
               description: 'LikeC4 action icon text color on hover',
-              value: '{colors.mantine.colors.text}',
+              value: 'var(--mantine-color-bright)',
             },
             disabled: {
               description: 'LikeC4 action icon text color when disabled',
-              value: '{colors.mantine.colors.dimmed}',
+              value: 'var(--mantine-color-dimmed)',
             },
           },
           bg: {
@@ -107,6 +98,27 @@ export const semanticTokens = defineSemanticTokens({
         border: {
           description: 'LikeC4 dropdown border color',
           value: '{colors.likec4.panel.border}',
+        },
+      },
+      overlay: {
+        backdrop: {
+          DEFAULT: {
+            description: 'LikeC4 overlay backdrop color',
+            value: {
+              base: `rgb(34 34 34)`,
+              _light: `rgb(15 15 15)`,
+            },
+          },
+        },
+        body: {
+          DEFAULT: {
+            description: 'LikeC4 overlay body color',
+            value: `var(--mantine-color-body)`,
+          },
+        },
+        border: {
+          description: 'LikeC4 overlay border color',
+          value: '{colors.mantine.colors.defaultBorder/50}',
         },
       },
     },

@@ -7,12 +7,10 @@ import {
   type Stream,
   AstUtils,
   DefaultScopeProvider,
-  DONE_RESULT,
   EMPTY_SCOPE,
   EMPTY_STREAM,
   MapScope,
   stream,
-  StreamImpl,
   StreamScope,
 } from 'langium'
 import { ast, isFqnRefInsideGlobals, isFqnRefInsideModel } from '../ast'
@@ -297,19 +295,4 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const projectId = projectIdFrom(context.container)
     return this.getProjectScope(projectId, referenceType, context)
   }
-}
-
-function lazyStream<T>(fn: () => Stream<T>): Stream<T> {
-  return new StreamImpl(
-    () => {
-      return fn().iterator()
-      // return null
-    },
-    iterator => {
-      if (iterator) {
-        return iterator.next()
-      }
-      return DONE_RESULT
-    },
-  )
 }

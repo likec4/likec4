@@ -46,7 +46,7 @@ import {
   tap,
   unique,
 } from 'remeda'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipsBrowserTypes } from './_types'
 
 /**
@@ -466,7 +466,6 @@ export function layoutRelationshipsView(
         parent: null,
         x: position.x,
         y: position.y,
-        position: [position.x, position.y],
         title: 'empty node',
         description: RichText.EMPTY,
         technology: null,
@@ -517,7 +516,6 @@ export function layoutRelationshipsView(
       parent: parentId as NodeId ?? null,
       x: position.x,
       y: position.y,
-      position: [position.x, position.y],
       title: element.title,
       description: element.summary,
       technology: element.technology,

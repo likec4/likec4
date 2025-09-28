@@ -81,7 +81,7 @@ export function PlaygroundsMenu() {
               <MenuLabel>Saved</MenuLabel>
             </>
           )}
-          {workspaces.map(({ key, name, title }, i, all) => (
+          {workspaces.map(({ key, name, title }) => (
             <MenuItem
               key={key}
               renderRoot={(props) => (
@@ -102,7 +102,7 @@ export function PlaygroundsMenu() {
                     e.stopPropagation()
                     removeWorkspace(name)
                     if (workspaceId === name) {
-                      router.navigate({
+                      void router.navigate({
                         to: '/w/$workspaceId/$viewId/',
                         params: {
                           workspaceId: 'tutorial',

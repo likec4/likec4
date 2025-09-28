@@ -1,4 +1,3 @@
-import { type aux } from '@likec4/core/types'
 import { hc } from 'hono/client'
 import type { ApiType } from './index'
 

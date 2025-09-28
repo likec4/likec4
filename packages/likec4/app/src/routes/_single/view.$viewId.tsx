@@ -1,7 +1,7 @@
 import { useUpdateEffect } from '@likec4/diagram'
 import { Alert, Button, Code, Container, Text } from '@mantine/core'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
-import { type FallbackProps } from 'react-error-boundary'
+import type { FallbackProps } from 'react-error-boundary'
 import { SidebarDrawer } from '../../components/sidebar/Drawer'
 import { Header } from '../../components/view-page/Header'
 import { withOverviewGraph } from '../../const'
@@ -35,7 +35,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
           <Button
             onClick={() => {
               resetErrorBoundary()
-              router.navigate({
+              void router.navigate({
                 to: '/',
                 search: true,
               })

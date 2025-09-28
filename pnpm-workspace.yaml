@@ -1,80 +1,96 @@
 packages:
   - apps/*
+  - devops/
   - styled-system/*
   - packages/*
   - "!packages/create-likec4"
 
 catalog:
-  "@types/node": ~20.19.11
+  "@dagrejs/dagre": 1.1.5
+  "@types/node": ~20.19.19
+  graphology: ^0.25.4
+  graphology-dag: ^0.4.1
+  graphology-types: ^0.24.8
+  oxlint: 1.19.0
+  oxlint-tsgolint: ^0.2.0
   playwright: 1.54.2
-  tsx: 4.20.5
+  tsx: 4.20.6
   turbo: 2.5.8
-  typescript: 5.9.2
+  typescript: 5.9.3
   unbuild: 3.5.0
+  vite-plugin-dts: 4.5.4
+  vite-tsconfig-paths: ^5.1.4
   wireit: 0.14.12
-  wrangler: 4.33.2
-  zx: 8.8.1
+  zx: 8.8.4
 
 catalogMode: prefer
 
 catalogs:
   astro:
     "@astrojs/check": ^0.9.4
-    "@astrojs/react": 4.3.1
+    "@astrojs/react": 4.4.0
     "@astrojs/starlight": 0.36.0
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
-    astro: 5.13.7
+    astro: 5.14.1
     astro-og-canvas: ^0.7.0
     shiki: ^3.13.0
-    starlight-heading-badges: ^0.5.0
-    starlight-image-zoom: ^0.12.0
-    starlight-links-validator: ^0.16.0
+    starlight-heading-badges: ^0.6.0
+    starlight-image-zoom: ^0.13.1
+    starlight-links-validator: ^0.18.0
     starlight-package-managers: ^0.11.0
+  cloudflare:
+    "@cloudflare/vite-plugin": 1.11.7
+    wrangler: ~4.35.0
   css:
-    "@pandacss/dev": ^1.3.0
-    "@pandacss/types": ^1.3.0
-    "@pandacss/preset-panda": ^1.3.0
+    "@pandacss/dev": ^1.4.1
+    "@pandacss/preset-panda": ^1.4.1
+    "@pandacss/types": ^1.4.1
     postcss: 8.5.6
   esbuild:
-    esbuild: 0.25.9
+    esbuild: 0.25.10
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    "@hono/node-server": ^1.19.3
-    hono: ^4.9.8
+    "@hono/node-server": ^1.19.5
+    "@hono/oauth-providers": ^0.8.5
+    "@hono/valibot-validator": ^0.5.3
+    "@hono/zod-validator": ^0.7.3
+    hono: ^4.9.10
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 8.2.8
-    "@mantine/core": 8.2.8
-    "@mantine/hooks": 8.2.8
-    "@mantine/modals": 8.2.8
-    "@mantine/notifications": 8.2.8
-    "@mantine/vanilla-extract": 8.2.8
+    "@mantine/colors-generator": 8.3.1
+    "@mantine/core": 8.3.1
+    "@mantine/hooks": 8.3.1
+    "@mantine/modals": 8.3.1
+    "@mantine/notifications": 8.3.1
+    "@mantine/vanilla-extract": 8.3.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.17.5
   react:
     "@floating-ui/dom": ^1.7.4
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.1.1
-    "@tabler/icons-react": 3.34.1
-    "@types/react": 19.1.12
+    "@tabler/icons-react": 3.35.0
+    "@types/react": 19.1.16
     "@types/react-dom": 19.1.9
     clsx: ^2.1.1
-    motion: ^12.23.12
+    motion: ^12.23.22
     nanostores: 1.0.1
     react: 19.1.1
     react-dom: 19.1.1
     react-error-boundary: ^6.0.0
+    react-shadow: ^20.6.0
   tanstack:
     "@tanstack/react-query": ^5.85.0
     "@tanstack/react-router": ^1.114.13
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   utils:
+    # Don't update this version, 1.12.1 introduced edge issues
     "@hpcc-js/wasm-graphviz": 1.12.0
     "@logtape/logtape": ^0.12.3
     "@lume/kiwi": ^0.4.4
@@ -83,7 +99,7 @@ catalogs:
     "@types/picomatch": ^4.0.2
     "@valibot/to-json-schema": ^1.3.0
     bundle-require: ^5.1.0
-    caniuse-lite: ^1.0.30001743
+    caniuse-lite: ^1.0.30001748
     chokidar: ^4.0.3
     chroma-js: ^3.1.2
     citty: ^0.1.6
@@ -91,12 +107,13 @@ catalogs:
     date-fns: ^4.1.0
     defu: ^6.1.4
     esm-env: ^1.2.2
-    fast-equals: ^5.2.2
+    fast-equals: ^5.3.2
     fdir: 6.4.0
+    indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
     nano-spawn: ^1.0.3
-    nanoid: 5.1.5
+    nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
     p-debounce: 4.0.0
@@ -106,21 +123,21 @@ catalogs:
     package-manager-detector: 1.3.0
     package-up: ^5.0.0
     picomatch: ^4.0.3
-    remeda: ^2.31.1
+    remeda: ^2.32.0
     safe-stringify: ^1.2.0
     sharp: 0.34.3
     std-env: ^3.9.0
-    strip-indent: ^4.0.0
+    strip-indent: ^4.1.0
     type-fest: ^4.41.0
     ufo: 1.6.1
     valibot: ^1.1.0
     zod: ^3.25.76
   vite:
-    "@vitejs/plugin-react": ^4.7.0
-    rollup: ^4.44.0
-    vite: ^6.3.6
+    "@vitejs/plugin-react": ^5.0.4
+    rollup: ^4.52.3
+    vite: ^7.1.9
     vite-plugin-dts: ^4.5.4
-    vite-plugin-node-polyfills: ^0.23.0
+    vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
   vitest:
     "@vitest/ui": 3.2.4
@@ -139,8 +156,8 @@ catalogs:
     "@xstate/react": ^5.0.5
     xstate: ^5.20.2
   xyflow:
-    "@xyflow/react": 12.8.4
-    "@xyflow/system": 0.0.68
+    "@xyflow/react": 12.8.6
+    "@xyflow/system": 0.0.70
 
 onlyBuiltDependencies:
   - dprint

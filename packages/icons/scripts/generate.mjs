@@ -1,7 +1,8 @@
 import { build } from 'esbuild'
 import { fdir } from 'fdir'
-import { writeFile } from 'node:fs/promises'
+import { cp, writeFile } from 'node:fs/promises'
 import { sep } from 'path'
+import { $ } from 'zx'
 
 console.info('Generating all.js and all.d.ts')
 
@@ -125,3 +126,11 @@ await build({
   jsxDev: false,
   format: 'esm',
 })
+
+console.info('Creating index.d.ts')
+
+$.stdio = 'inherit'
+for (const fname of new fdir().glob('**/index.ts').withBasePath().crawl().sync()) {
+  console.info('Copy %s', fname)
+  await cp(fname, fname.replace('.ts', '.d.ts'))
+}

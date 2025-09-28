@@ -1,7 +1,5 @@
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { isAndOperator, isOrOperator } from '@likec4/core'
 import type * as c4 from '@likec4/core'
-import type { Where } from '../../../core/src/compute-view/deployment-view/_types'
+import { invariant, isAndOperator, isNonEmptyArray, isOrOperator, nonexhaustive } from '@likec4/core'
 import { ast } from '../ast'
 
 const parseEquals = (

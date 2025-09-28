@@ -1,99 +1,100 @@
-import packageJson from '@likec4/core/package.json'
-import { generateDtsBundle } from 'dts-bundle-generator'
-import { build, formatMessagesSync } from 'esbuild'
-import { writeFile } from 'node:fs/promises'
-import { isDevelopment, isProduction } from 'std-env'
+// import { generateDtsBundle } from 'dts-bundle-generator'
+// import { build, formatMessagesSync } from 'esbuild'
+// import pandaCss from '@likec4/styles/postcss'
+import process from 'node:process'
+import { resolve } from 'path'
+import { build } from 'vite'
+import dts from 'vite-plugin-dts'
+// import { build } from 'vite'
 
-try {
-  const coreExports = Object
-    .keys(packageJson.exports)
-    .map((key) => `@likec4/core${key.slice(1)}`)
-  console.info('Bundle react')
-  const { errors, warnings } = await build({
-    entryPoints: [
-      'react/index.ts',
-    ],
-    outfile: 'react/index.mjs',
-    platform: 'browser',
-    format: 'esm',
-    color: true,
-    bundle: true,
-    treeShaking: true,
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production'),
+const cwd = process.cwd()
+
+const root = resolve(cwd, '.')
+const outDir = resolve(cwd, 'react')
+console.info(`Bundling React...`)
+console.info(`root: ${root}`)
+
+// const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
+
+// Static website
+await build({
+  root,
+  configFile: false,
+  clearScreen: false,
+  mode: 'production',
+  define: {
+    'process.env.NODE_ENV': '"production"',
+  },
+  resolve: {
+    alias: {
+      'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
     },
-    external: [
-      'react',
-      'react-dom',
-      'react/jsx-runtime',
-      'react/jsx-dev-runtime',
-      'react-dom/client',
-      ...coreExports,
-    ],
-    minify: isProduction,
+  },
+  esbuild: {
+    jsxDev: false,
     minifyIdentifiers: false,
-    minifySyntax: isProduction,
-    minifyWhitespace: isProduction,
-  })
-
-  if (errors.length) {
-    console.error(formatMessagesSync(errors, {
-      kind: 'error',
-      color: true,
-      terminalWidth: process.stdout.columns,
-    }))
-  }
-  if (warnings.length) {
-    console.warn(formatMessagesSync(warnings, {
-      kind: 'warning',
-      color: true,
-      terminalWidth: process.stdout.columns,
-    }))
-  }
-  if (errors.length || warnings.length) {
-    console.error('⛔️ Build failed')
-    process.exit(1)
-  }
-} catch (e) {
-  console.error('⛔️ Build failed')
-  console.error(e)
-  process.exit(1)
-}
-
-console.info('✅ React bundle done')
-console.info('generating dts bundle')
-
-try {
-  const [dts] = await generateDtsBundle([
-    {
-      filePath: './react/index.ts',
-      libraries: {
-        inlinedLibraries: [
-          '@likec4/diagram/bundle',
-          '@likec4/diagram',
-          '@xyflow/react',
-          '@xyflow/system',
-          'type-fest',
-        ],
+    platform: 'browser',
+  },
+  build: {
+    emptyOutDir: false,
+    outDir,
+    target: 'esnext',
+    cssCodeSplit: true,
+    minify: true,
+    sourcemap: false,
+    lib: {
+      entry: {
+        index: 'react/index.ts',
       },
+      formats: ['es'],
+    },
+    rollupOptions: {
       output: {
-        inlineDeclareGlobals: false,
-        // exportReferencedTypes: false,
+        exports: 'named',
+      },
+      external: [
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+        'react',
+        'react-dom',
+        'likec4/model',
+        'likec4/react',
+        '@emotion/is-prop-valid', // dev-only import from motion
+        /@likec4\/core.*/,
+        /likec4:/,
+      ],
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return
+        }
+        warn(warning)
       },
     },
-  ], {
-    preferredConfigPath: 'tsconfig.react-bundle.json',
-  })
-
-  if (!dts) {
-    console.error('⛔️ Failed to generate dts bundle')
-    process.exit(1)
-  }
-
-  await writeFile('react/index.d.mts', dts, 'utf-8')
-  console.info('✅ React Typings done')
-  process.exit(0)
-} catch (e) {
-  console.error('⛔️ Failed to generate dts bundle', e)
+  },
+  plugins: [
+    // tsconfig({
+    //   projects: ['./tsconfig.react-bundle.json'],
+    // }),
+    // react({}),
+    dts({
+      root: 'react',
+      tsconfigPath: '../tsconfig.react-bundle.json',
+      outDir: '.',
+      rollupTypes: true,
+      bundledPackages: [
+        '@likec4/diagram',
+        '@react-hookz/web',
+      ],
+      afterRollup(result) {
+        if (result.errorCount > 0) {
+          console.error('Rollup failed')
+          process.exit(1)
+        }
+      },
+    }),
+  ],
+}).catch((err) => {
+  console.error(err)
   process.exit(1)
-}
+})

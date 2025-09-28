@@ -10,7 +10,7 @@ import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useMemo, useRef } from 'react'
 import { find, isTruthy } from 'remeda'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 import {
@@ -28,17 +28,13 @@ import {
 import { layoutRelationshipDetails } from './layout'
 import { SelectEdge } from './SelectEdge'
 
-const nodeTypes = {
+const nodeTypes: Types.NodeRenderers = {
   element: ElementNode,
   compound: CompoundNode,
-} satisfies {
-  [key in RelationshipDetailsTypes.Node['type']]: any
 }
 
 export const edgeTypes = {
   relationship: RelationshipEdge,
-} satisfies {
-  [key in RelationshipDetailsTypes.Edge['type']]: any
 }
 
 export type RelationshipDetailsProps = {
@@ -166,10 +162,10 @@ const RelationshipDetailsInner = memo(() => {
         e.stopPropagation()
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
-      onPaneClick={useCallbackRef((e) => {
+      onPaneClick={useCallbackRef(() => {
         browser.send({ type: 'xyflow.paneClick' })
       })}
-      onDoubleClick={useCallbackRef(e => {
+      onDoubleClick={useCallbackRef(() => {
         browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {

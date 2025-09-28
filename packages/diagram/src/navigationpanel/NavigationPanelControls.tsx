@@ -9,7 +9,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { BreadcrumbsSeparator } from './_common'
-import { type NavigationPanelActorSnapshot } from './actor'
+import type { NavigationPanelActorSnapshot } from './actor'
 import { BurgerButton, NavigationButtons, OpenSource, SearchControl, ToggleReadonly, ViewDetailsCard } from './controls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
@@ -34,7 +34,6 @@ export const NavigationPanelControls = () => {
     enableSearch,
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
-    enableReadOnly,
   } = useEnabledFeatures()
   const {
     folders,
@@ -102,7 +101,7 @@ export const NavigationPanelControls = () => {
         key="breadcrumbs"
         layout="position"
         className={hstack({
-          gap: '[3px]',
+          gap: '1',
           flexShrink: 1,
           flexGrow: 1,
           overflow: 'hidden',
@@ -114,7 +113,7 @@ export const NavigationPanelControls = () => {
         key="actions"
         layout="position"
         className={hstack({
-          gap: '[1px]',
+          gap: '0.5',
           flexGrow: 0,
           _empty: {
             display: 'none',

@@ -1,10 +1,11 @@
-import * as c4 from '@likec4/core'
 import {
   type ViewId,
+  _stage,
   isScopedElementView,
 } from '@likec4/core'
 import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
+import type * as c4 from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
@@ -167,7 +168,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
   public async parseModel(
     projectId?: c4.ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Parsed | null> {
     const project = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(project)
@@ -179,7 +180,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     }
     const t0 = performanceMark()
     return await this.mutex.read(async () => {
-      await interruptAndCheck(cancelToken)
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
+      }
       const result = this.unsafeSyncJoinedModelData(project)
       logger.debug`parseModel in ${t0.pretty}`
       return result
@@ -222,7 +225,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       })
       return LikeC4Model.create({
         ...parsedModel.$data,
-        [c4._stage]: 'computed',
+        [_stage]: 'computed',
         views,
       })
     })
@@ -230,7 +233,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
   public async buildLikeC4Model(
     projectId?: c4.ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Computed> {
     const project = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(project)
@@ -242,7 +245,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     }
     const t0 = performanceMark()
     return await this.mutex.read(async () => {
-      await interruptAndCheck(cancelToken)
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
+      }
       const result = this.unsafeSyncBuildModel(project)
       logger.debug(`buildLikeC4Model in ${t0.pretty}`)
       return result
@@ -252,7 +257,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public async computeView(
     viewId: ViewId,
     projectId?: c4.ProjectId | undefined,
-    cancelToken = CancellationToken.None,
+    cancelToken?: CancellationToken,
   ): Promise<c4.ComputedView | null> {
     const project = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(project)

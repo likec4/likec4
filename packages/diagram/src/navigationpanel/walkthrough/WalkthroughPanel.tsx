@@ -6,9 +6,9 @@ import {
   ScrollAreaAutosize,
 } from '@mantine/core'
 import { isNonNull, isTruthy } from 'remeda'
-import { MarkdownBlock } from '../../custom'
+import { Markdown } from '../../base-primitives'
+import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagramContext } from '../../hooks/useDiagram'
-import type { DiagramContext } from '../../state/types'
 
 const SectionHeader = styled('div', {
   base: {
@@ -74,7 +74,7 @@ export const WalkthroughPanel = () => {
         // mt={2}
       >
         <SectionHeader>Notes</SectionHeader>
-        <MarkdownBlock
+        <Markdown
           value={notes}
           fontSize="sm"
           emptyText="No description"

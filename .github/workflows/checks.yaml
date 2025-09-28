@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -23,19 +23,32 @@ jobs:
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
+  check-lint:
+    name: 🧹 lint
+    timeout-minutes: 5
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: 🧹 lint
+        run: pnpm ci:lint
+
   check-build:
     name: 🛠️ build
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ build
         run: pnpm ci:build
-        
+
       - name: ⚙️ lint:package
         run: |
           pnpm lint:package
@@ -55,7 +68,7 @@ jobs:
     timeout-minutes: 10
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -73,7 +86,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -95,7 +108,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
@@ -117,7 +130,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ Setup pnpm
         uses: pnpm/action-setup@v4
@@ -125,13 +138,13 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .tool-versions
           cache: "pnpm"
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tarballs
           path: packages
@@ -180,7 +193,7 @@ jobs:
       - check-types
       - check-tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 🛠️ Setup pnpm
         uses: pnpm/action-setup@v4
@@ -188,13 +201,13 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .tool-versions
           cache: "pnpm"
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tarballs
           path: packages

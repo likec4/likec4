@@ -21,6 +21,7 @@ export const Route = createFileRoute('/_single/view/$viewId/mmd')({
         source: mmdSource(viewId),
       }
     } catch (error) {
+      console.error(error)
       throw notFound()
     }
   },

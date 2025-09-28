@@ -32,6 +32,7 @@ export async function bundleApp() {
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
+        // '@likec4/diagram': 'likec4/react',
       },
     },
     mode: 'production',
@@ -68,9 +69,11 @@ export async function bundleApp() {
       rollupOptions: {
         input: [
           './app/src/main.tsx',
+          './app/src/webcomponent.tsx',
           './app/src/fonts.css',
           './app/src/style.css',
         ],
+        treeshake: 'recommended',
         output: {
           chunkFileNames: '[name].js',
           manualChunks: (id) => {
@@ -96,7 +99,7 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
           resolve(cwd, 'app/src/const.js'),
-          /@likec4\/core.*/,
+          /@likec4\/.core*/,
           /likec4:/,
         ],
       },
@@ -125,7 +128,6 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
-    copyFile('app/src/webcomponent.tsx', '__app__/src/webcomponent.tsx'),
   ])
 }
 

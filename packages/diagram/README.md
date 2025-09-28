@@ -63,7 +63,7 @@ function App() {
 }
 ```
 
-See [LikeC4ViewProps](../src/bundle/LikeC4View.props.ts) for available props.
+See [LikeC4ViewProps](./src/LikeC4View.tsx) for available props.
 
 You may need to import icons, if you use built-in node renderers.
 

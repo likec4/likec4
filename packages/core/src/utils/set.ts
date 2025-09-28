@@ -42,6 +42,10 @@ export function intersection<T>(first: ReadonlySet<T>, ...sets: NonEmptyArray<Re
   return result
 }
 
+/**
+ * Returns new set as a difference of two sets (A-B)
+ * Keeps order from the first set
+ */
 export function difference<T>(a: ReadonlySet<T>, b: ReadonlySet<NoInfer<T>>): Set<T> {
   if (a.size === 0) {
     return new Set<T>()

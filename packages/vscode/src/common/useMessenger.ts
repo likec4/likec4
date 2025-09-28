@@ -1,9 +1,10 @@
-import { type ProjectId } from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import {
   BroadcastModelUpdate,
   FetchComputedModel,
   FetchDiagramView,
+  ReadLocalIcon,
   WebviewMsgs,
 } from '@likec4/vscode-preview/protocol'
 import {
@@ -18,9 +19,9 @@ import { Messenger } from 'vscode-messenger'
 import { BROADCAST } from 'vscode-messenger-common'
 import { logger as rootLogger } from '../logger'
 import { commands } from '../meta'
-import { type Rpc } from '../Rpc'
+import type { Rpc } from '../Rpc'
 import { performanceMark } from '../utils'
-import { type DiagramPanel } from './useDiagramPanel'
+import type { DiagramPanel } from './useDiagramPanel'
 
 const logger = rootLogger.getChild('messenger')
 
@@ -122,6 +123,51 @@ export function activateMessenger(
     } catch (error) {
       logger.error(`[Messenger] onChange error`, { error })
       throw error // propagate to client
+    }
+  }))
+
+  useDisposable(messenger.onRequest(ReadLocalIcon, async (uri) => {
+    const t0 = performanceMark()
+    try {
+      // Convert file:// URI to vscode.Uri
+      const fileUri = vscode.Uri.parse(uri)
+
+      // Read the file using VSCode filesystem API
+      const fileData = await vscode.workspace.fs.readFile(fileUri)
+
+      // Convert to base64
+      const base64data = Buffer.from(fileData).toString('base64')
+
+      // Determine MIME type based on file extension
+      const ext = fileUri.path.toLowerCase().split('.').pop()
+      let mimeType = 'image/png' // default
+      switch (ext) {
+        case 'jpg':
+        case 'jpeg':
+          mimeType = 'image/jpeg'
+          break
+        case 'png':
+          mimeType = 'image/png'
+          break
+        case 'gif':
+          mimeType = 'image/gif'
+          break
+        case 'svg':
+          mimeType = 'image/svg+xml'
+          break
+        case 'webp':
+          mimeType = 'image/webp'
+          break
+      }
+
+      const dataUri = `data:${mimeType};base64,${base64data}`
+
+      logger.debug(`request {req} for {uri} in ${t0.pretty}`, { req: 'readLocalIcon', uri })
+      return { base64data: dataUri }
+    } catch (err) {
+      logger.warn(`request {req} for {uri} failed after ${t0.pretty}`, { req: 'readLocalIcon', uri, err })
+      // Return null for any errors (file not found, permission denied, etc.)
+      return { base64data: null }
     }
   }))
 }

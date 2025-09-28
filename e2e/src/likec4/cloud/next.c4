@@ -83,7 +83,6 @@ model {
 
     backend -> events "emits"
   }
-
 }
 
 views {
@@ -96,11 +95,11 @@ views {
     }
 
     include
-        amazon._,
-        cloud.* -> amazon.* with {
-          color indigo
-          line solid
-        }
+      amazon._,
+      cloud.* -> amazon.* with {
+        color indigo
+        line solid
+      }
 
     exclude
       cloud.ui -> amazon

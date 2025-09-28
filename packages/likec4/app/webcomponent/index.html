@@ -41,6 +41,7 @@
     const hash = (window.location.hash || '#index').slice(1)
     const el = document.createElement('likec4-view')
     el.setAttribute('view-id', hash)
+    el.setAttribute('dynamic-variant', 'sequence')
     document.getElementById('likec4-webcomponent-root')?.appendChild(el)
   </script>
 

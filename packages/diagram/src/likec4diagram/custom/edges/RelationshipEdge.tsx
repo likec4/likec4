@@ -9,15 +9,15 @@ import { EdgeLabelRenderer } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, isTruthy, last } from 'remeda'
-import { ZIndexes } from '../../../base/const'
 import {
-  customEdge,
   EdgeActionButton,
   EdgeContainer,
   EdgeLabel,
   EdgeLabelContainer,
   EdgePath,
-} from '../../../base/primitives'
+  memoEdge,
+} from '../../../base-primitives'
+import { ZIndexes } from '../../../base/const'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks/useXYFlow'
@@ -33,7 +33,7 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
@@ -56,7 +56,6 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       points,
       hovered = false,
       active = false,
-      dimmed = false,
       labelBBox,
       labelXY,
       ...data
@@ -70,8 +69,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
 
   const isModified = isTruthy(data.controlPoints)
-    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.position)
-    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.position)
+    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data)
+    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data)
 
   let controlPoints = data.controlPoints ?? bezierControlPoints(props.data)
 

@@ -25,7 +25,7 @@ describe('ProjectConfig schema', () => {
       })
 
       it('should reject name "default"', ({ expect }) => {
-        expect(() => validateConfig({ name: 'default' })).toThrow(/Project name cannot be \"default\"/)
+        expect(() => validateConfig({ name: 'default' })).toThrow(/Project name cannot be "default"/)
       })
 
       it('should reject names containing dots', ({ expect }) => {
@@ -344,7 +344,7 @@ describe('ProjectConfig schema', () => {
       for (const aliases of testCases) {
         const entry = Object.entries(aliases)[0]
         if (entry) {
-          const [key, value] = entry
+          const [_key, value] = entry
           expect(() => validateImageAliases(aliases), `Path "${value}" should be rejected`).toThrow(
             'Invalid image alias value(s):',
           )

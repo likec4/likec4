@@ -1,7 +1,7 @@
 {
   "name": "likec4",
   "description": "Toolchain for your architecture diagrams",
-  "version": "1.41.0",
+  "version": "1.42.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -20,7 +20,7 @@
     "graph"
   ],
   "engines": {
-    "node": "~20.19.0 || ~22.18.0 || ~24.5.0 || ~24.7.0"
+    "node": "^20.19.0 || >=22.18.0"
   },
   "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -35,6 +35,7 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./config/schema.json": "./config/schema.json",
     "./config": {
       "sources": "./src/config/index.ts",
       "default": {
@@ -62,9 +63,8 @@
     "./react": {
       "sources": "./react/index.ts",
       "default": {
-        "types": "./react/index.d.mts",
-        "import": "./react/index.mjs",
-        "default": "./react/index.mjs"
+        "types": "./react/index.d.ts",
+        "default": "./react/index.js"
       }
     },
     "./vite-plugin-modules": {
@@ -92,15 +92,13 @@
       "import": "./icons/*",
       "default": "./icons/*"
     },
-    "./src": "./src/index.ts",
-    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "types": "./dist/index.d.mts",
-    "module": "./dist/index.mjs"
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc --build --verbose",
@@ -110,6 +108,7 @@
     "build": "echo \"use pnpm turbo run build\" || true",
     "generate:app": "tsr generate && panda codegen",
     "generate:icons": "tsx --conditions=sources scripts/generate-icons.ts",
+    "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
@@ -122,6 +121,7 @@
     "dev:docs:index-page": "pnpm cli:serve ../../apps/docs/src/components/index-page",
     "dev:docs:theme": "pnpm cli:serve ../../apps/docs/src/components/likec4-theme",
     "dev:playground:deployment": "pnpm cli:serve ../../apps/playground/src/examples/deployment",
+    "dev:playground:dynamic": "pnpm cli:serve ../../apps/playground/src/examples/dynamic",
     "dev:template": "pnpm cli:serve ../create-likec4/template",
     "dev:e2e": "pnpm cli:serve ../../e2e/src",
     "dev:example-cloud": "pnpm cli:serve ../../examples/cloud-system",
@@ -129,7 +129,7 @@
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
     "dev:examples": "pnpm cli:serve ../../examples",
     "cli": "tsx --conditions=sources src/cli/index.ts",
-    "cli:serve": "BUNDLE_REQUIRE_PRESERVE=1 tsx watch --conditions=sources --exclude=\"./../../examples/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
+    "cli:serve": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e}/**/*.{js,ts,mjs}\" src/cli/index.ts serve",
     "cli:build": "pnpm cli build -o dev/dist dev",
     "cli:preview": "pnpm cli preview -o dev/dist dev",
     "cli:export": "pnpm cli export png -o dev/export dev",
@@ -142,14 +142,17 @@
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
+    "boxen": "^8.0.1",
     "bundle-require": "catalog:utils",
     "esbuild": "catalog:esbuild",
-    "boxen": "^8.0.1",
+    "fdir": "catalog:utils",
     "playwright": "catalog:",
     "rollup": "catalog:vite",
+    "std-env": "catalog:utils",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite",
-    "std-env": "catalog:utils",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
@@ -157,14 +160,15 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "1.1.5",
-    "@fontsource/ibm-plex-sans": "^5.2.7",
+    "@dagrejs/dagre": "catalog:",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@likec4/config": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@likec4/config": "workspace:*",
     "@likec4/log": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
@@ -184,10 +188,7 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.33",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.21",
-    "classnames": "^2.5.1",
     "clsx": "catalog:react",
     "conf": "^13.1.0",
     "defu": "^6.1.4",
@@ -195,7 +196,6 @@
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "fdir": "catalog:utils",
     "get-port": "^7.1.0",
     "html-to-image": "1.11.11",
     "is-inside-container": "^1.0.0",
@@ -209,9 +209,9 @@
     "nanostores": "catalog:react",
     "npm-run-all2": "^8.0.4",
     "p-limit": "catalog:utils",
+    "picomatch": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
-    "picomatch": "catalog:utils",
     "postcss": "catalog:css",
     "pretty-ms": "^9.2.0",
     "react": "catalog:react",
@@ -237,6 +237,7 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zod": "catalog:utils"
   }
 }

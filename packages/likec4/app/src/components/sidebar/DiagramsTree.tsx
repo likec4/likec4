@@ -51,7 +51,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const data = useDiagramsTreeData(groupBy)
   const navigate = useNavigate()
   const navigateTo = (viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       viewTransition: false,
       params: (p) => ({

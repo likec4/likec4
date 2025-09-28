@@ -13,7 +13,7 @@ export const dialog = css({
   height: '100vh',
   maxWidth: '100vw',
   maxHeight: '100vh',
-  background: '[transparent]',
+  background: 'transparent',
   border: 'transparent',
   _backdrop: {
     // WebkitBackdropFilter: `blur(${backdropBlur})`,

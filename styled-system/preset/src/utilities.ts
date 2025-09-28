@@ -1,4 +1,4 @@
-import { type Config } from '@pandacss/dev'
+import type { Config } from '@pandacss/dev'
 
 type ExtendableUtilityConfig = NonNullable<Config['utilities']>
 

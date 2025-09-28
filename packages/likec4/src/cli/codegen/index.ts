@@ -11,8 +11,8 @@ import { webcomponentHandler } from './webcomponent/handler'
 const codegenCmd = (yargs: yargs.Argv) => {
   return yargs
     .command({
-      command: 'generate <command> [path]',
-      aliases: ['codegen', 'gen'],
+      command: 'gen <command> [path]',
+      aliases: ['generate', 'codegen'],
       describe: 'Generate various artifacts from LikeC4 sources',
       builder: yargs =>
         yargs

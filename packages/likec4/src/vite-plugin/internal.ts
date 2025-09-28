@@ -2,7 +2,7 @@
  * This module is used by the Vite plugin to generate the virtual modules
  */
 import { LikeC4Model } from '@likec4/core/model'
-import { type DiagramView, type LayoutedLikeC4ModelData } from '@likec4/core/types'
+import type { DiagramView, LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { type Atom, type WritableAtom, computed } from 'nanostores'
 import { useEffect, useState } from 'react'
@@ -42,7 +42,7 @@ export const createHooksForModel: ($atom: WritableAtom) => any = ($atom: Writabl
 
   const $likec4views: Atom<ReadonlyArray<DiagramView>> = computed(
     $atom,
-    (model) => [...Object.values(model.views)],
+    (model) => Object.values(model.views),
   )
 
   function useLikeC4Model(): LikeC4Model.Layouted {

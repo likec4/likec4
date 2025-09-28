@@ -21,7 +21,7 @@ import { LikeC4SearchInput } from './components/SearchInput'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './components/utils'
 import { ViewsColumn } from './components/ViewsColum'
 import { SearchActorContext, usePickViewFor } from './hooks'
-import { type SearchActorRef, type SearchActorSnapshot } from './searchActor'
+import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 
 const dialog = css({
   backgroundColor: `[rgb(34 34 34 / var(--_opacity, 95%))]`,

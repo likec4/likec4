@@ -1,0 +1,54 @@
+
+views {
+
+  view customer of customer {
+    include
+      customer,
+      cloud,
+      cloud.ui
+
+    style cloud {
+      opacity 40%
+      color secondary
+    }
+    style cloud.* {
+      color secondary
+    }
+  }
+
+  view cloud of cloud {
+    include *
+    autoLayout LeftRight
+  }
+
+  view ui of cloud.ui {
+    include
+      *,
+      cloud.backend._,
+    exclude
+      cloud.api -> cloud.auth
+  }
+
+  view backend of cloud.backend {
+    include
+      cloud,
+      *,
+      backend.* -> cloud.storage with {
+        title ''
+      }
+
+    style cloud, backend {
+      opacity 40%
+      color muted
+    }
+    style backend._ {
+      color green
+    }
+  }
+
+  view storage of cloud.storage {
+    include
+      *,
+      cloud.backend._
+  }
+}

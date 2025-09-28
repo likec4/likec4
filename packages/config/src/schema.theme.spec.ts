@@ -5,12 +5,26 @@ import {
   RelationshipArrowTypes,
   Sizes,
 } from '@likec4/core/styles'
-import { describe, it } from 'vitest'
+import { type ExpectStatic, describe, it } from 'vitest'
 import { defineStyle, defineThemeColor } from './define-config'
-import { type LikeC4StylesConfigInput } from './schema.theme'
+import type { LikeC4StylesConfigInput } from './schema.theme'
 
 // Utility to get a valid enum value safely
 const first = <T>(arr: ReadonlyArray<T>): T => arr[0]!
+
+const themecolorValues = (expect: ExpectStatic) => ({
+  elements: {
+    fill: expect.any(String),
+    stroke: expect.any(String),
+    hiContrast: expect.any(String),
+    loContrast: expect.any(String),
+  },
+  relationships: {
+    line: expect.any(String),
+    label: expect.any(String),
+    labelBg: expect.any(String),
+  },
+})
 
 describe('LikeC4StylesConfig', () => {
   describe('defineStyle', () => {
@@ -39,6 +53,7 @@ describe('LikeC4StylesConfig', () => {
         theme: {
           colors: {
             primary: explicitColors,
+            red2: '#FF0000',
           },
         },
       })
@@ -51,6 +66,8 @@ describe('LikeC4StylesConfig', () => {
       expect(theme).toHaveProperty('colors.primary.relationships.label', '#666666')
       // default should be injected by schema
       expect(theme).toHaveProperty('colors.primary.relationships.labelBg', 'rgba(0, 0, 0, 0)')
+      // red2 should be parsed
+      expect(theme).toHaveProperty('colors.red2', themecolorValues(expect))
     })
 
     it('should normalize defaults and preserve nested partials', ({ expect }) => {
@@ -86,19 +103,7 @@ describe('LikeC4StylesConfig', () => {
   describe('defineThemeColor', () => {
     it('should accept a ColorLiteral string and transform to ThemeColorValues object', ({ expect }) => {
       const p = defineThemeColor('#abcdef')
-      expect(p).toMatchObject({
-        elements: {
-          fill: expect.any(String),
-          stroke: expect.any(String),
-          hiContrast: expect.any(String),
-          loContrast: expect.any(String),
-        },
-        relationships: {
-          line: expect.any(String),
-          label: expect.any(String),
-          labelBg: expect.any(String),
-        },
-      })
+      expect(p).toMatchObject(themecolorValues(expect))
     })
 
     it('should pass-through an explicit object with element and relationship color values', ({ expect }) => {
