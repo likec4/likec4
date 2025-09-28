@@ -34,7 +34,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: 🧹 lint
-        run: pnpm lint
+        run: pnpm ci:lint
 
   check-build:
     name: 🛠️ build

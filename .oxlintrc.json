@@ -33,15 +33,19 @@
     "react_perf/jsx-no-jsx-as-prop": "warn",
     "promise/no-new-statics": "error",
     "react/exhaustive-deps": "warn",
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "typescript/require-array-sort-compare": "off",
+    "typescript/restrict-template-expressions": "off"
   },
   "overrides": [
     {
       "files": [
         "**/*.spec.ts",
-        "**/*.spec.tsx"
+        "**/*.spec.tsx",
+        "**/__test__/**"
       ],
       "rules": {
+        "typescript/unbound-method": "off",
         "no-unused-vars": "off"
       }
     }
