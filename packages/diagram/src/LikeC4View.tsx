@@ -20,6 +20,7 @@ import type {
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
+import { getViewBounds } from './utils/get-view-bounds'
 
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   /**
@@ -376,13 +377,15 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 
   const browserProps = isBoolean(browser) ? {} : browser
 
+  const bounds = getViewBounds(view, props.dynamicViewVariant)
+
   return (
     <ShadowRoot
       injectFontCss={injectFontCss}
       theme={mantineTheme}
       colorScheme={colorScheme}
       styleNonce={styleNonce}
-      keepAspectRatio={keepAspectRatio ? view.bounds : false}
+      keepAspectRatio={keepAspectRatio ? bounds : false}
       className={cx(
         'likec4-view',
         className,

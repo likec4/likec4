@@ -30,7 +30,7 @@ function RouteComponent() {
   const sharedPlayground = Route.parentRoute.useLoaderData()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       params: { viewId },
       search: true,
@@ -59,7 +59,12 @@ function RouteComponent() {
         zoomable
         pannable
         controls={false}
-        fitViewPadding={'32px'}
+        fitViewPadding={{
+          top: '70px',
+          bottom: '32px',
+          left: '32px',
+          right: '32px',
+        }}
         showNavigationButtons
         enableFocusMode
         enableDynamicViewWalkthrough

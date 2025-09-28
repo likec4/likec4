@@ -97,9 +97,9 @@ function WorkspaceDiagramPage() {
             fitView
             fitViewPadding={{
               top: '70px',
-              bottom: '10px',
+              bottom: '32px',
               left: '60px',
-              right: '10px',
+              right: '32px',
             }}
             experimentalEdgeEditing
             nodesSelectable

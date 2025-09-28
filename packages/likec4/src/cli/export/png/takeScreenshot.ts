@@ -1,6 +1,5 @@
 /// <reference lib="DOM" />
 import type { DiagramView, DynamicViewDisplayVariant, NonEmptyArray } from '@likec4/core'
-import { calcSequenceLayout } from '@likec4/layouts/sequence'
 import { relative, resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { BrowserContext, Page } from 'playwright'
@@ -77,7 +76,7 @@ export async function takeScreenshot({
 
       let bounds = view.bounds
       if (dynamicVariant === 'sequence' && view._type === 'dynamic') {
-        bounds = calcSequenceLayout(view).bounds
+        bounds = view.sequenceLayout.bounds
       }
 
       // @see https://github.com/likec4/likec4/issues/1857

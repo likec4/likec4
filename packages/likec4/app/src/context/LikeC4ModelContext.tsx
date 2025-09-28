@@ -1,8 +1,8 @@
 import { LikeC4ModelProvider } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import type { LayoutedLikeC4ModelData, LikeC4Model } from 'likec4/model'
-import type { Atom, ReadableAtom } from 'nanostores'
-import { type PropsWithChildren, createContext, useContext } from 'react'
+import type { ReadableAtom } from 'nanostores'
+import type { PropsWithChildren } from 'react'
 import { LikeC4ModelDataContextProvider } from './safeCtx'
 
 export function LikeC4ModelContext(

@@ -26,10 +26,10 @@ const streamableLikeC4MCPServer = (services: LikeC4Services, defaultPort = 33335
     } = update.configuration.mcp as { enabled?: boolean; port?: number }
 
     if (!enabled) {
-      server.stop()
+      void server.stop()
       return
     }
-    Promise.resolve()
+    void Promise.resolve()
       .then(() => server.start(port))
       .then(() => {
         connection?.telemetry?.logEvent({

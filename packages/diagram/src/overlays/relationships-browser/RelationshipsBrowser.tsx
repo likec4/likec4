@@ -96,16 +96,19 @@ const RelationshipsBrowserXYFlow = memo(() => {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView={false}
-      onNodeClick={useCallbackRef((e, node) => {
+      onNodeClick={useCallbackRef((_e, node) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.nodeClick', node })
       })}
-      onEdgeClick={useCallbackRef((e, edge) => {
+      onEdgeClick={useCallbackRef((_e, edge) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
-      onPaneClick={useCallbackRef((e) => {
+      onPaneClick={useCallbackRef((_e) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.paneClick' })
       })}
-      onDoubleClick={useCallbackRef(e => {
+      onDoubleClick={useCallbackRef((_e) => {
         browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {

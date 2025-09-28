@@ -7,6 +7,7 @@ import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
+import { getViewBounds } from './utils'
 
 export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
   & {
@@ -90,13 +91,15 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const hasNotations = notations.length > 0
   showNotations ??= hasNotations
 
+  const bounds = getViewBounds(view, props.dynamicViewVariant)
+
   return (
     <ShadowRoot
       injectFontCss={injectFontCss}
       theme={mantineTheme}
       colorScheme={colorScheme}
       styleNonce={styleNonce}
-      keepAspectRatio={keepAspectRatio ? view.bounds : false}
+      keepAspectRatio={keepAspectRatio ? bounds : false}
       className={cx(
         'likec4-view',
         className,

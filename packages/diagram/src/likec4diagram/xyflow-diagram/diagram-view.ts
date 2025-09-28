@@ -31,8 +31,7 @@ export function diagramToXY(opts: {
     view,
     nodesSelectable: selectable,
   } = opts
-  const isDynamicView = view._type === 'dynamic',
-    xynodes = [] as Types.Node[],
+  const xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
     nodeLookup = new Map<Fqn, DiagramNode>()
 
@@ -82,13 +81,12 @@ export function diagramToXY(opts: {
     }
 
     const position = {
-      x: node.position[0],
-      y: node.position[1],
+      x: node.x,
+      y: node.y,
     }
-    const center = BBox.center(node)
     if (parent) {
-      position.x -= parent.position[0]
-      position.y -= parent.position[1]
+      position.x -= parent.x
+      position.y -= parent.y
     }
 
     const id = ns + node.id as NodeId
@@ -122,7 +120,8 @@ export function diagramToXY(opts: {
       depth: node.depth ?? 0,
       icon: node.icon ?? 'none',
       tags: node.tags ?? null,
-      position: node.position,
+      x: node.x,
+      y: node.y,
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
@@ -139,7 +138,8 @@ export function diagramToXY(opts: {
       style: node.style,
       icon: node.icon ?? null,
       tags: node.tags,
-      position: node.position,
+      x: node.x,
+      y: node.y,
       isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData
 

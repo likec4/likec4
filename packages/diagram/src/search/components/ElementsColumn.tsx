@@ -42,19 +42,6 @@ interface LikeC4ModelTreeNodeData {
   children: LikeC4ModelTreeNodeData[]
 }
 
-function buildNode(
-  element: LikeC4Model.Element,
-  searchTerms: string[] = [],
-): LikeC4ModelTreeNodeData {
-  return {
-    label: element.title,
-    value: element.id,
-    element,
-    searchTerms,
-    children: [...element.children()].map(e => buildNode(e, searchTerms)).sort(sortByLabel),
-  }
-}
-
 const btn = buttonsva()
 
 export const ElementsColumn = memo(() => {

@@ -1,4 +1,4 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { getViewBounds, LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedCallback } from '@react-hookz/web'
@@ -79,7 +79,7 @@ export function ExportPage() {
         loadingOverlay.style.display = 'none'
       }
       downloadedRef.current = true
-      downloadAsPng({
+      void downloadAsPng({
         pngFilename: diagram.id,
         viewport,
       })
@@ -92,10 +92,12 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
+  const bounds = getViewBounds(diagram, dynamic)
+
   // @see https://github.com/likec4/likec4/issues/1857
   const extraPadding = 16
-  const width = diagram.bounds.width + padding * 2 + extraPadding,
-    height = diagram.bounds.height + padding * 2 + extraPadding
+  const width = bounds.width + padding * 2 + extraPadding,
+    height = bounds.height + padding * 2 + extraPadding
 
   return (
     <Box
@@ -111,24 +113,24 @@ export function ExportPage() {
         overflow: 'hidden',
         zIndex: 2,
       }}
-      style={dynamic !== 'sequence'
-        ? {
-          marginRight: 'auto',
-          marginBottom: 'auto',
-          minWidth: width,
-          width: width,
-          minHeight: height,
-          height: height,
-        }
-        : {
-          width: '100%',
-          height: '100%',
-        }}>
+      style={{
+        marginRight: 'auto',
+        marginBottom: 'auto',
+        minWidth: width,
+        width: width,
+        minHeight: height,
+        height: height,
+      }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <LikeC4Diagram
         view={diagram}
         fitView={false}
-        fitViewPadding={0}
+        fitViewPadding={{
+          top: '0px',
+          bottom: '0px',
+          left: '0px',
+          right: '0px',
+        }}
         background={'transparent'}
         reduceGraphics={false}
         dynamicViewVariant={dynamic}

@@ -10,7 +10,9 @@ import {
 } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
+import type { Writable } from 'type-fest'
 import { applyManualLayout } from '../manual/applyManualLayout'
+import { calcSequenceLayout } from '../sequence'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
@@ -104,6 +106,10 @@ export class GraphvizLayouter implements Disposable {
 
       if (view.manualLayout) {
         diagram = applyManualLayout(diagram, view.manualLayout)
+      }
+
+      if (isDynamicView(diagram)) {
+        ;(diagram as Writable<typeof diagram>).sequenceLayout = calcSequenceLayout(diagram)
       }
 
       dot = dot

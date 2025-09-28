@@ -386,7 +386,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     return exact({
       id: id as NodeId,
       parent: parentId as NodeId ?? null,
-      position: [position.x, position.y],
       x: position.x,
       y: position.y,
       title: element.title,

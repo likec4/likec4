@@ -32,7 +32,7 @@ if (import.meta.hot) {
 
 export const projectModelModule = {
   ...generateMatches('model'),
-  async load({ likec4, project, logger, assetsDir }) {
+  async load({ likec4, project, logger }) {
     logger.info(k.dim(`generating likec4:model/${project.id}`))
     const model = await likec4.layoutedModel(project.id)
     return projectModelCode(model)

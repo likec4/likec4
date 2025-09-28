@@ -178,7 +178,7 @@ export class SequenceViewLayouter {
   }
 
   getCompoundBoxes(): Array<BBox & { node: DiagramNode; depth: number }> {
-    return this.#compounds.map(({ node, depth, x1, y1, x2, y2, bottom }) => ({
+    return this.#compounds.map(({ node, depth, x1, y1, x2, bottom }) => ({
       node,
       depth,
       x: x1.value(),
@@ -311,7 +311,7 @@ export class SequenceViewLayouter {
     const x2 = this.actorBox(max.column).centerX.plus(30)
     const firstRow = this.#rows[min.row]
     const lastRow = this.#rows[max.row]
-    invariant(firstRow && lastRow, `parallel box invalid x1${x1} x2${x2} y1${firstRow} y2${lastRow}`)
+    invariant(firstRow && lastRow, `parallel box invalid minRow=${min.row} maxRow=${max.row}`)
 
     const y1 = this.newVar(0)
     this.put(y1).before(firstRow.y, 40)

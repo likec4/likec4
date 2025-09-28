@@ -45,7 +45,7 @@ export type ParallelRect = {
 }
 
 export interface SequenceActorStepPort {
-  id: EdgeId
+  id: string
   cx: number // center x
   cy: number // center y
   height: number
@@ -63,7 +63,8 @@ export interface SequenceActor {
 }
 
 export interface SequenceCompound {
-  id: NodeId
+  id: NodeId // auto-generated
+  origin: NodeId
   x: number
   y: number
   width: number

@@ -35,7 +35,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
           <Button
             onClick={() => {
               resetErrorBoundary()
-              router.navigate({
+              void router.navigate({
                 to: '/',
                 search: true,
               })

@@ -18,7 +18,6 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
   const browser = useRelationshipsBrowser()
   const { enableNavigateTo } = useEnabledFeatures()
   const {
-    id,
     data: {
       navigateTo,
       relations,

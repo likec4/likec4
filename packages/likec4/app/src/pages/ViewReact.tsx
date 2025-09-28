@@ -14,7 +14,7 @@ export function ViewReact() {
   })
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       viewTransition: false,
       params: (current) => ({
@@ -45,9 +45,9 @@ export function ViewReact() {
       controls
       fitViewPadding={{
         top: '70px',
-        bottom: '16px',
-        left: '16px',
-        right: '16px',
+        bottom: '32px',
+        left: '32px',
+        right: '32px',
       }}
       showNavigationButtons
       enableSearch
@@ -64,7 +64,7 @@ export function ViewReact() {
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={() => {
-        navigate({
+        void navigate({
           to: '/',
         })
       }}
@@ -81,7 +81,7 @@ function DiagramListener() {
   useUpdateEffect(() => {
     const search = router.latestLocation.search.dynamic ?? 'diagram'
     if (search !== dynamicViewVariant) {
-      router.buildAndCommitLocation({
+      void router.buildAndCommitLocation({
         search: (current?: any) => ({
           ...current,
           dynamic: dynamicViewVariant,

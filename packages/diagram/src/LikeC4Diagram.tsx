@@ -20,6 +20,7 @@ import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
 import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
+import { getViewBounds } from './utils/get-view-bounds'
 
 export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
   & LikeC4DiagramProperties<A>
@@ -85,19 +86,21 @@ export function LikeC4Diagram<A extends Any = Any>({
     initialHeight: number
   }>(null)
 
+  const bounds = getViewBounds(view, dynamicViewVariant)
+
   if (initialRef.current == null) {
     initialRef.current = {
       defaultEdges: [],
       defaultNodes: [],
-      initialWidth: initialWidth ?? view.bounds.width,
-      initialHeight: initialHeight ?? view.bounds.height,
+      initialWidth: initialWidth ?? bounds.width,
+      initialHeight: initialHeight ?? bounds.height,
     }
   }
 
   const isReducedGraphicsMode = reduceGraphics === 'auto'
     // If view has more then 3000 * 2000 pixels - assume it is a big diagram
     // Enable reduced graphics mode if diagram is "big" and pannable
-    ? pannable && ((view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000)
+    ? pannable && ((bounds.width ?? 1) * (bounds.height ?? 1) > 6_000_000)
     : reduceGraphics
 
   return (

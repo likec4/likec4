@@ -24,13 +24,13 @@ export type MarkdownProps = Omit<BoxProps, 'dangerouslySetInnerHTML' | 'children
    * Font size for the block
    * @default 'md'
    */
-  fontSize?: JsxStyleProps['fontSize']
+  fontSize?: (JsxStyleProps['fontSize'] & string) | undefined
 
   /**
    * If true, the component will not render anything if the value is empty.
    * @default false
    */
-  hideIfEmpty?: boolean
+  hideIfEmpty?: boolean | undefined
   /**
    * Text to show if the value is empty.
    * @default "no content"
@@ -46,6 +46,7 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
   emptyText = 'no content',
   className,
   style,
+  fontSize,
   ...props
 }, ref) => {
   if (value.isEmpty && hideIfEmpty) {
@@ -69,9 +70,9 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
       )}
       style={{
         ...style,
-        ...props.fontSize && {
-          '--text-fz': `var(--font-sizes-${props.fontSize}, var(--font-sizes-md))`,
-        },
+        ...(fontSize && {
+          '--text-fz': `var(--font-sizes-${fontSize}, var(--font-sizes-md))`,
+        }),
         // @ts-expect-error
         ['--mantine-scale']: textScale,
       }}

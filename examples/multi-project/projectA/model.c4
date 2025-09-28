@@ -29,8 +29,9 @@ model {
     legacy = container 'Cloud Legacy' {
       #deprecated
       description '''
-        The **legacy** version of our SaaS  
+        The **legacy** version of our SaaS
         MVP as was presented to the first customers
+
     '''
       link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
     }
@@ -40,10 +41,11 @@ model {
     }
 
     supportUser = actor 'Support User' 'Support team member with limited access' {
-      description ''' 
-        Support users require limited access to the system  
+      description '''
+        Support users require limited access to the system
         to help customers with their issues
-  '''
+
+      '''
       -> customer 'helps with questions' {
         metadata {
           rps '1000'
@@ -159,7 +161,11 @@ views {
       next.backend -> amazon.aurora
     }
 
-    include cloud, next, ui, amazon
+    include
+      cloud,
+      next._,
+      ui,
+      amazon
 
     style next, ui, amazon {
       opacity 10%

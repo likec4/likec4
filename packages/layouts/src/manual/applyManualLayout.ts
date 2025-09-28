@@ -21,7 +21,8 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
       ...node,
       width,
       height,
-      position: [x, y],
+      x,
+      y,
     } satisfies DiagramNode
   })
   const edges = diagramView.edges.map(edge => {
@@ -152,9 +153,12 @@ function layoutEdge(edge: DiagramEdge, manualLayout: ViewManualLayout) {
   const targetCenter = toVector(BBox.center(target))
   const edgeVector = targetCenter.subtract(sourceCenter)
 
+  const { x: middlePointX, y: middlePointY } = edgeVector.divide(2).add(sourceCenter)
+
   const labelBBox = {
     ...(edge?.labelBBox ?? { width: 0, height: 0 }),
-    ...edgeVector.divide(2).add(sourceCenter),
+    x: middlePointX,
+    y: middlePointY,
   }
 
   const controlPoint = edgeVector.multiply(0.7).add(sourceCenter)
@@ -210,8 +214,7 @@ function canApplySafely(diagramView: DiagramView, manualLayout: ViewManualLayout
   // - no new nodes
   // - compound nodes do not become leaf nodes and vice versa
   // - no new edges
-  return true
-    && deepEqual(diagramView.autoLayout, manualLayout.autoLayout)
+  return deepEqual(diagramView.autoLayout, manualLayout.autoLayout)
     && diagramView.nodes.every(n => {
       const manualNode = manualLayout.nodes[n.id]
       return !!manualNode

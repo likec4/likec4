@@ -91,9 +91,10 @@ describe.concurrent('LikeC4', () => {
     expect([...model.view('index').elements()]).toHaveLength(2)
     expect([...model.view('index').edges()]).toHaveLength(1)
     expect(model.view('index').node('system').$node).toMatchObject({
+      x: expect.any(Number),
+      y: expect.any(Number),
       width: expect.any(Number),
       height: expect.any(Number),
-      position: expect.any(Array),
       labelBBox: {
         x: expect.any(Number),
         y: expect.any(Number),

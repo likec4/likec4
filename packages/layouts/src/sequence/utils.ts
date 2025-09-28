@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
+import type { DiagramNode } from '@likec4/core/types'
 import { isAncestor, nonNullable, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
 import type { Compound, ParallelRect, Step } from './_types'
@@ -90,7 +90,7 @@ export function buildCompounds(actors: Array<DiagramNode>, nodes: Array<DiagramN
     }
 
     // Add ancestors to the stack
-    while (parent = ancestors.pop()) {
+    while ((parent = ancestors.pop())) {
       const parentAsCompound = {
         node: parent,
         from: actor,

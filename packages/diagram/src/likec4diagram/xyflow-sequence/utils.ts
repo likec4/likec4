@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
+import type { DiagramNode } from '@likec4/core/types'
 import { isAncestor, nonNullable, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
 import type { Compound, ParallelRect, Step } from './_types'

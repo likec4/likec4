@@ -92,7 +92,7 @@ export class LikeC4 {
     const likec4 = new LikeC4(workspaceUri.path, langium)
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      likec4.dispose()
+      await likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
     }
 
@@ -143,7 +143,7 @@ export class LikeC4 {
     }
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      likec4.dispose()
+      await likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
     }
 

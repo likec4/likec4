@@ -1233,8 +1233,8 @@ const _diagramMachine = setup({
                 params: {
                   fromNode: fromNode.id as NodeId,
                   toPosition: {
-                    x: toNode.data.position[0],
-                    y: toNode.data.position[1],
+                    x: toNode.data.x,
+                    y: toNode.data.y,
                   },
                 },
               })
@@ -1318,8 +1318,8 @@ const _diagramMachine = setup({
                 params: {
                   fromNode: fromNode.id as NodeId,
                   toPosition: {
-                    x: toNode.data.position[0],
-                    y: toNode.data.position[1],
+                    x: toNode.data.x,
+                    y: toNode.data.y,
                   },
                 },
               })

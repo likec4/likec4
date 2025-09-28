@@ -56,7 +56,6 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
       points,
       hovered = false,
       active = false,
-      dimmed = false,
       labelBBox,
       labelXY,
       ...data
@@ -70,8 +69,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const targetNode = nonNullable(useXYInternalNode(target)!, `target node ${target} not found`)
 
   const isModified = isTruthy(data.controlPoints)
-    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.position)
-    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.position)
+    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data)
+    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data)
 
   let controlPoints = data.controlPoints ?? bezierControlPoints(props.data)
 

@@ -18,7 +18,7 @@ export function ViewEditor() {
       }),
       search: true,
     })
-    router.commitLocation(loc)
+    void router.commitLocation(loc)
   })
 
   if (!view) {
@@ -39,9 +39,9 @@ export function ViewEditor() {
       experimentalEdgeEditing
       fitViewPadding={{
         top: '70px',
-        bottom: '10px',
+        bottom: '32px',
         left: '50px',
-        right: '10px',
+        right: '32px',
       }}
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}
@@ -55,7 +55,7 @@ export function ViewEditor() {
       onNavigateTo={onNavigateTo}
       onChange={(e) => console.log(e)}
       onBurgerMenuClick={() => {
-        router.navigate({
+        void router.navigate({
           to: '/',
         })
       }}

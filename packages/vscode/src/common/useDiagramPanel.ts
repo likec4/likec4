@@ -93,7 +93,7 @@ export const useDiagramPanel = createSingletonComposable(() => {
     })
 
     if (panelExists) {
-      nextTick(() => {
+      void nextTick(() => {
         logger.debug`panel exists, sending OpenView notification`
         logger.debug`sendNotification ${'OpenView ' + viewId} from ${projectId}`
         messenger.sendNotification(OnOpenView, participant, {

@@ -15,8 +15,8 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<A, Computed
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const { nodes: viewNodes } = this.view
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [_sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
+    const [_targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,

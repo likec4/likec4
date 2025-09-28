@@ -139,7 +139,7 @@ function createViewChange(parentContext: DiagramContext): ViewChange.SaveManualL
   const nodes = reduce([...nodeLookup.values()], (acc, node) => {
     const dimensions = getNodeDimensions(node)
     if (
-      !isSamePoint(node.internals.positionAbsolute, node.data.position) || node.initialWidth !== dimensions.width ||
+      !isSamePoint(node.internals.positionAbsolute, node.data) || node.initialWidth !== dimensions.width ||
       node.initialHeight !== dimensions.height
     ) {
       movedNodes.add(node.id)

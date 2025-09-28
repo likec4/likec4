@@ -59,10 +59,8 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   override changePort(graphvizPort: GraphvizPort) {
     super.changePort(graphvizPort)
     if (this.queue.concurrency !== graphvizPort.concurrency) {
-      this.queue.onIdle().finally(() => {
-        this.queue.concurrency = this.graphvizPort.concurrency
-        logger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
-      })
+      this.queue.concurrency = this.graphvizPort.concurrency
+      logger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
     }
   }
 

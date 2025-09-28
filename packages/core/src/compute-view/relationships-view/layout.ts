@@ -319,7 +319,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       title: element.title,
       x: position.x,
       y: position.y,
-      position: [position.x, position.y],
       description: element.$element.summary ?? element.$element.description ?? null,
       technology: element.technology,
       tags: [],

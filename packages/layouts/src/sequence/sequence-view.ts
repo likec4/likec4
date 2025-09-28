@@ -1,12 +1,14 @@
 import {
+  type DiagramEdge,
   type DiagramNode,
   type LayoutedDynamicView,
+  type NodeId,
   getParallelStepsPrefix,
   isStepEdgeId,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
-import { hasAtLeast } from 'remeda'
-import type { SequenceActor, SequenceActorStepPort, SequenceViewLayout, Step } from './_types'
+import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
+import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
 import {
   CONTINUOUS_OFFSET,
 } from './const'
@@ -20,42 +22,19 @@ type Port = {
   position: 'left' | 'right' | 'top' | 'bottom'
 }
 
-export function calcSequenceLayout(view: LayoutedDynamicView): SequenceViewLayout {
-  const actors = [] as Array<DiagramNode>
-  const actorPorts = new DefaultMap<DiagramNode, Port[]>(() => [])
-
-  const steps = [] as Array<Step>
+export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicView.Sequence.Layout {
+  const actorNodes = new Set<DiagramNode>()
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
-  const parentsLookup: DefaultMap<DiagramNode, DiagramNode[]> = new DefaultMap(
-    key => {
-      const parent = key.parent ? getNode(key.parent) : null
-      if (parent) {
-        return [parent, ...parentsLookup.get(parent)]
-      }
-      return []
-    },
-  )
 
-  const addActor = (...[source, target]: [DiagramNode, DiagramNode]) => {
-    // source actor not yet added
-    if (!actors.includes(source)) {
-      const indexOfTarget = actors.indexOf(target)
-      if (indexOfTarget > 0) {
-        actors.splice(indexOfTarget, 0, source)
-      } else {
-        actors.push(source)
-      }
-    }
-    if (!actors.includes(target)) {
-      actors.push(target)
-    }
-  }
-
-  let row = 0
+  // Step 1 - prepare steps and actors
+  const preparedSteps = [] as Array<{
+    edge: DiagramEdge
+    source: DiagramNode
+    target: DiagramNode
+  }>
 
   for (const edge of view.edges.filter(e => isStepEdgeId(e.id))) {
-    const prevStep = steps.at(-1)
     const source = getNode(edge.source)
     const target = getNode(edge.target)
 
@@ -63,21 +42,26 @@ export function calcSequenceLayout(view: LayoutedDynamicView): SequenceViewLayou
       console.error('Sequence view does not support nested actors')
       continue
     }
+    actorNodes.add(source)
+    actorNodes.add(target)
+    preparedSteps.push({ edge, source, target })
+  }
+
+  // Keep initial order of actors
+  const actors = view.nodes.filter(n => actorNodes.has(n))
+  invariant(hasAtLeast(actors, 1), 'actors array must not be empty')
+
+  const actorPorts = new DefaultMap<DiagramNode, Port[]>(() => [])
+
+  const steps = [] as Array<Step>
+
+  let row = 0
+
+  for (const { edge, source, target } of preparedSteps) {
+    const prevStep = steps.at(-1)
 
     let sourceColumn = actors.indexOf(source)
     let targetColumn = actors.indexOf(target)
-
-    const alreadyAdded = sourceColumn >= 0 && targetColumn >= 0
-
-    if (!alreadyAdded) {
-      if (edge.dir === 'back') {
-        addActor(target, source)
-      } else {
-        addActor(source, target)
-      }
-      sourceColumn = actors.indexOf(source)
-      targetColumn = actors.indexOf(target)
-    }
 
     const isSelfLoop = source === target
     const isBack = sourceColumn > targetColumn
@@ -122,14 +106,6 @@ export function calcSequenceLayout(view: LayoutedDynamicView): SequenceViewLayou
     actorPorts.get(target).push({ step, row, type: 'target', position: isBack || isSelfLoop ? 'right' : 'left' })
   }
 
-  // Update columns, as actors may have been re-ordered
-  for (const step of steps) {
-    step.from.column = actors.indexOf(step.source)
-    step.to.column = actors.indexOf(step.target)
-  }
-
-  invariant(hasAtLeast(actors, 1), 'actors array must not be empty')
-
   const layout = new SequenceViewLayouter({
     actors,
     steps,
@@ -138,10 +114,34 @@ export function calcSequenceLayout(view: LayoutedDynamicView): SequenceViewLayou
 
   const bounds = layout.getViewBounds()
 
+  const compounds = pipe(
+    layout.getCompoundBoxes(),
+    map(({ node, ...box }) => ({ ...box, id: node.id, origin: node.id })),
+    groupByProp('id'),
+    mapValues((boxes, id) => {
+      if (hasAtLeast(boxes, 2)) {
+        return map(boxes, (box, i) => ({ ...box, id: `${id}-${i + 1}` as NodeId }))
+      }
+      return boxes
+    }),
+    values(),
+    flat(),
+  )
+
   return {
-    id: view.id,
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
-    compounds: layout.getCompoundBoxes().map(({ node, ...box }) => ({ ...box, id: node.id })),
+    compounds,
+    steps: map(steps, s => ({
+      id: s.id,
+      sourceHandle: s.id + '_source',
+      targetHandle: s.id + '_target',
+      ...s.label && ({
+        labelBBox: {
+          width: s.label.width,
+          height: s.label.height,
+        },
+      }),
+    })),
     parallelAreas: layout.getParallelBoxes(),
     bounds,
   }
@@ -162,7 +162,7 @@ function toSeqActor({ actor, ports, layout }: {
     ports: ports.map((p): SequenceActorStepPort => {
       const bbox = layout.getPortCenter(p.step, p.type)
       return ({
-        id: p.step.id,
+        id: `${p.step.id}_${p.type}`,
         cx: bbox.cx - x,
         cy: bbox.cy - y,
         height: bbox.height,

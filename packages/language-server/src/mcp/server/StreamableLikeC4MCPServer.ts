@@ -75,10 +75,10 @@ export class StreamableLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposab
 
             await transport.handleRequest(req, res, await c.req.json())
 
-            res.on('close', () => {
+            res.on('close', async () => {
               logger.debug('Request closed')
-              transport.close()
-              server.close()
+              await transport.close()
+              await server.close()
             })
 
             return toFetchResponse(res)

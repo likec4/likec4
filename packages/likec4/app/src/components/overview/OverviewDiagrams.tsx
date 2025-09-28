@@ -145,14 +145,14 @@ export function OverviewDiagrams({
     }
     // const node = focusedNodeId ? nodes.find(node => node.id === focusedNodeId) : null
     if (!focusedNode) {
-      xyflow.fitView({
+      void xyflow.fitView({
         maxZoom: 1,
         padding: fitViewPadding,
         duration: 800,
       })
     } else {
       // const viewport = getViewportForBounds(node.data.rect, )
-      xyflow.fitView({
+      void xyflow.fitView({
         maxZoom: 1,
         padding: fitViewPadding,
         nodes: [focusedNode],
@@ -217,7 +217,7 @@ export function OverviewDiagrams({
           event.stopPropagation()
           // @ts-ignore
           setNodes(nodes => nodes.map(({ data, ...n }) => ({ ...n, data: { ...data, dimmed: n.id !== node.id } })))
-          xyflowRef.current?.fitView({
+          void xyflowRef.current?.fitView({
             maxZoom: 10,
             padding: 0,
             nodes: [node],
@@ -227,7 +227,7 @@ export function OverviewDiagrams({
             xyflowRef.current?.updateNodeData(node.id, { dimmed: true })
           }, 400)
           setTimeout(() => {
-            router.navigate({
+            void router.navigate({
               to: '/view/$viewId/',
               params: {
                 viewId: node.data.viewId,

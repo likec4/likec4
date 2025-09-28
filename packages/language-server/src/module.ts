@@ -249,7 +249,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
   if (!context.connection) {
     // We don't run inside a language server
     // Therefore, initialize the configuration provider instantly
-    shared.workspace.ConfigurationProvider.initialized({})
+    void shared.workspace.ConfigurationProvider.initialized({})
   } else {
     likec4.Rpc.init()
   }

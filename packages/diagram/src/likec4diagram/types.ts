@@ -37,7 +37,8 @@ export namespace Types {
         | 'height'
         | 'style'
         | 'tags'
-        | 'position'
+        | 'x'
+        | 'y'
       >
     >
     & {
@@ -116,7 +117,8 @@ export namespace Types {
         | 'shape'
         | 'style'
         | 'tags'
-        | 'position'
+        | 'x'
+        | 'y'
       >
     >
     & {

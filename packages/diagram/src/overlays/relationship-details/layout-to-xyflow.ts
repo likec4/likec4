@@ -48,12 +48,12 @@ export function layoutResultToXYFlow(
     }
 
     const position = {
-      x: node.position[0],
-      y: node.position[1],
+      x: node.x,
+      y: node.y,
     }
     if (parent) {
-      position.x -= parent.position[0]
-      position.y -= parent.position[1]
+      position.x -= parent.x
+      position.y -= parent.y
     }
 
     const id = node.id
