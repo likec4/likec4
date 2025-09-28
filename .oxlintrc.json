@@ -6,19 +6,20 @@
   "settings": {},
   "rules": {
     "oxc/no-accumulating-spread": "error",
+    "import/no-commonjs": "error",
     "import/consistent-type-specifier-style": [
       "error",
       {
         "prefer-top-level": true
       }
     ],
-    "typescript/no-import-type-side-effects": "error",
     "import/first": [
       "warn",
       {
         "absolute-first": true
       }
     ],
+    "import/no-cycle": "error",
     "no-restricted-imports": [
       "error",
       {
@@ -34,17 +35,22 @@
     "promise/no-new-statics": "error",
     "react/exhaustive-deps": "warn",
     "no-unused-expressions": "off",
+    "typescript/no-import-type-side-effects": "error",
     "typescript/require-array-sort-compare": "off",
-    "typescript/restrict-template-expressions": "off"
+    "typescript/restrict-template-expressions": "off",
+    "typescript/no-duplicate-type-constituents": "off",
+    "typescript/no-non-null-asserted-optional-chain": "error"
   },
   "overrides": [
     {
       "files": [
         "**/*.spec.ts",
+        "**/*.test-d.ts",
         "**/*.spec.tsx",
         "**/__test__/**"
       ],
       "rules": {
+        "typescript/no-non-null-asserted-optional-chain": "off",
         "typescript/unbound-method": "off",
         "no-unused-vars": "off"
       }

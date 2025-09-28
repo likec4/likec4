@@ -133,6 +133,7 @@ function WorkspaceDiagramPage() {
               })
             }}
             onEdgeClick={(edge, event) => {
+              event?.stopPropagation()
               if (_diagram._type === 'dynamic' && edge.astPath) {
                 playground.openSources({
                   view: _diagram.id,

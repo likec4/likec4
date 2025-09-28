@@ -1275,6 +1275,9 @@ importers:
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.0
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.18.0(oxlint-tsgolint@0.2.0)
       p-debounce:
         specifier: catalog:utils
         version: 4.0.0

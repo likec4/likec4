@@ -1,5 +1,5 @@
 import { AstUtils } from 'langium'
-import { isNullish, isTruthy } from 'remeda'
+import { isNullish } from 'remeda'
 import { ast } from '../ast'
 
 export function referenceableParent(node: ast.FqnRef): ast.Referenceable | null {

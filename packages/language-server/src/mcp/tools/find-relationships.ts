@@ -131,9 +131,8 @@ Response:
   const relationships = modelConnection.findConnection(el1, el2, 'both').flatMap(c => [...c.relations])
 
   for (const relationship of relationships) {
-    const isDirect = false
-      || relationship.source === el1 && relationship.target === el2
-      || relationship.source === el2 && relationship.target === el1
+    const isDirect = (relationship.source === el1 && relationship.target === el2)
+      || (relationship.source === el2 && relationship.target === el1)
 
     found.push({
       type: isDirect ? 'direct' : 'indirect',

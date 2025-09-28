@@ -16,7 +16,7 @@
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
     "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix",
+    "lint:fix": "oxlint --type-aware --fix-suggestions",
     "build": "turbo run build --filter=\"!@likec4/docs-astro\"",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter=\"!@likec4/docs-astro\"",

@@ -57,7 +57,7 @@ export const dynamicViewStepChain = (services: LikeC4Services): ValidationCheck<
 }
 
 export const dynamicViewDisplayVariant = (
-  services: LikeC4Services,
+  _services: LikeC4Services,
 ): ValidationCheck<ast.DynamicViewDisplayVariantProperty> => {
   return tryOrLog((prop, accept) => {
     if (isEmpty(prop.value) || (prop.value !== 'diagram' && prop.value !== 'sequence')) {

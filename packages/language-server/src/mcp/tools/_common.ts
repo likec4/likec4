@@ -22,7 +22,7 @@ export const locationSchema = z.object({
 }).nullable()
 
 export const projectIdSchema = z.string()
-  .refine((v): v is ProjectId => true)
+  .refine((_v): _v is ProjectId => true)
   .optional()
   .default(ProjectsManager.DefaultProjectId)
   .describe('Project id (optional, will use "default" if not specified)')

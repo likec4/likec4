@@ -181,7 +181,7 @@ export class BaseParser {
             tags.push(...values)
           }
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
       iter = iter.prev

@@ -15,7 +15,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   async getDocumentLinks(
     doc: LangiumDocument,
     _params: DocumentLinkParams,
-    cancelToken?: CancellationToken,
+    _cancelToken?: CancellationToken,
   ): Promise<DocumentLink[]> {
     if (!isLikeC4LangiumDocument(doc) || this.services.likec4.LanguageServices.isExcluded(doc)) {
       return []

@@ -7,7 +7,7 @@ import {
 } from '@likec4/language-server'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import { configureLogger, getConsoleStderrSink } from '@likec4/log'
+import { configureLogger, getConsoleStderrSink, loggable } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
 import k from 'tinyrainbow'
@@ -127,10 +127,14 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
   )
 
   if (typeof options.mcp === 'object' && options.mcp.port) {
-    likec4.mcp.Server.start(options.mcp.port)
+    void likec4.mcp.Server.start(options.mcp.port).catch((e) => {
+      logger.error(loggable(e))
+    })
   }
   if (options.mcp === 'stdio') {
-    likec4.mcp.Server.start()
+    void likec4.mcp.Server.start().catch((e) => {
+      logger.error(loggable(e))
+    })
   }
 
   return likec4

@@ -1,6 +1,8 @@
 import { FqnRef, isSameHierarchy, nonNullable } from '@likec4/core'
+import { loggable } from '@likec4/log'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 import { projectIdFrom } from '../utils'
@@ -99,7 +101,8 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     let sourceFqnRef
     try {
       sourceFqnRef = parser._resolveDeploymentRelationSource(el)
-    } catch (e) {
+    } catch (e: unknown) {
+      logger.warn(loggable(e))
       accept('error', 'DeploymentRelation source not resolved', {
         node: el,
         property: 'source',
@@ -146,7 +149,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
   })
 }
 
-export const extendDeploymentChecks = (services: LikeC4Services): ValidationCheck<ast.ExtendDeployment> => {
+export const extendDeploymentChecks = (_services: LikeC4Services): ValidationCheck<ast.ExtendDeployment> => {
   return tryOrLog((el, accept) => {
     const target = el.deploymentNode.value.ref
     if (!target || !ast.isDeploymentNode(target)) {

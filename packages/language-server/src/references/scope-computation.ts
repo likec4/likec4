@@ -48,7 +48,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         globals,
         likec4lib,
         deployments,
-        imports,
       } = document.parseResult.value
 
       // Process library
@@ -274,7 +273,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           let imported = imports as ast.Imported | undefined
           while (imported) {
             descendants.push(
-              this.descriptions.createDescription(imported, imported.imported.$refText, document),
+              this.descriptions.createDescription(imported, imported.imported.$refText),
             )
             imported = imported.prev
           }
