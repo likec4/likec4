@@ -16,6 +16,7 @@ import type { XYFlowInstance } from './hooks/useXYFlow'
 import type { Types } from './likec4diagram/types'
 
 type Any = t.aux.Any
+type Unknown = t.aux.UnknownLayouted
 type ViewId<A> = t.aux.ViewId<A>
 type Fqn<A> = t.aux.Fqn<A>
 type RelationId = t.aux.RelationId
@@ -26,7 +27,7 @@ export type NodeRenderers = Partial<CamelCasedProperties<Types.NodeRenderers>>
 
 export type { WhereOperator }
 
-export type DiagramNodeWithNavigate<A extends Any> = SetRequired<DiagramNode<A>, 'navigateTo'>
+export type DiagramNodeWithNavigate<A extends Any = Unknown> = SetRequired<DiagramNode<A>, 'navigateTo'>
 
 export type ElementIconRendererProps = {
   node: {
@@ -90,7 +91,7 @@ export type ViewPadding = PaddingWithUnit | {
   y?: PaddingWithUnit
 }
 
-export interface LikeC4DiagramProperties<A extends Any = Any> {
+export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   view: LayoutedView<A>
 
   className?: string | undefined
@@ -286,7 +287,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
-export type OpenSourceParams<A extends Any = Any> =
+export type OpenSourceParams<A extends Any = Unknown> =
   | {
     element: Fqn<A>
     property?: string
@@ -309,21 +310,21 @@ export type OpenSourceParams<A extends Any = Any> =
 /**
  * "Go to source" action
  */
-export type OnOpenSource<A extends Any = Any> = (params: OpenSourceParams<A>) => void
+export type OnOpenSource<A extends Any = Unknown> = (params: OpenSourceParams<A>) => void
 
-export type OnNavigateTo<A extends Any = Any> = (
+export type OnNavigateTo<A extends Any = Unknown> = (
   to: ViewId<A>,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
   element?: DiagramNodeWithNavigate<A>,
 ) => void
 
-export type OnNodeClick<A extends Any = Any> = (
+export type OnNodeClick<A extends Any = Unknown> = (
   node: DiagramNode<A>,
   event: ReactMouseEvent,
 ) => void
 
-export type OnEdgeClick<A extends Any = Any> = (
+export type OnEdgeClick<A extends Any = Unknown> = (
   edge: DiagramEdge<A>,
   event: ReactMouseEvent,
 ) => void
@@ -340,7 +341,7 @@ export type OnChange = (event: ChangeEvent) => void
 
 export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
 
-export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
+export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined

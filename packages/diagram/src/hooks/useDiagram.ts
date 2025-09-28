@@ -1,13 +1,7 @@
+import type * as t from '@likec4/core/types'
 import type {
-  aux,
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
   DynamicViewDisplayVariant,
-  NodeId,
   NodeNotation as ElementNotation,
-  scalar,
-  ViewId,
 } from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'
@@ -28,16 +22,23 @@ import { findDiagramEdge, findDiagramNode } from '../likec4diagram/state/utils'
 import type { Types } from '../likec4diagram/types'
 import { useDiagramActorRef } from './safeContext'
 
+type Any = t.aux.Any
+type Unknown = t.aux.UnknownLayouted
+type ViewId<A> = t.aux.ViewId<A>
+type Fqn<A> = t.aux.Fqn<A>
+type NodeId = t.aux.NodeId
+type EdgeId = t.aux.EdgeId
+
 export { useDiagramActorRef }
 
 export type { DiagramContext }
 
-export interface DiagramApi {
+export interface DiagramApi<A extends Any = Unknown> {
   readonly actor: DiagramActorRef
   /**
    * @warning Do not use in render phase
    */
-  readonly currentView: DiagramView
+  readonly currentView: t.DiagramView<A>
   /**
    * Send event to diagram actor
    */
@@ -45,7 +46,7 @@ export interface DiagramApi {
   /**
    * Navigate to view
    */
-  navigateTo(viewId: scalar.ViewId, fromNode?: scalar.NodeId): void
+  navigateTo(viewId: ViewId<A>, fromNode?: NodeId): void
   /**
    * Navigate back or forward in history
    */
@@ -57,18 +58,18 @@ export interface DiagramApi {
   /**
    * Open relationships browser
    */
-  openRelationshipsBrowser(fqn: scalar.Fqn): void
+  openRelationshipsBrowser(fqn: Fqn<A>): void
   /**
    * If running in editor, trigger opening source file
    */
-  openSource(params: OpenSourceParams<aux.Unknown>): void
+  openSource(params: OpenSourceParams<A>): void
   /**
    * Open element details card
    */
-  openElementDetails(fqn: scalar.Fqn, fromNode?: scalar.NodeId): void
-  openRelationshipDetails(...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]): void
-  updateNodeData(nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>): void
-  updateEdgeData(edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>): void
+  openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void
+  openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void
+  updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
+  updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
   /**
    * Schedule save manual layout
    */
@@ -101,7 +102,7 @@ export interface DiagramApi {
   /**
    * @warning Do not use in render phase
    */
-  findDiagramNode(xynodeId: string): DiagramNode | null
+  findDiagramNode(xynodeId: string): t.DiagramNode<A> | null
   /**
    * @warning Do not use in render phase
    */
@@ -109,7 +110,7 @@ export interface DiagramApi {
   /**
    * @warning Do not use in render phase
    */
-  findDiagramEdge(xyedgeId: string): DiagramEdge | null
+  findDiagramEdge(xyedgeId: string): t.DiagramEdge<A> | null
 
   startWalkthrough(): void
   walkthroughStep(direction?: 'next' | 'previous'): void
@@ -129,15 +130,15 @@ export interface DiagramApi {
  * Diagram API
  * Mostly for internal use
  */
-export function useDiagram(): DiagramApi {
+export function useDiagram<A extends Any = Unknown>(): DiagramApi<A> {
   const actor = useDiagramActorRef()
-  return useMemo((): DiagramApi => ({
+  return useMemo((): DiagramApi<A> => ({
     actor,
     send: (event: DiagramActorEvent) => actor.send(event),
-    navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
+    navigateTo: (viewId: ViewId<A>, fromNode?: NodeId) => {
       actor.send({
         type: 'navigate.to',
-        viewId,
+        viewId: viewId as any,
         ...(fromNode && { fromNode }),
       })
     },
@@ -150,13 +151,13 @@ export function useDiagram(): DiagramApi {
     openRelationshipsBrowser: (fqn) => {
       actor.send({ type: 'open.relationshipsBrowser', fqn })
     },
-    openSource: (params: OpenSourceParams<aux.Unknown>) => {
+    openSource: (params: OpenSourceParams<Unknown>) => {
       actor.send({ type: 'open.source', ...params })
     },
-    openElementDetails: (fqn, fromNode?: scalar.NodeId) => {
+    openElementDetails: (fqn, fromNode?: NodeId) => {
       actor.send({ type: 'open.elementDetails', fqn, fromNode })
     },
-    openRelationshipDetails: (...params: [edgeId: scalar.EdgeId] | [source: scalar.Fqn, target: scalar.Fqn]) => {
+    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]) => {
       if (params.length === 1) {
         actor.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
       } else {
@@ -164,10 +165,10 @@ export function useDiagram(): DiagramApi {
       }
     },
 
-    updateNodeData: (nodeId: scalar.NodeId, data: PartialDeep<Types.NodeData>) => {
+    updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
-    updateEdgeData: (edgeId: scalar.EdgeId, data: PartialDeep<Types.EdgeData>) => {
+    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
       actor.send({
         type: 'update.edgeData',
         edgeId,
@@ -201,7 +202,7 @@ export function useDiagram(): DiagramApi {
     /**
      * @warning Do not use in render phase
      */
-    get currentView(): DiagramView {
+    get currentView(): t.DiagramView<A> {
       return actor.getSnapshot().context.view
     },
     /**
@@ -215,7 +216,7 @@ export function useDiagram(): DiagramApi {
     /**
      * @warning Do not use in render phase
      */
-    findDiagramNode: (xynodeId: string): DiagramNode | null => {
+    findDiagramNode: (xynodeId: string): t.DiagramNode<A> | null => {
       return findDiagramNode(actor.getSnapshot().context, xynodeId)
     },
     findEdge: (xyedgeId: string): Types.Edge | null => {
@@ -224,7 +225,7 @@ export function useDiagram(): DiagramApi {
     /**
      * @warning Do not use in render phase
      */
-    findDiagramEdge: (xyedgeId: string): DiagramEdge | null => {
+    findDiagramEdge: (xyedgeId: string): t.DiagramEdge<A> | null => {
       return findDiagramEdge(actor.getSnapshot().context, xyedgeId)
     },
 
