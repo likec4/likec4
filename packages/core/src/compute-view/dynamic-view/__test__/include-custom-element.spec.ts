@@ -4,7 +4,7 @@ import { $step, compute } from './fixture'
 
 describe('dynamic-view: include custom element with', () => {
   it('should include custom element', () => {
-    const { nodeIds, edgeIds, nodes, edges } = compute([
+    const { nodeIds, edgeIds, nodes } = compute([
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
       $include('cloud.backend', {

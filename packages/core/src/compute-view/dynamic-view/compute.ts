@@ -112,9 +112,9 @@ class DynamicViewCompute<A extends AnyAux> {
         source: stepSource,
         target: stepTarget,
         title: stepTitle,
-        isBackward,
+        isBackward: _isBackward, // omit
         navigateTo: stepNavigateTo,
-        notation, // omit]
+        notation: _notation, // omit
         ...rest
       } = step
 

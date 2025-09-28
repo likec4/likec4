@@ -1,4 +1,4 @@
-import { type LikeC4Theme, type ThemeColor } from '@likec4/core'
+import type { LikeC4Theme, ThemeColor } from '@likec4/core'
 import {
   type PopoverProps,
   Button,

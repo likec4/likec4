@@ -2,6 +2,7 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
+  "oxc.enable": true,
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },

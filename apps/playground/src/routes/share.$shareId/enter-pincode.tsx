@@ -1,5 +1,4 @@
 import { api } from '$/api'
-import {} from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import {

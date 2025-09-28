@@ -7,7 +7,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { toFetchResponse, toReqRes } from 'fetch-to-node'
 import { Hono } from 'hono'
 import type { AsyncDisposable } from 'langium'
-import { type Server } from 'node:http'
+import type { Server } from 'node:http'
 import type { LikeC4Services } from '../../module'
 import type { LikeC4MCPServer } from '../interfaces'
 import { logger } from '../utils'

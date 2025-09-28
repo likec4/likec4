@@ -227,8 +227,9 @@ export function validateProjectConfig<C extends string | Record<string, unknown>
  * Converts a LikeC4ProjectConfig object into a LikeC4ProjectJsonConfig object.
  * Omit generators property (as it is not serializable)
  */
-export function serializableLikeC4ProjectConfig(
-  { generators, ...config }: LikeC4ProjectConfig,
-): LikeC4ProjectJsonConfig {
+export function serializableLikeC4ProjectConfig({
+  generators: _, // omit
+  ...config
+}: LikeC4ProjectConfig): LikeC4ProjectJsonConfig {
   return LikeC4ProjectJsonConfigSchema.parse(config) as unknown as LikeC4ProjectJsonConfig
 }

@@ -1,10 +1,11 @@
-import * as c4 from '@likec4/core'
 import {
   type ViewId,
+  _stage,
   isScopedElementView,
 } from '@likec4/core'
 import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
+import type * as c4 from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import { deepEqual as eq } from 'fast-equals'
 import {
@@ -222,7 +223,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       })
       return LikeC4Model.create({
         ...parsedModel.$data,
-        [c4._stage]: 'computed',
+        [_stage]: 'computed',
         views,
       })
     })

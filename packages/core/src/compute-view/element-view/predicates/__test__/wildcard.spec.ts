@@ -52,7 +52,7 @@ describe('Wildcard predicate', () => {
       )
     )
 
-  const { $include, $exclude, $rules } = TestHelper
+  const { $include, $rules } = TestHelper
 
   describe('without scope', () => {
     it('include *', () => {

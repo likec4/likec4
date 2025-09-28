@@ -1,9 +1,9 @@
-import {
-  type ComputedLikeC4ModelData,
-  type DiagramView,
-  type ProjectId,
-  type ViewChange,
-  type ViewId,
+import type {
+  ComputedLikeC4ModelData,
+  DiagramView,
+  ProjectId,
+  ViewChange,
+  ViewId,
 } from '@likec4/core/types'
 import { CancellationTokenImpl, HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'

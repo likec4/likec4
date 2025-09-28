@@ -1,7 +1,7 @@
-import { type AstNode, type ValidationAcceptor, type ValidationCheck } from 'langium'
+import type { AstNode, ValidationAcceptor, ValidationCheck } from 'langium'
 import { isPromise } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import { logger, logWarnError } from '../logger'
+import { logger } from '../logger'
 
 export const RESERVED_WORDS = [
   'this',

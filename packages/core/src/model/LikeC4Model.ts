@@ -31,14 +31,14 @@ import type {
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
-import {
-  type $ModelData,
-  type $View,
-  type $ViewModel,
-  type ElementOrFqn,
-  type IncomingFilter,
-  type OutgoingFilter,
-  type RelationOrId,
+import type {
+  $ModelData,
+  $View,
+  $ViewModel,
+  ElementOrFqn,
+  IncomingFilter,
+  OutgoingFilter,
+  RelationOrId,
 } from './types'
 import { getId, getViewFolderPath, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
@@ -569,7 +569,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   public *ancestors(element: ElementOrFqn<A>): ElementsIterator<A> {
     let id = getId(element)
     let parent
-    while (parent = this._parents.get(id)) {
+    while ((parent = this._parents.get(id))) {
       yield parent
       id = parent.id
     }

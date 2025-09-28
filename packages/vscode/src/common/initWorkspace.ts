@@ -49,10 +49,10 @@ export async function rebuildWorkspace(rpc: Rpc) {
 }
 
 async function findSources(rpc: Rpc) {
-  const isweb = isWebUi() || isVirtual()
+  // const isweb = isWebUi() || isVirtual()
+  // const uris = await (isweb ? recursiveSearchSources : findFiles)()
   const client = rpc.client
   const c2pConverter = client.code2ProtocolConverter
-  // const uris = await (isweb ? recursiveSearchSources : findFiles)()
   const { sources, projects } = await recursiveSearchSources()
   if (projects.length === 0) {
     logger.info('[findSources] no projects found')
@@ -85,10 +85,10 @@ async function findSources(rpc: Rpc) {
   return docs
 }
 
-async function findFiles() {
-  logger.info`call vscode.workspace.findFiles with pattern "${globPattern}"`
-  return await vscode.workspace.findFiles(globPattern)
-}
+// async function findFiles() {
+//   logger.info`call vscode.workspace.findFiles with pattern "${globPattern}"`
+//   return await vscode.workspace.findFiles(globPattern)
+// }
 
 export function isLikeC4Source(path: string) {
   const p = path.toLowerCase()
@@ -101,7 +101,7 @@ async function recursiveSearchSources() {
   const sources = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   let folder
-  while (folder = folders.pop()) {
+  while ((folder = folders.pop())) {
     try {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)

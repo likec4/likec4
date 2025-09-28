@@ -1,7 +1,7 @@
 import { type ProjectId, invariant, nonexhaustive } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { Location, Range, TextEdit } from 'vscode-languageserver-types'
-import { type ParsedLikeC4LangiumDocument } from '../ast'
+import type { ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'

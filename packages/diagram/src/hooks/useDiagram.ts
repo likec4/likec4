@@ -1,13 +1,13 @@
-import {
-  type aux,
-  type DiagramEdge,
-  type DiagramNode,
-  type DiagramView,
-  type DynamicViewDisplayVariant,
-  type NodeId,
-  type NodeNotation as ElementNotation,
-  type scalar,
-  type ViewId,
+import type {
+  aux,
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  DynamicViewDisplayVariant,
+  NodeId,
+  NodeNotation as ElementNotation,
+  scalar,
+  ViewId,
 } from '@likec4/core/types'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector as useXstateSelector } from '@xstate/react'

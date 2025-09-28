@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "es2024": true
+  },
+  "settings": {},
+  "rules": {
+    "oxc/no-accumulating-spread": "error",
+    "import/consistent-type-specifier-style": [
+      "error",
+      {
+        "prefer-top-level": true
+      }
+    ],
+    "typescript/no-import-type-side-effects": "error",
+    "import/first": [
+      "warn",
+      {
+        "absolute-first": true
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "type-fest",
+            "allowTypeImports": true
+          }
+        ]
+      }
+    ],
+    "react_perf/jsx-no-jsx-as-prop": "warn",
+    "promise/no-new-statics": "error",
+    "react/exhaustive-deps": "warn",
+    "no-unused-expressions": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
+}

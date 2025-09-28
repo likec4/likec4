@@ -2,12 +2,12 @@ import { indexBy, isArray, isString, map, mapValues, pipe, prop } from 'remeda'
 import type { Writable } from 'type-fest'
 import type { ExpectStatic } from 'vitest'
 import { expect as vitestExpect } from 'vitest'
-import {
-  type AnyTypes,
-  type Builder,
-  type DeploymentRulesBuilderOp,
-  type Types,
-  type ViewPredicate,
+import type {
+  AnyTypes,
+  Builder,
+  DeploymentRulesBuilderOp,
+  Types,
+  ViewPredicate,
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
@@ -126,7 +126,7 @@ export class TestHelper<T extends AnyTypes> {
 
   expectConnections = (connections: ReadonlyArray<Connection>) => ({
     toBeEmpty: () => {
-      this._expect(connections.map(c => c.expression)).to.be.empty
+      this._expect(connections.map(c => c.expression)).toEqual([])
     },
     toEqual: (...matchers: ConnectionEqual<T>) => {
       const [matcher, ...rest] = matchers

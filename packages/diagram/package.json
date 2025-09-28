@@ -73,6 +73,8 @@
     "postpack": "cp likec4-diagram-$npm_package_version.tgz package.tgz || true",
     "test": "vitest run --no-isolate",
     "clean": "likec4ops clean",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
@@ -130,6 +132,7 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
+    "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",

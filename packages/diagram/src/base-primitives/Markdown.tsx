@@ -1,4 +1,4 @@
-import { type RichTextOrEmpty as RichTextType } from '@likec4/core/types'
+import type { RichTextOrEmpty as RichTextType } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { type BoxProps, Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'

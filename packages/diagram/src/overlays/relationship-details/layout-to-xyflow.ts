@@ -7,7 +7,7 @@ import {
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import type { RelationshipDetailsTypes } from './_types'
-import { type LayoutResult } from './layout'
+import type { LayoutResult } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 export function layoutResultToXYFlow(

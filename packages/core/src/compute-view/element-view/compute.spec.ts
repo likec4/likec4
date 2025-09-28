@@ -32,7 +32,7 @@ describe('compute', () => {
   it('adds tags to node from element and spec', () => {
     const context = compute(
       builder
-        .model(({ el, actor, rel }, _) =>
+        .model(({ actor }, _) =>
           _(
             actor('alice'),
             actor('bob', {

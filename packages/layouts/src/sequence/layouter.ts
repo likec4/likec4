@@ -1,7 +1,7 @@
-import {
-  type BBox,
-  type DiagramNode,
-  type NonEmptyArray,
+import type {
+  BBox,
+  DiagramNode,
+  NonEmptyArray,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'

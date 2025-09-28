@@ -1,4 +1,4 @@
-import { type ValidationCheck } from 'langium'
+import type { ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { isReferenceToDeploymentModel } from '../utils'

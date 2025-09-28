@@ -22,8 +22,8 @@ import {
   nameFromFqn,
   nonNullable,
 } from '@likec4/core/utils'
+import { Graph } from '@likec4/core/utils/graphology'
 import { createLogger } from '@likec4/log'
-import Graph from 'graphology'
 
 import {
   concat,
@@ -106,7 +106,7 @@ export abstract class DotPrinter<A extends AnyAux, V extends ComputedView<A>> {
   protected compoundIds: Set<NodeId>
   protected edgesWithCompounds: Set<EdgeId>
 
-  protected graphology = new Graph<GraphologyNodeAttributes, GraphologyEdgeAttributes>({
+  protected graphology: Graph<GraphologyNodeAttributes, GraphologyEdgeAttributes> = new Graph({
     allowSelfLoops: true,
     multi: true,
     type: 'directed',

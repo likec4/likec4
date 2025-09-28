@@ -201,7 +201,7 @@ interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>
 type Op<T> = (b: T) => T
 
 function ensureObj<T>(value: string[] | Record<string, Partial<T>>): Record<string, Partial<T>> {
-  return isArray(value) ? fromKeys(value, v => ({})) : value
+  return isArray(value) ? fromKeys(value, _ => ({})) : value
 }
 
 function validateSpec({ tags, elements, deployments, relationships, ...specification }: BuilderSpecification) {
@@ -264,7 +264,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       deployments: structuredClone(spec.deployments),
       relationships: structuredClone(spec.relationships),
       tags: structuredClone(spec.tags),
-      ...(!!spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
+      ...(spec.metadataKeys ? { metadataKeys: spec.metadataKeys as any } : {}),
       customColors: {},
     } as Specification<Types.ToAux<T>>)
   }

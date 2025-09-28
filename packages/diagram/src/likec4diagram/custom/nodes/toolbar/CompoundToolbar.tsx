@@ -1,4 +1,4 @@
-import { type BorderStyle } from '@likec4/core'
+import type { BorderStyle } from '@likec4/core'
 import { Box, SegmentedControl } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'

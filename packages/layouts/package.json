@@ -74,8 +74,6 @@
     "@likec4/log": "workspace:*",
     "@lume/kiwi": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "graphology": "catalog:",
-    "graphology-types": "catalog:",
     "indent-string": "catalog:utils",
     "khroma": "catalog:utils",
     "nano-spawn": "catalog:utils",

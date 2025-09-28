@@ -1,4 +1,4 @@
-import { type AnyLikeC4Model } from '@likec4/core/model'
+import type { AnyLikeC4Model } from '@likec4/core/model'
 import {
   compareNatural,
   sortNaturalByFqn,

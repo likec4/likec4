@@ -260,7 +260,7 @@ export class BaseParser {
     const aliasName = slashIndex > 0 ? value.substring(0, slashIndex) : value
     const remainingPath = slashIndex > 0 ? value.substring(slashIndex + 1) : ''
     // Get imageAliases from project config, or use default '@' -> './images' mapping
-    const imageAliases: Record<string, string> = { '@': './images', ...this.project.config.imageAliases || {} }
+    const imageAliases: Record<string, string> = { '@': './images', ...this.project.config.imageAliases }
 
     // Look up the alias path
     const aliasPath = imageAliases[aliasName]

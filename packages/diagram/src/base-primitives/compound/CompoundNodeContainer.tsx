@@ -3,7 +3,7 @@ import { cx } from '@likec4/styles/css'
 import { compoundNode } from '@likec4/styles/recipes'
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
 import type { BaseNode, BaseNodeProps } from '../../base/types'
 

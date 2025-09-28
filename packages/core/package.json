@@ -91,6 +91,14 @@
         "default": "./dist/types/index.mjs"
       }
     },
+    "./utils/graphology": {
+      "sources": "./src/utils/graphology/index.ts",
+      "default": {
+        "types": "./dist/utils/graphology/index.d.mts",
+        "import": "./dist/utils/graphology/index.mjs",
+        "default": "./dist/utils/graphology/index.mjs"
+      }
+    },
     "./utils": {
       "sources": "./src/utils/index.ts",
       "default": {
@@ -122,28 +130,29 @@
   },
   "devDependencies": {
     "@dagrejs/dagre": "catalog:",
-    "defu": "catalog:utils",
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
     "@types/chroma-js": "catalog:utils",
-    "@likec4/tsconfig": "workspace:*",
-    "@likec4/devops": "workspace:*",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",
     "@types/mdast": "4.0.4",
     "@types/natural-compare-lite": "catalog:utils",
+    "@types/node": "catalog:",
     "@types/object-hash": "^3.0.6",
     "@types/unist": "3.0.3",
-    "@types/node": "catalog:",
+    "chroma-js": "catalog:utils",
+    "defu": "catalog:utils",
+    "fdir": "catalog:utils",
     "graphology": "catalog:",
     "graphology-dag": "catalog:",
     "graphology-types": "catalog:",
-    "chroma-js": "catalog:utils",
-    "remeda": "catalog:utils",
     "mnemonist": "0.40.3",
     "natural-compare-lite": "catalog:utils",
     "object-hash": "catalog:utils",
     "obliterator": "^2.0.5",
-    "fdir": "catalog:utils",
+    "oxlint": "catalog:",
+    "remeda": "catalog:utils",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",

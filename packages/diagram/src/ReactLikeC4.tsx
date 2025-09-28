@@ -1,12 +1,11 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import { type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 import type { Except } from 'type-fest'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
-import type { LikeC4View } from './LikeC4View'
 import { ShadowRoot } from './shadowroot/ShadowRoot'
 
 export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =

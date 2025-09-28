@@ -4,7 +4,7 @@ import { ModelExpression } from '../../../types'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'
-import { type ActiveGroupCtx, type ActiveGroupMemory, type Ctx } from './memory'
+import type { ActiveGroupCtx, ActiveGroupMemory, Ctx } from './memory'
 
 const { findConnection, findConnectionsBetween } = modelConnection
 

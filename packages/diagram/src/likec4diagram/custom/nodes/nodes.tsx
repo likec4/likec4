@@ -1,4 +1,4 @@
-import { type NodeId } from '@likec4/core'
+import type { NodeId } from '@likec4/core'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,

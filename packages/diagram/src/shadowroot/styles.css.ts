@@ -91,7 +91,7 @@ const getComputedColorScheme = (): ColorScheme | null => {
     if (colorScheme === 'light' || colorScheme === 'dark') {
       return colorScheme
     }
-  } catch (_e) {
+  } catch {
     // noop
   }
   return null

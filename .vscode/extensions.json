@@ -3,6 +3,7 @@
     "dprint.dprint",
     "langium.langium-vscode",
     "unifiedjs.vscode-mdx",
-    "vitest.explorer"
+    "vitest.explorer",
+    "oxc.oxc-vscode"
   ]
 }

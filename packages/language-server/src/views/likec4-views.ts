@@ -1,7 +1,7 @@
 import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
 import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
-import { type WorkspaceCache } from 'langium'
+import type { WorkspaceCache } from 'langium'
 import { values } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'

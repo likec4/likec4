@@ -15,7 +15,7 @@ import { projectIdFrom } from '../utils'
 import type { ProjectsManager } from '../workspace'
 import { MergedSpecification } from './builder/MergedSpecification'
 import type { DeploymentsIndex } from './deployments-index'
-import { type FqnIndex } from './fqn-index'
+import type { FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils

@@ -4,7 +4,7 @@ import { Handle, Position } from '@xyflow/react'
 import { isTruthy } from 'remeda'
 import type { SetNonNullable } from 'type-fest'
 import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
-import { type Types } from '../../types'
+import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { ElementDetailsButtonWithHandler } from './nodes'
 

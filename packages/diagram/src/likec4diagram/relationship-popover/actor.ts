@@ -1,4 +1,4 @@
-import { type EdgeId } from '@likec4/core/types'
+import type { EdgeId } from '@likec4/core/types'
 import {
   type ActorLogicFrom,
   type ActorRefFrom,

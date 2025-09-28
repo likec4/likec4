@@ -1,12 +1,12 @@
-import {
-  type Any,
-  type ComputedView,
-  type DiagramView,
-  type Element,
-  type Fqn,
-  type NodeId,
-  type scalar,
-  type ViewId,
+import type {
+  Any,
+  ComputedView,
+  DiagramView,
+  Element,
+  Fqn,
+  NodeId,
+  scalar,
+  ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'

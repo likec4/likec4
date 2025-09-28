@@ -1,5 +1,5 @@
-import { type AsyncDisposable } from 'langium'
-import { type LikeC4SharedServices } from '../module'
+import type { AsyncDisposable } from 'langium'
+import type { LikeC4SharedServices } from '../module'
 
 export interface FileSystemWatcherModuleContext {
   fileSystemWatcher: (services: LikeC4SharedServices) => FileSystemWatcher

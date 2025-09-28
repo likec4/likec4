@@ -1,5 +1,5 @@
 import { type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
-import { type InternalNode as RFInternalNode, type NodeChange, type OnNodeDrag, type XYPosition } from '@xyflow/react'
+import type { InternalNode as RFInternalNode, NodeChange, OnNodeDrag, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { filter, hasAtLeast, map, pipe } from 'remeda'

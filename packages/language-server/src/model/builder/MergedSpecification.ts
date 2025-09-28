@@ -128,7 +128,7 @@ export class MergedSpecification {
    * Converts a parsed model into a C4 model relation.
    */
   toModelRelation = ({
-    astPath,
+    astPath: _astPath, // omit
     source,
     target,
     kind,
@@ -203,7 +203,7 @@ export class MergedSpecification {
    * Converts a parsed deployment relation into a C4 deployment relation.
    */
   toDeploymentRelation = ({
-    astPath,
+    astPath: _astPath, // omit
     source,
     target,
     kind,

@@ -1,5 +1,5 @@
+import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
 import {
   type RegisteredFileSystemProvider,
   RegisteredMemoryFile,
@@ -61,7 +61,7 @@ export function createMemoryFileSystem(
         log.debug`create new ${file}`
         try {
           fsProvider.registerFile(new RegisteredMemoryFile(uri, content))
-        } catch (e) {
+        } catch {
           // Most likely the file is already registered
         }
         model = monaco.editor.createModel(content, 'likec4', uri)

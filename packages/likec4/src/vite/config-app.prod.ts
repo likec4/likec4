@@ -6,7 +6,7 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
-import { type ViteLogger } from '../logger'
+import type { ViteLogger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin/plugin'
 import { chunkSizeWarningLimit, viteAppRoot, viteLogger } from './utils'
 

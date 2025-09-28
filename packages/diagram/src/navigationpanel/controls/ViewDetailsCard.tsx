@@ -167,7 +167,7 @@ const ViewDetailsCardDropdown = ({
         <HStack alignItems={'flex-start'} mt="1">
           <ViewBadge label="id" value={id} />
           <HStack gap="xs" flexWrap="wrap">
-            {tags.map((tag, i) => (
+            {tags.map((tag) => (
               <ElementTag
                 key={tag}
                 tag={tag}

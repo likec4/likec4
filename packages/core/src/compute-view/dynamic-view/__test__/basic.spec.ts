@@ -176,7 +176,7 @@ describe('dynamic-view', () => {
   })
 
   it('should apply steps custom props', () => {
-    const { nodeIds, edgeIds, nodes, edges } = compute([
+    const { nodeIds, edgeIds, edges } = compute([
       $step('cloud.backend -> amazon', {
         line: 'dotted',
         description: { txt: 'uploads1' },
@@ -311,7 +311,7 @@ describe('dynamic-view', () => {
   })
 
   it('should include nodes and edges from rules (even not relative)', () => {
-    const { nodeIds, edgeIds, nodes, edges } = compute([
+    const { nodeIds, edgeIds, nodes } = compute([
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
       // Include expanded node

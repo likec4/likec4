@@ -46,7 +46,7 @@ describe('elementExprToPredicate', () => {
     expect(predicate({} as any)).toBe(true)
   })
 
-  it('returns a function that checks if the node id matches the expanded element expression', ({ expect }) => {
+  it('returns a function that checks if the node id matches the expanded element expression', () => {
     const { yes, no } = test$expr('cloud._')
     yes({ id: 'cloud' })
     yes({ id: 'cloud.backend' })
@@ -56,7 +56,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches the descedant element expression', ({ expect }) => {
+  it('returns a function that checks if the node id matches the descedant element expression', () => {
     const { yes, no } = test$expr('cloud.*')
     yes({ id: 'cloud.backend.storage' })
     yes({ id: 'cloud.frontend' })
@@ -64,7 +64,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches the element ref expression', ({ expect }) => {
+  it('returns a function that checks if the node id matches the element ref expression', () => {
     const { yes, no } = test$expr('cloud.backend')
     no({ id: 'cloud.backend.graphql' })
     yes({ id: 'cloud.backend' })
@@ -72,7 +72,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node tag matches WHERE tag == clause', ({ expect }) => {
+  it('returns a function that checks if the node tag matches WHERE tag == clause', () => {
     const { yes, no } = test$expr($where('*', {
       tag: { eq: 'aws' },
     }))
@@ -80,7 +80,7 @@ describe('elementExprToPredicate', () => {
     yes({ id: 'customer', tags: ['aws'] })
   })
 
-  it('returns a function that checks if the node tag matches WHERE tag != clause', ({ expect }) => {
+  it('returns a function that checks if the node tag matches WHERE tag != clause', () => {
     const { yes, no } = test$expr($where('*', {
       tag: { neq: 'next' },
     }))
@@ -89,7 +89,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer', tags: ['next'] })
   })
 
-  it('returns a function that checks if the node id matches internal condition of WHERE', ({ expect }) => {
+  it('returns a function that checks if the node id matches internal condition of WHERE', () => {
     const { yes, no } = test$expr($where('amazon', {
       tag: { eq: 'aws' },
     }))
@@ -97,7 +97,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer', tags: ['aws'] })
   })
 
-  it('returns a function that checks if the node id matches internal condition of custom properties expression', ({ expect }) => {
+  it('returns a function that checks if the node id matches internal condition of custom properties expression', () => {
     const { yes, no } = test$expr($with(
       $where('*', { tag: { eq: 'aws' } }),
     ))

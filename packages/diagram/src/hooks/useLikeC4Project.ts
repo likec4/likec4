@@ -1,6 +1,6 @@
-import {
-  type LikeC4Project,
-  type ProjectId,
+import type {
+  LikeC4Project,
+  ProjectId,
 } from '@likec4/core/types'
 import { useContext } from 'react'
 import { LikeC4ModelContext } from '../context/LikeC4ModelContext'

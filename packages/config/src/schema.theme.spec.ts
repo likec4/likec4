@@ -7,7 +7,7 @@ import {
 } from '@likec4/core/styles'
 import { describe, it } from 'vitest'
 import { defineStyle, defineThemeColor } from './define-config'
-import { type LikeC4StylesConfigInput } from './schema.theme'
+import type { LikeC4StylesConfigInput } from './schema.theme'
 
 // Utility to get a valid enum value safely
 const first = <T>(arr: ReadonlyArray<T>): T => arr[0]!

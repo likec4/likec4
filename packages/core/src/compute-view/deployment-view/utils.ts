@@ -151,13 +151,13 @@ export function toNodeSource<A extends AnyAux>(
       id,
       description,
       summary,
-      metadata,
+      metadata: _metadata, // omit
       style: {
         icon,
         shape,
         color,
       },
-      element,
+      element: _element, // omit
       tags: _tags, // omit
       ...$node
     } = el.$node

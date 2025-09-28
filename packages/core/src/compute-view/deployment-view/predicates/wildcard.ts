@@ -1,6 +1,6 @@
 import { map, pipe } from 'remeda'
 import type { FqnExpr } from '../../../types'
-import { type Elem, type PredicateExecutor } from '../_types'
+import type { Elem, PredicateExecutor } from '../_types'
 import { findConnectionsWithin } from '../utils'
 import { applyElementPredicate } from './utils'
 

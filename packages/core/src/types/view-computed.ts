@@ -10,8 +10,8 @@ import type { AnyAux } from './_aux'
 import type { _stage, _type } from './const'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
-import {
-  type Icon,
+import type {
+  Icon,
 } from './scalar'
 import type {
   BaseViewProperties,

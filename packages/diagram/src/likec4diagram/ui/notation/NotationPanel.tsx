@@ -1,4 +1,4 @@
-import { type ComputedNode, type NodeNotation as ElementNotationData } from '@likec4/core'
+import type { ComputedNode, NodeNotation as ElementNotationData } from '@likec4/core'
 import { cx, cx as clsx } from '@likec4/styles/css'
 import {
   ActionIcon,

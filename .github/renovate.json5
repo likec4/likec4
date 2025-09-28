@@ -41,8 +41,11 @@
         'wireit',
         'pnpm',
         'semver',
+        'oxlint',
+        'oxlint-tsgolint',
         'terser',
         'caniuse-lite',
+        'zx',
         '@fontsource-variable/**',
         '@fontsource/**',
       ]
@@ -76,6 +79,12 @@
       groupName: 'reactive-vscode',
       matchPackageNames: [
         '/reactive-vscode/',
+      ],
+    },
+    {
+      groupName: 'oxlint',
+      matchPackageNames: [
+        '/oxlint/',
       ],
     },
     {
