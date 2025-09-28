@@ -1,4 +1,4 @@
-import { entries, hasAtLeast, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
+import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
   Any,
@@ -220,11 +220,15 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
           continue
         }
         // Create groups for each segment of the path
-        split(folderPath, VIEW_FOLDERS_SEPARATOR).reduce((parent, segment) => {
-          const path = [...parent, segment]
-          const folder = getOrCreateFolder(path.join(VIEW_FOLDERS_SEPARATOR))
-          this._viewFolderItems.get(parent.join(VIEW_FOLDERS_SEPARATOR)).add(folder)
-          return path
+        split(folderPath, VIEW_FOLDERS_SEPARATOR).reduce((segments, segment) => {
+          const parent = segments.join(VIEW_FOLDERS_SEPARATOR)
+          const path = isEmpty(parent) ? segment : parent + VIEW_FOLDERS_SEPARATOR + segment
+
+          const folder = getOrCreateFolder(path)
+          this._viewFolderItems.get(parent).add(folder)
+
+          segments.push(segment)
+          return segments
         }, [] as string[])
       }
 
