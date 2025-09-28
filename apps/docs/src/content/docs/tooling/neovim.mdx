@@ -1,0 +1,32 @@
+---
+title: Neovim Plugin
+description: LikeC4 Neovim plugin
+sidebar:
+  order: 4
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+LikeC4 has a Neovim plugin for syntax highlighting and LSP integration with code navigation and completion.
+
+The plugin supports:
+- Auto start of the LikeC4 language server for files with .c4 extension
+- Validation and error reporting
+- Semantic syntax highlighting
+- Code completion and navigation 
+- Resolve references (like `find all references`, `go to definition` .. )
+- "Safe" renames (do not to forget to write your buffers)
+- Hover information
+- Live Previews (and editing)
+
+likec4.nvim is available in a separate repository on [GitHub](https://github.com/likec4/likec4.nvim).  
+
+## Installation
+Using lazy.nvim:
+
+```lua
+{
+  'likec4/likec4.nvim',
+  build = 'npm install -g @likec4/language-server'
+}
+```
