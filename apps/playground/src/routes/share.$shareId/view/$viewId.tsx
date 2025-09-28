@@ -90,7 +90,6 @@ function RouteComponent() {
 const ControlsLayout: ControlsCustomLayout = ({
   actionsGroup,
   navigationButtons,
-  burgerMenu,
   search,
 }) => (
   <m.div
@@ -110,7 +109,6 @@ const ControlsLayout: ControlsCustomLayout = ({
   >
     <VStack gap="lg">
       <HStack gap="md">
-        {/* {burgerMenu} */}
         <UnstyledButton
           component="a"
           href="https://likec4.dev/"

@@ -1,3 +1,4 @@
+// oxlint-disable no-floating-promises
 import {
   BBox,
   getParallelStepsPrefix,
@@ -282,7 +283,7 @@ const _diagramMachine = setup({
         lastClickedNode: lastClickedNode({ context, event }),
       }
     }),
-    'assign: focusedNode': assign(({ context, event }) => {
+    'assign: focusedNode': assign(({ event }) => {
       let focusedNode
       switch (event.type) {
         case 'xyflow.nodeClick':
@@ -333,7 +334,7 @@ const _diagramMachine = setup({
       )
       viewport.x = Math.round(viewport.x)
       viewport.y = Math.round(viewport.y)
-      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
+      panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
     },
 
     'xyflow:fitFocusedBounds': ({ context }) => {
@@ -747,7 +748,7 @@ const _diagramMachine = setup({
           target: 'isReady',
         },
         'update.view': {
-          actions: assign(({ context, event, spawn, self }) => ({
+          actions: assign(({ context, event }) => ({
             initialized: {
               ...context.initialized,
               xydata: true,
@@ -1025,7 +1026,7 @@ const _diagramMachine = setup({
             spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
             'xyflow:fitFocusedBounds',
           ],
-          exit: enqueueActions(({ enqueue, context, event }) => {
+          exit: enqueueActions(({ enqueue, context }) => {
             enqueue.stopChild('hotkey')
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
@@ -1110,7 +1111,7 @@ const _diagramMachine = setup({
             'xyflow:fitFocusedBounds',
             'emit: walkthroughStarted',
           ],
-          exit: enqueueActions(({ enqueue, context, event }) => {
+          exit: enqueueActions(({ enqueue, context }) => {
             enqueue.stopChild('hotkey')
             if (context.viewportBeforeFocus) {
               enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })

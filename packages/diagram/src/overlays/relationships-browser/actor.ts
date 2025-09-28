@@ -304,14 +304,14 @@ const _relationshipsBrowserLogic = setup({
       if (bounds) {
         const { width, height } = xystore.getState()
         const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined)
+        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
       } else {
         xyflow.fitView({
           minZoom: MinZoom,
           maxZoom,
           padding: ViewPadding,
           ...(duration > 0 && { duration }),
-        })
+        }).catch(console.error)
       }
     },
     'xyflow.applyNodeChanges': assign(({ context, event }) => {

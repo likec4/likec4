@@ -1,3 +1,4 @@
+// oxlint-disable no-base-to-string
 import {
   type DiagramNode,
   type DiagramView,
@@ -427,7 +428,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     edges: g.edges().map(e => {
       const edge = g.edge(e)
       const ename = e.name
-      invariant(ename, `Edge ${e} has no name`)
+      invariant(ename, `Edge has no name`)
       const { name, source, target, relations } = find(edges, e => e.name === ename)!
       const points = edge.points.map(p => [p.x, p.y] as Point)
       invariant(hasAtLeast(points, 1), `Edge ${name} has less than 2 points`)

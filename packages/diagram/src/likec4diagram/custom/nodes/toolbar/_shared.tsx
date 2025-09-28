@@ -1,7 +1,6 @@
 import {
   type DeploymentFqn,
   type Fqn,
-  type NodeId,
   type ThemeColor,
   type ViewChange,
   invariant,
@@ -11,7 +10,6 @@ import { useCallbackRef } from '@mantine/hooks'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
 import { useState } from 'react'
 import type { MergeExclusive } from 'type-fest'
-import type { BaseNodeProps } from '../../../../base'
 import { useDiagramEventHandlers } from '../../../../context'
 import { useDiagram } from '../../../../hooks/useDiagram'
 import type { Types } from '../../../types'

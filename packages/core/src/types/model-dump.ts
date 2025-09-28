@@ -68,7 +68,7 @@ export type ProjectDump = {
 }
 
 export type AuxFromDump<D> = D extends LikeC4ModelDump ? aux.Aux<
-    D[_stage] extends infer S extends string & 'computed' | 'layouted' ? S : 'computed' | 'layouted' | 'parsed',
+    D[_stage] extends infer S extends 'computed' | 'layouted' ? S : 'computed' | 'layouted' | 'parsed',
     KeysOf<D['elements']>,
     KeysOf<D['deployments']['elements']>,
     KeysOf<D['views']>,

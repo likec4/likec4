@@ -123,7 +123,7 @@ function WorkspaceDiagramPage() {
               playground.openSources({
                 view: nextView as scalar.ViewId,
               })
-              router.navigate({
+              void router.navigate({
                 viewTransition: false,
                 from: '/w/$workspaceId/$viewId',
                 to: './',

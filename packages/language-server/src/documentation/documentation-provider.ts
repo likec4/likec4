@@ -32,7 +32,7 @@ export class LikeC4DocumentationProvider implements DocumentationProvider {
           ? [instance.element.project as ProjectId, instance.element.model as Fqn]
           : [doc.likec4ProjectId, instance.element.model as Fqn]
         const el = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
-        const lines = [instance.id, `_instance of_ ${instance.element}`]
+        const lines = [instance.id, `_instance of_ ${fqn}`]
         if (el) {
           lines.push(' ', `**${el.title}**`)
         }

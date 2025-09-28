@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-base-to-string, typescript/no-misused-spread
 import defu from 'defu'
 import {
   entries,
@@ -341,9 +342,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     },
     __addRelation(relation) {
       const sourceEl = _elements.get(FqnRef.flatten(relation.source))
-      invariant(sourceEl, `Element with id "${relation.source}" not found`)
+      invariant(sourceEl, `Element with id "${relation.source.model}" not found`)
       const targetEl = _elements.get(FqnRef.flatten(relation.target))
-      invariant(targetEl, `Element with id "${relation.target}" not found`)
+      invariant(targetEl, `Element with id "${relation.target.model}" not found`)
       invariant(
         !isSameHierarchy(sourceEl, targetEl),
         'Cannot create relationship between elements in the same hierarchy',

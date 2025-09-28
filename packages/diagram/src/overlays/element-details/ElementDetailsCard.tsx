@@ -1,3 +1,5 @@
+// oxlint-disable no-misused-spread
+// oxlint-disable no-misused-spread
 import type {
   Any,
   ComputedView,

@@ -8,7 +8,7 @@ import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
-import type { BaseEdgeProps, BaseEdgePropsWithData } from '../../base/types'
+import type { BaseEdgePropsWithData } from '../../base/types'
 
 type Data = UndefinedOnPartialDeep<
   Pick<
@@ -38,7 +38,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       selectable = false,
     },
     className,
-    style,
+    style: _style, // omit
     children,
     ...rest
   },

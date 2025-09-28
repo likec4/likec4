@@ -1,3 +1,4 @@
+import { onNextTick } from '@likec4/core/utils'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import {
   type Module,
@@ -251,7 +252,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     // Therefore, initialize the configuration provider instantly
     void shared.workspace.ConfigurationProvider.initialized({})
   } else {
-    likec4.Rpc.init()
+    onNextTick(() => likec4.Rpc.init())
   }
 
   return { shared, likec4 }

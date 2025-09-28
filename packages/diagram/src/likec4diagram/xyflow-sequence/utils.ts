@@ -90,7 +90,7 @@ export function buildCompounds(actors: Array<DiagramNode>, nodes: Array<DiagramN
     }
 
     // Add ancestors to the stack
-    while (parent = ancestors.pop()) {
+    while ((parent = ancestors.pop())) {
       const parentAsCompound = {
         node: parent,
         from: actor,

@@ -49,7 +49,7 @@ const colorValue = z
 
 // const ColorSchema = z.union([ColorValue, LightDarkTuple])
 const colorSchema = colorValue
-type ColorValue = z.infer<typeof colorSchema>
+// type ColorValue = z.infer<typeof colorSchema>
 
 const ElementColorValuesSchema = z
   .object({

@@ -1,5 +1,5 @@
 import type { Disposable } from 'langium'
-import { logError } from '../logger'
+import { logWarnError } from '../logger'
 
 export abstract class ADisposable implements Disposable {
   protected toDispose: Disposable[] = []
@@ -13,11 +13,11 @@ export abstract class ADisposable implements Disposable {
     this.throwIfDisposed()
     this.isDisposed = true
     let item: Disposable | undefined
-    while (item = this.toDispose.pop()) {
+    while ((item = this.toDispose.pop())) {
       try {
         item.dispose()
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }

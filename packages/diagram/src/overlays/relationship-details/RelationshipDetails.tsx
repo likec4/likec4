@@ -162,10 +162,10 @@ const RelationshipDetailsInner = memo(() => {
         e.stopPropagation()
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
-      onPaneClick={useCallbackRef((e) => {
+      onPaneClick={useCallbackRef(() => {
         browser.send({ type: 'xyflow.paneClick' })
       })}
-      onDoubleClick={useCallbackRef(e => {
+      onDoubleClick={useCallbackRef(() => {
         browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {

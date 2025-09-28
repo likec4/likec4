@@ -14,8 +14,6 @@ import type { RelationshipDetailsTypes } from '../_types'
 export const RelationshipEdge = memoEdge<RelationshipDetailsTypes.EdgeProps>((props) => {
   const { enableNavigateTo } = useEnabledFeatures()
   const {
-    sourceX,
-    targetY,
     data: { navigateTo },
   } = props
   const [svgPath, labelX, labelY] = getBezierPath(props)

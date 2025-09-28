@@ -178,7 +178,7 @@ export class SequenceViewLayouter {
   }
 
   getCompoundBoxes(): Array<BBox & { node: DiagramNode; depth: number }> {
-    return this.#compounds.map(({ node, depth, x1, y1, x2, y2, bottom }) => ({
+    return this.#compounds.map(({ node, depth, x1, y1, x2, bottom }) => ({
       node,
       depth,
       x: x1.value(),

@@ -226,7 +226,7 @@ const RelationshipPopoverInternal = ({
     let wasCanceled = false
 
     const update = () => {
-      computePosition(reference, popper, {
+      void computePosition(reference, popper, {
         placement: 'bottom-start',
         middleware: [
           offset(4),
@@ -277,27 +277,27 @@ const RelationshipPopoverInternal = ({
 
   const diagram = useDiagram()
 
-  const navigateTo = enableNavigateTo
-    ? (viewId: ViewId) => {
-      diagram.navigateTo(viewId)
-    }
-    : undefined
-
-  const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
-    <Fragment key={relationship.id}>
-      {index > 0 && <Divider />}
-      <Relationship
-        viewId={viewId}
-        relationship={relationship}
-        sourceNode={sourceNode}
-        targetNode={targetNode}
-        edge={diagramEdge}
-        onNavigateTo={navigateTo}
-        {...(onOpenSource && enableVscode && {
-          onOpenSource: () => onOpenSource({ relation: relationship.id }),
-        })}
-      />
-    </Fragment>
+  const renderRelationship = useCallback(
+    (relationship: LikeC4Model.AnyRelation, index: number) => (
+      <Fragment key={relationship.id}>
+        {index > 0 && <Divider />}
+        <Relationship
+          viewId={viewId}
+          relationship={relationship}
+          sourceNode={sourceNode}
+          targetNode={targetNode}
+          onNavigateTo={enableNavigateTo
+            ? (viewId: ViewId) => {
+              diagram.navigateTo(viewId)
+            }
+            : undefined}
+          {...(onOpenSource && enableVscode && {
+            onOpenSource: () => onOpenSource({ relation: relationship.id }),
+          })}
+        />
+      </Fragment>
+    ),
+    [viewId, sourceNode, targetNode, diagram, enableNavigateTo, onOpenSource, enableVscode],
   )
 
   return (
@@ -382,7 +382,6 @@ const Relationship = forwardRef<
     // current view id
     viewId: ViewId
     relationship: LikeC4Model.AnyRelation
-    edge: DiagramEdge
     sourceNode: DiagramNode
     targetNode: DiagramNode
     onOpenSource?: () => void
@@ -391,7 +390,6 @@ const Relationship = forwardRef<
 >(({
   viewId,
   relationship: r,
-  edge,
   sourceNode,
   targetNode,
   onNavigateTo,

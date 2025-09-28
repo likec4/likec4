@@ -1,6 +1,4 @@
-import { type Config, defineSemanticTokens } from '@pandacss/dev'
-
-type ExtendableTheme = NonNullable<Config['theme']>
+import { defineSemanticTokens } from '@pandacss/dev'
 
 export const semanticTokens = defineSemanticTokens({
   colors: {

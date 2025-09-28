@@ -12,7 +12,6 @@ type FolderXYNodeProps = NodeProps<FolderXYNode>
 export const FolderNode = /* @__PURE__ */ memo(function FolderNode({
   data,
   parentId,
-  id,
 }: FolderXYNodeProps) {
   const isTopLevel = isNullish(parentId)
   return (
@@ -47,7 +46,6 @@ type FileXYNodeProps = NodeProps<FileXYNode>
 export const FileNode = /* @__PURE__ */ memo(function FileNode({
   data,
   parentId,
-  id,
 }: FileXYNodeProps) {
   const isTopLevel = isNullish(parentId)
   return (

@@ -111,7 +111,7 @@ export function useWorkspaces() {
         title,
       },
     ])
-    router.navigate({
+    void router.navigate({
       to: '/w/$workspaceId/$viewId/',
       params: {
         workspaceId: workspace.workspaceId,
@@ -124,7 +124,7 @@ export function useWorkspaces() {
     const workspaceId = workspace.workspaceId ?? nanoid(6)
     if (workspaces.some(w => w.name === workspaceId)) {
       alert(`Workspace ${workspaceId} already exists`)
-      router.navigate({
+      void router.navigate({
         to: '/w/$workspaceId/$viewId/',
         params: {
           workspaceId,
@@ -145,7 +145,7 @@ export function useWorkspaces() {
         title: workspace.title,
       },
     ])
-    router.navigate({
+    void router.navigate({
       to: '/w/$workspaceId/$viewId/',
       params: {
         workspaceId,

@@ -21,7 +21,6 @@ type CompoundNodeContainerProps =
 
 export function CompoundNodeContainer({
   nodeProps: {
-    selected: isSelected = false,
     data: {
       hovered: isHovered = false,
       dimmed: isDimmed = false,

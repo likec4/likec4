@@ -4,7 +4,6 @@ import {
   Button,
   Group,
 } from '@mantine/core'
-import { MatchRoute } from '@tanstack/react-router'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { Logo } from '../Logo'
 import { PlaygroundsMenu } from './PlaygroundsMenu'

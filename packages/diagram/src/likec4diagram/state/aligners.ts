@@ -256,14 +256,12 @@ export class GridAligner extends Aligner {
     let placeNextNodeAt = layoutRect[this.secondaryAxisCoord]
     const result = new Map<string, XYPosition>()
 
-    let i = 0
     for (let node of layer.nodes) {
       result.set(node.id, {
         [this.secondaryAxisCoord]: placeNextNodeAt,
         [this.primaryAxisCoord]: placeNextLayerAt,
       } as XYPosition)
       placeNextNodeAt += node[this.secondaryAxisDimension] + margin
-      i++
     }
 
     return { nodePositions: result, refLayer: null }

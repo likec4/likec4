@@ -55,7 +55,7 @@ export const mkLocate = (
       }
       : null
   } catch (e) {
-    logger.debug(`Failed to locate ${params}`, { error: e })
+    logger.debug(`Failed to locate {params}`, { error: e, params })
     return null
   }
 }

@@ -39,6 +39,8 @@
     "typescript/require-array-sort-compare": "off",
     "typescript/restrict-template-expressions": "off",
     "typescript/no-duplicate-type-constituents": "off",
+    "typescript/no-misused-spread": "off",
+    "typescript/unbound-method": "off",
     "typescript/no-non-null-asserted-optional-chain": "error"
   },
   "overrides": [
@@ -51,7 +53,6 @@
       ],
       "rules": {
         "typescript/no-non-null-asserted-optional-chain": "off",
-        "typescript/unbound-method": "off",
         "no-unused-vars": "off"
       }
     }

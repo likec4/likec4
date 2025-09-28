@@ -159,7 +159,6 @@ export function focusNodesEdges(params: ActionArg): Partial<DiagramContext> {
 export function updateNavigationHistory({ context, event }: ActionArg): Partial<DiagramContext> {
   assertEvent(event, 'update.view')
   let {
-    view,
     navigationHistory: {
       currentIndex,
       history,
@@ -334,6 +333,7 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
 
       currentNode = parent
       position = position.add(parent.position)
+      // oxlint-disable-next-line no-constant-condition
     } while (true)
 
     return position

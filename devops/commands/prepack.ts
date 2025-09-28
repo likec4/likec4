@@ -123,7 +123,7 @@ export default defineCommand({
     //   required: false,
     // },
   },
-  async run({ args }) {
+  async run() {
     process.env.FORCE_COLOR = '1'
     $.preferLocal = true
     $.verbose = true

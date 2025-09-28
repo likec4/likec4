@@ -16,7 +16,7 @@ export default defineBuildConfig({
     inlineDependencies: true,
   },
   hooks: {
-    async 'build:before'(ctx) {
+    async 'build:before'() {
       await spawn('panda', ['codegen'], {
         stdio: 'inherit',
         preferLocal: true,

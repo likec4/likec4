@@ -42,15 +42,6 @@ export function sequenceViewToXY(
   const steps = [] as Array<Step>
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
-  const parentsLookup: DefaultMap<DiagramNode, DiagramNode[]> = new DefaultMap(
-    key => {
-      const parent = key.parent ? getNode(key.parent) : null
-      if (parent) {
-        return [parent, ...parentsLookup.get(parent)]
-      }
-      return []
-    },
-  )
 
   const addActor = (...[source, target]: [DiagramNode, DiagramNode]) => {
     // source actor not yet added
