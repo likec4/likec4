@@ -75,31 +75,38 @@ views {
   dynamic view index {
     title 'Use Cases / Story 1.1 - User dashboard'
 
-    customer -> web '' {
-      notes '
-        Opens application in the browser via secured connection, authenticates and navigates to the dashboard
-      '
-    }
+    customer
+      -> web {
+        notes '''
+          - Opens application in the browser via secured connection
+          - Authenticates and navigates to the dashboard
 
-    web -> auth 'updates token if needed' {
-      navigateTo authTokenUpdateFlow
-      notes '
-        Frontend application checks access token expiration.
-        If expired - requests a new using refresh token
-      '
-    }
+        '''
+      }
+      -> auth 'updates token if needed' {
+        navigateTo authTokenUpdateFlow
+        notes '
+          Frontend application checks access token expiration.
+          If expired - requests a new using refresh token
+        '
+      }
 
-    web -> api 'GET request' {
-      notes 'Requests data from API endpoint with access token'
-    }
+
+    web
+      -> api 'GET request' {
+        notes '''
+          - Requests data from API endpoint with access token
+
+        '''
+      }
     // Validates token
-    api -> auth {
-      notes '
-        API verifies token and receives users identification if token is valid
+      -> auth {
+        notes '''
+          - API verifies token and receives users identification if token is valid
+          - If token is not valid, returns HTTP 403
 
-        If token is not valid, returns HTTP 403
-      '
-    }
+        '''
+      }
 
     parallel {
       api -> db '' {
@@ -117,11 +124,20 @@ views {
       notes 'Returns data to frontend as JSON'
     }
 
-    include cloud, storage
+    include cloud, backend, storage
 
     style cloud._ {
       color secondary
-      opacity 30%
+      opacity 20%
+    }
+    style cloud {
+      color muted
+      opacity 15%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
     }
   }
 
@@ -166,7 +182,11 @@ views {
 
     style customer, cloud._ {
       color secondary
-      opacity 40%
+      opacity 30%
+    }
+    style cloud {
+      color muted
+      opacity 15%
     }
   }
 }
