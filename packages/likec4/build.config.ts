@@ -1,4 +1,4 @@
-import { copyFile } from 'node:fs/promises'
+import { copyFile, mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { isProduction } from 'std-env'
 import { type BuildConfig, defineBuildConfig } from 'unbuild'
@@ -63,8 +63,10 @@ const cli: BuildConfig = {
     },
   },
   hooks: {
-    async 'build:before'() {
+    async 'build:done'() {
       await copyFile('./src/vite-plugin/modules.d.ts', './vite-plugin-modules.d.ts')
+      await mkdir('./config', { recursive: true })
+      await copyFile('../config/schema.json', './config/schema.json')
     },
   },
 }

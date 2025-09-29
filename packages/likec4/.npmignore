@@ -10,6 +10,7 @@
 !__app__/**
 !package.json
 !**/package.json
+!config/schema.json
 !LICENSE
 !README.md
 !vite-plugin-modules.d.ts

@@ -207,7 +207,8 @@ const LikeC4Config_Styles_Defaults = z
   .partial()
   .meta({
     id: 'DefaultStyleValues',
-    description: 'Default values for style properties',
+    description:
+      'Override default values for style properties\nThese values will be used if such property is not defined',
   })
 
 export const LikeC4StylesConfigSchema = z

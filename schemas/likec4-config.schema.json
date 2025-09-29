@@ -408,7 +408,7 @@
     },
     "DefaultStyleValues": {
       "id": "DefaultStyleValues",
-      "description": "Default values for style properties",
+      "description": "Override default values for style properties\nThese values will be used if such property is not defined",
       "type": "object",
       "properties": {
         "color": {

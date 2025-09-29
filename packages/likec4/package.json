@@ -35,6 +35,7 @@
         "default": "./dist/index.mjs"
       }
     },
+    "./config/schema.json": "./config/schema.json",
     "./config": {
       "sources": "./src/config/index.ts",
       "default": {
@@ -150,6 +151,8 @@
     "std-env": "catalog:utils",
     "type-fest": "catalog:utils",
     "vite": "catalog:vite",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
@@ -185,8 +188,6 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.33",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "autoprefixer": "^10.4.21",
     "clsx": "catalog:react",
     "conf": "^13.1.0",

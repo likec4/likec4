@@ -1,8 +1,15 @@
 export {
   defineConfig,
   defineGenerators,
+  defineStyle,
+  defineTheme,
+  defineThemeColor,
   type GeneratorFn,
   type GeneratorFnContext,
   type GeneratorFnParams,
   type LikeC4ProjectConfig,
+  type LikeC4ProjectConfigInput,
+  type LikeC4ProjectJsonConfig,
+  type LikeC4StylesConfig,
+  type LikeC4StylesConfigInput,
 } from '@likec4/config'

@@ -1,6 +1,7 @@
 # Build outputs
 dist/
 react/**
+config/schema.json
 !react/tsconfig.json
 !react/*.ts
 react/*.d.ts

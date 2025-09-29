@@ -7,6 +7,11 @@ export type {
   LikeC4ProjectJsonConfig,
 } from './schema'
 
+export type {
+  LikeC4StylesConfig,
+  LikeC4StylesConfigInput,
+} from './schema.theme'
+
 export { serializableLikeC4ProjectConfig, validateProjectConfig } from './schema'
 
 export {
