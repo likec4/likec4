@@ -48,10 +48,14 @@ export async function loadConfig(filepath: URI): Promise<LikeC4ProjectConfig> {
             build.onLoad({ filter: /.*/, namespace: 'likec4-config' }, (_args) => {
               return {
                 contents: `
-function mockDefineConfig(x) { return x }
+// Mock implementation to allow loading config files without bundling @likec4/config
+function mock(x) { return x }
 export {
-  mockDefineConfig as defineConfig,
-  mockDefineConfig as defineGenerators,
+  mock as defineConfig,
+  mock as defineGenerators,
+  mock as defineStyle,
+  mock as defineTheme,
+  mock as defineThemeColor,
 }`,
                 loader: 'js',
               }
