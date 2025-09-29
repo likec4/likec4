@@ -133,8 +133,15 @@ const defaultConfig = defineConfig({
         }
         for (const file of fs.readdirSync(resolve('dist'))) {
           if (file.endsWith('.css')) {
+            const sourcePath = resolve('dist', file)
+            const content = await fs.readFile(sourcePath, 'utf-8')
+            if (content.includes(':where(:host')) {
+              // validate result of styles build, should be ":where(:root,:host)" as
+              // expected by shadowroot styles
+              throw new Error(`Found ":where(:host" in ${file}, should be ":where(:root,:host)"`)
+            }
             this.info(`move ${file}`)
-            await fs.move(resolve('dist', file), resolve(file), { overwrite: true })
+            await fs.move(sourcePath, resolve(file), { overwrite: true })
           }
         }
       },

@@ -72,8 +72,12 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
       inlinedStyles
         .replaceAll(':where(:root,:host)', `.likec4-shadow-root`)
         .replaceAll(':root', `.likec4-shadow-root`)
-        .replaceAll('body {', `.likec4-shadow-root{`)
-        .replaceAll('body{', `.likec4-shadow-root{`),
+        /**
+         * replace only top-level body selectors, for example
+         * `body { }` should be replaced with `.likec4-shadow-root { }`
+         * but `.likec4-overlay-body { }` - not
+         */
+        .replaceAll(/(?<![-_])\bbody\s*\{/g, `.likec4-shadow-root{`),
     )
     setStyleSheets([css])
     return () => {
