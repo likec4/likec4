@@ -9,6 +9,7 @@ import {
   ElementShapes,
   RelationshipArrowTypes,
   Sizes,
+  ThemeColors,
 } from '@likec4/core/styles'
 import {
   type LikeC4ProjectStyleDefaults,
@@ -16,36 +17,67 @@ import {
   type LikeC4ProjectTheme,
   exact,
 } from '@likec4/core/types'
-import * as z from 'zod/v4'
+import { fromKeys } from 'remeda'
+import z from 'zod/v4'
 
 const opacity = z
   .number()
   .min(0, 'Opacity must be between 0 and 100')
   .max(100, 'Opacity must be between 0 and 100')
-  .meta({ description: 'Opacity 0%-100%' })
+  .meta({
+    id: 'Opacity',
+    description: 'Opacity 0%-100%',
+  })
 
-const shape = z.enum(ElementShapes)
+const shape = z.literal(ElementShapes).meta({
+  id: 'ElementShape',
+  description: 'Element shape',
+})
 
-const border = z.enum(BorderStyles)
+const border = z.literal(BorderStyles).meta({
+  id: 'BorderStyle',
+  description: 'Border style',
+})
 
-const size = z.enum(Sizes)
+const size = z.literal(Sizes).meta({
+  id: 'ElementSize',
+  description: 'Element size',
+})
 
-const arrow = z.enum(RelationshipArrowTypes)
+const arrow = z.literal(RelationshipArrowTypes).meta({
+  id: 'ArrowType',
+  description: 'Relationship arrow type',
+})
 const line = z
-  .enum(['dashed', 'solid', 'dotted'])
-  .meta({ description: 'Default line type for relationships' })
+  .literal(['dashed', 'solid', 'dotted'])
+  .meta({
+    id: 'LineType',
+    description: 'Default line type for relationships',
+  })
 
-const color = z
-  .string()
-  .nonempty('Color name cannot be empty')
+const themeColor = z.literal(ThemeColors).meta({
+  id: 'ThemeColor',
+  description: 'Reserved theme color name',
+})
+
+const color = z.union([
+  themeColor,
+  z.string().nonempty('Color name cannot be empty'),
+])
   .transform(value => value as ThemeColor)
-  .meta({ description: 'Theme color name (must be added to the theme)' })
+  .meta({
+    id: 'ColorName',
+    description: 'Color name (Theme color name or custom color name)',
+  })
 
 const colorValue = z
   .string()
   .nonempty('Color value cannot be empty')
   .transform(value => value as ColorLiteral)
-  .meta({ description: 'Color value: hex, rgb or rgba' })
+  .meta({
+    id: 'ColorLiteral',
+    description: 'Color value in any valid CSS format: hex, rgb, rgba, hsl, hsla ...',
+  })
 
 // const ColorSchema = z.union([ColorValue, LightDarkTuple])
 const colorSchema = colorValue
@@ -58,7 +90,10 @@ const ElementColorValuesSchema = z
     hiContrast: colorSchema.meta({ description: 'High contrast text color (title)' }),
     loContrast: colorSchema.meta({ description: 'Low contrast text color (description)' }),
   })
-  .meta({ description: 'Element colors' })
+  .meta({
+    id: 'ElementColorValues',
+    description: 'Specific element colors',
+  })
   .transform(value => value as ElementColorValues)
 
 const RelationshipColorValuesSchema = z
@@ -70,7 +105,10 @@ const RelationshipColorValuesSchema = z
       .default('rgba(0, 0, 0, 0)')
       .meta({ description: 'Label background color' }),
   })
-  .meta({ description: 'Edge colors' })
+  .meta({
+    id: 'RelationshipColorValues',
+    description: 'Specefic relationship colors',
+  })
   .transform(value => value as RelationshipColorValues)
 
 export const ThemeColorValuesSchema = z
@@ -95,7 +133,10 @@ export const ThemeColorValuesSchema = z
         }),
     }),
   ])
-  .meta({ description: 'Theme color or color values' })
+  .meta({
+    id: 'ThemeColorValues',
+    description: 'Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values',
+  })
   .transform((value): ThemeColorValues => {
     if (typeof value === 'string') {
       return computeColorValues(value)
@@ -104,32 +145,44 @@ export const ThemeColorValuesSchema = z
   })
 export type ThemeColorValuesInput = z.input<typeof ThemeColorValuesSchema>
 
-const ThemeColorsSchema = z
-  .record(
+const ThemeColorsSchema = z.union([
+  z.record(
     color,
     ThemeColorValuesSchema,
-  )
-  .meta({
-    description: 'Map of theme colors.',
-  })
+  ),
+  z.object(
+    fromKeys(ThemeColors, () => ThemeColorValuesSchema.optional()),
+  ),
+]).meta({
+  id: 'ThemeColors',
+  description: 'Override of theme colors',
+})
+
+const DimensionsSchema = z.object({
+  width: z.number(),
+  height: z.number(),
+}).meta({
+  id: 'Dimensions',
+  description: 'Dimensions',
+})
 
 export const LikeC4Config_Styles_Theme = z
   .object({
     colors: ThemeColorsSchema,
     sizes: z
-      .partialRecord(
-        size,
-        z.object({
-          width: z.number().min(100),
-          height: z.number().min(100),
-        }),
-      )
+      .object(fromKeys(Sizes, () => DimensionsSchema.optional()))
       .meta({ description: 'Map of theme sizes.' }),
   })
   .partial()
-  .meta({ description: 'Theme customization' })
-  .transform((value): LikeC4ProjectTheme => {
-    return exact(value)
+  .meta({
+    id: 'ThemeCustomization',
+    description: 'Theme customization',
+  })
+  .transform(({ colors, sizes }): LikeC4ProjectTheme => {
+    return exact({
+      colors: colors ? exact(colors) satisfies LikeC4ProjectTheme['colors'] : undefined,
+      sizes: sizes ? exact(sizes) satisfies LikeC4ProjectTheme['sizes'] : undefined,
+    })
   })
 export type LikeC4ConfigThemeInput = z.input<typeof LikeC4Config_Styles_Theme>
 
@@ -152,7 +205,10 @@ const LikeC4Config_Styles_Defaults = z
     }).partial(),
   })
   .partial()
-  .meta({ description: 'Default style values for elements, groups and relationships' })
+  .meta({
+    id: 'DefaultStyleValues',
+    description: 'Default values for style properties',
+  })
 
 export const LikeC4StylesConfigSchema = z
   .object({
@@ -163,7 +219,10 @@ export const LikeC4StylesConfigSchema = z
     //   .meta({ description: 'List of custom CSS files' }),
   })
   .partial()
-  .meta({ description: 'Project styles configuration' })
+  .meta({
+    id: 'StylesConfiguration',
+    description: 'Project styles customization',
+  })
   .transform(({ theme, defaults }): LikeC4ProjectStylesConfig =>
     exact({
       defaults: normalizeDefaults(defaults),
