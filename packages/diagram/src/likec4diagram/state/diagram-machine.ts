@@ -235,6 +235,7 @@ const _diagramMachine = setup({
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
+    'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is another view': ({ context, event }) => {
@@ -1004,6 +1005,7 @@ const _diagramMachine = setup({
             'xyflow.edgeClick': {
               guard: and([
                 'is dynamic view',
+                'enabled: DynamicViewWalkthrough',
                 'click: selected edge',
               ]) as any,
               actions: [
