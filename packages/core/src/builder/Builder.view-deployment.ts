@@ -1,5 +1,5 @@
 import { isString } from 'remeda'
-import { type DeploymentFqn, type Expression } from '../types'
+import type { DeploymentFqn, Expression } from '../types'
 import type { AnyTypes, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
 import type { ViewsBuilder } from './Builder.views'

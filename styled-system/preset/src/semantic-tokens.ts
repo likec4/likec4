@@ -1,6 +1,4 @@
-import { type Config, defineSemanticTokens } from '@pandacss/dev'
-
-type ExtendableTheme = NonNullable<Config['theme']>
+import { defineSemanticTokens } from '@pandacss/dev'
 
 export const semanticTokens = defineSemanticTokens({
   colors: {
@@ -107,6 +105,27 @@ export const semanticTokens = defineSemanticTokens({
         border: {
           description: 'LikeC4 dropdown border color',
           value: '{colors.likec4.panel.border}',
+        },
+      },
+      overlay: {
+        backdrop: {
+          DEFAULT: {
+            description: 'LikeC4 overlay backdrop color',
+            value: {
+              base: `rgb(34 34 34)`,
+              _light: `rgb(15 15 15)`,
+            },
+          },
+        },
+        body: {
+          DEFAULT: {
+            description: 'LikeC4 overlay body color',
+            value: `{colors.mantine.colors.body}`,
+          },
+        },
+        border: {
+          description: 'LikeC4 overlay border color',
+          value: '{colors.mantine.colors.defaultBorder/50}',
         },
       },
     },

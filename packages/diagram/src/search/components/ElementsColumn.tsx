@@ -26,8 +26,8 @@ import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
 import { first, isEmpty, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useDiagram } from '../../hooks/useDiagram'
-import { sortByLabel } from '../../likec4model/useLikeC4ElementsTree'
-import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import { sortByLabel } from '../../hooks/useLikeC4ElementsTree'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch, useSearchActor } from '../hooks'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
@@ -40,19 +40,6 @@ interface LikeC4ModelTreeNodeData {
   element: LikeC4Model.Element
   searchTerms: string[]
   children: LikeC4ModelTreeNodeData[]
-}
-
-function buildNode(
-  element: LikeC4Model.Element,
-  searchTerms: string[] = [],
-): LikeC4ModelTreeNodeData {
-  return {
-    label: element.title,
-    value: element.id,
-    element,
-    searchTerms,
-    children: [...element.children()].map(e => buildNode(e, searchTerms)).sort(sortByLabel),
-  }
 }
 
 const btn = buttonsva()

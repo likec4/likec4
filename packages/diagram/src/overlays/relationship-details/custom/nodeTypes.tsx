@@ -1,23 +1,23 @@
 import {
   CompoundNodeContainer,
   CompoundTitle,
-  customNode,
+  ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
-  ElementTitle,
-} from '../../../base/primitives'
+  memoNode,
+} from '../../../base-primitives'
 import { ElementActions } from './ElementActions'
 
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
-import type { NodeProps } from '../../../base'
+import type { BaseNodePropsWithData } from '../../../base'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTypes.NodeData>) => {
+const ElementDetailsButtonWithHandler = (props: BaseNodePropsWithData<RelationshipDetailsTypes.NodeData>) => {
   const diagram = useDiagram()
 
   return (
@@ -31,12 +31,12 @@ const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTyp
   )
 }
 
-export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
+export const ElementNode = memoNode<RelationshipDetailsTypes.NodeProps<'element'>>((props) => {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
@@ -45,17 +45,19 @@ export const ElementNode = customNode<RelationshipDetailsTypes.ElementNodeData>(
   )
 })
 
-export const CompoundNode = customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
-  return (
-    <CompoundNodeContainer nodeProps={props}>
-      <ElementDetailsButtonWithHandler {...props} />
-      <CompoundTitle {...props} />
-      <CompoundPorts {...props} />
-    </CompoundNodeContainer>
-  )
-})
+export const CompoundNode = memoNode<RelationshipDetailsTypes.NodeProps<'compound'>>(
+  (props) => {
+    return (
+      <CompoundNodeContainer nodeProps={props}>
+        <ElementDetailsButtonWithHandler {...props} />
+        <CompoundTitle {...props} />
+        <CompoundPorts {...props} />
+      </CompoundNodeContainer>
+    )
+  },
+)
 
-type ElementPortsProps = NodeProps<
+type ElementPortsProps = BaseNodePropsWithData<
   Pick<
     RelationshipDetailsTypes.ElementNodeData,
     | 'ports'
@@ -91,7 +93,7 @@ export const ElementPorts = ({ data: { ports, height: h } }: ElementPortsProps) 
     </>
   )
 }
-type CompoundPortsProps = NodeProps<
+type CompoundPortsProps = BaseNodePropsWithData<
   Pick<
     RelationshipDetailsTypes.CompoundNodeData,
     'ports'

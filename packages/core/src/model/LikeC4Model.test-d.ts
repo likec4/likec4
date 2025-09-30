@@ -146,7 +146,6 @@ test('LikeC4Model.create: should have all types', () => {
       deploymentView,
       views,
       view,
-      viewOf,
       $include,
     },
     builder,

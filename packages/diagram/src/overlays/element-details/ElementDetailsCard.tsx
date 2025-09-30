@@ -1,12 +1,14 @@
-import {
-  type Any,
-  type ComputedView,
-  type DiagramView,
-  type Element,
-  type Fqn,
-  type NodeId,
-  type scalar,
-  type ViewId,
+// oxlint-disable no-misused-spread
+// oxlint-disable no-misused-spread
+import type {
+  Any,
+  ComputedView,
+  DiagramView,
+  Element,
+  Fqn,
+  NodeId,
+  scalar,
+  ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { HStack } from '@likec4/styles/jsx'
@@ -39,14 +41,14 @@ import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
-import { MarkdownBlock } from '../../base/primitives'
-import { ElementTag } from '../../base/primitives/element/ElementTags'
+import { Markdown } from '../../base-primitives'
+import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
+import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
-import { useCurrentViewModel } from '../../likec4model'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
@@ -423,12 +425,12 @@ export function ElementDetailsCard({
                   {elementModel.hasSummary && (
                     <>
                       <PropertyLabel>summary</PropertyLabel>
-                      <MarkdownBlock value={elementModel.summary} />
+                      <Markdown value={elementModel.summary} />
                     </>
                   )}
                   <>
                     <PropertyLabel>description</PropertyLabel>
-                    <MarkdownBlock
+                    <Markdown
                       value={elementModel.description}
                       emptyText="no description"
                     />

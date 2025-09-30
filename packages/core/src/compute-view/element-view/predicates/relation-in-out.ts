@@ -1,5 +1,5 @@
 import { unique } from 'remeda'
-import { type ConnectionModel } from '../../../model'
+import type { ConnectionModel } from '../../../model'
 import type { RelationshipModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, ModelFqnExpr } from '../../../types'
 import { toArray, toSet } from '../../../utils/iterable/to'

@@ -32,6 +32,7 @@ export async function bundleApp() {
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
+        // '@likec4/diagram': 'likec4/react',
       },
     },
     mode: 'production',
@@ -71,6 +72,7 @@ export async function bundleApp() {
           './app/src/fonts.css',
           './app/src/style.css',
         ],
+        treeshake: 'recommended',
         output: {
           chunkFileNames: '[name].js',
           manualChunks: (id) => {

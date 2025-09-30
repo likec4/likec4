@@ -41,11 +41,12 @@
     },
     "build-react": {
       "dependsOn": [
-        "@likec4/diagram#build"
+        "@likec4/core#build",
+        "@likec4/diagram#build-dist"
       ],
       "outputs": [
-        "react/*.d.mts",
-        "react/*.mjs"
+        "react/*.d.ts",
+        "react/*.js"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -57,7 +58,7 @@
     "build-app": {
       "dependsOn": [
         "generate:app",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "__app__/**"
@@ -79,6 +80,7 @@
       ],
       "outputs": [
         "dist/**",
+        "config/schema.json",
         "vite-plugin-modules.d.ts"
       ],
       "inputs": [

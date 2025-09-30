@@ -8,8 +8,9 @@ import {
   RichText,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
-import { type NodeHandle } from '@xyflow/system'
+import type { NodeHandle } from '@xyflow/system'
 import { hasAtLeast } from 'remeda'
+import { roundDpr } from '../../utils/roundDpr'
 import { toXYFlowPosition } from '../../utils/xyflow'
 import type { Types } from '../types'
 import type { Step } from './_types'
@@ -41,15 +42,6 @@ export function sequenceViewToXY(
   const steps = [] as Array<Step>
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
-  const parentsLookup: DefaultMap<DiagramNode, DiagramNode[]> = new DefaultMap(
-    key => {
-      const parent = key.parent ? getNode(key.parent) : null
-      if (parent) {
-        return [parent, ...parentsLookup.get(parent)]
-      }
-      return []
-    },
-  )
 
   const addActor = (...[source, target]: [DiagramNode, DiagramNode]) => {
     // source actor not yet added
@@ -188,8 +180,9 @@ export function sequenceViewToXY(
         color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',
         dir: 'forward',
-        head: 'normal',
-        tail: 'none',
+        head: edge.head ?? 'normal',
+        tail: edge.tail ?? 'none',
+        astPath: edge.astPath,
       },
       selectable: true,
       focusable: false,
@@ -221,7 +214,8 @@ function toCompoundArea(
       shape: node.shape,
       style: node.style,
       tags: node.tags,
-      position: [x, y],
+      x,
+      y,
       viewId: view.id,
       depth,
       isViewGroup: true,
@@ -259,7 +253,8 @@ function toSeqParallelArea(
       shape: 'rectangle',
       style: {},
       tags: [],
-      position: [x, y],
+      x,
+      y,
       level: 0,
       icon: null,
       width,
@@ -287,7 +282,7 @@ function toSeqParallelArea(
   }
 }
 
-function toSeqActorNode({ actor, ports, bounds, layout, view }: {
+function toSeqActorNode({ actor, ports: _ports, bounds, layout, view }: {
   actor: DiagramNode
   ports: Port[]
   bounds: BBox
@@ -296,20 +291,21 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
 }): Types.SequenceActorNode {
   const { x, y, width, height } = layout.getActorBox(actor)
 
-  const { ports: portsData, handles } = ports.reduce((acc, p) => {
+  const { ports, handles } = _ports.reduce((acc, p) => {
     const bbox = layout.getPortCenter(p.step, p.type)
     acc.ports.push({
       id: p.step.id + '_' + p.type,
-      cx: bbox.cx - x,
-      cy: bbox.cy - y,
+      cx: roundDpr(bbox.cx - x),
+      cy: roundDpr(bbox.cy - y),
       height: bbox.height,
       type: p.type,
       position: p.position,
     })
     acc.handles.push({
+      id: p.step.id + '_' + p.type,
       position: toXYFlowPosition(p.position),
-      x: bbox.cx - x - 3,
-      y: bbox.cy - y,
+      x: bbox.cx,
+      y: bbox.cy,
       width: 5,
       height: bbox.height,
       type: p.type,
@@ -325,7 +321,8 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
     type: 'seq-actor',
     data: {
       id: actor.id,
-      position: [x, y],
+      x,
+      y,
       level: 0,
       icon: actor.icon ?? null,
       isMultiple: actor.style.multiple ?? false,
@@ -338,11 +335,22 @@ function toSeqActorNode({ actor, ports, bounds, layout, view }: {
       style: actor.style,
       tags: actor.tags,
       modelFqn: actor.modelRef ?? null,
-      technology: actor.technology,
+      technology: actor.technology ?? null,
       description: RichText.from(actor.description),
       viewHeight: bounds.height,
       viewId: view.id,
-      ports: portsData,
+      ports,
+      // ports: ports.map((p): Types.SequenceActorNodePort => {
+      //   const bbox = layout.getPortCenter(p.step, p.type)
+      //   return ({
+      //     id: p.step.id + '_' + p.type,
+      //     cx: bbox.cx - x,
+      //     cy: bbox.cy - y,
+      //     height: bbox.height,
+      //     type: p.type,
+      //     position: p.position,
+      //   })
+      // }),
     },
     deletable: false,
     selectable: true,

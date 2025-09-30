@@ -40,6 +40,10 @@ type HandlerParams = {
    * Enable/disable chromium sandbox
    */
   chromiumSandbox?: boolean
+  /**
+   * Use sequence layout for dynamic views
+   */
+  sequence?: boolean | undefined
 }
 
 export async function exportViewsToPNG(
@@ -53,6 +57,7 @@ export async function exportViewsToPNG(
     outputType = 'relative',
     maxAttempts = 3,
     chromiumSandbox = false,
+    sequence = false,
   }: {
     logger: ViteLogger
     serverUrl: string
@@ -63,6 +68,7 @@ export async function exportViewsToPNG(
     outputType?: 'relative' | 'flat'
     maxAttempts?: number
     chromiumSandbox?: boolean
+    sequence?: boolean
   },
 ) {
   logger.info(`${k.dim('output')} ${output}`)
@@ -93,6 +99,7 @@ export async function exportViewsToPNG(
       outputType,
       logger,
       maxAttempts,
+      dynamicVariant: sequence ? 'sequence' : 'diagram',
       timeout: timeoutMs,
       theme,
     })
@@ -114,6 +121,7 @@ export async function pngHandler({
   timeoutMs = 10_000,
   maxAttempts = 3,
   filter,
+  sequence = false,
   chromiumSandbox = false,
 }: HandlerParams) {
   const logger = createLikeC4Logger('export')
@@ -184,6 +192,7 @@ export async function pngHandler({
       output: _output,
       outputType,
       maxAttempts,
+      sequence,
       chromiumSandbox,
     })
     const { pretty } = inMillis(startTakeScreenshot)

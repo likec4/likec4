@@ -9,7 +9,7 @@ import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
+import type { RelationshipsBrowserTypes } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
 import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
 import {
@@ -20,20 +20,15 @@ import {
 import { useRelationshipsView } from './layout'
 import { SelectElement } from './SelectElement'
 
-const nodeTypes = {
+const nodeTypes: RelationshipsBrowserTypes.NodeRenderers = {
   element: ElementNode,
   compound: CompoundNode,
   empty: EmptyNode,
-} satisfies {
-  [key in RelationshipsBrowserTypes.Node['type']]: any
 }
 
 export const edgeTypes = {
   relationship: RelationshipEdge,
-} satisfies {
-  [key in RelationshipsBrowserTypes.Edge['type']]: any
 }
-
 export type RelationshipsBrowserProps = {
   actorRef: RelationshipsBrowserActorRef
 }
@@ -44,8 +39,8 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   //   return null
   // }
   const initialRef = useRef<{
-    initialNodes: Types.Node[]
-    initialEdges: Types.Edge[]
+    initialNodes: RelationshipsBrowserTypes.AnyNode[]
+    initialEdges: RelationshipsBrowserTypes.Edge[]
   }>(null)
 
   if (initialRef.current == null) {
@@ -90,7 +85,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
   )
 
   return (
-    <BaseXYFlow<Types.Node, Types.Edge>
+    <BaseXYFlow<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>
       id={browser.rootElementId}
       nodes={nodes}
       edges={edges}
@@ -101,16 +96,19 @@ const RelationshipsBrowserXYFlow = memo(() => {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView={false}
-      onNodeClick={useCallbackRef((e, node) => {
+      onNodeClick={useCallbackRef((_e, node) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.nodeClick', node })
       })}
-      onEdgeClick={useCallbackRef((e, edge) => {
+      onEdgeClick={useCallbackRef((_e, edge) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.edgeClick', edge })
       })}
-      onPaneClick={useCallbackRef((e) => {
+      onPaneClick={useCallbackRef((_e) => {
+        _e.stopPropagation()
         browser.send({ type: 'xyflow.paneClick' })
       })}
-      onDoubleClick={useCallbackRef(e => {
+      onDoubleClick={useCallbackRef((_e) => {
         browser.send({ type: 'xyflow.paneDblClick' })
       })}
       onViewportResize={useCallbackRef(() => {
@@ -160,8 +158,8 @@ const RelationshipsBrowserInner = memo(() => {
     closeable,
   } = useRelationshipsBrowserState(selector2)
 
-  const store = useStoreApi<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>()
-  const instance = useReactFlow<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>()
+  const store = useStoreApi<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>()
+  const instance = useReactFlow<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>()
 
   useEffect(() => {
     if (instance.viewportInitialized) {

@@ -1,12 +1,12 @@
 import type { EdgeId, NonEmptyReadonlyArray } from '@likec4/core'
 import { treeFromElements } from '@likec4/core/compute-view/relationships'
-import {
-  type AnyAux,
-  type ElementModel,
-  type LikeC4ViewModel,
-  type RelationshipModel,
-  modelConnection,
+import type {
+  ElementModel,
+  LikeC4ViewModel,
+  RelationshipModel,
 } from '@likec4/core/model'
+import { modelConnection } from '@likec4/core/model'
+import type { AnyAux } from '@likec4/core/types'
 import { invariant, isAncestor, sortParentsFirst } from '@likec4/core/utils'
 import { hasAtLeast } from 'remeda'
 

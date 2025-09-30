@@ -3,3 +3,5 @@
 /dsl/workspace/ /dsl/extend/
 /dsl/projects/ /dsl/config/multi-projects
 /examples/* /showcases/:splat
+
+/tooling/vscode/ /tooling/editors/

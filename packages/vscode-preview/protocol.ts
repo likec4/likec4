@@ -2,6 +2,7 @@ import type {
   ComputedLikeC4ModelData,
   DeploymentFqn,
   DiagramView,
+  ExclusiveUnion,
   Fqn,
   ProjectId,
   RelationId,
@@ -49,28 +50,21 @@ export const WebviewMsgs = {
   OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>,
 }
 
-export type LocateParams =
-  | {
+export type LocateParams = ExclusiveUnion<{
+  Element: {
     element: Fqn
-    deployment?: never
-    relation?: never
-    view?: never
   }
-  | {
+  Relation: {
     relation: RelationId
-    deployment?: never
-    element?: never
-    view?: never
   }
-  | {
+  DynamicViewStep: {
     view: ViewId
-    deployment?: never
-    relation?: never
-    element?: never
+    astPath: string
   }
-  | {
+  View: {
+    view: ViewId
+  }
+  Deployment: {
     deployment: DeploymentFqn
-    view?: never
-    relation?: never
-    element?: never
   }
+}>

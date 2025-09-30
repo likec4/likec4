@@ -1,5 +1,6 @@
 import { useCallbackRef } from '@mantine/hooks'
 import {
+  type InternalNode,
   type ReactFlowInstance,
   type ReactFlowState,
   useInternalNode,
@@ -10,10 +11,12 @@ import {
 import { shallowEqual } from 'fast-equals'
 import type { Types } from '../likec4diagram/types'
 
-export const useXYFlow = useReactFlow<Types.Node, Types.Edge>
-export type XYFlowInstance = ReactFlowInstance<Types.Node, Types.Edge>
+export type XYFlowInstance = ReactFlowInstance<Types.AnyNode, Types.AnyEdge>
+export function useXYFlow(): XYFlowInstance {
+  return useReactFlow<Types.AnyNode, Types.AnyEdge>()
+}
 
-export type XYStoreState = ReactFlowState<Types.Node, Types.Edge>
+export type XYStoreState = ReactFlowState<Types.AnyNode, Types.AnyEdge>
 
 export function useXYStore<StateSlice = unknown>(
   selector: (state: XYStoreState) => StateSlice,
@@ -25,10 +28,18 @@ export function useXYStore<StateSlice = unknown>(
   )
 }
 
-export const useXYStoreApi = useStoreApi<Types.Node, Types.Edge>
-export type XYStoreApi = ReturnType<typeof useXYStoreApi>
+export function useXYStoreApi(): XYStoreApi {
+  return useStoreApi<Types.AnyNode, Types.AnyEdge>()
+}
+export type XYStoreApi = {
+  getState: () => XYStoreState
+  setState: (state: Partial<XYStoreState> | ((state: XYStoreState) => Partial<XYStoreState>)) => void
+}
 
-export const useXYInternalNode = useInternalNode<Types.Node>
+export type XYInternalNode = InternalNode<Types.AnyNode>
+export function useXYInternalNode(id: string): XYInternalNode | undefined {
+  return useInternalNode<Types.AnyNode>(id)
+}
 
 const selectCurrentZoom = (state: ReactFlowState) => Math.round(state.transform[2] * 100) / 100
 export function useCurrentZoom(): number {

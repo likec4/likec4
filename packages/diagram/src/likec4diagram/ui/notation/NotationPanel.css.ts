@@ -1,10 +1,13 @@
 import { css } from '@likec4/styles/css'
 
 export const container = css({
+  position: 'absolute',
   bottom: '0',
   right: '0',
   padding: '2',
   margin: '0',
+  width: 'min-content',
+  height: 'min-content',
 })
 
 export const icon = css({

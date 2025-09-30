@@ -4,31 +4,32 @@
     "//"
   ],
   "tasks": {
-    "build:dist": {
+    "build-bundle": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/styles#build"
-      ],
-      "outputs": [
-        "dist/**",
-        "panda.buildinfo.json"
-      ],
-      "outputLogs": "new-only"
-    },
-    "build:bundle": {
-      "dependsOn": [
-        "@likec4/core#build",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "bundle/**"
       ],
       "outputLogs": "new-only"
     },
+    "build-dist": {
+      "dependsOn": [
+        "@likec4/core#build",
+        "@likec4/styles#generate"
+      ],
+      "outputs": [
+        "dist/**",
+        "*.css",
+        "panda.buildinfo.json"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
-        "build:dist",
-        "build:bundle"
+        "build-dist",
+        "build-bundle"
       ],
       "outputs": [],
       "outputLogs": "new-only"

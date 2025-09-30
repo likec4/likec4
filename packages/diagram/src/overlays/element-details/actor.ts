@@ -34,7 +34,7 @@ export type Events =
   | { type: 'change.subject'; subject: Fqn }
   | { type: 'close' }
 
-export const elementDetailsLogic = setup({
+const _elementDetailsLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -97,8 +97,9 @@ export const elementDetailsLogic = setup({
   // }),
 })
 
-export interface ElementDetailsLogic extends ActorLogicFrom<typeof elementDetailsLogic> {
+export interface ElementDetailsLogic extends ActorLogicFrom<typeof _elementDetailsLogic> {
 }
+export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic
 export interface ElementDetailsActorRef extends ActorRefFromLogic<ElementDetailsLogic> {
 }
 export type ElementDetailsSnapshot = SnapshotFrom<ElementDetailsLogic>

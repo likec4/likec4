@@ -1,6 +1,6 @@
 import type { aux, LayoutedLikeC4ModelData } from '@likec4/core/types'
 import { formatISO } from 'date-fns'
-import { type Context } from 'hono'
+import type { Context } from 'hono'
 import type { Session } from 'hono-sessions'
 import { createFactory } from 'hono/factory'
 import type { Tagged } from 'type-fest'

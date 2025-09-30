@@ -1,5 +1,5 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
-import { type LikeC4LanguageServices, type LikeC4Views, type ProjectsManager } from '@likec4/language-server'
+import type { LikeC4LanguageServices, LikeC4Views, ProjectsManager } from '@likec4/language-server'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -89,11 +89,15 @@ export class LikeC4 {
       validation: true,
     })
 
-    const likec4 = new LikeC4(workspaceUri.path, langium, opts?.printErrors ?? true)
+    const likec4 = new LikeC4(workspaceUri.path, langium)
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      likec4.dispose()
+      await likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
+    }
+
+    if (opts?.printErrors !== false && likec4.hasErrors()) {
+      likec4.printErrors()
     }
 
     return likec4
@@ -125,17 +129,21 @@ export class LikeC4 {
         }),
       )
 
+      likec4 = new LikeC4(workspace, langium)
+      LikeC4.likec4Instances.set(workspace, likec4)
+
       await langium.cli.Workspace.initWorkspace({
         uri: pathToFileURL(workspace).toString(),
         name: basename(workspace),
       })
 
-      likec4 = new LikeC4(workspace, langium, opts?.printErrors ?? true)
-      LikeC4.likec4Instances.set(workspace, likec4)
+      if (opts?.printErrors !== false && likec4.hasErrors()) {
+        likec4.printErrors()
+      }
     }
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      likec4.dispose()
+      await likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
     }
 
@@ -147,12 +155,8 @@ export class LikeC4 {
   private constructor(
     public readonly workspace: string,
     public readonly langium: LikeC4Langium,
-    private isPrintErrorEnabled: boolean,
   ) {
     this.logger = langium.logger
-    if (this.isPrintErrorEnabled) {
-      this.printErrors()
-    }
   }
 
   get languageServices(): LikeC4LanguageServices {

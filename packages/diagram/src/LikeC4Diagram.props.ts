@@ -7,22 +7,27 @@ import type {
   ViewChange,
   WhereOperator,
 } from '@likec4/core/types'
-import type { ReactFlowProps as XYFlowProps } from '@xyflow/react'
+import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { SetRequired } from 'type-fest'
+import type { CamelCasedProperties, SetRequired } from 'type-fest'
 import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
-import type { CustomNodes } from './custom/customNodes'
+import type { DiagramApi } from './hooks/useDiagram'
+import type { XYFlowInstance } from './hooks/useXYFlow'
+import type { Types } from './likec4diagram/types'
 
 type Any = t.aux.Any
+type Unknown = t.aux.UnknownLayouted
 type ViewId<A> = t.aux.ViewId<A>
 type Fqn<A> = t.aux.Fqn<A>
 type RelationId = t.aux.RelationId
 type DeploymentFqn<A> = t.aux.DeploymentFqn<A>
 type StrictViewId<A> = t.aux.StrictViewId<A>
 
-export type { CustomNodes, WhereOperator }
+export type NodeRenderers = Partial<CamelCasedProperties<Types.NodeRenderers>>
 
-export type DiagramNodeWithNavigate<A extends Any> = SetRequired<DiagramNode<A>, 'navigateTo'>
+export type { WhereOperator }
+
+export type DiagramNodeWithNavigate<A extends Any = Unknown> = SetRequired<DiagramNode<A>, 'navigateTo'>
 
 export type ElementIconRendererProps = {
   node: {
@@ -35,37 +40,10 @@ export type ElementIconRendererProps = {
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
-export type OnNavigateTo<A extends Any = Any> = (
-  to: ViewId<A>,
-  // These fields present if navigateTo triggered by a node click
-  event?: ReactMouseEvent,
-  element?: DiagramNodeWithNavigate<A>,
-) => void
-
-export type OnNodeClick<A extends Any = Any> = (
-  node: DiagramNode<A>,
-  event: ReactMouseEvent,
-) => void
-
-export type OnEdgeClick<A extends Any = Any> = (
-  edge: DiagramEdge<A>,
-  event: ReactMouseEvent,
-) => void
-
-/**
- * On pane/canvas click (not on any node or edge)
- */
-export type OnCanvasClick = (event: ReactMouseEvent) => void
-
-export type ChangeEvent = {
-  change: ViewChange
-}
-export type OnChange = (event: ChangeEvent) => void
-
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export type OverrideReactFlowProps = Pick<
-  XYFlowProps,
+  ReactFlowProps<Types.AnyNode, Types.AnyEdge>,
   | 'paneClickDistance'
   | 'nodeClickDistance'
   | 'selectionKeyCode'
@@ -113,7 +91,7 @@ export type ViewPadding = PaddingWithUnit | {
   y?: PaddingWithUnit
 }
 
-export interface LikeC4DiagramProperties<A extends Any = Any> {
+export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   view: LayoutedView<A>
 
   className?: string | undefined
@@ -134,12 +112,11 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
    */
   readonly?: boolean | undefined
   /**
-   * Show/hide panel with top left controls,
-   * - `next` - Experimental navigation panel
+   * Show/hide panel with top left controls
    *
    * @default true if not readonly
    */
-  controls?: boolean | 'next' | undefined
+  controls?: boolean | undefined
   /**
    * If set, initial viewport will show all nodes & edges
    * @default true
@@ -199,12 +176,6 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
    * @default 'dots'
    */
   background?: 'transparent' | 'solid' | 'dots' | 'lines' | 'cross' | undefined
-
-  /**
-   * Display webview with diagram title / description
-   * @default true
-   */
-  showDiagramTitle?: boolean | undefined
 
   /**
    * Show back/forward history navigation buttons
@@ -303,7 +274,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   /**
    * Override node renderers
    */
-  renderNodes?: CustomNodes | undefined
+  renderNodes?: NodeRenderers | undefined
 
   /**
    * Dynamic filter, applies both to nodes and edges
@@ -316,7 +287,7 @@ export interface LikeC4DiagramProperties<A extends Any = Any> {
   reactFlowProps?: OverrideReactFlowProps | undefined
 }
 
-export type OpenSourceParams<A extends Any = Any> =
+export type OpenSourceParams<A extends Any = Unknown> =
   | {
     element: Fqn<A>
     property?: string
@@ -331,8 +302,46 @@ export type OpenSourceParams<A extends Any = Any> =
   | {
     view: StrictViewId<A>
   }
+  | { // Dynamic view step
+    view: StrictViewId<A>
+    astPath: string
+  }
 
-export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
+/**
+ * "Go to source" action
+ */
+export type OnOpenSource<A extends Any = Unknown> = (params: OpenSourceParams<A>) => void
+
+export type OnNavigateTo<A extends Any = Unknown> = (
+  to: ViewId<A>,
+  // These fields present if navigateTo triggered by a node click
+  event?: ReactMouseEvent,
+  element?: DiagramNodeWithNavigate<A>,
+) => void
+
+export type OnNodeClick<A extends Any = Unknown> = (
+  node: DiagramNode<A>,
+  event: ReactMouseEvent,
+) => void
+
+export type OnEdgeClick<A extends Any = Unknown> = (
+  edge: DiagramEdge<A>,
+  event: ReactMouseEvent,
+) => void
+
+/**
+ * On pane/canvas click (not on any node or edge)
+ */
+export type OnCanvasClick = (event: ReactMouseEvent) => void
+
+export type ChangeEvent = {
+  change: ViewChange
+}
+export type OnChange = (event: ChangeEvent) => void
+
+export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
+
+export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined
@@ -346,5 +355,7 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Any> {
   // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
 
-  onOpenSource?: null | undefined | ((params: OpenSourceParams<A>) => void)
+  onOpenSource?: OnOpenSource<A> | null | undefined
+
+  onInitialized?: OnInitialized | null | undefined
 }

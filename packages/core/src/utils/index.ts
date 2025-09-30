@@ -32,9 +32,11 @@ export {
 export { getOrCreate } from './getOrCreate'
 
 export {
+  hasProp,
   isNonEmptyArray,
   isString,
 } from './guards'
+
 export {
   ifilter,
   ifind,
@@ -50,7 +52,7 @@ export {
   toSet,
 } from './iterable'
 export { memoizeProp } from './memoize-prop'
-export { delay, promiseNextTick } from './promises'
+export { delay, onNextTick, promiseNextTick } from './promises'
 
 export { compareRelations } from './relations'
 

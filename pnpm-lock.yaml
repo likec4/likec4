@@ -42,20 +42,45 @@ catalogs:
     starlight-package-managers:
       specifier: ^0.11.0
       version: 0.11.0
+  cloudflare:
+    '@cloudflare/vite-plugin':
+      specifier: 1.11.7
+      version: 1.11.7
+    wrangler:
+      specifier: ~4.35.0
+      version: 4.35.0
   css:
     '@pandacss/dev':
-      specifier: ^1.3.0
-      version: 1.3.0
+      specifier: ^1.3.1
+      version: 1.3.1
     '@pandacss/types':
-      specifier: ^1.3.0
-      version: 1.3.0
+      specifier: ^1.3.1
+      version: 1.3.1
     postcss:
       specifier: 8.5.6
       version: 8.5.6
   default:
+    '@dagrejs/dagre':
+      specifier: 1.1.5
+      version: 1.1.5
     '@types/node':
       specifier: ~20.19.11
       version: 20.19.11
+    graphology:
+      specifier: ^0.25.4
+      version: 0.25.4
+    graphology-dag:
+      specifier: ^0.4.1
+      version: 0.4.1
+    graphology-types:
+      specifier: ^0.24.8
+      version: 0.24.8
+    oxlint:
+      specifier: 1.18.0
+      version: 1.18.0
+    oxlint-tsgolint:
+      specifier: ^0.2.0
+      version: 0.2.0
     playwright:
       specifier: 1.54.2
       version: 1.54.2
@@ -71,9 +96,9 @@ catalogs:
     wireit:
       specifier: 0.14.12
       version: 0.14.12
-    wrangler:
-      specifier: 4.33.2
-      version: 4.33.2
+    zx:
+      specifier: 8.8.1
+      version: 8.8.1
   esbuild:
     esbuild-node-externals:
       specifier: 1.18.0
@@ -85,6 +110,12 @@ catalogs:
     '@hono/node-server':
       specifier: ^1.19.3
       version: 1.19.4
+    '@hono/oauth-providers':
+      specifier: ^0.8.5
+      version: 0.8.5
+    '@hono/valibot-validator':
+      specifier: ^0.5.3
+      version: 0.5.3
     hono:
       specifier: ^4.9.8
       version: 4.9.8
@@ -100,23 +131,23 @@ catalogs:
       version: 3.5.2
   mantine:
     '@mantine/colors-generator':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
     '@mantine/core':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
     '@mantine/hooks':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
     '@mantine/modals':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
     '@mantine/notifications':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
     '@mantine/vanilla-extract':
-      specifier: 8.2.8
-      version: 8.2.8
+      specifier: 8.3.1
+      version: 8.3.1
   mcp:
     '@modelcontextprotocol/sdk':
       specifier: ^1.17.5
@@ -132,8 +163,8 @@ catalogs:
       specifier: ^25.1.1
       version: 25.1.1
     '@tabler/icons-react':
-      specifier: 3.34.1
-      version: 3.34.1
+      specifier: 3.35.0
+      version: 3.35.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -146,6 +177,9 @@ catalogs:
     react-error-boundary:
       specifier: ^6.0.0
       version: 6.0.0
+    react-shadow:
+      specifier: ^20.6.0
+      version: 20.6.0
   tanstack:
     '@tanstack/react-query':
       specifier: ^5.85.0
@@ -205,6 +239,9 @@ catalogs:
     fdir:
       specifier: 6.4.0
       version: 6.4.0
+    indent-string:
+      specifier: ^5.0.0
+      version: 5.0.0
     json5:
       specifier: ^2.2.3
       version: 2.2.3
@@ -317,7 +354,7 @@ overrides:
   esbuild: 0.25.9
   react: 19.1.1
   react-dom: 19.1.1
-  '@types/react': 19.1.12
+  '@types/react': 19.1.13
   '@types/react-dom': 19.1.9
   vscode-jsonrpc: 8.2.1
   vscode-languageclient: 9.0.1
@@ -341,6 +378,9 @@ importers:
 
   .:
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:devops
       '@vitest/ui':
         specifier: catalog:vitest
         version: 3.2.4(vitest@3.2.4)
@@ -362,6 +402,12 @@ importers:
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.18.0(oxlint-tsgolint@0.2.0)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 0.2.0
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -388,7 +434,7 @@ importers:
         version: 0.9.4(prettier@3.5.2)(typescript@5.9.2)
       '@astrojs/react':
         specifier: catalog:astro
-        version: 4.4.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
+        version: 4.4.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
       '@astrojs/starlight':
         specifier: catalog:astro
         version: 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.7.0))
@@ -405,11 +451,11 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       astro:
         specifier: catalog:astro
         version: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.44.0)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.7.0)
@@ -456,14 +502,14 @@ importers:
         specifier: catalog:vite
         version: 6.3.6(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
       wrangler:
-        specifier: 'catalog:'
-        version: 4.33.2
+        specifier: catalog:cloudflare
+        version: 4.35.0
 
   apps/playground:
     dependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.11.6
-        version: 1.11.6(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250829.0)(wrangler@4.33.2)
+        specifier: catalog:cloudflare
+        version: 1.11.7(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250906.0)(wrangler@4.35.0)
       '@codingame/monaco-vscode-editor-api':
         specifier: 16.1.1
         version: 16.1.1
@@ -492,10 +538,10 @@ importers:
         specifier: 16.1.1
         version: 16.1.1
       '@hono/oauth-providers':
-        specifier: ^0.8.5
+        specifier: catalog:hono
         version: 0.8.5(hono@4.9.8)
       '@hono/valibot-validator':
-        specifier: ^0.5.3
+        specifier: catalog:hono
         version: 0.5.3(hono@4.9.8)(valibot@1.1.0(typescript@5.9.2))
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
@@ -523,22 +569,22 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.2.8(react@19.1.1)
+        version: 8.3.1(react@19.1.1)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.8(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.3.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.8(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.3.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -547,7 +593,7 @@ importers:
         version: 0.4.0(ws@8.18.1)(xstate@5.20.2)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.34.1(react@19.1.1)
+        version: 3.35.0(react@19.1.1)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -564,26 +610,23 @@ importers:
         specifier: 'catalog:'
         version: 20.19.11
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.7.0(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)
+        version: 5.0.5(@types/react@19.1.13)(react@19.1.1)(xstate@5.20.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.4(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.68
-      clsx:
-        specifier: catalog:react
-        version: 2.1.1
       date-fns:
         specifier: catalog:utils
         version: 4.1.0
@@ -702,11 +745,54 @@ importers:
         specifier: 'catalog:'
         version: 0.14.12
       wrangler:
-        specifier: 'catalog:'
-        version: 4.33.2
+        specifier: catalog:cloudflare
+        version: 4.35.0
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
+
+  devops:
+    dependencies:
+      citty:
+        specifier: catalog:utils
+        version: 0.1.6
+      indent-string:
+        specifier: catalog:utils
+        version: 5.0.0
+      parse-gitignore:
+        specifier: ^2.0.0
+        version: 2.0.0
+      remeda:
+        specifier: catalog:utils
+        version: 2.31.1
+      std-env:
+        specifier: catalog:utils
+        version: 3.9.0
+      tsx:
+        specifier: 'catalog:'
+        version: 4.20.5
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
+    devDependencies:
+      '@likec4/tsconfig':
+        specifier: workspace:*
+        version: link:../packages/tsconfig
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.11
+      '@types/parse-gitignore':
+        specifier: ^1.0.2
+        version: 1.0.2
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.2
 
   packages/config:
     dependencies:
@@ -722,6 +808,9 @@ importers:
       json5:
         specifier: catalog:utils
         version: 2.2.3
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
@@ -732,6 +821,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
@@ -744,6 +836,9 @@ importers:
       nano-spawn:
         specifier: catalog:utils
         version: 1.0.3
+      remeda:
+        specifier: catalog:utils
+        version: 2.31.1
       tsx:
         specifier: 'catalog:'
         version: 4.20.5
@@ -762,9 +857,6 @@ importers:
 
   packages/core:
     dependencies:
-      defu:
-        specifier: catalog:utils
-        version: 6.1.4
       mdast-util-from-markdown:
         specifier: ^2.0.2
         version: 2.0.2
@@ -792,9 +884,6 @@ importers:
       remark-rehype:
         specifier: 11.1.2
         version: 11.1.2
-      remeda:
-        specifier: catalog:utils
-        version: 2.31.1
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -803,14 +892,17 @@ importers:
         version: 11.0.5
     devDependencies:
       '@dagrejs/dagre':
-        specifier: 1.1.5
+        specifier: 'catalog:'
         version: 1.1.5
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@mantine/colors-generator':
         specifier: catalog:mantine
-        version: 8.2.8(chroma-js@3.1.2)
+        version: 8.3.1(chroma-js@3.1.2)
       '@types/chroma-js':
         specifier: catalog:utils
         version: 3.1.1
@@ -838,17 +930,20 @@ importers:
       chroma-js:
         specifier: catalog:utils
         version: 3.1.2
+      defu:
+        specifier: catalog:utils
+        version: 6.1.4
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
       graphology:
-        specifier: ^0.25.4
+        specifier: 'catalog:'
         version: 0.25.4(graphology-types@0.24.8)
       graphology-dag:
-        specifier: ^0.4.1
+        specifier: 'catalog:'
         version: 0.4.1(graphology-types@0.24.8)
       graphology-types:
-        specifier: ^0.24.8
+        specifier: 'catalog:'
         version: 0.24.8
       mnemonist:
         specifier: 0.40.3
@@ -862,6 +957,12 @@ importers:
       obliterator:
         specifier: ^2.0.5
         version: 2.0.5
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.18.0(oxlint-tsgolint@0.2.0)
+      remeda:
+        specifier: catalog:utils
+        version: 2.31.1
       turbo:
         specifier: 2.5.8
         version: 2.5.8
@@ -878,7 +979,7 @@ importers:
   packages/diagram:
     dependencies:
       '@dagrejs/dagre':
-        specifier: 1.1.5
+        specifier: 'catalog:'
         version: 1.1.5
       '@floating-ui/dom':
         specifier: catalog:react
@@ -894,10 +995,10 @@ importers:
         version: 0.4.4
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.2.8(react@19.1.1)
+        version: 8.3.1(react@19.1.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
@@ -906,10 +1007,10 @@ importers:
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)
+        version: 5.0.5(@types/react@19.1.13)(react@19.1.1)(xstate@5.20.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.4(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.68
@@ -919,9 +1020,6 @@ importers:
       d3-shape:
         specifier: ^3.2.0
         version: 3.2.0
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
@@ -938,7 +1036,7 @@ importers:
         specifier: catalog:react
         version: 6.0.0(react@19.1.1)
       react-shadow:
-        specifier: ^20.6.0
+        specifier: catalog:react
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remeda:
         specifier: catalog:utils
@@ -950,18 +1048,21 @@ importers:
         specifier: catalog:xstate
         version: 5.20.2
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.18.1)(xstate@5.20.2)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.34.1(react@19.1.1)
+        version: 3.35.0(react@19.1.1)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -972,14 +1073,17 @@ importers:
         specifier: 'catalog:'
         version: 20.19.11
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.7.0(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.18.0(oxlint-tsgolint@0.2.0)
       postcss:
         specifier: catalog:css
         version: 8.5.6
@@ -1004,6 +1108,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
 
   packages/generators:
     dependencies:
@@ -1020,6 +1127,9 @@ importers:
         specifier: catalog:utils
         version: 2.31.1
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1038,18 +1148,18 @@ importers:
 
   packages/icons:
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
-      execa:
-        specifier: ^9.5.3
-        version: 9.6.0
       fdir:
         specifier: catalog:utils
         version: 6.4.0(picomatch@4.0.3)
@@ -1068,6 +1178,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zx:
+        specifier: 'catalog:'
+        version: 8.8.1
 
   packages/language-server:
     dependencies:
@@ -1090,6 +1203,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
@@ -1111,9 +1227,6 @@ importers:
       '@smithy/util-base64':
         specifier: ^4.0.0
         version: 4.0.0
-      '@types/chroma-js':
-        specifier: catalog:utils
-        version: 3.1.1
       '@types/natural-compare-lite':
         specifier: catalog:utils
         version: 1.4.2
@@ -1132,9 +1245,6 @@ importers:
       chokidar:
         specifier: catalog:utils
         version: 4.0.3
-      chroma-js:
-        specifier: catalog:utils
-        version: 3.1.2
       defu:
         specifier: catalog:utils
         version: 6.1.4
@@ -1168,6 +1278,9 @@ importers:
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.0
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.18.0(oxlint-tsgolint@0.2.0)
       p-debounce:
         specifier: catalog:utils
         version: 4.0.0
@@ -1243,17 +1356,14 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      '@lume/kiwi':
+        specifier: catalog:utils
+        version: 0.4.4
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
-      graphology:
-        specifier: ^0.25.4
-        version: 0.25.4(graphology-types@0.24.8)
-      graphology-types:
-        specifier: ^0.24.8
-        version: 0.24.8
       indent-string:
-        specifier: ^5.0.0
+        specifier: catalog:utils
         version: 5.0.0
       khroma:
         specifier: catalog:utils
@@ -1289,6 +1399,9 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1322,6 +1435,12 @@ importers:
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 4.7.0(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
+      '@xyflow/react':
+        specifier: catalog:xyflow
+        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@xyflow/system':
+        specifier: catalog:xyflow
+        version: 0.0.68
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1331,6 +1450,9 @@ importers:
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
+      fdir:
+        specifier: catalog:utils
+        version: 6.4.0(picomatch@4.0.3)
       playwright:
         specifier: 'catalog:'
         version: 1.54.2
@@ -1351,7 +1473,7 @@ importers:
         version: 17.7.2
     devDependencies:
       '@dagrejs/dagre':
-        specifier: 1.1.5
+        specifier: 'catalog:'
         version: 1.1.5
       '@fontsource/ibm-plex-sans':
         specifier: ^5.2.7
@@ -1359,6 +1481,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
@@ -1388,22 +1513,22 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.2.8(react@19.1.1)
+        version: 8.3.1(react@19.1.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.34.1(react@19.1.1)
+        version: 3.35.0(react@19.1.1)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1420,29 +1545,20 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
-      '@xyflow/react':
-        specifier: catalog:xyflow
-        version: 12.8.4(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@xyflow/system':
-        specifier: catalog:xyflow
-        version: 0.0.68
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
-      classnames:
-        specifier: ^2.5.1
-        version: 2.5.1
       clsx:
         specifier: catalog:react
         version: 2.1.1
@@ -1464,9 +1580,6 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 5.2.2
-      fdir:
-        specifier: catalog:utils
-        version: 6.4.0(picomatch@4.0.3)
       get-port:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1600,6 +1713,9 @@ importers:
         specifier: catalog:utils
         version: 0.12.3
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1643,6 +1759,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
@@ -1790,9 +1909,6 @@ importers:
       ufo:
         specifier: catalog:utils
         version: 1.6.1
-      valibot:
-        specifier: catalog:utils
-        version: 1.1.0(typescript@5.9.2)
       vscode-ext-gen:
         specifier: ^1.0.2
         version: 1.0.2
@@ -1817,6 +1933,9 @@ importers:
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
+      zod:
+        specifier: catalog:utils
+        version: 3.25.76
       zx:
         specifier: lite
         version: 8.8.4-lite
@@ -1829,6 +1948,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
@@ -1843,22 +1965,22 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 8.2.8(react@19.1.1)
+        version: 8.3.1(react@19.1.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.34.1(react@19.1.1)
+        version: 3.35.0(react@19.1.1)
       '@tanstack/react-query':
         specifier: catalog:tanstack
         version: 5.85.0(react@19.1.1)
@@ -1869,11 +1991,11 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       '@types/vscode':
         specifier: catalog:vscode
         version: 1.100.0
@@ -1885,7 +2007,7 @@ importers:
         version: 4.7.0(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.8.4(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.68
@@ -1936,32 +2058,35 @@ importers:
     dependencies:
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.3.0
+        version: 1.3.1
     devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        version: 8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1970,7 +2095,7 @@ importers:
         version: 2.1.0
       pandacss-preset-radix-colors:
         specifier: ^0.2.0
-        version: 0.2.0(@pandacss/dev@1.3.0(typescript@5.9.2))(@radix-ui/colors@3.0.0)
+        version: 0.2.0(@pandacss/dev@1.3.1(typescript@5.9.2))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
         version: 2.31.1
@@ -1982,7 +2107,14 @@ importers:
         version: 3.5.0(typescript@5.9.2)
 
   styled-system/styles:
+    dependencies:
+      react:
+        specifier: 19.1.1
+        version: 19.1.1
     devDependencies:
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../preset
@@ -1994,16 +2126,16 @@ importers:
         version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.2
-        version: 0.2.2(@pandacss/config@1.3.0)(@pandacss/core@1.3.0)(@pandacss/node@1.3.0(typescript@5.9.2))(esbuild@0.25.9)(typescript@5.9.2)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
+        version: 0.2.2(@pandacss/config@1.3.1)(@pandacss/core@1.3.1)(@pandacss/node@1.3.1(typescript@5.9.2))(esbuild@0.25.9)(typescript@5.9.2)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.3.0(typescript@5.9.2)
+        version: 1.3.1(typescript@5.9.2)
       '@pandacss/types':
         specifier: catalog:css
-        version: 1.3.0
+        version: 1.3.1
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.11
@@ -2011,11 +2143,11 @@ importers:
         specifier: catalog:utils
         version: 4.0.2
       '@types/react':
-        specifier: 19.1.12
-        version: 19.1.12
+        specifier: 19.1.13
+        version: 19.1.13
       '@types/react-dom':
         specifier: 19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.13)
       nano-spawn:
         specifier: catalog:utils
         version: 1.0.3
@@ -2082,7 +2214,7 @@ packages:
     resolution: {integrity: sha512-RzblkVImAFdV1C0AWsSWzS70Z0FMtW2p0XXkNYu3QePfyVJta3JIy8m8jY8271etaCZtpFjsE2UaiHGZIBm6nw==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       '@types/react-dom': 19.1.9
       react: 19.1.1
       react-dom: 19.1.1
@@ -2242,20 +2374,20 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/unenv-preset@2.7.1':
-    resolution: {integrity: sha512-b0YHedns1FHEdalv9evlydfc/hLPs+LqCbPatmiJ99ScI5QTK0NXqqBhgvQ9qch73tsYfOpdpwtBl1GOcb1C9A==}
+  '@cloudflare/unenv-preset@2.7.3':
+    resolution: {integrity: sha512-tsQQagBKjvpd9baa6nWVIv399ejiqcrUBBW6SZx6Z22+ymm+Odv5+cFimyuCsD/fC1fQTwfRmwXBNpzvHSeGCw==}
     peerDependencies:
-      unenv: 2.0.0-rc.19
+      unenv: 2.0.0-rc.21
       workerd: ^1.20250828.1
     peerDependenciesMeta:
       workerd:
         optional: true
 
-  '@cloudflare/vite-plugin@1.11.6':
-    resolution: {integrity: sha512-+xvFYZoxqlIUfXALk+T+jUtvXAylGicpYjrGVS2Z8cSEM5mLl+R5CbLG9kmWDLP2AoVAH5yJalpk7SQ3larLqg==}
+  '@cloudflare/vite-plugin@1.11.7':
+    resolution: {integrity: sha512-8CN3B/TTeOJmfququLvBIUdE8Fh6O+6afI2u/AsUYyAiPddEcVF5w3B1OSSn2v+b/uBJX0s3SrGbJ1TXFPT7MA==}
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0
-      wrangler: ^4.31.0
+      wrangler: ^4.32.0
 
   '@cloudflare/workerd-darwin-64@1.20250816.0':
     resolution: {integrity: sha512-yN1Rga4ufTdrJPCP4gEqfB47i1lWi3teY5IoeQbUuKnjnCtm4pZvXur526JzCmaw60Jx+AEWf5tizdwRd5hHBQ==}
@@ -2263,8 +2395,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-64@1.20250829.0':
-    resolution: {integrity: sha512-IkB5gaLz3gzBg9hIsC/bVvOMDaRiWA5anaPK0ERDXXXJnMiBkLnA009O5Mp0x7j0fpxbw05xaiYXcFdGPdUt3A==}
+  '@cloudflare/workerd-darwin-64@1.20250906.0':
+    resolution: {integrity: sha512-E+X/YYH9BmX0ew2j/mAWFif2z05NMNuhCTlNYEGLkqMe99K15UewBqajL9pMcMUKxylnlrEoK3VNxl33DkbnPA==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [darwin]
@@ -2275,8 +2407,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-arm64@1.20250829.0':
-    resolution: {integrity: sha512-gFYC+w0jznCweKmrv63inEYduGj6crOskgZrn5zHI8S7c3ynC1LSW6LR8E9A2mSOwuDWKM1hHypwctwGUKlikg==}
+  '@cloudflare/workerd-darwin-arm64@1.20250906.0':
+    resolution: {integrity: sha512-X5apsZ1SFW4FYTM19ISHf8005FJMPfrcf4U5rO0tdj+TeJgQgXuZ57IG0WeW7SpLVeBo8hM6WC8CovZh41AfnA==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
@@ -2287,8 +2419,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-64@1.20250829.0':
-    resolution: {integrity: sha512-JS699jk+Bn7j4QF7tdF+Sqhy4EUHM2NGVLF/vOIbpPWQnBVvP6Z+vmxi5MuVUwpAH48kpqbtMx380InNvT5f1Q==}
+  '@cloudflare/workerd-linux-64@1.20250906.0':
+    resolution: {integrity: sha512-rlKzWgsLnlQ5Nt9W69YBJKcmTmZbOGu0edUsenXPmc6wzULUxoQpi7ZE9k3TfTonJx4WoQsQlzCUamRYFsX+0Q==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
@@ -2299,8 +2431,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-arm64@1.20250829.0':
-    resolution: {integrity: sha512-9Ic/VwcrCEQiIzynmpFQnS8N3uXm8evxUxFe37r6OC8/MGcXZTcp0/lmEk+cjjz+2aw5CfPMP82IdQyRKVZ+Og==}
+  '@cloudflare/workerd-linux-arm64@1.20250906.0':
+    resolution: {integrity: sha512-DdedhiQ+SeLzpg7BpcLrIPEZ33QKioJQ1wvL4X7nuLzEB9rWzS37NNNahQzc1+44rhG4fyiHbXBPOeox4B9XVA==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
@@ -2311,8 +2443,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workerd-windows-64@1.20250829.0':
-    resolution: {integrity: sha512-6uETqeeMciRSA00GRGzH1nnz0egDP2bqMOJtTBWlLzFs88GbLe2RXECJxo4E3eVr8yvAMyqwd0WUR4dDBjO7Rg==}
+  '@cloudflare/workerd-windows-64@1.20250906.0':
+    resolution: {integrity: sha512-Q8Qjfs8jGVILnZL6vUpQ90q/8MTCYaGR3d1LGxZMBqte8Vr7xF3KFHPEy7tFs0j0mMjnqCYzlofmPNY+9ZaDRg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -2992,14 +3124,14 @@ packages:
   '@floating-ui/dom@1.7.4':
     resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
 
-  '@floating-ui/react-dom@2.1.2':
-    resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
+  '@floating-ui/react-dom@2.1.6':
+    resolution: {integrity: sha512-4JX6rEatQEvlmgU80wZyq9RT96HZJa88q8hp0pBd+LrczeDI4o6uA2M+uvxngVHo4Ihr8uibXxH6+70zhAFrVw==}
     peerDependencies:
       react: 19.1.1
       react-dom: 19.1.1
 
-  '@floating-ui/react@0.26.28':
-    resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
+  '@floating-ui/react@0.27.16':
+    resolution: {integrity: sha512-9O8N4SeG2z++TSM8QA/KTeKFBVCNEz/AGS7gWPJf6KFRzmRWixFRnCnkPHRDwSVZW6QPDO6uT0P2SpWNKCc9/g==}
     peerDependencies:
       react: 19.1.1
       react-dom: 19.1.1
@@ -3198,48 +3330,48 @@ packages:
   '@lume/kiwi@0.4.4':
     resolution: {integrity: sha512-ie0YTKgiZqD4TXlJ4eUbfi4UEoKs6YlLRYNTfPm5eUXwfudTBmPRs7Qcxz2SWKDpVTwThv3sWG6zwtyAA0nPpw==}
 
-  '@mantine/colors-generator@8.2.8':
-    resolution: {integrity: sha512-bkxaZuLr5GuCAZMwJfrMDa78pXJsq1bB7AVMF8C/trIaHBBxzXe8nfTDhu2NYpojpd5pBhvHHyidXPwHdNkO5Q==}
+  '@mantine/colors-generator@8.3.1':
+    resolution: {integrity: sha512-1JJ/wIN+JaLhObWi3Ap4dvTk4ksN7dvOHa+ynEaxMg5Ienb2sv2V/zadiFISXkMw1zgBkcFe1UJbgm3QL4gsmg==}
     peerDependencies:
       chroma-js: '>=2.4.2'
 
-  '@mantine/core@8.2.8':
-    resolution: {integrity: sha512-dybAXrlQ+QiIhpnVCkdH6P4Sjm9I9RymYXfDp97oj9KfGRMEJGLDdPAwp/2GhXe7UdDkzqD48JCkbfRWF2Q+qA==}
+  '@mantine/core@8.3.1':
+    resolution: {integrity: sha512-OYfxn9cTv+K6RZ8+Ozn/HDQXkB8Fmn+KJJt5lxyFDP9F09EHnC59Ldadv1LyUZVBGtNqz4sn6b3vBShbxwAmYw==}
     peerDependencies:
-      '@mantine/hooks': 8.2.8
+      '@mantine/hooks': 8.3.1
       react: 19.1.1
       react-dom: 19.1.1
 
-  '@mantine/hooks@8.2.8':
-    resolution: {integrity: sha512-KK1krCcXizWT6JF8gWexv58imQBbviylAJqSqdZ4zUPgrpe81ehMyfxo5Z9EZsnSwMxkB4RLMhCCJhC5g8GvLA==}
+  '@mantine/hooks@8.3.1':
+    resolution: {integrity: sha512-lQutBS+Q0iz/cNFvdrsYassPWo3RtWcmDGJeOtKfHigLzFOhxUuLOkQgepDbMf3WcVMB/tist6Px1PQOv57JTw==}
     peerDependencies:
       react: 19.1.1
 
-  '@mantine/modals@8.2.8':
-    resolution: {integrity: sha512-+RzHK4uy/Gsk6RspunD8An9WYF921If8S2pDeveMwxVhUeNMZXeh9FpQWESlqVV+SHSPDDP4QeTkwhJm9DWf2g==}
+  '@mantine/modals@8.3.1':
+    resolution: {integrity: sha512-3+OL1VcrKI91eqfLR4j6gIKHxwCVINNBrBdIVKc4ozAPAF/XI5VXwhXYxV/Nd7B2lxQgsOlIK5rjEKFvTfHZBg==}
     peerDependencies:
-      '@mantine/core': 8.2.8
-      '@mantine/hooks': 8.2.8
-      react: 19.1.1
-      react-dom: 19.1.1
-
-  '@mantine/notifications@8.2.8':
-    resolution: {integrity: sha512-luNksAUkROoMzKCB/30nQ8o38wt54ktylbpBcTrAcjE1q00nH/IEYLS58iUYGf8l/xGBV1KH8jgSik58iqk++A==}
-    peerDependencies:
-      '@mantine/core': 8.2.8
-      '@mantine/hooks': 8.2.8
+      '@mantine/core': 8.3.1
+      '@mantine/hooks': 8.3.1
       react: 19.1.1
       react-dom: 19.1.1
 
-  '@mantine/store@8.2.8':
-    resolution: {integrity: sha512-xma5vcJlcR2UN6NZj0Rhskfppmz6wUTY/52EBU9sKZw60e1iiuTX2Bk/sfUa34VKZF4cRS46VLz2qstyCJne4Q==}
+  '@mantine/notifications@8.3.1':
+    resolution: {integrity: sha512-C1Iqa4g1HNNTLv2/CxOCR1mNlYNFCNtnS0u/JsR+HvtFVrun1namxDG6e6/U0hIva2klogYdivx4cyxmjPFerg==}
+    peerDependencies:
+      '@mantine/core': 8.3.1
+      '@mantine/hooks': 8.3.1
+      react: 19.1.1
+      react-dom: 19.1.1
+
+  '@mantine/store@8.3.1':
+    resolution: {integrity: sha512-OZwg0YKbCEKnkFmS9oRLKA8TMriBzO1T6nUib1yfLCx0VFuznllYZiDtaSWNkEYSdnFWCv5hKh5aOD4RHUnQfQ==}
     peerDependencies:
       react: 19.1.1
 
-  '@mantine/vanilla-extract@8.2.8':
-    resolution: {integrity: sha512-C1EQzwC+Hh/lCcntqPAxtRk8fYBaq+ECOcJE8q33kqUTN6my0uyBYj76sc3KBoKjCvEX8WzRnBAMPjOBj9U9oA==}
+  '@mantine/vanilla-extract@8.3.1':
+    resolution: {integrity: sha512-ffJTIyC3o1Qdu3TQXUpbR/YYelxcU6LF6T1RxyTnT5ejYGS3ko9qRGQfIvcBjnGQduH2d2Z6LxWXfZNliVdnsQ==}
     peerDependencies:
-      '@mantine/core': 8.2.8
+      '@mantine/core': 8.3.1
 
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
@@ -3374,6 +3506,76 @@ packages:
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
 
+  '@oxlint-tsgolint/darwin-arm64@0.2.0':
+    resolution: {integrity: sha512-ayJO9SmiJ15oV3+svIw8bqun0ySdjiD7L+ddwNB4vOAgUX/rdX1KTBnDb/ZEk6MOFBnFgbbiEiLRJLlGtuFYVQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxlint-tsgolint/darwin-x64@0.2.0':
+    resolution: {integrity: sha512-iCrcjkqqyy3zq+yXOmNsjt/DiSU4u9yJ00hEr4oGSrrk7V0ju6eqrmsh8VGS74YLY3MCskTjeTyVDRR7huc3WQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxlint-tsgolint/linux-arm64@0.2.0':
+    resolution: {integrity: sha512-Kne4mrJGCZ0O+/ukcvWftCmDAEFUpMQ4q4wZdWVlnmNdTbtICIay3ofk/rzX0QoZmEZh0jy/G7p+5P0t9Bg5Sg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint-tsgolint/linux-x64@0.2.0':
+    resolution: {integrity: sha512-DKGFSR71fnExWpJXvN32SqWuEcT1XXeI1CKpO63jgXTAUpVl9H/BXG3+gNptSoZqzqeFTj8jOgiaX6VkOABqGA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint-tsgolint/win32-arm64@0.2.0':
+    resolution: {integrity: sha512-Grbkva1YH0eTRtv3MkVTFAycVwQSytcl8N52zNs1YresWwOlnNvNZ5EeLIaQaudcxwsbpZWR2Bdsfa467zDJTw==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxlint-tsgolint/win32-x64@0.2.0':
+    resolution: {integrity: sha512-asfPqgu7r1H8NmBNxfMpZER6WvrUTH8BDMPIcChBhrUjuSmt4UMyiyul3CEPZLPQcPlaWCeGnConTu3BabK4Fw==}
+    cpu: [x64]
+    os: [win32]
+
+  '@oxlint/darwin-arm64@1.18.0':
+    resolution: {integrity: sha512-z/4/ClV0sZYDNk/xsOZHr5BHFbAXI7LU+i3P8d/L2ejy7zF8e4WA8szd70OqVm7Gcsa81TSeeQygViR63WCQ1A==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxlint/darwin-x64@1.18.0':
+    resolution: {integrity: sha512-cQP5UtmfxZKLVyISh/BeaaK5z70AGOtQkf1wm7ZaEb0eT81PkLUdzkPwTjwyQq/TeT09uw2paVy3l2SEAO+JQA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxlint/linux-arm64-gnu@1.18.0':
+    resolution: {integrity: sha512-JsobGeuKwpQFKSgK398QHfZ4kN9XXWJ0xvI8kofoefO/LLmj1ox3+Yln3kx425AaooruRMqBhh1JFXqEKeDxOw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint/linux-arm64-musl@1.18.0':
+    resolution: {integrity: sha512-Sds76cCqGylhywWrJcJ++4JQ45MxQKDDm7iW6Gx6C9nH+DyCPnYOjZAMYDkQiiZ3MlWCIW87SggsHkMaGO45ew==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint/linux-x64-gnu@1.18.0':
+    resolution: {integrity: sha512-pvBDpuf7SE3iMfwgmI3m8gandsdjs8CpIgiv/tiUhxCsKeK7gRVpiIr1XcewFrYwLn/km/EhjjFr/Kb7/CsHOA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint/linux-x64-musl@1.18.0':
+    resolution: {integrity: sha512-9G0km2Rt4MAoGOVndD/7+U947dnxQkWtLX9en5Gkh3lC7HBDvVpYLopXddguWE+qbqEQKp67PiuITeyYQ4uESA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint/win32-arm64@1.18.0':
+    resolution: {integrity: sha512-Px9436ey0xIuU3/PuXw8EwxJSWPIxiZ9pi7FiryOMisY0dNHQP9XlGvk1MNqzyFctNmas93ZG5zyyctzLTtiUg==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxlint/win32-x64@1.18.0':
+    resolution: {integrity: sha512-6yG6xADwy3SJsBuV2TZXfDMWDAzDBpTx3Ja/shdHbhP+YiVT87rRESjT5dKmASqrzQViycgnZ71UXiTf/nxqTA==}
+    cpu: [x64]
+    os: [win32]
+
   '@pagefind/darwin-arm64@1.3.0':
     resolution: {integrity: sha512-365BEGl6ChOsauRjyVpBjXybflXAOvoMROw3TucAROHIcdBvXk9/2AmEvGFU0r75+vdQI4LJdJdpH4Y6Yqaj4A==}
     cpu: [arm64]
@@ -3439,63 +3641,63 @@ packages:
   '@pandabox/utils@0.0.5':
     resolution: {integrity: sha512-+Qp6dLiWD3rGfq6PVTmWtXqD5OJ82XrekvJzsHWssjBoqLSlJKnALVy+bDRxojMRxTGna5JI85iLjb2EzRJbdw==}
 
-  '@pandacss/config@1.3.0':
-    resolution: {integrity: sha512-WARKx6Oh9Zgp667gF+3crDyH3Hhki5o4K9jOROtMlt81l4+Omkt9SZfmPHlEyh5g1f6kbab0DCLiPrP7WT/5HA==}
+  '@pandacss/config@1.3.1':
+    resolution: {integrity: sha512-Q58Q40JvVyZSruX3jthoJMsUv80Q0g2Aug0Q4OKSaqxLV3MXh3gW8KN0qztVp4kSS+sURShh8qPd6Ucjp5YXPA==}
 
-  '@pandacss/core@1.3.0':
-    resolution: {integrity: sha512-8DkrGgc1vLfseuPxodKxiaDzbmAMY0b6ljtIXA1F0X7OrXxaZXcVnuHpiGrVBYQX5ZIdf8jreEM3+T9b01RGrA==}
+  '@pandacss/core@1.3.1':
+    resolution: {integrity: sha512-NxRnZnz+kftf4iBJwNdoR/cjDIXT7x5f43teQoSDklcB+5CghAoN8Q5xqJS3pQ8PPZDQnB2Ek+sncTWBfITlgg==}
 
-  '@pandacss/dev@1.3.0':
-    resolution: {integrity: sha512-SG0lVa9h3JtM3CJeJC/Cyi3lB428F+39KMCO2c69/dIJHCHqKYV55xVl7BswvBSrJUEiJF7SdJsA4iIJqHvjCw==}
+  '@pandacss/dev@1.3.1':
+    resolution: {integrity: sha512-ddoVOsbb39sp6TTZQtrQRBlxsPKJWsnZvr3bKucRXa6xvjUEuWHgA0pP2qmx1XruIj+i4Tj8T2gHzZWhCT9r/g==}
     hasBin: true
 
   '@pandacss/extractor@0.36.1':
     resolution: {integrity: sha512-Fm+yrTIUE+T0fHfekfYTUtIsbCsP5i4/jnvnlQavD/JX2+6x9yB83otP0TaVM1lpTCURtrSVZgEvXdc8OmZ2dA==}
 
-  '@pandacss/extractor@1.3.0':
-    resolution: {integrity: sha512-D+h9qq974upnkI7HwKRBQoIKCgH+3KzJ5AXJKlCwpln8RuzbnaX+W57Kaimark0dSem3nALkv9PEKggyYR93AQ==}
+  '@pandacss/extractor@1.3.1':
+    resolution: {integrity: sha512-6UCPexBqvqJ0+He/yOwIZprPoRs/Gpt9n2Whf57NIceozhOpnFsCwrtgOQZLZlx7x9OdKf44g5ZBxM9wvRzCdw==}
 
-  '@pandacss/generator@1.3.0':
-    resolution: {integrity: sha512-PpBrU/whWRHq1KGgKu5Kzo8rpxjSGRN7/TlEANspQaNEcmz7nRrvY+dpFhe9pcTqnZSlSOqldDWpHyP2tQb1Dg==}
+  '@pandacss/generator@1.3.1':
+    resolution: {integrity: sha512-xQQX2NNNVBYYq+wkcY3fk4UVAsAF+Y2YSfsxskLRMkPXFUzESphEv6mOadYQl7sTkxdpUriFYA3jL2Z9aiCb8Q==}
 
-  '@pandacss/is-valid-prop@1.3.0':
-    resolution: {integrity: sha512-BptMTTqJutBGff2GyLtnHyHYSC//rZjlgFcG0VhTHLxii9JK7JKOOZ5Mqd6aiQ6jgCrQB1NJTevzc+FvzXABEg==}
+  '@pandacss/is-valid-prop@1.3.1':
+    resolution: {integrity: sha512-HT4U2GkVsdoESpN21DhzlgN32EfTki7Nd1vddhO4TGw4q0z1oaIuOozMH3/g6fFcN+Jo3fLOX+ZmbToLA/CPXw==}
 
-  '@pandacss/logger@1.3.0':
-    resolution: {integrity: sha512-m7qjKpoW9cH1QPM5gAt6SRak2aQr8/Flf0M++AgNwtBt6vgRbWU0Q3KUcOH9zBaDOSXuq5lVkOR/ywcaDjIHng==}
+  '@pandacss/logger@1.3.1':
+    resolution: {integrity: sha512-dY7I5+cAwPoYD5WblO9OjKd+RPZy3MUSZEk+fjM6KZsyl0GShdWery2246DxvpKCJnBLcYFp0UZErANt5gkllQ==}
 
-  '@pandacss/node@1.3.0':
-    resolution: {integrity: sha512-QGhV8qsHqDcwGqydsOnAXyaIzEsLxGarUMsKDvToAMyUjP6aOV38W7W7Wjl9q7CkGalJWEtIF+O1dfiRlN+fjw==}
+  '@pandacss/node@1.3.1':
+    resolution: {integrity: sha512-2Qa6fjcpemaIVru4SBbNca5eDqeKOzIlIzXFlrdOOFD4ZWXDVaFqiCX6XeibeoHTHX+ACjtInv0GUrE8RNoCXw==}
 
-  '@pandacss/parser@1.3.0':
-    resolution: {integrity: sha512-hcSi4wsNXWbiv02tn5sDVgSsRd0boxPT0u3NXGl/HIW0cfSHyQv0rXLYlWfFNuCTIY0n01+CyaryV0fqaDSEvw==}
+  '@pandacss/parser@1.3.1':
+    resolution: {integrity: sha512-vXYaZQD/9h5n/hOr8OCLLvMaY+ng/LchiFqXo5sHaA/fThTMeglipCjuK94rExbJ3PwqNTwcs8zQu0TrOpf/Gg==}
 
-  '@pandacss/postcss@1.3.0':
-    resolution: {integrity: sha512-NAYVuJYaBKpiRRu4i6KklAQOkw0aNOlg8GVxouYoD2XZXEsOt3l6S9ZerptVn8jE239xR8h0VscUoB9dMN/NDA==}
+  '@pandacss/postcss@1.3.1':
+    resolution: {integrity: sha512-QuJI31oQMXbtlDPNRENfqVs1VaTTVq6zGOOuz3BDDj++6x165IIEs3KgRmnKPnUNyRHTkQxOMoQZgKQ1wAsU9A==}
 
-  '@pandacss/preset-base@1.3.0':
-    resolution: {integrity: sha512-71iO1FqjvC9WP4WbAvHlNPh7JMupqKUkjPJnMvNW4P7kmLtyVXrrdOzO7VsSv7dD6ie8lXLqk0NLd8PdCfHXUw==}
+  '@pandacss/preset-base@1.3.1':
+    resolution: {integrity: sha512-3/Q1WlfIrxFLTbRo7Va1EBSgMgDOsvDxill26FWl2CIztKlQtRgeBg4ez8m7LM3elGth6jkTdBTRIry1MXNw1g==}
 
-  '@pandacss/preset-panda@1.3.0':
-    resolution: {integrity: sha512-i1YteMrXLU0nzV/FLIB18f3pvVZ9mPiFyhVJGZpLDqp8Jop1PdYtir31VMeY6sz+I+cKKOL3HUkwn82c4+vfog==}
+  '@pandacss/preset-panda@1.3.1':
+    resolution: {integrity: sha512-ReLsoXIHIgXLSy0o+trdZpeMwvliL+9lNcpNtlkZrTrzLbrahJwBU0fOeCGxgOemu/3ZfHCTmw2LKWcj942A2w==}
 
-  '@pandacss/reporter@1.3.0':
-    resolution: {integrity: sha512-E7yQK/3zZ58z2nwgzFmIboslG6W8gl8EZ4EAVyDluEhCcTRvr4ZtG0atWlOLiWNa5HAfEF4k0Fg973BxoFECmQ==}
+  '@pandacss/reporter@1.3.1':
+    resolution: {integrity: sha512-1JovCGuvf+mL86QpIhBVF/s08MeaRwS5FLzoC4Qd0cjlTCE7nrReyfwNhQuMsvKGCPLjZ4OlWl2wpXn0NZ6p8g==}
 
   '@pandacss/shared@0.36.1':
     resolution: {integrity: sha512-yiGHfGNpOkphCsx8sYGsL8RhyPKeqcGgrrrQCNzwgkJRGXDqTVw9qNbD4tkILI8Qe+S+5aCiLkWCfoUtqJ+Btg==}
 
-  '@pandacss/shared@1.3.0':
-    resolution: {integrity: sha512-aI7wZPUVVfY7CFaNw5ycc3vk+iom+zsH6vuwgLPP6wScQxC5npq07lU57Q9TZAALJ0kLO68Sf/yprPz8ZRufJQ==}
+  '@pandacss/shared@1.3.1':
+    resolution: {integrity: sha512-B/dVrOpeXbD4RYkdjGoYsvL7YMBQlV/zZ0Vk096a++c0qtgxnIs0nY1scCcL+UeLcKDvCEUF+Q7uzZfDjipPYg==}
 
-  '@pandacss/token-dictionary@1.3.0':
-    resolution: {integrity: sha512-ad1jGTXA4SCpQ4v9XiXwofv32eQOK4eS1W4oliwKe2SJU0oLgTnS0jNvw+kS9OkP+++9w1i9GacPZL7zDZkm1A==}
+  '@pandacss/token-dictionary@1.3.1':
+    resolution: {integrity: sha512-Y5LgQ+wOZD6fayx4schMBE8YhXJjvGnYxusZrLmTDSLsrvFWigpkAFBog1Tq/1ic0DWRPdjPAqoz1oOjCCAWZA==}
 
   '@pandacss/types@0.36.1':
     resolution: {integrity: sha512-F0mGFtXT2j1hNFi5Z1AXPxEYcHoaedyJyScEbsGga4aa2KlJCEPEX9UDdgltMlrhSilM7nq7RbrDMToZ/cwvOg==}
 
-  '@pandacss/types@1.3.0':
-    resolution: {integrity: sha512-bv4W/iyuX9sea4JmpGaeKuU3wBtE/6vluiqh8lHwN0yrkdUmRpl0dnGD22e22sWu2LK8lCn6gOs2UrumhOUhLg==}
+  '@pandacss/types@1.3.1':
+    resolution: {integrity: sha512-U5r2P36u97KHqJcMSmDb7rWKrrquO+Q0PImKOTVQ/PRZ1bFpVPLYpHEt5KngEYsNM7gU+EuLFuGZuSkkFYUlKw==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -3784,13 +3986,13 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@tabler/icons-react@3.34.1':
-    resolution: {integrity: sha512-Ld6g0NqOO05kyyHsfU8h787PdHBm7cFmOycQSIrGp45XcXYDuOK2Bs0VC4T2FWSKZ6bx5g04imfzazf/nqtk1A==}
+  '@tabler/icons-react@3.35.0':
+    resolution: {integrity: sha512-XG7t2DYf3DyHT5jxFNp5xyLVbL4hMJYJhiSdHADzAjLRYfL7AnjlRfiHDHeXxkb2N103rEIvTsBRazxXtAUz2g==}
     peerDependencies:
       react: 19.1.1
 
-  '@tabler/icons@3.34.1':
-    resolution: {integrity: sha512-9gTnUvd7Fd/DmQgr3MKY+oJLa1RfNsQo8c/ir3TJAWghOuZXodbtbVp0QBY2DxWuuvrSZFys0HEbv1CoiI5y6A==}
+  '@tabler/icons@3.35.0':
+    resolution: {integrity: sha512-yYXe+gJ56xlZFiXwV9zVoe3FWCGuZ/D7/G4ZIlDtGxSx5CGQK110wrnT29gUj52kEZoxqF7oURTk97GQxELOFQ==}
 
   '@tanstack/history@1.114.22':
     resolution: {integrity: sha512-CNwKraj/Xa8H7DUyzrFBQC3wL96JzIxT4i9CW0hxqFNNmLDyUcMJr8264iqqfxC0u1lFSG96URad08T2Qhadpw==}
@@ -3954,6 +4156,9 @@ packages:
   '@types/fontkit@2.0.8':
     resolution: {integrity: sha512-wN+8bYxIpJf+5oZdrdtaX04qUuWHcKxcDEgRS9Qm9ZClSHjzEn13SxUC+5eRM+4yXIeTYk8mTzLAWGF64847ew==}
 
+  '@types/fs-extra@11.0.4':
+    resolution: {integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==}
+
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -3962,6 +4167,9 @@ packages:
 
   '@types/js-yaml@4.0.9':
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
+
+  '@types/jsonfile@6.1.4':
+    resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -3999,6 +4207,9 @@ packages:
   '@types/object-hash@3.0.6':
     resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
 
+  '@types/parse-gitignore@1.0.2':
+    resolution: {integrity: sha512-AQwj+lNTWI7y1kkMe8qLByiToXoXs/du70qGFIHJZaJUVrF5jB8QzvWmLyR1VWYqRagpY8ABrqAjs7uHsJnVBQ==}
+
   '@types/picomatch@3.0.2':
     resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
 
@@ -4008,10 +4219,10 @@ packages:
   '@types/react-dom@19.1.9':
     resolution: {integrity: sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ==}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  '@types/react@19.1.12':
-    resolution: {integrity: sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w==}
+  '@types/react@19.1.13':
+    resolution: {integrity: sha512-hHkbU/eoO3EG5/MZkuFSKmYqPbSVk5byPFa3e7y/8TybHiLMACgI8seVYlicwk7H5K/rI2px9xrQp/C+AUDTiQ==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -4642,9 +4853,6 @@ packages:
 
   classcat@5.0.5:
     resolution: {integrity: sha512-JhZUT7JFcQy/EzW605k/ktHtncoo9vnyW/2GspNYwFlN1C/WmjuV/xtS04e9SOkL2sTdw0VAZ2UGCcQ9lR6p6w==}
-
-  classnames@2.5.1:
-    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
@@ -6562,13 +6770,13 @@ packages:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
 
-  miniflare@4.20250816.0:
-    resolution: {integrity: sha512-HuakGvmsU8aC60wsHP7Su+BgJFly1GmKbmbR/nqIz0Xlk6wcd/pp3vZ7jtbT3unf+aeBOlEO/CzcUb8xFsJLdA==}
+  miniflare@4.20250816.1:
+    resolution: {integrity: sha512-2X8yMy5wWw0dF1pNU4kztzZgp0jWv2KMqAOOb2FeQ/b11yck4aczmYHi7UYD3uyOgtj8WFhwG/KdRWAaATTtRA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  miniflare@4.20250829.0:
-    resolution: {integrity: sha512-V1DLPnOXjm0DtfU9K0ftrxF+G7LkQ3nDKtXGdU8+Vf+dOqdGM+3ZHZOcDC5XPOsDnI280HBd5xcos/ghtGB7cg==}
+  miniflare@4.20250906.0:
+    resolution: {integrity: sha512-T/RWn1sa0ien80s6NjU+Un/tj12gR6wqScZoiLeMJDD4/fK0UXfnbWXJDubnUED8Xjm7RPQ5ESYdE+mhPmMtuQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6874,6 +7082,20 @@ packages:
   outdent@0.8.0:
     resolution: {integrity: sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A==}
 
+  oxlint-tsgolint@0.2.0:
+    resolution: {integrity: sha512-37Hy+FT1sz8hHUo31JIgFDA8NcFndexrg5okutWRPXNejJwB9hKN+pyInaQQIv4XDsgNcQsSR2VJoq99eaGk9g==}
+    hasBin: true
+
+  oxlint@1.18.0:
+    resolution: {integrity: sha512-bR/XSaWwrRyt87IGdJtCIf3KLspkY4Ni7FfkOdERWihfyazs40NUMCyYICZo5ojU/8zIq+EWpa/gEf7wsoBOug==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    hasBin: true
+    peerDependencies:
+      oxlint-tsgolint: '>=0.2.0'
+    peerDependenciesMeta:
+      oxlint-tsgolint:
+        optional: true
+
   p-debounce@4.0.0:
     resolution: {integrity: sha512-4Ispi9I9qYGO4lueiLDhe4q4iK5ERK8reLsuzH6BPaXn53EGaua8H66PXIFGrW897hwjXp+pVLrm/DLxN0RF0A==}
     engines: {node: '>=12'}
@@ -6969,6 +7191,10 @@ packages:
     resolution: {integrity: sha512-kgBf6avCbO3Cn6+RnzRGLkUsv4ZVqv/VfAYkRsyBcgkshNvVBkRn1FEZcW0Jb+npXQWm2vHPnnOqFteZxRRGNw==}
     engines: {node: '>=0.10.0'}
     hasBin: true
+
+  parse-gitignore@2.0.0:
+    resolution: {integrity: sha512-RmVuCHWsfu0QPNW+mraxh/xjQVw/lhUCUru8Zni3Ctq3AoMhpDTq0OVdKS6iesd6Kqb7viCV3isAL43dciOSog==}
+    engines: {node: '>=14'}
 
   parse-json@4.0.0:
     resolution: {integrity: sha512-aOIos8bujGN93/8Ox/jPLh7RwVnPEysynVFE+fQZyg6jKELEHwzgKdLRFHUgXJL6kylijVSBC4BvN9OmsB48Rw==}
@@ -7399,7 +7625,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qs@6.14.0:
@@ -7467,17 +7692,17 @@ packages:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
 
-  react-remove-scroll@2.7.0:
-    resolution: {integrity: sha512-sGsQtcjMqdQyijAHytfGEELB8FufGbfXIsvUTe+NLx1GDRJCXtCFLBLUI1eyZCKXXvbEU2C6gai0PZKoIE9Vbg==}
+  react-remove-scroll@2.7.1:
+    resolution: {integrity: sha512-HpMh8+oahmIdOuS5aFKKY6Pyog+FNaZV/XyJOq7b4YFwsFHe5yYfdbIalI4k3vU2nSDql7YskmUseHsRrJqIPA==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
@@ -7500,7 +7725,7 @@ packages:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
@@ -8358,12 +8583,15 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@7.13.0:
-    resolution: {integrity: sha512-l+zSMssRqrzDcb3fjMkjjLGmuiiK2pMIcV++mJaAc9vhjSGpvM7h43QgP+OAMb1GImHmbPyG2tBXeuyG5iY4gA==}
+  undici@7.14.0:
+    resolution: {integrity: sha512-Vqs8HTzjpQXZeXdpsfChQTlafcMQaaIwnGwLam1wudSSjlJeQ3bw1j+TLPePgrCnCpUXx7Ba5Pdpf5OBih62NQ==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.19:
     resolution: {integrity: sha512-t/OMHBNAkknVCI7bVB9OWjUUAwhVv9vsPIAGnNUxnu3FxPQN11rjh0sksLMzc3g7IlTgvHmOTl4JM7JHpcv5wA==}
+
+  unenv@2.0.0-rc.21:
+    resolution: {integrity: sha512-Wj7/AMtE9MRnAXa6Su3Lk0LNCfqDYgfwVjwRFVum9U7wsto1imuHqk4kTm7Jni+5A0Hn7dttL6O/zjvUvoo+8A==}
 
   unicode-properties@1.4.1:
     resolution: {integrity: sha512-CLjCCLQ6UuMxWnbIylkisbRj31qxHPAurvena/0iwSVbQ2G1VY5/HjV0IRabOEbDHlzZlRdCrD4NhB0JtU40Pg==}
@@ -8526,7 +8754,7 @@ packages:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
@@ -8563,7 +8791,7 @@ packages:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
     peerDependenciesMeta:
       '@types/react':
@@ -8939,17 +9167,17 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  workerd@1.20250829.0:
-    resolution: {integrity: sha512-8qoE56hf9QHS2llMM1tybjhvFEX5vnNUa1PpuyxeNC9F0dn9/qb9eDqN/z3sBPgpYK8vfQU9J8KOxczA+qo/cQ==}
+  workerd@1.20250906.0:
+    resolution: {integrity: sha512-ryVyEaqXPPsr/AxccRmYZZmDAkfQVjhfRqrNTlEeN8aftBk6Ca1u7/VqmfOayjCXrA+O547TauebU+J3IpvFXw==}
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.33.2:
-    resolution: {integrity: sha512-4cQU62098a5mj7YsECkksypMNoO9B8D6CVzP/SDEqP73ti9exBxI3OlkB+8rMawF1OyYNAihaSAzIPZ52OiK0g==}
+  wrangler@4.35.0:
+    resolution: {integrity: sha512-HbyXtbrh4Fi3mU8ussY85tVdQ74qpVS1vctUgaPc+bPrXBTqfDLkZ6VRtHAVF/eBhz4SFmhJtCQpN1caY2Ak8A==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^4.20250829.0
+      '@cloudflare/workers-types': ^4.20250906.0
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -9089,7 +9317,7 @@ packages:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       immer: '>=9.0.6'
       react: 19.1.1
     peerDependenciesMeta:
@@ -9102,6 +9330,11 @@ packages:
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
+
+  zx@8.8.1:
+    resolution: {integrity: sha512-qvsKBnvWHstHKCluKPlEgI/D3+mdiQyMoSSeFR8IX/aXzWIas5A297KxKgPJhuPXdrR6ma0Jzx43+GQ/8sqbrw==}
+    engines: {node: '>= 12.17.0'}
+    hasBin: true
 
   zx@8.8.4-lite:
     resolution: {integrity: sha512-NaH101NH/XG5jP2cWvr/AFyd7EE1mQ6ZvqBzvJ4ceXwxfmchhPX4RjudB3MXa/+thcxR6xB9znZUiX2u/Tq+AA==}
@@ -9230,10 +9463,10 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react@4.4.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)':
+  '@astrojs/react@4.4.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)':
     dependencies:
-      '@types/react': 19.1.12
-      '@types/react-dom': 19.1.9(@types/react@19.1.12)
+      '@types/react': 19.1.13
+      '@types/react-dom': 19.1.9(@types/react@19.1.13)
       '@vitejs/plugin-react': 4.7.0(vite@6.3.6(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
@@ -9476,30 +9709,30 @@ snapshots:
     dependencies:
       mime: 3.0.0
 
-  '@cloudflare/unenv-preset@2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250829.0)':
+  '@cloudflare/unenv-preset@2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250906.0)':
     dependencies:
       unenv: 2.0.0-rc.19
     optionalDependencies:
-      workerd: 1.20250829.0
+      workerd: 1.20250906.0
 
-  '@cloudflare/unenv-preset@2.7.1(unenv@2.0.0-rc.19)(workerd@1.20250829.0)':
+  '@cloudflare/unenv-preset@2.7.3(unenv@2.0.0-rc.21)(workerd@1.20250906.0)':
     dependencies:
-      unenv: 2.0.0-rc.19
+      unenv: 2.0.0-rc.21
     optionalDependencies:
-      workerd: 1.20250829.0
+      workerd: 1.20250906.0
 
-  '@cloudflare/vite-plugin@1.11.6(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250829.0)(wrangler@4.33.2)':
+  '@cloudflare/vite-plugin@1.11.7(rollup@4.44.0)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))(workerd@1.20250906.0)(wrangler@4.35.0)':
     dependencies:
-      '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250829.0)
+      '@cloudflare/unenv-preset': 2.6.2(unenv@2.0.0-rc.19)(workerd@1.20250906.0)
       '@mjackson/node-fetch-server': 0.6.1
       '@rollup/plugin-replace': 6.0.2(rollup@4.44.0)
       get-port: 7.1.0
-      miniflare: 4.20250816.0
+      miniflare: 4.20250816.1
       picocolors: 1.1.1
       tinyglobby: 0.2.14
       unenv: 2.0.0-rc.19
       vite: 6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
-      wrangler: 4.33.2
+      wrangler: 4.35.0
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -9510,31 +9743,31 @@ snapshots:
   '@cloudflare/workerd-darwin-64@1.20250816.0':
     optional: true
 
-  '@cloudflare/workerd-darwin-64@1.20250829.0':
+  '@cloudflare/workerd-darwin-64@1.20250906.0':
     optional: true
 
   '@cloudflare/workerd-darwin-arm64@1.20250816.0':
     optional: true
 
-  '@cloudflare/workerd-darwin-arm64@1.20250829.0':
+  '@cloudflare/workerd-darwin-arm64@1.20250906.0':
     optional: true
 
   '@cloudflare/workerd-linux-64@1.20250816.0':
     optional: true
 
-  '@cloudflare/workerd-linux-64@1.20250829.0':
+  '@cloudflare/workerd-linux-64@1.20250906.0':
     optional: true
 
   '@cloudflare/workerd-linux-arm64@1.20250816.0':
     optional: true
 
-  '@cloudflare/workerd-linux-arm64@1.20250829.0':
+  '@cloudflare/workerd-linux-arm64@1.20250906.0':
     optional: true
 
   '@cloudflare/workerd-windows-64@1.20250816.0':
     optional: true
 
-  '@cloudflare/workerd-windows-64@1.20250829.0':
+  '@cloudflare/workerd-windows-64@1.20250906.0':
     optional: true
 
   '@codingame/monaco-vscode-039b5553-0838-562a-97c2-30d6e54a7b42-common@16.1.1': {}
@@ -10664,15 +10897,15 @@ snapshots:
       '@floating-ui/core': 1.7.3
       '@floating-ui/utils': 0.2.10
 
-  '@floating-ui/react-dom@2.1.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@floating-ui/react-dom@2.1.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@floating-ui/dom': 1.7.4
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  '@floating-ui/react@0.26.28(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@floating-ui/react@0.27.16(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@floating-ui/react-dom': 2.1.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@floating-ui/utils': 0.2.10
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
@@ -10836,51 +11069,51 @@ snapshots:
 
   '@lume/kiwi@0.4.4': {}
 
-  '@mantine/colors-generator@8.2.8(chroma-js@3.1.2)':
+  '@mantine/colors-generator@8.3.1(chroma-js@3.1.2)':
     dependencies:
       chroma-js: 3.1.2
 
-  '@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@floating-ui/react': 0.26.28(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@mantine/hooks': 8.2.8(react@19.1.1)
+      '@floating-ui/react': 0.27.16(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/hooks': 8.3.1(react@19.1.1)
       clsx: 2.1.1
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       react-number-format: 5.4.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react-remove-scroll: 2.7.0(@types/react@19.1.12)(react@19.1.1)
-      react-textarea-autosize: 8.5.9(@types/react@19.1.12)(react@19.1.1)
+      react-remove-scroll: 2.7.1(@types/react@19.1.13)(react@19.1.1)
+      react-textarea-autosize: 8.5.9(@types/react@19.1.13)(react@19.1.1)
       type-fest: 4.41.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@8.2.8(react@19.1.1)':
+  '@mantine/hooks@8.3.1(react@19.1.1)':
     dependencies:
       react: 19.1.1
 
-  '@mantine/modals@8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.8(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/modals@8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.3.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@mantine/core': 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@mantine/hooks': 8.2.8(react@19.1.1)
+      '@mantine/core': 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/hooks': 8.3.1(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  '@mantine/notifications@8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.2.8(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@mantine/notifications@8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@mantine/hooks@8.3.1(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@mantine/core': 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@mantine/hooks': 8.2.8(react@19.1.1)
-      '@mantine/store': 8.2.8(react@19.1.1)
+      '@mantine/core': 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/hooks': 8.3.1(react@19.1.1)
+      '@mantine/store': 8.3.1(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       react-transition-group: 4.4.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
-  '@mantine/store@8.2.8(react@19.1.1)':
+  '@mantine/store@8.3.1(react@19.1.1)':
     dependencies:
       react: 19.1.1
 
-  '@mantine/vanilla-extract@8.2.8(@mantine/core@8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
+  '@mantine/vanilla-extract@8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
     dependencies:
-      '@mantine/core': 8.2.8(@mantine/hooks@8.2.8(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@mantine/core': 8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   '@mdx-js/mdx@3.1.0(acorn@8.15.0)':
     dependencies:
@@ -11141,6 +11374,48 @@ snapshots:
 
   '@oslojs/encoding@1.1.0': {}
 
+  '@oxlint-tsgolint/darwin-arm64@0.2.0':
+    optional: true
+
+  '@oxlint-tsgolint/darwin-x64@0.2.0':
+    optional: true
+
+  '@oxlint-tsgolint/linux-arm64@0.2.0':
+    optional: true
+
+  '@oxlint-tsgolint/linux-x64@0.2.0':
+    optional: true
+
+  '@oxlint-tsgolint/win32-arm64@0.2.0':
+    optional: true
+
+  '@oxlint-tsgolint/win32-x64@0.2.0':
+    optional: true
+
+  '@oxlint/darwin-arm64@1.18.0':
+    optional: true
+
+  '@oxlint/darwin-x64@1.18.0':
+    optional: true
+
+  '@oxlint/linux-arm64-gnu@1.18.0':
+    optional: true
+
+  '@oxlint/linux-arm64-musl@1.18.0':
+    optional: true
+
+  '@oxlint/linux-x64-gnu@1.18.0':
+    optional: true
+
+  '@oxlint/linux-x64-musl@1.18.0':
+    optional: true
+
+  '@oxlint/win32-arm64@1.18.0':
+    optional: true
+
+  '@oxlint/win32-x64@1.18.0':
+    optional: true
+
   '@pagefind/darwin-arm64@1.3.0':
     optional: true
 
@@ -11167,13 +11442,13 @@ snapshots:
     dependencies:
       postcss: 8.5.6
 
-  '@pandabox/unplugin@0.2.2(@pandacss/config@1.3.0)(@pandacss/core@1.3.0)(@pandacss/node@1.3.0(typescript@5.9.2))(esbuild@0.25.9)(typescript@5.9.2)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))':
+  '@pandabox/unplugin@0.2.2(@pandacss/config@1.3.1)(@pandacss/core@1.3.1)(@pandacss/node@1.3.1(typescript@5.9.2))(esbuild@0.25.9)(typescript@5.9.2)(vite@6.3.6(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0))':
     dependencies:
       '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.6)
-      '@pandacss/config': 1.3.0
-      '@pandacss/core': 1.3.0
+      '@pandacss/config': 1.3.1
+      '@pandacss/core': 1.3.1
       '@pandacss/extractor': 0.36.1(typescript@5.9.2)
-      '@pandacss/node': 1.3.0(typescript@5.9.2)
+      '@pandacss/node': 1.3.1(typescript@5.9.2)
       '@pandacss/shared': 0.36.1
       '@rollup/pluginutils': 5.3.0(rollup@4.44.0)
       es-toolkit: 1.32.0
@@ -11193,27 +11468,27 @@ snapshots:
       '@pandacss/shared': 0.36.1
       '@pandacss/types': 0.36.1
 
-  '@pandacss/config@1.3.0':
+  '@pandacss/config@1.3.1':
     dependencies:
-      '@pandacss/logger': 1.3.0
-      '@pandacss/preset-base': 1.3.0
-      '@pandacss/preset-panda': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/logger': 1.3.1
+      '@pandacss/preset-base': 1.3.1
+      '@pandacss/preset-panda': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/types': 1.3.1
       bundle-n-require: 1.1.2
       escalade: 3.1.2
       merge-anything: 5.1.7
       microdiff: 1.3.2
       typescript: 5.8.3
 
-  '@pandacss/core@1.3.0':
+  '@pandacss/core@1.3.1':
     dependencies:
       '@csstools/postcss-cascade-layers': 5.0.2(postcss@8.4.49)
-      '@pandacss/is-valid-prop': 1.3.0
-      '@pandacss/logger': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/token-dictionary': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/is-valid-prop': 1.3.1
+      '@pandacss/logger': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/token-dictionary': 1.3.1
+      '@pandacss/types': 1.3.1
       browserslist: 4.23.3
       hookable: 5.5.3
       lightningcss: 1.25.1
@@ -11229,17 +11504,17 @@ snapshots:
       postcss-selector-parser: 6.1.2
       ts-pattern: 5.8.0
 
-  '@pandacss/dev@1.3.0(typescript@5.9.2)':
+  '@pandacss/dev@1.3.1(typescript@5.9.2)':
     dependencies:
       '@clack/prompts': 0.9.1
-      '@pandacss/config': 1.3.0
-      '@pandacss/logger': 1.3.0
-      '@pandacss/node': 1.3.0(typescript@5.9.2)
-      '@pandacss/postcss': 1.3.0(typescript@5.9.2)
-      '@pandacss/preset-panda': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/token-dictionary': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/config': 1.3.1
+      '@pandacss/logger': 1.3.1
+      '@pandacss/node': 1.3.1(typescript@5.9.2)
+      '@pandacss/postcss': 1.3.1(typescript@5.9.2)
+      '@pandacss/preset-panda': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/token-dictionary': 1.3.1
+      '@pandacss/types': 1.3.1
       cac: 6.7.14
     transitivePeerDependencies:
       - jsdom
@@ -11254,47 +11529,47 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/extractor@1.3.0(typescript@5.9.2)':
+  '@pandacss/extractor@1.3.1(typescript@5.9.2)':
     dependencies:
-      '@pandacss/shared': 1.3.0
+      '@pandacss/shared': 1.3.1
       ts-evaluator: 1.2.0(typescript@5.9.2)
       ts-morph: 26.0.0
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/generator@1.3.0':
+  '@pandacss/generator@1.3.1':
     dependencies:
-      '@pandacss/core': 1.3.0
-      '@pandacss/is-valid-prop': 1.3.0
-      '@pandacss/logger': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/token-dictionary': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/core': 1.3.1
+      '@pandacss/is-valid-prop': 1.3.1
+      '@pandacss/logger': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/token-dictionary': 1.3.1
+      '@pandacss/types': 1.3.1
       javascript-stringify: 2.1.0
       outdent: 0.8.0
       pluralize: 8.0.0
       postcss: 8.4.49
       ts-pattern: 5.8.0
 
-  '@pandacss/is-valid-prop@1.3.0': {}
+  '@pandacss/is-valid-prop@1.3.1': {}
 
-  '@pandacss/logger@1.3.0':
+  '@pandacss/logger@1.3.1':
     dependencies:
-      '@pandacss/types': 1.3.0
+      '@pandacss/types': 1.3.1
       kleur: 4.1.5
 
-  '@pandacss/node@1.3.0(typescript@5.9.2)':
+  '@pandacss/node@1.3.1(typescript@5.9.2)':
     dependencies:
-      '@pandacss/config': 1.3.0
-      '@pandacss/core': 1.3.0
-      '@pandacss/generator': 1.3.0
-      '@pandacss/logger': 1.3.0
-      '@pandacss/parser': 1.3.0(typescript@5.9.2)
-      '@pandacss/reporter': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/token-dictionary': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/config': 1.3.1
+      '@pandacss/core': 1.3.1
+      '@pandacss/generator': 1.3.1
+      '@pandacss/logger': 1.3.1
+      '@pandacss/parser': 1.3.1(typescript@5.9.2)
+      '@pandacss/reporter': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/token-dictionary': 1.3.1
+      '@pandacss/types': 1.3.1
       browserslist: 4.23.3
       chokidar: 4.0.3
       fast-glob: 3.3.3
@@ -11318,14 +11593,14 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/parser@1.3.0(typescript@5.9.2)':
+  '@pandacss/parser@1.3.1(typescript@5.9.2)':
     dependencies:
-      '@pandacss/config': 1.3.0
-      '@pandacss/core': 1.3.0
-      '@pandacss/extractor': 1.3.0(typescript@5.9.2)
-      '@pandacss/logger': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/config': 1.3.1
+      '@pandacss/core': 1.3.1
+      '@pandacss/extractor': 1.3.1(typescript@5.9.2)
+      '@pandacss/logger': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/types': 1.3.1
       '@vue/compiler-sfc': 3.4.19
       magic-string: 0.30.17
       ts-morph: 26.0.0
@@ -11334,46 +11609,46 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/postcss@1.3.0(typescript@5.9.2)':
+  '@pandacss/postcss@1.3.1(typescript@5.9.2)':
     dependencies:
-      '@pandacss/node': 1.3.0(typescript@5.9.2)
+      '@pandacss/node': 1.3.1(typescript@5.9.2)
       postcss: 8.4.49
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/preset-base@1.3.0':
+  '@pandacss/preset-base@1.3.1':
     dependencies:
-      '@pandacss/types': 1.3.0
+      '@pandacss/types': 1.3.1
 
-  '@pandacss/preset-panda@1.3.0':
+  '@pandacss/preset-panda@1.3.1':
     dependencies:
-      '@pandacss/types': 1.3.0
+      '@pandacss/types': 1.3.1
 
-  '@pandacss/reporter@1.3.0':
+  '@pandacss/reporter@1.3.1':
     dependencies:
-      '@pandacss/core': 1.3.0
-      '@pandacss/generator': 1.3.0
-      '@pandacss/logger': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/core': 1.3.1
+      '@pandacss/generator': 1.3.1
+      '@pandacss/logger': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/types': 1.3.1
       table: 6.9.0
       wordwrapjs: 5.1.0
 
   '@pandacss/shared@0.36.1': {}
 
-  '@pandacss/shared@1.3.0': {}
+  '@pandacss/shared@1.3.1': {}
 
-  '@pandacss/token-dictionary@1.3.0':
+  '@pandacss/token-dictionary@1.3.1':
     dependencies:
-      '@pandacss/logger': 1.3.0
-      '@pandacss/shared': 1.3.0
-      '@pandacss/types': 1.3.0
+      '@pandacss/logger': 1.3.1
+      '@pandacss/shared': 1.3.1
+      '@pandacss/types': 1.3.1
       ts-pattern: 5.8.0
 
   '@pandacss/types@0.36.1': {}
 
-  '@pandacss/types@1.3.0': {}
+  '@pandacss/types@1.3.1': {}
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -11641,12 +11916,12 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tabler/icons-react@3.34.1(react@19.1.1)':
+  '@tabler/icons-react@3.35.0(react@19.1.1)':
     dependencies:
-      '@tabler/icons': 3.34.1
+      '@tabler/icons': 3.35.0
       react: 19.1.1
 
-  '@tabler/icons@3.34.1': {}
+  '@tabler/icons@3.35.0': {}
 
   '@tanstack/history@1.114.22': {}
 
@@ -11846,6 +12121,11 @@ snapshots:
     dependencies:
       '@types/node': 22.15.31
 
+  '@types/fs-extra@11.0.4':
+    dependencies:
+      '@types/jsonfile': 6.1.4
+      '@types/node': 22.15.31
+
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -11856,6 +12136,10 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/js-yaml@4.0.9': {}
+
+  '@types/jsonfile@6.1.4':
+    dependencies:
+      '@types/node': 22.15.31
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -11889,15 +12173,19 @@ snapshots:
 
   '@types/object-hash@3.0.6': {}
 
+  '@types/parse-gitignore@1.0.2':
+    dependencies:
+      '@types/node': 22.15.31
+
   '@types/picomatch@3.0.2': {}
 
   '@types/picomatch@4.0.2': {}
 
-  '@types/react-dom@19.1.9(@types/react@19.1.12)':
+  '@types/react-dom@19.1.9(@types/react@19.1.13)':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  '@types/react@19.1.12':
+  '@types/react@19.1.13':
     dependencies:
       csstype: 3.1.3
 
@@ -12145,23 +12433,23 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@5.0.5(@types/react@19.1.12)(react@19.1.1)(xstate@5.20.2)':
+  '@xstate/react@5.0.5(@types/react@19.1.13)(react@19.1.1)(xstate@5.20.2)':
     dependencies:
       react: 19.1.1
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.12)(react@19.1.1)
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.13)(react@19.1.1)
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
       xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xyflow/react@12.8.4(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@xyflow/react@12.8.4(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@xyflow/system': 0.0.68
       classcat: 5.0.5
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
-      zustand: 4.5.7(@types/react@19.1.12)(react@19.1.1)
+      zustand: 4.5.7(@types/react@19.1.13)(react@19.1.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -12793,8 +13081,6 @@ snapshots:
       consola: 3.4.2
 
   classcat@5.0.5: {}
-
-  classnames@2.5.1: {}
 
   cli-boxes@3.0.0: {}
 
@@ -15157,7 +15443,7 @@ snapshots:
 
   min-indent@1.0.1: {}
 
-  miniflare@4.20250816.0:
+  miniflare@4.20250816.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       acorn: 8.14.0
@@ -15166,7 +15452,7 @@ snapshots:
       glob-to-regexp: 0.4.1
       sharp: 0.34.3
       stoppable: 1.1.0
-      undici: 7.13.0
+      undici: 7.14.0
       workerd: 1.20250816.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
@@ -15175,7 +15461,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@4.20250829.0:
+  miniflare@4.20250906.0:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       acorn: 8.14.0
@@ -15184,8 +15470,8 @@ snapshots:
       glob-to-regexp: 0.4.1
       sharp: 0.34.3
       stoppable: 1.1.0
-      undici: 7.13.0
-      workerd: 1.20250829.0
+      undici: 7.14.0
+      workerd: 1.20250906.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
       zod: 3.22.3
@@ -15532,6 +15818,27 @@ snapshots:
 
   outdent@0.8.0: {}
 
+  oxlint-tsgolint@0.2.0:
+    optionalDependencies:
+      '@oxlint-tsgolint/darwin-arm64': 0.2.0
+      '@oxlint-tsgolint/darwin-x64': 0.2.0
+      '@oxlint-tsgolint/linux-arm64': 0.2.0
+      '@oxlint-tsgolint/linux-x64': 0.2.0
+      '@oxlint-tsgolint/win32-arm64': 0.2.0
+      '@oxlint-tsgolint/win32-x64': 0.2.0
+
+  oxlint@1.18.0(oxlint-tsgolint@0.2.0):
+    optionalDependencies:
+      '@oxlint/darwin-arm64': 1.18.0
+      '@oxlint/darwin-x64': 1.18.0
+      '@oxlint/linux-arm64-gnu': 1.18.0
+      '@oxlint/linux-arm64-musl': 1.18.0
+      '@oxlint/linux-x64-gnu': 1.18.0
+      '@oxlint/linux-x64-musl': 1.18.0
+      '@oxlint/win32-arm64': 1.18.0
+      '@oxlint/win32-x64': 1.18.0
+      oxlint-tsgolint: 0.2.0
+
   p-debounce@4.0.0: {}
 
   p-finally@1.0.0: {}
@@ -15597,9 +15904,9 @@ snapshots:
 
   pako@1.0.11: {}
 
-  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.3.0(typescript@5.9.2))(@radix-ui/colors@3.0.0):
+  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.3.1(typescript@5.9.2))(@radix-ui/colors@3.0.0):
     dependencies:
-      '@pandacss/dev': 1.3.0(typescript@5.9.2)
+      '@pandacss/dev': 1.3.1(typescript@5.9.2)
       '@radix-ui/colors': 3.0.0
 
   param-case@3.0.4:
@@ -15627,6 +15934,8 @@ snapshots:
       is-hexadecimal: 2.0.1
 
   parse-github-url@1.0.2: {}
+
+  parse-gitignore@2.0.0: {}
 
   parse-json@4.0.0:
     dependencies:
@@ -16095,24 +16404,24 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-remove-scroll-bar@2.3.8(@types/react@19.1.12)(react@19.1.1):
+  react-remove-scroll-bar@2.3.8(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      react-style-singleton: 2.2.3(@types/react@19.1.12)(react@19.1.1)
+      react-style-singleton: 2.2.3(@types/react@19.1.13)(react@19.1.1)
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  react-remove-scroll@2.7.0(@types/react@19.1.12)(react@19.1.1):
+  react-remove-scroll@2.7.1(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      react-remove-scroll-bar: 2.3.8(@types/react@19.1.12)(react@19.1.1)
-      react-style-singleton: 2.2.3(@types/react@19.1.12)(react@19.1.1)
+      react-remove-scroll-bar: 2.3.8(@types/react@19.1.13)(react@19.1.1)
+      react-style-singleton: 2.2.3(@types/react@19.1.13)(react@19.1.1)
       tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.1.12)(react@19.1.1)
-      use-sidecar: 1.1.3(@types/react@19.1.12)(react@19.1.1)
+      use-callback-ref: 1.3.3(@types/react@19.1.13)(react@19.1.1)
+      use-sidecar: 1.1.3(@types/react@19.1.13)(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
   react-resizable-panels@3.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
@@ -16126,20 +16435,20 @@ snapshots:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  react-style-singleton@2.2.3(@types/react@19.1.12)(react@19.1.1):
+  react-style-singleton@2.2.3(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       get-nonce: 1.0.1
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  react-textarea-autosize@8.5.9(@types/react@19.1.12)(react@19.1.1):
+  react-textarea-autosize@8.5.9(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.27.6
       react: 19.1.1
-      use-composed-ref: 1.4.0(@types/react@19.1.12)(react@19.1.1)
-      use-latest: 1.3.0(@types/react@19.1.12)(react@19.1.1)
+      use-composed-ref: 1.4.0(@types/react@19.1.13)(react@19.1.1)
+      use-latest: 1.3.0(@types/react@19.1.13)(react@19.1.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -17184,9 +17493,17 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici@7.13.0: {}
+  undici@7.14.0: {}
 
   unenv@2.0.0-rc.19:
+    dependencies:
+      defu: 6.1.4
+      exsolve: 1.0.7
+      ohash: 2.0.11
+      pathe: 2.0.3
+      ufo: 1.6.1
+
+  unenv@2.0.0-rc.21:
     dependencies:
       defu: 6.1.4
       exsolve: 1.0.7
@@ -17341,39 +17658,39 @@ snapshots:
       punycode: 1.4.1
       qs: 6.14.0
 
-  use-callback-ref@1.3.3(@types/react@19.1.12)(react@19.1.1):
+  use-callback-ref@1.3.3(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  use-composed-ref@1.4.0(@types/react@19.1.12)(react@19.1.1):
+  use-composed-ref@1.4.0(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  use-isomorphic-layout-effect@1.2.1(@types/react@19.1.12)(react@19.1.1):
+  use-isomorphic-layout-effect@1.2.1(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  use-latest@1.3.0(@types/react@19.1.12)(react@19.1.1):
+  use-latest@1.3.0(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       react: 19.1.1
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.12)(react@19.1.1)
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.13)(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
-  use-sidecar@1.1.3(@types/react@19.1.12)(react@19.1.1):
+  use-sidecar@1.1.3(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       detect-node-es: 1.1.0
       react: 19.1.1
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
 
   use-sync-external-store@1.5.0(react@19.1.1):
     dependencies:
@@ -17856,24 +18173,24 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250816.0
       '@cloudflare/workerd-windows-64': 1.20250816.0
 
-  workerd@1.20250829.0:
+  workerd@1.20250906.0:
     optionalDependencies:
-      '@cloudflare/workerd-darwin-64': 1.20250829.0
-      '@cloudflare/workerd-darwin-arm64': 1.20250829.0
-      '@cloudflare/workerd-linux-64': 1.20250829.0
-      '@cloudflare/workerd-linux-arm64': 1.20250829.0
-      '@cloudflare/workerd-windows-64': 1.20250829.0
+      '@cloudflare/workerd-darwin-64': 1.20250906.0
+      '@cloudflare/workerd-darwin-arm64': 1.20250906.0
+      '@cloudflare/workerd-linux-64': 1.20250906.0
+      '@cloudflare/workerd-linux-arm64': 1.20250906.0
+      '@cloudflare/workerd-windows-64': 1.20250906.0
 
-  wrangler@4.33.2:
+  wrangler@4.35.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
-      '@cloudflare/unenv-preset': 2.7.1(unenv@2.0.0-rc.19)(workerd@1.20250829.0)
+      '@cloudflare/unenv-preset': 2.7.3(unenv@2.0.0-rc.21)(workerd@1.20250906.0)
       blake3-wasm: 2.1.5
       esbuild: 0.25.9
-      miniflare: 4.20250829.0
+      miniflare: 4.20250906.0
       path-to-regexp: 6.3.0
-      unenv: 2.0.0-rc.19
-      workerd: 1.20250829.0
+      unenv: 2.0.0-rc.21
+      workerd: 1.20250906.0
     optionalDependencies:
       fsevents: 2.3.3
     transitivePeerDependencies:
@@ -18000,13 +18317,15 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zustand@4.5.7(@types/react@19.1.12)(react@19.1.1):
+  zustand@4.5.7(@types/react@19.1.13)(react@19.1.1):
     dependencies:
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.13
       react: 19.1.1
 
   zwitch@2.0.4: {}
+
+  zx@8.8.1: {}
 
   zx@8.8.4-lite: {}

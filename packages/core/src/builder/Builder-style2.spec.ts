@@ -157,7 +157,7 @@ describe('Builder (style 2)', () => {
       )
 
     expect(() => {
-      const raw = b.deployment(_ =>
+      b.deployment(_ =>
         _.deployment(
           _.instanceOf('cloud.ui'),
         )
@@ -182,7 +182,7 @@ describe('Builder (style 2)', () => {
 
   it('should build and compute LikeC4Model', async ({ expect }) => {
     const m = spec.clone()
-      .model(({ system, actor, component, relTo, rel }, _) =>
+      .model(({ system, actor, component, rel }, _) =>
         _(
           actor('customer'),
           system('cloud').with(
@@ -216,7 +216,7 @@ describe('Builder (style 2)', () => {
 
   it('should set summary and description', async ({ expect }) => {
     const m = spec.clone()
-      .model(({ component, relTo, rel }, _) =>
+      .model(({ component }, _) =>
         _(
           component('c1', {
             summary: 'summary',

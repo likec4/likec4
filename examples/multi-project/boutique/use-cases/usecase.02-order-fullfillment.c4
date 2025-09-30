@@ -7,24 +7,25 @@ views "Use Cases" {
 
     '''
 
-    customer -> boutique {
-      title 'Customer places order'
-      navigateTo place-order
-      notes '
+    customer
+      -> boutique.checkout {
+        title 'Customer places order'
+        navigateTo place-order
+        notes '
         The customer interacts with the web application to place an order.
       '
-    }
-    payment-gateway <- boutique 'initiates payment' {
-      notes '
+      }
+      -> payment-gateway 'initiates payment' {
+        notes '
         Payment service initiates payment processing, which may take a few seconds to a few minutes.
       '
-    }
-    payment-gateway -> boutique.payments 'confirms payment with webnook' {
-      notes '
+      }
+      -> boutique.payments 'confirms payment with webnook' {
+        notes '
         When customer completes the payment, the payment gateway sends a confirmation as a webhook.
       '
-    }
-    boutique.payments -> boutique.checkout 'confirms pending payment'
+      }
+      -> boutique.checkout 'confirms pending payment'
 
     parallel {
       boutique.checkout -> boutique.shipping 'requests fulfillment' {

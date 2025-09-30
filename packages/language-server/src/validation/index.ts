@@ -1,3 +1,5 @@
+import { onNextTick } from '@likec4/core/utils'
+import { loggable } from '@likec4/log'
 import { type AstNode, DocumentState } from 'langium'
 import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -10,10 +12,10 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
-import { dynamicViewDisplayVariant, dynamicViewStep } from './dynamic-view'
+import { dynamicViewDisplayVariant, dynamicViewStepChain, dynamicViewStepSingle } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
-import { checkImported, checkImportsFromPoject } from './imports'
+import { checkImportsFromPoject } from './imports'
 import {
   colorLiteralRuleChecks,
   iconPropertyRuleChecks,
@@ -65,7 +67,8 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isFqnExpr,
   ast.isRelationExpr,
   ast.isDynamicViewParallelSteps,
-  ast.isDynamicViewStep,
+  ast.isDynamicStepChain,
+  ast.isDynamicStepSingle,
   ast.isDeploymentViewRule,
   ast.isDeploymentViewRulePredicate,
   ast.isExpressionV2,
@@ -157,7 +160,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalPredicateGroup: checkGlobalPredicate(services),
     GlobalDynamicPredicateGroup: checkGlobalPredicate(services),
     GlobalStyleId: checkGlobalStyleId(services),
-    DynamicViewStep: dynamicViewStep(services),
+    DynamicStepSingle: dynamicViewStepSingle(services),
+    DynamicStepChain: dynamicViewStepChain(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),
@@ -171,21 +175,24 @@ export function registerValidationChecks(services: LikeC4Services) {
     IncomingRelationExpr: checkIncomingRelationExpr(services),
     OutgoingRelationExpr: checkOutgoingRelationExpr(services),
     ImportsFromPoject: checkImportsFromPoject(services),
-    Imported: checkImported(services),
+    // Imported: checkImported(services),
     ColorLiteral: colorLiteralRuleChecks(services),
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {
-    // workaround for bug in langium
-    services.shared.workspace.DocumentBuilder.onUpdate((_, deleted) => {
-      for (const uri of deleted) {
-        logger.debug(`clear diagnostics for deleted ${uri.path}`)
-        void connection.sendDiagnostics({
-          uri: uri.toString(),
-          diagnostics: [],
-        })
-      }
+    // delay initialization
+    onNextTick(() => {
+      // workaround for bug in langium
+      services.shared.workspace.DocumentBuilder.onUpdate((_, deleted) => {
+        for (const uri of deleted) {
+          logger.debug(`clear diagnostics for deleted ${uri.path}`)
+          connection.sendDiagnostics({
+            uri: uri.toString(),
+            diagnostics: [],
+          }).catch(e => logger.error(loggable(e)))
+        }
+      })
     })
   }
 }

@@ -1,20 +1,19 @@
-import { defaultTheme } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
-import type { NodeProps } from '@xyflow/react'
-import { Handle } from '@xyflow/react'
-import { Position } from '@xyflow/system'
-import { ElementNodeContainer, ElementShape, ElementTitle } from '../../../base/primitives'
-import { type Types } from '../../types'
+import { Handle, Position } from '@xyflow/react'
+import { isTruthy } from 'remeda'
+import type { SetNonNullable } from 'type-fest'
+import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
+import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { ElementDetailsButtonWithHandler } from './nodes'
 
-const positionMap: Record<Types.SequenceActorNodePort['position'], Position> = {
+const positionMap = {
   left: Position.Left,
   right: Position.Right,
   top: Position.Top,
   bottom: Position.Bottom,
-}
+} as const
 
 const ActorStepPort = ({
   data,
@@ -36,20 +35,15 @@ const ActorStepPort = ({
             _whenHovered: '7px',
             _whenSelected: '7px',
           },
-          // pointerEvents: 'none',
           transition: 'fast',
           translateX: '-1/2',
           translateY: '-1/2',
           translate: 'auto',
-          // transform: 'translate',
         })}
         style={{
           top: p.cy,
           left: p.cx,
           height: p.height,
-          // transform: p.type === 'source' ? 'translate(-50%, -16px)' : 'translate(-50%, -50%)',
-          // transform: 'translate(-50%, -50%)',
-          // zIndex: p.type === 'source' ? 1 : 0,
         }}
       />
       <Handle
@@ -70,7 +64,10 @@ const ActorStepPort = ({
   )
 }
 
-export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
+const hasModelFqn = <D extends Types.SequenceActorNodeData>(data: D): data is SetNonNullable<D, 'modelFqn'> =>
+  isTruthy(data.modelFqn)
+
+export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
   const data = props.data
   const {
     positionAbsoluteY,
@@ -84,6 +81,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
   return (
     <>
       <Box
+        data-likec4-color={'gray'}
         className={css({
           position: 'absolute',
           rounded: 'xs',
@@ -92,50 +90,24 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
           transition: 'fast',
           translateX: '-1/2',
           translate: 'auto',
-          // transform: 'translate',
         })}
         style={{
-          // position: 'absolute',
-          backgroundColor: defaultTheme.colors.gray.elements.stroke,
-          opacity: isHovered ? 0.5 : 0.4,
+          backgroundColor: 'var(--likec4-palette-stroke)',
+          opacity: isHovered ? 0.6 : 0.4,
           left: '50%',
           width: isHovered ? 3 : 2,
           height: viewHeight - positionAbsoluteY,
           zIndex: -1,
           pointerEvents: 'none',
-          // top: p.y,
-          // left: p.width / 2,
-          // height: p.type === 'source' ? 48 : 32,
-          // transform: p.type === 'source' ? 'translate(-50%, -16px)' : 'translate(-50%, -50%)',
-          // transform: 'translate(-50%, -50%)',
-          // zIndex: p.type === 'source' ? 1 : 0,
         }}
       />
-      {
-        /* <div
-        // css={{
-        //   backgroundColor: 'var(--likec4-palette-fill)',
-        // }}
-        style={{
-          position: 'absolute',
-          backgroundColor: defaultTheme.elements.gray.fill,
-          opacity: 0.5,
-          top: 8,
-          left: 'calc(50% - 1px)',
-          width: 2,
-          height: viewHeight - positionAbsoluteY,
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}>
-      </div> */
-      }
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
-        <ElementTitle {...props} />
-        {data.modelFqn && (
+        <ElementData {...props} />
+        {hasModelFqn(data) && (
           <>
-            <ElementActions {...props} data={data as Types.ElementNodeData} />
-            <ElementDetailsButtonWithHandler {...props} data={data as Types.ElementNodeData} />
+            <ElementActions {...props} data={data} />
+            <ElementDetailsButtonWithHandler {...props} data={data} />
           </>
         )}
       </ElementNodeContainer>
@@ -144,7 +116,7 @@ export function SequenceActorNode(props: NodeProps<Types.SequenceActorNode>) {
   )
 }
 
-export function SequenceParallelArea(props: NodeProps<Types.SequenceActorNode>) {
+export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
   return (
     <Box
       data-likec4-color={props.data.color}

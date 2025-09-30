@@ -1,28 +1,15 @@
-import { first, only, values } from 'remeda'
+import { first } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { type AnyTypes, Builder } from '../../builder'
-import { LikeC4Model } from '../../model'
+import { Builder } from '../../builder'
 import { findConnection, findConnectionsWithin } from '../../model/connection/model'
-import { type LikeC4View, isElementView } from '../../types'
-import { invariant } from '../../utils'
-import { withReadableEdges } from '../utils/with-readable-edges'
 import { TestHelper } from './__test__/TestHelper'
 import { cleanRedundantRelationships, findRedundantConnections } from './clean-connections'
-import { computeElementView } from './compute'
 
 const builder = Builder.specification({
   elements: {
     el: {},
   },
 })
-
-function compute<const T extends AnyTypes>(buider: Builder<T>) {
-  const parsed = buider.build()
-  const likec4model = LikeC4Model.create(parsed)
-  const view = only(values(parsed.views as Record<string, LikeC4View<any>>))
-  invariant(view && isElementView(view), 'Must have one element view')
-  return withReadableEdges(computeElementView(likec4model, view))
-}
 
 describe('Redundant relationships', () => {
   it('correctly find and exclude redundant', () => {

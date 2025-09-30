@@ -1,5 +1,5 @@
 import { nonNullable } from '@likec4/core'
-import { type AstNode, type CstNode, type NamedAstNode, DefaultNameProvider, isNamed } from 'langium'
+import { type AstNode, type CstNode, DefaultNameProvider, isNamed } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 

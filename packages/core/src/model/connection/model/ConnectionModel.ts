@@ -119,11 +119,11 @@ export class ConnectionModel<A extends AnyAux = Unknown> implements Connection<E
 
   [customInspectSymbol](
     // @ts-ignore
-    depth,
+    _depth,
     // @ts-ignore
-    inspectOptions,
+    _inspectOptions,
     // @ts-ignore
-    inspect,
+    _inspect,
   ) {
     const asString = this.toString()
 

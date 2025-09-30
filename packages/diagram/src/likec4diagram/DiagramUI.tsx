@@ -1,46 +1,39 @@
+import { useRerender } from '@react-hookz/web'
 import { memo } from 'react'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context'
+import { EnsureCurrentViewModel } from '../context/LikeC4ModelContext'
 import { useOverlaysActorRef } from '../hooks/useOverlaysActor'
 import { useSearchActorRef } from '../hooks/useSearchActor'
-import { EnsureCurrentViewModel } from '../likec4model/LikeC4ModelContext'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { RelationshipPopover } from './relationship-popover/RelationshipPopover'
-import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
+import { NotationPanel } from './ui'
 
-export const DiagramUI = memo(() => {
+export const LikeC4DiagramUI = memo(() => {
   const {
     enableControls,
-    enableViewTitle,
     enableNotations,
-    enableDynamicViewWalkthrough,
     enableSearch,
     enableRelationshipDetails,
   } = useEnabledFeatures()
+  const rerender = useRerender()
   const overlaysActorRef = useOverlaysActorRef()
   const searchActorRef = useSearchActorRef()
 
   return (
-    <>
-      {enableControls === 'next'
-        ? (
-          <EnsureCurrentViewModel>
-            <NavigationPanel />
-          </EnsureCurrentViewModel>
-        )
-        : <Controls />}
+    <ErrorBoundary onReset={rerender}>
+      {enableControls && (
+        <EnsureCurrentViewModel>
+          <NavigationPanel />
+        </EnsureCurrentViewModel>
+      )}
       {overlaysActorRef && <Overlays overlaysActorRef={overlaysActorRef} />}
       {enableNotations && <NotationPanel />}
-      {enableControls === true && (
-        <>
-          {enableViewTitle && <DiagramTitlePanel />}
-          {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
-        </>
-      )}
       {enableSearch && searchActorRef && <Search searchActorRef={searchActorRef} />}
       {enableRelationshipDetails && <RelationshipPopover />}
-    </>
+    </ErrorBoundary>
   )
 })
-DiagramUI.displayName = 'DiagramUI'
+LikeC4DiagramUI.displayName = 'DiagramUI'

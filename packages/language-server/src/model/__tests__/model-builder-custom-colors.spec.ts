@@ -1,4 +1,4 @@
-import { type ViewId } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { ThemeColors } from '@likec4/core/styles'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'

@@ -1,4 +1,4 @@
-import { type ProjectId } from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
 import {
   BroadcastModelUpdate,
@@ -19,9 +19,9 @@ import { Messenger } from 'vscode-messenger'
 import { BROADCAST } from 'vscode-messenger-common'
 import { logger as rootLogger } from '../logger'
 import { commands } from '../meta'
-import { type Rpc } from '../Rpc'
+import type { Rpc } from '../Rpc'
 import { performanceMark } from '../utils'
-import { type DiagramPanel } from './useDiagramPanel'
+import type { DiagramPanel } from './useDiagramPanel'
 
 const logger = rootLogger.getChild('messenger')
 

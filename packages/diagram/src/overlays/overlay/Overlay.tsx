@@ -1,4 +1,5 @@
 import { cx } from '@likec4/styles/css'
+import { overlay } from '@likec4/styles/recipes'
 import {
   RemoveScroll,
 } from '@mantine/core'
@@ -7,7 +8,10 @@ import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import { m, useReducedMotionConfig } from 'motion/react'
 import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import { stopPropagation } from '../../utils'
-import { backdropBlur, backdropOpacity, level as cssVarLevel, overlay as overlayCVA } from './Overlay.css'
+
+const backdropBlur = '--_blur'
+const backdropOpacity = '--_opacity'
+const cssVarLevel = '--_level'
 
 export type OverlayProps = PropsWithChildren<{
   fullscreen?: boolean | undefined
@@ -69,7 +73,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     setOpened(true)
   }, openDelay > 0 ? openDelay : undefined)
 
-  const styles = overlayCVA({
+  const overlayRecipe = overlay({
     fullscreen,
     withBackdrop,
   })
@@ -88,7 +92,8 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       className={cx(
         classes?.dialog,
         className,
-        styles.dialog,
+        overlayRecipe,
+        // styles.dialog,
         fullscreen && RemoveScroll.classNames.fullWidth,
       )}
       layout
@@ -157,8 +162,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         <div
           className={cx(
             classes?.body,
-            styles.body,
-            'overlay-body',
+            'likec4-overlay-body',
           )}>
           {opened && <>{children}</>}
         </div>

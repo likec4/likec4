@@ -176,18 +176,22 @@ function convertLegacyModel(
         ...convertDescription(description),
       })),
     },
-    relations: mapValues(relations, ({ id, source, target, color, description, ...rest }): Relationship => ({
-      ...rest,
-      ...convertDescription(description),
-      id: id as unknown as scalar.RelationId,
-      ...(color && { color: color as any }),
-      source: {
-        model: source,
-      },
-      target: {
-        model: target,
-      },
-    })),
+    relations: mapValues(
+      relations,
+      ({ id, source, target, color, description, navigateTo, ...rest }): Relationship => ({
+        ...rest,
+        ...convertDescription(description),
+        id: id as unknown as scalar.RelationId,
+        ...(color && { color: color as any }),
+        ...(navigateTo && { navigateTo: navigateTo as any }),
+        source: {
+          model: source,
+        },
+        target: {
+          model: target,
+        },
+      }),
+    ),
     views: mapValues(views, ({ __, id, description, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
       ...rest,
       description: description ? { txt: description } : null,

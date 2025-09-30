@@ -5,7 +5,7 @@ import { type ButtonProps, Button, SegmentedControl } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
 } from '@tabler/icons-react'
-import { type HTMLMotionProps } from 'motion/react'
+import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
@@ -30,7 +30,7 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
   />
 ))
 
-function StartWalkthroughButton({ onClick }: { onClick: () => void }) {
+function StartWalkthroughButton() {
   const diagram = useDiagram()
   const actor = useNavigationActor()
   return (
@@ -104,7 +104,6 @@ function DynamicViewModeSwitcher({
 export function DynamicViewControls() {
   const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
   const diagram = useDiagram()
-  const actor = useNavigationActor()
   return (
     <>
       <DynamicViewModeSwitcher
@@ -114,12 +113,7 @@ export function DynamicViewControls() {
           diagram.switchDynamicViewVariant(mode)
         }}
       />
-      <StartWalkthroughButton
-        key="trigger-dynamic-walkthrough"
-        onClick={() => {
-          actor.closeDropdown()
-          diagram.startWalkthrough()
-        }} />
+      <StartWalkthroughButton key="trigger-dynamic-walkthrough" />
     </>
   )
 }

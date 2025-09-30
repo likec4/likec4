@@ -1,6 +1,6 @@
-import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
+import { LikeC4Diagram, useDiagramContext, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { NotFound } from '../components/NotFound'
 import { pageTitle as defaultPageTitle } from '../const'
 import { useCurrentDiagram } from '../hooks'
@@ -9,9 +9,12 @@ export function ViewReact() {
   const navigate = useNavigate()
   const view = useCurrentDiagram()
   const model = useLikeC4Model()
+  const { dynamic } = useSearch({
+    from: '__root__',
+  })
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       viewTransition: false,
       params: (current) => ({
@@ -39,17 +42,18 @@ export function ViewReact() {
       readonly
       zoomable
       pannable
-      controls="next"
+      controls
       fitViewPadding={{
         top: '70px',
-        bottom: '16px',
-        left: '16px',
-        right: '16px',
+        bottom: '32px',
+        left: '32px',
+        right: '32px',
       }}
-      showDiagramTitle
       showNavigationButtons
+      enableSearch
       enableFocusMode
       enableDynamicViewWalkthrough
+      dynamicViewVariant={dynamic}
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
@@ -60,10 +64,32 @@ export function ViewReact() {
       nodesSelectable
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={() => {
-        navigate({
+        void navigate({
           to: '/',
         })
       }}
-    />
+    >
+      <DiagramListener />
+    </LikeC4Diagram>
   )
+}
+
+function DiagramListener() {
+  const router = useRouter()
+  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
+
+  useUpdateEffect(() => {
+    const search = router.latestLocation.search.dynamic ?? 'diagram'
+    if (search !== dynamicViewVariant) {
+      void router.buildAndCommitLocation({
+        search: (current?: any) => ({
+          ...current,
+          dynamic: dynamicViewVariant,
+        }),
+        viewTransition: false,
+      })
+    }
+  }, [dynamicViewVariant])
+
+  return null
 }

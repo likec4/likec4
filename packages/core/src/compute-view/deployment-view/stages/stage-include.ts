@@ -3,7 +3,7 @@ import { isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type CtxElement, AbstractStageInclude } from '../../memory'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
-import { type Ctx } from '../memory/memory'
+import type { Ctx } from '../memory/memory'
 import { findConnection, findConnectionsBetween } from '../utils'
 
 type Elem = CtxElement<Ctx>

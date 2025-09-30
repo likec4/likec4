@@ -1,4 +1,4 @@
-import { type Element, type ViewId } from '@likec4/core'
+import type { Element, ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'

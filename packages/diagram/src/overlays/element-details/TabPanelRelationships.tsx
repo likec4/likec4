@@ -3,7 +3,6 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { ActionIcon, Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
-import { useState } from 'react'
 import { unique } from 'remeda'
 import { useOverlaysActorRef } from '../../hooks/useOverlaysActor'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
@@ -33,7 +32,6 @@ export function TabPanelRelationships({
   const overlaysActor = useOverlaysActorRef()
   const delailsActor = useElementDetailsActorRef()
   const relationshipsBrowserActor = useSelector(delailsActor, s => s.children[`${delailsActor.id}-relationships`])
-  const [scope, setScope] = useState<'global' | 'view'>('view')
 
   const incoming = [...element.incoming()].map(r => r.id)
   const outgoing = [...element.outgoing()].map(r => r.id)

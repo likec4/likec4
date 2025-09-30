@@ -11,7 +11,7 @@ describe('computeRelationshipsView', () => {
       },
     })
   const builder = specs
-    .model(({ el, rel }, _) =>
+    .model(({ el }, _) =>
       _(
         el('cloud').with(
           el('backend').with(

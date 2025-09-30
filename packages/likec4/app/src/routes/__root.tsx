@@ -26,8 +26,20 @@ const asPadding = (v: unknown) => {
   return 20
 }
 
+const asDynamicVariant = (v: unknown): 'diagram' | 'sequence' => {
+  if (typeof v !== 'string') {
+    return 'diagram'
+  }
+  const vlower = v.toLowerCase()
+  if (vlower === 'diagram' || vlower === 'sequence') {
+    return vlower
+  }
+  return 'diagram'
+}
+
 export type SearchParams = {
   theme?: 'light' | 'dark' | 'auto'
+  dynamic?: 'diagram' | 'sequence'
   padding?: number
 }
 
@@ -49,6 +61,9 @@ export const Route = createRootRouteWithContext<Context>()({
       ...isTruthy(search.theme) && {
         theme: asTheme(search.theme),
       },
+      ...isTruthy(search.dynamic) && {
+        dynamic: asDynamicVariant(search.dynamic),
+      },
     }
   },
   search: {
@@ -56,6 +71,7 @@ export const Route = createRootRouteWithContext<Context>()({
       stripSearchParams({
         padding: 20,
         theme: 'auto',
+        dynamic: 'diagram',
       }),
     ],
   },

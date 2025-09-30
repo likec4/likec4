@@ -23,6 +23,19 @@ jobs:
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
+  check-lint:
+    name: 🧹 lint
+    timeout-minutes: 5
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: 🧹 lint
+        run: pnpm ci:lint
+
   check-build:
     name: 🛠️ build
     timeout-minutes: 5
@@ -35,7 +48,7 @@ jobs:
 
       - name: ⚙️ build
         run: pnpm ci:build
-        
+
       - name: ⚙️ lint:package
         run: |
           pnpm lint:package

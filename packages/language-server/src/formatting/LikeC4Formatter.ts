@@ -12,6 +12,7 @@ import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from '
 import * as ast from '../generated/ast'
 import type { LikeC4Services } from '../module'
 import * as utils from './utils'
+import { isMultiline } from './utils'
 
 type QuoteStyle = 'single' | 'double' | 'ignore' | 'auto'
 interface LikeC4FormatterOptions {
@@ -109,7 +110,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatTags(node: AstNode) {
     this.on(node, ast.isTags, (n, f) => {
       const tags = GrammarUtils.findNodesForProperty(n.$cstNode, 'values')
-        .filter(x => x!!)
+        .filter(isTruthy)
         .slice(1) as CstNode[]
 
       f.cst(tags)
@@ -178,6 +179,36 @@ export class LikeC4Formatter extends AbstractFormatter {
         .append(FormattingOptions.noSpace)
 
       f.properties('title').prepend(FormattingOptions.oneSpace)
+
+      const wrapToNextLine =
+        // Dynamic step chain with multiline source
+        (ast.isDynamicStepChain(n) && isMultiline(n.$cstNode))
+        // This is the beginning of the series
+        || (ast.isDynamicStepSingle(n) && ast.isDynamicStepChain(n.$container) && isMultiline(n.$container.$cstNode!))
+
+      if (!wrapToNextLine) {
+        return
+      }
+
+      f.property('dotKind')
+        .prepend(Formatting.indent({ allowLess: false, allowMore: true, priority: 2 }))
+
+      f.keywords('->', '-[')
+        .prepend(Formatting.indent({ allowLess: false, allowMore: true, priority: 2 }))
+
+      if (n.custom?.$cstNode && isMultiline(n.custom.$cstNode)) {
+        f.property('custom')
+          .prepend({
+            options: {
+              allowLess: false,
+              allowMore: true,
+              priority: 2,
+            },
+            moves: [{
+              tabs: 1,
+            }],
+          })
+      }
     })
   }
 
@@ -226,26 +257,41 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       const formatter = this.getNodeFormatter(node)
       const openBrace = formatter.keywords('{')
-      const closeBrace = formatter.keywords('}')
-
-      const interiorNodes = formatter.interior(openBrace, closeBrace)
-
-      // Workaround for tags as they are parsed as overlapping regions.
-      // E.g. '#tag1, #tag2' will be parsed as two nodes: '#tag1' and '#tag1, #tag2'
-      let perviousNode = null
-      for (const interiorNode of interiorNodes.nodes) {
-        if (!perviousNode || !utils.areOverlap(perviousNode, interiorNode)) {
-          formatter.cst([interiorNode]).prepend(FormattingOptions.indent)
-        }
-        perviousNode = interiorNode
-      }
 
       openBrace
         .prepend(FormattingOptions.noIndent)
         .prepend(FormattingOptions.oneSpace)
-      closeBrace
-        .prepend(FormattingOptions.noIndent)
-        .prepend(Formatting.newLine({ allowMore: true }))
+
+      const multiline = isMultiline(node.$cstNode)
+
+      const closeBrace = formatter.keywords('}')
+      const interiorNodes = formatter.interior(openBrace, closeBrace)
+
+      // Workaround for tags as they are parsed as overlapping regions.
+      // E.g. '#tag1, #tag2' will be parsed as two nodes: '#tag1' and '#tag1, #tag2'
+      let previousNode = null
+      for (const interiorNode of interiorNodes.nodes) {
+        if (!multiline) {
+          formatter.cst([interiorNode])
+            .surround(FormattingOptions.oneSpace)
+          continue
+        }
+        if (!previousNode || !utils.areOverlap(previousNode, interiorNode)) {
+          formatter.cst([interiorNode])
+            .prepend(Formatting.newLine({ allowMore: true }))
+            .prepend(FormattingOptions.indent)
+        }
+        previousNode = interiorNode
+      }
+
+      if (multiline) {
+        closeBrace
+          .prepend(FormattingOptions.noIndent)
+          .prepend(Formatting.newLine({ allowMore: true }))
+      } else {
+        closeBrace
+          .prepend(Formatting.oneSpace({ allowLess: true }))
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-import { type LikeC4Model } from '../../model'
+import type { LikeC4Model } from '../../model'
 import type { ConnectionModel } from '../../model'
 import type { RelationshipModel } from '../../model'
 import type { ModelExpression, ModelFqnExpr, ModelRelationExpr } from '../../types'

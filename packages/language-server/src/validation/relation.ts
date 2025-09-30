@@ -1,9 +1,8 @@
-import { FqnExpr, FqnRef, isSameHierarchy } from '@likec4/core'
-import { type Reference, type ValidationCheck, AstUtils } from 'langium'
-import { isDefined } from 'remeda'
+import { FqnRef, isSameHierarchy } from '@likec4/core'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
-import { importsRef, safeCall } from '../utils'
+import { safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {

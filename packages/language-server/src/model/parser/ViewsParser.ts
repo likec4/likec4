@@ -1,7 +1,8 @@
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import { filter, find, isArray, isDefined, isEmpty, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
-import type { Writable } from 'type-fest'
+import { loggable } from '@likec4/log'
+import { filter, find, isDefined, isEmpty, isNonNullish, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
+import type { Except, Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
   type ParsedAstElementView,
@@ -11,7 +12,7 @@ import {
   toColor,
   ViewOps,
 } from '../../ast'
-import { logger, logWarnError } from '../../logger'
+import { logger as mainLogger } from '../../logger'
 import { stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -23,6 +24,8 @@ export type WithViewsParser = ReturnType<typeof ViewsParser>
 
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 
+const logger = mainLogger.getChild('ViewsParser')
+
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
@@ -32,7 +35,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           try {
             return isValid(s) ? this.parseViewRuleStyleOrGlobalRef(s) : []
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
             return []
           }
         })
@@ -63,7 +66,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               view.title = folder + ' / ' + (view.title || view.id)
             }
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
           }
         }
       }
@@ -125,7 +128,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             try {
               return this.isValid(n) ? this.parseElementViewRule(n) : []
             } catch (e) {
-              logWarnError(e)
+              logger.warn(loggable(e))
               return []
             }
           }),
@@ -176,7 +179,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             exprs.unshift(expr)
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
         if (!prev) {
           break
@@ -221,7 +224,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
           nonexhaustive(rule)
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
       return {
@@ -301,7 +304,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             try {
               return isValid(n) ? this.parseDynamicViewRule(n) : []
             } catch (e) {
-              logWarnError(e)
+              logger.warn(loggable(e))
               return []
             }
           }, [] as Array<c4.DynamicViewRule>),
@@ -316,10 +319,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               }
             }
           } catch (e) {
-            logWarnError(e)
+            logger.warn(loggable(e))
           }
           return acc
-        }, [] as c4.DynamicViewStepOrParallel[]),
+        }, [] as c4.DynamicViewStep[]),
         ...(manualLayout && { manualLayout }),
       }
     }
@@ -352,49 +355,134 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             }
           }
         } catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
         iter = iter.prev
       }
       return { include }
     }
 
-    parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicViewParallelSteps {
+    parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
+      const parallelId = pathInsideDynamicView(node)
+      const __parallel = node.steps.map(step => this.parseDynamicStep(step))
+      invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
       return {
-        __parallel: node.steps.map(step => this.parseDynamicStep(step)),
+        parallelId,
+        __parallel,
       }
     }
 
-    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
+    /**
+     * @returns non-empty array in case of step chain A -> B -> C
+     */
+    parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicStep | c4.DynamicStepsSeries {
+      if (ast.isDynamicStepSingle(node)) {
+        invariant(this.isValid(node))
+        return this.parseDynamicStepSingle(node)
+      }
+      const __series = this.recursiveParseDynamicStepChain(node)
+      invariant(isNonEmptyArray(__series), 'Dynamic step chain must have at least one step')
+      return {
+        seriesId: pathInsideDynamicView(node),
+        __series,
+      }
+    }
+
+    recursiveParseDynamicStepChain(
+      node: ast.DynamicStepChain,
+      callstack?: Array<[source: c4.Fqn, target: c4.Fqn]>,
+    ): c4.DynamicStep[] {
+      if (ast.isDynamicStepSingle(node.source)) {
+        if (!this.isValid(node.source)) {
+          return []
+        }
+        const previous = this.parseDynamicStepSingle(node.source)
+
+        // Head of the chain cannot be backward
+        if (previous.isBackward) {
+          return []
+        }
+
+        const thisStep = {
+          ...this.parseAbstractDynamicStep(node),
+          source: previous.target,
+        }
+        // if target is the same as source of previous step, then it is a backward step
+        // A -> B -> A
+        if (thisStep.target === previous.source) {
+          thisStep.isBackward = true
+        } else if (callstack) {
+          callstack.push([previous.source, previous.target])
+          callstack.push([thisStep.source, thisStep.target])
+        }
+        return [previous, thisStep]
+      }
+
+      callstack ??= []
+      const allprevious = this.recursiveParseDynamicStepChain(node.source, callstack)
+      if (!isNonEmptyArray(allprevious) || !this.isValid(node)) {
+        return []
+      }
+
+      const previous = last(allprevious)
+      const thisStep = {
+        ...this.parseAbstractDynamicStep(node),
+        source: previous.target,
+      }
+      const index = callstack.findIndex(([source, target]) => source === thisStep.target && target === thisStep.source)
+      if (index !== -1) {
+        thisStep.isBackward = true
+        callstack.splice(index, callstack.length - index)
+      } else {
+        callstack.push([thisStep.source, thisStep.target])
+      }
+      return [...allprevious, thisStep]
+    }
+
+    parseDynamicStepSingle(node: ast.DynamicStepSingle): c4.DynamicStep {
       const sourceEl = elementRef(node.source)
       if (!sourceEl) {
         throw new Error('Invalid reference to source')
       }
-      const targetEl = elementRef(node.target)
-      if (!targetEl) {
-        throw new Error('Invalid reference to target')
+      let baseStep = {
+        ...this.parseAbstractDynamicStep(node),
+        source: this.resolveFqn(sourceEl),
       }
-      let source = this.resolveFqn(sourceEl)
-      let target = this.resolveFqn(targetEl)
-      const title = removeIndent(node.title) ?? null
 
-      let step: Writable<c4.DynamicViewStep> = {
-        source,
-        target,
-        title,
-      }
       if (node.isBackward) {
-        step = {
-          source: target,
-          target: source,
-          title,
+        baseStep = {
+          ...baseStep,
+          source: baseStep.target,
+          target: baseStep.source,
           isBackward: true,
         }
       }
-      if (!isArray(node.custom?.props)) {
-        return step
+      return baseStep
+    }
+
+    parseAbstractDynamicStep(
+      astnode: ast.AbstractDynamicStep,
+    ): Writable<Except<c4.DynamicStep, 'source', { requireExactProps: true }>> {
+      const targetEl = elementRef(astnode.target)
+      if (!targetEl) {
+        throw new Error('Invalid reference to target')
       }
-      for (const prop of node.custom.props) {
+      const step: Writable<Omit<c4.DynamicStep, 'source'>> = {
+        target: this.resolveFqn(targetEl),
+        astPath: pathInsideDynamicView(astnode),
+      }
+
+      const title = removeIndent(astnode.title)
+      if (title) {
+        step.title = title
+      }
+
+      const kind = astnode.kind?.ref?.name ?? astnode.dotKind?.kind.ref?.name
+      if (kind) {
+        step.kind = kind as c4.RelationshipKind
+      }
+
+      for (const prop of astnode.custom?.props ?? []) {
         try {
           switch (true) {
             case ast.isRelationNavigateToProperty(prop): {
@@ -407,7 +495,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             case ast.isRelationStringProperty(prop):
             case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
-                step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
+                if (prop.key === 'description') {
+                  const value = removeIndent(prop.value)
+                  if (value) {
+                    step.description = value
+                  }
+                } else {
+                  step[prop.key] = removeIndent(parseMarkdownAsString(prop.value)) ?? ''
+                }
               }
               break
             }
@@ -441,10 +536,28 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
         }
         catch (e) {
-          logWarnError(e)
+          logger.warn(loggable(e))
         }
       }
       return step
     }
   }
+}
+
+function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps): string {
+  let node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
+  let path = []
+  while (!ast.isDynamicViewBody(node)) {
+    if (isNumber(node.$containerIndex)) {
+      path.unshift(
+        `@${node.$containerIndex}`,
+      )
+    }
+    path.unshift(
+      `/${node.$containerProperty ?? '__invalid__'}`,
+    )
+    node = node.$container
+  }
+
+  return path.join('')
 }

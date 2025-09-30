@@ -5,7 +5,7 @@ import {
   useFirstMountState,
 } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
-import { type DependencyList, type EffectCallback } from 'react'
+import type { DependencyList, EffectCallback } from 'react'
 
 const noop = () => {}
 

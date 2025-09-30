@@ -155,23 +155,23 @@ declare module 'likec4:react' {
 
 declare module 'likec4:dot' {
   export function loadDotSources(projectId: string): Promise<{
-    dotSource(viewId: string): string
-    svgSource(viewId: string): string
+    dotSource(this: void, viewId: string): string
+    svgSource(this: void, viewId: string): string
   }>
 }
 declare module 'likec4:d2' {
   export function loadD2Sources(projectId: string): Promise<{
-    d2Source(viewId: string): string
+    d2Source(this: void, viewId: string): string
   }>
 }
 declare module 'likec4:mmd' {
   export function loadMmdSources(projectId: string): Promise<{
-    mmdSource(viewId: string): string
+    mmdSource(this: void, viewId: string): string
   }>
 }
 declare module 'likec4:puml' {
   export function loadPumlSources(projectId: string): Promise<{
-    pumlSource(viewId: string): string
+    pumlSource(this: void, viewId: string): string
   }>
 }
 

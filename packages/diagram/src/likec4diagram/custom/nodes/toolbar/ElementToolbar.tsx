@@ -1,7 +1,6 @@
 import { type ElementShape, ElementShapes } from '@likec4/core/styles'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconCheck, IconSelector } from '@tabler/icons-react'
-import type { NodeProps } from '../../../../base/types'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import { stopPropagation } from '../../../../utils/xyflow'
 import type { Types } from '../../../types'
@@ -10,8 +9,7 @@ import { BrowseRelationshipsButton, GoToSourceButton, useHandlers } from './_sha
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
 
-type ElementToolbarProps = NodeProps<Types.ElementNodeData>
-export function ElementToolbar(props: ElementToolbarProps) {
+export function ElementToolbar(props: Types.NodeProps<'element'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {
@@ -43,8 +41,7 @@ export function ElementToolbar(props: ElementToolbarProps) {
   )
 }
 
-type DeploymentElementToolbarProps = NodeProps<Types.DeploymentElementNodeData>
-export function DeploymentElementToolbar(props: DeploymentElementToolbarProps) {
+export function DeploymentElementToolbar(props: Types.NodeProps<'deployment'>) {
   const { enableVscode, enableRelationshipBrowser } = useEnabledFeatures()
   const {
     data: {

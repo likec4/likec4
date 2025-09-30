@@ -4,9 +4,9 @@ import {
   type EdgeChange,
   type NodeChange,
   type ReactFlowInstance,
+  type ReactFlowState,
   applyEdgeChanges,
   applyNodeChanges,
-  useStoreApi,
 } from '@xyflow/react'
 import { type InternalNodeUpdate, getViewportForBounds } from '@xyflow/system'
 import { isNullish, omit, prop } from 'remeda'
@@ -27,24 +27,28 @@ import { Base } from '../../base'
 import { MinZoom, ZIndexes } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
-import { typedSystem } from '../../state/utils'
+import { typedSystem } from '../../likec4diagram/state/utils'
 import { centerXYInternalNode } from '../../utils'
 import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
 import type { LayoutRelationshipsViewResult } from './layout'
 import { viewToNodesEdge } from './useViewToNodesEdges'
 
-type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>
+type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>
 
 /**
  * Root node in 'subjects' column
  */
-const findRootSubject = (nodes: RelationshipsBrowserTypes.Node[]) =>
+const findRootSubject = (nodes: RelationshipsBrowserTypes.AnyNode[]) =>
   nodes.find((n): n is RelationshipsBrowserTypes.ElementNode | RelationshipsBrowserTypes.CompoundNode =>
     n.data.column === 'subjects' && isNullish(n.parentId)
   )
 
-export type XYStoreApi = ReturnType<typeof useStoreApi<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>>
+type XYStoreState = ReactFlowState<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>
+type XYStoreApi = {
+  getState: () => XYStoreState
+  setState: (state: XYStoreState) => void
+}
 
 export const layouter = fromPromise<{
   xyedges: RelationshipsBrowserTypes.Edge[]
@@ -230,7 +234,7 @@ export type Events =
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
 
-export const relationshipsBrowserLogic = setup({
+const _relationshipsBrowserLogic = setup({
   types: {
     context: {} as Context,
     tags: '' as 'active',
@@ -300,14 +304,14 @@ export const relationshipsBrowserLogic = setup({
       if (bounds) {
         const { width, height } = xystore.getState()
         const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined)
+        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined).catch(console.error)
       } else {
         xyflow.fitView({
           minZoom: MinZoom,
           maxZoom,
           padding: ViewPadding,
           ...(duration > 0 && { duration }),
-        })
+        }).catch(console.error)
       }
     },
     'xyflow.applyNodeChanges': assign(({ context, event }) => {
@@ -585,8 +589,8 @@ export const relationshipsBrowserLogic = setup({
   }),
 })
 
-export interface RelationshipsBrowserLogic extends ActorLogicFrom<typeof relationshipsBrowserLogic> {
-}
-export interface RelationshipsBrowserActorRef extends ActorRefFromLogic<RelationshipsBrowserLogic> {
-}
-export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserActorRef>
+export interface RelationshipsBrowserLogic extends ActorLogicFrom<typeof _relationshipsBrowserLogic> {}
+export const relationshipsBrowserLogic: RelationshipsBrowserLogic = _relationshipsBrowserLogic
+
+export interface RelationshipsBrowserActorRef extends ActorRefFromLogic<RelationshipsBrowserLogic> {}
+export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserLogic>

@@ -82,10 +82,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         "cloud.backend:amazon.s3",
       ],
       "parent": null,
-      "position": [
-        8,
-        8,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -118,10 +114,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
         "cloud.backend:amazon.s3",
       ],
       "parent": "cloud",
-      "position": [
-        40,
-        61,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -160,10 +152,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
-      "position": [
-        545,
-        8,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -199,10 +187,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "modelRef": "amazon.s3",
       "outEdges": [],
       "parent": "amazon",
-      "position": [
-        577,
-        61,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -487,10 +471,6 @@ sso authentification",
         "customer:cloud.frontend.dashboard",
       ],
       "parent": null,
-      "position": [
-        68,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -526,10 +506,6 @@ sso authentification",
         "support:cloud.frontend.adminPanel",
       ],
       "parent": null,
-      "position": [
-        498,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -570,10 +546,6 @@ sso authentification",
         "cloud.backend.storage:amazon",
       ],
       "parent": null,
-      "position": [
-        8,
-        271,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -611,10 +583,6 @@ sso authentification",
         "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "parent": "cloud",
-      "position": [
-        68,
-        332,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -652,10 +620,6 @@ sso authentification",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "parent": "cloud",
-      "position": [
-        498,
-        332,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -695,10 +659,6 @@ sso authentification",
         "cloud.backend.storage:amazon",
       ],
       "parent": "cloud",
-      "position": [
-        48,
-        620,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -737,10 +697,6 @@ sso authentification",
         "cloud.backend.graphql:cloud.backend.storage",
       ],
       "parent": "cloud.backend",
-      "position": [
-        88,
-        681,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -778,10 +734,6 @@ sso authentification",
         "cloud.backend.storage:amazon",
       ],
       "parent": "cloud.backend",
-      "position": [
-        518,
-        681,
-      ],
       "shape": "storage",
       "style": {
         "opacity": 15,
@@ -817,10 +769,6 @@ sso authentification",
       "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
-      "position": [
-        1055,
-        681,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -1034,10 +982,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "customer:cloud.frontend",
       ],
       "parent": null,
-      "position": [
-        0,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -1073,10 +1017,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "support:cloud.frontend",
       ],
       "parent": null,
-      "position": [
-        430,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -1116,10 +1056,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "cloud.backend:amazon",
       ],
       "parent": null,
-      "position": [
-        175,
-        271,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -1155,10 +1091,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "cloud.frontend:cloud.backend",
       ],
       "parent": "cloud",
-      "position": [
-        215,
-        332,
-      ],
       "shape": "browser",
       "style": {
         "opacity": 15,
@@ -1193,10 +1125,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
         "cloud.backend:amazon",
       ],
       "parent": "cloud",
-      "position": [
-        672,
-        332,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -1232,10 +1160,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
-      "position": [
-        1209,
-        332,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -1410,10 +1334,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "customer:cloud",
       ],
       "parent": null,
-      "position": [
-        0,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -1449,10 +1369,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "support:cloud",
       ],
       "parent": null,
-      "position": [
-        430,
-        0,
-      ],
       "shape": "person",
       "style": {
         "opacity": 15,
@@ -1488,10 +1404,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
         "cloud:amazon",
       ],
       "parent": null,
-      "position": [
-        215,
-        323,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,
@@ -1527,10 +1439,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "modelRef": "amazon",
       "outEdges": [],
       "parent": null,
-      "position": [
-        752,
-        323,
-      ],
       "shape": "rectangle",
       "style": {
         "opacity": 15,

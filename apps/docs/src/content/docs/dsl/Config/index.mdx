@@ -1,12 +1,13 @@
 ---
 title: Project config
-description: Learn how to split your LikeC4 model into multiple projects
+description: Learn how to configure and customize your project
 sidebar: 
   label: Project config
   order: 13
 ---
 
-import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+import { Card, FileTree, Aside, LinkCard, LinkButton } from '@astrojs/starlight/components';
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
 To define a project, create a `likec4.config.json` file in the folder.  
 All files in the folder (and subfolders) will be part of this project:
@@ -62,6 +63,7 @@ You can exclude files by adding an `exclude` array to the config file.
 
 ```json
 {
+  "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
   "exclude": [
     "**/node_modules/**"
@@ -80,6 +82,7 @@ Use the `likec4.config.json` to add an `imageAliases` field:
 
 ```json
 {
+  "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
   "imageAliases": {
     "@": "./images",
@@ -141,25 +144,19 @@ When using image aliases, keep the following rules in mind:
 
 ### Defaults
 
-```json
-{
-  "imageAliases": {
-    "@": "./images",
-  }
-}
-```
-
 When no LikeC4 configuration file is found, or when no `imageAliases` field is found, LikeC4 uses the following defaults:
 
 ```json
 {
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
   "imageAliases": {
     "@": "./images",
   }
 }
 ```
 
-This is true even if you specify other aliases. Simply override the `@` to change the default location.
+Simply override the `@` to change the default location.
 
 ```json
 {
@@ -168,3 +165,71 @@ This is true even if you specify other aliases. Simply override the `@` to chang
   }
 }
 ```
+
+## Styles customization
+
+LikeC4 provides advanced style customization capabilities.  
+You can override default theme in project config file.
+
+Example:
+
+```jsonc
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "styles": {
+    // Theme section allows you to override default colors and sizes
+    "theme": {
+      "colors": {
+        // Simple color definition - automatically generates element/relationship colors
+        "primary": "#FF6B6B",
+        "secondary": "#4ECDC4",
+        // Detailed color definition with specific values
+        "muted": {
+          "elements": {
+            "fill": "#2563eb", // Background color
+            "stroke": "#1d4ed8", // Border color
+            "hiContrast": "#ffffff", // Title text color
+            "loContrast": "#e2e8f0" // Description text color
+          },
+          "relationships": {
+            "line": "#1d4ed8", // Line color
+            "label": "#ffffff", // Label text color
+            "labelBg": "rgba(37,99,235,0.1)" // Label background color
+          }
+        },
+        // Give detailed definitions for a color from your specification
+        "custom-color-from-your-spec": { 
+          // ...
+        }
+      },
+      "sizes": { // override dimensions
+        "md": {
+          "width": 200,
+          "height": 200
+        }
+      }
+    },
+    // Override default values for style properties,
+    // These values will be used if such property is not defined
+    "defaults": {
+      "border": "dotted",
+      "opacity": 100,
+      "size": "md",
+      "color": "slate",
+      "group": {
+        "color": "green",
+        "opacity": 10,
+        "border": "solid"
+      },
+      "relationship": {
+        "color": "indigo",
+        "line": "solid",
+        "arrow": "diamond"
+      }
+    }
+  }
+}
+```
+
+<AdvancedCustomizationTip />

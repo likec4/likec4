@@ -59,10 +59,8 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
   override changePort(graphvizPort: GraphvizPort) {
     super.changePort(graphvizPort)
     if (this.queue.concurrency !== graphvizPort.concurrency) {
-      this.queue.onIdle().finally(() => {
-        this.queue.concurrency = this.graphvizPort.concurrency
-        logger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
-      })
+      this.queue.concurrency = this.graphvizPort.concurrency
+      logger.debug`set queue concurrency to ${this.graphvizPort.concurrency}`
     }
   }
 
@@ -98,7 +96,10 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         logger.debug`add task for view ${task.view.id}`
         this.queue
           .add(async () => {
-            await promiseNextTick()
+            // In WASM, we can't run tasks in parallel, and we don't want start task immediately
+            if (concurrency <= 2) {
+              await promiseNextTick()
+            }
             return await super.layout(task)
           })
           .then(result => {

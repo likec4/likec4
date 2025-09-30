@@ -1,5 +1,5 @@
-import {
-  type Fqn,
+import type {
+  Fqn,
 } from '@likec4/core'
 import { type ExpectStatic, describe, it } from 'vitest'
 import type { LikeC4Services } from '../../module'

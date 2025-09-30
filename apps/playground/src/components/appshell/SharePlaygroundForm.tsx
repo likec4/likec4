@@ -51,9 +51,8 @@ const Alert = MantineAlert.withProps({
 
 export function SharePlaygroundForm() {
   const router = useRouter()
-  const { isShareInProgress, viewId, shareRequest } = usePlaygroundSnapshot(s => ({
+  const { isShareInProgress, shareRequest } = usePlaygroundSnapshot(s => ({
     isShareInProgress: s.matches('sharing'),
-    viewId: s.context.activeViewId ?? 'index',
     shareRequest: s.context.shareRequest
       ? {
         success: s.context.shareRequest.success ?? null,

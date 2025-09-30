@@ -30,7 +30,7 @@ function RouteComponent() {
   const sharedPlayground = Route.parentRoute.useLoaderData()
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
-    navigate({
+    void navigate({
       to: './',
       params: { viewId },
       search: true,
@@ -59,8 +59,12 @@ function RouteComponent() {
         zoomable
         pannable
         controls={false}
-        fitViewPadding={'32px'}
-        showDiagramTitle
+        fitViewPadding={{
+          top: '70px',
+          bottom: '32px',
+          left: '32px',
+          right: '32px',
+        }}
         showNavigationButtons
         enableFocusMode
         enableDynamicViewWalkthrough
@@ -86,7 +90,6 @@ function RouteComponent() {
 const ControlsLayout: ControlsCustomLayout = ({
   actionsGroup,
   navigationButtons,
-  burgerMenu,
   search,
 }) => (
   <m.div
@@ -106,7 +109,6 @@ const ControlsLayout: ControlsCustomLayout = ({
   >
     <VStack gap="lg">
       <HStack gap="md">
-        {/* {burgerMenu} */}
         <UnstyledButton
           component="a"
           href="https://likec4.dev/"

@@ -1,6 +1,8 @@
 export { ElementModel } from './ElementModel'
-export { type AnyLikeC4Model, LikeC4Model } from './LikeC4Model'
-export { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
+export { LikeC4Model } from './LikeC4Model'
+export type { AnyLikeC4Model } from './LikeC4Model'
+export { RelationshipModel } from './RelationModel'
+export type { AnyRelationshipModel } from './RelationModel'
 
 export {
   Connection,
@@ -26,11 +28,13 @@ export {
 
 export {
   DeployedInstanceModel,
-  type DeploymentElementModel,
   DeploymentNodeModel,
-  type DeploymentRelationEndpoint,
   DeploymentRelationModel,
   RelationshipsAccum,
+} from './DeploymentElementModel'
+export type {
+  DeploymentElementModel,
+  DeploymentRelationEndpoint,
 } from './DeploymentElementModel'
 export { LikeC4DeploymentModel } from './DeploymentModel'
 
@@ -51,18 +55,6 @@ export type {
 } from './types'
 
 export * from './guards'
-
-export type {
-  Any,
-  AnyAux,
-  Aux,
-  aux,
-  AuxFromDump,
-  AuxFromLikeC4ModelData,
-  SpecAux,
-} from '../types'
-
-export { RichText, type RichTextEmpty, type RichTextOrEmpty } from '../types'
 
 export {
   extractViewTitleFromPath,

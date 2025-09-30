@@ -4,12 +4,13 @@
 # Include the following
 !bin/**
 !dist/**
-!react/*.d.mts
-!react/*.mjs
+!react/*.d.ts
+!react/*.js
 !icons/**
 !__app__/**
 !package.json
-!*/package.json
+!**/package.json
+!config/schema.json
 !LICENSE
 !README.md
 !vite-plugin-modules.d.ts

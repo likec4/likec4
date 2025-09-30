@@ -103,7 +103,7 @@ export function createTestServices(options?: {
   }
 
   const format = async (input: string | LikeC4LangiumDocument, uri?: string) => {
-    const document = typeof input === 'string' ? await parse(input, uri) : input
+    const document = typeof input === 'string' ? await parse(stripIndent(input), uri) : input
     await documentBuilder.build([document], { validation: true })
 
     const edits = await formatter?.formatDocument(
@@ -205,7 +205,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
 
   for (const [name, files] of entries(data)) {
     const folderUri = UriUtils.joinPath(URI.parse(workspace), 'src', name)
-    services.shared.workspace.ProjectsManager.registerProject({
+    await services.shared.workspace.ProjectsManager.registerProject({
       config: {
         name,
         exclude: ['node_modules'],

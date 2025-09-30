@@ -11,6 +11,7 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 import {
+  type CSSProperties,
   type ForwardRefExoticComponent,
   type PropsWithChildren,
   type ReactNode,
@@ -40,13 +41,15 @@ export function IconRendererProvider({
 export function IconRenderer({
   element,
   className,
+  style,
 }: {
   element?: {
     id: string
     title: string
     icon?: string | null | undefined
   }
-  className: string
+  className?: string | undefined
+  style?: CSSProperties | undefined
 }) {
   const RenderIcon = useContext(IconRendererContext)
   if (!element || !element.icon || element.icon === 'none') {
@@ -71,6 +74,7 @@ export function IconRenderer({
         'likec4-element-icon',
       )}
       data-likec4-icon={element.icon}
+      style={style}
     >
       {icon}
     </div>

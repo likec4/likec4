@@ -42,10 +42,10 @@ export function ShareButton() {
   }))
   const hasErrors = diagnosticErrors.length > 0
 
-  const { hasChanges, isExample } = usePlaygroundWorkspace()
+  const { isExample } = usePlaygroundWorkspace()
   const [examplePopoverOpened, setExamplePopoverOpened] = useState(false)
 
-  const [workspaces, {
+  const [, {
     createNewFromCurrent,
   }] = useWorkspaces()
 

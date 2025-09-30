@@ -1,7 +1,7 @@
 import { LikeC4Model } from '@likec4/core/model'
-import {
-  type DiagramNode,
-  type scalar,
+import type {
+  DiagramNode,
+  scalar,
 } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'

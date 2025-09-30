@@ -24,9 +24,8 @@ export async function handler({
     watch: false,
   })
   const viewsLogger = createLikeC4Logger('c4:views')
-  let valid = true
-  valid = await validateModel(languageServices) && valid
-  valid = (ignoreLayout || await validateLayout(languageServices, viewsLogger)) && valid
+  let valid = validateModel(languageServices)
+  valid = valid && (ignoreLayout || await validateLayout(languageServices, viewsLogger))
 
   return valid ? 0 : exit(1)
 

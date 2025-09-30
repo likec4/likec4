@@ -1,6 +1,5 @@
 import type { AnyTypes, Types, TypesNested } from './_types'
 import type { DeploymentModelBuilder } from './Builder.deploymentModel'
-import type { ModelBuilder } from './Builder.model'
 
 type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, infer F>
   ? TypesNested<

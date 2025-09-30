@@ -1,8 +1,6 @@
-import type { Padding } from '@xyflow/system'
-
-export const ViewPadding: Padding = {
+export const ViewPadding = {
   top: '40px',
   bottom: '16px',
   left: '16px',
   right: '16px',
-}
+} as const

@@ -2,15 +2,17 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Link } from '@tanstack/react-router'
 
-import { StaticLikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
+import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { useEffect, useState } from 'react'
 
-import type { aux, LikeC4ViewModel } from '@likec4/core/model'
-import { MarkdownBlock } from '@likec4/diagram/custom'
+import type { DiagramView } from '@likec4/core/types'
+import { RichText } from '@likec4/core/types'
+import { Markdown } from '@likec4/diagram/custom'
 import { Box, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { randomInteger } from 'remeda'
 import { pageTitle } from '../../const'
+import { useLikeC4Views } from '../../hooks'
 import * as css from './index.css'
 
 export const Route = createFileRoute('/_single/single-index')({
@@ -19,7 +21,7 @@ export const Route = createFileRoute('/_single/single-index')({
 
 function RouteComponent() {
   useDocumentTitle(pageTitle)
-  const views = [...useLikeC4Model().views()]
+  const views = useLikeC4Views()
   return (
     <Container size={'xl'}>
       <SimpleGrid
@@ -34,7 +36,7 @@ function RouteComponent() {
   )
 }
 
-function ViewCard({ view }: { view: LikeC4ViewModel<aux.UnknownLayouted> }) {
+function ViewCard({ view }: { view: DiagramView }) {
   const [visible, setVisible] = useState(false)
   const { ref, inViewport } = useInViewport()
 
@@ -58,7 +60,7 @@ function ViewCard({ view }: { view: LikeC4ViewModel<aux.UnknownLayouted> }) {
           {visible && (
             <StaticLikeC4Diagram
               background={'transparent'}
-              view={view.$view}
+              view={view}
               fitView
               fitViewPadding={'4px'}
               reduceGraphics
@@ -71,8 +73,8 @@ function ViewCard({ view }: { view: LikeC4ViewModel<aux.UnknownLayouted> }) {
         <Text fw={500}>{view.title ?? view.id}</Text>
       </Group>
 
-      <MarkdownBlock
-        value={view.description}
+      <Markdown
+        value={RichText.from(view.description)}
         textScale={0.75}
         emptyText="No description"
         lineClamp={3}

@@ -11,6 +11,7 @@ import type {
   ProjectId,
 } from '@likec4/core/types'
 import JSON5 from 'json5'
+import type { SimplifyDeep } from 'type-fest'
 import type { URI } from 'vscode-uri'
 import * as z from 'zod/v4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
@@ -48,7 +49,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     description: 'LikeC4 project configuration',
   })
 
-export type LikeC4ProjectJsonConfig = z.input<typeof LikeC4ProjectJsonConfigSchema>
+export type LikeC4ProjectJsonConfig = SimplifyDeep<z.input<typeof LikeC4ProjectJsonConfigSchema>>
 
 const FunctionType = z.instanceof(Function)
 export const GeneratorsSchema = z.record(z.string(), FunctionType)
@@ -197,11 +198,11 @@ export type LikeC4ProjectConfig = z.infer<typeof LikeC4ProjectJsonConfigSchema> 
   generators?: Record<string, GeneratorFn> | undefined
 }
 
-export namespace LikeC4ProjectConfig {
-  export type Input = z.input<typeof LikeC4ProjectJsonConfigSchema> & {
+export type LikeC4ProjectConfigInput = SimplifyDeep<
+  z.input<typeof LikeC4ProjectJsonConfigSchema> & {
     generators?: Record<string, GeneratorFn> | undefined
   }
-}
+>
 
 /**
  * Validates JSON string or JSON object into a LikeC4ProjectConfig object.
@@ -226,8 +227,9 @@ export function validateProjectConfig<C extends string | Record<string, unknown>
  * Converts a LikeC4ProjectConfig object into a LikeC4ProjectJsonConfig object.
  * Omit generators property (as it is not serializable)
  */
-export function serializableLikeC4ProjectConfig(
-  { generators, ...config }: LikeC4ProjectConfig,
-): LikeC4ProjectJsonConfig {
+export function serializableLikeC4ProjectConfig({
+  generators: _, // omit
+  ...config
+}: LikeC4ProjectConfig): LikeC4ProjectJsonConfig {
   return LikeC4ProjectJsonConfigSchema.parse(config) as unknown as LikeC4ProjectJsonConfig
 }

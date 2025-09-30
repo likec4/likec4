@@ -1,13 +1,10 @@
-import { filter, findLast, first, flatMap, hasAtLeast, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import { findLast, isTruthy, map, pipe } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
-import { modelConnection } from '../../model'
-import type { AnyAux, aux, scalar } from '../../types'
+import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
-  type DynamicViewStep,
-  type NonEmptyArray,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -15,22 +12,20 @@ import {
   _stage,
   _type,
   exact,
-  isDynamicViewParallelSteps,
+  isDynamicStepsParallel,
+  isDynamicStepsSeries,
   isViewRuleAutoLayout,
-  isViewRulePredicate,
   stepEdgeId,
 } from '../../types'
-import { compareRelations, nonNullable } from '../../utils'
-import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
+import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
+import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
-import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../utils/view-hash'
-
-const { findConnection } = modelConnection
+import { elementsFromIncludeProperties, elementsFromSteps, findRelations } from './utils'
 
 type Element<A extends AnyAux> = ElementModel<A>
 
@@ -39,8 +34,9 @@ namespace DynamicViewCompute {
     id: StepEdgeId
     source: Element<A>
     target: Element<A>
-    title: string | null
-    description?: string
+    title?: string
+    kind?: aux.RelationKind<A>
+    description?: scalar.MarkdownOrString
     technology?: string
     // Notes for walkthrough
     notes?: scalar.MarkdownOrString
@@ -52,64 +48,18 @@ namespace DynamicViewCompute {
     isBackward: boolean
     navigateTo?: aux.StrictViewId<A>
     tags?: aux.Tags<A>
+    astPath: string
   }
 }
 
 class DynamicViewCompute<A extends AnyAux> {
   // Intermediate state
-  private explicits = new Set<Element<A>>()
   private steps = [] as DynamicViewCompute.Step<A>[]
 
   constructor(
     protected model: LikeC4Model<A>,
     protected view: DynamicView<A>,
   ) {}
-
-  private addStep(
-    {
-      source: stepSource,
-      target: stepTarget,
-      title: stepTitle,
-      isBackward,
-      navigateTo: stepNavigateTo,
-      notation, // omit
-      ...step
-    }: DynamicViewStep<A>,
-    index: number,
-    parent?: number,
-  ) {
-    const id = parent ? stepEdgeId(parent, index) : stepEdgeId(index)
-    const source = this.model.element(stepSource)
-    const target = this.model.element(stepTarget)
-
-    this.explicits.add(source)
-    this.explicits.add(target)
-
-    const {
-      title,
-      relations,
-      tags,
-      navigateTo: derivedNavigateTo,
-      color,
-      line,
-    } = this.findRelations(source, target)
-
-    const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
-
-    this.steps.push(exact({
-      id,
-      ...step,
-      source,
-      target,
-      title: stepTitle ?? title,
-      relations: relations ?? [],
-      isBackward: isBackward ?? false,
-      ...navigateTo && { navigateTo },
-      ...tags && { tags },
-      ...color && { color },
-      ...line && { line },
-    }))
-  }
 
   compute(): ComputedDynamicView<A> {
     const {
@@ -118,47 +68,116 @@ class DynamicViewCompute<A extends AnyAux> {
       steps: viewSteps,
       ...view
     } = this.view
+    const rules = resolveGlobalRulesInDynamicView(_rules, this.model.globals)
+
+    // Identify actors
+    const explicits = elementsFromIncludeProperties(this.model, rules)
+    const fromSteps = elementsFromSteps(this.model, viewSteps)
+    const actors = pipe(
+      union(
+        // First all actors, that are explicitly included
+        intersection(explicits, fromSteps),
+        // Then all actors from steps
+        fromSteps,
+        // Then all explicits (not from steps)
+        explicits,
+      ),
+      toArray(),
+      sortParentsFirst,
+    )
+
+    // Identify compounds
+    const compounds = actors.reduce((acc, actor, index, all) => {
+      for (let i = index + 1; i < all.length; i++) {
+        const other = all[i]!
+        if (isAncestor(actor, other)) {
+          acc.push(actor)
+          break
+        }
+      }
+      return acc
+    }, [] as Element<A>[])
+
+    // Process steps
+    const processStep = (step: DynamicStep<A> | DynamicStepsSeries<A>, stepNum: number, prefix?: number): number => {
+      if (isDynamicStepsSeries(step)) {
+        for (const s of step.__series) {
+          stepNum = processStep(s, stepNum, prefix)
+        }
+        return stepNum
+      }
+      const id = prefix ? stepEdgeId(prefix, stepNum) : stepEdgeId(stepNum)
+
+      const {
+        source: stepSource,
+        target: stepTarget,
+        title: stepTitle,
+        isBackward: _isBackward, // omit
+        navigateTo: stepNavigateTo,
+        notation: _notation, // omit
+        ...rest
+      } = step
+
+      const source = this.model.element(stepSource)
+      const sourceColumn = actors.indexOf(source)
+      invariant(sourceColumn >= 0, `Source ${stepSource} not found`)
+      const target = this.model.element(stepTarget)
+      const targetColumn = actors.indexOf(target)
+      invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
+
+      if (compounds.includes(source) || compounds.includes(target)) {
+        console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
+        // return stepNum
+      }
+
+      const {
+        title,
+        relations,
+        navigateTo: derivedNavigateTo,
+        ...derived
+      } = findRelations(source, target, this.view.id)
+
+      const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id
+        ? stepNavigateTo
+        : derivedNavigateTo
+
+      this.steps.push(exact({
+        ...derived,
+        ...rest,
+        id,
+        source,
+        target,
+        navigateTo,
+        title: stepTitle ?? title,
+        relations: relations ?? [],
+        isBackward: sourceColumn > targetColumn,
+      }))
+
+      return stepNum + 1
+    }
 
     let stepNum = 1
     for (const step of viewSteps) {
-      if (isDynamicViewParallelSteps(step)) {
-        if (step.__parallel.length === 0) {
-          continue
+      if (isDynamicStepsParallel(step)) {
+        let nestedStepNum = 1
+        for (const s of step.__parallel) {
+          nestedStepNum = processStep(s, nestedStepNum, stepNum)
         }
-        if (step.__parallel.length === 1) {
-          this.addStep(step.__parallel[0]!, stepNum)
-        } else {
-          step.__parallel.forEach((s, i) => this.addStep(s, i + 1, stepNum))
-        }
-      } else {
-        this.addStep(step, stepNum)
+        // Increment stepNum after processing all parallel steps
+        stepNum++
+        continue
       }
-      stepNum++
-    }
-
-    const rules = resolveGlobalRulesInDynamicView(_rules, this.model.globals)
-
-    for (const rule of rules) {
-      if (isViewRulePredicate(rule)) {
-        for (const expr of rule.include) {
-          const satisfies = elementExprToPredicate(expr)
-          for (const e of this.model.elements()) {
-            if (satisfies(e)) {
-              this.explicits.add(e)
-            }
-          }
-        }
-      }
+      stepNum = processStep(step, stepNum)
     }
 
     const nodesMap = buildComputedNodes(
       this.model.$styles,
-      [...this.explicits].map(elementModelToNodeSource),
+      actors.map(elementModelToNodeSource),
     )
 
     const defaults = this.model.$styles.defaults.relationship
 
-    const edges = this.steps.map(({ id, source, target, relations, title, description, isBackward, tags, ...step }) => {
+    const edges = this.steps.map(({ id, source, target, relations, title, isBackward, tags, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
@@ -166,9 +185,8 @@ class DynamicViewCompute<A extends AnyAux> {
         parent: commonAncestor(source.id, target.id) as scalar.NodeId | null,
         source: sourceNode.id,
         target: targetNode.id,
-        label: title,
+        label: title ?? null,
         relations,
-        description: description ? { txt: description } : null,
         color: defaults.color,
         line: defaults.line,
         head: defaults.arrow,
@@ -206,7 +224,7 @@ class DynamicViewCompute<A extends AnyAux> {
       applyViewRuleStyles(
         rules,
         // Keep order of elements
-        [...this.explicits].map(e => nonNullable(nodesMap.get(e.id as scalar.NodeId))),
+        actors.map(e => nonNullable(nodesMap.get(e.id as scalar.NodeId))),
       ),
     )
 
@@ -237,74 +255,6 @@ class DynamicViewCompute<A extends AnyAux> {
         },
       }),
     })
-  }
-
-  private findRelations(source: Element<A>, target: Element<A>): {
-    title: string | null
-    tags: aux.Tags<A> | null
-    relations: NonEmptyArray<aux.RelationId> | null
-    navigateTo: aux.StrictViewId<A> | null
-    color: Color | null
-    line: RelationshipLineType | null
-  } {
-    const relationships = findConnection(source, target, 'directed')
-      .flatMap(r => [...r.relations])
-      .sort(compareRelations)
-    if (relationships.length === 0) {
-      return {
-        title: null,
-        tags: null,
-        relations: null,
-        navigateTo: null,
-        color: null,
-        line: null,
-      }
-    }
-    const alltags = pipe(
-      relationships,
-      flatMap(r => r.tags),
-      unique(),
-    ) as aux.Tags<A>
-    const tags = hasAtLeast(alltags, 1) ? alltags : null
-    const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
-
-    // Most closest relation
-    const relation = first(relationships)
-    const relationNavigateTo = relation?.$relationship.navigateTo ?? null
-
-    const navigateTo = relationNavigateTo && relationNavigateTo !== this.view.id
-      ? relationNavigateTo as aux.StrictViewId<A>
-      : pipe(
-        relationships,
-        map(r => r.$relationship.navigateTo as aux.StrictViewId<A>),
-        filter(isTruthy),
-        filter(v => v !== this.view.id),
-        unique(),
-        only(),
-      )
-
-    const commonProperties = pipe(
-      relationships,
-      reduce((acc, { title, $relationship: r }) => {
-        isTruthy(title) && acc.title.add(title)
-        isTruthy(r.color) && acc.color.add(r.color)
-        isTruthy(r.line) && acc.line.add(r.line)
-        return acc
-      }, {
-        color: new Set<Color>(),
-        line: new Set<RelationshipLineType>(),
-        title: new Set<string>(),
-      }),
-    )
-
-    return {
-      tags,
-      relations,
-      navigateTo: navigateTo ?? null,
-      title: only([...commonProperties.title]) ?? null,
-      color: only([...commonProperties.color]) ?? null,
-      line: only([...commonProperties.line]) ?? null,
-    }
   }
 }
 export function computeDynamicView<M extends AnyAux>(

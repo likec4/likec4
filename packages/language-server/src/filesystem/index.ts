@@ -1,4 +1,4 @@
-import { type LikeC4ProjectConfig } from '@likec4/config'
+import type { LikeC4ProjectConfig } from '@likec4/config'
 import type {
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,

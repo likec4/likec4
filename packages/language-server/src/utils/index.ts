@@ -18,7 +18,7 @@ export function safeCall<T>(fn: () => T): T | undefined {
 export function performanceNow() {
   try {
     return performance.now()
-  } catch (e) {
+  } catch {
     return Date.now()
   }
 }

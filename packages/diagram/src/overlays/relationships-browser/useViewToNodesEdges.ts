@@ -15,10 +15,10 @@ import { LayoutRelationshipsViewResult } from './layout'
 export function viewToNodesEdge(
   view: Pick<LayoutRelationshipsViewResult, 'nodes' | 'edges'>,
 ): {
-  xynodes: RelationshipsBrowserTypes.Node[]
+  xynodes: RelationshipsBrowserTypes.AnyNode[]
   xyedges: RelationshipsBrowserTypes.Edge[]
 } {
-  const xynodes = [] as RelationshipsBrowserTypes.Node[],
+  const xynodes = [] as RelationshipsBrowserTypes.AnyNode[],
     xyedges = [] as RelationshipsBrowserTypes.Edge[],
     nodeLookup = new Map<Fqn, LayoutRelationshipsViewResult.Node>()
 
@@ -37,10 +37,6 @@ export function viewToNodesEdge(
     [] as TraverseItem[],
   ))
 
-  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
-
-  // namespace to force unique ids
-  const ns = ''
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
 
   let next: TraverseItem | undefined
@@ -54,15 +50,15 @@ export function viewToNodesEdge(
     }
 
     const position = {
-      x: node.position[0],
-      y: node.position[1],
+      x: node.x,
+      y: node.y,
     }
     if (parent) {
-      position.x -= parent.position[0]
-      position.y -= parent.position[1]
+      position.x -= parent.x
+      position.y -= parent.y
     }
 
-    const id = ns + node.id
+    const id = node.id
 
     const base = {
       id,
@@ -78,9 +74,9 @@ export function viewToNodesEdge(
       initialWidth: node.width,
       initialHeight: node.height,
       ...(parent && {
-        parentId: ns + parent.id,
+        parentId: parent.id,
       }),
-    } satisfies Omit<RelationshipsBrowserTypes.Node, 'data' | 'type'>
+    } satisfies Omit<RelationshipsBrowserTypes.AnyNode, 'data' | 'type'>
 
     const fqn = node.modelRef ?? null
     // const deploymentRef = DiagramNode.deploymentRef(node)
@@ -111,6 +107,7 @@ export function viewToNodesEdge(
             ...base,
             type: 'compound',
             data: {
+              id,
               column: node.column,
               title: node.title,
               color: node.color,
@@ -134,6 +131,7 @@ export function viewToNodesEdge(
             ...base,
             type: 'element' as const,
             data: {
+              id,
               column: node.column,
               fqn,
               title: node.title,
@@ -158,7 +156,7 @@ export function viewToNodesEdge(
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
-    const id = ns + edge.id
+    const id = edge.id
 
     if (!hasAtLeast(edge.points, 2)) {
       console.error('edge should have at least 2 points', edge)
@@ -173,8 +171,8 @@ export function viewToNodesEdge(
     xyedges.push({
       id,
       type: 'relationship',
-      source: ns + source,
-      target: ns + target,
+      source,
+      target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
       // selectable: selectable,

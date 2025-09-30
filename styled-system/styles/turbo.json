@@ -9,9 +9,7 @@
         "@likec4/style-preset#build"
       ],
       "outputs": [
-        "dist/**",
-        "!dist/preset.mjs",
-        "!dist/preset.d.mts"
+        "dist/**"
       ]
     },
     "typecheck": {
@@ -23,15 +21,6 @@
         "*.tsbuildinfo"
       ],
       "outputLogs": "new-only"
-    },
-    "build": {
-      "dependsOn": [
-        "generate"
-      ],
-      "outputs": [
-        "dist/preset.d.mts",
-        "dist/preset.mjs"
-      ]
     }
   }
 }

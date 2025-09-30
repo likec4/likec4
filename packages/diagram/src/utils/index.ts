@@ -12,4 +12,5 @@ export {
   stopPropagation,
 } from './xyflow'
 
+export { getViewBounds } from './get-view-bounds'
 export { roundDpr } from './roundDpr'

@@ -107,7 +107,6 @@ export function computeRelationshipsView<M extends AnyAux>(
   scopeViewId: aux.ViewId<M> | null,
   scope: 'global' | 'view' = 'global',
 ): RelationshipsViewData<M> {
-  let subjectExistsInScope = true
   const view = scopeViewId ? likec4model.findView(scopeViewId) : null
   if (scope === 'view') {
     invariant(

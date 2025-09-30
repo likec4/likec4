@@ -1,5 +1,5 @@
 import { createOptionalContext } from '@mantine/core'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export type ControlsCustomLayoutProps = {
   burgerMenu: ReactNode

@@ -1,8 +1,8 @@
 import { deepEqual as eq } from 'fast-equals'
 import { isDefined, omit } from 'remeda'
-import type { Base } from './types'
+import type { BaseEdge } from './types'
 
-function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
+function _update<E extends BaseEdge>(current: E[], update: E[]): E[] {
   return update.map((next) => {
     const existing = current.find(n => n.id === next.id)
     if (existing && eq(existing.type, next.type)) {
@@ -27,9 +27,9 @@ function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
   })
 }
 
-export function updateEdges<E extends Base.Edge>(current: E[], update: E[]): E[]
-export function updateEdges<E extends Base.Edge>(update: E[]): (current: E[]) => E[]
-export function updateEdges<E extends Base.Edge>(current: E[], update?: E[]) {
+export function updateEdges<E extends BaseEdge>(current: E[], update: E[]): E[]
+export function updateEdges<E extends BaseEdge>(update: E[]): (current: E[]) => E[]
+export function updateEdges<E extends BaseEdge>(current: E[], update?: E[]) {
   if (isDefined(update)) {
     return _update(current, update)
   }

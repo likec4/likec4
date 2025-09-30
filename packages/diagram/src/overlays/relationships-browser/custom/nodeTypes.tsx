@@ -1,31 +1,22 @@
-import { Handle } from '@xyflow/react'
-import { Position } from '@xyflow/system'
-import type { FC } from 'react'
-import type { NodeProps } from '../../../base'
+import { Handle, Position } from '@xyflow/react'
+import type { BaseNodePropsWithData } from '../../../base'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
   CompoundTitle,
+  ElementData,
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
   ElementTags,
-  ElementTitle,
-} from '../../../base/primitives'
+} from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
-import { EmptyNode as EmptyNodeRender } from './EmptyNode'
-
-type NodeTypes = {
-  element: FC<NodeProps<RelationshipsBrowserTypes.ElementNodeData>>
-  compound: FC<NodeProps<RelationshipsBrowserTypes.CompoundNodeData>>
-  empty: FC<NodeProps<RelationshipsBrowserTypes.EmptyNodeData>>
-}
 
 const ElementDetailsButtonWithHandler = (
-  props: NodeProps<RelationshipsBrowserTypes.ElementNodeData | RelationshipsBrowserTypes.CompoundNodeData>,
+  props: RelationshipsBrowserTypes.NodeProps<'element' | 'compound'>,
 ) => {
   const diagram = useDiagram()
 
@@ -40,12 +31,12 @@ const ElementDetailsButtonWithHandler = (
   )
 }
 
-export const ElementNode: NodeTypes['element'] = (props) => {
+export function ElementNode(props: RelationshipsBrowserTypes.NodeProps<'element'>) {
   const { enableElementTags } = useEnabledFeatures()
   return (
     <ElementNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
       <ElementShape {...props} />
-      <ElementTitle {...props} />
+      <ElementData {...props} />
       {enableElementTags && <ElementTags {...props} />}
       <ElementDetailsButtonWithHandler {...props} />
       <ElementActions {...props} />
@@ -54,7 +45,7 @@ export const ElementNode: NodeTypes['element'] = (props) => {
   )
 }
 
-export const CompoundNode: NodeTypes['compound'] = (props) => {
+export function CompoundNode(props: RelationshipsBrowserTypes.NodeProps<'compound'>) {
   const diagram = useDiagram()
   return (
     <CompoundNodeContainer key={props.id} layoutId={props.id} nodeProps={props}>
@@ -64,18 +55,13 @@ export const CompoundNode: NodeTypes['compound'] = (props) => {
         onClick={e => {
           e.stopPropagation()
           diagram.openElementDetails(props.data.fqn)
-        }}
-      />
+        }} />
       <CompoundPorts {...props} />
     </CompoundNodeContainer>
   )
 }
 
-export const EmptyNode: NodeTypes['empty'] = (props) => {
-  return <EmptyNodeRender {...props} />
-}
-
-type ElementPortsProps = NodeProps<
+type ElementPortsProps = BaseNodePropsWithData<
   Pick<
     RelationshipsBrowserTypes.ElementNodeData,
     | 'ports'
@@ -111,7 +97,7 @@ export const ElementPorts = ({ data: { ports, height: h } }: ElementPortsProps) 
     </>
   )
 }
-type CompoundPortsProps = NodeProps<
+type CompoundPortsProps = BaseNodePropsWithData<
   Pick<
     RelationshipsBrowserTypes.CompoundNodeData,
     'ports'

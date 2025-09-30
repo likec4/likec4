@@ -1,10 +1,7 @@
 import { ref, useActiveTextEditor, useEditorDecorations, watch } from 'reactive-vscode'
 import { first } from 'remeda'
 import * as vscode from 'vscode'
-import { logger as root } from '../logger'
 import type { Rpc } from '../Rpc'
-
-const logger = root.getChild('tag-decoration')
 
 export function useTagDecoration() {
   // const t

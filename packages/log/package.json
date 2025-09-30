@@ -29,7 +29,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
@@ -37,13 +39,14 @@
     "pack": "pnpm pack",
     "postpack": "cp likec4-log-$npm_package_version.tgz package.tgz || true",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf dist lib"
+    "clean": "likec4ops clean"
   },
   "dependencies": {
     "@logtape/logtape": "catalog:utils"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",

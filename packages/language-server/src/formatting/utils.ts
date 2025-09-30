@@ -1,6 +1,5 @@
-import type { CstNode } from "langium"
-import type { Position, Range } from "vscode-languageserver-types"
-
+import type { CstNode } from 'langium'
+import type { Position, Range } from 'vscode-languageserver-types'
 
 export function areOverlap(a: CstNode, b: CstNode): boolean {
   ;[a, b] = compareRanges(a, b) > 0 ? [b, a] : [a, b]
@@ -21,6 +20,6 @@ export function isInRagne(range: Range, pos: Position): boolean {
     || pos.line == range.end.line && pos.character > range.end.character)
 }
 
-export function isMultiline(node: CstNode): boolean {
-  return node.range.start.line != node.range.end.line
+export function isMultiline(node: CstNode | undefined): boolean {
+  return !!node && node.range.start.line != node.range.end.line
 }

@@ -2,7 +2,7 @@ export type {
   DiagramActorEvent,
   DiagramActorRef,
   DiagramContext,
-} from '../state/types'
+} from '../likec4diagram/state/types'
 
 export {
   useDiagramEventHandlers,
@@ -23,34 +23,27 @@ export {
   useDiagramContext,
   useOnDiagramEvent,
 } from '../hooks/useDiagram'
-export {
-  useXYFlow,
-  useXYInternalNode,
-  useXYStore,
-  useXYStoreApi,
-  type XYFlowInstance,
-  type XYStoreApi,
-} from '../hooks/useXYFlow'
 
 export {
   useCurrentViewModel,
-} from '../likec4model/useCurrentViewModel'
+} from '../hooks/useCurrentViewModel'
+
 export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,
-} from '../likec4model/useLikeC4Model'
+} from '../hooks/useLikeC4Model'
+
 export {
   useHasProjects,
   useLikeC4ProjectId,
   useLikeC4Projects,
   useLikeC4ProjectsContext,
-} from '../likec4model/useLikeC4Project'
+} from '../hooks/useLikeC4Project'
 
 export {
   useLikeC4Styles,
-} from '../likec4model/useLikeC4Styles'
+} from '../hooks/useLikeC4Styles'
 
-export { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 export { useSetState } from '../hooks/useSetState'
 export { useUpdateEffect } from '../hooks/useUpdateEffect'

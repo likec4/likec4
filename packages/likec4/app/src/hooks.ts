@@ -5,7 +5,7 @@ import { useParams } from '@tanstack/react-router'
 import { shallowEqual } from 'fast-equals'
 import { useEffect, useState } from 'react'
 import { values } from 'remeda'
-import { useLikeC4ModelDataAtom } from './context/LikeC4ModelContext'
+import { useLikeC4ModelDataAtom } from './context/safeCtx'
 
 // To get the transparent background
 // We need to add a class to the HTML element

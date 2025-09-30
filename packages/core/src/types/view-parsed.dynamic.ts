@@ -1,8 +1,7 @@
 import { isArray } from 'remeda'
-import type { MergeExclusive, Simplify } from 'type-fest'
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
-import type { ExclusiveUnion } from './_common'
+import type { ExclusiveUnion, NonEmptyReadonlyArray } from './_common'
 import type { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
 import { type MarkdownOrString, isStepEdgeId } from './scalar'
@@ -15,11 +14,12 @@ import type {
 } from './view-common'
 import type { ElementViewRuleStyle } from './view-parsed.element'
 
-export interface DynamicViewStep<A extends AnyAux = AnyAux> {
+export interface DynamicStep<A extends AnyAux = AnyAux> {
   readonly source: aux.StrictFqn<A>
   readonly target: aux.StrictFqn<A>
-  readonly title: string | null
-  readonly description?: string
+  readonly title?: string | null
+  readonly kind?: aux.RelationKind<A>
+  readonly description?: MarkdownOrString
   readonly technology?: string
   readonly notation?: string
   // Notes for walkthrough
@@ -29,12 +29,25 @@ export interface DynamicViewStep<A extends AnyAux = AnyAux> {
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
+
   // Link to dynamic view
   readonly navigateTo?: aux.StrictViewId<A>
+
+  /**
+   * Path to the AST node relative to the view body ast
+   * Used to locate the step in the source code
+   */
+  readonly astPath: string
 }
 
-export interface DynamicViewParallelSteps<A extends AnyAux = AnyAux> {
-  readonly __parallel: DynamicViewStep<A>[]
+export interface DynamicStepsSeries<A extends AnyAux = AnyAux> {
+  readonly seriesId: string
+  readonly __series: NonEmptyReadonlyArray<DynamicStep<A>>
+}
+
+export interface DynamicStepsParallel<A extends AnyAux = AnyAux> {
+  readonly parallelId: string
+  readonly __parallel: NonEmptyReadonlyArray<DynamicStep<A> | DynamicStepsSeries<A>>
 }
 
 // Get the prefix of the parallel steps
@@ -46,12 +59,29 @@ export function getParallelStepsPrefix(id: string): string | null {
   return null
 }
 
-export type DynamicViewStepOrParallel<A extends AnyAux = AnyAux> = Simplify<
-  MergeExclusive<
-    DynamicViewStep<A>,
-    DynamicViewParallelSteps<A>
-  >
->
+export type DynamicViewStep<A extends AnyAux = AnyAux> = ExclusiveUnion<{
+  Step: DynamicStep<A>
+  Series: DynamicStepsSeries<A>
+  Parallel: DynamicStepsParallel<A>
+}>
+
+export function isDynamicStep<A extends AnyAux>(
+  step: DynamicViewStep<A> | undefined,
+): step is DynamicStep<A> {
+  return !!step && !('__series' in step || '__parallel' in step)
+}
+
+export function isDynamicStepsParallel<A extends AnyAux>(
+  step: DynamicViewStep<A> | undefined,
+): step is DynamicStepsParallel<A> {
+  return !!step && '__parallel' in step && isArray(step.__parallel)
+}
+
+export function isDynamicStepsSeries<A extends AnyAux>(
+  step: DynamicViewStep<A> | undefined,
+): step is DynamicStepsSeries<A> {
+  return !!step && '__series' in step && isArray(step.__series)
+}
 
 export interface DynamicViewIncludeRule<A extends AnyAux = AnyAux> {
   include: ModelFqnExpr.Any<A>[]
@@ -78,12 +108,6 @@ export interface ParsedDynamicView<A extends AnyAux = AnyAux> extends BaseParsed
    */
   readonly variant?: DynamicViewDisplayVariant
 
-  readonly steps: DynamicViewStepOrParallel<A>[]
+  readonly steps: DynamicViewStep<A>[]
   readonly rules: DynamicViewRule<A>[]
-}
-
-export function isDynamicViewParallelSteps<A extends AnyAux>(
-  step: DynamicViewStepOrParallel<A>,
-): step is DynamicViewParallelSteps<A> {
-  return '__parallel' in step && isArray(step.__parallel)
 }

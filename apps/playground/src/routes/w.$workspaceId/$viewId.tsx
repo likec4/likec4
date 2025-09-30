@@ -93,13 +93,13 @@ function WorkspaceDiagramPage() {
           <LikeC4Diagram
             view={_diagram}
             readonly={false}
-            controls="next"
+            controls
             fitView
             fitViewPadding={{
               top: '70px',
-              bottom: '10px',
+              bottom: '32px',
               left: '60px',
-              right: '10px',
+              right: '32px',
             }}
             experimentalEdgeEditing
             nodesSelectable
@@ -123,7 +123,7 @@ function WorkspaceDiagramPage() {
               playground.openSources({
                 view: nextView as scalar.ViewId,
               })
-              router.navigate({
+              void router.navigate({
                 viewTransition: false,
                 from: '/w/$workspaceId/$viewId',
                 to: './',
@@ -133,6 +133,14 @@ function WorkspaceDiagramPage() {
               })
             }}
             onEdgeClick={(edge, event) => {
+              event?.stopPropagation()
+              if (_diagram._type === 'dynamic' && edge.astPath) {
+                playground.openSources({
+                  view: _diagram.id,
+                  astPath: edge.astPath,
+                })
+                return
+              }
               const relationId = only(edge.relations)
               if (relationId) {
                 playground.openSources({

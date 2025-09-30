@@ -1,7 +1,7 @@
 import { type Client as WorkerApi, hcWithType } from '#worker/client'
 import type { SharedPlayground } from '#worker/types'
 import { notFound } from '@tanstack/react-router'
-import { type ClientResponse, type InferRequestType, type InferResponseType } from 'hono/client'
+import type { ClientResponse, InferRequestType, InferResponseType } from 'hono/client'
 import type { Get } from 'type-fest'
 
 const workerApi = hcWithType('')

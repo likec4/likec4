@@ -1,23 +1,24 @@
 import {
   treeFromElements,
 } from '@likec4/core/compute-view/relationships'
-import {
-  type DiagramEdge,
-  type DiagramNode,
-  type DiagramView,
-  type EdgeId,
-  type Fqn,
-  type IconUrl,
-  type NodeId,
-  type NonEmptyArray,
-  type Point,
-  type RelationId,
-  type RichTextOrEmpty,
-  exact,
+import type {
+  AnyAux,
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  EdgeId,
+  Fqn,
+  IconUrl,
+  NodeId,
+  NonEmptyArray,
+  Point,
+  RelationId,
+  RichTextOrEmpty,
 } from '@likec4/core/types'
+import { exact } from '@likec4/core/types'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import type { AnyAux, ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import {
   DefaultMap,
   ifind,
@@ -402,7 +403,6 @@ export function layoutRelationshipDetails(
       parent: parentId as NodeId ?? null,
       x: position.x,
       y: position.y,
-      position: [position.x, position.y],
       title: element.title,
       description: element.summary,
       technology: element.technology,

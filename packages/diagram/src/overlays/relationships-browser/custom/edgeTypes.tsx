@@ -2,23 +2,22 @@ import { css } from '@likec4/styles/css'
 import { Tooltip } from '@mantine/core'
 import { getBezierPath } from '@xyflow/system'
 import {
-  customEdge,
   EdgeActionButton,
   EdgeContainer,
   EdgeLabel,
   EdgeLabelContainer,
   EdgePath,
-} from '../../../base/primitives'
+  memoEdge,
+} from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { useRelationshipsBrowser } from '../hooks'
 
-export const RelationshipEdge = customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
+export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((props) => {
   const browser = useRelationshipsBrowser()
   const { enableNavigateTo } = useEnabledFeatures()
   const {
-    id,
     data: {
       navigateTo,
       relations,

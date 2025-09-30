@@ -316,7 +316,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const instance = this.parser.forDocument(doc).parseDeployedInstance(astElement)
 
     const name = this.nameProvider.getNameStrict(astElement)
-    const detail = 'instance of ' + instance.element
+    const detail = 'instance of ' + instance.element.model
     return [
       {
         kind: this.symbolKind(astElement),

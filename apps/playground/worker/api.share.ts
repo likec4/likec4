@@ -1,6 +1,6 @@
 import { vValidator } from '@hono/valibot-validator'
 import { defaultTheme } from '@likec4/core/styles'
-import { type TagSpecification } from '@likec4/core/types'
+import type { TagSpecification } from '@likec4/core/types'
 import { isArray, mapToObj } from 'remeda'
 import * as v from 'valibot'
 import { SharePlaygroundReqSchema, sharesKV } from './kv'

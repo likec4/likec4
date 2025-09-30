@@ -1,5 +1,6 @@
 import type { LikeC4ProjectStylesConfig, LikeC4ProjectTheme, ThemeColorValues } from '@likec4/core/types'
-import { type GeneratorFn, type LikeC4ProjectConfig, GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
+import type { GeneratorFn, LikeC4ProjectConfig, LikeC4ProjectConfigInput } from './schema'
+import { GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
 import {
   type LikeC4ConfigThemeInput,
   type LikeC4StylesConfigInput,
@@ -30,8 +31,8 @@ import {
  * })
  * ```
  */
-export function defineConfig<const C extends LikeC4ProjectConfig>(config: C): C {
-  return LikeC4ProjectConfigSchema.parse(config) as unknown as C
+export function defineConfig<C extends LikeC4ProjectConfigInput>(config: C): LikeC4ProjectConfig {
+  return LikeC4ProjectConfigSchema.parse(config) as unknown as LikeC4ProjectConfig
 }
 
 /**
@@ -60,47 +61,6 @@ export function defineGenerators<const G extends Record<string, GeneratorFn>>(ge
 }
 
 /**
- * Define reusable custom style
- * @example
- * ```ts
- * // styles.ts
- * export default defineStyle({
- *   theme: {
- *     colors: {
- *       primary: '#FF0000'
- *     }
- *   },
- *   defaults: {
- *     element: {
- *       opacity: 0.5
- *     },
- *     relationship: {
- *       color: 'grey'
- *       line: 'solid'
- *     }
- *   }
- * })
- */
-export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S): LikeC4ProjectStylesConfig {
-  return LikeC4StylesConfigSchema.parse(styles)
-}
-
-/**
- * Define reusable custom theme
- * @example
- * ```ts
- * export default defineTheme({
- *   colors: {
- *     primary: '#FF0000'
- *   }
- * })
- * ```
- */
-export function defineTheme<const S extends LikeC4ConfigThemeInput>(theme: S): LikeC4ProjectTheme {
-  return LikeC4Config_Styles_Theme.parse(theme)
-}
-
-/**
  * Define reusable custom theme color
  * @example
  * ```ts
@@ -113,4 +73,59 @@ export function defineTheme<const S extends LikeC4ConfigThemeInput>(theme: S): L
  */
 export function defineThemeColor<const S extends ThemeColorValuesInput>(colors: S): ThemeColorValues {
   return ThemeColorValuesSchema.parse(colors)
+}
+
+/**
+ * Define reusable custom theme
+ * @example
+ * ```ts
+ * import { defineThemeColor, defineTheme } from 'likec4/config'
+ *
+ * export default defineTheme({
+ *   colors: {
+ *     primary: '#FF0000',
+ *     // Or use defineThemeColor
+ *     red: defineThemeColor({
+ *       elements: {
+ *         fill: 'red'
+ *       }
+ *     })
+ *   }
+ * })
+ * ```
+ */
+export function defineTheme<const S extends LikeC4ConfigThemeInput>(theme: S): LikeC4ProjectTheme {
+  return LikeC4Config_Styles_Theme.parse(theme)
+}
+
+/**
+ * Define reusable custom style
+ * @example
+ * ```ts
+ * import { defineStyle, defineThemeColor } from 'likec4/config'
+ *
+ * export default defineStyle({
+ *   theme: {
+ *     colors: {
+ *       red: defineThemeColor({
+ *         elements: {
+ *           fill: 'red'
+ *         }
+ *       })
+ *     }
+ *   },
+ *   defaults: {
+ *     color: 'red',
+ *     opacity: 50,
+ *     border: 'solid',
+ *     size: 'sm',
+ *     relationship: {
+ *       color: 'grey',
+ *       line: 'solid',
+ *     }
+ *   }
+ * })
+ */
+export function defineStyle<const S extends LikeC4StylesConfigInput>(styles: S): LikeC4ProjectStylesConfig {
+  return LikeC4StylesConfigSchema.parse(styles)
 }

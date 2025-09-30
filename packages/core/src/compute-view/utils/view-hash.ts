@@ -1,4 +1,4 @@
-import { isTruthy, map, mapToObj, pick, pipe } from 'remeda'
+import { isTruthy, map, mapToObj, pipe } from 'remeda'
 import type { SetOptional } from 'type-fest'
 import type { ComputedView } from '../../types'
 import { objectHash } from '../../utils'

@@ -10,7 +10,21 @@ import {
 export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorString = error instanceof Error ? error.message : 'Unknown error'
   return (
-    <Box pos={'fixed'} top={'0'} left={'0'} w={'100%'} p={'0'} style={{ zIndex: 1000 }}>
+    <Box
+      css={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        padding: '0',
+        backdropFilter: `blur(5px)`,
+        backgroundColor: {
+          _dark: `[rgb(34 34 34 / 10%)]`,
+          _light: `[rgb(15 15 15/ 20%)]`,
+        },
+        zIndex: 1000,
+      }}>
       <Notification
         icon={<IconX style={{ width: 16, height: 16 }} />}
         styles={{

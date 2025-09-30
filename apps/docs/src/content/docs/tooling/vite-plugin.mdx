@@ -5,11 +5,12 @@ head:
   - tag: title
     content: LikeC4 Vite Plugin
 sidebar:
-  label: Vite Plugin
-  order: 3
+  label: LikeC4 Vite Plugin
+  order: 4
 ---
 import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
 import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
 <p style={{display: 'flex', gap: '10px'}}>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
@@ -80,10 +81,10 @@ This is useful for building documentation, tutorials, or any other application w
     Add types reference to the `vite-env.d.ts` file  
     (or create new one, like `src/likec4.d.ts`)
 
-    ```diff lang="ts"
+    ```diff lang="ts" {3}
     // src/vite-env.d.ts
     /// <reference types="vite/client" />
-    + /// <reference types="likec4/vite-plugin-modules" />
+    /// <reference types="likec4/vite-plugin-modules" />
     ```
 
     Another option is to add to the `tsconfig.json`:
@@ -197,6 +198,8 @@ This is useful for building documentation, tutorials, or any other application w
     You should see the LikeC4 diagram rendered in your app.
 
 </Steps>
+
+<AdvancedCustomizationTip />
 
 ## Plugin
 

@@ -9,7 +9,6 @@ import {
   ActionIcon,
   Button,
   Divider,
-  Portal,
   ScrollAreaAutosize,
   Text,
   Tooltip as MantineTooltip,
@@ -26,20 +25,22 @@ import {
   memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
 import { clamp, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
+import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
+import { PortalToContainer } from '../../components/PortalToContainer'
+import { useRootContainerRef } from '../../context'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { MarkdownBlock } from '../../custom'
+import type { DiagramContext } from '../../hooks/useDiagram'
 import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
-import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { useLikeC4Model } from '../../likec4model'
-import type { DiagramContext } from '../../state/types'
-import { findDiagramEdge, findDiagramNode } from '../../state/utils'
+import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
+import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
 import * as styles from './styles.css'
 
@@ -165,19 +166,21 @@ export const RelationshipPopover = memo(() => {
   }
 
   return (
-    <RelationshipPopoverInternal
-      viewId={viewId}
-      direct={direct}
-      nested={nested}
-      diagramEdge={diagramEdge}
-      sourceNode={sourceNode}
-      targetNode={targetNode}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave} />
+    <PortalToContainer>
+      <RelationshipPopoverInternal
+        viewId={viewId}
+        direct={direct}
+        nested={nested}
+        diagramEdge={diagramEdge}
+        sourceNode={sourceNode}
+        targetNode={targetNode}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave} />
+    </PortalToContainer>
   )
 })
 
-const getEdgeLabelElement = (edgeId: string, container: HTMLDivElement | undefined) => {
+const getEdgeLabelElement = (edgeId: string, container: HTMLElement | null | undefined) => {
   return container?.querySelector<HTMLDivElement>(`.likec4-edge-label[data-edge-id="${edgeId}"]`) ?? null
 }
 
@@ -206,12 +209,12 @@ const RelationshipPopoverInternal = ({
   const { enableNavigateTo, enableVscode } = useEnabledFeatures()
   const { onOpenSource } = useDiagramEventHandlers()
 
-  const { portalProps } = useMantinePortalProps()
+  const containerRef = useRootContainerRef()
 
   const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>(null)
 
-  useEffect(() => {
-    setReferenceEl(getEdgeLabelElement(diagramEdge.id, portalProps?.target))
+  useLayoutEffect(() => {
+    setReferenceEl(getEdgeLabelElement(diagramEdge.id, containerRef.current))
   }, [diagramEdge])
 
   useEffect(() => {
@@ -223,20 +226,18 @@ const RelationshipPopoverInternal = ({
     let wasCanceled = false
 
     const update = () => {
-      computePosition(reference, popper, {
+      void computePosition(reference, popper, {
         placement: 'bottom-start',
         middleware: [
-          offset(2),
+          offset(4),
           autoPlacement({
+            crossAxis: true,
             padding: POPOVER_PADDING,
             allowedPlacements: [
               'bottom-start',
-              'bottom-end',
               'top-start',
-              'top-end',
               'right-start',
               'right-end',
-              'left-start',
               'left-end',
             ],
           }),
@@ -276,102 +277,102 @@ const RelationshipPopoverInternal = ({
 
   const diagram = useDiagram()
 
-  const navigateTo = enableNavigateTo
-    ? (viewId: ViewId) => {
-      diagram.navigateTo(viewId)
-    }
-    : undefined
-
-  const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
-    <Fragment key={relationship.id}>
-      {index > 0 && <Divider />}
-      <Relationship
-        viewId={viewId}
-        relationship={relationship}
-        sourceNode={sourceNode}
-        targetNode={targetNode}
-        edge={diagramEdge}
-        onNavigateTo={navigateTo}
-        {...(onOpenSource && enableVscode && {
-          onOpenSource: () => onOpenSource({ relation: relationship.id }),
-        })}
-      />
-    </Fragment>
+  const renderRelationship = useCallback(
+    (relationship: LikeC4Model.AnyRelation, index: number) => (
+      <Fragment key={relationship.id}>
+        {index > 0 && <Divider />}
+        <Relationship
+          viewId={viewId}
+          relationship={relationship}
+          sourceNode={sourceNode}
+          targetNode={targetNode}
+          onNavigateTo={enableNavigateTo
+            ? (viewId: ViewId) => {
+              diagram.navigateTo(viewId)
+            }
+            : undefined}
+          {...(onOpenSource && enableVscode && {
+            onOpenSource: () => onOpenSource({ relation: relationship.id }),
+          })}
+        />
+      </Fragment>
+    ),
+    [viewId, sourceNode, targetNode, diagram, enableNavigateTo, onOpenSource, enableVscode],
   )
 
   return (
-    <Portal {...portalProps}>
-      <ScrollAreaAutosize
-        ref={ref}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        type="auto"
-        scrollbars={'y'}
-        scrollbarSize={6}
-        styles={{
-          viewport: {
-            overscrollBehavior: 'contain',
-            minWidth: 180,
+    <ScrollAreaAutosize
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      type="auto"
+      scrollbars={'y'}
+      scrollbarSize={6}
+      styles={{
+        viewport: {
+          overscrollBehavior: 'contain',
+          minWidth: 180,
+        },
+      }}
+      className={cx(
+        css({
+          layerStyle: 'likec4.dropdown',
+          p: '0',
+          pointerEvents: {
+            base: 'all',
+            _whenPanning: 'none',
           },
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: 'max-content',
+          cursor: 'default',
+        }),
+      )}
+    >
+      <VStack
+        css={{
+          gap: '3',
+          padding: '4',
+          paddingTop: '2',
         }}
-        className={cx(
-          'react-flow__panel nowheel nopan nodrag',
-          css({
-            layerStyle: 'likec4.dropdown',
-            p: '0',
-            pointerEvents: 'all',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: 'max-content',
-            cursor: 'default',
-          }),
-        )}
       >
-        <VStack
-          css={{
-            gap: '3',
-            padding: '4',
-            paddingTop: '2',
+        <Button
+          variant="default"
+          color="gray"
+          size="compact-xs"
+          style={{
+            alignSelf: 'flex-start',
+            fontWeight: 500,
+            ['--button-fz']: 'var(--font-sizes-xxs)',
+          }}
+          onClick={(e) => {
+            e.stopPropagation()
+            diagram.openRelationshipDetails(diagramEdge.id)
           }}
         >
-          <Button
-            variant="default"
-            color="gray"
-            size="compact-xs"
-            style={{
-              alignSelf: 'flex-start',
-              fontWeight: 500,
-              ['--button-fz']: 'var(--font-sizes-xxs)',
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              diagram.openRelationshipDetails(diagramEdge.id)
-            }}
-          >
-            browse relationships
-          </Button>
-          {direct.length > 0 && (
-            <>
-              <Label>DIRECT RELATIONSHIPS</Label>
-              {direct.map(renderRelationship)}
-            </>
-          )}
-          {nested.length > 0 && (
-            <>
-              <Label
-                css={{
-                  mt: direct.length > 0 ? '2' : '0',
-                }}
-              >
-                RESOLVED FROM NESTED
-              </Label>
-              {nested.map(renderRelationship)}
-            </>
-          )}
-        </VStack>
-      </ScrollAreaAutosize>
-    </Portal>
+          browse relationships
+        </Button>
+        {direct.length > 0 && (
+          <>
+            <Label>DIRECT RELATIONSHIPS</Label>
+            {direct.map(renderRelationship)}
+          </>
+        )}
+        {nested.length > 0 && (
+          <>
+            <Label
+              css={{
+                mt: direct.length > 0 ? '2' : '0',
+              }}
+            >
+              RESOLVED FROM NESTED
+            </Label>
+            {nested.map(renderRelationship)}
+          </>
+        )}
+      </VStack>
+    </ScrollAreaAutosize>
   )
 }
 
@@ -381,7 +382,6 @@ const Relationship = forwardRef<
     // current view id
     viewId: ViewId
     relationship: LikeC4Model.AnyRelation
-    edge: DiagramEdge
     sourceNode: DiagramNode
     targetNode: DiagramNode
     onOpenSource?: () => void
@@ -390,7 +390,6 @@ const Relationship = forwardRef<
 >(({
   viewId,
   relationship: r,
-  edge,
   sourceNode,
   targetNode,
   onNavigateTo,
@@ -496,7 +495,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <MarkdownBlock value={r.description} fontSize={'sm'} />
+            <Markdown value={r.description} fontSize={'sm'} />
           </Box>
         </>
       )}

@@ -1,4 +1,5 @@
 {
-  "types": "./index.d.mts",
-  "module": "./index.mjs"
+  "name": "@likec4/react",
+  "types": "./index.d.ts",
+  "module": "./index.js"
 }

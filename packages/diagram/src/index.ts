@@ -1,5 +1,4 @@
 export type { ControlsCustomLayout, ControlsCustomLayoutProps } from './context/ControlsCustomLayout'
-export { FramerMotionConfig } from './context/FramerMotionConfig'
 export { IconRendererProvider } from './context/IconRenderer'
 
 export {
@@ -7,10 +6,22 @@ export {
   type LikeC4DiagramProps,
 } from './LikeC4Diagram'
 
-export {
-  Overlay,
-  type OverlayProps,
-} from './overlays/overlay/Overlay'
+export type {
+  ElementIconRenderer,
+  ElementIconRendererProps,
+  LikeC4ColorScheme,
+  NodeRenderers,
+  OnCanvasClick,
+  OnChange,
+  OnEdgeClick,
+  OnInitialized,
+  OnNavigateTo,
+  OnNodeClick,
+  OnOpenSource,
+  PaddingWithUnit,
+  ViewPadding,
+  WhereOperator,
+} from './LikeC4Diagram.props'
 
 export {
   LikeC4ModelProvider,
@@ -22,29 +33,43 @@ export {
   type LikeC4ProjectsProviderProps,
 } from './LikeC4ProjectsProvider'
 
-export * from './custom/hooks'
-
-export type {
-  ChangeEvent,
-  CustomNodes,
-  DiagramNodeWithNavigate,
-  ElementIconRenderer,
-  ElementIconRendererProps,
-  LikeC4ColorScheme,
-  LikeC4DiagramEventHandlers,
-  LikeC4DiagramProperties,
-  OnCanvasClick,
-  OnChange,
-  OnEdgeClick,
-  OnNavigateTo,
-  OnNodeClick,
-  OpenSourceParams,
-  PaddingUnit,
-  PaddingWithUnit,
-  WhereOperator,
-} from './LikeC4Diagram.props'
+export {
+  type DiagramApi,
+  type DiagramContext,
+  useDiagram,
+  useDiagramContext,
+  useOnDiagramEvent,
+} from './hooks/useDiagram'
 
 export {
-  StaticLikeC4Diagram,
-  type StaticLikeC4DiagramProps,
-} from './StaticLikeC4Diagram'
+  useLikeC4Model,
+  useLikeC4Specification,
+  useLikeC4ViewModel,
+} from './hooks/useLikeC4Model'
+
+export { useCurrentViewModel } from './hooks/useCurrentViewModel'
+
+export {
+  useHasProjects,
+  useLikeC4ProjectId,
+  useLikeC4Projects,
+  useLikeC4ProjectsContext,
+} from './hooks/useLikeC4Project'
+
+export { useLikeC4Styles } from './hooks/useLikeC4Styles'
+
+export { useUpdateEffect } from './hooks/useUpdateEffect'
+
+export type { Types } from './likec4diagram/types'
+
+export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
+
+export { LikeC4View } from './LikeC4View'
+
+export type { LikeC4BrowserProps, LikeC4ViewProps } from './LikeC4View'
+
+export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
+
+export { useCurrentViewId } from './hooks/useCurrentViewId'
+
+export { getViewBounds } from './utils/get-view-bounds'

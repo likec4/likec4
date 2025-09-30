@@ -45,7 +45,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           label: keyword.value,
           kind: CompletionItemKind.Snippet,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} { \$0 } from '\${1|${
+          insertText: `${keyword.value} { $0 } from '\${1|${
             this.services.shared.workspace.ProjectsManager.all.join(',')
           }|}'`,
         })
@@ -79,7 +79,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           label: keyword.value,
           kind: CompletionItemKind.Property,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1|${ThemeColors.join(',')}|}\$0`,
+          insertText: `${keyword.value} \${1|${ThemeColors.join(',')}|}$0`,
         })
         break
       case keyword.value === 'opacity':

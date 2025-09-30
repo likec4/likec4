@@ -79,7 +79,7 @@ const main = defineCommand({
       logger.warn`watch for changes enabled, use ${'--no-watch'} to consume less resources`
     }
 
-    const langium = await createLanguageServices({
+    const langium = createLanguageServices({
       ...LikeC4FileSystem(args.watch),
       ...WithMCPServer(useStdio ? 'stdio' : { port }),
     })
