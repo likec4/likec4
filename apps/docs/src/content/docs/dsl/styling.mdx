@@ -1,27 +1,24 @@
 ---
 title: Styling
-description: How to customize diagrams to match your brand and style guides.
+description: How to customize styles of your diagrams to match your brand and guidelines.
 sidebar: 
   label: Styling
   order: 7
-tableOfContents:
-  minHeadingLevel: 3
-  maxHeadingLevel: 4
 ---
 
 import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, LinkCard } from '@astrojs/starlight/components';
 
-You can change colors, shapes, and icons of elements and relationships.
+LikeC4 provides advanced customization capabilities. You can change colors, shapes, sizes, and icons of elements and relationships.
 
-### Element
+## Element
 
 There are multiple ways to style elements:
 - Style all elements of a kind in `specification`
-- Specific for an element in `model`
+- Specific for an element in `model` or `deployment`
 - Override styles in `view` (more on this in [next section](/dsl/views/predicates/#style-predicates))
 
-#### Elements of a kind
+### Elements of a kind
 
 To style all elements of a kind, use the `style` block in `specification`:
 
@@ -30,7 +27,7 @@ specification {
   element user {
     style {
       // every element of 'user' kind
-      shape person // have 'person' shape
+      shape person // has 'person' shape
       color amber  // and amber color
     }
   }
@@ -44,10 +41,10 @@ specification {
 }
 ```
 
-#### Single element
+### Single element
 
-To style a specific element, use the nested `style` block in `model`.  
-Element styles override the kind ones:
+To style a specific element, use the nested `style` block.  
+Element styles override ones from the kind:
 
 ```likec4 copy
 specification {
@@ -62,69 +59,57 @@ specification {
 model {
   customer = actor 'Customer' {
     style {
-      // inherits shape from kind
-      // and overrides color
+      // inherits shape and overrides color
       color green                   
     }
   }
 }
 ```
 
-#### Per view
+### Per view
 
 [Next section](/dsl/views/predicates/#style-predicates) clarifies how to customize elements per view.
 
-### Style properties
+## Style properties
 
-Every `style` block may contain the following properties:  
-{'-'} shape  
-{'-'} color  
-{'-'} size 
-{'-'} padding
-{'-'} textSize 
-{'-'} icon  
-{'-'} opacity  
-{'-'} border
-{'-'} multiple
+### Shape
 
-#### Shape
+```likec4 "shape person" copy
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+}
+```
 
-Available element shapes:
-
-| shape     | example |
-| :-------- | :-----: |
-| rectangle |   check below    |
-| storage   |   ..    |
-| cylinder  |   (same as storage)    |
-| browser   |   ..    |
-| mobile    |   ..    |
-| person    |   ..    |
-| queue     |   ..    |
-
-If not set, the default shape is `rectangle`.
+Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`.  
 
 <LikeC4ThemeView viewId="themecolor_primary"/>
 
-#### Color
+### Color
 
-| color          |                                                           |
-| :------------- | :-------------------------------------------------------: |
-| primary, blue  |  ...  |
-| secondary, sky |  ...  |
-| muted, slate   |  ...  |
-| amber          |  ...  |
-| gray           |  ...  |
-| green          |  ...  |
-| indigo         |  ...  |
-| red            |  ...  |
 
-If not set, the default color is `primary`.
+```likec4 "color red" copy
+specification {
+  element actor {
+    style {
+      color red
+    }
+  }
+}
+```
+
+Available colors: `primary` (default), `secondary`, `muted`, `amber`, `gray`, `green`, `indigo`, `red`.
 
 <LikeC4ThemeView viewId="index"/>
 
+:::tip
 It's also possible to use custom colors defined in [specification](/dsl/specification/#color).
+:::
 
-#### Size
+### Size
 
 Size of an element is controlled by following properties:
 
@@ -140,7 +125,7 @@ Default size is `medium`.
 
 When shape size is `xsmall`, only element's title is displayed.
 
-```likec4
+```likec4 "size large" "textSize xl"
 specification {
   element element {
     style {
@@ -153,11 +138,11 @@ specification {
 <LikeC4ThemeView viewId="sizes1_example" interactive={false}/>
 <LikeC4ThemeView viewId="sizes2_example" interactive={false}/>
 
-#### Opacity
+### Opacity
 
 If element displayed as a group (like a container), you can set opacity:
 
-```likec4
+```likec4 "opacity 10%"
 specification {
   element element {
     style {
@@ -168,13 +153,13 @@ specification {
 ```
 
 
-<LikeC4ThemeView viewId="opacity_example" interactive={false}/>
+<LikeC4ThemeView viewId="opacity_example"/>
 
-#### Border
+### Border
 
 If element displayed as a group (like a container), you can change border style:
 
-```likec4
+```likec4 "border dotted"
 specification {
   element element {
     style {
@@ -185,11 +170,11 @@ specification {
 }
 ```
 
-Supported values: `dotted`, `dashed`, `solid`, `none`
+Supported values: `dashed` (default), `dotted`, `solid`, `none`
 
-<LikeC4ThemeView viewId="border_example" interactive={false}/>
+<LikeC4ThemeView viewId="border_example"/>
 
-#### Multiple
+### Multiple
 
 To display element as multiple instances, set `multiple` to `true`:
 
@@ -206,7 +191,7 @@ specification {
 
 <LikeC4ThemeView viewId="multiple_example" interactive={false} fitViewPadding={0.2}/>
 
-#### Icon
+### Icon
 
 Elements may have an icon - any browser-supported image (png, svg, webp, etc.):
 
@@ -217,36 +202,24 @@ model {
       // Publicly available with `https://`
       icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
 
-      // or local images, based on aliased folders
-      icon @/postgresql.svg
-
       // or local image, relative to current file
       icon ../postgresql.svg
-
-      size sm
-      textSize lg
     }
   }
 }
 ```
 
 :::tip
-See more about image aliases in the [documentation](/dsl/config/#image-aliases).
-:::
+`icon` can be defined as a property and skip `style` block
 
-<LikeC4ThemeView viewId="icon_url_example" interactive={false}/>
-
-<Aside type='tip'>
-  `icon` can be defined as a property and skip `style` block
-
-  ```likec4 copy
-  model {
-    pg = service 'PostgreSQL' {
-      icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
-    }
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
   }
-  ```
-</Aside>
+}
+```
+:::
 
 :::tip
 Use `none` to unset `icon`
@@ -258,7 +231,22 @@ pg = service 'PostgreSQL' {
 ```
 :::
 
-#### Bundled icons
+### Aliased icons
+
+With `@` prefix, you can use aliased folders (learn more in [configuration](/dsl/config/#image-aliases)):
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    style {
+      // local images, based on aliased folders
+      icon @/postgresql.svg
+    }
+  }
+}
+```
+
+### Bundled icons
 
 LikeC4 includes a set of icons from these packs:
 - `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
@@ -284,22 +272,22 @@ model {
 
 <br/>
 
-<LikeC4ThemeView viewId="icons_example" interactive={false}/>
+<LikeC4ThemeView viewId="icons_example"/>
 
 <br/>
 
-<Aside type='tip'>
-  Use VSCode code completion to explore available icons.
-</Aside>
+:::tip
+Use VSCode code completion to explore available icons.
+:::
 
-### Relationship
+## Relationship
 
 There are multiple ways to style relationships:
 - Style all relationships of a kind in `specification`
 - Specific relationship in `model`
 - Customize per `view` ([explained here](/dsl/views/predicates/#relationship-customization))
 
-#### Relationships of a kind
+### Relationships of a kind
 
 Relationships can be styled in [specification](/dsl/relationships/#relationship-kinds):
 
@@ -314,7 +302,7 @@ specification {
 }
 ```
 
-#### Specific Relationship
+### Specific Relationship
 
 ```likec4
 model {
@@ -327,15 +315,15 @@ model {
 }
 ```
 
-#### Relationship per view
+### Relationship per view
 
 [Next section](/dsl/views/predicates/#relationship-customization) clarifies how to customize relationships per view.
 
-### Relationship properties
+## Relationship properties
 
 Besides the `color`, relationships may have the following properties:  
 
-#### Line
+### Line
 
 | line   | example |
 | :----- | :-----: |
@@ -345,7 +333,7 @@ Besides the `color`, relationships may have the following properties:
 
 By default, the line is `dashed`.
 
-#### Arrow type
+### Arrow type
 
 The arrow type can be set for the head and the tail of the relationship:
 
@@ -360,10 +348,10 @@ The arrow type can be set for the head and the tail of the relationship:
 | open      |   ..    |
 | none      |   ..    |
 
-By default, the head is `normal` and the tail is `none`.
-
 > `onormal` means "outlined normal", i.e. no fill  
 > `odiamond` - "outlined diamond"
+
+By default, the head is `normal` and the tail is `none`.
 
 ```likec4
 model {
@@ -375,3 +363,13 @@ model {
   }
 }
 ```
+
+## Styles customization
+
+How to override default styles is explained in project configuration
+
+<LinkCard
+  title="Project configuration"
+  description="Learn how to customize styles in your project"
+  href="/dsl/config/#styles-customization"
+/>

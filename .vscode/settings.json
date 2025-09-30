@@ -28,6 +28,7 @@
   },
   "[mdx]": {
     "editor.defaultFormatter": "dprint.dprint",
+    "files.trimTrailingWhitespace": false,
   },
   "[css]": {
     "editor.defaultFormatter": "dprint.dprint",

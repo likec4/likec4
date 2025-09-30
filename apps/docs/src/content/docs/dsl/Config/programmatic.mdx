@@ -8,6 +8,7 @@ sidebar:
 
 import { Card, FileTree, Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
 :::caution
 This feature is experimental and not well tested with IDEs.
@@ -119,3 +120,117 @@ export default defineConfig({
   generators,
 })
 ```
+
+## Styles Customization
+
+Same as in [JSON-config](/dsl/config/#styles-customization), you can define styles in TypeScript config:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  styles: {
+    // Theme section allows you to override default colors and sizes
+    theme: {
+      colors: {
+        // Simple color definition - automatically generates element/relationship colors
+        primary: "#FF6B6B",
+        secondary: "#4ECDC4",
+        // Detailed color definition with specific values
+        muted: {
+          elements: {
+            fill: "#2563eb", // Background color
+            stroke: "#1d4ed8", // Border color
+            hiContrast: "#ffffff", // Title text color
+            loContrast: "#e2e8f0" // Description text color
+          },
+          relationships: {
+            line: "#1d4ed8", // Line color
+            label: "#ffffff", // Label text color
+            labelBg: "rgba(37,99,235,0.1)" // Label background color
+          }
+        },
+        // Give detailed definitions for a color from your specification
+        "custom-color-from-your-spec": { 
+          // ...
+        }
+      },
+      sizes: { // override dimensions
+        md: {
+          width: 200,
+          height: 200
+        }
+      }
+    },
+    // Override default values for style properties,
+    // These values will be used if such property is not defined
+    defaults: {
+      border: "dotted",
+      opacity: 100,
+      size: "md",
+      color: "slate",
+      group: {
+        color: "green",
+        opacity: 10,
+        border: "solid"
+      },
+      relationship: {
+        color: "indigo",
+        line: "solid",
+        arrow: "diamond"
+      }
+    }
+  }
+})
+```
+
+### Reusable Styles
+
+There is also helper functions `defineStyle`, `defineTheme` and `defineThemeColor`.  
+You can export them from a separate file (or publish as a package, to share with others) and import them in your config.
+
+```ts title="@your-org/likec4-theme"
+import { defineStyle, defineTheme, defineThemeColor } from 'likec4/config'
+
+const theme1 = defineTheme({
+  colors: {
+    primary: "#FF6B6B",
+  },
+})
+
+const theme2 = defineTheme({
+  colors: {
+    primary: "#4ECDC4",
+  },
+})
+
+export default defineStyle({
+  // Even use environment variable to switch between themes
+  theme: process.env['THEME'] === 'theme2' ? theme2 : theme1,
+  defaults: {
+    // ...
+  }
+})
+```
+
+And  in your config:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import styles from '@your-org/likec4-theme'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  styles,
+})
+```
+
+<br/>
+
+
+<AdvancedCustomizationTip/>

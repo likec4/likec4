@@ -80,6 +80,7 @@
       ],
       "outputs": [
         "dist/**",
+        "config/schema.json",
         "vite-plugin-modules.d.ts"
       ],
       "inputs": [
