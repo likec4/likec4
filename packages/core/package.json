@@ -116,6 +116,10 @@
     "module": "dist/index.mjs"
   },
   "dependencies": {
+    "type-fest": "catalog:utils"
+  },
+  "devDependencies": {
+    "unified": "11.0.5",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-to-string": "^4.0.0",
     "rehype-format": "5.0.1",
@@ -125,10 +129,6 @@
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
-    "type-fest": "catalog:utils",
-    "unified": "11.0.5"
-  },
-  "devDependencies": {
     "@dagrejs/dagre": "catalog:",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",

@@ -857,39 +857,9 @@ importers:
 
   packages/core:
     dependencies:
-      mdast-util-from-markdown:
-        specifier: ^2.0.2
-        version: 2.0.2
-      mdast-util-to-string:
-        specifier: ^4.0.0
-        version: 4.0.0
-      rehype-format:
-        specifier: 5.0.1
-        version: 5.0.1
-      rehype-raw:
-        specifier: 7.0.0
-        version: 7.0.0
-      rehype-sanitize:
-        specifier: ^6.0.0
-        version: 6.0.0
-      rehype-stringify:
-        specifier: 10.0.1
-        version: 10.0.1
-      remark-gfm:
-        specifier: 4.0.1
-        version: 4.0.1
-      remark-parse:
-        specifier: 11.0.0
-        version: 11.0.0
-      remark-rehype:
-        specifier: 11.1.2
-        version: 11.1.2
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
-      unified:
-        specifier: 11.0.5
-        version: 11.0.5
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -945,6 +915,12 @@ importers:
       graphology-types:
         specifier: 'catalog:'
         version: 0.24.8
+      mdast-util-from-markdown:
+        specifier: ^2.0.2
+        version: 2.0.2
+      mdast-util-to-string:
+        specifier: ^4.0.0
+        version: 4.0.0
       mnemonist:
         specifier: 0.40.3
         version: 0.40.3(patch_hash=5c12abb43fcff6fd81e53021b89075d53249640d165a2556cc1e58d71201a13a)
@@ -960,6 +936,27 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.18.0(oxlint-tsgolint@0.2.0)
+      rehype-format:
+        specifier: 5.0.1
+        version: 5.0.1
+      rehype-raw:
+        specifier: 7.0.0
+        version: 7.0.0
+      rehype-sanitize:
+        specifier: ^6.0.0
+        version: 6.0.0
+      rehype-stringify:
+        specifier: 10.0.1
+        version: 10.0.1
+      remark-gfm:
+        specifier: 4.0.1
+        version: 4.0.1
+      remark-parse:
+        specifier: 11.0.0
+        version: 11.0.0
+      remark-rehype:
+        specifier: 11.1.2
+        version: 11.1.2
       remeda:
         specifier: catalog:utils
         version: 2.31.1
@@ -972,6 +969,9 @@ importers:
       unbuild:
         specifier: 'catalog:'
         version: 3.5.0(typescript@5.9.2)
+      unified:
+        specifier: 11.0.5
+        version: 11.0.5
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(sugarss@4.0.1(postcss@8.5.6))(terser@5.39.2)(tsx@4.20.5)(yaml@2.7.0)
