@@ -36,6 +36,12 @@ export const GetLastClickedNode: RequestType<never, { element: Fqn | null; deplo
   method: 'get-last-clicked-node',
 }
 
+export const ReadLocalIcon: RequestType</* uri */ string, {
+  base64data: string | null
+}> = {
+  method: 'read-local-icon',
+}
+
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,

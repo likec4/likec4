@@ -1,9 +1,9 @@
 import type { scalar } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
-import { IconRenderer } from '@likec4/icons/all'
 import { Button } from '@mantine/core'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from './App.css'
+import { IconRenderer } from './IconRenderer'
 import { ErrorMessage, QueryErrorBoundary } from './QueryErrorBoundary'
 import {
   setLastClickedNode,
