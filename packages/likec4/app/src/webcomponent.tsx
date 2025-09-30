@@ -2,10 +2,15 @@ import { LikeC4View as ReactLikeC4View } from 'likec4:react'
 import { type Root, createRoot } from 'react-dom/client'
 import { ComponentName } from './const'
 
-export class LikeC4View extends HTMLElement {
-  static observedAttributes = ['view-id', 'browser']
+import z from 'zod/v4'
 
-  private rootEl: HTMLDivElement | undefined
+const propsSchema = z.object({
+  viewId: z.string().default('index'),
+  browser: z.stringbool().default(true),
+  dynamicViewVariant: z.literal(['diagram', 'sequence']).optional(),
+})
+
+export class LikeC4View extends HTMLElement {
   private shadow: ShadowRoot
   private root: Root | undefined
 
@@ -55,19 +60,34 @@ export class LikeC4View extends HTMLElement {
     this.hostCss = undefined
   }
 
+  static observedAttributes = ['view-id', 'browser', 'dynamic-variant']
+
+  protected getProps() {
+    const props = propsSchema.safeParse(
+      {
+        viewId: this.getAttribute('view-id'),
+        browser: this.getAttribute('browser') ?? undefined,
+        dynamicViewVariant: this.getAttribute('dynamic-variant') ?? undefined,
+      },
+    )
+    if (!props.success) {
+      console.error('Invalid props', z.formatError(props.error))
+      return {
+        viewId: 'index',
+      }
+    }
+    return props.data
+  }
+
   protected render() {
-    const viewId = this.getAttribute('view-id') ?? 'index'
-    const browserAttr = this.getAttribute('browser') ?? 'true'
-
-    const browser = browserAttr !== 'false'
-
+    const props = this.getProps()
     this.updateHostCss()
 
     // this.rootEl ??= this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
     this.root ??= createRoot(this.shadow)
 
     this.root.render(
-      <ReactLikeC4View viewId={viewId} browser={browser} />,
+      <ReactLikeC4View {...props} />,
     )
   }
 

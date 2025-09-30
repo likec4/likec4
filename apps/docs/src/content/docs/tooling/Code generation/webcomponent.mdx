@@ -69,8 +69,14 @@ For example:
 And in HTML:
 
 ```html
-<custom-c4-view view-id="index" browser="true"></custom-c4-view>
+<custom-c4-view view-id="index" browser="true" dynamic-variant="sequence"></custom-c4-view>
 ```
+
+| Property          | Description                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `view-id`         | Your view id                                                                                          |
+| `browser`         | Whether to show views browser popup (default `true`)                                                  |
+| `dynamic-variant` | How dynamic view should be rendered<br />Possible values: `diagram` or `sequence` (default `diagram`) |
 
 :::note
 CLI command [build](/tooling/cli/#build-static-website) always generates javascript with web components.  

@@ -1706,6 +1706,9 @@ importers:
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
+      zod:
+        specifier: catalog:utils
+        version: 3.25.76
 
   packages/log:
     dependencies:

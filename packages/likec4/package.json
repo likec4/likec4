@@ -237,6 +237,7 @@
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
-    "wireit": "catalog:"
+    "wireit": "catalog:",
+    "zod": "catalog:utils"
   }
 }
