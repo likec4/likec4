@@ -126,7 +126,7 @@ catalogs:
     sharp: 0.34.3
     std-env: ^3.9.0
     strip-indent: ^4.0.0
-    type-fest: ^4.41.0
+    type-fest: ^5.0.1
     ufo: 1.6.1
     valibot: ^1.1.0
     zod: ^3.25.76
