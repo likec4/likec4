@@ -69,6 +69,7 @@ export async function bundleApp() {
       rollupOptions: {
         input: [
           './app/src/main.tsx',
+          './app/src/webcomponent.tsx',
           './app/src/fonts.css',
           './app/src/style.css',
         ],
@@ -98,7 +99,8 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
           resolve(cwd, 'app/src/const.js'),
-          /@likec4\/core.*/,
+          /@likec4\/.*/,
+          /@xyflow\/.*/,
           /likec4:/,
         ],
       },
@@ -127,7 +129,6 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', '__app__/favicon.svg'),
     copyFile('app/src/const.js', '__app__/src/const.js'),
     copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx'),
-    copyFile('app/src/webcomponent.tsx', '__app__/src/webcomponent.tsx'),
   ])
 }
 
