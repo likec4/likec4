@@ -99,7 +99,7 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from motion
           resolve(cwd, 'app/src/const.js'),
-          /@likec4\/.*/,
+          /@likec4\/.core*/,
           /@xyflow\/.*/,
           /likec4:/,
         ],
