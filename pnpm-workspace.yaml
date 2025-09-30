@@ -48,7 +48,7 @@ catalogs:
     "@pandacss/types": ^1.4.1
     postcss: 8.5.6
   esbuild:
-    esbuild: 0.25.9
+    esbuild: 0.25.10
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
