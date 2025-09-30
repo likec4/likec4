@@ -14,6 +14,7 @@ tableOfContents:
 
 import { Tabs, TabItem as Tab, Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
 <p style={{display: 'flex', gap: '10px'}}>
 <a href="https://www.npmjs.com/package/%40likec4%2Fdiagram" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
@@ -21,7 +22,9 @@ import { PackageManagers } from 'starlight-package-managers'
 
 LikeC4 React library is available to embed diagrams into your applications.  
 Although you can use it directly, consider [Vite Plugin](/tooling/vite-plugin/)
-or [CLI](/tooling/code-generation/react/) for smoother development experience.
+or [CLI](/tooling/code-generation/react/) for smoother developer experience.
+
+<AdvancedCustomizationTip />
 
 ## Usage
 
@@ -462,7 +465,7 @@ function App() {
 LikeC4Diagram can use custom node renderers.\
 Compose custom nodes renderers using primitives from `@likec4/diagram/custom`\
 (or `@likec4/diagram/bundle/custom` for the bundled version).\
-See [customNodes.tsx](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.tsx) for examples.
+See [customNodes.ts](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.ts) for examples.
 
 ```tsx
 import { LikeC4Diagram } from '@likec4/diagram'

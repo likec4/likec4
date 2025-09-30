@@ -1,11 +1,14 @@
 ---
-title: VSCode Extension
-description: Official LikeC4 extension for VSCode
+title: Editors
+description: Customize your code editor to improve LikeC4 experience.
 sidebar:
-  order: 4
+  order: 0
+  label: Editors (IDE)  
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## VSCode
 
 <div style={{display: 'flex', gap: '10px'}}>
 <a href="https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode" target="_blank">![VSCode Installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/likec4.likec4-vscode?label=vscode%20installs)</a>
@@ -42,4 +45,41 @@ Try [example-cloud-system](https://github.dev/likec4/example-cloud-system) with:
   href="https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4"
   target="_blank"
 />
+
+<LinkCard
+  title="Stackblitz"
+  description="Open example project in the browser using Stackblitz"
+  href="https://stackblitz.com/~/github/likec4/example-cloud-system/"
+  target="_blank"
+/>
 </CardGrid>
+
+## Neovim
+
+LikeC4 has a Neovim plugin for syntax highlighting and LSP integration with code navigation and completion.
+
+The plugin supports:
+- Auto start of the LikeC4 language server for files with .c4 extension
+- Validation and error reporting
+- Semantic syntax highlighting
+- Code completion and navigation 
+- Resolve references (like `find all references`, `go to definition` .. )
+- "Safe" renames (do not to forget to write your buffers)
+- Hover information
+- Live Previews (and editing)
+
+likec4.nvim is available in a separate repository on GitHub - [likec4/likec4.nvim](https://github.com/likec4/likec4.nvim).  
+Installation:
+
+```lua
+{
+  'likec4/likec4.nvim',
+  build = 'npm install -g @likec4/language-server'
+}
+```
+
+## JetBrains IDEs
+
+LikeC4 has a JetBrains plugin for syntax highlighting and LSP integration with code navigation and completion.
+
+The plugin is available in the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/26619-likec4-lsp-support) and GitHub - [likec4/jetbrains-plugin](https://github.com/likec4/jetbrains-plugin).

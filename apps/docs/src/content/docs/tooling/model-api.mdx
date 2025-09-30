@@ -173,7 +173,18 @@ model
   .filter(r => r.isTagged('http')) // filter by tags
   .map(r => r.source) // get source elements
 
-const diagram = await likec4.layoutedModel().view('index')
+```  
+
+To get layouted model:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+
+const model = await likec4.layoutedModel()
+
+const diagram = model.view('index')
 
 ```  
 
@@ -300,7 +311,7 @@ for (const view of model.views()) {
 
 ## Model Builder
 
-Type-safe builder available from `@likec4/core/builder`.  
+Type-safe builder available from `@likec4/core/builder` (and `likec4/model/builder`).  
 Builder can be used to create model programmatically and supports two styles:
 
 <Tabs>

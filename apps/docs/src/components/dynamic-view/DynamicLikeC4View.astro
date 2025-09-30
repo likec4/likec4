@@ -2,15 +2,21 @@
 import { LikeC4View, type LikeC4ViewId } from 'likec4:react/dynamic-view';
 interface Props {
   viewId: LikeC4ViewId;
+  variant?: 'sequence' | 'diagram'
 }
-const { viewId } = Astro.props
+const { viewId, variant } = Astro.props
 ---
 
 <LikeC4View
   className="likec4-dynamic-view"
   viewId={viewId}
+  dynamicViewVariant={variant}
+  enableDynamicViewWalkthrough={false}
+  enableFocusMode={false}
   browser={{
+    enableDynamicViewWalkthrough: true,
     enableFocusMode: false,
+    dynamicViewVariant: variant
   }}
   client:only="react">
 </LikeC4View>

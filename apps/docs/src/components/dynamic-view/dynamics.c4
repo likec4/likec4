@@ -174,39 +174,37 @@ views {
   dynamic view index {
     title 'Story 1.1 - User dashboard'
 
-    customer
-      -> web {
-        notes '''
-          - Opens application in the browser via secured connection
-          - Authenticates and navigates to the dashboard
+    customer -> web {
+      notes '''
+        - Opens application in the browser via secured connection
+        - Authenticates and navigates to the dashboard
 
-        '''
-      }
-      -> auth 'updates token if needed' {
-        navigateTo authTokenUpdateFlow
-        notes '
+      '''
+    }
+    web -> auth 'updates token if needed' {
+      navigateTo authTokenUpdateFlow
+      notes '
           Frontend application checks access token expiration.
           If expired - requests a new using refresh token
         '
-      }
+    }
 
 
-    web
-      -> api 'GET request' {
-        notes '''
+    web -> api 'GET request' {
+      notes '''
           - Requests data from API endpoint with access token
           - Validates token
 
         '''
-      }
+    }
     // Validates token
-      -> auth {
-        notes '''
+    api -> auth {
+      notes '''
           - API verifies token and receives users identification if token is valid
           - If token is not valid, returns HTTP 403
 
         '''
-      }
+    }
 
     parallel {
       api -> db {
@@ -217,15 +215,14 @@ views {
       }
     }
 
-    api
-      -> api 'process' {
-        notes 'Transforms data and prepares user dashboard'
-      }
-      -> web 'returns data' {
-        technology 'JSON'
-        notes 'Returns data to frontend as JSON'
-      }
-      -> customer 'renders dashboard'
+    api -> api 'process' {
+      notes 'Transforms data and prepares user dashboard'
+    }
+    api -> web 'returns data' {
+      technology 'JSON'
+      notes 'Returns data to frontend as JSON'
+    }
+    web -> customer 'renders dashboard'
 
 
     include cloud, backend, storage
@@ -292,5 +289,57 @@ views {
       color muted
       opacity 15%
     }
+  }
+
+  dynamic view order1 {
+    variant sequence
+    title 'Actors order / Version 1'
+
+    customer
+      -> web
+      -> auth
+      -> web
+      -> api
+
+    style customer {
+      color green
+    }
+    style web {
+      color blue
+    }
+    style auth {
+      color red
+    }
+    style api {
+      color indigo
+    }
+
+  }
+
+  dynamic view order2 {
+    variant sequence
+    title 'Actors order / Version 2'
+
+    include  auth, web, api
+
+    customer
+      -> web
+      -> auth
+      -> web
+      -> api
+
+    style customer {
+      color green
+    }
+    style web {
+      color blue
+    }
+    style auth {
+      color red
+    }
+    style api {
+      color indigo
+    }
+
   }
 }

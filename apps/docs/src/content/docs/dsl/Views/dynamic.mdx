@@ -92,10 +92,33 @@ views {
 }
 ```
 
-:::note
-Check this <a href="https://github.com/likec4/likec4/discussions/816" target='_blank'>GitHub discussion</a> for further development.  
-Feel free to share your ideas.
-:::
+### Continuous steps
+
+Alternative syntax for describing continuous steps: `A -> B -> C`
+
+```likec4 copy
+dynamic view example {
+  customer
+     -> web
+     -> api // same as web -> api
+     -> web // same as web <- api
+}
+```
+
+It identifies the backward direction of the step, i.e. `A -> B -> A` is the same as `A -> B; A <- B`.
+Nested steps are processed as well, i.e. 
+```likec4
+A -> B -> C -> D -> B -> A
+```
+is the same as 
+```likec4
+A -> B
+B -> C
+C -> D
+D -> B
+A <- B // is backward
+```
+
 
 ### Parallel steps
 
@@ -119,7 +142,7 @@ Nested parallel blocks are not possible - <a href="https://github.com/likec4/lik
 
 ### Navigation
 
-Control the flow of the walk-through:
+Steps can navigate to other dynamic views:
 
 ```likec4 copy
 dynamic view level1 {
@@ -137,7 +160,7 @@ dynamic view moreDetails {
 
 ### Notes 
 
-`notes` is for additional comments during walk-through:
+`notes` can be used to add additional information to the step. It supports Markdown:
 
 ```likec4 copy
 dynamic view stepnotes {
@@ -152,14 +175,13 @@ dynamic view stepnotes {
 
   parallel {
     api -> cache {
-      notes '
-        Requests temporary session-scoped data
-      '
-    }
-    api -> db {
-      notes '
-        Queries persistent data
-      '
+      // Supports Markdown
+      notes '''
+        **What it does**:
+        - requests session-scoped data
+        - updates TTL
+
+      '''
     }
   }  
 }
@@ -176,19 +198,60 @@ By default, dynamic views are displayed as diagrams.
 
 ### Sequence 
 
+Classic sequence diagram:
+
 ![sequence variant](../../../../assets/views/dynamic-variant-sequence.png)
 
 :::note
-The sequence variant comes with a few limitations:
-- only connections with _leaf_ elements are supported
-- export to image is not yet available (_coming soon_)
+The sequence variant supports only connections with _leaf_ elements, i.e. elements that do not have any child elements.
 :::
+
+## Order of actors
+
+The sequence variant allows to set the order of actors with `include` predicate:
+
+**Default variant**:
+
+```likec4 copy
+dynamic view order1 {
+  customer
+    -> web
+    -> auth
+    -> web
+    -> api
+}
+```
+Steps define the order of actors.
+
+![diagram sequence-order-1](../../../../assets/views/sequence-order-1.png)
+
+**Ordered variant:**  
+
+```likec4 copy {9-12}
+dynamic view order2 {
+  customer  
+    -> web
+    -> auth
+    -> web
+    -> api
+
+  // Strict order
+  include
+    auth,
+    web,
+    api
+}
+```
+
+`include` predicate may define order partially, for the rest order will be derived based on the steps.
+
+![diagram sequence-order-2](../../../../assets/views/sequence-order-2.png)
 
 ## Example
 
 Browse this example:
 
-<DynamicLikeC4View viewId="index"/>
+<DynamicLikeC4View viewId="index" variant="sequence"/>
 
 <br/>
 <CardGrid>
