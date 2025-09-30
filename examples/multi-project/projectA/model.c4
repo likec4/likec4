@@ -1,6 +1,7 @@
 model {
 
   customer = actor 'Cloud System Customer' {
+    icon ./user.svg
     description '
       The regular customer of the system
     '
