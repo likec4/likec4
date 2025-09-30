@@ -2,7 +2,7 @@
   "name": "@likec4/layouts",
   "description": "Layout algorithms for LikeC4 views",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -32,7 +32,6 @@
         "default": "./dist/index.js"
       }
     },
-
     "./sequence": {
       "sources": "./src/sequence/index.ts",
       "default": {

@@ -24,5 +24,5 @@ module.exports = {
   },
   installCommand: () => 'pnpm install',
   buildCommand: () => 'pnpm build',
-  publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public`,
+  publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public --no-git-checks || exit 0`,
 }

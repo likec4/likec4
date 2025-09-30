@@ -1,3 +1,45 @@
+# [1.42.0](https://github.com/likec4/likec4/compare/v1.41.0...v1.42.0) (2025-09-30)
+
+### 🚀 Features
+
+- **Theme & Styling Customization**  
+  One of the most requested features is finally here — the ability to override the default theme and customize styling.  
+  Check out [Styles Customization Docs](https:///likec4.dev/dsl/config/#styles-customization).
+  
+- **Dynamic Views Enhancements**  
+  - DSL supports continuous steps `A -> B -> C -> ....` [docs](https://likec4.dev/dsl/views/dynamic/#continuous-steps)
+  - Explicit order of actors [docs](https://likec4.dev/dsl/views/dynamic/#order-of-actors)
+  - Webcomponents: `dynamic-variant` attribute
+    ```html
+    <likec4-view view-id="index" dynamic-variant="sequence"/>
+    ```
+  - Export Sequence Views to PNG  
+    ```sh
+    # Exports views matching use-case* using sequence layout
+    likec4 export png -f "use-case*" --sequence src/likec4    
+    ```
+    
+- **VSCode Improvements**  
+  - VSCode preview now navigates to the source of a step
+  - Local files can now be displayed in the VSCode preview (first Copilot contribution, [#2218](https://github.com/likec4/likec4/issues/2218))
+
+- **Other Improvements**  
+  - Sourceless relationships are now supported on extended elements, closes [#2114](https://github.com/likec4/likec4/issues/2114)
+  - @gjveld added neovim instructions [#2266](https://github.com/likec4/likec4/issues/2266)
+
+### 🐞 Bug Fixes
+
+* add relative paths to types and module fields in icons package.json ([aa83914](https://github.com/likec4/likec4/commit/aa83914f95140564afca4cce389358878599ded1))
+* enable error throwing in zx shell commands for CLI build tests ([4f5438d](https://github.com/likec4/likec4/commit/4f5438d3c590c6be4c09fee794e7e8387103b28f))
+* invalid style replacements in shadowroot ([16fa684](https://github.com/likec4/likec4/commit/16fa684bba2093baf16bf84fd28391b168e35883))
+* normalize package.json types/module paths by removing leading ./ prefix ([ef03ec3](https://github.com/likec4/likec4/commit/ef03ec3fdd4651aa46d7f26c27e3b1918a9164f2))
+* npm engine warnings by updating Node.js version ranges from tilde to caret/gte ([#2270](https://github.com/likec4/likec4/issues/2270)) ([e87d3f5](https://github.com/likec4/likec4/commit/e87d3f54ea58a2acd39c0b8bfa32911c8a510bfc))
+* png export fails on single file static page ([242cf4e](https://github.com/likec4/likec4/commit/242cf4e1f9ad1dc23ba9b9459ff281386e7e6978)), closes [#2237](https://github.com/likec4/likec4/issues/2237)
+* **react:** embedded sequence starts walkthrough on edge click ([6685a23](https://github.com/likec4/likec4/commit/6685a23a2a0e897ccf50e0883641433ff3024860))
+* **react:** search on description/summary not working ([#2242](https://github.com/likec4/likec4/issues/2242)) ([80252e0](https://github.com/likec4/likec4/commit/80252e023f22b8bfc7ff9294fad72551c5df9652)), closes [#2239](https://github.com/likec4/likec4/issues/2239)
+* sequence view goes to negative coordinates ([beda70d](https://github.com/likec4/likec4/commit/beda70de566b425bdd96388df94ef23e4793fcee))
+
+
 # [1.41.0](https://github.com/likec4/likec4/compare/v1.40.0...v1.41.0) (2025-09-16)
 
 ### 🚀 Features
