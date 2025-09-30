@@ -1,3 +1,43 @@
+# [1.42.0](https://github.com/likec4/likec4/compare/v1.41.0...v1.42.0) (2025-09-30)
+
+
+### Bug Fixes
+
+* add relative paths to types and module fields in icons package.json ([aa83914](https://github.com/likec4/likec4/commit/aa83914f95140564afca4cce389358878599ded1))
+* enable error throwing in zx shell commands for CLI build tests ([4f5438d](https://github.com/likec4/likec4/commit/4f5438d3c590c6be4c09fee794e7e8387103b28f))
+* invalid style replacements in shadowroot ([16fa684](https://github.com/likec4/likec4/commit/16fa684bba2093baf16bf84fd28391b168e35883))
+* normalize package.json types/module paths by removing leading ./ prefix ([ef03ec3](https://github.com/likec4/likec4/commit/ef03ec3fdd4651aa46d7f26c27e3b1918a9164f2))
+* npm engine warnings by updating Node.js version ranges from tilde to caret/gte ([#2270](https://github.com/likec4/likec4/issues/2270)) ([e87d3f5](https://github.com/likec4/likec4/commit/e87d3f54ea58a2acd39c0b8bfa32911c8a510bfc))
+* png export fails on single file static page ([242cf4e](https://github.com/likec4/likec4/commit/242cf4e1f9ad1dc23ba9b9459ff281386e7e6978)), closes [#2237](https://github.com/likec4/likec4/issues/2237)
+* **react:** embedded sequence starts walkthrough on edge click ([6685a23](https://github.com/likec4/likec4/commit/6685a23a2a0e897ccf50e0883641433ff3024860))
+* **react:** search on description/summary not working ([#2242](https://github.com/likec4/likec4/issues/2242)) ([80252e0](https://github.com/likec4/likec4/commit/80252e023f22b8bfc7ff9294fad72551c5df9652)), closes [#2239](https://github.com/likec4/likec4/issues/2239)
+* sequence view goes to negative coordinates ([beda70d](https://github.com/likec4/likec4/commit/beda70de566b425bdd96388df94ef23e4793fcee))
+* sequence view goes to negative coordinates ([8e0bb70](https://github.com/likec4/likec4/commit/8e0bb70f6a1729ca96e89a931399961bf7b973a5))
+* update zod import and restrict bundled dependencies to @likec4/core ([695ca20](https://github.com/likec4/likec4/commit/695ca20bcfbdb52e6b6599c8f5c00ec85a87ee5f))
+
+
+### Features
+
+* add webcomponent entry point and include xyflow dependencies in bundle ([b4c605f](https://github.com/likec4/likec4/commit/b4c605f055d9dbfc9afb8ede8c46ad01bcbf87d8))
+* **app:** set dynamic variant with URL search param ([b7675db](https://github.com/likec4/likec4/commit/b7675db8d074fbfb3d08bf369112f075621bcc2c))
+* **cli:** export sequence views ([73cc555](https://github.com/likec4/likec4/commit/73cc55573e57d28b9ef8a1934d31db283502ff6a))
+* configure project styles ([3be4b27](https://github.com/likec4/likec4/commit/3be4b27972f52eba46740ca99cf615b106321c7c))
+* **docs:** neovim doc ([#2266](https://github.com/likec4/likec4/issues/2266)) ([c359b47](https://github.com/likec4/likec4/commit/c359b4768eb9dc585e86c662c07b75459a36d10a))
+* **dsl:** chained steps in dynamic views ([453221a](https://github.com/likec4/likec4/commit/453221a0851a297c051f4808e891d304ad532238))
+* Enable local file:// icon display in VSCode preview ([#2272](https://github.com/likec4/likec4/issues/2272)) ([a1c0c3b](https://github.com/likec4/likec4/commit/a1c0c3beaeb151764c9463193228c0acba5e2375)), closes [#2112](https://github.com/likec4/likec4/issues/2112)
+* preserve order in dynamic view based on explicit includes and steps ([93ff345](https://github.com/likec4/likec4/commit/93ff345b1bb120715dd336c5e7f5f11bab19245e))
+* **react:** add `onInitialized` callback ([a06e246](https://github.com/likec4/likec4/commit/a06e24699401c373c865e8ba6a8fb060b970abe1))
+* sourceless relationship on extended model ([c657b6d](https://github.com/likec4/likec4/commit/c657b6d646b044806a1134c6990df0b0843842aa)), closes [#2114](https://github.com/likec4/likec4/issues/2114)
+* **vscode:** navigate to the source of dynamic view step ([2f02481](https://github.com/likec4/likec4/commit/2f024814864d8916ffa43ae39371fffd302c125e))
+* **webcomponent:** add `dynamic-variant` attribute ([3a09cfe](https://github.com/likec4/likec4/commit/3a09cfe0abd78b26637427cb5747620193a05bb1))
+
+
+### Performance Improvements
+
+* memoize diagram nodes and optimize node type preparation ([1195672](https://github.com/likec4/likec4/commit/119567268f7b1481888c46624965091f5ac2640f))
+
+
+
 # [1.41.0](https://github.com/likec4/likec4/compare/v1.40.0...v1.41.0) (2025-09-16)
 
 ### 🚀 Features
