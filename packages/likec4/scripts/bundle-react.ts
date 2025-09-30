@@ -57,6 +57,7 @@ await build({
         'likec4/react',
         '@emotion/is-prop-valid', // dev-only import from motion
         /@likec4\/core.*/,
+        /@xyflow\/.*/,
         /likec4:/,
       ],
       onwarn(warning, warn) {
