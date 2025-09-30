@@ -2,9 +2,10 @@ import { cloudflare } from '@cloudflare/vite-plugin'
 import pandaCss from '@likec4/styles/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'import-meta-resolve'
+import { resolve as resolveImportMeta } from 'import-meta-resolve'
 import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import url from 'url'
 import { type AliasOptions, defineConfig } from 'vite'
 import tsconfigpaths from 'vite-tsconfig-paths'
@@ -12,6 +13,7 @@ import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+  'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
   // '@likec4/core/compute-view/relationships': path.resolve(
   //   __dirname,
   //   '../../packages/core/src/compute-view/relationships-view/index.ts',
@@ -79,7 +81,7 @@ export default defineConfig(({ command }) => ({
                 ) {
                   newCode += code.slice(i, match.index)
                   const path = match[1]!.slice(1, -1)
-                  const resolved = resolve(path, url.pathToFileURL(args.path).toString())
+                  const resolved = resolveImportMeta(path, url.pathToFileURL(args.path).toString())
                   newCode += `new URL(${JSON.stringify(url.fileURLToPath(resolved))}, import.meta.url)`
                   i = assetImportMetaUrlRE.lastIndex
                 }

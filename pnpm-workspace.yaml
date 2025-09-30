@@ -14,14 +14,14 @@ catalog:
   oxlint: 1.18.0
   oxlint-tsgolint: ^0.2.0
   playwright: 1.54.2
-  tsx: 4.20.5
+  tsx: 4.20.6
   turbo: 2.5.8
   typescript: 5.9.2
   unbuild: 3.5.0
   vite-plugin-dts: 4.5.4
   vite-tsconfig-paths: ^5.1.4
   wireit: 0.14.12
-  zx: 8.8.1
+  zx: 8.8.4
 
 catalogMode: prefer
 
@@ -43,9 +43,9 @@ catalogs:
     "@cloudflare/vite-plugin": 1.11.7
     wrangler: ~4.35.0
   css:
-    "@pandacss/dev": ^1.3.1
-    "@pandacss/preset-panda": ^1.3.1
-    "@pandacss/types": ^1.3.1
+    "@pandacss/dev": ^1.4.1
+    "@pandacss/preset-panda": ^1.4.1
+    "@pandacss/types": ^1.4.1
     postcss: 8.5.6
   esbuild:
     esbuild: 0.25.9
@@ -74,7 +74,7 @@ catalogs:
     "@nanostores/react": 1.0.0
     "@react-hookz/web": ^25.1.1
     "@tabler/icons-react": 3.35.0
-    "@types/react": 19.1.13
+    "@types/react": 19.1.16
     "@types/react-dom": 19.1.9
     clsx: ^2.1.1
     motion: ^12.23.22
@@ -97,7 +97,7 @@ catalogs:
     "@types/picomatch": ^4.0.2
     "@valibot/to-json-schema": ^1.3.0
     bundle-require: ^5.1.0
-    caniuse-lite: ^1.0.30001743
+    caniuse-lite: ^1.0.30001746
     chokidar: ^4.0.3
     chroma-js: ^3.1.2
     citty: ^0.1.6
@@ -131,11 +131,11 @@ catalogs:
     valibot: ^1.1.0
     zod: ^3.25.76
   vite:
-    "@vitejs/plugin-react": ^4.7.0
-    rollup: ^4.44.0
-    vite: ^6.3.6
+    "@vitejs/plugin-react": ^5.0.4
+    rollup: ^4.52.3
+    vite: ^7.1.7
     vite-plugin-dts: ^4.5.4
-    vite-plugin-node-polyfills: ^0.23.0
+    vite-plugin-node-polyfills: ^0.24.0
     vite-tsconfig-paths: ^5.1.4
   vitest:
     "@vitest/ui": 3.2.4

@@ -25,6 +25,11 @@ await build({
   define: {
     'process.env.NODE_ENV': '"production"',
   },
+  resolve: {
+    alias: {
+      'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
+    },
+  },
   esbuild: {
     jsxDev: false,
     minifyIdentifiers: false,
