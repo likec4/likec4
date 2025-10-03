@@ -350,6 +350,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       index: 0,
       expectedItems: [
         'title',
+        'summary',
         'description',
         'link',
         'include',
