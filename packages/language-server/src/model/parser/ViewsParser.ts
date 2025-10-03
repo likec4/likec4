@@ -100,7 +100,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseBaseProps(
+      const { title = null, summary = null, description = null } = this.parseBaseProps(
         pipe(
           body.props,
           filter(p => this.isValid(p)),
@@ -119,6 +119,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         id: id as c4.ViewId,
         astPath,
         title: toSingleLine(title) ?? null,
+        summary,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,
@@ -272,7 +273,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseBaseProps(
+      const { title = null, summary = null, description = null } = this.parseBaseProps(
         pipe(
           props,
           filter(ast.isViewStringProperty),
@@ -294,6 +295,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         id: id as c4.ViewId,
         astPath,
         title: toSingleLine(title) ?? null,
+        summary,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,

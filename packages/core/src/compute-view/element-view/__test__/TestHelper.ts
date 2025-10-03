@@ -258,6 +258,7 @@ class ProcessPredicates<T extends AnyTypes> {
       [_type]: 'element',
       rules: [],
       title: null,
+      summary: null,
       description: null,
     } as Writable<ElementView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any

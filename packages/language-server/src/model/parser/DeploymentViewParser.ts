@@ -32,6 +32,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
       const {
         title = null,
+        summary = null,
         description = null,
       } = this.parseBaseProps(
         pipe(
@@ -53,6 +54,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         id: id as c4.ViewId,
         astPath,
         title: toSingleLine(title) ?? null,
+        summary,
         description,
         tags,
         links: isNonEmptyArray(links) ? links : null,

@@ -460,6 +460,7 @@ const emptyView = {
   _type: 'element' as const,
   id: 'index' as scalar.ViewId<'index'>,
   title: null,
+  summary: null,
   description: null,
   tags: null,
   links: null,

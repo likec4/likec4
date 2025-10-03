@@ -231,6 +231,7 @@ class ProcessPredicates<T extends AnyTypes> {
       [_type]: 'deployment',
       rules: [],
       title: null,
+      summary: null,
       description: null,
     } as Writable<DeploymentView<typeof this.t.model.Aux>>
     let vb = mkViewBuilder(view) as any

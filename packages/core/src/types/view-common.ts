@@ -106,6 +106,7 @@ export type ViewType = 'element' | 'dynamic' | 'deployment'
 export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
+  readonly summary: scalar.MarkdownOrString | null
   readonly description: scalar.MarkdownOrString | null
   /**
    * Source file containing this view, relative to the project root.
