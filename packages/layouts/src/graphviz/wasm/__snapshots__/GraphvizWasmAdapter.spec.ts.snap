@@ -200,6 +200,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "y": 61,
     },
   ],
+  "summary": null,
   "tags": null,
   "title": "",
   "viewOf": "amazon",
@@ -1173,6 +1174,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "y": 332,
     },
   ],
+  "summary": null,
   "tags": null,
   "title": "",
   "viewOf": "cloud",
@@ -1452,6 +1454,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "y": 323,
     },
   ],
+  "summary": null,
   "tags": null,
   "title": "",
 }

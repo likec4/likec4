@@ -7,6 +7,7 @@ export const viewIssue911: ComputedElementView = {
   [_stage]: 'computed',
   [_type]: 'element',
   autoLayout: 'TB',
+  summary: null,
   description: null,
   edges: [
     // {
