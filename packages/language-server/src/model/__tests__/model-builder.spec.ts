@@ -458,6 +458,65 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
+  it('builds model and views with summary and description', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      deploymentNode node
+    }
+    model {
+      component system
+    }
+    deployment {
+      node n1
+    }
+    views {
+      view v1 {
+        title 'Element View'
+        summary 'Element view summary'
+        description 'Element view description'
+        include *
+      }
+
+      dynamic view v2 {
+        title 'Dynamic View'
+        summary 'Dynamic view summary'
+        description 'Dynamic view description'
+      }
+
+      deployment view v3 {
+        title 'Deployment View'
+        summary 'Deployment view summary'
+        description 'Deployment view description'
+      }
+    }
+    `)
+    expect(diagnostics).to.be.empty
+
+    const model = await buildModel()
+    expect(model.views).toMatchObject({
+      v1: {
+        id: 'v1',
+        title: 'Element View',
+        summary: { txt: 'Element view summary' },
+        description: { txt: 'Element view description' },
+      },
+      v2: {
+        id: 'v2',
+        title: 'Dynamic View',
+        summary: { txt: 'Dynamic view summary' },
+        description: { txt: 'Dynamic view description' },
+      },
+      v3: {
+        id: 'v3',
+        title: 'Deployment View',
+        summary: { txt: 'Deployment view summary' },
+        description: { txt: 'Deployment view description' },
+      },
+    })
+  })
+
   it('builds model and views with links', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics, document } = await validate(`

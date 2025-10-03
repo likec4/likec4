@@ -377,6 +377,58 @@ describe.concurrent('LikeC4ModelParser', () => {
       })
     })
 
+    it('parses summary, title, description for views', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component c1
+        }
+        deployment {
+          node n1
+        }
+        views {
+          view v1 {
+            title "View 1 Title"
+            summary "View 1 summary"
+            description "View 1 description"
+            include *
+          }
+
+          dynamic view v2 {
+            title "View 2 Title"
+            summary """ View 2 summary """
+            description """ View 2 description """
+          }
+
+          deployment view v3 {
+            title '''View 3 Title'''
+            summary '''View 3 summary'''
+            description '''View 3 description'''
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Views[0]).toMatchObject({
+        title: 'View 1 Title',
+        summary: { txt: 'View 1 summary' },
+        description: { txt: 'View 1 description' },
+      })
+      expect(doc.c4Views[1]).toMatchObject({
+        title: 'View 2 Title',
+        summary: { md: 'View 2 summary' },
+        description: { md: 'View 2 description' },
+      })
+      expect(doc.c4Views[2]).toMatchObject({
+        title: 'View 3 Title',
+        summary: { md: 'View 3 summary' },
+        description: { md: 'View 3 description' },
+      })
+    })
+
     it('transforms multi-line view title to single line', async ({ expect }) => {
       const { validate, services } = createTestServices()
       const { document, errors } = await validate(`
