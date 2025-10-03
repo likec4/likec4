@@ -273,6 +273,7 @@ export const cloud3levels = {
   id: 'cloud3levels' as ViewId,
   title: '',
   viewOf: 'cloud' as Fqn,
+  summary: null,
   description: null,
   tags: null,
   links: null,
