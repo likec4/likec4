@@ -317,7 +317,7 @@ ViewProperty:
 ;
 
 ViewStringProperty:
-  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'summary' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
