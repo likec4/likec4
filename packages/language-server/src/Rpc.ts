@@ -89,11 +89,13 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       connection.onRequest(ComputeView.req, async ({ viewId, projectId }, cancelToken) => {
+        logger.debug`received request ${'computeView'} for view ${viewId} from project ${projectId}`
         const view = await likec4Services.ModelBuilder.computeView(viewId, projectId as ProjectId, cancelToken)
         return { view }
       }),
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
-        const model = await likec4Services.ModelBuilder.parseModel(projectId as ProjectId, cancelToken)
+        logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`
+        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId)
         if (model === null) {
           return { model: null }
         }
@@ -107,11 +109,12 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(LayoutView.req, async ({ viewId, projectId }, cancelToken) => {
-        logger.debug`received request ${'layoutView'} of ${viewId} from project ${projectId}`
+        logger.debug`received request ${'layoutView'} for ${viewId} from project ${projectId}`
         const result = await likec4Services.Views.layoutView(viewId, projectId as ProjectId, cancelToken)
         return { result }
       }),
       connection.onRequest(ValidateLayout.Req, async ({ projectId }, cancelToken) => {
+        logger.debug`received request ${'validateLayout'} for project ${projectId}`
         const layouts = await likec4Services.Views.layoutAllViews(projectId as ProjectId, cancelToken)
 
         const result = reportLayoutDrift(layouts.map(l => l.diagram))
@@ -214,6 +217,7 @@ export class Rpc extends ADisposable {
         await DocumentBuilder.update(changed, deleted, cancelToken)
       }),
       connection.onRequest(Locate.Req, params => {
+        logger.debug`received request ${'locate'}, ${params}`
         switch (true) {
           case 'element' in params:
             return likec4Services.ModelLocator.locateElement(params.element, params.projectId as ProjectId)

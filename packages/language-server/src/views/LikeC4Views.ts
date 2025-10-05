@@ -1,7 +1,7 @@
 import type { ComputedView, DiagramView, ProjectId, ViewId } from '@likec4/core'
 import { type LayoutResult, type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
-import type { WorkspaceCache } from 'langium'
+import { type WorkspaceCache, interruptAndCheck } from 'langium'
 import { values } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
@@ -97,7 +97,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
       return []
     }
     const m0 = performanceMark()
-    projectId ??= likeC4Model.project.id
+    projectId = likeC4Model.project.id
     const logger = viewsLogger.getChild(projectId)
     logger.debug`layoutAll: ${views.length} views`
 
@@ -120,6 +120,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
     if (tasks.length > 0) {
       await this.layouter.batchLayout({
         batch: tasks,
+        cancelToken,
         onSuccess: (task, result) => {
           this.viewSucceed(task.view, projectId, result)
           results.push(result)
@@ -128,6 +129,9 @@ export class DefaultLikeC4Views implements LikeC4Views {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
         },
       })
+    }
+    if (cancelToken && cancelToken.isCancellationRequested) {
+      await interruptAndCheck(cancelToken)
     }
     if (results.length !== views.length) {
       logger.warn`layouted ${results.length} of ${views.length} views in ${m0.pretty}`
@@ -145,7 +149,7 @@ export class DefaultLikeC4Views implements LikeC4Views {
   ): Promise<GraphvizOut | null> {
     const model = await this.ModelBuilder.buildLikeC4Model(projectId, cancelToken)
     const view = model.findView(viewId)?.$view
-    projectId ??= model.project.id
+    projectId = model.project.id
     const logger = viewsLogger.getChild(projectId)
     if (!view) {
       logger.warn`layoutView ${viewId} not found`

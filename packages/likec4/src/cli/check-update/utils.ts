@@ -45,7 +45,7 @@ export function notifyAvailableUpdate() {
       }).catch(() => {
         // ignore error
       })
-    } catch (_error) {
+    } catch {
       // ignore error
     }
   }

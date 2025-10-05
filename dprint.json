@@ -14,7 +14,9 @@
     "jsxOpeningElement.bracketPosition": "maintain",
     "jsx.quoteStyle": "preferDouble",
     "jsxSelfClosingElement.bracketPosition": "maintain",
-    "jsx.bracketPosition": "maintain"
+    "jsx.bracketPosition": "maintain",
+    "unionAndIntersectionType.preferHanging": false,
+    "unionAndIntersectionType.preferSingleLine": false
   },
   "json": {
   },

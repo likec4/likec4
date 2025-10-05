@@ -2,6 +2,16 @@ import type { DiagramView } from '@likec4/core'
 import type { $keywords } from 'ts-graphviz'
 import type { Tagged } from 'type-fest'
 
+/**
+ * Partially implements CancellationToken interface from vscode-jsonrpc
+ */
+export type CancellationToken = {
+  /**
+   * Is `true` when the token has been cancelled, `false` otherwise.
+   */
+  readonly isCancellationRequested: boolean
+}
+
 // Declare custom attributes.
 declare module 'ts-graphviz' {
   export namespace GraphAttributeKey {

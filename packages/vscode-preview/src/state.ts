@@ -99,7 +99,7 @@ messenger.onRequest(GetLastClickedNode, () => {
 })
 
 messenger.onNotification(BroadcastModelUpdate, () => {
-  queryClient.invalidateQueries({
+  void queryClient.invalidateQueries({
     queryKey: [$projectId.get()],
   })
 })

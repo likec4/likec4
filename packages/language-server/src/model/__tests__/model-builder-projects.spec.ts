@@ -37,6 +37,9 @@ describe.concurrent('LikeC4ModelBuilder -- projects', () => {
       config: {
         name: 'test-project',
         title: 'Test Project',
+        manualLayouts: {
+          outDir: '.likec4-layouts',
+        },
       },
       folderUri: URI.parse('file:///test/workspace/src/test-project-1'),
     })
@@ -64,6 +67,9 @@ describe.concurrent('LikeC4ModelBuilder -- projects', () => {
     expect(model.project).toEqual({
       id: 'test-project',
       title: 'Test Project',
+      manualLayouts: {
+        outDir: '.likec4-layouts',
+      },
     })
 
     // test-project is the only project, so it should be the default
@@ -78,6 +84,9 @@ describe.concurrent('LikeC4ModelBuilder -- projects', () => {
     expect(defaultModel.project).toEqual({
       id: 'test-project',
       title: 'Test Project',
+      manualLayouts: {
+        outDir: '.likec4-layouts',
+      },
     })
   })
 })

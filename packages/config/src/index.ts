@@ -5,6 +5,8 @@ export type {
   LikeC4ProjectConfig,
   LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
+  LocateResult,
+  ManualLayoutsConfigSchema,
 } from './schema'
 
 export type {

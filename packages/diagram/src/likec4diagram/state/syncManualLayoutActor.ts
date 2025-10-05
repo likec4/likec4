@@ -1,6 +1,6 @@
 import type { ViewChange, ViewId } from '@likec4/core/types'
 import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
-import { hasAtLeast, reduce } from 'remeda'
+import { hasAtLeast, indexBy, map } from 'remeda'
 import {
   type ActorLogicFrom,
   type ActorRef,
@@ -129,43 +129,58 @@ export interface SyncLayoutActorLogic extends ActorLogicFrom<typeof _syncManualL
 
 export const syncManualLayoutActorLogic: SyncLayoutActorLogic = _syncManualLayoutActorLogic
 
-function createViewChange(parentContext: DiagramContext): ViewChange.SaveManualLayout {
-  const { view, xystore, xyflow } = parentContext
+function createViewChange(parentContext: DiagramContext): ViewChange.SaveLayout {
+  const { view, xynodes, xyedges, xystore } = parentContext
 
   const { nodeLookup } = xystore.getState()
   const movedNodes = new Set<string>()
+
+  const xynodesLookup = indexBy(xynodes, n => n.data.id)
+
   let bounds: Rect | undefined
 
-  const nodes = reduce([...nodeLookup.values()], (acc, node) => {
-    const dimensions = getNodeDimensions(node)
-    if (
-      !isSamePoint(node.internals.positionAbsolute, node.data) || node.initialWidth !== dimensions.width ||
-      node.initialHeight !== dimensions.height
-    ) {
-      movedNodes.add(node.id)
+  const nodes = map(view.nodes, (node) => {
+    const xynode = xynodesLookup[node.id]
+    if (!xynode) {
+      bounds = bounds ? getBoundsOfRects(bounds, node) : node
+      return node
     }
-    const rect = acc[node.id] = {
-      isCompound: node.type !== 'element' && node.type !== 'deployment',
-      x: Math.floor(node.internals.positionAbsolute.x),
-      y: Math.floor(node.internals.positionAbsolute.y),
+    const internal = nodeLookup.get(xynode.id)!
+    const dimensions = getNodeDimensions(internal)
+    if (
+      !isSamePoint(internal.internals.positionAbsolute, node) || node.width !== dimensions.width ||
+      node.height !== dimensions.height
+    ) {
+      movedNodes.add(xynode.id)
+    }
+    const rect = {
+      ...node,
+      x: Math.floor(internal.internals.positionAbsolute.x),
+      y: Math.floor(internal.internals.positionAbsolute.y),
       width: Math.ceil(dimensions.width),
       height: Math.ceil(dimensions.height),
     }
     bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
-    return acc
-  }, {} as ViewChange.SaveManualLayout['layout']['nodes'])
+    return rect
+  })
 
-  const edges = reduce(xyflow?.getEdges() ?? [], (acc, { source, target, data }) => {
+  const edges = map(view.edges, (edge) => {
+    const xyedge = xyedges.find(e => e.data.id === edge.id)
+    if (!xyedge) {
+      return edge
+    }
+    const data = xyedge.data
     let controlPoints = data.controlPoints ?? []
-    const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
+    const sourceOrTargetMoved = movedNodes.has(xyedge.source) || movedNodes.has(xyedge.target)
     // If edge control points are not set, but the source or target node was moved
     if (controlPoints.length === 0 && sourceOrTargetMoved) {
       controlPoints = bezierControlPoints(data)
     }
     if (data.points.length === 0 && controlPoints.length === 0) {
-      return acc
+      return edge
     }
-    const _updated: ViewChange.SaveManualLayout['layout']['edges'][string] = acc[data.id] = {
+    const _updated = {
+      ...edge,
       points: data.points,
     }
     if (data.labelXY && data.labelBBox) {
@@ -200,19 +215,18 @@ function createViewChange(parentContext: DiagramContext): ViewChange.SaveManualL
       y2: Math.ceil(Math.max(...allY)),
     })
     bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
-    return acc
-  }, {} as ViewChange.SaveManualLayout['layout']['edges'])
+    return _updated
+  })
 
   bounds ??= view.bounds
 
   return {
-    op: 'save-manual-layout',
+    op: 'save-layout',
     layout: {
-      hash: view.hash,
-      autoLayout: view.autoLayout,
+      ...view,
+      bounds,
       nodes,
       edges,
-      ...bounds,
     },
   }
 }

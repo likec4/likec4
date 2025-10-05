@@ -3,6 +3,7 @@ import { promiseNextTick } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import PQueue from 'p-queue'
 import { type GraphvizPort, type LayoutResult, type LayoutTaskParams, GraphvizLayouter } from './GraphvizLayoter'
+import type { CancellationToken } from './types'
 
 const logger = rootLogger.getChild(['layouter', 'queue'])
 
@@ -76,6 +77,7 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
 
   async batchLayout<A extends AnyAux>(params: {
     batch: LayoutTaskParams<A>[]
+    cancelToken?: CancellationToken | undefined
     onSuccess?: (task: LayoutTaskParams<A>, result: LayoutResult<A>) => void
     onError?: (task: LayoutTaskParams<A>, error: unknown) => void
   }): Promise<LayoutResult<A>[]> {
@@ -86,6 +88,11 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
       await promiseNextTick()
       // recursively call batchLayout (to prevent batches from running in parallel)
       return await this.batchLayout(params)
+    }
+    // this batch may have been cancelled while waiting for previous batch to finish
+    if (params.cancelToken?.isCancellationRequested) {
+      logger.debug`cancellation requested`
+      return []
     }
     const concurrency = this.queue.concurrency
     logger.debug`starting batch layout, size: ${params.batch.length}, concurrency: ${concurrency}`
@@ -118,6 +125,10 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
           logger
             .debug`task limit reached: ${this.queue.size}, waiting queue to shrink to ${concurrency}`
           await this.queue.onSizeLessThan(concurrency + 1)
+        }
+        if (params.cancelToken?.isCancellationRequested) {
+          logger.debug`cancellation requested`
+          break
         }
       }
     } finally {

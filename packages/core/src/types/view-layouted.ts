@@ -12,6 +12,12 @@ import type {
 import type { ComputedEdge, ComputedNode } from './view-computed'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
+export type DiagramNodeDriftReason =
+  | 'not-exists'
+  | 'properties-changed'
+  | 'relationships-changed'
+  | 'shape-changed'
+
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
    * Absolute X coordinate
@@ -60,6 +66,12 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
   // notes?: scalar.HtmlOrString | null
 }
 
+export type LayoutedViewDriftReason =
+  | 'not-exists'
+  | 'nodes-drift'
+  | 'edges-drift'
+  | 'properties-changed'
+
 interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewProperties<A>, ViewWithHash, ViewWithNotation {
   readonly [_stage]: 'layouted'
   readonly autoLayout: ViewAutoLayout
@@ -72,6 +84,8 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
    * But was changed and layout should be recalculated
    */
   hasLayoutDrift?: boolean
+
+  drifts?: LayoutedViewDriftReason[]
 }
 
 export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {

@@ -1,6 +1,6 @@
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import * as monaco from '@codingame/monaco-vscode-editor-api'
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
+import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import {
@@ -112,7 +112,7 @@ export function LanguageClientSync({ config, wrapper }: {
       playground.changeActiveFile(nextFilename)
       return
     }
-    console.error(`Editor or model not found for location: ${location}`, { editor, model })
+    console.error(`Editor or model not found for location`, { location, editor, model })
   }
 
   const showLocation = useCallbackRef(async (target: Locate.Params) => {

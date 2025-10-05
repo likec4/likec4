@@ -21,6 +21,24 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
    * @returns The project config.
    */
   loadProjectConfig(filepath: URI): Promise<LikeC4ProjectConfig>
+
+  /**
+   * Reads the directory information for the given URI.
+   *
+   * @param options.onlyLikeC4 If true, only returns files with '.c4', '.likec4' extensions,
+   *        false is used to only for manual layouts at the moment
+   * @default true
+   *
+   * @param options.recursive If true, recursively reads the directory,
+   * @default true
+   */
+  readDirectory(uri: URI, options?: { onlyLikeC4Files?: boolean; recursive?: boolean }): Promise<FileSystemNode[]>
+
+  /**
+   * Writes the content to the file system.
+   * Used by manual layouts.
+   */
+  writeFile(uri: URI, content: string): Promise<void>
 }
 
 export interface FileSystemModuleContext extends FileSystemWatcherModuleContext {
@@ -41,6 +59,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
   }
 
   loadProjectConfig(): Promise<LikeC4ProjectConfig> {
+    throw new Error('No file system is available.')
+  }
+
+  writeFile(): Promise<void> {
     throw new Error('No file system is available.')
   }
 }

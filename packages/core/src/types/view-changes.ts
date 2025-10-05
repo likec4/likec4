@@ -1,6 +1,7 @@
 import type { NonEmptyArray } from './_common'
 import type * as scalar from './scalar'
 import type { BorderStyle, ElementShape, ThemeColor } from './styles'
+import type { LayoutedView } from './view'
 import type { AutoLayoutDirection, ViewManualLayout } from './view-common'
 
 export namespace ViewChange {
@@ -20,6 +21,11 @@ export namespace ViewChange {
     layout: ViewManualLayout
   }
 
+  export interface SaveLayout {
+    op: 'save-layout'
+    layout: LayoutedView
+  }
+
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
     layout: {
@@ -29,4 +35,8 @@ export namespace ViewChange {
     }
   }
 }
-export type ViewChange = ViewChange.ChangeElementStyle | ViewChange.SaveManualLayout | ViewChange.ChangeAutoLayout
+export type ViewChange =
+  | ViewChange.ChangeElementStyle
+  | ViewChange.SaveManualLayout
+  | ViewChange.SaveLayout
+  | ViewChange.ChangeAutoLayout

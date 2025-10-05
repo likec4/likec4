@@ -1,4 +1,7 @@
 {
   "name": "projectA",
-  "title": "Multi-Projects / Project A"
+  "title": "Multi-Projects / Project A",
+  "manualLayouts": {
+    "outDir": ".likec4/layouted"
+  }
 }

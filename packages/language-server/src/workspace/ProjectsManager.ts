@@ -201,6 +201,13 @@ export class ProjectsManager {
       () => `Specify exact project, known: [${[...this.#projectIdToFolder.keys()].join(', ')}]`,
     )
   }
+  /**
+   * Validates and ensures the project.
+   */
+  ensureProject(projectId?: scalar.ProjectId | undefined): Project {
+    projectId = this.ensureProjectId(projectId)
+    return this.getProject(projectId)
+  }
 
   hasMultipleProjects(): boolean {
     return this.#projects.length > 1

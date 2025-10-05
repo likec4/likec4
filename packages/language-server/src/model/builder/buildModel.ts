@@ -245,6 +245,7 @@ export function buildModelData(
         id: project.id,
         title: project.config.title ?? project.config.name,
         styles: project.config.styles,
+        manualLayouts: project.config.manualLayouts,
       }),
       specification: {
         tags: c4Specification.tags,

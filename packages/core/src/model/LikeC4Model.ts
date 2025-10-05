@@ -233,7 +233,12 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
       }
 
       for (const { view, folderPath } of views) {
-        const vm = new LikeC4ViewModel(this, view, getOrCreateFolder(folderPath))
+        const vm = new LikeC4ViewModel(
+          this,
+          getOrCreateFolder(folderPath),
+          view,
+          $data._stage === 'layouted' ? $data.manualLayouts?.[view.id] as any : undefined,
+        )
         this._viewFolderItems.get(folderPath).add(vm)
         this._views.set(view.id, vm)
         for (const tag of vm.tags) {

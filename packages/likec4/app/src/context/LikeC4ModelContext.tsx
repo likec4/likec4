@@ -15,7 +15,7 @@ export function LikeC4ModelContext(
   const model = useStore(likec4model)
 
   return (
-    <LikeC4ModelDataContextProvider value={likec4data}>
+    <LikeC4ModelDataContextProvider value={likec4model}>
       <LikeC4ModelProvider likec4model={model}>
         {children}
       </LikeC4ModelProvider>

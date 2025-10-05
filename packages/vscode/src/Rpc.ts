@@ -9,6 +9,7 @@ import {
   type Locate,
   type RegisterProject,
   type ReloadProjects,
+  // type SaveManualLayout,
   type ValidateLayout,
   FetchComputedModel,
   FetchTelemetryMetrics,
@@ -35,6 +36,7 @@ const changeView: ChangeView.Req = new RequestType('likec4/change-view')
 const layoutView: LayoutView.Req = new RequestType('likec4/layout-view')
 const validateLayout: ValidateLayout.Req = new RequestType('likec4/validate-layout') as any
 const getDocumentTags: GetDocumentTags.Req = new RequestType('likec4/document-tags')
+// const saveManualLayout: SaveManualLayout.Req = new RequestType('likec4/save-manual-layout')
 
 // #endregion
 
@@ -52,6 +54,7 @@ const lsp = {
   layoutView,
   validateLayout,
   getDocumentTags,
+  // saveManualLayout,
 }
 
 export const useRpc = createSingletonComposable(() => {

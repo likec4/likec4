@@ -1,4 +1,5 @@
 import type { scalar } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { Button } from '@mantine/core'
 import { only } from 'remeda'
@@ -38,19 +39,19 @@ export function App() {
     <LikeC4ModelProvider likec4model={likec4Model}>
       {error && <ErrorMessage error={error} />}
       <QueryErrorBoundary>
-        <Initialized />
+        <Initialized likec4Model={likec4Model} />
       </QueryErrorBoundary>
     </LikeC4ModelProvider>
   )
 }
 
-function Initialized() {
+function Initialized({ likec4Model }: { likec4Model: LikeC4Model }) {
   const [{
     nodesDraggable,
     edgesEditable,
   }] = useVscodeAppState()
 
-  const {
+  let {
     view,
     error,
   } = useDiagramView()
@@ -70,6 +71,9 @@ function Initialized() {
       </div>
     )
   }
+
+  view = likec4Model.$data.manualLayouts?.[view.id] ?? view
+
   return (
     <>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>

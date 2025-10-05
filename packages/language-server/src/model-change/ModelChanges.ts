@@ -1,4 +1,4 @@
-import { type ProjectId, invariant, nonexhaustive } from '@likec4/core'
+import { type ProjectId, type ViewChange, type ViewId, invariant, nonexhaustive } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { Location, Range, TextEdit } from 'vscode-languageserver-types'
 import type { ParsedLikeC4LangiumDocument } from '../ast'
@@ -22,7 +22,19 @@ export class LikeC4ModelChanges {
     let result: Location | null = null
     try {
       await this.services.shared.workspace.WorkspaceLock.write(async () => {
-        const { doc, edits, modifiedRange } = this.convertToTextEdit(changeView)
+        let { viewId, projectId: projectId_, change } = changeView
+        if (change.op === 'save-layout') {
+          invariant(viewId === change.layout.id, 'View ID does not match')
+          const project = this.services.shared.workspace.ProjectsManager.ensureProject(projectId_ as ProjectId)
+          result = await this.services.likec4.ManualLayouts.write(project, change.layout)
+          return
+        }
+        const projectId = this.services.shared.workspace.ProjectsManager.ensureProjectId(projectId_ as ProjectId)
+        const { doc, edits, modifiedRange } = this.convertToTextEdit({
+          viewId,
+          projectId,
+          change,
+        })
         const textDocument = {
           uri: doc.textDocument.uri,
           version: doc.textDocument.version,
@@ -53,12 +65,16 @@ export class LikeC4ModelChanges {
     return result
   }
 
-  protected convertToTextEdit({ viewId, projectId, change }: ChangeView.Params): {
+  protected convertToTextEdit({ viewId, projectId, change }: {
+    viewId: ViewId
+    projectId: ProjectId
+    change: Exclude<ViewChange, ViewChange.SaveLayout>
+  }): {
     doc: ParsedLikeC4LangiumDocument
     modifiedRange: Range
     edits: TextEdit[]
   } {
-    const lookup = this.locator.locateViewAst(viewId, projectId as ProjectId)
+    const lookup = this.locator.locateViewAst(viewId, projectId)
     if (!lookup) {
       throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
     }

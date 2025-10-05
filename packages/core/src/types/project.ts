@@ -17,6 +17,10 @@ export interface LikeC4ProjectStylesConfig {
   defaults?: LikeC4ProjectStyleDefaults
 }
 
+export interface LikeC4ProjectManualLayoutsConfig {
+  outDir: string
+}
+
 /**
  * Configuration of the project, as read from the config file.
  * LikeC4 projects encapsulate models, and can import from each other
@@ -33,4 +37,6 @@ export interface LikeC4Project {
    * Custom styles
    */
   styles?: LikeC4ProjectStylesConfig | undefined
+
+  manualLayouts?: LikeC4ProjectManualLayoutsConfig | undefined
 }

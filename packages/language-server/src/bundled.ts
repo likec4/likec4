@@ -5,7 +5,7 @@ import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
 import { getLspConnectionSink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
-import { ConfigurableLayouter } from './views/configurable-layouter'
+import { ConfigurableLayouter } from './views/ConfigurableLayouter'
 
 /**
  * This is used as `bin` entry point to start the language server.

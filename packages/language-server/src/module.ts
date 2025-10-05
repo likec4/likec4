@@ -64,7 +64,8 @@ import {
   WorkspaceSymbolProvider,
 } from './shared'
 import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
-import { type LikeC4Views, DefaultLikeC4Views } from './views'
+import { type LikeC4ManualLayouts, type LikeC4Views, DefaultLikeC4Views, NoopLikeC4ManualLayouts } from './views'
+import type { LikeC4ManualLayoutsModuleContext } from './views/LikeC4ManualLayouts'
 import {
   AstNodeDescriptionProvider,
   IndexManager,
@@ -80,6 +81,7 @@ export type LanguageServicesContext =
   & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
   & FileSystemModuleContext
   & LikeC4MCPServerModuleContext
+  & LikeC4ManualLayoutsModuleContext
 
 interface LikeC4AddedSharedServices {
   lsp: {
@@ -135,6 +137,7 @@ export interface LikeC4AddedServices {
   likec4: {
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
+    ManualLayouts: LikeC4ManualLayouts
     Layouter: QueueGraphvizLayoter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
@@ -171,7 +174,9 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const createLikeC4Module = (
-  context: LikeC4MCPServerModuleContext,
+  context:
+    & LikeC4MCPServerModuleContext
+    & LikeC4ManualLayoutsModuleContext,
 ): Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> => ({
   documentation: {
     DocumentationProvider: bind(LikeC4DocumentationProvider),
@@ -193,6 +198,7 @@ export const createLikeC4Module = (
       })
     },
     Views: bind(DefaultLikeC4Views),
+    ManualLayouts: (services: LikeC4Services) => context.manualLayouts(services),
     DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
@@ -236,6 +242,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     LikeC4GeneratedModule,
     createLikeC4Module({
       ...NoMCPServer,
+      ...NoopLikeC4ManualLayouts,
       ...context,
     }),
     module,
@@ -262,6 +269,7 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
   const moduleContext = {
     ...NoMCPServer,
     ...NoopFileSystem,
+    ...NoopLikeC4ManualLayouts,
     ...context,
   }
   return inject(

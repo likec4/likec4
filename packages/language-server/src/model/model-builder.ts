@@ -22,18 +22,20 @@ import {
   flatMap,
   groupBy,
   hasAtLeast,
-  isNot,
+  isEmpty,
   mapToObj,
+  mapValues,
+  omitBy,
   pipe,
-  prop,
   values,
 } from 'remeda'
-import { CancellationToken } from 'vscode-jsonrpc'
+import type { CancellationToken } from 'vscode-jsonrpc'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
-import { assignNavigateTo } from '../view-utils'
+import { applyStylesToManualLayout, assignNavigateTo } from '../view-utils'
+import type { LikeC4ManualLayouts } from '../views'
 import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LikeC4ModelParser } from './model-parser'
@@ -45,6 +47,8 @@ const computedModelCacheKey = (projectId: c4.ProjectId) => `computed-model-${pro
 const builderLogger = mainLogger.getChild('model-builder')
 
 type ModelParsedListener = (docs: URI[]) => void
+
+type ManualLayouts = Record<ViewId, c4.LayoutedView> | null
 
 export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
@@ -59,6 +63,7 @@ export interface LikeC4ModelBuilder extends Disposable {
     cancelToken?: CancellationToken,
   ): Promise<c4.ComputedView | null>
   onModelParsed(callback: ModelParsedListener): Disposable
+  clearCache(): void
 }
 
 export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4ModelBuilder {
@@ -67,6 +72,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private listeners: ModelParsedListener[] = []
   private cache: WorkspaceCache<string, unknown>
   private DocumentBuilder: DocumentBuilder
+  private manualLayouts: LikeC4ManualLayouts
   private mutex: WorkspaceLock
 
   constructor(services: LikeC4Services) {
@@ -76,6 +82,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     this.cache = services.ValidatedWorkspaceCache
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
+    this.manualLayouts = services.likec4.ManualLayouts
 
     this.onDispose(
       this.DocumentBuilder.onUpdate((_changed, deleted) => {
@@ -88,7 +95,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       this.DocumentBuilder.onBuildPhase(
         DocumentState.Validated,
         (docs, _cancelToken) => {
-          const validated = docs.map(prop('uri')).filter(isNot(isLikeC4Builtin))
+          const validated = docs.flatMap(d => isLikeC4Builtin(d.uri) || this.projects.checkIfExcluded(d) ? [] : d.uri)
           if (validated.length > 0) {
             this.notifyListeners(validated)
           }
@@ -110,7 +117,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     const logger = builderLogger.getChild(projectId)
     const key = parsedWithoutImportsCacheKey(projectId)
     if (cache.has(key)) {
-      logger.debug`unsafeSyncBuildModelData from cache`
+      logger.debug`unsafeSyncParseModelData from cache`
     }
     return cache.get(key, () => {
       try {
@@ -120,7 +127,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           logger.debug`no documents to build model`
           return null
         }
-        logger.debug`unsafeSyncBuildModelData`
+        logger.debug`unsafeSyncParseModelData`
         return buildModelData(project, docs)
       } catch (e) {
         logWarnError(e)
@@ -132,10 +139,16 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   /**
    * To avoid circular dependencies, first we parse all documents and then we join them.
    */
-  private unsafeSyncJoinedModelData(projectId: c4.ProjectId): LikeC4Model.Parsed | null {
+  private unsafeSyncJoinedModel(
+    projectId: c4.ProjectId,
+    manualLayouts: ManualLayouts,
+  ): LikeC4Model.Parsed | null {
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
-    const key = parsedModelCacheKey(projectId)
+    const key = parsedModelCacheKey(projectId) + (manualLayouts ? '+manualLayouts' : '')
+    if (cache.has(key)) {
+      logger.debug`unsafeSyncJoinedModel from cache`
+    }
     return cache.get(key, () => {
       const result = this.unsafeSyncParseModelData(projectId)
       if (!result) {
@@ -162,6 +175,13 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           imports,
         }
       }
+      if (manualLayouts) {
+        // we mutate parsedData, so we need to make a copy
+        if (parsedData === result.data) {
+          parsedData = { ...parsedData }
+        }
+        parsedData.manualLayouts = manualLayouts
+      }
       return LikeC4Model.create(parsedData)
     })
   }
@@ -170,22 +190,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Parsed | null> {
-    const project = this.projects.ensureProjectId(projectId)
-    const logger = builderLogger.getChild(project)
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Parsed | null>
-    const cached = cache.get(parsedModelCacheKey(project))
-    if (cached) {
-      logger.debug`parseModel from cache`
-      return cached
-    }
+    projectId = this.projects.ensureProjectId(projectId)
+    const logger = builderLogger.getChild(projectId)
     const t0 = performanceMark()
     return await this.mutex.read(async () => {
-      if (cancelToken) {
+      if (cancelToken?.isCancellationRequested) {
         await interruptAndCheck(cancelToken)
       }
-      const result = this.unsafeSyncJoinedModelData(project)
+      const project = this.projects.getProject(projectId)
+      const manualLayouts = await this.manualLayouts.read(project)
+      const parsedModel = this.unsafeSyncJoinedModel(projectId, manualLayouts)
       logger.debug`parseModel in ${t0.pretty}`
-      return result
+      return parsedModel
     })
   }
 
@@ -196,12 +212,19 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * This method is internal and should to be called only when all documents are known to be parsed.
    * Otherwise, the model may be incomplete.
    */
-  public unsafeSyncBuildModel(projectId: c4.ProjectId): LikeC4Model.Computed {
+  public unsafeSyncBuildModel(
+    projectId: c4.ProjectId,
+    manualLayouts?: ManualLayouts,
+  ): LikeC4Model.Computed {
     const logger = builderLogger.getChild(projectId)
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const viewsCache = this.cache as WorkspaceCache<string, c4.ComputedView | null>
-    return cache.get(computedModelCacheKey(projectId), () => {
-      const parsedModel = this.unsafeSyncJoinedModelData(projectId)
+    const key = computedModelCacheKey(projectId) + (manualLayouts ? '+manualLayouts' : '')
+    if (cache.has(key)) {
+      logger.debug`unsafeSyncBuildModel from cache`
+    }
+    return cache.get(key, () => {
+      const parsedModel = this.unsafeSyncJoinedModel(projectId, manualLayouts ?? null)
       if (!parsedModel) {
         return LikeC4Model.EMPTY
       }
@@ -223,11 +246,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         viewsCache.set(key, view)
         return [v.id, view] as const
       })
-      return LikeC4Model.create({
+      const data: c4.ComputedLikeC4ModelData = {
         ...parsedModel.$data,
         [_stage]: 'computed',
         views,
-      })
+      }
+      if (data.manualLayouts) {
+        data.manualLayouts = mapValues(data.manualLayouts, v => {
+          const computed = views[v.id]
+          return computed ? applyStylesToManualLayout(v, computed) : v
+        })
+      }
+      return LikeC4Model.create(data)
     })
   }
 
@@ -235,20 +265,16 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     projectId?: c4.ProjectId | undefined,
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model.Computed> {
-    const project = this.projects.ensureProjectId(projectId)
-    const logger = builderLogger.getChild(project)
-    const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
-    const cached = cache.get(computedModelCacheKey(project))
-    if (cached) {
-      logger.debug('buildLikeC4Model from cache')
-      return cached
-    }
+    projectId = this.projects.ensureProjectId(projectId)
+    const logger = builderLogger.getChild(projectId)
     const t0 = performanceMark()
     return await this.mutex.read(async () => {
-      if (cancelToken) {
+      if (cancelToken?.isCancellationRequested) {
         await interruptAndCheck(cancelToken)
       }
-      const result = this.unsafeSyncBuildModel(project)
+      const project = this.projects.getProject(projectId)
+      const manualLayouts = await this.manualLayouts.read(project)
+      const result = this.unsafeSyncBuildModel(projectId, manualLayouts)
       logger.debug(`buildLikeC4Model in ${t0.pretty}`)
       return result
     })
@@ -320,6 +346,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         this.listeners.splice(index, 1)
       }
     })
+  }
+
+  public clearCache(): void {
+    this.cache.clear()
   }
 
   private documents(projectId: c4.ProjectId) {

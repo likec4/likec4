@@ -39,11 +39,11 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   get allExcludingBuiltin(): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
     return super.all.filter((doc): doc is LikeC4LangiumDocument => {
-      if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri) || projects.checkIfExcluded(doc)) {
+      if (!isLikeC4LangiumDocument(doc) || isLikeC4Builtin(doc.uri)) {
         return false
       }
       doc.likec4ProjectId = projects.belongsTo(doc.uri)
-      return true
+      return !projects.checkIfExcluded(doc)
     })
   }
 

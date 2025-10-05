@@ -43,6 +43,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   readonly #allTags = new DefaultMap((_key: aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
 
   public readonly $view: V
+
   public readonly $model: LikeC4Model<A>
 
   public readonly title: string | null
@@ -62,13 +63,14 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   constructor(
     model: LikeC4Model<A>,
-    view: V,
     folder: LikeC4ViewsFolder<A>,
+    view: V,
+    manualLayouted?: V | undefined,
   ) {
     this.$model = model
-    this.$view = view
+    this.$view = manualLayouted ?? view
     this.folder = folder
-    for (const node of view.nodes) {
+    for (const node of this.$view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
       if (!node.parent) {
@@ -85,7 +87,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       }
     }
 
-    for (const edge of view.edges) {
+    for (const edge of this.$view.edges) {
       const edgeModel = new EdgeModel(
         this,
         Object.freeze(edge),
@@ -101,8 +103,8 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
       this.#edges.set(edge.id, edgeModel)
     }
 
-    this.title = this.$view.title ? extractViewTitleFromPath(this.$view.title) : null
-    this.viewPath = this.$view.title ? normalizeViewPath(this.$view.title) : this.$view.id
+    this.title = view.title ? extractViewTitleFromPath(view.title) : null
+    this.viewPath = view.title ? normalizeViewPath(view.title) : view.id
   }
 
   get _type(): V[_type] {

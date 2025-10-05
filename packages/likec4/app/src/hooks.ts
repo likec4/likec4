@@ -4,8 +4,7 @@ import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useParams } from '@tanstack/react-router'
 import { shallowEqual } from 'fast-equals'
 import { useEffect, useState } from 'react'
-import { values } from 'remeda'
-import { useLikeC4ModelDataAtom } from './context/safeCtx'
+import { useLikeC4ModelAtom } from './context/safeCtx'
 
 // To get the transparent background
 // We need to add a class to the HTML element
@@ -23,19 +22,19 @@ export function useTransparentBackground(enabled = true) {
 }
 
 export function useLikeC4Views(): ReadonlyArray<DiagramView> {
-  const $likec4data = useLikeC4ModelDataAtom()
+  const $likec4model = useLikeC4ModelAtom()
   const [views, setViews] = useState([] as DiagramView[])
   useEffect(() => {
-    return $likec4data.subscribe((next) => {
+    return $likec4model.subscribe((next) => {
       setViews(prev => {
-        const nextViews = values(next.views)
+        const nextViews = [...next.views()].map(v => v.$view)
         if (shallowEqual(prev, nextViews)) {
           return prev
         }
         return nextViews
       })
     })
-  }, [$likec4data])
+  }, [$likec4model])
   return views
 }
 

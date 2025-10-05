@@ -27,7 +27,7 @@ export const viteBuild = async ({
 }: Config) => {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
 
-  const { isDev, ...config } = await viteConfig({
+  const config = await viteConfig({
     ...cfg,
     languageServices,
     likec4AssetsDir,

@@ -44,7 +44,7 @@ export class RichText {
    * @example
    *
    *  get description(): RichTextOrEmpty {
-   *    return RichText.memoize(this, this.$element.description)
+   *    return RichText.memoize(this, 'description', this.$element.description)
    *  }
    */
   static memoize(obj: object, tag: symbol | string, source: MarkdownOrString | null | undefined): RichTextOrEmpty {

@@ -3,6 +3,7 @@ import {
   createLanguageServices as createCustomLanguageServices,
   LikeC4FileSystem,
   NoopFileSystem,
+  WithLikeC4ManualLayouts,
   WithMCPServer,
 } from '@likec4/language-server'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
@@ -121,6 +122,7 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     {
       ...options.useFileSystem ? LikeC4FileSystem(options.watch) : NoopFileSystem,
       ...options.mcp ? WithMCPServer(options.mcp === 'stdio' ? 'stdio' : 'sse') : {},
+      ...WithLikeC4ManualLayouts,
     },
     CliModule,
     module,

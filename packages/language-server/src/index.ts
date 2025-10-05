@@ -7,7 +7,8 @@ import { LikeC4FileSystem } from './filesystem/LikeC4FileSystem'
 import { getTelemetrySink, logger } from './logger'
 import { WithMCPServer } from './mcp/server/WithMCPServer'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
-import { ConfigurableLayouter } from './views/configurable-layouter'
+import { ConfigurableLayouter } from './views/ConfigurableLayouter'
+import { WithLikeC4ManualLayouts } from './views/LikeC4ManualLayouts'
 
 export { getLspConnectionSink, logger as lspLogger } from './logger'
 
@@ -21,6 +22,8 @@ export type { LikeC4Views } from './views'
 export type { ProjectsManager } from './workspace'
 export { LikeC4FileSystem, NoopFileSystem, WithMCPServer }
 
+export { WithLikeC4ManualLayouts }
+
 type StartLanguageServerOptions = {
   /**
    * Whether to enable the file system watcher.
@@ -32,6 +35,12 @@ type StartLanguageServerOptions = {
    * @default 'sse'
    */
   enableMCP?: false | 'sse' | 'stdio'
+
+  /**
+   * Whether to enable manual layouts, stored in json5 files.
+   * @default true
+   */
+  enableManualLayouts?: boolean
 }
 
 export function startLanguageServer(options?: StartLanguageServerOptions): {
@@ -41,6 +50,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
   const opts = defu(options, {
     enableWatcher: true,
     enableMCP: 'sse' as const,
+    enableManualLayouts: true,
   })
   const connection = createConnection(ProposedFeatures.all)
 
@@ -65,6 +75,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
       connection,
       ...LikeC4FileSystem(opts.enableWatcher),
       ...opts.enableMCP && WithMCPServer(opts.enableMCP),
+      ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
     },
     {
       likec4: {

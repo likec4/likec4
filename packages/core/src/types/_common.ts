@@ -55,7 +55,7 @@ export type ExclusiveUnion<Expressions, All = AllNever<Expressions>> = Expressio
   : never
 
 /**
- * Copy from https://github.com/remeda/remeda/blob/main/src/internal/types/NTuple.ts
+ * Copy from https://github.com/remeda/remeda/blob/main/packages/remeda/src/internal/types/NTuple.ts
  * An array with *exactly* N elements in it.
  *
  * Only literal N values are supported. For very large N the type might result

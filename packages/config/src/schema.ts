@@ -17,6 +17,16 @@ import * as z from 'zod/v4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 
+export const ManualLayoutsConfigSchema = z.object({
+  outDir: z.string()
+    .meta({
+      description:
+        'Path to the directory where manual layouts will be stored, relative to the folder containing the project config',
+    }),
+})
+
+export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
+
 export const LikeC4ProjectJsonConfigSchema = z.object({
   name: z.string()
     .nonempty('Project name cannot be empty')
@@ -44,6 +54,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
   exclude: z.array(z.string())
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
+  manualLayouts: ManualLayoutsConfigSchema
+    .optional()
+    .meta({ description: 'Configuration for manual layouts' }),
 })
   .meta({
     description: 'LikeC4 project configuration',
@@ -56,6 +69,41 @@ export const GeneratorsSchema = z.record(z.string(), FunctionType)
 export const LikeC4ProjectConfigSchema = LikeC4ProjectJsonConfigSchema.extend({
   generators: GeneratorsSchema.optional(),
 })
+
+/**
+ * Result of the {@link GeneratorFnContext.locate} function
+ */
+export type LocateResult = {
+  /**
+   * Range inside the source file
+   */
+  range: {
+    start: {
+      line: number
+      character: number
+    }
+    end: {
+      line: number
+      character: number
+    }
+  }
+  /**
+   * Full path to the source file
+   */
+  document: URI
+  /**
+   * Document path relative to the project folder
+   */
+  relativePath: string
+  /**
+   * Folder, containing the source file ("dirname" of document)
+   */
+  folder: string
+  /**
+   * Source file name ("basename" of document)
+   */
+  filename: string
+}
 
 export interface GeneratorFnContext {
   /**
@@ -90,37 +138,7 @@ export interface GeneratorFnContext {
       | DeploymentRelationModel
       | LikeC4ViewModel
       | DeploymentElementModel,
-  ): {
-    /**
-     * Range inside the source file
-     */
-    range: {
-      start: {
-        line: number
-        character: number
-      }
-      end: {
-        line: number
-        character: number
-      }
-    }
-    /**
-     * Full path to the source file
-     */
-    document: URI
-    /**
-     * Document path relative to the project folder
-     */
-    relativePath: string
-    /**
-     * Folder, containing the source file ("dirname" of document)
-     */
-    folder: string
-    /**
-     * Source file name ("basename" of document)
-     */
-    filename: string
-  }
+  ): LocateResult
 
   /**
    * Write a file

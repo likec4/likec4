@@ -23,6 +23,11 @@ interface BaseLikeC4ModelData<A extends aux.Any> {
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
   imports: Record<string, NonEmptyArray<Element<A>>>
+  /**
+   * If project contains saved manual layouts
+   * For {@link LayoutedLikeC4ModelData} or {@link ComputedLikeC4ModelData} this includes only drifted views
+   */
+  manualLayouts?: Record<aux.ViewId<any>, LayoutedView<any>>
 }
 
 export type AuxFromLikeC4ModelData<D> =

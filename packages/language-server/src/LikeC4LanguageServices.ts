@@ -9,13 +9,15 @@ import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { type LangiumDocument, URI } from 'langium'
 import { entries, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
-import { type Range, DiagnosticSeverity } from 'vscode-languageserver-types'
+import type { CancellationToken } from 'vscode-jsonrpc'
+import type { Range } from 'vscode-languageserver-types'
+import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger, logWarnError } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
-import type { LikeC4Views } from './views/likec4-views'
+import type { LikeC4Views } from './views/LikeC4Views'
 import { ProjectsManager } from './workspace'
 
 const logger = mainLogger.getChild('LanguageServices')
@@ -53,11 +55,11 @@ export interface LikeC4LanguageServices {
    * Returns diagrams (i.e. views with layout computed) for the specified project
    * If no project is specified, returns diagrams for default project
    */
-  diagrams(project?: ProjectId | undefined): Promise<DiagramView[]>
+  diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]>
 
-  computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed>
+  computedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed>
 
-  layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted>
+  layoutedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Layouted>
 
   getErrors(): Array<{
     message: string
@@ -182,8 +184,9 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
    * Diagram is a computed view, layouted using Graphviz
    * Used in React components
    */
-  async diagrams(): Promise<DiagramView[]> {
-    return await this.views.diagrams()
+  async diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<DiagramView[]> {
+    const projectId = this.projectsManager.ensureProjectId(project)
+    return await this.views.diagrams(projectId, cancelToken)
   }
 
   /**
@@ -191,24 +194,24 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
    * Only computes view predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
    */
-  async computedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Computed> {
+  async computedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Computed> {
     const projectId = this.projectsManager.ensureProjectId(project)
-    return await this.builder.buildLikeC4Model(projectId)
+    return await this.builder.buildLikeC4Model(projectId, cancelToken)
   }
 
   /**
    * Same as {@link computedModel()}, but also applies layout
    * Ready for rendering
    */
-  async layoutedModel(project?: ProjectId | undefined): Promise<LikeC4Model.Layouted> {
+  async layoutedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model.Layouted> {
     const projectId = this.projectsManager.ensureProjectId(project)
-    const parsed = await this.builder.parseModel(projectId)
-    if (!parsed) {
+    const model = await this.builder.buildLikeC4Model(projectId, cancelToken)
+    if (!model) {
       throw new Error('Failed to parse model')
     }
-    const diagrams = await this.views.diagrams(projectId)
+    const diagrams = await this.views.diagrams(projectId, cancelToken)
     return LikeC4Model.create({
-      ...parsed.$data,
+      ...model.$data,
       _stage: 'layouted' as const,
       views: indexBy(diagrams, prop('id')),
     })
@@ -299,13 +302,17 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   }
 
   async dispose(): Promise<void> {
-    logger.debug('disposing LikeC4LanguageServices')
-    await this.services.shared.workspace.FileSystemWatcher.dispose()
-    if (this.services.mcp.Server.isStarted) {
-      await this.services.mcp.Server.stop()
+    try {
+      logger.debug('disposing LikeC4LanguageServices')
+      await this.services.shared.workspace.FileSystemWatcher.dispose()
+      if (this.services.mcp.Server.isStarted) {
+        await this.services.mcp.Server.stop()
+      }
+      this.services.Rpc.dispose()
+      this.services.likec4.ModelBuilder.dispose()
+      logger.debug('LikeC4LanguageServices disposed')
+    } catch (e) {
+      logger.error(loggable(e))
     }
-    this.services.Rpc.dispose()
-    this.services.likec4.ModelBuilder.dispose()
-    logger.debug('LikeC4LanguageServices disposed')
   }
 }

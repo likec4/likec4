@@ -12,7 +12,7 @@ type VitePreviewParams = {
 }
 
 export async function vitePreview(cfg: VitePreviewParams) {
-  const { isDev, ...config } = await viteConfig({
+  const config = await viteConfig({
     ...cfg,
     likec4AssetsDir: '',
     webcomponentPrefix: undefined,
