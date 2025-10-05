@@ -5,13 +5,12 @@ import { GlobalFqn } from './scalar'
 
 // Alias for bundle exports
 type AnyAux = aux.Any
-type Unknown = aux.Unknown
 
 export namespace FqnRef {
   /**
    * Reference to logical model element
    */
-  export interface ElementRef<A extends AnyAux = Unknown> {
+  export interface ElementRef<A extends AnyAux = AnyAux> {
     project?: never
     model: aux.ElementId<A>
   }
@@ -22,7 +21,7 @@ export namespace FqnRef {
   /**
    * Reference to imported logical model element
    */
-  export interface ImportRef<A extends AnyAux = Unknown> {
+  export interface ImportRef<A extends AnyAux = AnyAux> {
     project: aux.ProjectId<A>
     model: aux.ElementId<A>
   }
@@ -43,7 +42,7 @@ export namespace FqnRef {
     throw new Error('Expected FqnRef.ModelRef or FqnRef.ImportRef')
   }
 
-  export type ModelRef<A extends AnyAux = Unknown> = ImportRef<A> | ElementRef<A>
+  export type ModelRef<A extends AnyAux = AnyAux> = ImportRef<A> | ElementRef<A>
   export function isModelRef<A extends AnyAux>(ref: FqnRef<A>): ref is ModelRef<A> {
     return isElementRef(ref) || isImportRef(ref)
   }
@@ -57,7 +56,7 @@ export namespace FqnRef {
    * @property {D} deployment - TThe fully qualified name (FQN) of the deployed instance.
    * @property {M} element - The element reference within the deployment.
    */
-  export interface InsideInstanceRef<A extends AnyAux = Unknown> {
+  export interface InsideInstanceRef<A extends AnyAux = AnyAux> {
     deployment: aux.DeploymentId<A>
     element: aux.ElementId<A>
   }
@@ -85,7 +84,7 @@ export namespace FqnRef {
   }
 }
 
-export type FqnRef<A extends AnyAux = Unknown> = ExclusiveUnion<{
+export type FqnRef<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   DeploymentRef: FqnRef.DeploymentRef<A>
   ModelRef: FqnRef.ModelRef<A>
 }>
