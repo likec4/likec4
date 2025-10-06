@@ -1,10 +1,12 @@
-import { isEmpty, isTruthy } from 'remeda'
+import { isEmpty, isShallowEqual, isTruthy } from 'remeda'
 import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
   type RichTextOrEmpty,
   FqnRef,
+  preferDescription,
+  preferSummary,
   RichText,
 } from '../types'
 import type * as aux from '../types/_aux'
@@ -26,6 +28,8 @@ export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTag
   readonly expression: string
   readonly title: string | null
   readonly technology: string | null
+  readonly hasSummary: boolean
+  readonly summary: RichTextOrEmpty
   readonly description: RichTextOrEmpty
   readonly navigateTo: LikeC4ViewModel<A> | null
   readonly kind: aux.RelationKind<A> | null
@@ -81,8 +85,29 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.technology
   }
 
+  /**
+   * Returns true if the relationship has a summary and a description
+   * (if one is missing - it falls back to another)
+   */
+  get hasSummary(): boolean {
+    return !!this.$relationship.summary && !!this.$relationship.description &&
+      !isShallowEqual(this.$relationship.summary, this.$relationship.description)
+  }
+
+  /**
+   * Short description of the relationship.
+   * Falls back to description if summary is not provided.
+   */
+  get summary(): RichTextOrEmpty {
+    return RichText.memoize(this, 'summary', preferSummary(this.$relationship))
+  }
+
+  /**
+   * Long description of the relationship.
+   * Falls back to summary if description is not provided.
+   */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$relationship.description)
+    return RichText.memoize(this, 'description', preferDescription(this.$relationship))
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {

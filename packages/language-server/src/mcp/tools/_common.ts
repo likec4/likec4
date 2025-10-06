@@ -1,7 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { ProjectId } from '@likec4/core/types'
 import { URI } from 'vscode-uri'
-import z from 'zod'
+import * as z from 'zod/v3'
 import type { LikeC4LanguageServices } from '../../LikeC4LanguageServices'
 import type { Locate } from '../../protocol'
 import { ProjectsManager } from '../../workspace'

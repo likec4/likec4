@@ -1,4 +1,5 @@
 import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
+import type { IsAny } from 'type-fest'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
   Any,
@@ -13,12 +14,22 @@ import type {
   LikeC4StylesConfig,
   ModelGlobals,
   ParsedLikeC4ModelData,
+  ProjectId,
   Relationship,
   Specification,
   WhereOperator,
 } from '../types'
-import { type ProjectId, _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
+import { _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type * as aux from '../types/_aux'
+import type {
+  AnyComputed,
+  AnyLayouted,
+  AnyParsed,
+  Unknown,
+  UnknownComputed,
+  UnknownLayouted,
+  UnknownParsed,
+} from '../types/_aux'
 import * as scalar from '../types/scalar'
 import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
@@ -45,7 +56,7 @@ import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 import type { NodeModel } from './view/NodeModel'
 
-export class LikeC4Model<A extends Any = aux.Unknown> {
+export class LikeC4Model<A extends Any = Any> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -78,19 +89,15 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   protected readonly _viewFolderItems = new DefaultMap<
     string,
     Set<LikeC4ViewsFolder<A> | LikeC4ViewModel<A>>
-  >(
-    () => new Set(),
-  )
+  >(() => new Set())
 
   protected readonly _allTags = new DefaultMap<
     aux.Tag<A>,
     Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
-  >(
-    () => new Set(),
-  )
+  >(() => new Set())
 
-  static fromParsed<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T> {
-    return new LikeC4Model<T>(model as any).asParsed
+  static fromParsed<T extends AnyParsed>(model: ParsedLikeC4ModelData<T>): LikeC4Model<T> {
+    return new LikeC4Model(model)
   }
 
   /**
@@ -103,9 +110,13 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    * @returns A new LikeC4Model instance with the type derived from the input model
    */
 
-  static create<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
-  static create<T extends Any>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
-  static create<T extends Any>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
+  static create<T extends AnyParsed>(model: ParsedLikeC4ModelData<T>): LikeC4Model<T>
+  static create<T extends AnyComputed>(model: ComputedLikeC4ModelData<T>): LikeC4Model<T>
+  static create<T extends AnyLayouted>(model: LayoutedLikeC4ModelData<T>): LikeC4Model<T>
+  // static create<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
+  // static create<T extends Any>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
+  // static create<T extends Any>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
+  static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T>
   static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T> {
     return new LikeC4Model(model)
   }
@@ -237,7 +248,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
           this,
           getOrCreateFolder(folderPath),
           view,
-          $data._stage === 'layouted' ? $data.manualLayouts?.[view.id] as any : undefined,
+          $data.manualLayouts?.[view.id],
         )
         this._viewFolderItems.get(folderPath).add(vm)
         this._views.set(view.id, vm)
@@ -298,19 +309,19 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
   /**
    * Type guard the model to the parsed stage.
    */
-  public isParsed(this: LikeC4Model<any>): this is LikeC4Model<aux.toParsed<A>> {
+  public isParsed(this: LikeC4Model<any>): this is LikeC4Model.Parsed<A> {
     return this.stage === 'parsed'
   }
   /**
    * Type guard the model to the layouted stage.
    */
-  public isLayouted(this: LikeC4Model<any>): this is LikeC4Model<aux.toLayouted<A>> {
+  public isLayouted(this: LikeC4Model<any>): this is LikeC4Model.Layouted<A> {
     return this.stage === 'layouted'
   }
   /**
    * Type guard the model to the computed stage.
    */
-  public isComputed(this: LikeC4Model<any>): this is LikeC4Model<aux.toComputed<A>> {
+  public isComputed(this: LikeC4Model<any>): this is LikeC4Model.Computed<A> {
     return this.stage === 'computed'
   }
 
@@ -377,7 +388,7 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    *   id: 'dashboard',
    * })
    */
-  public element(el: ElementOrFqn<A>): ElementModel<A> {
+  public element(el: aux.ElementId<A> | { id: aux.Fqn<A> }): ElementModel<A> {
     if (el instanceof ElementModel) {
       return el
     }
@@ -486,9 +497,9 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    *   id: 'index',
    * })
    */
-  public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4ViewModel<A, $View<A>> {
+  public view(viewId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): $ViewModel<A> {
     const id = getId(viewId)
-    return nonNullable(this._views.get(id), `View ${id} not found`)
+    return nonNullable(this._views.get(id), `View ${id} not found`) as $ViewModel<A>
   }
 
   /**
@@ -498,8 +509,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
    * @example
    * model.findView('index')
    */
-  public findView(viewId: aux.LooseViewId<A>): LikeC4ViewModel<A, $View<A>> | null {
-    return this._views.get(viewId as aux.ViewId<A>) ?? null
+  public findView(viewId: aux.LooseViewId<A>): $ViewModel<A> | null {
+    return this._views.get(viewId as aux.ViewId<A>) as $ViewModel<A> ?? null
   }
 
   /**
@@ -852,8 +863,8 @@ export class LikeC4Model<A extends Any = aux.Unknown> {
 export type AnyLikeC4Model = LikeC4Model<any>
 
 export namespace LikeC4Model {
-  export const EMPTY = LikeC4Model.create<aux.UnknownComputed>({
-    _stage: 'computed',
+  export const EMPTY: LikeC4Model<Unknown> = LikeC4Model.create<Unknown>({
+    _stage: 'computed' as 'computed' | 'layouted',
     projectId: 'default' as never,
     project: { id: 'default' as never },
     specification: {
@@ -877,38 +888,57 @@ export namespace LikeC4Model {
     imports: {},
   })
 
-  export type Parsed<A = aux.Unknown> =
+  export type Parsed<A = unknown> =
     // dprint-ignore
-    aux.Unknown extends A
-      ? LikeC4Model<aux.UnknownParsed>
+    IsAny<A> extends true
+      ? LikeC4Model<AnyParsed>
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
         ? LikeC4Model<Aux<'parsed', E, D, V, PID, Spec>>
-        : never
+        : LikeC4Model<UnknownParsed>
 
-  export type Computed<A = aux.Unknown> =
+  export type Computed<A = unknown> =
     // dprint-ignore
-    aux.Unknown extends A
-    ? LikeC4Model<aux.UnknownComputed>
-    : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
-      ? LikeC4Model<Aux<'computed', E, D, V, PID, Spec>>
-      : never
+    IsAny<A> extends true
+      ? LikeC4Model<AnyComputed>
+      : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
+        ? LikeC4Model<Aux<'computed', E, D, V, PID, Spec>>
+        : LikeC4Model<UnknownComputed>
+  //   // dprint-ignore
+  //   A extends infer X extends Any
+  //     ? IsEqual<X['Stage'], 'computed'> extends true
+  //       ? LikeC4Model<X>
+  //       : LikeC4Model<Aux<'computed', X['ElementId'], X['DeploymentId'], X['ViewId'], X['ProjectId'], SpecAux<X['ElementKind'], X['DeploymentKind'], X['RelationKind'], X['Tag'], X['MetadataKey']>>>
+  //     : LikeC4Model<UnknownComputed>
+  // // A extends infer X extends Any
+  // //   ? X['Stage'] extends 'computed'
+  // //     ? LikeC4Model<X>
+  // //     : 'computed' extends X['Stage']
+  // //       ? LikeC4Model<Aux<'computed', X['ElementId'], X['DeploymentId'], X['ViewId'], X['ProjectId'], SpecAux<X['ElementKind'], X['DeploymentKind'], X['RelationKind'], X['Tag'], X['MetadataKey']>>>
+  // //       : never
+  // //   : LikeC4Model<UnknownComputed>
 
-  export type Layouted<A = aux.Unknown> =
+  export type Layouted<A = unknown> =
     // dprint-ignore
-    aux.Unknown extends A
-      ? LikeC4Model<aux.UnknownLayouted>
+    IsAny<A> extends true
+      ? LikeC4Model<AnyLayouted>
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
         ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
-        : never
+        : LikeC4Model<UnknownLayouted>
+  // A extends Aux<infer S, infer E, infer D, infer V, infer PID, infer Spec>
+  //   ? 'layouted' extends S
+  //     ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
+  //     : never
+  //   : LikeC4Model<UnknownLayouted>
 
-  export type Node<A = aux.Unknown> = A extends aux.AnyAux ? NodeModel<A> : never
-  export type Element<A = aux.Unknown> = A extends aux.AnyAux ? ElementModel<A> : never
-  export type Relationship<A = aux.Unknown> = A extends aux.AnyAux ? RelationshipModel<A> : never
-  export type View<A = aux.Unknown> = A extends aux.AnyAux ? $ViewModel<A> : never
+  export type Node<A = Any> = A extends Any ? NodeModel<A> : never
+  export type Element<A = Any> = A extends Any ? ElementModel<A> : never
+  export type Relationship<A = Any> = A extends Any ? RelationshipModel<A> : never
+  export type View<A = Any> = A extends Any ? $ViewModel<A> : never
 
-  export type DeploymentNode<A = aux.Unknown> = A extends aux.AnyAux ? DeploymentNodeModel<A> : never
-  export type DeployedInstance<A = aux.Unknown> = A extends aux.AnyAux ? DeployedInstanceModel<A> : never
+  export type DeploymentNode<A = Any> = A extends Any ? DeploymentNodeModel<A> : never
+  export type DeploymentRelation<A = Any> = A extends Any ? DeploymentRelationModel<A> : never
+  export type DeployedInstance<A = Any> = A extends Any ? DeployedInstanceModel<A> : never
 
-  export type AnyRelation<M = aux.Unknown> = M extends aux.AnyAux ? RelationshipModel<M> | DeploymentRelationModel<M>
+  export type AnyRelation<M = Any> = M extends Any ? RelationshipModel<M> | DeploymentRelationModel<M>
     : never
 }

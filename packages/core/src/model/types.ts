@@ -3,8 +3,8 @@ import type {
   AnyAux,
   ComputedLikeC4ModelData,
   ComputedView,
-  DiagramView,
   LayoutedLikeC4ModelData,
+  LayoutedView,
   ParsedLikeC4ModelData,
   scalar,
   ViewType,
@@ -24,11 +24,11 @@ export type AnyScalar<V extends string> =
   | Tagged<V, 'EdgeId'>
   | Tagged<V, 'RelationId'>
 
-export type ElementOrFqn<A extends AnyAux> = aux.ElementId<A> | { id: aux.Fqn<A> }
+export type ElementOrFqn<A> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
-export type DeploymentOrFqn<A extends AnyAux> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
+export type DeploymentOrFqn<A> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
 
-export type ViewOrId<A extends AnyAux> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
+export type ViewOrId<A> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
 
 export type NodeOrId = string | { id: scalar.NodeId }
 export type EdgeOrId = string | { id: scalar.EdgeId }
@@ -37,15 +37,15 @@ export type RelationOrId = string | { id: scalar.RelationId }
 export type $View<A extends AnyAux> = {
   parsed: never
   computed: ComputedView<A>
-  layouted: DiagramView<A>
+  layouted: LayoutedView<A>
 }[aux.Stage<A>]
 
 export type $ViewWithType<A extends AnyAux, V extends ViewType> = ViewWithType<$View<A>, V>
 
 export type $ViewModel<A extends AnyAux> = {
   parsed: never
-  computed: LikeC4ViewModel<A>
-  layouted: LikeC4ViewModel<A>
+  computed: LikeC4ViewModel<A, $View<A>>
+  layouted: LikeC4ViewModel<A, $View<A>>
 }[aux.Stage<A>]
 
 // export type $ModelData<A> = A extends infer T extends Any ? {

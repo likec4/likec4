@@ -1,5 +1,6 @@
 import { LikeC4Model } from '@likec4/core/model'
-import { type aux, type LayoutedLikeC4ModelData, _stage } from '@likec4/core/types'
+import type { aux } from '@likec4/core/types'
+import { _stage } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import { mapToObj } from 'remeda'
 import { QueueGraphvizLayoter } from './QueueGraphvizLayoter'
@@ -7,7 +8,7 @@ import { QueueGraphvizLayoter } from './QueueGraphvizLayoter'
 /**
  * Layouts all views in the computed model.
  * @param model - The model to layout.
- * @param options - Options for the layouter.
+ * @param options - Options for th2 layouter.
  * @returns A promise that resolves to the layouted model.
  */
 export async function layoutLikeC4Model<A extends aux.Any>(
@@ -30,5 +31,5 @@ export async function layoutLikeC4Model<A extends aux.Any>(
     ...model.asLayouted.$data,
     [_stage]: 'layouted',
     views: mapToObj(layoutResult, ({ diagram }) => [diagram.id, diagram]),
-  } as LayoutedLikeC4ModelData<A>)
+  }) as any
 }

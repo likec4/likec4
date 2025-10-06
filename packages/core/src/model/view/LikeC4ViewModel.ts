@@ -1,15 +1,21 @@
 import { isTruthy } from 'remeda'
+import type { LikeC4Styles } from '../../styles'
 import type {
   Any,
   AnyView,
+  BBox,
+  ComputedView,
   DynamicViewDisplayVariant,
   IteratorLike,
+  LayoutedView,
   Link,
   scalar,
+  ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
 import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
+import type { AnyComputed, AnyLayouted } from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
@@ -65,10 +71,11 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     model: LikeC4Model<A>,
     folder: LikeC4ViewsFolder<A>,
     view: V,
-    manualLayouted?: V | undefined,
+    manualLayout?: ViewManualLayoutSnapshot<Any, V[_type]> | undefined,
   ) {
     this.$model = model
-    this.$view = manualLayouted ?? view
+    this.$view = view
+    // this.$view = manualLayouted ?? view
     this.folder = folder
     for (const node of this.$view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
@@ -107,12 +114,30 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     this.viewPath = view.title ? normalizeViewPath(view.title) : view.id
   }
 
+  /**
+   * Returns the styles configuration for the project.
+   */
+  get $styles(): LikeC4Styles {
+    return this.$model.$styles
+  }
+
   get _type(): V[_type] {
     return this.$view[_type]
   }
 
+  get stage(): V[_stage] {
+    return this.$view[_stage]
+  }
+
   get id(): aux.StrictViewId<A> {
     return this.$view.id
+  }
+
+  get bounds(): Readonly<BBox> {
+    if ('bounds' in this.$view) {
+      return this.$view.bounds
+    }
+    throw new Error('View is not layouted')
   }
 
   /**
@@ -223,6 +248,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 
   public findNodeWithElement(element: aux.LooseElementId<A> | { id: aux.Fqn<A> }): NodeModel.WithElement<A, V> | null {
     const id = getId(element)
+    if (!this.#includeElements.has(id)) {
+      return null
+    }
     return ifind(
       this.#nodes.values(),
       (node): node is NodeModel.WithElement<A, V> => node.hasElement() && node.element.id === id,
@@ -313,13 +341,18 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
    */
   public isComputed(
     this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<aux.toComputed<A>> {
+  ): this is LikeC4ViewModel.Computed<aux.toComputed<A>> {
     return this.$view[_stage] === 'computed'
   }
 
-  public isDiagram(
-    this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel<aux.toLayouted<A>> {
+  public isLayouted(): this is LikeC4ViewModel.Layouted<A> {
+    return this.$view[_stage] === 'layouted'
+  }
+
+  /**
+   * @deprecated Use {@link isLayouted} instead
+   */
+  public isDiagram(): this is LikeC4ViewModel.Layouted<A> {
     return this.$view[_stage] === 'layouted'
   }
 
@@ -343,6 +376,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
 }
 
 export namespace LikeC4ViewModel {
+  export type Computed<A> = A extends AnyComputed ? LikeC4ViewModel<A, ComputedView<A>> : never
+
+  export type Layouted<A> = A extends AnyLayouted ? LikeC4ViewModel<A, LayoutedView<A>> : never
+
   export interface ElementView<A extends Any, V extends $View<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'element'>>
   {

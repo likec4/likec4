@@ -42,10 +42,10 @@ export function createLikeC4Logger(prefix: string | readonly [string, ...string[
       }
       logger.error`${msg}`
     },
-    clearScreen: function(type: LogType): void {
+    clearScreen: function(_type: LogType): void {
       // console.clear()
     },
-    hasErrorLogged: function(error: any): boolean {
+    hasErrorLogged: function(_error: any): boolean {
       throw new Error('Function not implemented.')
     },
     hasWarned: false,

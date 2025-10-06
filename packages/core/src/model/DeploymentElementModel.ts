@@ -1,4 +1,4 @@
-import { isEmpty, isTruthy, only, unique } from 'remeda'
+import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import {
   type Any,
@@ -21,7 +21,7 @@ import {
   RichText,
 } from '../types'
 import * as aux from '../types/_aux'
-import { commonAncestor, hierarchyLevel, memoizeProp, nameFromFqn, nonNullable } from '../utils'
+import { commonAncestor, hierarchyLevel, ihead, memoizeProp, nameFromFqn, nonNullable } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
@@ -310,8 +310,11 @@ export class DeploymentNodeModel<A extends Any = Any> extends AbstractDeployment
     if (children.size !== 1) {
       return null
     }
-    const child = only([...children])
-    return child?.isInstance() ? child : null
+    const child = ihead(children)
+    if (!child) {
+      return null
+    }
+    return child.isInstance() ? child : child.onlyOneInstance()
   }
 
   /**
@@ -575,8 +578,29 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
     return this.$relationship.technology ?? null
   }
 
+  /**
+   * Returns true if the relationship has a summary and a description
+   * (if one is missing - it falls back to another)
+   */
+  get hasSummary(): boolean {
+    return !!this.$relationship.summary && !!this.$relationship.description &&
+      !isShallowEqual(this.$relationship.summary, this.$relationship.description)
+  }
+
+  /**
+   * Short description of the relationship.
+   * Falls back to description if summary is not provided.
+   */
+  get summary(): RichTextOrEmpty {
+    return RichText.memoize(this, 'summary', preferSummary(this.$relationship))
+  }
+
+  /**
+   * Long description of the relationship.
+   * Falls back to summary if description is not provided.
+   */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$relationship.description)
+    return RichText.memoize(this, 'description', preferDescription(this.$relationship))
   }
 
   get tags(): aux.Tags<A> {

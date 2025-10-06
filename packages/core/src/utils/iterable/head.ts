@@ -15,8 +15,7 @@ export function ihead<T>(iterable?: Iterable<T>) {
 }
 
 function _head<T>(iter: Iterable<T>) {
-  for (const value of iter) {
-    return value
-  }
-  return
+  const iterator = iter[Symbol.iterator]()
+  const { value } = iterator.next()
+  return value
 }

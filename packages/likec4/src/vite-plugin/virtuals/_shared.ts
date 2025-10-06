@@ -76,6 +76,7 @@ const charMap: Record<string, string> = {
   '\u2029': '\\u2029',
 }
 function escapeUnsafeChars(str: string): string {
+  // oxlint-disable-next-line no-control-regex
   return str.replace(/[<>\b\f\n\r\t\0\u2028\u2029\\]/g, x => charMap[x]!)
 }
 

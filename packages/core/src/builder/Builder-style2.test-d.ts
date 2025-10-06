@@ -90,6 +90,16 @@ test('Builder types - style 2', () => {
         ),
       )
     )
+    // Test one view
+    .views(_ =>
+      _.view(
+        'one-view-per-block',
+        _.$rules(
+          // @ts-expect-error
+          _.$include('wrong'),
+        ),
+      )
+    )
     // Test Element View Of
     .views(({ viewOf, $rules, $include }, _) =>
       _(
@@ -157,7 +167,7 @@ test('Builder types - style 2', () => {
     'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
   >()
   expectTypeOf(b1.Types.ViewId).toEqualTypeOf<
-    'view' | 'view-of' | 'deployment'
+    'view' | 'view-of' | 'deployment' | 'one-view-per-block'
   >()
   expectTypeOf(b1.Types.DeploymentFqn).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
@@ -170,7 +180,7 @@ test('Builder types - style 2', () => {
         'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',
@@ -189,7 +199,7 @@ test('Builder types - style 2', () => {
         'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
         'project-a', // <----
         SpecAux<
           'actor' | 'system' | 'component',
@@ -208,7 +218,7 @@ test('Builder types - style 2', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
         'project-a', // <----
         SpecAux<
           'actor' | 'system' | 'component',
@@ -228,7 +238,7 @@ test('Builder types - style 2', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',

@@ -69,7 +69,7 @@ catalogs:
     "@mantine/notifications": 8.3.1
     "@mantine/vanilla-extract": 8.3.1
   mcp:
-    "@modelcontextprotocol/sdk": ^1.17.5
+    "@modelcontextprotocol/sdk": ^1.19.1
   react:
     "@floating-ui/dom": ^1.7.4
     "@nanostores/react": 1.0.0
@@ -132,9 +132,10 @@ catalogs:
     ufo: 1.6.1
     valibot: ^1.1.0
     zod: ^3.25.76
+    zod4: npm:zod@^4.1.11
   vite:
     "@vitejs/plugin-react": ^5.0.4
-    rollup: ^4.52.3
+    rollup: ^4.52.4
     vite: ^7.1.9
     vite-plugin-dts: ^4.5.4
     vite-plugin-node-polyfills: ^0.24.0

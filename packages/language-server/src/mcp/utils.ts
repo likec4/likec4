@@ -5,7 +5,7 @@ import type {
   ServerRequest,
   ToolAnnotations,
 } from '@modelcontextprotocol/sdk/types.js'
-import type { z, ZodRawShape, ZodTypeAny } from 'zod'
+import type { z, ZodRawShape, ZodTypeAny } from 'zod/v3'
 
 import { loggable } from '@likec4/log'
 import type { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'

@@ -1,5 +1,5 @@
 import { keys } from 'remeda'
-import z from 'zod'
+import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
 import { projectIdSchema } from './_common'
 

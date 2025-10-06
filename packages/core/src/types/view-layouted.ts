@@ -10,13 +10,8 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { ViewManualLayoutSnapshot } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
-
-export type DiagramNodeDriftReason =
-  | 'not-exists'
-  | 'properties-changed'
-  | 'relationships-changed'
-  | 'shape-changed'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
@@ -92,10 +87,20 @@ export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayo
   readonly [_type]: 'element'
   readonly viewOf?: aux.Fqn<A>
   readonly extends?: aux.StrictViewId<A>
+
+  /**
+   * If the view is changed manually this field contains the layout data.
+   */
+  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'element'>
 }
 
 export interface LayoutedDeploymentView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
   readonly [_type]: 'deployment'
+
+  /**
+   * If the view is changed manually this field contains the layout data.
+   */
+  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'deployment'>
 }
 
 export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
@@ -111,6 +116,11 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
    * Sequence layout of this dynamic view
    */
   readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
+
+  /**
+   * If the view is changed manually this field contains the layout data.
+   */
+  readonly manualLayout?: ViewManualLayoutSnapshot<A, 'dynamic'>
 }
 
 export namespace LayoutedDynamicView {

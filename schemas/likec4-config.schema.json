@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "LikeC4 project configuration",
   "type": "object",
   "properties": {
@@ -31,11 +31,7 @@
       }
     },
     "styles": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/StylesConfiguration"
-        }
-      ]
+      "$ref": "#/$defs/StylesConfiguration"
     },
     "exclude": {
       "description": "List of file patterns to exclude from the project, default is [\"**/node_modules/**\"]",
@@ -61,25 +57,17 @@
   "required": [
     "name"
   ],
-  "definitions": {
+  "$defs": {
     "StylesConfiguration": {
       "id": "StylesConfiguration",
       "description": "Project styles customization",
       "type": "object",
       "properties": {
         "theme": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/ThemeCustomization"
-            }
-          ]
+          "$ref": "#/$defs/ThemeCustomization"
         },
         "defaults": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/DefaultStyleValues"
-            }
-          ]
+          "$ref": "#/$defs/DefaultStyleValues"
         }
       }
     },
@@ -89,50 +77,26 @@
       "type": "object",
       "properties": {
         "colors": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/ThemeColors"
-            }
-          ]
+          "$ref": "#/$defs/ThemeColors"
         },
         "sizes": {
           "description": "Map of theme sizes.",
           "type": "object",
           "properties": {
             "xs": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Dimensions"
-                }
-              ]
+              "$ref": "#/$defs/Dimensions"
             },
             "sm": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Dimensions"
-                }
-              ]
+              "$ref": "#/$defs/Dimensions"
             },
             "md": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Dimensions"
-                }
-              ]
+              "$ref": "#/$defs/Dimensions"
             },
             "lg": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Dimensions"
-                }
-              ]
+              "$ref": "#/$defs/Dimensions"
             },
             "xl": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Dimensions"
-                }
-              ]
+              "$ref": "#/$defs/Dimensions"
             }
           }
         }
@@ -145,95 +109,47 @@
         {
           "type": "object",
           "propertyNames": {
-            "$ref": "#/definitions/ColorName"
+            "$ref": "#/$defs/ColorName"
           },
           "additionalProperties": {
-            "allOf": [
-              {
-                "$ref": "#/definitions/ThemeColorValues"
-              }
-            ]
+            "$ref": "#/$defs/ThemeColorValues"
           }
         },
         {
           "type": "object",
           "properties": {
             "amber": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "blue": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "gray": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "slate": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "green": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "indigo": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "muted": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "primary": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "red": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "secondary": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             },
             "sky": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ThemeColorValues"
-                }
-              ]
+              "$ref": "#/$defs/ThemeColorValues"
             }
           }
         }
@@ -244,7 +160,7 @@
       "description": "Color name (Theme color name or custom color name)",
       "anyOf": [
         {
-          "$ref": "#/definitions/ThemeColor"
+          "$ref": "#/$defs/ThemeColor"
         },
         {
           "type": "string",
@@ -275,7 +191,7 @@
       "description": "Exact value (hex, rgb, rgba, hsl, hsla ...) or break down of specific color values",
       "anyOf": [
         {
-          "$ref": "#/definitions/ColorLiteral"
+          "$ref": "#/$defs/ColorLiteral"
         },
         {
           "type": "object",
@@ -283,28 +199,20 @@
             "elements": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ColorLiteral"
+                  "$ref": "#/$defs/ColorLiteral"
                 },
                 {
-                  "allOf": [
-                    {
-                      "$ref": "#/definitions/ElementColorValues"
-                    }
-                  ]
+                  "$ref": "#/$defs/ElementColorValues"
                 }
               ]
             },
             "relationships": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ColorLiteral"
+                  "$ref": "#/$defs/ColorLiteral"
                 },
                 {
-                  "allOf": [
-                    {
-                      "$ref": "#/definitions/RelationshipColorValues"
-                    }
-                  ]
+                  "$ref": "#/$defs/RelationshipColorValues"
                 }
               ]
             }
@@ -329,35 +237,19 @@
       "properties": {
         "fill": {
           "description": "Background color",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         },
         "stroke": {
           "description": "Stroke color (border, paths above background)",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         },
         "hiContrast": {
           "description": "High contrast text color (title)",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         },
         "loContrast": {
           "description": "Low contrast text color (description)",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         }
       },
       "required": [
@@ -374,27 +266,15 @@
       "properties": {
         "line": {
           "description": "Line color",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         },
         "label": {
           "description": "Label text color",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         },
         "labelBg": {
           "description": "Label background color",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorLiteral"
-            }
-          ]
+          "$ref": "#/$defs/ColorLiteral"
         }
       },
       "required": [
@@ -425,63 +305,31 @@
       "type": "object",
       "properties": {
         "color": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/ColorName"
-            }
-          ]
+          "$ref": "#/$defs/ColorName"
         },
         "opacity": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/Opacity"
-            }
-          ]
+          "$ref": "#/$defs/Opacity"
         },
         "border": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/BorderStyle"
-            }
-          ]
+          "$ref": "#/$defs/BorderStyle"
         },
         "size": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/ElementSize"
-            }
-          ]
+          "$ref": "#/$defs/ElementSize"
         },
         "shape": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/ElementShape"
-            }
-          ]
+          "$ref": "#/$defs/ElementShape"
         },
         "group": {
           "type": "object",
           "properties": {
             "color": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ColorName"
-                }
-              ]
+              "$ref": "#/$defs/ColorName"
             },
             "opacity": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/Opacity"
-                }
-              ]
+              "$ref": "#/$defs/Opacity"
             },
             "border": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/BorderStyle"
-                }
-              ]
+              "$ref": "#/$defs/BorderStyle"
             }
           }
         },
@@ -489,25 +337,13 @@
           "type": "object",
           "properties": {
             "color": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ColorName"
-                }
-              ]
+              "$ref": "#/$defs/ColorName"
             },
             "line": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/LineType"
-                }
-              ]
+              "$ref": "#/$defs/LineType"
             },
             "arrow": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/ArrowType"
-                }
-              ]
+              "$ref": "#/$defs/ArrowType"
             }
           }
         }

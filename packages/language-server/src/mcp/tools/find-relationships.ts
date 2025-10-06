@@ -1,6 +1,6 @@
 import { modelConnection } from '@likec4/core/model'
 import { invariant, isSameHierarchy } from '@likec4/core/utils'
-import z from 'zod'
+import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
 import { includedInViews, includedInViewsSchema, locationSchema, mkLocate, projectIdSchema } from './_common'
 

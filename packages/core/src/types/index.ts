@@ -1,11 +1,15 @@
 export * from './_common'
 
-export * as aux from './_aux'
+export type * as aux from './_aux'
 
 export type {
   Any,
   AnyAux,
+  AnyComputed,
+  AnyLayouted,
+  AnyParsed,
   Aux,
+  LooseLiteral,
   SpecAux,
   Unknown,
   UnknownComputed,
@@ -34,6 +38,7 @@ export * from './view-changes'
 export * from './view-common'
 export * from './view-computed'
 export * from './view-layouted'
+export * from './view-manual-layout'
 export * from './view-parsed.deployment'
 export * from './view-parsed.dynamic'
 export * from './view-parsed.element'

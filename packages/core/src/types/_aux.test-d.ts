@@ -31,6 +31,56 @@ function expectAuxTypes<A>() {
   }>()
 }
 
+type AllResolvedAsStringWithStage<S extends ModelStage> = {
+  stage: S
+  projectId: string
+  fqn: scalar.Fqn<string>
+  elementId: string
+  viewId: string
+  deploymentId: string
+  deploymentFqn: scalar.DeploymentFqn<string>
+  elementKind: string
+  deploymentKind: string
+  relationKind: string
+  tag: string
+  metadataKey: string
+  strict: {
+    projectId: scalar.ProjectId<string>
+    fqn: scalar.Fqn<string>
+    deploymentFqn: scalar.DeploymentFqn<string>
+    viewId: scalar.ViewId<string>
+    elementKind: scalar.ElementKind<string>
+    deploymentKind: scalar.DeploymentKind<string>
+    relationKind: scalar.RelationshipKind<string>
+    tag: scalar.Tag<string>
+  }
+}
+
+type AllResolvedAsNever = {
+  stage: never
+  projectId: never
+  fqn: never
+  elementId: never
+  viewId: never
+  deploymentId: never
+  deploymentFqn: never
+  elementKind: never
+  deploymentKind: never
+  relationKind: never
+  tag: never
+  metadataKey: never
+  strict: {
+    projectId: never
+    fqn: never
+    deploymentFqn: never
+    viewId: never
+    elementKind: never
+    deploymentKind: never
+    relationKind: never
+    tag: never
+  }
+}
+
 describe('Aux', () => {
   it('extract types', () => {
     type A = Aux<
@@ -132,145 +182,64 @@ describe('Aux', () => {
 
   it('should work with Unknown', () => {
     type A = aux.Unknown
-    expectAuxTypes<A>().toEqualTypeOf<{
-      stage: 'computed' | 'layouted'
-      projectId: string
-      fqn: scalar.Fqn<string>
-      elementId: string
-      viewId: string
-      deploymentId: string
-      deploymentFqn: scalar.DeploymentFqn<string>
-      elementKind: string
-      deploymentKind: string
-      relationKind: string
-      tag: string
-      metadataKey: string
-      strict: {
-        projectId: scalar.ProjectId<string>
-        fqn: scalar.Fqn<string>
-        deploymentFqn: scalar.DeploymentFqn<string>
-        viewId: scalar.ViewId<string>
-        elementKind: scalar.ElementKind<string>
-        deploymentKind: scalar.DeploymentKind<string>
-        relationKind: scalar.RelationshipKind<string>
-        tag: scalar.Tag<string>
-      }
-    }>()
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
   })
 
+  it('should work with UnknownComputed', () => {
+    type A = aux.UnknownComputed
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'computed'>>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+  })
+
+  it('should work with UnknownLayouted', () => {
+    type A = aux.UnknownLayouted
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'layouted'>>()
+    expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
+    expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
+  })
+
+  it('should work with UnknownParsed', () => {
+    type A = aux.UnknownParsed
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed'>>()
+  })
+
   it('should work with NEVER', () => {
     type A = aux.Never
-    expectAuxTypes<A>().toEqualTypeOf<{
-      stage: never
-      projectId: never
-      fqn: never
-      elementId: never
-      viewId: never
-      deploymentId: never
-      deploymentFqn: never
-      elementKind: never
-      deploymentKind: never
-      relationKind: never
-      tag: never
-      metadataKey: never
-      strict: {
-        projectId: never
-        fqn: never
-        deploymentFqn: never
-        viewId: never
-        elementKind: never
-        deploymentKind: never
-        relationKind: never
-        tag: never
-      }
-    }>()
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsNever>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly never[]>()
     expectTypeOf<aux.Metadata<A>>().toBeNever()
-    expectAuxTypes<never>().toEqualTypeOf<{
-      stage: never
-      projectId: never
-      fqn: never
-      elementId: never
-      viewId: never
-      deploymentId: never
-      deploymentFqn: never
-      elementKind: never
-      deploymentKind: never
-      relationKind: never
-      tag: never
-      metadataKey: never
-      strict: {
-        projectId: never
-        fqn: never
-        deploymentFqn: never
-        viewId: never
-        elementKind: never
-        deploymentKind: never
-        relationKind: never
-        tag: never
-      }
-    }>()
+    expectAuxTypes<never>().toEqualTypeOf<AllResolvedAsNever>()
     expectTypeOf<aux.Tags<never>>().toEqualTypeOf<readonly never[]>()
     expectTypeOf<aux.Metadata<never>>().toBeNever()
   })
 
+  it('should work with AnyParsed (fallback to UnknownParsed)', () => {
+    type A = aux.AnyParsed
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed'>>()
+  })
+
+  it('should work with AnyComputed (fallback to UnknownComputed)', () => {
+    type A = aux.AnyComputed
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'computed'>>()
+  })
+
+  it('should work with AnyLayouted (fallback to UnknownLayouted)', () => {
+    type A = aux.AnyLayouted
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'layouted'>>()
+  })
+
   it('should work with Any (fallback to Unknown)', () => {
     type A = aux.Any
-    expectAuxTypes<A>().toEqualTypeOf<{
-      stage: ModelStage
-      projectId: string
-      fqn: scalar.Fqn<string>
-      elementId: string
-      viewId: string
-      deploymentId: string
-      deploymentFqn: scalar.DeploymentFqn<string>
-      elementKind: string
-      deploymentKind: string
-      relationKind: string
-      tag: string
-      metadataKey: string
-      strict: {
-        projectId: scalar.ProjectId<string>
-        fqn: scalar.Fqn<string>
-        deploymentFqn: scalar.DeploymentFqn<string>
-        viewId: scalar.ViewId<string>
-        elementKind: scalar.ElementKind<string>
-        deploymentKind: scalar.DeploymentKind<string>
-        relationKind: scalar.RelationshipKind<string>
-        tag: scalar.Tag<string>
-      }
-    }>()
+    expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed' | 'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string>>()
   })
 
   it('should work with any', () => {
-    expectAuxTypes<any>().toEqualTypeOf<{
-      stage: ModelStage
-      projectId: string
-      fqn: scalar.Fqn<string>
-      elementId: string
-      viewId: string
-      deploymentId: string
-      deploymentFqn: scalar.DeploymentFqn<string>
-      elementKind: string
-      deploymentKind: string
-      relationKind: string
-      tag: string
-      metadataKey: string
-      strict: {
-        projectId: scalar.ProjectId<string>
-        fqn: scalar.Fqn<string>
-        deploymentFqn: scalar.DeploymentFqn<string>
-        viewId: scalar.ViewId<string>
-        elementKind: scalar.ElementKind<string>
-        deploymentKind: scalar.DeploymentKind<string>
-        relationKind: scalar.RelationshipKind<string>
-        tag: scalar.Tag<string>
-      }
-    }>()
+    expectAuxTypes<any>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed' | 'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string>>()
 

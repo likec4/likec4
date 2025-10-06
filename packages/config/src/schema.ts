@@ -13,7 +13,7 @@ import type {
 import JSON5 from 'json5'
 import type { SimplifyDeep } from 'type-fest'
 import type { URI } from 'vscode-uri'
-import * as z from 'zod/v4'
+import * as z from 'zod4'
 import { ImageAliasesSchema, validateImageAliases } from './schema.image-alias'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 

@@ -82,7 +82,7 @@ export class TestHelper<T extends AnyTypes> {
     return withReadableEdges(
       this.builder
         .clone()
-        .views(_ => _.view('dev').with(...rules))
+        .views(_ => _.view('dev', _.$rules(...rules)))
         .toLikeC4Model()
         .view('dev')
         .$view,
@@ -259,7 +259,7 @@ class ProcessPredicates<T extends AnyTypes> {
       rules: [],
       title: null,
       description: null,
-    } as Writable<ElementView<typeof this.t.model.Aux>>
+    } as Writable<ElementView>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,

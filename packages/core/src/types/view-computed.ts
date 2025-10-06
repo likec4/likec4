@@ -16,14 +16,12 @@ import type {
 import type {
   BaseViewProperties,
   ViewAutoLayout,
-  ViewManualLayout,
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
 export type ComputedNodeStyle = Except<ElementStyle, 'icon' | 'shape' | 'color', { requireExactProps: true }>
-// export type ComputedNodeStyle = ElementStyle
 
 // dprint-ignore
 export interface ComputedNode<A extends AnyAux = AnyAux>
@@ -108,11 +106,6 @@ interface BaseComputedViewProperties<A extends AnyAux> extends BaseViewPropertie
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode<A>[]
   readonly edges: ComputedEdge<A>[]
-
-  /**
-   * If the view is changed manually this field contains the layout data.
-   */
-  readonly manualLayout?: ViewManualLayout | undefined
 }
 
 export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {

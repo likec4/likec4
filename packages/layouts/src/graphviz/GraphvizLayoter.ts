@@ -104,9 +104,9 @@ export class GraphvizLayouter implements Disposable {
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
 
-      if (view.manualLayout) {
-        diagram = applyManualLayout(diagram, view.manualLayout)
-      }
+      // if (view.manualLayout) {
+      //   diagram = applyManualLayout(diagram, view.manualLayout)
+      // }
 
       if (isDynamicView(diagram)) {
         ;(diagram as Writable<typeof diagram>).sequenceLayout = calcSequenceLayout(diagram)

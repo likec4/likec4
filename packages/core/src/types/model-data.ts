@@ -1,6 +1,14 @@
 import type { IsAny } from 'type-fest'
 import type * as aux from './_aux'
-import type { Any } from './_aux'
+import type {
+  Any,
+  AnyComputed,
+  AnyLayouted,
+  AnyParsed,
+  UnknownComputed,
+  UnknownLayouted,
+  UnknownParsed,
+} from './_aux'
 import type { NonEmptyArray } from './_common'
 import type { _stage } from './const'
 import type { ModelGlobals } from './global'
@@ -10,8 +18,10 @@ import type { Specification } from './model-spec'
 import type { LikeC4Project } from './project'
 import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
+import type { ViewManualLayoutSnapshot } from './view-manual-layout'
 
-interface BaseLikeC4ModelData<A extends aux.Any> {
+interface BaseLikeC4ModelData<A extends Any> {
+  [_stage]: A['Stage']
   projectId: aux.ProjectId<A>
   project: LikeC4Project
   specification: Specification<A>
@@ -27,7 +37,7 @@ interface BaseLikeC4ModelData<A extends aux.Any> {
    * If project contains saved manual layouts
    * For {@link LayoutedLikeC4ModelData} or {@link ComputedLikeC4ModelData} this includes only drifted views
    */
-  manualLayouts?: Record<aux.ViewId<any>, LayoutedView<any>>
+  manualLayouts?: Record<scalar.ViewId, ViewManualLayoutSnapshot<UnknownLayouted>>
 }
 
 export type AuxFromLikeC4ModelData<D> =
@@ -52,20 +62,20 @@ export type AuxFromLikeC4ModelData<D> =
  * @typeParam Views - Types of views in the model (defaults to string)
  * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
-export interface ParsedLikeC4ModelData<A extends Any = aux.UnknownParsed> extends BaseLikeC4ModelData<A> {
+export interface ParsedLikeC4ModelData<A extends AnyParsed = UnknownParsed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'parsed'
   // globals: ModelGlobals<A
   views: Record<aux.ViewId<A>, ParsedView<A>>
 }
 
-export interface ComputedLikeC4ModelData<A extends Any = aux.UnknownComputed> extends BaseLikeC4ModelData<A> {
+export interface ComputedLikeC4ModelData<A extends AnyComputed = UnknownComputed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'computed'
   // specification: Specification<A>
   // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, ComputedView<A>>
 }
 
-export interface LayoutedLikeC4ModelData<A extends Any = aux.UnknownLayouted> extends BaseLikeC4ModelData<A> {
+export interface LayoutedLikeC4ModelData<A extends AnyLayouted = UnknownLayouted> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
   // globals: ModelGlobals<A>
   views: Record<aux.ViewId<A>, LayoutedView<A>>
@@ -75,8 +85,3 @@ export type LikeC4ModelData<A extends Any> =
   | ParsedLikeC4ModelData<A>
   | ComputedLikeC4ModelData<A>
   | LayoutedLikeC4ModelData<A>
-// ExclusiveUnion<{
-//   Parsed: ParsedLikeC4ModelData<A>
-//   Computed: ComputedLikeC4ModelData<A>
-//   Layouted: LayoutedLikeC4ModelData<A>
-// }>

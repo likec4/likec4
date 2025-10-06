@@ -1,4 +1,4 @@
-import * as z from 'zod/v4'
+import * as z from 'zod4'
 
 // Key must be prefixed with "@" and contain only allowed characters
 const IMAGE_ALIAS_KEY_REGEX = /^@[A-Za-z0-9_-]*$/

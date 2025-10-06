@@ -1,5 +1,5 @@
 import { ifilter } from '@likec4/core/utils'
-import z from 'zod'
+import * as z from 'zod/v3'
 import { likec4Tool, logger } from '../utils'
 import { includedInViews, includedInViewsSchema } from './_common'
 

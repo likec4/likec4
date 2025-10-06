@@ -5,6 +5,7 @@
   "folders": [],
   "excludeFolders": [
     "apps/playground",
+    "devops",
     "e2e",
     "examples",
     "packages/create-likec4",
@@ -12,6 +13,7 @@
     "packages/icons",
     "packages/layouts",
     "packages/log",
+    "packages/tsconfig",
     "packages/vscode",
     "packages/vscode-preview",
     "styled-system"

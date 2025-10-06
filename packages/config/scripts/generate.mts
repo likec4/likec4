@@ -1,8 +1,8 @@
 import { writeFile } from 'node:fs/promises'
-import * as z from 'zod/v4'
+import * as z from 'zod4'
 import { LikeC4ProjectJsonConfigSchema } from '../src/schema'
 
-const schema = z.toJSONSchema(LikeC4ProjectJsonConfigSchema, { io: 'input', target: 'draft-7' })
+const schema = z.toJSONSchema(LikeC4ProjectJsonConfigSchema, { io: 'input' })
 
 await writeFile(
   './schema.json',

@@ -42,7 +42,7 @@ await cp('.', outdir, {
 
 const cwd = process.cwd()
 
-await cd(outdir)
+cd(outdir)
 await writeFile('package.json', JSON.stringify(packageJson, null, 2))
 await $`npm install --production`
 await $`npx @vscode/vsce package --out likec4.vsix`

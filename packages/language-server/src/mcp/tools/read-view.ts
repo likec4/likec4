@@ -1,5 +1,5 @@
 import type { NodeModel } from '@likec4/core/model'
-import z from 'zod'
+import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
 import { locationSchema, mkLocate, projectIdSchema } from './_common'
 

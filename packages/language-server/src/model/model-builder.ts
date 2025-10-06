@@ -22,10 +22,7 @@ import {
   flatMap,
   groupBy,
   hasAtLeast,
-  isEmpty,
   mapToObj,
-  mapValues,
-  omitBy,
   pipe,
   values,
 } from 'remeda'
@@ -34,7 +31,7 @@ import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
-import { applyStylesToManualLayout, assignNavigateTo } from '../view-utils'
+import { assignNavigateTo } from '../view-utils'
 import type { LikeC4ManualLayouts } from '../views'
 import type { ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
@@ -226,7 +223,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     return cache.get(key, () => {
       const parsedModel = this.unsafeSyncJoinedModel(projectId, manualLayouts ?? null)
       if (!parsedModel) {
-        return LikeC4Model.EMPTY
+        return LikeC4Model.EMPTY.asComputed
       }
       const allViews = [] as c4.ComputedView[]
       for (const view of values(parsedModel.$data.views)) {
@@ -252,10 +249,10 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         views,
       }
       if (data.manualLayouts) {
-        data.manualLayouts = mapValues(data.manualLayouts, v => {
-          const computed = views[v.id]
-          return computed ? applyStylesToManualLayout(v, computed) : v
-        })
+        // data.manualLayouts = mapValues(data.manualLayouts, (v, id) => {
+        //   const computed = views[id]
+        //   return computed ? applyStylesToManualLayout(v, computed) : v
+        // })
       }
       return LikeC4Model.create(data)
     })

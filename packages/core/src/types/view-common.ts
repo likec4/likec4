@@ -75,6 +75,9 @@ export interface ViewAutoLayout {
   nodeSep?: number
 }
 
+/**
+ * @deprecated Use {@link ViewManualLayoutSnapshot} instead
+ */
 export type ViewManualLayout = {
   // Object hash of previous layout
   readonly hash: string
@@ -125,11 +128,6 @@ export interface BaseParsedViewProperties<A extends AnyAux> extends BaseViewProp
    * Undefined if the view is auto-generated.
    */
   readonly docUri?: string | undefined
-
-  /**
-   * If the view is changed manually this field contains the layout data.
-   */
-  readonly manualLayout?: ViewManualLayout | undefined
 }
 
 export type NodeNotation = {

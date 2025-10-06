@@ -2,13 +2,11 @@ import { isTruthy } from 'remeda'
 import {
   type Any,
   type Color,
-  type ComputedNode,
   type ComputedNodeStyle,
-  type DiagramNode,
   type ElementShape as C4ElementShape,
-  type ExtractOnStage,
   type IconUrl,
   type IteratorLike,
+  type LayoutedView,
   type Link,
   type RichTextOrEmpty,
   type scalar,
@@ -27,79 +25,101 @@ import type { LikeC4ViewModel } from './LikeC4ViewModel'
 export type NodesIterator<M extends Any, V extends $View<M>> = IteratorLike<NodeModel<M, V>>
 
 export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
-  #node: ComputedNode<A> | DiagramNode<A>
+  public readonly Aux!: A
+
+  public readonly $viewModel: LikeC4ViewModel<A, V>
+  public readonly $view: V
+  public readonly $node: V['nodes'][number]
 
   constructor(
-    public readonly $view: LikeC4ViewModel<A, V>,
-    public readonly $node: V['nodes'][number],
+    $viewModel: LikeC4ViewModel<A, V>,
+    $node: V['nodes'][number],
   ) {
-    this.#node = $node
+    this.$viewModel = $viewModel
+    this.$view = $viewModel.$view
+    this.$node = $node
   }
 
   get id(): scalar.NodeId {
-    return this.#node.id
+    return this.$node.id
   }
 
   get title(): string {
-    return this.#node.title
+    return this.$node.title
   }
 
   get kind(): aux.ElementKind<A> | aux.DeploymentKind<A> | typeof GroupElementKind | 'instance' {
-    return this.#node.kind as any
+    return this.$node.kind as any
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.#node.description)
+    return RichText.memoize(this, 'description', this.$node.description)
   }
 
   get technology(): string | null {
-    return this.#node.technology ?? null
+    return this.$node.technology ?? null
   }
 
   get parent(): NodeModel<A, V> | null {
-    return this.#node.parent ? this.$view.node(this.#node.parent) : null
+    return this.$node.parent ? this.$viewModel.node(this.$node.parent) : null
   }
 
   get element(): ElementModel<A> | null {
-    const modelRef = this.#node.modelRef
-    return modelRef ? this.$view.$model.element(modelRef) : null
+    const modelRef = this.$node.modelRef
+    return modelRef ? this.$viewModel.$model.element(modelRef) : null
   }
 
   get deployment(): DeploymentElementModel<A> | null {
-    const modelRef = this.#node.deploymentRef
-    return modelRef ? this.$view.$model.deployment.element(modelRef) : null
+    const modelRef = this.$node.deploymentRef
+    return modelRef ? this.$viewModel.$model.deployment.element(modelRef) : null
   }
 
   get shape(): C4ElementShape {
-    return this.#node.shape
+    return this.$node.shape
   }
 
   get color(): Color {
-    return this.#node.color
+    return this.$node.color
   }
 
   get icon(): IconUrl | null {
-    return this.#node.icon ?? null
+    return this.$node.icon ?? null
   }
 
   get tags(): aux.Tags<A> {
-    return this.#node.tags
+    return this.$node.tags
   }
 
   get links(): ReadonlyArray<Link> {
-    return this.#node.links ?? []
+    return this.$node.links ?? []
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {
-    return this.#node.navigateTo ? this.$view.$model.view(this.#node.navigateTo) : null
+    return this.$node.navigateTo ? this.$viewModel.$model.view(this.$node.navigateTo) : null
   }
 
   get style(): ComputedNodeStyle {
-    return this.#node.style
+    return this.$node.style
+  }
+
+  get x(): number | undefined {
+    return 'x' in this.$node ? this.$node.x : undefined
+  }
+
+  get y(): number | undefined {
+    return 'y' in this.$node ? this.$node.y : undefined
+  }
+
+  get width(): number | undefined {
+    return 'width' in this.$node ? this.$node.width : undefined
+  }
+
+  get height(): number | undefined {
+    return 'height' in this.$node ? this.$node.height : undefined
   }
 
   public children(): ReadonlySet<NodeModel<A, V>> {
-    return memoizeProp(this, 'children', () => new Set(this.#node.children.map((child) => this.$view.node(child))))
+    return memoizeProp(this, 'children', () => new Set(this.$node.children.map((child) => this.$viewModel.node(child))))
   }
 
   /**
@@ -116,7 +136,7 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   public *siblings(): NodesIterator<A, V> {
-    const siblings = this.parent?.children() ?? this.$view.roots()
+    const siblings = this.parent?.children() ?? this.$viewModel.roots()
     for (const sibling of siblings) {
       if (sibling.id !== this.id) {
         yield sibling
@@ -126,8 +146,8 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<A, V> {
-    for (const edgeId of this.#node.inEdges) {
-      const edge = this.$view.edge(edgeId)
+    for (const edgeId of this.$node.inEdges) {
+      const edge = this.$viewModel.edge(edgeId)
       switch (true) {
         case filter === 'all':
         case filter === 'direct' && edge.target.id === this.id:
@@ -152,8 +172,8 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<A, V> {
-    for (const edgeId of this.#node.outEdges) {
-      const edge = this.$view.edge(edgeId)
+    for (const edgeId of this.$node.outEdges) {
+      const edge = this.$viewModel.edge(edgeId)
       switch (true) {
         case filter === 'all':
         case filter === 'direct' && edge.source.id === this.id:
@@ -177,29 +197,29 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return
   }
 
-  public isDiagramNode(this: NodeModel<any, any>): this is NodeModel<A, ExtractOnStage<V, 'layouted'>> {
-    return 'width' in this.#node && 'height' in this.#node
+  public isLayouted(): this is NodeModel.Layouted<A> {
+    return 'width' in this.$node && 'height' in this.$node
   }
 
   public hasChildren(): boolean {
-    return this.#node.children.length > 0
+    return this.$node.children.length > 0
   }
 
   public hasParent(): this is NodeModel.WithParent<A, V> {
-    return this.#node.parent !== null
+    return this.$node.parent !== null
   }
 
   /**
    * Check if this node references to logical model element.
    */
   public hasElement(): this is NodeModel.WithElement<A, V> {
-    return isTruthy(this.#node.modelRef)
+    return isTruthy(this.$node.modelRef)
   }
   /**
    * Check if this node references to deployment element (Node or Instance).
    */
   public hasDeployment(): this is NodeModel.WithDeploymentElement<A, V> {
-    return isTruthy(this.#node.deploymentRef)
+    return isTruthy(this.$node.deploymentRef)
   }
   /**
    * Check if this node references to deployed instance
@@ -210,7 +230,7 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
   }
 
   public isGroup(): this is NodeModel.IsGroup<A, V> {
-    return isGroupElementKind(this.#node)
+    return isGroupElementKind(this.$node)
   }
 
   /**
@@ -222,24 +242,32 @@ export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
 }
 
 export namespace NodeModel {
-  export interface WithParent<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export type Layouted<A> = A extends aux.AnyLayouted ? NodeModel<A, LayoutedView<A>> & {
+      x: number
+      y: number
+      width: number
+      height: number
+    } :
+    never
+
+  export interface WithParent<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
     parent: NodeModel<A, V>
   }
-  export interface WithElement<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithElement<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
     kind: aux.ElementKind<A>
     element: ElementModel<A>
   }
-  export interface WithDeploymentElement<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithDeploymentElement<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
     kind: aux.DeploymentKind<A>
     deployment: DeploymentElementModel<A>
   }
-  export interface WithDeployedInstance<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithDeployedInstance<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
     kind: 'instance'
     element: ElementModel<A>
     deployment: DeployedInstanceModel<A>
   }
 
-  export interface IsGroup<A extends Any = Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface IsGroup<A extends Any, V extends $View<A>> extends NodeModel<A, V> {
     kind: typeof GroupElementKind
     element: null
     deployment: null
