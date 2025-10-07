@@ -6,6 +6,8 @@ import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 
+import tailwindcss from '@tailwindcss/vite'
+
 const version = process.env.npm_package_version || 'latest'
 
 // https://astro.build/config
@@ -121,12 +123,14 @@ export default defineConfig({
       components: {
         SiteTitle: './src/components/starlight/SiteTitle.astro',
         Head: './src/components/starlight/Head.astro',
+        PageFrame: './src/components/starlight/PageFrame.astro',
       },
     }),
   ],
 
   experimental: {
     contentIntellisense: true,
+    chromeDevtoolsWorkspace: true,
   },
 
   vite: {
@@ -144,6 +148,7 @@ export default defineConfig({
       LikeC4VitePlugin({
         workspace: 'src/components',
       }),
+      tailwindcss(),
     ],
   },
 })

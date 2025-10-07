@@ -26,11 +26,10 @@
     "jsxImportSource": "react"
   },
   "include": [
-    "./src"
+    ".astro/types.d.ts",
+    "**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/node_modules/**",
     "dist"
   ],
   "references": [

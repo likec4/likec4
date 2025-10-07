@@ -1,6 +1,5 @@
 ---
 import Default from "@astrojs/starlight/components/Head.astro";
-import type { Props } from "@astrojs/starlight/props";
 
 // const docs = await getCollection("docs");
 // const routes = new Set(docs.map(({ data, slug }) => `${slug}.png`));
@@ -32,6 +31,7 @@ function getOgImageUrl(path: string): string | undefined {
 const ogImageUrl = getOgImageUrl(Astro.url.pathname);
 const imageSrc = ogImageUrl ?? "/img/og-default.png?v=2";
 // const canonicalImageSrc = new URL(imageSrc, Astro.url.origin);
+const isHomepage = Astro.locals.starlightRoute.id === '';
 ---
 
 

@@ -30,6 +30,7 @@ catalogs:
     "@astrojs/check": ^0.9.4
     "@astrojs/react": 4.4.0
     "@astrojs/starlight": 0.36.0
+    "@astrojs/starlight-tailwind": ^4.0.1
     "@expressive-code/plugin-collapsible-sections": ^0.41.3
     "@expressive-code/plugin-line-numbers": ^0.41.3
     astro: 5.14.1
@@ -47,6 +48,8 @@ catalogs:
     "@pandacss/preset-panda": ^1.4.1
     "@pandacss/types": ^1.4.1
     postcss: 8.5.6
+    "@tailwindcss/vite": ^4.1.14
+    tailwindcss: ^4.1.14
   esbuild:
     esbuild: 0.25.10
     esbuild-node-externals: 1.18.0

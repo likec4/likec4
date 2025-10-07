@@ -20,9 +20,10 @@
     "@astrojs/check": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/starlight": "catalog:astro",
-    "@likec4/config": "workspace:*",
+    "@astrojs/starlight-tailwind": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
+    "@likec4/config": "workspace:*",
     "@types/picomatch": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
@@ -41,6 +42,8 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "wrangler": "catalog:cloudflare"
+    "wrangler": "catalog:cloudflare",
+    "@tailwindcss/vite": "catalog:css",
+    "tailwindcss": "catalog:css"
   }
 }

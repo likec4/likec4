@@ -5,6 +5,7 @@
   "oxc.enable": true,
   "oxc.typeAware": true,
   "oxc.lint.run": "onSave",
+  "astro.content-intellisense": true,
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },

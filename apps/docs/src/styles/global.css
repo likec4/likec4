@@ -1,3 +1,9 @@
+@layer base, starlight, theme, components, utilities;
+
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
 :root {
   /* --sl-font:
     "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
@@ -23,4 +29,51 @@
 
 .title-wrapper {
   --sl-nav-height: 3.3rem;
+}
+
+/* Dark mode colors. */
+:root {
+  --sl-color-accent-low: #201c48;
+  --sl-color-accent: #6241ea;
+  --sl-color-accent-high: #c1c2fb;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eeedef;
+  --sl-color-gray-2: #c8c8ca;
+  --sl-color-gray-3: #a4a3a8;
+  --sl-color-gray-4: #58575c;
+  --sl-color-gray-5: #38373b;
+  --sl-color-gray-6: #27262a;
+  --sl-color-black: #18181a;
+}
+/* Light mode colors. */
+:root[data-theme="light"] {
+  --sl-color-accent-low: #d1d3fe;
+  --sl-color-accent: #5125d2;
+  --sl-color-accent-high: #2d246b;
+  --sl-color-white: #18181a;
+  --sl-color-gray-1: #27262a;
+  --sl-color-gray-2: #38373b;
+  --sl-color-gray-3: #58575c;
+  --sl-color-gray-4: #8c8b8f;
+  --sl-color-gray-5: #c2c1c4;
+  --sl-color-gray-6: #eeedef;
+  --sl-color-gray-7: #f6f6f7;
+  --sl-color-black: #ffffff;
+}
+
+@theme {
+  /* Generated accent color palettes. */
+  --color-accent-200: #c1c2fb;
+  --color-accent-600: #5125d2;
+  --color-accent-900: #2d246b;
+  --color-accent-950: #201c48;
+  /* Generated gray color palettes. */
+  --color-gray-100: #f6f6f7;
+  --color-gray-200: #eeedef;
+  --color-gray-300: #c2c1c4;
+  --color-gray-400: #8c8b8f;
+  --color-gray-500: #58575c;
+  --color-gray-700: #38373b;
+  --color-gray-800: #27262a;
+  --color-gray-900: #18181a;
 }

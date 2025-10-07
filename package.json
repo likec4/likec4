@@ -79,7 +79,14 @@
     },
     "patchedDependencies": {
       "mnemonist@0.40.3": "patches/mnemonist@0.40.3.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "dprint",
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   },
   "nano-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [

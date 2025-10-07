@@ -1,0 +1,11 @@
+---
+import Default from "@astrojs/starlight/components/Header.astro";
+
+const isCustomPage = Astro.locals.starlightRoute.id === 'custom';
+---
+
+{isCustomPage ? (
+  <div>
+    Custom page
+  </div>
+) :  (<Default {...Astro.props}><slot /></Default>)}
