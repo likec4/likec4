@@ -41,7 +41,7 @@ export async function takeScreenshot({
   let next
   while ((next = pending.shift())) {
     const { view, attempt } = next
-    const url = `export/${encodeURIComponent(view.id)}`
+    const url = `export/${encodeURIComponent(view.id)}/`
     try {
       if (attempt > 1) {
         if (page) {

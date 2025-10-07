@@ -39,7 +39,7 @@ const views = [
 for (const view of views) {
   const project = view.$model.projectId
   const name = `${project}__${view.id}`
-  const url = `/project/${encodeURIComponent(project)}/export/${encodeURIComponent(view.id)}/?theme=dark&padding=22`
+  const url = `/project/${encodeURIComponent(project)}/export/${encodeURIComponent(view.id)}/?padding=22`
   const content = `
 import { test, expect } from "@playwright/test";
 
