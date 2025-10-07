@@ -4,10 +4,12 @@ import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { LikeC4LanguageMetaData } from '../generated/module'
 import { Content, isLikeC4Builtin } from '../likec4lib'
-import { logError } from '../logger'
+import { logger as rootLogger } from '../logger'
 import { chokidarFileSystemWatcher } from './ChokidarWatcher'
 import { noopFileSystemWatcher } from './FileSystemWatcher'
 import type { FileSystemModuleContext, FileSystemProvider } from './index'
+
+const logger = rootLogger.getChild('filesystem')
 
 export const LikeC4FileSystem = (
   ehableWatcher = true,
@@ -29,7 +31,12 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(Content)
     }
-    return await super.readFile(uri)
+    try {
+      return await super.readFile(uri)
+    } catch (error) {
+      logger.error(`Failed to read file ${uri.fsPath}`, { error })
+      return ''
+    }
   }
 
   override async readDirectory(folderPath: URI): Promise<FileSystemNode[]> {
@@ -49,7 +56,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
         })
       }
     } catch (error) {
-      logError(error)
+      logger.error(`Failed to read directory ${folderPath.fsPath}`, { error })
     }
     return entries
   }
@@ -71,7 +78,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
         })
       }
     } catch (error) {
-      logError(error)
+      logger.error(`Failed to scan project files ${folderUri.fsPath}`, { error })
     }
     return entries
   }
