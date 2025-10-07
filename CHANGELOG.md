@@ -1,11 +1,8 @@
 ## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
 
+### 🐞 Bug Fixes
 
-### Bug Fixes
-
-* add error handling and logging in filesystem operations ([450299b](https://github.com/likec4/likec4/commit/450299b3310225b18e92771e98e0fd8c93e77ce2))
-* update e2e tests to use light theme and fix export URL paths ([020855b](https://github.com/likec4/likec4/commit/020855baa83e6c6efb2bb5a10b3563c070243bbe))
-
+* regression with relationships layout, closes [#2282](https://github.com/likec4/likec4/issues/2282)
 
 
 # [1.42.0](https://github.com/likec4/likec4/compare/v1.41.0...v1.42.0) (2025-09-30)
