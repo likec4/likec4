@@ -41,10 +41,17 @@ type Metadata = {
 }
 
 const RecordAny = z.record(z.string(), z.any())
-const ModelSchema = z.looseObject({
+const ModelSchema = z.object({
   _stage: z.literal('layouted'),
   projectId: z.string().optional().default('default'),
-  project: z.looseObject({ id: z.string().optional() }).optional(),
+  project: z
+    .object({
+      id: z.string(),
+      title: z.string(),
+      styles: z.any(),
+    })
+    .partial()
+    .optional(),
   specification: z.looseObject({
     tags: z.optional(RecordAny),
     elements: RecordAny,
