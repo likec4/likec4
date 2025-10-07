@@ -32,7 +32,7 @@ export default defineConfig({
 
   use: {
     browserName: 'chromium',
-    colorScheme: 'dark',
+    colorScheme: 'light',
     trace: 'on',
   },
 
