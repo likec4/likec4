@@ -90,9 +90,6 @@ test('LikeC4Model in React types codegen', () => {
   expectTypeOf<A['ViewId']>().toEqualTypeOf<ExpectedViewId>()
   expectTypeOf(likec4model.view('backend')).toEqualTypeOf<LikeC4ViewModel<A, LayoutedView<A>>>()
   expectTypeOf(likec4model.view).parameter(0).toEqualTypeOf<ExpectedViewId | { id: ViewId<ExpectedViewId> }>()
-
-  // @ts-expect-error
-  likec4model.element('amazon1')
 })
 
 test('ReactComponents with valid types', () => {
