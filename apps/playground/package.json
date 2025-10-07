@@ -95,7 +95,7 @@
     "@codingame/monaco-vscode-theme-service-override": "16.1.1",
     "@codingame/monaco-vscode-views-service-override": "16.1.1",
     "@hono/oauth-providers": "catalog:hono",
-    "@hono/valibot-validator": "catalog:hono",
+    "@hono/zod-validator": "catalog:hono",
     "@hpcc-js/wasm-graphviz": "catalog:utils",
     "@likec4/core": "workspace:*",
     "likec4-core-legacy": "npm:@likec4/core@1.31.0",
@@ -148,7 +148,6 @@
     "type-fest": "catalog:utils",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "valibot": "catalog:utils",
     "vite": "catalog:vite",
     "vite-plugin-node-polyfills": "catalog:vite",
     "vite-tsconfig-paths": "catalog:vite",
@@ -164,6 +163,7 @@
     "wireit": "catalog:",
     "wrangler": "catalog:cloudflare",
     "xstate": "catalog:xstate",
-    "import-meta-resolve": "^4.1.0"
+    "import-meta-resolve": "^4.1.0",
+    "zod": "catalog:utils"
   }
 }

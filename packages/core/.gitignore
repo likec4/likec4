@@ -9,4 +9,5 @@ compute-view/package.json
 model/package.json
 styles/package.json
 types/package.json
+utils/graphology/package.json
 utils/package.json

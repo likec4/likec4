@@ -113,9 +113,9 @@ catalogs:
     '@hono/oauth-providers':
       specifier: ^0.8.5
       version: 0.8.5
-    '@hono/valibot-validator':
-      specifier: ^0.5.3
-      version: 0.5.3
+    '@hono/zod-validator':
+      specifier: ^0.7.3
+      version: 0.7.3
     hono:
       specifier: ^4.9.8
       version: 4.9.8
@@ -195,8 +195,8 @@ catalogs:
       version: 1.114.17
   utils:
     '@hpcc-js/wasm-graphviz':
-      specifier: 1.12.1
-      version: 1.12.1
+      specifier: 1.12.0
+      version: 1.12.0
     '@logtape/logtape':
       specifier: ^0.12.3
       version: 0.12.3
@@ -296,9 +296,6 @@ catalogs:
     ufo:
       specifier: 1.6.1
       version: 1.6.1
-    valibot:
-      specifier: ^1.1.0
-      version: 1.1.0
     zod:
       specifier: ^3.25.76
       version: 3.25.76
@@ -540,12 +537,12 @@ importers:
       '@hono/oauth-providers':
         specifier: catalog:hono
         version: 0.8.5(hono@4.9.8)
-      '@hono/valibot-validator':
+      '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.5.3(hono@4.9.8)(valibot@1.1.0(typescript@5.9.2))
+        version: 0.7.3(hono@4.9.8)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -702,9 +699,6 @@ importers:
       ufo:
         specifier: catalog:utils
         version: 1.6.1
-      valibot:
-        specifier: catalog:utils
-        version: 1.1.0(typescript@5.9.2)
       vite:
         specifier: catalog:vite
         version: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -750,6 +744,9 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.20.2
+      zod:
+        specifier: catalog:utils
+        version: 3.25.76
 
   devops:
     dependencies:
@@ -1186,7 +1183,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -1349,7 +1346,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1428,7 +1425,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1748,7 +1745,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -1824,7 +1821,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.1
+        version: 1.12.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -3160,14 +3157,14 @@ packages:
     peerDependencies:
       hono: '>=3.0.0'
 
-  '@hono/valibot-validator@0.5.3':
-    resolution: {integrity: sha512-91wjmjDvrTdEm2ZcuCyLBghtld78QoLEduzfkqLo1L74n6sqqoVfc0gDfmju1Ar6w1eK8Q0UyIubrtj4KMWVnQ==}
+  '@hono/zod-validator@0.7.3':
+    resolution: {integrity: sha512-uYGdgVib3RlGD698WR5dVM0zB3UuPY5vHKXffGUbUh7r4xY+mFIhF3/v4AcQVLrU5CQdBso8BJr4wuVoCrjTuQ==}
     peerDependencies:
       hono: '>=3.9.0'
-      valibot: ^1.0.0 || ^1.0.0-beta.4 || ^1.0.0-rc
+      zod: ^3.25.0 || ^4.0.0
 
-  '@hpcc-js/wasm-graphviz@1.12.1':
-    resolution: {integrity: sha512-FhCRZYOWfE6K1HKnyn4PDgFL8eB6s7wAzPDebkMW7YfAm7qrdjh30xNvIUVR0gT3XIbtHuW2Z0UXWQT5Zx8siw==}
+  '@hpcc-js/wasm-graphviz@1.12.0':
+    resolution: {integrity: sha512-Cr0eeLN3M87zkTllMMd5G1FtT2LsxEu+V2t72CokvvQmylRtQpfdZBf4nZvw+qZmJWB0IuGxzYkSoxGfZCbtKQ==}
 
   '@hutson/parse-repository-url@3.0.2':
     resolution: {integrity: sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==}
@@ -8834,14 +8831,6 @@ packages:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
-  valibot@1.1.0:
-    resolution: {integrity: sha512-Nk8lX30Qhu+9txPYTwM0cFlWLdPFsFr6LblzqIySfbZph9+BFsAHsNvHOymEviUepeIW6KFHzpX8TKhbptBXXw==}
-    peerDependencies:
-      typescript: '>=5'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
@@ -10982,12 +10971,12 @@ snapshots:
     dependencies:
       hono: 4.9.8
 
-  '@hono/valibot-validator@0.5.3(hono@4.9.8)(valibot@1.1.0(typescript@5.9.2))':
+  '@hono/zod-validator@0.7.3(hono@4.9.8)(zod@3.25.76)':
     dependencies:
       hono: 4.9.8
-      valibot: 1.1.0(typescript@5.9.2)
+      zod: 3.25.76
 
-  '@hpcc-js/wasm-graphviz@1.12.1': {}
+  '@hpcc-js/wasm-graphviz@1.12.0': {}
 
   '@hutson/parse-repository-url@3.0.2': {}
 
@@ -17771,10 +17760,6 @@ snapshots:
   uuid@3.4.0: {}
 
   uuid@9.0.1: {}
-
-  valibot@1.1.0(typescript@5.9.2):
-    optionalDependencies:
-      typescript: 5.9.2
 
   validate-npm-package-license@3.0.4:
     dependencies:

@@ -18,7 +18,19 @@ const serveCmd = (yargs: yargs.Argv) => {
           .option('use-hash-history', useHashHistory)
           // .option('use-overview', useOverview)
           .option('use-dot', useDotBin)
-          .option('listen', listen),
+          .option('listen', listen)
+          .options({
+            'react-hmr': {
+              type: 'boolean',
+              default: true,
+              describe: 'Enable/Disable React HMR',
+            },
+            'build-webcomponent': {
+              type: 'boolean',
+              default: true,
+              describe: 'Enable/Disable Webcomponent build',
+            },
+          }),
       handler: async args => {
         await ensureReact()
         await handler({
@@ -30,6 +42,8 @@ const serveCmd = (yargs: yargs.Argv) => {
           title: args['title'],
           useHashHistory: args['use-hash-history'],
           listen: args['listen'],
+          enableHMR: args['react-hmr'],
+          enableWebcomponent: args['build-webcomponent'],
         })
       },
     })

@@ -1,5 +1,4 @@
 import { delay } from '@likec4/core/utils'
-import { DEV } from 'esm-env'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -42,6 +41,18 @@ type HandlerParams = {
    * @default '127.0.0.1'
    */
   listen?: string | undefined
+
+  /**
+   * Enable webcomponent build
+   * @default true
+   */
+  enableWebcomponent?: boolean | undefined
+
+  /**
+   * Enable HMR
+   * @default true
+   */
+  enableHMR?: boolean | undefined
 }
 
 export async function handler({
@@ -51,23 +62,27 @@ export async function handler({
   title,
   useHashHistory,
   useOverview = false,
+  enableWebcomponent = true,
+  enableHMR = true,
   base,
   listen,
 }: HandlerParams) {
   // Explicitly set NODE_ENV to development
-  process.env['NODE_ENV'] = 'development'
+  if (enableHMR) {
+    process.env['NODE_ENV'] = 'development'
+  }
   const languageServices = await LikeC4.fromWorkspace(path, {
     // logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: true,
+    watch: enableHMR,
   })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })
 
   const server = await viteDev({
-    buildWebcomponent: !DEV,
-    hmr: true,
+    buildWebcomponent: enableWebcomponent,
+    hmr: enableHMR,
     base,
     webcomponentPrefix,
     title,
