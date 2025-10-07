@@ -15,6 +15,7 @@ export namespace ShareOptions {
     { value: 'D7', label: '7 days' },
     { value: 'M1', label: '1 month' },
     { value: 'M3', label: '3 months' },
+    { value: 'M6', label: '6 months' },
   ] as const
   export type ExpiresValue = typeof ExpiresValues[number]['value']
 

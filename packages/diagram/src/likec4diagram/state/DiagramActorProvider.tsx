@@ -87,12 +87,11 @@ export function DiagramActorProvider({
     shallowEqual,
   )
 
-  useCustomCompareEffect(
+  useEffect(
     () => {
       actorRef.send({ type: 'update.inputs', inputs: { zoomable, pannable, fitViewPadding, nodesSelectable } })
     },
     [zoomable, pannable, fitViewPadding, nodesSelectable],
-    deepEqual,
   )
 
   const dynamicViewVariant = useSelector(actorRef, selectDynamicViewVariant)

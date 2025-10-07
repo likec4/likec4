@@ -101,7 +101,7 @@ export const NavigationPanelControls = () => {
         key="breadcrumbs"
         layout="position"
         className={hstack({
-          gap: '[3px]',
+          gap: '1',
           flexShrink: 1,
           flexGrow: 1,
           overflow: 'hidden',
@@ -113,7 +113,7 @@ export const NavigationPanelControls = () => {
         key="actions"
         layout="position"
         className={hstack({
-          gap: '[1px]',
+          gap: '0.5',
           flexGrow: 0,
           _empty: {
             display: 'none',

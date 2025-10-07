@@ -10,7 +10,6 @@ import type {
 import type { ReactFlowProps } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { CamelCasedProperties, SetRequired } from 'type-fest'
-import type { ControlsCustomLayout } from './context/ControlsCustomLayout'
 import type { DiagramApi } from './hooks/useDiagram'
 import type { XYFlowInstance } from './hooks/useXYFlow'
 import type { Types } from './likec4diagram/types'
@@ -260,16 +259,6 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
-
-  /**
-   * Customize layout of the controls on the top left
-   *
-   * @note
-   * Ignored if `controls="next"`
-   *
-   * @see {@link controls}
-   */
-  renderControls?: ControlsCustomLayout | undefined
 
   /**
    * Override node renderers

@@ -51,6 +51,7 @@ export const ExpiresValueSchema = z.literal([
   'D7',
   'M1',
   'M3',
+  'M6',
 ])
 
 // export type AccessValue = v.InferOutput<typeof AccessValueSchema>

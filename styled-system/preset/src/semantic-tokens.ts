@@ -6,7 +6,7 @@ export const semanticTokens = defineSemanticTokens({
       background: {
         DEFAULT: {
           description: 'Background color',
-          value: '{colors.mantine.colors.body}',
+          value: 'var(--mantine-color-body)',
         },
         pattern: {
           description: 'Background pattern color',
@@ -40,13 +40,6 @@ export const semanticTokens = defineSemanticTokens({
           DEFAULT: {
             description: 'LikeC4 panel background color',
             value: {
-              base: `{colors.mantine.colors.body/90}`,
-              _dark: `{colors.mantine.colors.dark[6]/80}`,
-            },
-          },
-          whenPanning: {
-            description: 'LikeC4 panel background color when panning',
-            value: {
               base: `{colors.mantine.colors.body}`,
               _dark: `{colors.mantine.colors.dark[6]}`,
             },
@@ -63,15 +56,15 @@ export const semanticTokens = defineSemanticTokens({
           text: {
             DEFAULT: {
               description: 'LikeC4 action icon text color',
-              value: '{colors.mantine.colors.text/70}',
+              value: 'color-mix(in srgb, var(--mantine-color-text) 80%, transparent)',
             },
             hover: {
               description: 'LikeC4 action icon text color on hover',
-              value: '{colors.mantine.colors.text}',
+              value: 'var(--mantine-color-bright)',
             },
             disabled: {
               description: 'LikeC4 action icon text color when disabled',
-              value: '{colors.mantine.colors.dimmed}',
+              value: 'var(--mantine-color-dimmed)',
             },
           },
           bg: {
@@ -120,7 +113,7 @@ export const semanticTokens = defineSemanticTokens({
         body: {
           DEFAULT: {
             description: 'LikeC4 overlay body color',
-            value: `{colors.mantine.colors.body}`,
+            value: `var(--mantine-color-body)`,
           },
         },
         border: {

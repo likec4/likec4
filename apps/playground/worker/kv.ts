@@ -15,7 +15,7 @@ import type {
   Tag,
   TagSpecification,
 } from '@likec4/core/types'
-import { compareNatural, nonNullable } from '@likec4/core/utils'
+import { compareNatural, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { addDays, addMonths, getUnixTime, startOfMinute } from 'date-fns'
 import { HTTPException } from 'hono/http-exception'
 import type { LayoutedLikeC4ModelData as LayoutedLikeC4ModelDataLegacy } from 'likec4-core-legacy/types'
@@ -340,6 +340,11 @@ export const sharesKV = (c: HonoContext) => {
       case 'M3':
         expiresAtDate = addMonths(now, 3)
         break
+      case 'M6':
+        expiresAtDate = addMonths(now, 6)
+        break
+      default:
+        nonexhaustive(shareOptions.expires)
     }
     const createdAt = ISODatetime(now)
     const expiresAt = ISODatetime(expiresAtDate)

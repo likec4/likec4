@@ -1,7 +1,10 @@
 import type { Any } from '@likec4/core/types'
-import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import { useCustomCompareMemo } from '@react-hookz/web'
+import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, useRef } from 'react'
-import { FitViewPaddings } from './base'
+import { isPlainObject, mapValues } from 'remeda'
+import { FitViewPaddings, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
 import {
   DiagramEventHandlers,
@@ -10,11 +13,14 @@ import {
   FramerMotionConfig,
   IconRendererProvider,
 } from './context'
-import { ControlsCustomLayoutProvider } from './context/ControlsCustomLayout'
-import { ReduceGraphicsContext } from './context/ReduceGraphics'
 import { TagStylesProvider } from './context/TagStylesContext'
 import { useId } from './hooks/useId'
-import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import type {
+  LikeC4DiagramEventHandlers,
+  LikeC4DiagramProperties,
+  PaddingWithUnit,
+  ViewPadding,
+} from './LikeC4Diagram.props'
 import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
@@ -51,7 +57,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   readonly = true,
   controls = !readonly,
   fitView = true,
-  fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
+  fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
   background = 'dots',
@@ -72,7 +78,6 @@ export function LikeC4Diagram<A extends Any = Any>({
   experimentalEdgeEditing = !readonly,
   reduceGraphics = 'auto',
   renderIcon,
-  renderControls,
   where,
   reactFlowProps,
   renderNodes,
@@ -84,9 +89,13 @@ export function LikeC4Diagram<A extends Any = Any>({
     defaultEdges: Types.Edge[]
     initialWidth: number
     initialHeight: number
+    initialFitViewOptions?: FitViewOptions
+    initialMinZoom: number
+    initialMaxZoom: number
   }>(null)
 
   const bounds = getViewBounds(view, dynamicViewVariant)
+  const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
 
   if (initialRef.current == null) {
     initialRef.current = {
@@ -94,13 +103,21 @@ export function LikeC4Diagram<A extends Any = Any>({
       defaultNodes: [],
       initialWidth: initialWidth ?? bounds.width,
       initialHeight: initialHeight ?? bounds.height,
+      initialFitViewOptions: {
+        maxZoom: MaxZoom,
+        minZoom: MinZoom,
+        padding: fitViewPadding,
+      },
+      initialMaxZoom: MaxZoom,
+      initialMinZoom: MinZoom,
     }
   }
 
   const isReducedGraphicsMode = reduceGraphics === 'auto'
     // If view has more then 3000 * 2000 pixels - assume it is a big diagram
-    // Enable reduced graphics mode if diagram is "big" and pannable
-    ? pannable && ((bounds.width ?? 1) * (bounds.height ?? 1) > 6_000_000)
+    // Enable reduced graphics mode if diagram is "big" and pannable, and has compounds
+    ? pannable && ((bounds.width ?? 1) * (bounds.height ?? 1) > 6_000_000) &&
+      view.nodes.some(n => n.children?.length > 0)
     : reduceGraphics
 
   return (
@@ -145,42 +162,61 @@ export function LikeC4Diagram<A extends Any = Any>({
               }}>
               <LikeC4Styles id={id} />
               <TagStylesProvider rootSelector={`#${id}`}>
-                <ReduceGraphicsContext reduceGraphics={isReducedGraphicsMode}>
-                  <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
-                    <XYFlowProvider
-                      fitView={fitView}
-                      {...initialRef.current}
+                <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
+                  <XYFlowProvider
+                    fitView={fitView}
+                    {...initialRef.current}
+                  >
+                    <DiagramActorProvider
+                      view={view}
+                      zoomable={zoomable}
+                      pannable={pannable}
+                      fitViewPadding={fitViewPadding}
+                      nodesSelectable={nodesSelectable}
+                      where={where ?? null}
+                      dynamicViewVariant={dynamicViewVariant}
                     >
-                      <DiagramActorProvider
-                        view={view}
-                        zoomable={zoomable}
-                        pannable={pannable}
-                        fitViewPadding={fitViewPadding}
+                      <LikeC4DiagramXYFlow
+                        nodesDraggable={nodesDraggable}
                         nodesSelectable={nodesSelectable}
-                        where={where ?? null}
-                        dynamicViewVariant={dynamicViewVariant}
+                        background={background}
+                        reactFlowProps={reactFlowProps}
+                        renderNodes={renderNodes}
                       >
-                        <ControlsCustomLayoutProvider value={renderControls ?? null}>
-                          <LikeC4DiagramXYFlow
-                            nodesDraggable={nodesDraggable}
-                            nodesSelectable={nodesSelectable}
-                            background={background}
-                            reactFlowProps={reactFlowProps}
-                            renderNodes={renderNodes}
-                          >
-                            {children}
-                          </LikeC4DiagramXYFlow>
-                          <LikeC4DiagramUI />
-                        </ControlsCustomLayoutProvider>
-                      </DiagramActorProvider>
-                    </XYFlowProvider>
-                  </RootContainer>
-                </ReduceGraphicsContext>
+                        {children}
+                      </LikeC4DiagramXYFlow>
+                      <LikeC4DiagramUI />
+                    </DiagramActorProvider>
+                  </XYFlowProvider>
+                </RootContainer>
               </TagStylesProvider>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>
       </FramerMotionConfig>
     </EnsureMantine>
+  )
+}
+
+const toLiteralPaddingWithUnit = (value: PaddingWithUnit): PaddingWithUnit & string => {
+  if (typeof value === 'number') {
+    return `${value}px`
+  }
+  return value
+}
+
+/**
+ * Converts number values to px
+ */
+function useNormalizedViewPadding(raw: ViewPadding): ViewPadding {
+  return useCustomCompareMemo(
+    () => {
+      if (isPlainObject(raw)) {
+        return mapValues(raw, toLiteralPaddingWithUnit)
+      }
+      return toLiteralPaddingWithUnit(raw)
+    },
+    [raw],
+    deepEqual,
   )
 }

@@ -10,7 +10,7 @@ import type { Simplify } from 'type-fest'
 import { memoNode } from '../base-primitives/memoNode'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
-import { useIsReducedGraphics, usePanningAtom } from '../context/ReduceGraphics'
+import { useIsReducedGraphics, usePanningAtom } from '../context/RootContainerContext'
 import { useUpdateEffect } from '../hooks'
 import { useDiagram, useDiagramContext } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
@@ -219,9 +219,7 @@ export function LikeC4DiagramXYFlow({
           diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
         }
       })}
-      {...props.pannable && {
-        onMove,
-      }}
+      onMove={onMove}
       onMoveEnd={onMoveEnd}
       onInit={useCallbackRef((instance) => {
         diagram.send({ type: 'xyflow.init', instance })

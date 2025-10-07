@@ -1,1 +1,1 @@
-export { useIsPanning, useIsReducedGraphics } from '../context/ReduceGraphics'
+export { useIsPanning, useIsReducedGraphics } from '../context/RootContainerContext'

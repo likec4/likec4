@@ -7,7 +7,7 @@ export const breadcrumbTitle = cva({
     transition: 'fast',
     color: {
       base: 'mantine.colors.text/90',
-      _hover: 'mantine.colors.text',
+      _hover: '[var(--mantine-color-bright)]',
     },
   },
   variants: {

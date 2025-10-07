@@ -1,4 +1,3 @@
-export type { ControlsCustomLayout, ControlsCustomLayoutProps } from './context/ControlsCustomLayout'
 export { IconRendererProvider } from './context/IconRenderer'
 
 export {
