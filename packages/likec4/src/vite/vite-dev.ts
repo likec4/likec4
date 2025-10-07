@@ -60,6 +60,8 @@ export async function viteDev({
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${hmrPort} is published from container`))
     }
+  } else {
+    logger.info(`Disabling HMR`)
   }
 
   const server = await createServer({
@@ -95,7 +97,7 @@ export async function viteDev({
   await server.listen()
 
   if (buildWebcomponent) {
-    // don't wait, we want to start the server asap
+    logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
     ;(async () => {
       try {
         const webcomponentConfig = await viteWebcomponentConfig({
@@ -113,6 +115,8 @@ export async function viteDev({
         logger.warn('webcomponent build failed, ignoring error and continue')
       }
     })()
+  } else {
+    logger.info(`Skip webcomponent build`)
   }
 
   return server
