@@ -1,3 +1,10 @@
+## [1.42.1](https://github.com/likec4/likec4/compare/v1.42.0...v1.42.1) (2025-10-07)
+
+### 🐞 Bug Fixes
+
+* regression with relationships layout, closes [#2282](https://github.com/likec4/likec4/issues/2282)
+
+
 # [1.42.0](https://github.com/likec4/likec4/compare/v1.41.0...v1.42.0) (2025-09-30)
 
 ### 🚀 Features
