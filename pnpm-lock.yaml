@@ -195,8 +195,8 @@ catalogs:
       version: 1.114.17
   utils:
     '@hpcc-js/wasm-graphviz':
-      specifier: 1.12.0
-      version: 1.12.0
+      specifier: 1.12.1
+      version: 1.12.1
     '@logtape/logtape':
       specifier: ^0.12.3
       version: 0.12.3
@@ -542,7 +542,7 @@ importers:
         version: 0.7.3(hono@4.9.10)(zod@3.25.76)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       '@likec4/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -1183,7 +1183,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -1346,7 +1346,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1425,7 +1425,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -1745,7 +1745,7 @@ importers:
     dependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       bundle-require:
         specifier: catalog:utils
         version: 5.1.0(esbuild@0.25.9)
@@ -1821,7 +1821,7 @@ importers:
     devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:utils
-        version: 1.12.0
+        version: 1.12.1
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -3163,8 +3163,8 @@ packages:
       hono: '>=3.9.0'
       zod: ^3.25.0 || ^4.0.0
 
-  '@hpcc-js/wasm-graphviz@1.12.0':
-    resolution: {integrity: sha512-Cr0eeLN3M87zkTllMMd5G1FtT2LsxEu+V2t72CokvvQmylRtQpfdZBf4nZvw+qZmJWB0IuGxzYkSoxGfZCbtKQ==}
+  '@hpcc-js/wasm-graphviz@1.12.1':
+    resolution: {integrity: sha512-FhCRZYOWfE6K1HKnyn4PDgFL8eB6s7wAzPDebkMW7YfAm7qrdjh30xNvIUVR0gT3XIbtHuW2Z0UXWQT5Zx8siw==}
 
   '@hutson/parse-repository-url@3.0.2':
     resolution: {integrity: sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==}
@@ -10976,7 +10976,7 @@ snapshots:
       hono: 4.9.10
       zod: 3.25.76
 
-  '@hpcc-js/wasm-graphviz@1.12.0': {}
+  '@hpcc-js/wasm-graphviz@1.12.1': {}
 
   '@hutson/parse-repository-url@3.0.2': {}
 
