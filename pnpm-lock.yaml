@@ -88,8 +88,8 @@ catalogs:
       specifier: 4.20.6
       version: 4.20.6
     typescript:
-      specifier: 5.9.2
-      version: 5.9.2
+      specifier: 5.9.3
+      version: 5.9.3
     unbuild:
       specifier: 3.5.0
       version: 3.5.0
@@ -419,7 +419,7 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.15.31)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -428,13 +428,13 @@ importers:
     devDependencies:
       '@astrojs/check':
         specifier: catalog:astro
-        version: 0.9.4(prettier@3.5.2)(typescript@5.9.2)
+        version: 0.9.4(prettier@3.5.2)(typescript@5.9.3)
       '@astrojs/react':
         specifier: catalog:astro
         version: 4.4.0(@types/node@22.15.31)(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(jiti@2.4.2)(lightningcss@1.25.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+        version: 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.41.3
@@ -455,10 +455,10 @@ importers:
         version: 19.1.9(@types/react@19.1.16)
       astro:
         specifier: catalog:astro
-        version: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)
+        version: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.7.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+        version: 0.7.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       canvaskit-wasm:
         specifier: 0.40.0
         version: 0.40.0
@@ -479,22 +479,22 @@ importers:
         version: 3.13.0
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.5.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)))
+        version: 0.5.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)))
       starlight-image-zoom:
         specifier: catalog:astro
-        version: 0.12.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)))
+        version: 0.12.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)))
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.16.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)))
+        version: 0.16.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)))
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.11.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)))
+        version: 0.11.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)))
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:vite
         version: 7.1.7(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -581,7 +581,7 @@ importers:
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -695,7 +695,7 @@ importers:
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       ufo:
         specifier: catalog:utils
         version: 1.6.1
@@ -707,7 +707,7 @@ importers:
         version: 0.24.0(rollup@4.52.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       vite-tsconfig-paths:
         specifier: catalog:vite
-        version: 5.1.4(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+        version: 5.1.4(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       vscode:
         specifier: npm:@codingame/monaco-vscode-extension-api@16.1.1
         version: '@codingame/monaco-vscode-extension-api@16.1.1'
@@ -789,7 +789,7 @@ importers:
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
 
   packages/config:
     dependencies:
@@ -844,10 +844,10 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -962,10 +962,10 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       unified:
         specifier: 11.0.5
         version: 11.0.5
@@ -1053,7 +1053,7 @@ importers:
         version: link:../tsconfig
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.18.1)(xstate@5.20.2)
@@ -1092,13 +1092,13 @@ importers:
         version: 19.1.1(react@19.1.1)
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:vite
         version: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+        version: 4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -1135,10 +1135,10 @@ importers:
         version: 20.19.11
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -1171,7 +1171,7 @@ importers:
         version: 19.1.1(react@19.1.1)
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       wireit:
         specifier: 'catalog:'
         version: 0.14.12
@@ -1310,13 +1310,13 @@ importers:
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       ufo:
         specifier: catalog:utils
         version: 1.6.1
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -1413,10 +1413,10 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -1519,7 +1519,7 @@ importers:
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1666,16 +1666,16 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       ufo:
         specifier: catalog:utils
         version: 1.6.1
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+        version: 4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       vite-plugin-inspect:
         specifier: ^11.1.0
         version: 11.1.0(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
@@ -1733,10 +1733,10 @@ importers:
         version: 3.9.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       wrap-error-message:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1791,10 +1791,10 @@ importers:
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
       vitest:
         specifier: catalog:vitest
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.11)(@vitest/ui@3.2.4)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -1905,7 +1905,7 @@ importers:
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       ufo:
         specifier: catalog:utils
         version: 1.6.1
@@ -1974,7 +1974,7 @@ importers:
         version: 1.0.0(nanostores@1.0.1)(react@19.1.1)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.1.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -2043,7 +2043,7 @@ importers:
         version: 4.41.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: catalog:vite
         version: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
@@ -2077,7 +2077,7 @@ importers:
         version: 8.3.1(@mantine/core@8.3.1(@mantine/hooks@8.3.1(react@19.1.1))(@types/react@19.1.16)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2095,16 +2095,16 @@ importers:
         version: 2.1.0
       pandacss-preset-radix-colors:
         specifier: ^0.2.0
-        version: 0.2.0(@pandacss/dev@1.4.1(typescript@5.9.2))(@radix-ui/colors@3.0.0)
+        version: 0.2.0(@pandacss/dev@1.4.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
         version: 2.31.1
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
 
   styled-system/styles:
     dependencies:
@@ -2126,13 +2126,13 @@ importers:
         version: 0.0.8
       '@pandabox/unplugin':
         specifier: ^0.2.2
-        version: 0.2.2(@pandacss/config@1.4.1)(@pandacss/core@1.4.1)(@pandacss/node@1.4.1(typescript@5.9.2))(esbuild@0.25.10)(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
+        version: 0.2.2(@pandacss/config@1.4.1)(@pandacss/core@1.4.1)(@pandacss/node@1.4.1(typescript@5.9.3))(esbuild@0.25.10)(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))
       '@pandabox/utils':
         specifier: ^0.0.5
         version: 0.0.5
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.4.1(typescript@5.9.2)
+        version: 1.4.1(typescript@5.9.3)
       '@pandacss/types':
         specifier: catalog:css
         version: 1.4.1
@@ -2156,10 +2156,10 @@ importers:
         version: 8.5.6
       typescript:
         specifier: 'catalog:'
-        version: 5.9.2
+        version: 5.9.3
       unbuild:
         specifier: 'catalog:'
-        version: 3.5.0(typescript@5.9.2)
+        version: 3.5.0(typescript@5.9.3)
 
 packages:
 
@@ -8562,8 +8562,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -9388,12 +9388,12 @@ packages:
 
 snapshots:
 
-  '@astrojs/check@0.9.4(prettier@3.5.2)(typescript@5.9.2)':
+  '@astrojs/check@0.9.4(prettier@3.5.2)(typescript@5.9.3)':
     dependencies:
-      '@astrojs/language-server': 2.15.4(prettier@3.5.2)(typescript@5.9.2)
+      '@astrojs/language-server': 2.15.4(prettier@3.5.2)(typescript@5.9.3)
       chokidar: 4.0.3
       kleur: 4.1.5
-      typescript: 5.9.2
+      typescript: 5.9.3
       yargs: 17.7.2
     transitivePeerDependencies:
       - prettier
@@ -9405,12 +9405,12 @@ snapshots:
 
   '@astrojs/internal-helpers@0.7.3': {}
 
-  '@astrojs/language-server@2.15.4(prettier@3.5.2)(typescript@5.9.2)':
+  '@astrojs/language-server@2.15.4(prettier@3.5.2)(typescript@5.9.3)':
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/yaml2ts': 0.2.2
       '@jridgewell/sourcemap-codec': 1.5.5
-      '@volar/kit': 2.4.11(typescript@5.9.2)
+      '@volar/kit': 2.4.11(typescript@5.9.3)
       '@volar/language-core': 2.4.14
       '@volar/language-server': 2.4.11
       '@volar/language-service': 2.4.11
@@ -9482,12 +9482,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@4.2.5(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))':
+  '@astrojs/mdx@4.2.5(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.1
       '@mdx-js/mdx': 3.1.0(acorn@8.15.0)
       acorn: 8.15.0
-      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)
+      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       es-module-lexer: 1.7.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -9538,17 +9538,17 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.25.76
 
-  '@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))':
+  '@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.7
-      '@astrojs/mdx': 4.2.5(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      '@astrojs/mdx': 4.2.5(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       '@astrojs/sitemap': 3.3.1
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)
-      astro-expressive-code: 0.41.2(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
+      astro-expressive-code: 0.41.2(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -11488,13 +11488,13 @@ snapshots:
     dependencies:
       postcss: 8.5.6
 
-  '@pandabox/unplugin@0.2.2(@pandacss/config@1.4.1)(@pandacss/core@1.4.1)(@pandacss/node@1.4.1(typescript@5.9.2))(esbuild@0.25.10)(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
+  '@pandabox/unplugin@0.2.2(@pandacss/config@1.4.1)(@pandacss/core@1.4.1)(@pandacss/node@1.4.1(typescript@5.9.3))(esbuild@0.25.10)(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0))':
     dependencies:
       '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.6)
       '@pandacss/config': 1.4.1
       '@pandacss/core': 1.4.1
-      '@pandacss/extractor': 0.36.1(typescript@5.9.2)
-      '@pandacss/node': 1.4.1(typescript@5.9.2)
+      '@pandacss/extractor': 0.36.1(typescript@5.9.3)
+      '@pandacss/node': 1.4.1(typescript@5.9.3)
       '@pandacss/shared': 0.36.1
       '@rollup/pluginutils': 5.3.0(rollup@4.52.3)
       es-toolkit: 1.32.0
@@ -11550,13 +11550,13 @@ snapshots:
       postcss-selector-parser: 6.1.2
       ts-pattern: 5.8.0
 
-  '@pandacss/dev@1.4.1(typescript@5.9.2)':
+  '@pandacss/dev@1.4.1(typescript@5.9.3)':
     dependencies:
       '@clack/prompts': 0.9.1
       '@pandacss/config': 1.4.1
       '@pandacss/logger': 1.4.1
-      '@pandacss/node': 1.4.1(typescript@5.9.2)
-      '@pandacss/postcss': 1.4.1(typescript@5.9.2)
+      '@pandacss/node': 1.4.1(typescript@5.9.3)
+      '@pandacss/postcss': 1.4.1(typescript@5.9.3)
       '@pandacss/preset-panda': 1.4.1
       '@pandacss/shared': 1.4.1
       '@pandacss/token-dictionary': 1.4.1
@@ -11566,19 +11566,19 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/extractor@0.36.1(typescript@5.9.2)':
+  '@pandacss/extractor@0.36.1(typescript@5.9.3)':
     dependencies:
       '@pandacss/shared': 0.36.1
-      ts-evaluator: 1.2.0(typescript@5.9.2)
+      ts-evaluator: 1.2.0(typescript@5.9.3)
       ts-morph: 21.0.1
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/extractor@1.4.1(typescript@5.9.2)':
+  '@pandacss/extractor@1.4.1(typescript@5.9.3)':
     dependencies:
       '@pandacss/shared': 1.4.1
-      ts-evaluator: 1.2.0(typescript@5.9.2)
+      ts-evaluator: 1.2.0(typescript@5.9.3)
       ts-morph: 26.0.0
     transitivePeerDependencies:
       - jsdom
@@ -11605,13 +11605,13 @@ snapshots:
       '@pandacss/types': 1.4.1
       kleur: 4.1.5
 
-  '@pandacss/node@1.4.1(typescript@5.9.2)':
+  '@pandacss/node@1.4.1(typescript@5.9.3)':
     dependencies:
       '@pandacss/config': 1.4.1
       '@pandacss/core': 1.4.1
       '@pandacss/generator': 1.4.1
       '@pandacss/logger': 1.4.1
-      '@pandacss/parser': 1.4.1(typescript@5.9.2)
+      '@pandacss/parser': 1.4.1(typescript@5.9.3)
       '@pandacss/reporter': 1.4.1
       '@pandacss/shared': 1.4.1
       '@pandacss/token-dictionary': 1.4.1
@@ -11634,16 +11634,16 @@ snapshots:
       prettier: 3.2.5
       ts-morph: 26.0.0
       ts-pattern: 5.8.0
-      tsconfck: 3.1.6(typescript@5.9.2)
+      tsconfck: 3.1.6(typescript@5.9.3)
     transitivePeerDependencies:
       - jsdom
       - typescript
 
-  '@pandacss/parser@1.4.1(typescript@5.9.2)':
+  '@pandacss/parser@1.4.1(typescript@5.9.3)':
     dependencies:
       '@pandacss/config': 1.4.1
       '@pandacss/core': 1.4.1
-      '@pandacss/extractor': 1.4.1(typescript@5.9.2)
+      '@pandacss/extractor': 1.4.1(typescript@5.9.3)
       '@pandacss/logger': 1.4.1
       '@pandacss/shared': 1.4.1
       '@pandacss/types': 1.4.1
@@ -11655,9 +11655,9 @@ snapshots:
       - jsdom
       - typescript
 
-  '@pandacss/postcss@1.4.1(typescript@5.9.2)':
+  '@pandacss/postcss@1.4.1(typescript@5.9.3)':
     dependencies:
-      '@pandacss/node': 1.4.1(typescript@5.9.2)
+      '@pandacss/node': 1.4.1(typescript@5.9.3)
       postcss: 8.4.49
     transitivePeerDependencies:
       - jsdom
@@ -12348,12 +12348,12 @@ snapshots:
       loupe: 3.1.4
       tinyrainbow: 2.0.0
 
-  '@volar/kit@2.4.11(typescript@5.9.2)':
+  '@volar/kit@2.4.11(typescript@5.9.3)':
     dependencies:
       '@volar/language-service': 2.4.11
       '@volar/typescript': 2.4.11
       typesafe-path: 0.2.2
-      typescript: 5.9.2
+      typescript: 5.9.3
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
 
@@ -12468,7 +12468,7 @@ snapshots:
       de-indent: 1.0.2
       he: 1.2.0
 
-  '@vue/language-core@2.2.0(typescript@5.9.2)':
+  '@vue/language-core@2.2.0(typescript@5.9.3)':
     dependencies:
       '@volar/language-core': 2.4.14
       '@vue/compiler-dom': 3.5.14
@@ -12479,7 +12479,7 @@ snapshots:
       muggle-string: 0.4.1
       path-browserify: 1.0.1
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   '@vue/shared@3.4.19': {}
 
@@ -12651,19 +12651,19 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.41.2(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)):
+  astro-expressive-code@0.41.2(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)):
     dependencies:
-      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)
+      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       rehype-expressive-code: 0.41.2
 
-  astro-og-canvas@0.7.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)):
+  astro-og-canvas@0.7.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)):
     dependencies:
-      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0)
+      astro: 5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)
       canvaskit-wasm: 0.39.1
       deterministic-object-hash: 2.0.2
       entities: 4.5.0
 
-  astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0):
+  astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0):
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.7.3
@@ -12713,7 +12713,7 @@ snapshots:
       smol-toml: 1.4.2
       tinyexec: 0.3.2
       tinyglobby: 0.2.15
-      tsconfck: 3.1.6(typescript@5.9.2)
+      tsconfck: 3.1.6(typescript@5.9.3)
       ultrahtml: 1.6.0
       unifont: 0.5.2
       unist-util-visit: 5.0.0
@@ -12726,7 +12726,7 @@ snapshots:
       yocto-spinner: 0.2.3
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
-      zod-to-ts: 1.2.0(typescript@5.9.2)(zod@3.25.76)
+      zod-to-ts: 1.2.0(typescript@5.9.3)(zod@3.25.76)
     optionalDependencies:
       sharp: 0.34.3
     transitivePeerDependencies:
@@ -13668,7 +13668,7 @@ snapshots:
 
   dts-bundle-generator@9.5.1:
     dependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
       yargs: 17.7.2
 
   dunder-proto@1.0.1:
@@ -15571,7 +15571,7 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
-  mkdist@2.2.0(typescript@5.9.2):
+  mkdist@2.2.0(typescript@5.9.3):
     dependencies:
       autoprefixer: 10.4.21(postcss@8.5.6)
       citty: 0.1.6
@@ -15587,7 +15587,7 @@ snapshots:
       semver: 7.7.2
       tinyglobby: 0.2.15
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   mlly@1.7.4:
     dependencies:
@@ -15958,9 +15958,9 @@ snapshots:
 
   pako@1.0.11: {}
 
-  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.4.1(typescript@5.9.2))(@radix-ui/colors@3.0.0):
+  pandacss-preset-radix-colors@0.2.0(@pandacss/dev@1.4.1(typescript@5.9.3))(@radix-ui/colors@3.0.0):
     dependencies:
-      '@pandacss/dev': 1.4.1(typescript@5.9.2)
+      '@pandacss/dev': 1.4.1(typescript@5.9.3)
       '@radix-ui/colors': 3.0.0
 
   param-case@3.0.4:
@@ -16798,11 +16798,11 @@ snapshots:
       hash-base: 3.0.5
       inherits: 2.0.4
 
-  rollup-plugin-dts@6.1.1(rollup@4.52.3)(typescript@5.9.2):
+  rollup-plugin-dts@6.1.1(rollup@4.52.3)(typescript@5.9.3):
     dependencies:
       magic-string: 0.30.19
       rollup: 4.52.3
-      typescript: 5.9.2
+      typescript: 5.9.3
     optionalDependencies:
       '@babel/code-frame': 7.27.1
 
@@ -17161,19 +17161,19 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-heading-badges@0.5.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))):
+  starlight-heading-badges@0.5.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
     dependencies:
       '@astrojs/markdown-remark': 6.3.7
-      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       unist-util-visit: 5.0.0
     transitivePeerDependencies:
       - supports-color
 
-  starlight-image-zoom@0.12.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))):
+  starlight-image-zoom@0.12.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       mdast-util-mdx-jsx: 3.2.0
       rehype-raw: 7.0.0
       unist-util-visit: 5.0.0
@@ -17181,9 +17181,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.16.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))):
+  starlight-links-validator@0.16.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
       '@types/picomatch': 3.0.2
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
@@ -17197,9 +17197,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.11.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))):
+  starlight-package-managers@0.11.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.25.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
 
   statuses@2.0.1: {}
 
@@ -17413,12 +17413,12 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-evaluator@1.2.0(typescript@5.9.2):
+  ts-evaluator@1.2.0(typescript@5.9.3):
     dependencies:
       ansi-colors: 4.1.3
       crosspath: 2.0.0
       object-path: 0.11.8
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   ts-graphviz@1.8.2: {}
 
@@ -17434,9 +17434,9 @@ snapshots:
 
   ts-pattern@5.8.0: {}
 
-  tsconfck@3.1.6(typescript@5.9.2):
+  tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   tslib@1.14.1: {}
 
@@ -17496,7 +17496,7 @@ snapshots:
 
   typescript@5.8.3: {}
 
-  typescript@5.9.2: {}
+  typescript@5.9.3: {}
 
   ufo@1.6.1: {}
 
@@ -17507,7 +17507,7 @@ snapshots:
 
   ultrahtml@1.6.0: {}
 
-  unbuild@3.5.0(typescript@5.9.2):
+  unbuild@3.5.0(typescript@5.9.3):
     dependencies:
       '@rollup/plugin-alias': 5.1.1(rollup@4.52.3)
       '@rollup/plugin-commonjs': 28.0.2(rollup@4.52.3)
@@ -17523,18 +17523,18 @@ snapshots:
       hookable: 5.5.3
       jiti: 2.4.2
       magic-string: 0.30.19
-      mkdist: 2.2.0(typescript@5.9.2)
+      mkdist: 2.2.0(typescript@5.9.3)
       mlly: 1.7.4
       pathe: 2.0.3
       pkg-types: 2.2.0
       pretty-bytes: 6.1.1
       rollup: 4.52.3
-      rollup-plugin-dts: 6.1.1(rollup@4.52.3)(typescript@5.9.2)
+      rollup-plugin-dts: 6.1.1(rollup@4.52.3)(typescript@5.9.3)
       scule: 1.3.0
       tinyglobby: 0.2.15
       untyped: 2.0.0
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
     transitivePeerDependencies:
       - sass
       - vue
@@ -17837,18 +17837,18 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-dts@4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)):
+  vite-plugin-dts@4.5.4(@types/node@20.19.11)(rollup@4.52.3)(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)):
     dependencies:
       '@microsoft/api-extractor': 7.52.8(@types/node@20.19.11)
       '@rollup/pluginutils': 5.3.0(rollup@4.52.3)
       '@volar/typescript': 2.4.14
-      '@vue/language-core': 2.2.0(typescript@5.9.2)
+      '@vue/language-core': 2.2.0(typescript@5.9.3)
       compare-versions: 6.1.1
       debug: 4.4.1
       kolorist: 1.8.0
       local-pkg: 1.1.1
       magic-string: 0.30.19
-      typescript: 5.9.2
+      typescript: 5.9.3
     optionalDependencies:
       vite: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
     transitivePeerDependencies:
@@ -17885,11 +17885,11 @@ snapshots:
       rollup: 4.52.3
       vite: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
 
-  vite-tsconfig-paths@5.1.4(typescript@5.9.2)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)):
+  vite-tsconfig-paths@5.1.4(typescript@5.9.3)(vite@7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)):
     dependencies:
       debug: 4.4.1
       globrex: 0.1.2
-      tsconfck: 3.1.6(typescript@5.9.2)
+      tsconfck: 3.1.6(typescript@5.9.3)
     optionalDependencies:
       vite: 7.1.7(@types/node@20.19.11)(jiti@2.4.2)(lightningcss@1.25.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
     transitivePeerDependencies:
@@ -18370,9 +18370,9 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-to-ts@1.2.0(typescript@5.9.2)(zod@3.25.76):
+  zod-to-ts@1.2.0(typescript@5.9.3)(zod@3.25.76):
     dependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
       zod: 3.25.76
 
   zod@3.22.3: {}
