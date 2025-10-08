@@ -17,7 +17,7 @@
     "clean": "likec4ops clean"
   },
   "devDependencies": {
-    "@fontsource-variable/ibm-plex-sans": "^5.2.7",
+    "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/devops": "workspace:*",
