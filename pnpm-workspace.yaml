@@ -52,7 +52,7 @@ catalogs:
     esbuild-node-externals: 1.18.0
     esbuild-plugins-node-modules-polyfill: 1.7.1
   hono:
-    "@hono/node-server": ^1.19.3
+    "@hono/node-server": ^1.19.5
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
     "@hono/zod-validator": ^0.7.3
