@@ -113,7 +113,7 @@ catalogs:
     json5: ^2.2.3
     khroma: 2.1.0
     nano-spawn: ^1.0.3
-    nanoid: 5.1.5
+    nanoid: 5.1.6
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
     p-debounce: 4.0.0
