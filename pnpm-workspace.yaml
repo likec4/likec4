@@ -56,7 +56,7 @@ catalogs:
     "@hono/oauth-providers": ^0.8.5
     "@hono/valibot-validator": ^0.5.3
     "@hono/zod-validator": ^0.7.3
-    hono: ^4.9.8
+    hono: ^4.9.10
     hono-sessions: ^0.8.0
   langium:
     langium: 3.5.0
