@@ -282,8 +282,8 @@ catalogs:
       specifier: ^4.0.3
       version: 4.0.3
     remeda:
-      specifier: ^2.31.1
-      version: 2.31.1
+      specifier: ^2.32.0
+      version: 2.32.0
     safe-stringify:
       specifier: ^1.2.0
       version: 1.2.0
@@ -677,7 +677,7 @@ importers:
         version: 3.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       std-env:
         specifier: catalog:utils
         version: 3.9.0
@@ -761,7 +761,7 @@ importers:
         version: 2.0.0
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       std-env:
         specifier: catalog:utils
         version: 3.9.0
@@ -835,7 +835,7 @@ importers:
         version: 1.0.3
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -956,7 +956,7 @@ importers:
         version: 11.1.2
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       turbo:
         specifier: 2.5.8
         version: 2.5.8
@@ -1037,7 +1037,7 @@ importers:
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -1122,7 +1122,7 @@ importers:
         version: 3.5.0
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1295,7 +1295,7 @@ importers:
         version: 9.2.0
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       strip-indent:
         specifier: catalog:utils
         version: 4.0.0
@@ -1376,7 +1376,7 @@ importers:
         version: 8.1.1
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       strip-indent:
         specifier: catalog:utils
         version: 4.0.0
@@ -1648,7 +1648,7 @@ importers:
         version: 20.6.0(prop-types@15.8.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       semver:
         specifier: ^7.7.2
         version: 7.7.2
@@ -1782,7 +1782,7 @@ importers:
         version: 0.1.6
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -1887,7 +1887,7 @@ importers:
         version: 0.3.2(@types/vscode@1.100.0)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       std-env:
         specifier: catalog:utils
         version: 3.9.0
@@ -2034,7 +2034,7 @@ importers:
         version: 6.0.0(react@19.1.1)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -2098,7 +2098,7 @@ importers:
         version: 0.2.0(@pandacss/dev@1.4.1(typescript@5.9.3))(@radix-ui/colors@3.0.0)
       remeda:
         specifier: catalog:utils
-        version: 2.31.1
+        version: 2.32.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -7886,8 +7886,8 @@ packages:
   remark-stringify@11.0.0:
     resolution: {integrity: sha512-1OSmLd3awB/t8qdoEOMazZkNsfVTeY4fTsgzcQFdXNq8ToTN4ZGwrMnlda4K6smTFKD+GRV6O48i6Z4iKgPPpw==}
 
-  remeda@2.31.1:
-    resolution: {integrity: sha512-FRZefcuXbmCoYt8hAITAzW4t8i/RERaGk/+GtRN90eV3NHxsnRKCDIOJVrwrQ6zz77TG/Xyi9mGRfiJWT7DK1g==}
+  remeda@2.32.0:
+    resolution: {integrity: sha512-BZx9DsT4FAgXDTOdgJIc5eY6ECIXMwtlSPQoPglF20ycSWigttDDe88AozEsPPT4OWk5NujroGSBC1phw5uU+w==}
 
   request-light@0.5.8:
     resolution: {integrity: sha512-3Zjgh+8b5fhRJBQZoy+zbVKpAQGLyka0MPgW3zruTF4dFFJ8Fqcfu9YsAvi/rvdcaTeWG3MkbZv4WKxAn/84Lg==}
@@ -16730,7 +16730,7 @@ snapshots:
       mdast-util-to-markdown: 2.1.2
       unified: 11.0.5
 
-  remeda@2.31.1:
+  remeda@2.32.0:
     dependencies:
       type-fest: 4.41.0
 
