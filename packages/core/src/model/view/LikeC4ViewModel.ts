@@ -1,4 +1,4 @@
-import { isTruthy } from 'remeda'
+import { isShallowEqual, isTruthy } from 'remeda'
 import type {
   Any,
   AnyView,
@@ -8,7 +8,7 @@ import type {
   scalar,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, preferDescription, preferSummary, RichText } from '../../types'
 import type * as aux from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
@@ -150,7 +150,24 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$view.description)
+    return RichText.memoize(this, 'description', preferDescription(this.$view))
+  }
+
+  /**
+   * Returns true if the view has a summary and a description
+   * (if one is missing - it falls back to another)
+   */
+  get hasSummary(): boolean {
+    return !!this.$view.summary && !!this.$view.description &&
+      !isShallowEqual(this.$view.summary, this.$view.description)
+  }
+
+  /**
+   * Short description of the view.
+   * Falls back to description if summary is not provided.
+   */
+  get summary(): RichTextOrEmpty {
+    return RichText.memoize(this, 'summary', preferSummary(this.$view))
   }
 
   get tags(): aux.Tags<A> {

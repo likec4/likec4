@@ -145,6 +145,7 @@ export interface ParsedAstElementView {
   extends?: c4.ViewId
   astPath: string
   title: string | null
+  summary: c4.MarkdownOrString | null
   description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
@@ -157,6 +158,7 @@ export interface ParsedAstDynamicView {
   id: c4.ViewId
   astPath: string
   title: string | null
+  summary: c4.MarkdownOrString | null
   description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
@@ -171,6 +173,7 @@ export interface ParsedAstDeploymentView {
   id: c4.ViewId
   astPath: string
   title: string | null
+  summary: c4.MarkdownOrString | null
   description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null

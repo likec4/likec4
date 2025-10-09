@@ -21,6 +21,7 @@ describe('resolveGlobalRulesInViews', () => {
       _type: 'element',
       id: ViewId('viewId'),
       title: 'View Title',
+      summary: null,
       description: { txt: 'View Description' },
       tags: null,
       links: null,

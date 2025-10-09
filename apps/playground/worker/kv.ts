@@ -202,6 +202,7 @@ function convertLegacyModel(
     ),
     views: mapValues(views, ({ __, id, description, nodes, edges, notation, tags, ...rest }): LayoutedView<any> => ({
       ...rest,
+      summary: null,
       description: description ? { txt: description } : null,
       ...(notation
         ? {
