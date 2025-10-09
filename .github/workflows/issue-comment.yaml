@@ -81,7 +81,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:
@@ -146,7 +146,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:
