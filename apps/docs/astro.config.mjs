@@ -1,12 +1,12 @@
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
-
-import tailwindcss from '@tailwindcss/vite'
+import starlightTocOverviewCustomizer from 'starlight-toc-overview-customizer'
 
 const version = process.env.npm_package_version || 'latest'
 
@@ -27,6 +27,9 @@ export default defineConfig({
             '/playground/getting-started/',
             '/playground/',
           ],
+        }),
+        starlightTocOverviewCustomizer({
+          overviewTitle: 'Back to top',
         }),
       ],
       title: 'LikeC4',

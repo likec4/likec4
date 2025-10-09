@@ -45,6 +45,9 @@ catalogs:
     starlight-package-managers:
       specifier: ^0.11.0
       version: 0.11.0
+    starlight-toc-overview-customizer:
+      specifier: ^0.1.0
+      version: 0.1.0
   cloudflare:
     '@cloudflare/vite-plugin':
       specifier: 1.11.7
@@ -434,6 +437,10 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.15.31)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.39.2)(tsx@4.20.6)(yaml@2.7.0)
 
   apps/docs:
+    dependencies:
+      starlight-toc-overview-customizer:
+        specifier: catalog:astro
+        version: 0.1.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0)))
     devDependencies:
       '@astrojs/check':
         specifier: catalog:astro
@@ -8432,6 +8439,12 @@ packages:
     engines: {node: '>=18.17.1'}
     peerDependencies:
       '@astrojs/starlight': '>=0.22.0'
+
+  starlight-toc-overview-customizer@0.1.0:
+    resolution: {integrity: sha512-WV+eGl4LrSSHgnnScQQndpji65IfSEDx5sGRiaOKSQC7kkPInjll9TDPACxVyyxh8fN096ip/fwYaM3OBUWHAQ==}
+    engines: {node: ^18.17.1 || ^20.3.0 || >=21.0.0}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.32'
 
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
@@ -17549,6 +17562,10 @@ snapshots:
       - supports-color
 
   starlight-package-managers@0.11.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
+    dependencies:
+      '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
+
+  starlight-toc-overview-customizer@0.1.0(@astrojs/starlight@0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))):
     dependencies:
       '@astrojs/starlight': 0.36.0(astro@5.14.1(@types/node@22.15.31)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.3)(terser@5.39.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.7.0))
 

@@ -1,14 +1,16 @@
 ---
-import Default from "@astrojs/starlight/components/PageFrame.astro";
-import Hero from '@components/custom/Hero.astro';
-import Navigation from '@components/custom/Navigation.astro';
+import Default from '@astrojs/starlight/components/PageFrame.astro'
+import IndexPage from '@components/custom/IndexPage.astro'
 
-const isCustomPage = Astro.locals.starlightRoute.id === 'custom';
+const isCustomPage = Astro.locals.starlightRoute.id === 'custom'
 ---
 
-{isCustomPage ? (
-  <div class="min-h-screen transition-colors duration-300">
-	    <Navigation/>
-  <Hero/>
-  </div>
-) :  (<Default {...Astro.props}><slot /></Default>)}
+{
+  isCustomPage ? <IndexPage /> : (
+    <Default>
+      <slot name="header" slot="header" />
+      <slot name="sidebar" slot="sidebar" />
+      <slot />
+    </Default>
+  )
+}

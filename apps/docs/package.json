@@ -23,7 +23,9 @@
     "@astrojs/starlight-tailwind": "catalog:astro",
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
+    "starlight-toc-overview-customizer": "catalog:astro",
     "@likec4/config": "workspace:*",
+    "@tailwindcss/vite": "catalog:css",
     "@types/picomatch": "catalog:utils",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
@@ -39,11 +41,10 @@
     "starlight-image-zoom": "catalog:astro",
     "starlight-links-validator": "catalog:astro",
     "starlight-package-managers": "catalog:astro",
+    "tailwindcss": "catalog:css",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "wrangler": "catalog:cloudflare",
-    "@tailwindcss/vite": "catalog:css",
-    "tailwindcss": "catalog:css"
+    "wrangler": "catalog:cloudflare"
   }
 }

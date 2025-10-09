@@ -1,0 +1,187 @@
+---
+import { Code } from '@astrojs/starlight/components'
+import LikeC4View from '@components/index-page/LikeC4View.astro'
+const codeExample = `
+// You start with defining your terms and ...
+specification {
+  // ... "types" of your elements
+  element actor {
+    style {
+      shape person // how to render
+    }
+  }
+  element system
+  element component
+  // and "typed" relationships (if you need)
+  relationship async
+}
+
+// Here goes your model, the single source of truth
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+    -> ui 'opens in browser'
+  }
+
+  cloud = system 'Our SaaS' {
+    backend = component 'Backend' {
+      icon tech:graphql
+      description 'Implements business logic and provides GraphQL API'
+    }
+
+    ui = component 'Frontend' {
+      description 'NextJS application'
+      style {
+        icon tech:nextjs
+        shape browser
+      }
+    }
+
+    ui -[async]-> backend 'requests via HTTPS'
+  }
+}
+
+// And finally, you define what to render
+views {
+  view index {
+    title 'Landscape view'
+    include *, cloud.*
+
+    style cloud.* {
+      color green
+    }
+  }
+}
+`
+---
+
+<section
+  id="demo"
+  class="py-24 px-6 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
+>
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
+        See it in action
+      </h2>
+      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+        Transform your architecture model into beautiful, interactive diagrams instantly.
+      </p>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between px-6 py-4 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex gap-2">
+          <div class="w-3 h-3 rounded-full bg-red-500"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            id="code-tab"
+            class="tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <polyline points="16,18 22,12 16,6"></polyline>
+              <polyline points="8,6 2,12 8,18"></polyline>
+            </svg>
+            Code
+          </button>
+          <button
+            id="diagram-tab"
+            class="tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Diagram
+          </button>
+        </div>
+
+        <div>
+          <!-- <button class="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <polygon points="5,3 19,12 5,21"></polygon>
+            </svg>
+          </button> -->
+        </div>
+      </div>
+
+      <div class="relative">
+        <div id="code-content" class="tab-content p-0">
+          <Code code={codeExample} lang="likec4" />
+          <!-- <pre class="text-sm md:text-base text-slate-800 dark:text-slate-200 font-mono leading-relaxed overflow-x-auto">{codeExample}</pre> -->
+        </div>
+
+        <div
+          id="diagram-content"
+          class="tab-content p-8 min-h-[500px] flex items-center justify-center bg-slate-50 dark:bg-slate-800 hidden"
+        >
+          <div class="w-full max-w-4xl">
+            <LikeC4View viewId="index" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 text-center">
+      <p class="text-slate-600 dark:text-slate-400 mb-6 text-lg">
+        Try it yourself with our interactive playground
+      </p>
+      <a
+        href="https://playground.likec4.dev/w/tutorial/"
+        target="_blank"
+        class="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 no-underline"
+      >
+        Launch Playground
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+function switchTab(
+  activeTabId: string,
+  inactiveTabId: string,
+  activeContentId: string,
+  inactiveContentId: string,
+): void {
+  const activeTab = document.getElementById(activeTabId)
+  const inactiveTab = document.getElementById(inactiveTabId)
+  const activeContent = document.getElementById(activeContentId)
+  const inactiveContent = document.getElementById(inactiveContentId)
+
+  if (activeTab && inactiveTab && activeContent && inactiveContent) {
+    // Update tab styles
+    activeTab.className =
+      'tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md'
+    inactiveTab.className =
+      'tab-button px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+
+    // Update content visibility
+    activeContent.classList.remove('hidden')
+    inactiveContent.classList.add('hidden')
+  }
+}
+
+function initializeTabs(): void {
+  const codeTab = document.getElementById('code-tab')
+  const diagramTab = document.getElementById('diagram-tab')
+
+  codeTab?.addEventListener('click', () => {
+    switchTab('code-tab', 'diagram-tab', 'code-content', 'diagram-content')
+  })
+
+  diagramTab?.addEventListener('click', () => {
+    switchTab('diagram-tab', 'code-tab', 'diagram-content', 'code-content')
+  })
+}
+
+// Initialize on DOM content loaded
+document.addEventListener('DOMContentLoaded', initializeTabs)
+
+// Handle page navigation (for Astro's client-side routing)
+document.addEventListener('astro:page-load', initializeTabs)
+</script>
