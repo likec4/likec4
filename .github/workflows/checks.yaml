@@ -144,7 +144,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tarballs
           path: packages
@@ -207,7 +207,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📦 download tarballs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tarballs
           path: packages
