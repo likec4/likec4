@@ -2,11 +2,11 @@
 import Default from '@astrojs/starlight/components/PageFrame.astro'
 import IndexPage from '@components/custom/IndexPage.astro'
 
-const isCustomPage = Astro.locals.starlightRoute.id === 'custom'
+const isIndexPage = Astro.locals.starlightRoute.id === ''
 ---
 
 {
-  isCustomPage ? <IndexPage /> : (
+  isIndexPage ? <IndexPage /> : (
     <Default>
       <slot name="header" slot="header" />
       <slot name="sidebar" slot="sidebar" />
